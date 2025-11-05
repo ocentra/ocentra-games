@@ -5,11 +5,11 @@ import googleLogo from '../../../assets/Auth/google.png';
 import guestLogo from '../../../assets/Auth/annon.png';
 
 interface LoginDialogProps {
-  onLogin: (username: string, password: string) => void;
-  onSignUp: (userData: { alias: string; avatar: string; username: string; password: string }) => void;
-  onFacebookLogin: () => void;
-  onGoogleLogin: () => void;
-  onGuestLogin: () => void;
+  onLogin: (username: string, password: string) => Promise<boolean>;
+  onSignUp: (userData: { alias: string; avatar: string; username: string; password: string }) => Promise<boolean>;
+  onFacebookLogin: () => Promise<boolean>;
+  onGoogleLogin: () => Promise<boolean>;
+  onGuestLogin: () => Promise<boolean>;
   onTabSwitch?: () => void; // Add callback for tab switching
 }
 
@@ -75,10 +75,20 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isSignIn) {
-      onLogin(username, password);
+      onLogin(username, password).then(success => {
+        if (!success) {
+          // Handle login failure
+          console.log('Login failed');
+        }
+      });
     } else {
       // For sign up, you might want to add validation for matching passwords
-      onSignUp({ alias, avatar, username, password });
+      onSignUp({ alias, avatar, username, password }).then(success => {
+        if (!success) {
+          // Handle sign up failure
+          console.log('Sign up failed');
+        }
+      });
     }
   };
 
@@ -275,7 +285,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
         {isSignIn && (
           <>
             <div className="divider">
-              <span>or</span>
+              <span>or Log in with</span>
             </div>
             
             <div className="social-login">

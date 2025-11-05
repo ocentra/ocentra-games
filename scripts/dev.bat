@@ -1,0 +1,9 @@
+@echo off
+echo 🔄 Ensuring clean start of development environment...
+echo.
+echo 🔍 Killing existing Node.js processes...
+taskkill /F /IM node.exe 2>nul
+echo ✅ Node.js processes terminated
+echo.
+echo 🚀 Starting Vite development server on port 3000...
+npx vite

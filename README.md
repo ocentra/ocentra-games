@@ -34,6 +34,19 @@ A high-stakes, real-time multiplayer card game built with React Three Fiber, fea
    npm install
    ```
 
+### Firebase Setup
+
+This project uses Firebase for authentication and data storage. To set up Firebase:
+
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Register your web app in the Firebase project
+3. Enable Authentication methods (Email/Password, Google, Facebook)
+4. Set up Firestore Database
+5. Copy your Firebase configuration to the [.env](file:///e:/Claim/.env) file
+6. Follow the detailed instructions in [FIREBASE_SETUP.md](file:///e:/Claim/FIREBASE_SETUP.md)
+
+For development, the app will work in offline mode if Firebase is not configured.
+
 ### Available Scripts
 
 - `npm run dev` - Start development server with hot reload
