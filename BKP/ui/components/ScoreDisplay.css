@@ -1,0 +1,197 @@
+.score-display {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px;
+  min-width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.score-display.winner {
+  border-color: #ffd700;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  animation: winner-glow 2s ease-in-out infinite alternate;
+}
+
+.score-display.animate {
+  animation: score-reveal 1.5s ease-out;
+}
+
+@keyframes winner-glow {
+  from {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+}
+
+@keyframes score-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.player-info {
+  margin-bottom: 12px;
+  border-bottom: 1px solid #0f3460;
+  padding-bottom: 8px;
+}
+
+.player-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.declared-suit {
+  font-size: 12px;
+  color: #64b5f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.score-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.score-line.major {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.score-line.total {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 12px 0;
+  margin-top: 8px;
+  border-top: 2px solid #0f3460;
+}
+
+.score-line .label {
+  color: #b0bec5;
+}
+
+.score-line .value {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.score-line.positive .value {
+  color: #4caf50;
+}
+
+.score-line.negative .value {
+  color: #f44336;
+}
+
+.score-line.bonus .value {
+  color: #ffd700;
+}
+
+.bonus-details {
+  margin-top: 4px;
+  padding-left: 16px;
+}
+
+.bonus-item {
+  font-size: 12px;
+  color: #ffecb3;
+  margin: 2px 0;
+}
+
+/* Animation delays for staggered reveal */
+.score-display.animate .score-line:nth-child(1) {
+  animation: slide-in 0.5s ease-out 0.2s both;
+}
+
+.score-display.animate .score-line:nth-child(2) {
+  animation: slide-in 0.5s ease-out 0.4s both;
+}
+
+.score-display.animate .score-line:nth-child(3) {
+  animation: slide-in 0.5s ease-out 0.6s both;
+}
+
+.score-display.animate .score-line:nth-child(4) {
+  animation: slide-in 0.5s ease-out 0.8s both;
+}
+
+.score-display.animate .score-line:nth-child(5) {
+  animation: slide-in 0.5s ease-out 1.0s both;
+}
+
+.score-display.animate .score-line.total {
+  animation: slide-in 0.8s ease-out 1.2s both, pulse 0.5s ease-out 2s;
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .score-display {
+    min-width: 240px;
+    padding: 12px;
+    margin: 4px;
+  }
+  
+  .player-name {
+    font-size: 16px;
+  }
+  
+  .score-line {
+    font-size: 13px;
+  }
+  
+  .score-line.major {
+    font-size: 15px;
+  }
+  
+  .score-line.total {
+    font-size: 18px;
+  }
+}

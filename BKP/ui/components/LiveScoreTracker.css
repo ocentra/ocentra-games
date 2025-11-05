@@ -1,0 +1,252 @@
+.live-score-tracker {
+  background: rgba(26, 26, 46, 0.9);
+  border: 1px solid #0f3460;
+  border-radius: 8px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 250px;
+}
+
+.live-score-tracker.compact {
+  padding: 8px;
+  min-width: 200px;
+}
+
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #0f3460;
+}
+
+.tracker-header h3 {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.round-info {
+  color: #64b5f6;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.live-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.live-score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(15, 52, 96, 0.3);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.live-score-item.current {
+  border-color: #64b5f6;
+  background: rgba(100, 181, 246, 0.1);
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.3);
+}
+
+.live-score-item:hover {
+  background: rgba(15, 52, 96, 0.5);
+}
+
+.player-position {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.position-rank {
+  font-size: 14px;
+  font-weight: bold;
+  color: #64b5f6;
+  min-width: 24px;
+  text-align: center;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.player-name {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.declared-suit {
+  color: #ffb74d;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.score-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.current-score {
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.current-score.positive {
+  color: #4caf50;
+}
+
+.current-score.negative {
+  color: #f44336;
+}
+
+.score-change {
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  animation: score-change-flash 0.5s ease-out;
+}
+
+.score-change.increase {
+  color: #4caf50;
+}
+
+.score-change.decrease {
+  color: #f44336;
+}
+
+@keyframes score-change-flash {
+  0% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.score-details {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.declared-info,
+.undeclared-info {
+  font-size: 10px;
+  color: #b0bec5;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bonus-indicator {
+  font-size: 12px;
+  filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+}
+
+/* Compact mode styles */
+.compact-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.compact-score-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgba(15, 52, 96, 0.2);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.compact-score-item.current {
+  border-color: #64b5f6;
+  background: rgba(100, 181, 246, 0.1);
+}
+
+.compact-rank {
+  font-size: 10px;
+  font-weight: bold;
+  color: #64b5f6;
+  min-width: 16px;
+  text-align: center;
+}
+
+.compact-name {
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-score {
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  min-width: 40px;
+  text-align: right;
+}
+
+.compact-score.positive {
+  color: #4caf50;
+}
+
+.compact-score.negative {
+  color: #f44336;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .live-score-tracker {
+    min-width: 200px;
+    padding: 8px;
+  }
+  
+  .tracker-header h3 {
+    font-size: 14px;
+  }
+  
+  .live-score-item {
+    padding: 6px;
+  }
+  
+  .player-name {
+    font-size: 13px;
+  }
+  
+  .current-score {
+    font-size: 14px;
+  }
+}
