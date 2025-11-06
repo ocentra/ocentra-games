@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signInWithRedirect, 
+  signInWithPopup,
   signOut, 
   GoogleAuthProvider, 
   FacebookAuthProvider,
@@ -177,15 +178,57 @@ export const loginWithGoogle = async (): Promise<AuthResult> => {
   }
   
   try {
+    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] Creating GoogleAuthProvider...');
     const provider = new GoogleAuthProvider();
-    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] Initiating redirect to Google...');
-    await signInWithRedirect(auth!, provider);
-    // The result is handled by the onAuthStateChanged listener
-    logAuth(LOG_AUTH_SOCIAL, 'log', prefix, '[loginWithGoogle] ✅ Redirect initiated, waiting for callback');
-    return { success: true };
+    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] Provider created, auth object:', { 
+      hasAuth: !!auth, 
+      currentUser: auth?.currentUser?.uid || null,
+      appName: auth?.app?.name || null
+    });
+    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] About to call signInWithPopup...');
+    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] Current URL:', window.location.href);
+    logAuth(LOG_AUTH_FLOW, 'log', prefix, '[loginWithGoogle] Opening popup for Google login...');
+    const result = await signInWithPopup(auth!, provider);
+    logAuth(LOG_AUTH_SOCIAL, 'log', prefix, '[loginWithGoogle] ✅ Popup login successful:', { 
+      uid: result.user.uid, 
+      email: result.user.email 
+    });
+    
+    // Update last login time
+    logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[loginWithGoogle] Updating lastLoginAt in Firestore');
+    await updateDoc(doc(db!, 'users', result.user.uid), {
+      lastLoginAt: new Date()
+    });
+    
+    // Get user profile from Firestore
+    logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[loginWithGoogle] Fetching user profile from Firestore:', { uid: result.user.uid });
+    const userDoc = await getDoc(doc(db!, 'users', result.user.uid));
+    if (userDoc.exists()) {
+      const userProfile: UserProfile = {
+        ...userDoc.data() as UserProfile,
+        uid: result.user.uid
+      };
+      
+      logAuth(LOG_AUTH_LOGIN, 'log', prefix, '[loginWithGoogle] ✅ Login successful, profile loaded:', { 
+        uid: userProfile.uid, 
+        displayName: userProfile.displayName,
+        gamesPlayed: userProfile.gamesPlayed,
+        eloRating: userProfile.eloRating
+      });
+      
+      return { success: true, user: userProfile };
+    } else {
+      logAuth(LOG_AUTH_ERROR, 'error', prefix, '[loginWithGoogle] ❌ User profile not found in Firestore:', { uid: result.user.uid });
+      return { success: false, error: 'User profile not found' };
+    }
   } catch (error: unknown) {
     const firebaseError = error as FirebaseError;
-    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[loginWithGoogle] ❌ Google login error:', firebaseError);
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[loginWithGoogle] ❌ Google login error:', {
+      code: firebaseError.code,
+      message: firebaseError.message,
+      fullError: firebaseError
+    });
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[loginWithGoogle] ❌ Error occurred during popup login');
     return { success: false, error: firebaseError.message };
   }
 };

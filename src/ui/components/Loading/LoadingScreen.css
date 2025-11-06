@@ -1,0 +1,83 @@
+.loading-screen,
+.game-loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgb(0, 110, 104) 0%, rgb(0, 50, 100) 70%, rgb(0, 5, 15) 100%);
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1.5s ease-out;
+}
+
+.game-loading-screen.fade-out {
+  opacity: 0;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 8px solid rgba(0, 149, 255, 0.2);
+  border-top: 8px solid rgba(0, 149, 255, 0.8);
+  animation: spin 1s linear infinite;
+}
+
+.loading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 100px));
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  animation: pulse 2s ease-in-out infinite alternate;
+}
+
+.loading-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: limegreen;
+  opacity: 0.7;
+  text-shadow:
+    0 1px 0 #ccc,
+    0 2px 0 #c9c9c9,
+    0 3px 0 #bbb,
+    0 4px 0 #b9b9b9,
+    0 5px 0 #aaa,
+    0 6px 1px rgba(0, 0, 0, 0.1),
+    0 0 5px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 3px 5px rgba(0, 0, 0, 0.2),
+    0 5px 10px rgba(0, 0, 0, 0.25),
+    0 10px 10px rgba(0, 0, 0, 0.2),
+    0 20px 20px rgba(0, 0, 0, 0.15);
+  animation: grow 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, calc(-50% + 100px)) scale(1); }
+  100% { transform: translate(-50%, calc(-50% + 100px)) scale(1.1); }
+}
+
+@keyframes grow {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  100% { transform: translate(-50%, -50%) scale(15); }
+}
+

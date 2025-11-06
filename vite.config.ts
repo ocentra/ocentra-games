@@ -39,7 +39,6 @@ function initLogDatabase(): Database.Database {
     // Column already exists, ignore
   }
   
-  console.log('[Log DB] SQLite database initialized at:', dbPath)
   return logDb
 }
 
@@ -245,9 +244,6 @@ function logApiPlugin(): Plugin {
             try {
               const request = JSON.parse(body)
               
-              // Log incoming request for debugging
-              console.log('[MCP] Received request:', JSON.stringify(request, null, 2))
-              
               // MCP JSON-RPC 2.0 format: { jsonrpc: "2.0", id, method, params }
               const { jsonrpc, id, method } = request
               
@@ -410,6 +406,14 @@ function logApiPlugin(): Plugin {
                           properties: {
                             since: { type: 'string', description: 'Filter stats since this time (ISO string or relative like "1h", "24h")' },
                           },
+                        },
+                      },
+                      {
+                        name: 'clear_logs',
+                        description: 'Clear all logs from the database',
+                        inputSchema: {
+                          type: 'object',
+                          properties: {},
                         },
                       },
                       {
@@ -729,6 +733,34 @@ function logApiPlugin(): Plugin {
                   return
                 }
                 
+                // clear_logs - Clear all logs from database
+                if (name === 'clear_logs') {
+                  try {
+                    const db = initLogDatabase()
+                    const result = db.prepare('DELETE FROM logs').run()
+                    res.writeHead(200, { 'Content-Type': 'application/json' })
+                    res.end(JSON.stringify({
+                      jsonrpc: '2.0',
+                      id,
+                      result: {
+                        content: [
+                          {
+                            type: 'text',
+                            text: JSON.stringify({
+                              success: true,
+                              deleted: result.changes || 0,
+                              message: `Cleared ${result.changes || 0} logs`,
+                            }, null, 2),
+                          },
+                        ],
+                      },
+                    }))
+                  } catch (error) {
+                    returnError(error)
+                  }
+                  return
+                }
+                
                 // Unknown tool
                 res.writeHead(400, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify({
@@ -826,8 +858,6 @@ function logApiPlugin(): Plugin {
                 logEntry.tags ? JSON.stringify(logEntry.tags) : null
               )
               
-              console.log('[Log DB] Stored log:', { level: logEntry.level, context: logEntry.context, message: logEntry.message })
-              
               res.writeHead(200, { 'Content-Type': 'application/json' })
               res.end(JSON.stringify({ success: true }))
             } catch (error) {
@@ -841,6 +871,34 @@ function logApiPlugin(): Plugin {
           return
         }
         
+        next()
+      })
+      
+      // API route: DELETE /api/logs/clear - Clear all logs
+      server.middlewares.use('/api/logs/clear', async (req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Methods', 'DELETE, OPTIONS')
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+        
+        if (req.method === 'OPTIONS') {
+          res.writeHead(200)
+          res.end()
+          return
+        }
+        
+        if (req.method === 'DELETE') {
+          try {
+            const db = initLogDatabase()
+            const result = db.prepare('DELETE FROM logs').run()
+            res.writeHead(200, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ success: true, deleted: result.changes || 0 }))
+          } catch (error) {
+            console.error('[Log DB] Error clearing logs:', error)
+            res.writeHead(500, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ success: false, error: String(error) }))
+          }
+          return
+        }
         next()
       })
       

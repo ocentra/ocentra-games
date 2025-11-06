@@ -66,14 +66,36 @@ npm install firebase
 
 2. Open your app in the browser and try to register or log in
 
+## Step 8: Configure API Key Restrictions (IMPORTANT)
+
+If you see errors like "Requests from referer https://claim-b020c.firebaseapp.com/ are blocked":
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your Firebase project (claim-b020c)
+3. Navigate to **APIs & Services** → **Credentials**
+4. Find your API key (starts with `AIzaSy...`)
+5. Click **Edit** (pencil icon)
+6. Under **Application restrictions** → Select **HTTP referrers (web sites)**
+7. Click **Add an item** and add these referrers:
+   - `http://localhost:3000/*`
+   - `http://localhost:3000/__/auth/iframe*`
+   - `https://claim-b020c.firebaseapp.com/*`
+   - `https://claim-b020c.firebaseapp.com/__/auth/iframe*`
+   - `https://claim-b020c.web.app/*`
+   - `https://claim-b020c.web.app/__/auth/iframe*`
+8. Click **Save**
+
+**Note:** For development, you can temporarily set restrictions to "None", but this is not recommended for production.
+
 ## Troubleshooting
 
 If you encounter issues:
 
-1. Check that all environment variables are correctly set
-2. Verify that you've enabled the required authentication providers in Firebase Console
-3. Ensure your Firestore rules allow read/write access for development
-4. Check the browser console for any error messages
+1. **API Key Blocked Error (403)**: See Step 8 above to configure API key restrictions
+2. Check that all environment variables are correctly set
+3. Verify that you've enabled the required authentication providers in Firebase Console
+4. Ensure your Firestore rules allow read/write access for development
+5. Check the browser console for any error messages
 
 ## Security Considerations
 
