@@ -8,6 +8,9 @@
 import { getLogStorage, type LogQuery } from './logStorage';
 import { parseQueryParams, queryLogsFromParams, getLogStatsFromParams } from './logRouteHandler';
 
+// Logging flag - set to true to enable console logging for Log API
+const LOG_API = false
+
 /**
  * Intercept fetch requests to /api/logs/* and handle them in browser
  */
@@ -71,7 +74,7 @@ export function setupLogApiInterceptor(): void {
     return originalFetch.call(this, input, init);
   };
   
-  console.log('[Log API] Browser-side API interceptor active. /api/logs/* requests handled in browser.');
+  if (LOG_API) console.log('[Log API] Browser-side API interceptor active. /api/logs/* requests handled in browser.');
 }
 
 /**
@@ -92,5 +95,5 @@ if (typeof window !== 'undefined') {
     return await storage.clearLogs(query);
   };
   
-  console.log('[Log API] Log query functions available at window.__QUERY_LOGS__, window.__GET_LOG_STATS__, window.__CLEAR_LOGS__');
+  if (LOG_API) console.log('[Log API] Log query functions available at window.__QUERY_LOGS__, window.__GET_LOG_STATS__, window.__CLEAR_LOGS__');
 }

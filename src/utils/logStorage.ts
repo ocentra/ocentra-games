@@ -15,6 +15,7 @@ export interface LogEntry {
   timestamp: number;        // Timestamp in milliseconds
   args?: unknown[];         // Additional arguments passed to log
   stack?: string;          // Stack trace for errors
+  tags?: string[];         // Tags for filtering (e.g., ["auth", "critical"])
 }
 
 export type LogLevel = 'log' | 'error' | 'warn' | 'info' | 'debug';
@@ -142,11 +143,27 @@ export class LogStorage {
       // Parse since timestamp if provided
       let sinceTimestamp: number | null = null;
       if (query.since) {
-        const date = new Date(query.since);
-        if (isNaN(date.getTime())) {
-          throw new Error(`Invalid RFC3339 timestamp: ${query.since}`);
+        // Check if it's a relative time (e.g., "1h", "24h", "7d")
+        const relativeMatch = query.since.match(/^(\d+)([hdms])$/);
+        if (relativeMatch) {
+          const value = parseInt(relativeMatch[1], 10);
+          const unit = relativeMatch[2];
+          let ms = 0;
+          switch (unit) {
+            case 's': ms = value * 1000; break;
+            case 'm': ms = value * 60 * 1000; break;
+            case 'h': ms = value * 60 * 60 * 1000; break;
+            case 'd': ms = value * 24 * 60 * 60 * 1000; break;
+          }
+          sinceTimestamp = Date.now() - ms;
+        } else {
+          // Try to parse as RFC3339 timestamp
+          const date = new Date(query.since);
+          if (isNaN(date.getTime())) {
+            throw new Error(`Invalid timestamp format: ${query.since}. Expected RFC3339 (e.g., "2025-01-01T00:00:00Z") or relative time (e.g., "1h", "24h", "7d")`);
+          }
+          sinceTimestamp = date.getTime();
         }
-        sinceTimestamp = date.getTime();
       }
 
       return new Promise((resolve, reject) => {

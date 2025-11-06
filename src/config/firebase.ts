@@ -9,10 +9,10 @@ import type { Firestore } from 'firebase/firestore';
 const prefix = '[FirebaseConfig]';
 
 // Auth flow logging flags
-const LOG_AUTH_FLOW = true;        // Main auth flow tracking
-const LOG_AUTH_INIT = true;        // Firebase initialization
-const LOG_AUTH_CONFIG = true;      // Configuration status
-const LOG_AUTH_ERROR = true;        // Error logging
+const LOG_AUTH_FLOW = false;        // Main auth flow tracking
+const LOG_AUTH_INIT = false;        // Firebase initialization
+const LOG_AUTH_CONFIG = false;      // Configuration status
+const LOG_AUTH_ERROR = false;        // Error logging
 
 // Check if Firebase config is available
 const hasFirebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY && 

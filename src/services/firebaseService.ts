@@ -18,15 +18,15 @@ import { logAuth } from '../utils/logger';
 const prefix = '[FirebaseService]';
 
 // Auth flow logging flags
-const LOG_AUTH_FLOW = true;        // Main auth flow tracking
-const LOG_AUTH_REGISTER = true;    // User registration
-const LOG_AUTH_LOGIN = true;       // User login
-const LOG_AUTH_LOGOUT = true;      // User logout
-const LOG_AUTH_SOCIAL = true;      // Social login (Google/Facebook)
-const LOG_AUTH_GUEST = true;       // Guest login
-const LOG_AUTH_REDIRECT = true;    // Redirect handling
-const LOG_AUTH_FIRESTORE = true;   // Firestore operations
-const LOG_AUTH_ERROR = true;       // Error logging
+const LOG_AUTH_FLOW = false;        // Main auth flow tracking
+const LOG_AUTH_REGISTER = false;    // User registration
+const LOG_AUTH_LOGIN = false;       // User login
+const LOG_AUTH_LOGOUT = false;      // User logout
+const LOG_AUTH_SOCIAL = false;      // Social login (Google/Facebook)
+const LOG_AUTH_GUEST = false;       // Guest login
+const LOG_AUTH_REDIRECT = false;    // Redirect handling
+const LOG_AUTH_FIRESTORE = false;   // Firestore operations
+const LOG_AUTH_ERROR = false;       // Error logging
 
 // Check if Firebase is configured
 const isFirebaseConfigured = !!auth && !!db;
@@ -371,7 +371,7 @@ export const updateUserStats = async (
     return { success: true };
   } catch (error: unknown) {
     const firebaseError = error as FirebaseError;
-    console.error('Update user stats error:', firebaseError);
+    if (LOG_AUTH_ERROR) console.error('Update user stats error:', firebaseError);
     return { success: false, error: firebaseError.message };
   }
 };

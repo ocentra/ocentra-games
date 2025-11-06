@@ -2,251 +2,133 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import type { Plugin } from 'vite'
-import Database from 'better-sqlite3'
+import { WebSocketServer } from 'ws'
+import type { WebSocket } from 'ws'
 
-// SQLite database for logs (Node.js can access it)
-let logDb: Database.Database | null = null
+// Logging flag - set to true to enable console logging for MCP Bridge
+const LOG_MCP_BRIDGE = false
 
-function initLogDatabase(): Database.Database {
-  if (logDb) return logDb
-  
-  const dbPath = path.join(process.cwd(), 'logs.db')
-  logDb = new Database(dbPath)
-  
-  // Create logs table if it doesn't exist
-  logDb.exec(`
-    CREATE TABLE IF NOT EXISTS logs (
-      id TEXT PRIMARY KEY,
-      level TEXT NOT NULL,
-      context TEXT NOT NULL,
-      message TEXT NOT NULL,
-      source TEXT NOT NULL,
-      timestamp INTEGER NOT NULL,
-      args TEXT,
-      stack TEXT,
-      tags TEXT
-    );
-    CREATE INDEX IF NOT EXISTS idx_timestamp ON logs(timestamp);
-    CREATE INDEX IF NOT EXISTS idx_level ON logs(level);
-    CREATE INDEX IF NOT EXISTS idx_source ON logs(source);
-    CREATE INDEX IF NOT EXISTS idx_context ON logs(context);
-  `)
-  
-  // Add tags column if it doesn't exist (for existing databases)
-  try {
-    logDb.exec(`ALTER TABLE logs ADD COLUMN tags TEXT`)
-  } catch {
-    // Column already exists, ignore
-  }
-  
-  return logDb
-}
+// WebSocket connections from browser tabs
+const browserConnections = new Set<WebSocket>()
 
-// Helper function to build SQL query with filters
-function buildLogQuery(filters: {
-  level?: string | string[]
-  source?: string | string[]
-  context?: string
-  tags?: string | string[]
-  since?: string | number
-  until?: string | number
-  limit?: number
-}): { query: string; params: unknown[] } {
-  let query = 'SELECT * FROM logs WHERE 1=1'
-  const params: unknown[] = []
-  
-  // Level filter (supports single or array)
-  if (filters.level) {
-    if (Array.isArray(filters.level)) {
-      query += ` AND level IN (${filters.level.map(() => '?').join(', ')})`
-      params.push(...filters.level)
-    } else {
-      query += ' AND level = ?'
-      params.push(filters.level)
-    }
+/**
+ * Send command to browser and await result
+ */
+async function sendToBrowser(
+  msg: { type: string; id?: string; params?: unknown },
+  timeout = 10000
+): Promise<unknown> {
+  if (browserConnections.size === 0) {
+    throw new Error('No browser connected. Please open the app in a browser tab.')
   }
-  
-  // Source filter (supports single or array)
-  if (filters.source) {
-    if (Array.isArray(filters.source)) {
-      query += ` AND source IN (${filters.source.map(() => '?').join(', ')})`
-      params.push(...filters.source)
-    } else {
-      query += ' AND source = ?'
-      params.push(filters.source)
-    }
-  }
-  
-  // Context filter (partial match)
-  if (filters.context) {
-    query += ' AND context LIKE ?'
-    params.push(`%${filters.context}%`)
-  }
-  
-  // Tags filter (supports single or array, checks if tag exists in JSON array)
-  if (filters.tags) {
-    if (Array.isArray(filters.tags)) {
-      // Check if any of the tags exist in the tags JSON array
-      const tagConditions = filters.tags.map(() => {
-        return `json_extract(tags, '$') IS NOT NULL AND json_array_length(json_extract(tags, '$')) > 0 AND EXISTS (SELECT 1 FROM json_each(json_extract(tags, '$')) WHERE value = ?)`
-      })
-      query += ` AND (${tagConditions.join(' OR ')})`
-      params.push(...filters.tags)
-    } else {
-      query += ` AND json_extract(tags, '$') IS NOT NULL AND json_array_length(json_extract(tags, '$')) > 0 AND EXISTS (SELECT 1 FROM json_each(json_extract(tags, '$')) WHERE value = ?)`
-      params.push(filters.tags)
-    }
-  }
-  
-  // Time range filters
-  if (filters.since) {
-    let sinceTimestamp: number
-    if (typeof filters.since === 'number') {
-      sinceTimestamp = filters.since
-    } else if (filters.since.match(/^\d+[hdms]$/)) {
-      const match = filters.since.match(/^(\d+)([hdms])$/)
-      if (match) {
-        const value = parseInt(match[1], 10)
-        const unit = match[2]
-        let ms = 0
-        switch (unit) {
-          case 's': ms = value * 1000; break
-          case 'm': ms = value * 60 * 1000; break
-          case 'h': ms = value * 60 * 60 * 1000; break
-          case 'd': ms = value * 24 * 60 * 60 * 1000; break
+
+  // Use the first (and only leader) connection
+  const [client] = Array.from(browserConnections)
+
+  return new Promise((resolve, reject) => {
+    const id = msg.id || `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    msg.id = id
+
+    const listener = (data: Buffer) => {
+      try {
+        const res = JSON.parse(data.toString())
+        if (res.id === id) {
+          client.off('message', listener)
+          clearTimeout(timeoutId)
+          if (res.error) {
+            reject(new Error(res.error))
+          } else {
+            resolve(res.result)
+          }
         }
-        sinceTimestamp = Date.now() - ms
-      } else {
-        sinceTimestamp = new Date(filters.since).getTime()
+      } catch {
+        // Ignore parse errors for other messages
       }
-    } else {
-      sinceTimestamp = new Date(filters.since).getTime()
     }
-    query += ' AND timestamp >= ?'
-    params.push(sinceTimestamp)
-  }
-  
-  if (filters.until) {
-    let untilTimestamp: number
-    if (typeof filters.until === 'number') {
-      untilTimestamp = filters.until
-    } else {
-      untilTimestamp = new Date(filters.until).getTime()
-    }
-    query += ' AND timestamp <= ?'
-    params.push(untilTimestamp)
-  }
-  
-  query += ' ORDER BY timestamp DESC LIMIT ?'
-  params.push(filters.limit || 50) // Default limit 50 to prevent spam
-  
-  return { query, params }
+
+    const timeoutId = setTimeout(() => {
+      client.off('message', listener)
+      reject(new Error(`Timeout waiting for browser response after ${timeout}ms`))
+    }, timeout)
+
+    client.on('message', listener)
+    client.send(JSON.stringify(msg))
+  })
 }
 
-// Helper function to execute query and parse results
-function executeLogQuery(filters: {
-  level?: string | string[]
-  source?: string | string[]
-  context?: string
-  tags?: string | string[]
-  since?: string | number
-  until?: string | number
-  limit?: number
-}): Array<{
-  id: string
-  level: string
-  context: string
-  message: string
-  source: string
-  timestamp: number
-  args: string | null
-  stack: string | null
-  tags: string | null
-}> {
-  const db = initLogDatabase()
-  const { query, params } = buildLogQuery(filters)
-  const stmt = db.prepare(query)
-  return stmt.all(...params) as Array<{
-    id: string
-    level: string
-    context: string
-    message: string
-    source: string
-    timestamp: number
-    args: string | null
-    stack: string | null
-    tags: string | null
-  }>
-}
 
-// Helper function to format log results
-function formatLogResults(rows: Array<{
-  id: string
-  level: string
-  context: string
-  message: string
-  source: string
-  timestamp: number
-  args: string | null
-  stack: string | null
-  tags: string | null
-}>): Array<{
-  id: string
-  level: string
-  context: string
-  message: string
-  source: string
-  timestamp: number
-  args?: unknown
-  stack?: string
-  tags?: string[]
-}> {
-  return rows.map(row => ({
-    id: row.id,
-    level: row.level,
-    context: row.context,
-    message: row.message,
-    source: row.source,
-    timestamp: row.timestamp,
-    args: row.args ? JSON.parse(row.args) : undefined,
-    stack: row.stack || undefined,
-    tags: row.tags ? JSON.parse(row.tags) : undefined,
-  }))
-}
-
-// Simple API routes for querying logs from SQLite
-// App writes logs to SQLite via HTTP POST, routes query SQLite
-function logApiPlugin(): Plugin {
+/**
+ * MCP Bridge Plugin - WebSocket server for browser communication
+ */
+function mcpBridgePlugin(): Plugin {
   return {
-    name: 'log-api',
+    name: 'mcp-bridge',
     configureServer(server) {
-      // Initialize SQLite database
-      initLogDatabase()
+      // Create WebSocket server
+      const wss = new WebSocketServer({ noServer: true })
+
+      // Handle WebSocket upgrade
+      server.httpServer?.on('upgrade', (req, socket, head) => {
+        if (req.url === '/ws') {
+          wss.handleUpgrade(req, socket, head, (ws) => {
+            wss.emit('connection', ws, req)
+          })
+        }
+      })
+
+      // Handle WebSocket connections
+      wss.on('connection', (ws: WebSocket) => {
+        if (LOG_MCP_BRIDGE) console.log('[MCP Bridge] Browser connected')
+        browserConnections.add(ws)
+
+        // Handle pings (heartbeat)
+        ws.on('message', (data: Buffer) => {
+          try {
+            const msg = JSON.parse(data.toString())
+            if (msg.type === 'ping') {
+              ws.send(JSON.stringify({ type: 'pong' }))
+            }
+          } catch {
+            // Ignore parse errors
+          }
+        })
+
+        ws.on('close', () => {
+          if (LOG_MCP_BRIDGE) console.log('[MCP Bridge] Browser disconnected')
+          browserConnections.delete(ws)
+        })
+
+        ws.on('error', () => {
+          if (LOG_MCP_BRIDGE) console.error('[MCP Bridge] WebSocket error')
+          browserConnections.delete(ws)
+        })
+      })
+
       // MCP HTTP endpoint: POST /mcp
       server.middlewares.use('/mcp', async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        
+
         if (req.method === 'OPTIONS') {
           res.writeHead(200)
           res.end()
           return
         }
-        
+
         if (req.method === 'POST') {
           let body = ''
           req.on('data', (chunk: Buffer) => {
             body += chunk.toString()
           })
-          
+
           req.on('end', async () => {
             try {
               const request = JSON.parse(body)
-              
+
               // MCP JSON-RPC 2.0 format: { jsonrpc: "2.0", id, method, params }
               const { jsonrpc, id, method } = request
-              
+
               if (jsonrpc !== '2.0') {
                 res.writeHead(400, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify({
@@ -259,10 +141,9 @@ function logApiPlugin(): Plugin {
                 }))
                 return
               }
-              
+
               // Handle MCP methods
               if (method === 'initialize') {
-                // MCP initialization - required first call
                 res.writeHead(200, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify({
                   jsonrpc: '2.0',
@@ -280,9 +161,8 @@ function logApiPlugin(): Plugin {
                 }))
                 return
               }
-              
+
               if (method === 'notifications/initialized') {
-                // This is a notification (no response needed), but we should acknowledge it
                 res.writeHead(200, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify({
                   jsonrpc: '2.0',
@@ -291,7 +171,7 @@ function logApiPlugin(): Plugin {
                 }))
                 return
               }
-              
+
               if (method === 'tools/list') {
                 res.writeHead(200, { 'Content-Type': 'application/json' })
                 res.end(JSON.stringify({
@@ -410,7 +290,7 @@ function logApiPlugin(): Plugin {
                       },
                       {
                         name: 'clear_logs',
-                        description: 'Clear all logs from the database',
+                        description: 'Clear all logs from IndexedDB',
                         inputSchema: {
                           type: 'object',
                           properties: {},
@@ -437,32 +317,12 @@ function logApiPlugin(): Plugin {
                 }))
                 return
               }
-              
+
               if (method === 'tools/call') {
                 const { name, arguments: args } = request.params || {}
-                
-                if (name === 'hello') {
-                  res.writeHead(200, { 'Content-Type': 'application/json' })
-                  res.end(JSON.stringify({
-                    jsonrpc: '2.0',
-                    id,
-                    result: { content: [{ type: 'text', text: 'Hello from MCP!' }] },
-                  }))
-                  return
-                }
-                
+
                 // Helper function to return log results
-                const returnLogResults = (logs: Array<{
-                  id: string
-                  level: string
-                  context: string
-                  message: string
-                  source: string
-                  timestamp: number
-                  args?: unknown
-                  stack?: string
-                  tags?: string[]
-                }>) => {
+                const returnLogResults = (logs: unknown[]) => {
                   res.writeHead(200, { 'Content-Type': 'application/json' })
                   res.end(JSON.stringify({
                     jsonrpc: '2.0',
@@ -481,7 +341,7 @@ function logApiPlugin(): Plugin {
                     },
                   }))
                 }
-                
+
                 // Helper function to handle errors
                 const returnError = (error: unknown) => {
                   res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -498,73 +358,67 @@ function logApiPlugin(): Plugin {
                     },
                   }))
                 }
-                
-                // get_errors - Get error logs (default: last 24h, limit 50)
-                if (name === 'get_errors') {
-                  try {
-                    const rows = executeLogQuery({
+
+                // Handle tool calls
+                try {
+                  if (name === 'hello') {
+                    res.writeHead(200, { 'Content-Type': 'application/json' })
+                    res.end(JSON.stringify({
+                      jsonrpc: '2.0',
+                      id,
+                      result: { content: [{ type: 'text', text: 'Hello from MCP!' }] },
+                    }))
+                    return
+                  }
+
+                  // All log queries go through WebSocket to browser
+                  let queryParams: {
+                    level?: string
+                    source?: string
+                    context?: string
+                    tags?: string[]
+                    since?: string
+                    until?: string
+                    limit?: number
+                  } = {}
+
+                  if (name === 'get_errors') {
+                    queryParams = {
                       level: 'error',
                       since: args?.since || '24h',
                       source: args?.source,
                       context: args?.context,
                       tags: args?.tags,
                       limit: args?.limit || 50,
-                    })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_recent_logs - Get recent logs (default: last 1h, limit 50)
-                if (name === 'get_recent_logs') {
-                  try {
-                    const rows = executeLogQuery({
+                    }
+                  } else if (name === 'get_recent_logs') {
+                    queryParams = {
                       since: args?.since || '1h',
                       level: args?.level,
                       source: args?.source,
                       context: args?.context,
                       tags: args?.tags,
                       limit: args?.limit || 50,
-                    })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_logs_by_source - Get logs filtered by source
-                if (name === 'get_logs_by_source') {
-                  try {
+                    }
+                  } else if (name === 'get_logs_by_source') {
                     if (!args?.source) {
                       returnError(new Error('source parameter is required'))
                       return
                     }
-                    const rows = executeLogQuery({
+                    queryParams = {
                       source: args.source,
                       level: args?.level,
                       since: args?.since,
                       context: args?.context,
                       tags: args?.tags,
                       limit: args?.limit || 50,
-                    })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_logs_by_time_range - Get logs within a time range
-                if (name === 'get_logs_by_time_range') {
-                  try {
+                    }
+                  } else if (name === 'get_logs_by_time_range') {
                     if (!args?.from) {
                       returnError(new Error('from parameter is required'))
                       return
                     }
-                    const rows = executeLogQuery({
+                    queryParams = {
                       since: args.from,
                       until: args?.to,
                       level: args?.level,
@@ -572,129 +426,49 @@ function logApiPlugin(): Plugin {
                       context: args?.context,
                       tags: args?.tags,
                       limit: args?.limit || 50,
-                    })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_logs_by_context - Get logs filtered by context
-                if (name === 'get_logs_by_context') {
-                  try {
+                    }
+                  } else if (name === 'get_logs_by_context') {
                     if (!args?.context) {
                       returnError(new Error('context parameter is required'))
                       return
                     }
-                    const rows = executeLogQuery({
+                    queryParams = {
                       context: args.context,
                       level: args?.level,
                       source: args?.source,
                       since: args?.since,
                       tags: args?.tags,
                       limit: args?.limit || 50,
-                    })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_logs_by_tags - Get logs filtered by tags
-                if (name === 'get_logs_by_tags') {
-                  try {
+                    }
+                  } else if (name === 'get_logs_by_tags') {
                     if (!args?.tags || !Array.isArray(args.tags) || args.tags.length === 0) {
                       returnError(new Error('tags parameter is required and must be a non-empty array'))
                       return
                     }
-                    const rows = executeLogQuery({
+                    queryParams = {
                       tags: args.tags,
                       level: args?.level,
                       source: args?.source,
                       context: args?.context,
                       since: args?.since,
                       limit: args?.limit || 50,
+                    }
+                  } else if (name === 'query_logs') {
+                    queryParams = {
+                      level: args?.level,
+                      source: args?.source,
+                      context: args?.context,
+                      tags: args?.tags,
+                      since: args?.since,
+                      until: args?.until,
+                      limit: args?.limit || 50,
+                    }
+                  } else if (name === 'get_log_stats') {
+                    // Get stats from browser
+                    const stats = await sendToBrowser({
+                      type: 'get_log_stats',
+                      params: args?.since ? { since: args.since } : {},
                     })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // get_log_stats - Get statistics about stored logs
-                if (name === 'get_log_stats') {
-                  try {
-                    const db = initLogDatabase()
-                    
-                    // Build base query
-                    let whereClause = 'WHERE 1=1'
-                    const params: unknown[] = []
-                    
-                    if (args?.since) {
-                      let sinceTimestamp: number
-                      if (typeof args.since === 'string' && args.since.match(/^\d+[hdms]$/)) {
-                        const match = args.since.match(/^(\d+)([hdms])$/)
-                        if (match) {
-                          const value = parseInt(match[1], 10)
-                          const unit = match[2]
-                          let ms = 0
-                          switch (unit) {
-                            case 's': ms = value * 1000; break
-                            case 'm': ms = value * 60 * 1000; break
-                            case 'h': ms = value * 60 * 60 * 1000; break
-                            case 'd': ms = value * 24 * 60 * 60 * 1000; break
-                          }
-                          sinceTimestamp = Date.now() - ms
-                        } else {
-                          sinceTimestamp = new Date(args.since).getTime()
-                        }
-                      } else {
-                        sinceTimestamp = new Date(args.since as string).getTime()
-                      }
-                      whereClause += ' AND timestamp >= ?'
-                      params.push(sinceTimestamp)
-                    }
-                    
-                    // Get total count
-                    const totalCount = db.prepare(`SELECT COUNT(*) as count FROM logs ${whereClause}`).get(...params) as { count: number }
-                    
-                    // Get counts by level
-                    const levelCounts = db.prepare(`
-                      SELECT level, COUNT(*) as count 
-                      FROM logs ${whereClause}
-                      GROUP BY level
-                    `).all(...params) as Array<{ level: string; count: number }>
-                    
-                    // Get counts by source
-                    const sourceCounts = db.prepare(`
-                      SELECT source, COUNT(*) as count 
-                      FROM logs ${whereClause}
-                      GROUP BY source
-                    `).all(...params) as Array<{ source: string; count: number }>
-                    
-                    // Get oldest and newest timestamps
-                    const timeRange = db.prepare(`
-                      SELECT MIN(timestamp) as oldest, MAX(timestamp) as newest 
-                      FROM logs ${whereClause}
-                    `).get(...params) as { oldest: number | null; newest: number | null }
-                    
-                    const stats = {
-                      total_logs: totalCount.count,
-                      by_level: levelCounts.reduce((acc, row) => {
-                        acc[row.level] = row.count
-                        return acc
-                      }, {} as Record<string, number>),
-                      by_source: sourceCounts.reduce((acc, row) => {
-                        acc[row.source] = row.count
-                        return acc
-                      }, {} as Record<string, number>),
-                      oldest_timestamp: timeRange.oldest,
-                      newest_timestamp: timeRange.newest,
-                    }
-                    
                     res.writeHead(200, { 'Content-Type': 'application/json' })
                     res.end(JSON.stringify({
                       jsonrpc: '2.0',
@@ -708,36 +482,13 @@ function logApiPlugin(): Plugin {
                         ],
                       },
                     }))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // query_logs - Backward compatible flexible query (default limit 50)
-                if (name === 'query_logs') {
-                  try {
-                    const rows = executeLogQuery({
-                      level: args?.level,
-                      source: args?.source,
-                      context: args?.context,
-                      tags: args?.tags,
-                      since: args?.since,
-                      until: args?.until,
-                      limit: args?.limit || 50, // Default limit 50 to prevent spam
+                    return
+                  } else if (name === 'clear_logs') {
+                    // Clear logs in browser
+                    const result = await sendToBrowser({
+                      type: 'clear_logs',
+                      params: {},
                     })
-                    returnLogResults(formatLogResults(rows))
-                  } catch (error) {
-                    returnError(error)
-                  }
-                  return
-                }
-                
-                // clear_logs - Clear all logs from database
-                if (name === 'clear_logs') {
-                  try {
-                    const db = initLogDatabase()
-                    const result = db.prepare('DELETE FROM logs').run()
                     res.writeHead(200, { 'Content-Type': 'application/json' })
                     res.end(JSON.stringify({
                       jsonrpc: '2.0',
@@ -748,32 +499,41 @@ function logApiPlugin(): Plugin {
                             type: 'text',
                             text: JSON.stringify({
                               success: true,
-                              deleted: result.changes || 0,
-                              message: `Cleared ${result.changes || 0} logs`,
+                              message: `Cleared logs`,
+                              result,
                             }, null, 2),
                           },
                         ],
                       },
                     }))
-                  } catch (error) {
-                    returnError(error)
+                    return
+                  } else {
+                    res.writeHead(400, { 'Content-Type': 'application/json' })
+                    res.end(JSON.stringify({
+                      jsonrpc: '2.0',
+                      id,
+                      error: {
+                        code: -32602,
+                        message: `Unknown tool: ${name}`,
+                      },
+                    }))
+                    return
                   }
-                  return
+
+                  // Query logs via WebSocket
+                  if (Object.keys(queryParams).length > 0) {
+                    const logs = await sendToBrowser({
+                      type: 'query_logs',
+                      params: queryParams,
+                    })
+                    returnLogResults(logs as unknown[])
+                  }
+                } catch (error) {
+                  returnError(error)
                 }
-                
-                // Unknown tool
-                res.writeHead(400, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify({
-                  jsonrpc: '2.0',
-                  id,
-                  error: {
-                    code: -32602,
-                    message: `Unknown tool: ${name}`,
-                  },
-                }))
                 return
               }
-              
+
               // Unknown method
               res.writeHead(400, { 'Content-Type': 'application/json' })
               res.end(JSON.stringify({
@@ -802,7 +562,7 @@ function logApiPlugin(): Plugin {
           res.end(JSON.stringify({
             name: 'claim-logs',
             version: '1.0.0',
-            description: 'MCP server for Claim app logs',
+            description: 'MCP server for Claim app logs (IndexedDB via WebSocket)',
             interfaces: {
               mcp: {
                 transport: 'http',
@@ -814,225 +574,6 @@ function logApiPlugin(): Plugin {
         } else {
           next()
         }
-      })
-      
-      // API route: POST /api/logs/store - Receive logs from browser
-      server.middlewares.use('/api/logs/store', async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        
-        if (req.method === 'OPTIONS') {
-          res.writeHead(200)
-          res.end()
-          return
-        }
-        
-        if (req.method === 'POST') {
-          let body = ''
-          req.on('data', (chunk: Buffer) => {
-            body += chunk.toString()
-          })
-          
-          req.on('end', async () => {
-            try {
-              const logEntry = JSON.parse(body)
-              const db = initLogDatabase()
-              
-              // Generate ID if not provided
-              const id = logEntry.id || `${logEntry.timestamp}-${Math.random().toString(36).substr(2, 9)}`
-              
-              // Insert log into SQLite
-              db.prepare(`
-                INSERT OR REPLACE INTO logs (id, level, context, message, source, timestamp, args, stack, tags)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-              `).run(
-                id,
-                logEntry.level,
-                logEntry.context,
-                logEntry.message,
-                logEntry.source,
-                logEntry.timestamp,
-                logEntry.args ? JSON.stringify(logEntry.args) : null,
-                logEntry.stack || null,
-                logEntry.tags ? JSON.stringify(logEntry.tags) : null
-              )
-              
-              res.writeHead(200, { 'Content-Type': 'application/json' })
-              res.end(JSON.stringify({ success: true }))
-            } catch (error) {
-              res.writeHead(400, { 'Content-Type': 'application/json' })
-              res.end(JSON.stringify({
-                success: false,
-                error: error instanceof Error ? error.message : 'Failed to store log',
-              }))
-            }
-          })
-          return
-        }
-        
-        next()
-      })
-      
-      // API route: DELETE /api/logs/clear - Clear all logs
-      server.middlewares.use('/api/logs/clear', async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Methods', 'DELETE, OPTIONS')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        
-        if (req.method === 'OPTIONS') {
-          res.writeHead(200)
-          res.end()
-          return
-        }
-        
-        if (req.method === 'DELETE') {
-          try {
-            const db = initLogDatabase()
-            const result = db.prepare('DELETE FROM logs').run()
-            res.writeHead(200, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify({ success: true, deleted: result.changes || 0 }))
-          } catch (error) {
-            console.error('[Log DB] Error clearing logs:', error)
-            res.writeHead(500, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify({ success: false, error: String(error) }))
-          }
-          return
-        }
-        next()
-      })
-      
-      // API route: GET /api/logs/query?level=error&source=Auth&limit=100
-      server.middlewares.use('/api/logs/query', async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        
-        if (req.method === 'OPTIONS') {
-          res.writeHead(200)
-          res.end()
-          return
-        }
-        
-        if (req.method === 'GET') {
-          try {
-            const db = initLogDatabase()
-            const urlObj = new URL(req.url || '', `http://localhost:${process.env.PORT || 3000}`)
-            
-            // Parse query parameters
-            const level = urlObj.searchParams.get('level')
-            const source = urlObj.searchParams.get('source')
-            const context = urlObj.searchParams.get('context')
-            const since = urlObj.searchParams.get('since')
-            const limit = parseInt(urlObj.searchParams.get('limit') || '1000', 10)
-            
-            // Build SQL query
-            let query = 'SELECT * FROM logs WHERE 1=1'
-            const params: unknown[] = []
-            
-            if (level) {
-              query += ' AND level = ?'
-              params.push(level)
-            }
-            
-            if (source) {
-              query += ' AND source = ?'
-              params.push(source)
-            }
-            
-            if (context) {
-              query += ' AND context LIKE ?'
-              params.push(`%${context}%`)
-            }
-            
-            if (since) {
-              // Parse since (RFC3339 or relative like "1h")
-              let sinceTimestamp: number
-              if (since.match(/^\d+[hdms]$/)) {
-                const match = since.match(/^(\d+)([hdms])$/)
-                if (match) {
-                  const value = parseInt(match[1], 10)
-                  const unit = match[2]
-                  let ms = 0
-                  switch (unit) {
-                    case 's': ms = value * 1000; break
-                    case 'm': ms = value * 60 * 1000; break
-                    case 'h': ms = value * 60 * 60 * 1000; break
-                    case 'd': ms = value * 24 * 60 * 60 * 1000; break
-                  }
-                  sinceTimestamp = Date.now() - ms
-                } else {
-                  sinceTimestamp = new Date(since).getTime()
-                }
-              } else {
-                sinceTimestamp = new Date(since).getTime()
-              }
-              query += ' AND timestamp >= ?'
-              params.push(sinceTimestamp)
-            }
-            
-            query += ' ORDER BY timestamp DESC LIMIT ?'
-            params.push(limit)
-            
-            // Execute query
-            const stmt = db.prepare(query)
-            const rows = stmt.all(...params) as Array<{
-              id: string
-              level: string
-              context: string
-              message: string
-              source: string
-              timestamp: number
-              args: string | null
-              stack: string | null
-            }>
-            
-            // Parse args JSON
-            const logs = rows.map(row => ({
-              id: row.id,
-              level: row.level,
-              context: row.context,
-              message: row.message,
-              source: row.source,
-              timestamp: row.timestamp,
-              args: row.args ? JSON.parse(row.args) : undefined,
-              stack: row.stack || undefined,
-            }))
-            
-            res.writeHead(200, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify({
-              success: true,
-              count: logs.length,
-              logs,
-            }))
-          } catch (error) {
-            res.writeHead(500, { 'Content-Type': 'application/json' })
-            res.end(JSON.stringify({
-              success: false,
-              error: error instanceof Error ? error.message : 'Failed to query logs',
-            }))
-          }
-          return
-        }
-        
-        next()
-      })
-      
-      // API route: GET /api/logs/stats
-      // Let browser requests pass through to React Router
-      server.middlewares.use('/api/logs/stats', async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-        
-        if (req.method === 'OPTIONS') {
-          res.writeHead(200)
-          res.end()
-          return
-        }
-        
-        // Let it pass through to React Router (browser-side)
-        next()
       })
     },
   }
@@ -1046,7 +587,7 @@ export default defineConfig({
         plugins: [['babel-plugin-react-compiler']],
       },
     }),
-    logApiPlugin(),
+    mcpBridgePlugin(),
   ],
   resolve: {
     alias: {
@@ -1055,7 +596,20 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['three', '@react-three/fiber', '@react-three/drei'],
+    include: [
+      'three',
+      '@react-three/fiber',
+      '@react-three/drei',
+      'zustand',
+      'three-stdlib',
+      '@huggingface/transformers',
+      '@tanstack/react-query',
+      // Firebase v12+ uses ESM exports, don't include root package
+      // Instead, include specific subpaths if needed
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+    ],
   },
   build: {
     target: 'esnext',

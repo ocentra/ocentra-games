@@ -15,14 +15,14 @@ import type { AuthResult, UserProfile } from '../services/firebaseService';
 const prefix = '[AuthProvider]';
 
 // Auth flow logging flags
-const LOG_AUTH_FLOW = true;        // Main auth flow tracking
-const LOG_AUTH_STATE = true;       // Auth state changes
-const LOG_AUTH_LOGIN = true;       // Login operations
-const LOG_AUTH_SIGNUP = true;      // Sign up operations
-const LOG_AUTH_LOGOUT = true;      // Logout operations
-const LOG_AUTH_SOCIAL = true;      // Social login
-const LOG_AUTH_GUEST = true;       // Guest login
-const LOG_AUTH_ERROR = true;      // Error logging
+const LOG_AUTH_FLOW = false;        // Main auth flow tracking
+const LOG_AUTH_STATE = false;       // Auth state changes
+const LOG_AUTH_LOGIN = false;       // Login operations
+const LOG_AUTH_SIGNUP = false;      // Sign up operations
+const LOG_AUTH_LOGOUT = false;      // Logout operations
+const LOG_AUTH_SOCIAL = false;      // Social login
+const LOG_AUTH_GUEST = false;       // Guest login
+const LOG_AUTH_ERROR = false;      // Error logging
 
 interface AuthContextType {
   isAuthenticated: boolean;

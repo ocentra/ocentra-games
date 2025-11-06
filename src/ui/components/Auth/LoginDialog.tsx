@@ -9,9 +9,9 @@ import { logAuth } from '../../../utils/logger';
 const prefix = '[LoginDialog]';
 
 // Auth flow logging flags
-const LOG_AUTH_UI = true;          // UI interactions
-const LOG_AUTH_REDIRECT = true;    // Redirect handling
-const LOG_AUTH_ERROR = true;       // Error logging
+const LOG_AUTH_UI = false;          // UI interactions
+const LOG_AUTH_REDIRECT = false;    // Redirect handling
+const LOG_AUTH_ERROR = false;       // Error logging
 
 interface LoginDialogProps {
   onLogin: (username: string, password: string) => Promise<boolean>;

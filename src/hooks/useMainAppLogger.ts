@@ -3,9 +3,9 @@ import { logAuth } from '../utils/logger';
 const prefix = '[MainApp]';
 
 // MainApp logging flags
-const LOG_UI = true;          // UI state changes
-const LOG_RENDER = true;      // Component renders
-const LOG_ERROR = true;       // Error logging
+const LOG_UI = false;          // UI state changes
+const LOG_RENDER = false;      // Component renders
+const LOG_ERROR = false;       // Error logging
 
 export function useMainAppLogger() {
   return {

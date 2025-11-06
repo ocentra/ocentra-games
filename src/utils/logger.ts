@@ -17,6 +17,9 @@ export const LOG_FLAGS = {
   STORE: false,        // Store/state management logs
 }
 
+// Global flag to enable/disable all console logging (including errors)
+const LOG_ENABLED = false
+
 // Map module names to LogSource
 const MODULE_TO_SOURCE: Record<keyof typeof LOG_FLAGS, LogSource> = {
   UI: 'UI',
@@ -78,7 +81,7 @@ function formatMessage(args: unknown[]): string {
 }
 
 /**
- * Store log entry in IndexedDB and also send to Node.js server
+ * Store log entry in IndexedDB only
  */
 async function storeLogEntry(
   level: LogLevel,
@@ -91,7 +94,10 @@ async function storeLogEntry(
 ): Promise<void> {
   try {
     const source = MODULE_TO_SOURCE[module] || 'Other';
-    const logEntry = {
+    const { getLogStorage } = await import('./logStorage');
+    const storage = getLogStorage();
+    
+    await storage.storeLog({
       level,
       context,
       message,
@@ -100,24 +106,10 @@ async function storeLogEntry(
       args: args.length > 0 ? args : undefined,
       stack,
       tags: tags && tags.length > 0 ? tags : undefined,
-    };
-    
-    // Send to Node.js server (stores in SQLite)
-    try {
-      await fetch('/api/logs/store', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(logEntry),
-      }).catch(() => {
-        // Ignore if server not ready
-      });
-    } catch {
-      // Ignore fetch errors
-    }
-    
+    });
   } catch (error) {
     // Silently fail - don't break the app if log storage fails
-    console.warn('[Logger] Failed to store log:', error);
+    if (LOG_ENABLED) console.warn('[Logger] Failed to store log:', error);
   }
 }
 
@@ -139,7 +131,7 @@ export function log(module: keyof typeof LOG_FLAGS, level: LogLevel, ...args: un
     consoleMethod(`[${module}]`, ...args);
   }
   
-  // Always store in SQLite (async, non-blocking)
+  // Always store in IndexedDB (async, non-blocking)
   const stack = level === 'error' ? new Error().stack : undefined;
   
   // Auto-generate tags based on level and module
@@ -215,12 +207,12 @@ export function logDebug(module: keyof typeof LOG_FLAGS, ...args: unknown[]) {
  * @param context - Context/module name (e.g., "FirebaseService", "AuthProvider")
  * @param args - Log arguments
  */
-export function logAuth(
+export async function logAuth(
   flag: boolean,
   level: LogLevel,
   context: string,
   ...args: unknown[]
-): void {
+): Promise<void> {
   const message = formatMessage(args);
   
   // Write to console if flag is enabled
@@ -234,7 +226,7 @@ export function logAuth(
     consoleMethod(`[${context}]`, ...args);
   }
   
-  // Always store in SQLite (async, non-blocking)
+  // Always store in IndexedDB (async, non-blocking)
   const stack = level === 'error' ? new Error().stack : undefined;
   
   // Auto-generate tags for auth logs
@@ -242,20 +234,19 @@ export function logAuth(
   if (level === 'error') tags.push('error', 'critical')
   if (level === 'warn') tags.push('warning')
   
-  // Store with Auth source - send to Node.js server (stores in SQLite)
-  fetch('/api/logs/store', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      level,
-      context,
-      message,
-      source: 'Auth',
-      timestamp: Date.now(),
-      args: args.length > 0 ? args : undefined,
-      stack,
-      tags: tags.length > 0 ? tags : undefined,
-    }),
+  // Store with Auth source - store in IndexedDB
+  const { getLogStorage } = await import('./logStorage');
+  const storage = getLogStorage();
+  
+  storage.storeLog({
+    level,
+    context,
+    message,
+    source: 'Auth',
+    timestamp: Date.now(),
+    args: args.length > 0 ? args : undefined,
+    stack,
+    tags: tags.length > 0 ? tags : undefined,
   }).catch(() => {
     // Ignore errors
   });
