@@ -1,0 +1,209 @@
+.game-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: #080b18;
+  pointer-events: none;
+}
+
+/* === CARD TEXTURE === */
+.game-background__texture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--bg-image);
+  background-repeat: repeat;
+  background-position: center center;
+  background-size: var(--bg-size-x, 50%) var(--bg-size-y, 100%);
+  mix-blend-mode: var(--bg-blend, normal);
+  opacity: var(--bg-opacity, 1);
+  filter: saturate(1.1);
+}
+
+/* === SUIT SYMBOLS === */
+.game-background__symbols {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.game-background__symbol {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+.game-background__symbol[data-symbol="club-filled"] {
+  top: var(--symbol-club-filled-y, 50%);
+  left: var(--symbol-club-filled-x, 50%);
+  width: var(--symbol-club-filled-width, 14%);
+  height: var(--symbol-club-filled-height, 24%);
+  background-image: var(--symbol-club-filled-image);
+  opacity: var(--symbol-club-filled-opacity, 0.4);
+  mix-blend-mode: var(--symbol-club-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="club-hollow"] {
+  top: var(--symbol-club-hollow-y, 50%);
+  left: var(--symbol-club-hollow-x, 50%);
+  width: var(--symbol-club-hollow-width, 14%);
+  height: var(--symbol-club-hollow-height, 24%);
+  background-image: var(--symbol-club-hollow-image);
+  opacity: var(--symbol-club-hollow-opacity, 0.4);
+  mix-blend-mode: var(--symbol-club-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="diamond-filled"] {
+  top: var(--symbol-diamond-filled-y, 50%);
+  left: var(--symbol-diamond-filled-x, 50%);
+  width: var(--symbol-diamond-filled-width, 14%);
+  height: var(--symbol-diamond-filled-height, 24%);
+  background-image: var(--symbol-diamond-filled-image);
+  opacity: var(--symbol-diamond-filled-opacity, 0.4);
+  mix-blend-mode: var(--symbol-diamond-filled-blend, hard-light);
+}
+
+.game-background__symbol[data-symbol="diamond-hollow"] {
+  top: var(--symbol-diamond-hollow-y, 50%);
+  left: var(--symbol-diamond-hollow-x, 50%);
+  width: var(--symbol-diamond-hollow-width, 14%);
+  height: var(--symbol-diamond-hollow-height, 24%);
+  background-image: var(--symbol-diamond-hollow-image);
+  opacity: var(--symbol-diamond-hollow-opacity, 0.4);
+  mix-blend-mode: var(--symbol-diamond-hollow-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="heart-filled"] {
+  top: var(--symbol-heart-filled-y, 50%);
+  left: var(--symbol-heart-filled-x, 50%);
+  width: var(--symbol-heart-filled-width, 14%);
+  height: var(--symbol-heart-filled-height, 24%);
+  background-image: var(--symbol-heart-filled-image);
+  opacity: var(--symbol-heart-filled-opacity, 0.4);
+  mix-blend-mode: var(--symbol-heart-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="heart-hollow"] {
+  top: var(--symbol-heart-hollow-y, 50%);
+  left: var(--symbol-heart-hollow-x, 50%);
+  width: var(--symbol-heart-hollow-width, 14%);
+  height: var(--symbol-heart-hollow-height, 24%);
+  background-image: var(--symbol-heart-hollow-image);
+  opacity: var(--symbol-heart-hollow-opacity, 0.4);
+  mix-blend-mode: var(--symbol-heart-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="spade-filled"] {
+  top: var(--symbol-spade-filled-y, 50%);
+  left: var(--symbol-spade-filled-x, 50%);
+  width: var(--symbol-spade-filled-width, 14%);
+  height: var(--symbol-spade-filled-height, 24%);
+  background-image: var(--symbol-spade-filled-image);
+  opacity: var(--symbol-spade-filled-opacity, 0.4);
+  mix-blend-mode: var(--symbol-spade-filled-blend, multiply);
+}
+
+.game-background__symbol[data-symbol="spade-hollow"] {
+  top: var(--symbol-spade-hollow-y, 50%);
+  left: var(--symbol-spade-hollow-x, 50%);
+  width: var(--symbol-spade-hollow-width, 14%);
+  height: var(--symbol-spade-hollow-height, 24%);
+  background-image: var(--symbol-spade-hollow-image);
+  opacity: var(--symbol-spade-hollow-opacity, 0.4);
+  mix-blend-mode: var(--symbol-spade-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="club-circle-filled"] {
+  top: var(--symbol-club-circle-filled-y, 50%);
+  left: var(--symbol-club-circle-filled-x, 50%);
+  width: var(--symbol-club-circle-filled-width, 16%);
+  height: var(--symbol-club-circle-filled-height, 28%);
+  background-image: var(--symbol-club-circle-filled-image);
+  opacity: var(--symbol-club-circle-filled-opacity, 0.45);
+  mix-blend-mode: var(--symbol-club-circle-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="club-circle-hollow"] {
+  top: var(--symbol-club-circle-hollow-y, 50%);
+  left: var(--symbol-club-circle-hollow-x, 50%);
+  width: var(--symbol-club-circle-hollow-width, 16%);
+  height: var(--symbol-club-circle-hollow-height, 28%);
+  background-image: var(--symbol-club-circle-hollow-image);
+  opacity: var(--symbol-club-circle-hollow-opacity, 0.45);
+  mix-blend-mode: var(--symbol-club-circle-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="diamond-circle-filled"] {
+  top: var(--symbol-diamond-circle-filled-y, 50%);
+  left: var(--symbol-diamond-circle-filled-x, 50%);
+  width: var(--symbol-diamond-circle-filled-width, 17%);
+  height: var(--symbol-diamond-circle-filled-height, 30%);
+  background-image: var(--symbol-diamond-circle-filled-image);
+  opacity: var(--symbol-diamond-circle-filled-opacity, 0.45);
+  mix-blend-mode: var(--symbol-diamond-circle-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="diamond-circle-hollow"] {
+  top: var(--symbol-diamond-circle-hollow-y, 50%);
+  left: var(--symbol-diamond-circle-hollow-x, 50%);
+  width: var(--symbol-diamond-circle-hollow-width, 17%);
+  height: var(--symbol-diamond-circle-hollow-height, 30%);
+  background-image: var(--symbol-diamond-circle-hollow-image);
+  opacity: var(--symbol-diamond-circle-hollow-opacity, 0.45);
+  mix-blend-mode: var(--symbol-diamond-circle-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="heart-circle-filled"] {
+  top: var(--symbol-heart-circle-filled-y, 50%);
+  left: var(--symbol-heart-circle-filled-x, 50%);
+  width: var(--symbol-heart-circle-filled-width, 18%);
+  height: var(--symbol-heart-circle-filled-height, 30%);
+  background-image: var(--symbol-heart-circle-filled-image);
+  opacity: var(--symbol-heart-circle-filled-opacity, 0.45);
+  mix-blend-mode: var(--symbol-heart-circle-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="heart-circle-hollow"] {
+  top: var(--symbol-heart-circle-hollow-y, 50%);
+  left: var(--symbol-heart-circle-hollow-x, 50%);
+  width: var(--symbol-heart-circle-hollow-width, 18%);
+  height: var(--symbol-heart-circle-hollow-height, 30%);
+  background-image: var(--symbol-heart-circle-hollow-image);
+  opacity: var(--symbol-heart-circle-hollow-opacity, 0.45);
+  mix-blend-mode: var(--symbol-heart-circle-hollow-blend, screen);
+}
+
+.game-background__symbol[data-symbol="spade-circle-filled"] {
+  top: var(--symbol-spade-circle-filled-y, 50%);
+  left: var(--symbol-spade-circle-filled-x, 50%);
+  width: var(--symbol-spade-circle-filled-width, 17%);
+  height: var(--symbol-spade-circle-filled-height, 30%);
+  background-image: var(--symbol-spade-circle-filled-image);
+  opacity: var(--symbol-spade-circle-filled-opacity, 0.45);
+  mix-blend-mode: var(--symbol-spade-circle-filled-blend, soft-light);
+}
+
+.game-background__symbol[data-symbol="spade-circle-hollow"] {
+  top: var(--symbol-spade-circle-hollow-y, 50%);
+  left: var(--symbol-spade-circle-hollow-x, 50%);
+  width: var(--symbol-spade-circle-hollow-width, 17%);
+  height: var(--symbol-spade-circle-hollow-height, 30%);
+  background-image: var(--symbol-spade-circle-hollow-image);
+  opacity: var(--symbol-spade-circle-hollow-opacity, 0.45);
+  mix-blend-mode: var(--symbol-spade-circle-hollow-blend, screen);
+}
+
+/* === GLOW OVERLAY (optional aesthetic) === */
+.game-background__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--overlay-background);
+  mix-blend-mode: var(--overlay-blend, screen);
+  opacity: var(--overlay-opacity, 0.25);
+}

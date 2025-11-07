@@ -11,8 +11,11 @@ import { AuthScreen } from '../ui/components/Auth/AuthScreen';
 import { useAuthHandlers } from '../hooks/useAuthHandlers';
 import { useMainAppLogger } from '../hooks/useMainAppLogger';
 import { useLoadingState } from '../hooks/useLoadingState';
+import GameScreen from '../ui/components/GameScreen/GameScreen';
 
-const MainApp: React.FC = () => {
+const workOngameScene = true; // toggle while iterating on the dedicated game scene workbench
+
+const AuthenticatedApp: React.FC = () => {
   const { isAuthenticated, user, login, signUp, logout, loginWithFacebook, loginWithGoogle, loginAsGuest, sendPasswordReset } = useAuth();
   const authHandlers = useAuthHandlers(login, signUp, loginWithFacebook, loginWithGoogle, loginAsGuest);
   const logger = useMainAppLogger();
@@ -92,6 +95,14 @@ const MainApp: React.FC = () => {
       />
     </div>
   );
+};
+
+const MainApp: React.FC = () => {
+  if (workOngameScene) {
+    return <GameScreen />;
+  }
+
+  return <AuthenticatedApp />;
 };
 
 export default MainApp;
