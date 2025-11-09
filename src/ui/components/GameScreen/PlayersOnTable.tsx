@@ -1,11 +1,13 @@
 import React from "react";
-import PlayerSeat from "./PlayerSeat";
+import PlayerUI from "./PlayerUI";
 import "./PlayersOnTable.css";
 
 const PlayersOnTable: React.FC = () => {
   return (
     <div className="players-on-table">
-      <PlayerSeat name="You" position="bottom" />
+      <div className="player-seat player-seat-center">
+        <PlayerUI />
+      </div>
     </div>
   );
 };
