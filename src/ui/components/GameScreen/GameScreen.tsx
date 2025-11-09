@@ -5,7 +5,7 @@ import { useAuth } from '../../../providers/AuthProvider';
 import GameBackground from './GameBackground';
 import GameHUD from './GameHUD';
 import CardInHand from './CardInHand';
-import CenterTable from './CenterTable';
+import CenterTableSvg from './CenterTableSvg';
 import PlayersOnTable from './PlayersOnTable';
 import './GameScreen.css';
 
@@ -43,8 +43,8 @@ export const GameScreen: React.FC = () => {
         <GameHeader user={user} onLogout={logout} />
 
         <main className="game-screen__content">
-          <CenterTable  />
-          <PlayersOnTable />
+          <CenterTableSvg />
+         {/* <PlayersOnTable /> */}
           <CardInHand
             position="fixed"
             anchorPoint={hudAnchor ?? undefined}
