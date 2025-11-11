@@ -1,5 +1,5 @@
 import { EventArgsBase } from '@lib/eventing/base/EventArgsBase';
-import type { OperationDeferred } from '@lib/eventing/internal';
+import type { OperationDeferred } from '@lib/eventing';
 import type { PlayerProfile } from './PlayerTypes';
 
 export class GetLocalPlayerEvent extends EventArgsBase {

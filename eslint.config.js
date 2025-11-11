@@ -25,6 +25,25 @@ export default defineConfig([
     },
     rules: {
       ...jsxA11y.configs.recommended.rules,
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@lib/eventing/internal/*'],
+              message: 'Eventing internals are private. Import from @lib/eventing.',
+            },
+            {
+              group: ['@lib/react-behaviours/hooks/*'],
+              message: 'Use @lib/react-behaviours instead of deep hook paths.',
+            },
+            {
+              group: ['@lib/logging/**/index'],
+              message: 'Import logging modules from @lib/logging barrel exports.',
+            },
+          ],
+        },
+      ],
     },
   },
 ])

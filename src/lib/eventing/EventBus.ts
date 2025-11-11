@@ -49,8 +49,16 @@ export class EventBus implements IEventBus {
     return EventBus._instance;
   }
 
+  static set instance(bus: EventBus) {
+    EventBus.configure(bus);
+  }
+
   static configure(instance: EventBus): void {
     EventBus._instance = instance;
+  }
+
+  static reset(): void {
+    EventBus._instance = null;
   }
 
   private readonly subscribers = new Map<string, Array<SyncHandler<IEventArgs>>>();
@@ -58,7 +66,6 @@ export class EventBus implements IEventBus {
   private readonly queuedEvents = new Map<string, Array<QueuedEvent<IEventArgs>>>();
   private readonly inFlightEvents = new Map<string, number>();
   private readonly processingQueues = new Set<string>();
-  private readonly missingEventTypeWarned = new Set<string>();
   private readonly options: EventBusOptions;
   private readonly logger: ModuleLogger;
 
@@ -217,17 +224,13 @@ export class EventBus implements IEventBus {
   }
 
   private getKey(type: EventConstructor<IEventArgs>): string {
-    if (type.eventType) {
+    if (type.eventType && typeof type.eventType === 'string') {
       return type.eventType;
     }
-    const fallback = type.name;
-    if (!this.missingEventTypeWarned.has(fallback)) {
-      this.logger.logWarning(
-        `Event constructor "${fallback}" is missing static eventType; falling back to constructor.name.`
-      );
-      this.missingEventTypeWarned.add(fallback);
-    }
-    return fallback;
+    throw new Error(
+      `Event constructor "${type.name}" is missing a static string eventType. ` +
+        'Ensure every event extends EventArgsBase and declares a unique eventType.'
+    );
   }
 
   private async guardAndPublish<T extends IEventArgs>(
