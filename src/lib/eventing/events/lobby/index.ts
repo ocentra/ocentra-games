@@ -1,248 +1,44 @@
-import { EventArgsBase } from '@lib/eventing/base/EventArgsBase'
-import { createOperationDeferred, type OperationDeferred } from '@lib/eventing'
-import type {
-  ButtonReference,
-  LobbyDetails,
-  LobbyOptions,
-  LobbyPlayer,
-  LobbySummary,
-} from '@types/lobby'
-import type { AuthPlayerData } from '@types/auth'
+export { ShowSubTabEvent } from './ShowSubTabEvent'
+export { InfoSubTabStateChangedEvent } from './InfoSubTabStateChangedEvent'
+export { ArcadeInfoEvent } from './ArcadeInfoEvent'
+export { ShowArcadeSideEvent } from './ShowArcadeSideEvent'
+export { Button3DSimpleClickEvent } from './Button3DSimpleClickEvent'
+export { LobbyInfoEvent } from './LobbyInfoEvent'
+export { LobbyPlayerUpdateEvent } from './LobbyPlayerUpdateEvent'
+export { UpdateLobbyEvent } from './UpdateLobbyEvent'
+export { CreateProfileEvent } from './CreateProfileEvent'
+export { UpdatePlayerListEvent } from './UpdatePlayerListEvent'
+export { StartLobbyAsHostEvent } from './StartLobbyAsHostEvent'
+export { PlayerLeftLobbyEvent } from './PlayerLeftLobbyEvent'
+export { ShowScreenEvent } from './ShowScreenEvent'
+export { UpdateLobbyListEvent } from './UpdateLobbyListEvent'
+export { UpdateLobbyPlayerListEvent } from './UpdateLobbyPlayerListEvent'
+export { ProfileCreatedEvent } from './ProfileCreatedEvent'
+export { CreateLobbyEvent } from './CreateLobbyEvent'
+export { InputLobbyPasswordEvent } from './InputLobbyPasswordEvent'
+export { JoinedLobbyEvent } from './JoinedLobbyEvent'
+export { JoinLobbyEvent } from './JoinLobbyEvent'
 
-export class ShowSubTabEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/ShowSubTab'
-
-  readonly show: boolean
-  readonly tabName: string
-
-  constructor(show: boolean, tabName: string) {
-    super()
-    this.show = show
-    this.tabName = tabName
-  }
-}
-
-export class InfoSubTabStateChangedEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/InfoSubStateChanged'
-
-  readonly infoSubEnabled: boolean
-
-  constructor(infoSubEnabled: boolean) {
-    super()
-    this.infoSubEnabled = infoSubEnabled
-  }
-}
-
-export class ArcadeInfoEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/ArcadeInfo'
-
-  readonly info: string
-
-  constructor(info: string) {
-    super()
-    this.info = info
-  }
-}
-
-export class ShowArcadeSideEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/ShowArcadeSide'
-
-  readonly show: boolean
-
-  constructor(show: boolean) {
-    super()
-    this.show = show
-  }
-}
-
-export class Button3DSimpleClickEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/Button3DClick'
-
-  readonly button: ButtonReference
-
-  constructor(button: ButtonReference) {
-    super()
-    this.button = button
-  }
-}
-
-export class LobbyInfoEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/Info'
-
-  readonly button: ButtonReference
-
-  constructor(button: ButtonReference) {
-    super()
-    this.button = button
-  }
-}
-
-export class LobbyPlayerUpdateEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/PlayerUpdate'
-
-  readonly button: ButtonReference
-  readonly type: 'add' | 'remove'
-
-  constructor(button: ButtonReference, type: 'add' | 'remove') {
-    super()
-    this.button = button
-    this.type = type
-  }
-}
-
-export class UpdateLobbyEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/Update'
-
-  readonly searchLobbyName: string
-  readonly abortController: AbortController
-
-  constructor(abortController: AbortController, searchLobbyName: string) {
-    super()
-    this.abortController = abortController
-    this.searchLobbyName = searchLobbyName
-  }
-}
-
-export class CreateProfileEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/CreateProfile'
-
-  readonly authPlayerData: AuthPlayerData
-
-  constructor(authPlayerData: AuthPlayerData) {
-    super()
-    this.authPlayerData = authPlayerData
-  }
-}
-
-export class UpdatePlayerListEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/UpdatePlayerList'
-
-  readonly players: LobbyPlayer[]
-
-  constructor(players: LobbyPlayer[]) {
-    super()
-    this.players = players
-  }
-}
-
-export class StartLobbyAsHostEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/StartAsHost'
-
-  readonly lobbyId: string
-
-  constructor(lobbyId: string) {
-    super()
-    this.lobbyId = lobbyId
-  }
-}
-
-export class PlayerLeftLobbyEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/PlayerLeft'
-
-  readonly playerId: string
-  readonly deferred: OperationDeferred<boolean>
-
-  constructor(
-    playerId: string,
-    deferred: OperationDeferred<boolean> = createOperationDeferred<boolean>()
-  ) {
-    super()
-    this.playerId = playerId
-    this.deferred = deferred
-  }
-}
-
-export class ShowScreenEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/ShowScreen'
-
-  readonly screen: string
-
-  constructor(screen: string) {
-    super()
-    this.screen = screen
-  }
-}
-
-export class UpdateLobbyListEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/UpdateLobbyList'
-
-  readonly lobbies: LobbySummary[]
-
-  constructor(lobbies: LobbySummary[]) {
-    super()
-    this.lobbies = lobbies
-  }
-}
-
-export class UpdateLobbyPlayerListEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/UpdateLobbyPlayerList'
-
-  readonly lobby: LobbyDetails
-  readonly isHost: boolean
-
-  constructor(lobby: LobbyDetails, isHost: boolean) {
-    super()
-    this.lobby = lobby
-    this.isHost = isHost
-  }
-}
-
-export class ProfileCreatedEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/ProfileCreated'
-
-  readonly player: LobbyPlayer
-
-  constructor(player: LobbyPlayer) {
-    super()
-    this.player = player
-  }
-}
-
-export class CreateLobbyEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/CreateLobby'
-
-  readonly options: LobbyOptions
-
-  constructor(options: LobbyOptions) {
-    super()
-    this.options = options
-  }
-}
-
-export class InputLobbyPasswordEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/InputLobbyPassword'
-
-  readonly deferred: OperationDeferred<string>
-
-  constructor(deferred: OperationDeferred<string> = createOperationDeferred<string>()) {
-    super()
-    this.deferred = deferred
-  }
-}
-
-export class JoinedLobbyEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/Joined'
-
-  readonly hasJoined: boolean
-
-  constructor(hasJoined = true) {
-    super()
-    this.hasJoined = hasJoined
-  }
-}
-
-export class JoinLobbyEvent extends EventArgsBase {
-  static readonly eventType = 'Lobby/JoinLobby'
-
-  readonly lobbyId: string
-  readonly isProtectedLobby: boolean
-
-  constructor(lobbyId: string, isProtectedLobby = false) {
-    super()
-    this.lobbyId = lobbyId
-    this.isProtectedLobby = isProtectedLobby
-  }
-}
+import type { ShowSubTabEvent } from './ShowSubTabEvent'
+import type { InfoSubTabStateChangedEvent } from './InfoSubTabStateChangedEvent'
+import type { ArcadeInfoEvent } from './ArcadeInfoEvent'
+import type { ShowArcadeSideEvent } from './ShowArcadeSideEvent'
+import type { Button3DSimpleClickEvent } from './Button3DSimpleClickEvent'
+import type { LobbyInfoEvent } from './LobbyInfoEvent'
+import type { LobbyPlayerUpdateEvent } from './LobbyPlayerUpdateEvent'
+import type { UpdateLobbyEvent } from './UpdateLobbyEvent'
+import type { CreateProfileEvent } from './CreateProfileEvent'
+import type { UpdatePlayerListEvent } from './UpdatePlayerListEvent'
+import type { StartLobbyAsHostEvent } from './StartLobbyAsHostEvent'
+import type { PlayerLeftLobbyEvent } from './PlayerLeftLobbyEvent'
+import type { ShowScreenEvent } from './ShowScreenEvent'
+import type { UpdateLobbyListEvent } from './UpdateLobbyListEvent'
+import type { UpdateLobbyPlayerListEvent } from './UpdateLobbyPlayerListEvent'
+import type { ProfileCreatedEvent } from './ProfileCreatedEvent'
+import type { CreateLobbyEvent } from './CreateLobbyEvent'
+import type { InputLobbyPasswordEvent } from './InputLobbyPasswordEvent'
+import type { JoinedLobbyEvent } from './JoinedLobbyEvent'
+import type { JoinLobbyEvent } from './JoinLobbyEvent'
 
 declare module '@lib/eventing/EventTypes' {
   interface EventTypeMap {
@@ -268,4 +64,3 @@ declare module '@lib/eventing/EventTypes' {
     'Lobby/JoinLobby': JoinLobbyEvent
   }
 }
-
