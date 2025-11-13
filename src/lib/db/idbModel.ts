@@ -1154,7 +1154,7 @@ export async function saveChunkedFileSafe(resourceUrl: string, blob: Blob, model
     const reader = stream.getReader();
     let chunkIndex = 0;
     let totalBytesProcessed = 0;
-    let currentChunkBuffer = new Uint8Array(CHUNK_SIZE);
+    const currentChunkBuffer = new Uint8Array(CHUNK_SIZE);
     let currentChunkOffset = 0;
     
     try {

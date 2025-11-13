@@ -86,12 +86,31 @@ export function ProfilePictureModal({ isOpen, onClose }: ProfilePictureModalProp
     onClose();
   };
 
+  const handleOverlayKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleClose()
+    }
+  }
+
   return (
-    <div className="profile-modal-overlay" onClick={handleClose}>
-      <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="profile-modal-overlay" 
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-modal-title"
+    >
+      <button
+        type="button"
+        className="profile-modal-backdrop"
+        onClick={handleClose}
+        onKeyDown={handleOverlayKeyDown}
+        aria-label="Close dialog"
+        tabIndex={-1}
+      />
+      <div className="profile-modal">
         <div className="profile-modal-header">
-          <h2>Choose Your Avatar</h2>
-          <button className="close-btn" onClick={handleClose}>×</button>
+          <h2 id="profile-modal-title">Choose Your Avatar</h2>
+          <button className="close-btn" onClick={handleClose} aria-label="Close dialog">×</button>
         </div>
 
         <div className="profile-modal-content">
@@ -105,7 +124,8 @@ export function ProfilePictureModal({ isOpen, onClose }: ProfilePictureModalProp
           <div className="avatars-section">
             <div className="avatars-grid">
               {AVATARS.map((avatar) => (
-                <div
+                <button
+                  type="button"
                   key={avatar.id}
                   className={`avatar-option ${selectedAvatar === avatar.path ? 'selected' : ''} ${user?.photoURL === avatar.path ? 'current' : ''}`}
                   onClick={() => setSelectedAvatar(avatar.path)}
@@ -115,7 +135,7 @@ export function ProfilePictureModal({ isOpen, onClose }: ProfilePictureModalProp
                   {user?.photoURL === avatar.path && (
                     <div className="current-badge">Current</div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           </div>

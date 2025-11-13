@@ -320,40 +320,47 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
           {!isSignIn && (
             <>
               <div className="avatar-container">
-                <div 
+                <button
+                  type="button"
                   className="avatar-preview"
                   onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+                  aria-label="Select avatar"
+                  aria-expanded={showAvatarSelector}
                 >
                   {avatar ? (
                     <img src={avatar} alt="Selected avatar" />
                   ) : (
                     <div className="avatar-placeholder">👤</div>
                   )}
-                </div>
+                </button>
                 
                 {showAvatarSelector && (
                   <div className="avatar-selector" ref={avatarSelectorRef}>
                     <div className="avatar-grid">
                       {avatarOptions.map((avatarOption) => (
-                        <div 
+                        <button
+                          type="button"
                           key={avatarOption.id}
                           className={`avatar-option ${avatar === avatarOption.url ? 'selected' : ''}`}
                           onClick={() => handleAvatarSelect(avatarOption.url)}
+                          aria-label={`Select avatar ${avatarOption.id}`}
                         >
                           {avatarOption.url ? (
                             <img src={avatarOption.url} alt={`Avatar ${avatarOption.id}`} />
                           ) : (
                             <div className="avatar-placeholder">👤</div>
                           )}
-                        </div>
+                        </button>
                       ))}
-                      <div 
+                      <button
+                        type="button"
                         className="avatar-option upload-option"
                         onClick={handleUploadClick}
+                        aria-label="Upload custom avatar"
                       >
                         <div className="upload-placeholder">+</div>
                         <div className="upload-text">Upload</div>
-                      </div>
+                      </button>
                     </div>
                     <label htmlFor="avatar-upload" className="sr-only">Upload avatar</label>
                     <input

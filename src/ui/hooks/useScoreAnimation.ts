@@ -79,6 +79,10 @@ export const useScoreAnimation = (
     }
 
     requestAnimationFrame(animate)
+    // Intentionally excluding animationState.currentValue from dependencies as it changes on every frame
+    // and would cause the effect to re-run continuously. The effect should only re-run when animation
+    // state, target score, duration, easing, or completion callback changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animationState.isAnimating, targetScore, duration, easing, onComplete])
 
   return {

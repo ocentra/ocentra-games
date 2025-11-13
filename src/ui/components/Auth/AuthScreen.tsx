@@ -47,7 +47,7 @@ export function AuthScreen({
     EventBus.instance.subscribe(ShowScreenEvent, handleShowScreen)
 
     return () => {
-      EventBus.instance.unsubscribe(ShowScreenEvent, handleShowScreen as any)
+      EventBus.instance.unsubscribe(ShowScreenEvent, handleShowScreen)
     }
   }, [])
 

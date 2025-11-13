@@ -1330,7 +1330,11 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
             logDebug("Cleaned up Three.js resources");
         };
         // --- End Cleanup ---
-
+        // Intentionally excluding dependencies: clock, createShootingStar, forceCleanup, gradientFragmentShader, 
+        // gradientVertexShader, handleKeyPress, onReady, updateShootingStars. These are either stable (useMemo/useCallback),
+        // constants, or intentionally excluded to prevent re-running the effect on every render. This effect should only
+        // run once on mount and clean up on unmount.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // End useEffect
     logDebug('useEffect hook defined');
 

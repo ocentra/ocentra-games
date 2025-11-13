@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { RequestModelListEvent, ModelAvailableEvent } from '@/lib/eventing/events/model';
 import { EventBus } from '@/lib/eventing/EventBus';
 import './GameModeSelector.css';
@@ -27,64 +27,74 @@ export function GameModeSelector({ onPlaySinglePlayer, onPlayMultiplayer }: Game
   const [isLoadingModels, setIsLoadingModels] = useState(true);
 
   // Load available models on mount
-  useEffect(() => {
-    loadAvailableModels();
-    
-    // Subscribe to model available events
-    EventBus.instance.subscribe(ModelAvailableEvent, (event) => {
-      loadAvailableModels();
-    });
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, []);
-
-  const loadAvailableModels = async () => {
+  const loadAvailableModels = useCallback(async () => {
     try {
-      setIsLoadingModels(true);
-      const event = new RequestModelListEvent();
-      EventBus.instance.publish(event);
-      const models = await event.deferred.promise;
-      
-      // Extract model IDs and quants for dropdown
-      const modelOptions: string[] = [];
-      models.forEach((model: AvailableModel) => {
-        // Add model with each available quant
-        model.quants.forEach((quant) => {
-          if (quant.status === 'downloaded' || quant.status === 'available') {
-            const displayName = `${model.modelId} (${quant.dtype})`;
-            modelOptions.push(displayName);
-          }
-        });
-      });
+      setIsLoadingModels(true)
+      const event = new RequestModelListEvent()
+      EventBus.instance.publish(event)
+      const result = await event.deferred.promise
 
-      // If no models found, use default options
-      if (modelOptions.length === 0) {
-        modelOptions.push('onnx-community/Phi-3.5-mini-instruct-onnx-web (q4f16)');
-        modelOptions.push('onnx-community/Phi-3.5-mini-instruct-onnx-web (q4)');
-      }
-
-      setAvailableModels(models);
-      
-      // Initialize with first model
-      if (modelOptions.length > 0) {
-        setAiModels(Array(aiCount).fill(modelOptions[0]));
-        setMultiplayerAiModels(Array(multiplayerAI).fill(modelOptions[0]));
+      if (result.isSuccess) {
+        const models = result.value
+        const modelOptions: string[] = []
+        models.forEach((model: AvailableModel) => {
+          model.quants.forEach((quant) => {
+            if (quant.status === 'downloaded' || quant.status === 'available') {
+              const displayName = `${model.modelId} (${quant.dtype})`
+              modelOptions.push(displayName)
+            }
+          })
+        })
+        setAvailableModels(models)
+        if (modelOptions.length > 0) {
+          setAiModels(prev => {
+            if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
+              return Array(aiCount).fill(modelOptions[0])
+            }
+            return prev
+          })
+          setMultiplayerAiModels(prev => {
+            if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
+              return Array(multiplayerAI).fill(modelOptions[0])
+            }
+            return prev
+          })
+        }
+      } else {
+        console.error('Failed to load models:', result.errorMessage)
+        const defaults = [
+          'onnx-community/Phi-3.5-mini-instruct-onnx-web (q4f16)',
+          'onnx-community/Phi-3.5-mini-instruct-onnx-web (q4)',
+        ]
+        setAiModels(Array(aiCount).fill(defaults[0]))
+        setMultiplayerAiModels(Array(multiplayerAI).fill(defaults[0]))
       }
     } catch (error) {
-      console.error('Failed to load models:', error);
-      // Fallback to default models
+      console.error('Failed to load models:', error)
       const defaults = [
         'onnx-community/Phi-3.5-mini-instruct-onnx-web (q4f16)',
         'onnx-community/Phi-3.5-mini-instruct-onnx-web (q4)',
-      ];
-      setAiModels(Array(aiCount).fill(defaults[0]));
-      setMultiplayerAiModels(Array(multiplayerAI).fill(defaults[0]));
+      ]
+      setAiModels(Array(aiCount).fill(defaults[0]))
+      setMultiplayerAiModels(Array(multiplayerAI).fill(defaults[0]))
     } finally {
-      setIsLoadingModels(false);
+      setIsLoadingModels(false)
     }
-  };
+  }, [aiCount, multiplayerAI])
+
+  useEffect(() => {
+    loadAvailableModels()
+
+    // Subscribe to model available events
+    const handleModelAvailable = () => {
+      loadAvailableModels()
+    }
+    EventBus.instance.subscribe(ModelAvailableEvent, handleModelAvailable)
+
+    return () => {
+      EventBus.instance.unsubscribe(ModelAvailableEvent, handleModelAvailable)
+    }
+  }, [loadAvailableModels])
 
   const handleAiCountChange = (count: number) => {
     setAiCount(count);

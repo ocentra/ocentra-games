@@ -43,7 +43,13 @@ export function GameHeader({ user, onLogout, showProfile = true }: GameHeaderPro
         <div className="header-right">
           {showProfile && user && (
             <div className="user-profile-section">
-              <div className="user-profile-compact" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+              <button
+                type="button"
+                className="user-profile-compact"
+                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                aria-label="User profile menu"
+                aria-expanded={showProfileMenu}
+              >
                 {user.photoURL ? (
                   <img src={user.photoURL} alt={user.displayName} className="profile-avatar-compact" />
                 ) : (
@@ -53,20 +59,26 @@ export function GameHeader({ user, onLogout, showProfile = true }: GameHeaderPro
                 )}
                 <span className="profile-name-compact">{user.displayName || 'Player'}</span>
                 <span className="profile-arrow">▼</span>
-              </div>
+              </button>
 
               {showProfileMenu && (
                 <>
-                  <div className="profile-menu-backdrop" onClick={() => setShowProfileMenu(false)}></div>
+                  <button
+                    type="button"
+                    className="profile-menu-backdrop"
+                    onClick={() => setShowProfileMenu(false)}
+                    aria-label="Close profile menu"
+                  />
                   <div className="profile-menu-compact">
                     <div className="profile-menu-header">
-                      <div 
-                        className="profile-picture-wrapper" 
+                      <button
+                        type="button"
+                        className="profile-picture-wrapper"
                         onClick={() => {
                           setShowPictureModal(true);
                           setShowProfileMenu(false);
                         }}
-                        title="Click to change profile picture"
+                        aria-label="Change profile picture"
                       >
                         {user.photoURL ? (
                           <img src={user.photoURL} alt={user.displayName} className="profile-menu-avatar" />
@@ -78,7 +90,7 @@ export function GameHeader({ user, onLogout, showProfile = true }: GameHeaderPro
                         <div className="edit-overlay">
                           <span>✏️</span>
                         </div>
-                      </div>
+                      </button>
                       <div className="profile-menu-info">
                         <div className="profile-menu-name">{user.displayName}</div>
                         <div className="profile-menu-email">{user.email}</div>

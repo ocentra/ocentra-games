@@ -269,7 +269,7 @@ export class StateValidator {
   ): void {
     switch (action.type) {
       case 'declare_intent':
-        this.validateDeclareIntentAction(action, gameState, player, errors, warnings)
+        this.validateDeclareIntentAction(action, gameState, player, errors)
         break
       
       case 'call_showdown':
@@ -286,8 +286,7 @@ export class StateValidator {
     action: PlayerAction,
     gameState: GameState,
     player: Player,
-    errors: string[],
-    warnings: string[]
+    errors: string[]
   ): void {
     const data = action.data as { suit: Suit }
     

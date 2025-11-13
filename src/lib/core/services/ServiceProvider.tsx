@@ -17,12 +17,13 @@ interface ServiceContainerProviderProps {
   configure?: (container: ServiceContainer) => void
 }
 
-export const ServiceContainerProvider = ({
+export function ServiceContainerProvider({
   value,
   configure,
   children,
-}: PropsWithChildren<ServiceContainerProviderProps>) => {
-  const parent = value ?? useContext(ServiceContainerContext)
+}: PropsWithChildren<ServiceContainerProviderProps>) {
+  const parentValue = useContext(ServiceContainerContext)
+  const parent = value ?? parentValue
 
   const container = useMemo(() => {
     if (!configure) {
@@ -40,9 +41,13 @@ export const ServiceContainerProvider = ({
   )
 }
 
-export const useServiceContainer = (): ServiceContainer => useContext(ServiceContainerContext)
+// eslint-disable-next-line react-refresh/only-export-components
+export function useServiceContainer(): ServiceContainer {
+  return useContext(ServiceContainerContext)
+}
 
-export const useService = <T,>(key: ServiceKey<T>): T => {
+// eslint-disable-next-line react-refresh/only-export-components
+export function useService<T>(key: ServiceKey<T>): T {
   const container = useServiceContainer()
   return container.resolve(key)
 }

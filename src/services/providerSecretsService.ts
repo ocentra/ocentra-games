@@ -1,7 +1,7 @@
 // Provider Secrets Service
 // Stores API keys and secrets securely in Firebase Firestore (per player)
 
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@config/firebase'
 import { auth } from '@config/firebase'
 import type { ProviderSecrets, ProviderType } from '@/ai/providers/types'
