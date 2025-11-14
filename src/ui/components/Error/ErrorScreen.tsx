@@ -1,4 +1,3 @@
-import React from 'react';
 import './ErrorScreen.css';
 
 interface ErrorScreenProps {

@@ -311,7 +311,7 @@ export class StateValidator {
   }
 
   private validateCallShowdownAction(
-    action: PlayerAction,
+    _action: PlayerAction,
     gameState: GameState,
     player: Player,
     errors: string[],

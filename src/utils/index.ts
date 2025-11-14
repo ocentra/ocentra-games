@@ -51,8 +51,9 @@ export type {
 } from './useAssetManager'
 
 // Loading UI Components
-export { 
-  LoadingProgress, 
-  MultiProgress, 
-  LoadingScreen 
-} from '../ui/components/LoadingProgress'
+// TODO: LoadingProgress component needs to be created
+// export { 
+//   LoadingProgress, 
+//   MultiProgress, 
+//   LoadingScreen 
+// } from '../ui/components/LoadingProgress'

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useBehaviour } from './useBehaviour';
 import { ReactBehaviour } from '../ReactBehaviour';
 
-type StateSelector<T extends ReactBehaviour, S> = (behaviour: T) => S;
+type StateSelector<TBehaviour extends ReactBehaviour<TCtx>, TState, TCtx = undefined> = (behaviour: TBehaviour) => TState;
 
 interface UseBehaviourStateOptions {
   autoStart?: boolean;
@@ -14,7 +14,7 @@ export const useBehaviourState = <
   TContext = undefined
 >(
   factory: (context: TContext | undefined) => T,
-  selector: StateSelector<T, S>,
+  selector: StateSelector<T, S, TContext>,
   context?: TContext,
   options?: UseBehaviourStateOptions
 ): S => {

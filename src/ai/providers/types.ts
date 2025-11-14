@@ -1,13 +1,16 @@
 // Provider types and interfaces for external LLM providers
 
-export enum ProviderType {
-  LOCAL = 'local',
-  OPENAI = 'openai',
-  OPENROUTER = 'openrouter',
-  LMSTUDIO = 'lmstudio',
-  NATIVE = 'native',
-  TABAGENT_SERVER = 'tabagent_server',
-}
+// Per erasableSyntaxOnly: Use const object instead of enum
+export const ProviderType = {
+  LOCAL: 'local',
+  OPENAI: 'openai',
+  OPENROUTER: 'openrouter',
+  LMSTUDIO: 'lmstudio',
+  NATIVE: 'native',
+  TABAGENT_SERVER: 'tabagent_server',
+} as const;
+
+export type ProviderType = typeof ProviderType[keyof typeof ProviderType];
 
 export interface ProviderConfig {
   type: ProviderType
@@ -17,7 +20,7 @@ export interface ProviderConfig {
 }
 
 export interface OpenAIConfig extends ProviderConfig {
-  type: ProviderType.OPENAI
+  type: 'openai'  // Use string literal type instead of enum reference
   apiKey: string
   baseUrl?: string // Default: https://api.openai.com/v1
   model?: string // Default: gpt-4o-mini
@@ -26,7 +29,7 @@ export interface OpenAIConfig extends ProviderConfig {
 }
 
 export interface OpenRouterConfig extends ProviderConfig {
-  type: ProviderType.OPENROUTER
+  type: 'openrouter'  // Use string literal type instead of enum reference
   apiKey: string
   baseUrl?: string // Default: https://openrouter.ai/api/v1
   model?: string // Default: openai/gpt-4o-mini
@@ -35,7 +38,7 @@ export interface OpenRouterConfig extends ProviderConfig {
 }
 
 export interface LMStudioConfig extends ProviderConfig {
-  type: ProviderType.LMSTUDIO
+  type: 'lmstudio'  // Use string literal type instead of enum reference
   baseUrl: string // Default: http://localhost:1234/v1
   model?: string
   maxTokens?: number
@@ -43,7 +46,7 @@ export interface LMStudioConfig extends ProviderConfig {
 }
 
 export interface NativeConfig extends ProviderConfig {
-  type: ProviderType.NATIVE
+  type: 'native'  // Use string literal type instead of enum reference
   connectionType: 'http' | 'stdin' | 'native_messaging' | 'webrtc'
   baseUrl?: string
   apiKey?: string
@@ -52,7 +55,7 @@ export interface NativeConfig extends ProviderConfig {
 }
 
 export interface TabAgentServerConfig extends ProviderConfig {
-  type: ProviderType.TABAGENT_SERVER
+  type: 'tabagent_server'  // Use string literal type instead of enum reference
   serverUrl: string
   apiKey?: string
 }

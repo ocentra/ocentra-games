@@ -35,11 +35,11 @@ const LOG_MODEL_LOADING = false
 export class ModelManager {
   private static instance: ModelManager | null = null
   private currentPipeline: BasePipeline | null = null
-  private currentConfig: BaseModelConfig | null = null
+  private _currentConfig: BaseModelConfig | null = null
   private currentModelId: string | null = null
   private currentQuantPath: string | null = null
   private llmService: ILLMService | null = null
-  private isInitialized: boolean = false
+  private _isInitialized: boolean = false
 
   private constructor() {
     // Private constructor for singleton
@@ -83,9 +83,7 @@ export class ModelManager {
    */
   private async initialize(): Promise<void> {
     try {
-      // Fetch override is already set up in initModelManager.ts at module level
-      // We just need to mark as initialized
-      this.isInitialized = true
+      this._isInitialized = true
 
       if (LOG_GENERAL || LOG_MODEL_LOADING) {
         console.log(prefix, '✅ ModelManager initialized')
@@ -136,7 +134,7 @@ export class ModelManager {
       )
 
       this.currentPipeline = pipeline
-      this.currentConfig = config
+      this._currentConfig = config
 
       // Load the pipeline
       await pipeline.load(config, progressCallback)
@@ -200,16 +198,17 @@ export class ModelManager {
    * Check if model is loaded
    */
   isModelLoaded(): boolean {
-    return this.llmService !== null && this.llmService.IsReady()
+    return this._isInitialized && this.llmService !== null && this.llmService.IsReady()
   }
 
   /**
    * Get current model info
    */
-  getCurrentModel(): { modelId: string | null; quantPath: string | null } {
+  getCurrentModel(): { modelId: string | null; quantPath: string | null; config: BaseModelConfig | null } {
     return {
       modelId: this.currentModelId,
       quantPath: this.currentQuantPath,
+      config: this._currentConfig,
     }
   }
 
@@ -225,7 +224,8 @@ export class ModelManager {
       this.currentPipeline.reset()
       this.currentPipeline = null
     }
-    this.currentConfig = null
+    this._currentConfig = null
+    this._isInitialized = false
     this.currentModelId = null
     this.currentQuantPath = null
 

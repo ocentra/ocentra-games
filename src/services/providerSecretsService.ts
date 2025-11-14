@@ -2,8 +2,7 @@
 // Stores API keys and secrets securely in Firebase Firestore (per player)
 
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { db } from '@config/firebase'
-import { auth } from '@config/firebase'
+import { db, auth } from '@/config/firebase'
 import type { ProviderSecrets, ProviderType } from '@/ai/providers/types'
 
 const prefix = '[ProviderSecretsService]'
@@ -15,9 +14,17 @@ const LOG_ERROR = true
  */
 export async function getProviderSecrets(): Promise<ProviderSecrets | null> {
   try {
+    if (!auth) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase auth not initialized')
+      return null
+    }
     const user = auth.currentUser
     if (!user) {
       if (LOG_ERROR) console.error(prefix, 'No authenticated user')
+      return null
+    }
+    if (!db) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase Firestore not initialized')
       return null
     }
 
@@ -55,9 +62,17 @@ export async function saveProviderSecret(
   secretValue: string
 ): Promise<boolean> {
   try {
+    if (!auth) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase auth not initialized')
+      return false
+    }
     const user = auth.currentUser
     if (!user) {
       if (LOG_ERROR) console.error(prefix, 'No authenticated user')
+      return false
+    }
+    if (!db) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase Firestore not initialized')
       return false
     }
 
@@ -98,9 +113,17 @@ export async function deleteProviderSecret(
   secretKey: string
 ): Promise<boolean> {
   try {
+    if (!auth) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase auth not initialized')
+      return false
+    }
     const user = auth.currentUser
     if (!user) {
       if (LOG_ERROR) console.error(prefix, 'No authenticated user')
+      return false
+    }
+    if (!db) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase Firestore not initialized')
       return false
     }
 
@@ -165,9 +188,17 @@ export async function saveProviderConfig(
   config: Record<string, string>
 ): Promise<boolean> {
   try {
+    if (!auth) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase auth not initialized')
+      return false
+    }
     const user = auth.currentUser
     if (!user) {
       if (LOG_ERROR) console.error(prefix, 'No authenticated user')
+      return false
+    }
+    if (!db) {
+      if (LOG_ERROR) console.error(prefix, 'Firebase Firestore not initialized')
       return false
     }
 

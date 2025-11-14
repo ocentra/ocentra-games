@@ -36,29 +36,31 @@ export function GameModeSelector({ onPlaySinglePlayer, onPlayMultiplayer }: Game
 
       if (result.isSuccess) {
         const models = result.value
-        const modelOptions: string[] = []
-        models.forEach((model: AvailableModel) => {
-          model.quants.forEach((quant) => {
-            if (quant.status === 'downloaded' || quant.status === 'available') {
-              const displayName = `${model.modelId} (${quant.dtype})`
-              modelOptions.push(displayName)
-            }
+        if (models && Array.isArray(models)) {
+          const modelOptions: string[] = []
+          models.forEach((model: AvailableModel) => {
+            model.quants.forEach((quant) => {
+              if (quant.status === 'downloaded' || quant.status === 'available') {
+                const displayName = `${model.modelId} (${quant.dtype})`
+                modelOptions.push(displayName)
+              }
+            })
           })
-        })
-        setAvailableModels(models)
-        if (modelOptions.length > 0) {
-          setAiModels(prev => {
-            if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
-              return Array(aiCount).fill(modelOptions[0])
-            }
-            return prev
-          })
-          setMultiplayerAiModels(prev => {
-            if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
-              return Array(multiplayerAI).fill(modelOptions[0])
-            }
-            return prev
-          })
+          setAvailableModels(models)
+          if (modelOptions.length > 0) {
+            setAiModels(prev => {
+              if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
+                return Array(aiCount).fill(modelOptions[0])
+              }
+              return prev
+            })
+            setMultiplayerAiModels(prev => {
+              if (prev.length === 0 || prev.every(m => !modelOptions.includes(m))) {
+                return Array(multiplayerAI).fill(modelOptions[0])
+              }
+              return prev
+            })
+          }
         }
       } else {
         console.error('Failed to load models:', result.errorMessage)
