@@ -6,18 +6,21 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/utils/__tests__/setup.ts'],
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/e2e/**', // Exclude Playwright E2E tests
-      '**/*.e2e.spec.ts',
-      '**/*.e2e.test.ts',
-      // Conditionally exclude integration/load tests if SKIP_SOLANA_TESTS is set
-      ...(process.env.SKIP_SOLANA_TESTS === 'true' ? [
-        '**/integration/**',
-        '**/load/**',
-      ] : []),
-    ],
+        exclude: [
+          '**/node_modules/**',
+          '**/dist/**',
+          '**/e2e/**', // Exclude Playwright E2E tests
+          '**/*.e2e.spec.ts',
+          // Exclude R2Service.e2e.test.ts from regular test runs (requires Worker to be running)
+          // Run it explicitly with: npm run test:storage:e2e
+          // Only exclude if not explicitly running E2E tests
+          ...(process.argv.includes('R2Service.e2e.test.ts') ? [] : ['**/R2Service.e2e.test.ts']),
+          // Conditionally exclude integration/load tests if SKIP_SOLANA_TESTS is set
+          ...(process.env.SKIP_SOLANA_TESTS === 'true' ? [
+            '**/integration/**',
+            '**/load/**',
+          ] : []),
+        ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
