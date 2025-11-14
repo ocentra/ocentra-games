@@ -5,31 +5,48 @@ compatibility_date = "2024-01-01"
 [env.development]
 name = "claim-storage-dev"
 
-[env.production]
-name = "claim-storage"
-
-[[r2_buckets]]
+[[env.development.r2_buckets]]
 binding = "MATCHES_BUCKET"
-bucket_name = "claim-matches"
+bucket_name = "claim-matches-test"  # Test bucket for development
 
-[[durable_objects.bindings]]
+[[env.development.durable_objects.bindings]]
 name = "MATCH_COORDINATOR"
 class_name = "MatchCoordinatorDO"
-script_name = "claim-storage"
+script_name = "claim-storage-dev"
 
-[migrations]
-[[migrations]]
+[[env.development.migrations]]
 tag = "v1"
-new_classes = ["MatchCoordinatorDO"]
+new_sqlite_classes = ["MatchCoordinatorDO"]
 
-[vars]
+[env.development.vars]
 ENVIRONMENT = "development"
 # Per critique Issue #12: CORS configuration - MUST be specific origin in production
 # Development allows * for local testing, production MUST use specific origin
 CORS_ORIGIN = "*"  # TODO: Set to specific origin in production (e.g., "https://claim.game")
 
+[env.production]
+name = "claim-storage"
+
+[[env.production.r2_buckets]]
+binding = "MATCHES_BUCKET"
+bucket_name = "claim-matches"  # Production bucket
+
+[[env.production.durable_objects.bindings]]
+name = "MATCH_COORDINATOR"
+class_name = "MatchCoordinatorDO"
+script_name = "claim-storage"
+
+[[env.production.migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatchCoordinatorDO"]
+
 [env.production.vars]
 ENVIRONMENT = "production"
 # Per critique Issue #12: Reject * in production for security
-CORS_ORIGIN = "https://claim.game"  # MUST be specific origin, not *
+# Set to your actual production domain
+# Options:
+# - https://game.ocentra.ca (recommended - subdomain)
+# - https://claim.ocentra.ca (alternative subdomain)
+# - https://ocentra.ca (if using root domain)
+CORS_ORIGIN = "https://game.ocentra.ca"  # Update to your chosen subdomain
 

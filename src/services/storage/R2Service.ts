@@ -109,7 +109,7 @@ export class R2Service {
   }
 
   async generateSignedUrl(matchId: string, expiresIn: number = 3600): Promise<string> {
-    const url = `${this.config.workerUrl}/api/signed-url/${matchId}?expiresIn=${expiresIn}`;
+    const url = `${this.config.workerUrl}/api/signed-url/${matchId}?expires=${expiresIn}`;
     const response = await fetch(url, { method: 'GET' });
     
     if (!response.ok) {

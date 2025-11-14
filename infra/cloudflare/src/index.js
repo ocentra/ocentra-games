@@ -8,12 +8,20 @@ const metricsCollector = new MetricsCollector();
  * Gets CORS headers based on environment configuration.
  * Per critique Issue #12: Reject * in production for security.
  */
+/**
+ * Validates and returns CORS headers with security best practices.
+ * Per critique Issue #12: Enhanced CORS security.
+ */
 function getCorsHeaders(env, requestOrigin) {
     const allowedOrigin = env.CORS_ORIGIN || '*';
     const isProduction = env.ENVIRONMENT === 'production';
     // Per critique Issue #12: Reject * in production
     if (isProduction && allowedOrigin === '*') {
         throw new Error('CORS_ORIGIN cannot be "*" in production. Set a specific origin.');
+    }
+    // Security: Log suspicious origin attempts in production
+    if (isProduction && requestOrigin && requestOrigin !== allowedOrigin) {
+        console.warn(`[SECURITY] CORS origin mismatch: ${requestOrigin} attempted access (allowed: ${allowedOrigin})`);
     }
     // In production, validate request origin matches allowed origin
     let origin = allowedOrigin;
@@ -26,13 +34,34 @@ function getCorsHeaders(env, requestOrigin) {
     }
     else if (!isProduction && allowedOrigin === '*') {
         // Development: allow any origin if configured as *
-        origin = requestOrigin || '*';
+        // But check whitelist if provided for better security
+        if (env.CORS_ALLOWED_ORIGINS && requestOrigin) {
+            const allowedOrigins = env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim());
+            if (allowedOrigins.includes(requestOrigin)) {
+                origin = requestOrigin;
+            }
+            else {
+                console.warn(`[DEV] CORS: Origin ${requestOrigin} not in whitelist, but allowing (dev mode)`);
+                origin = requestOrigin;
+            }
+        }
+        else {
+            // No whitelist, allow any origin in dev (with logging)
+            if (requestOrigin) {
+                console.log(`[DEV] CORS: Allowing origin ${requestOrigin} (development mode - no whitelist)`);
+            }
+            origin = requestOrigin || '*';
+        }
     }
     return {
         'Access-Control-Allow-Origin': origin,
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, Signature',
+        'Access-Control-Allow-Credentials': 'true', // Only works with specific origin, not *
         'Access-Control-Max-Age': '86400',
+        // Security headers
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
     };
 }
 // Export Durable Object class
@@ -40,6 +69,14 @@ export { MatchCoordinatorDO } from './durable-objects/MatchCoordinatorDO';
 export default {
     async fetch(request, env) {
         const requestOrigin = request.headers.get('Origin');
+        const referer = request.headers.get('Referer');
+        // Security: Validate Referer header in production (additional CSRF protection)
+        if (env.ENVIRONMENT === 'production' && env.CORS_ORIGIN && env.CORS_ORIGIN !== '*') {
+            if (referer && !referer.startsWith(env.CORS_ORIGIN)) {
+                console.warn(`[SECURITY] Suspicious Referer: ${referer} (expected: ${env.CORS_ORIGIN})`);
+                // Don't block, but log for monitoring
+            }
+        }
         // Handle CORS preflight
         if (request.method === 'OPTIONS') {
             try {
