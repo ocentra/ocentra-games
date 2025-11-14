@@ -1,21 +1,24 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
+// Define mock classes outside the mock factory so they can be used in type annotations
+class MockTexture {
+  wrapS = 1000
+  wrapT = 1000
+  magFilter = 1006
+  minFilter = 1006
+  flipY = true
+  generateMipmaps = true
+  needsUpdate = false
+  dispose(): void {
+    // no-op
+  }
+}
+
 // Mock Three.js before importing
 vi.mock('three', () => ({
-  Texture: class MockTexture {
-    wrapS = 1000
-    wrapT = 1000
-    magFilter = 1006
-    minFilter = 1006
-    flipY = true
-    generateMipmaps = true
-    needsUpdate = false
-    dispose(): void {
-      // no-op
-    }
-  },
+  Texture: MockTexture,
   TextureLoader: class MockTextureLoader {
-    load(url: string, onLoad?: (texture: InstanceType<typeof MockTexture>) => void): InstanceType<typeof MockTexture> {
+    load(url: string, onLoad?: (texture: MockTexture) => void): MockTexture {
       void url
       const texture = new MockTexture()
       if (onLoad) {

@@ -47,6 +47,9 @@ export interface UserProfile {
   winRate: number;
   eloRating: number;
   achievements: string[];
+  // Per spec Section 18, lines 1693-1696: Match history references
+  matchHistory?: string[];  // Match PDA addresses or match IDs
+  matchIds?: string[];      // Match UUIDs for quick lookup
 }
 
 // Authentication result interface
@@ -459,6 +462,86 @@ export const loginAsGuest = async (): Promise<AuthResult> => {
     const firebaseError = error as FirebaseError;
     logAuth(LOG_AUTH_ERROR, 'error', prefix, '[loginAsGuest] ❌ Anonymous login error:', firebaseError);
     const userFriendlyMessage = getAuthErrorMessage(error);
+    return { success: false, error: userFriendlyMessage };
+  }
+};
+
+// Per spec Section 18, lines 1693-1696: Add match to user's match history
+export const addMatchToHistory = async (
+  userId: string,
+  matchId: string
+): Promise<{ success: boolean; error?: string }> => {
+  logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[addMatchToHistory] Adding match to history:', { userId, matchId });
+
+  if (!isFirebaseConfigured) {
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[addMatchToHistory] ❌ Firebase not configured');
+    return { success: false, error: 'Firebase not configured' };
+  }
+
+  try {
+    const userDoc = doc(db!, 'users', userId);
+    const userDocSnapshot = await getDoc(userDoc);
+
+    if (!userDocSnapshot.exists()) {
+      logAuth(LOG_AUTH_ERROR, 'error', prefix, '[addMatchToHistory] ❌ User not found:', { userId });
+      return { success: false, error: 'User not found' };
+    }
+
+    const userData = userDocSnapshot.data() as UserProfile;
+    const matchIds = userData.matchIds || [];
+
+    // Check if match already exists
+    if (matchIds.includes(matchId)) {
+      logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[addMatchToHistory] Match already in history:', { userId, matchId });
+      return { success: true };
+    }
+
+    // Add match to history (keep last 100 matches)
+    const updatedMatchIds = [matchId, ...matchIds].slice(0, 100);
+    const updatedMatchHistory = userData.matchHistory ? [matchId, ...userData.matchHistory].slice(0, 100) : updatedMatchIds;
+
+    await updateDoc(userDoc, {
+      matchHistory: updatedMatchHistory,
+      matchIds: updatedMatchIds,
+    });
+
+    logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[addMatchToHistory] ✅ Match added to history:', { userId, matchId });
+    return { success: true };
+  } catch (error) {
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[addMatchToHistory] ❌ Error:', error);
+    const userFriendlyMessage = error instanceof Error ? error.message : 'Failed to add match to history';
+    return { success: false, error: userFriendlyMessage };
+  }
+};
+
+// Get user's match history
+export const getMatchHistory = async (
+  userId: string
+): Promise<{ success: boolean; matchIds?: string[]; error?: string }> => {
+  logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[getMatchHistory] Getting match history:', { userId });
+
+  if (!isFirebaseConfigured) {
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[getMatchHistory] ❌ Firebase not configured');
+    return { success: false, error: 'Firebase not configured' };
+  }
+
+  try {
+    const userDoc = doc(db!, 'users', userId);
+    const userDocSnapshot = await getDoc(userDoc);
+
+    if (!userDocSnapshot.exists()) {
+      logAuth(LOG_AUTH_ERROR, 'error', prefix, '[getMatchHistory] ❌ User not found:', { userId });
+      return { success: false, error: 'User not found' };
+    }
+
+    const userData = userDocSnapshot.data() as UserProfile;
+    const matchIds = userData.matchIds || [];
+
+    logAuth(LOG_AUTH_FIRESTORE, 'log', prefix, '[getMatchHistory] ✅ Match history retrieved:', { userId, count: matchIds.length });
+    return { success: true, matchIds };
+  } catch (error) {
+    logAuth(LOG_AUTH_ERROR, 'error', prefix, '[getMatchHistory] ❌ Error:', error);
+    const userFriendlyMessage = error instanceof Error ? error.message : 'Failed to get match history';
     return { success: false, error: userFriendlyMessage };
   }
 };

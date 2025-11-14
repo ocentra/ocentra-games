@@ -140,8 +140,8 @@ export class TurnManager {
   }
 
   private processCallShowdownAction(
-    gameState: GameState, 
-    action: PlayerAction, 
+    _gameState: GameState, 
+    _action: PlayerAction, 
     updates: Partial<GameState>
   ): Partial<GameState> {
     return {
@@ -151,8 +151,8 @@ export class TurnManager {
   }
 
   private processRebuttalAction(
-    gameState: GameState, 
-    action: PlayerAction, 
+    _gameState: GameState, 
+    _action: PlayerAction, 
     updates: Partial<GameState>
   ): Partial<GameState> {
     // Rebuttal processing would involve validating the 3-card run

@@ -1,0 +1,195 @@
+{
+  "match_id": "660e8400-e29b-41d4-a716-446655440001",
+  "version": "1.0.0",
+  "game": {
+    "name": "CLAIM",
+    "ruleset": "default"
+  },
+  "start_time": "2025-01-15T12:00:00.000Z",
+  "end_time": "2025-01-15T12:45:00.000Z",
+  "seed": "9876543210",
+  "players": [
+    {
+      "player_id": "AI-Player-1",
+      "type": "ai",
+      "public_key": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "metadata": {
+        "model_name": "claude-3-opus",
+        "model_id": "claude-3-opus-20240229",
+        "model_hash": "sha256:abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+        "training_date": "2024-02-29",
+        "prompt_template": "You are playing CLAIM card game...",
+        "prompt_template_hash": "sha256:prompt123hash456template789",
+        "temperature": 0.7,
+        "max_tokens": 1000
+      }
+    },
+    {
+      "player_id": "AI-Player-2",
+      "type": "ai",
+      "public_key": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtawWM",
+      "metadata": {
+        "model_name": "gpt-4-turbo",
+        "model_id": "gpt-4-turbo-2024-04-09",
+        "model_hash": "sha256:def456ghi789jkl012mno345pqr678stu901vwx234yza567bcd890",
+        "training_date": "2024-04-09",
+        "prompt_template": "You are an expert CLAIM player...",
+        "prompt_template_hash": "sha256:prompt456hash789template012",
+        "temperature": 0.8,
+        "max_tokens": 1000
+      }
+    },
+    {
+      "player_id": "AI-Player-3",
+      "type": "ai",
+      "public_key": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+      "metadata": {
+        "model_name": "gemini-pro",
+        "model_id": "gemini-pro-2024-05-14",
+        "model_hash": "sha256:ghi789jkl012mno345pqr678stu901vwx234yza567bcd890efg123",
+        "training_date": "2024-05-14",
+        "prompt_template": "Play CLAIM strategically...",
+        "prompt_template_hash": "sha256:prompt789hash012template345",
+        "temperature": 0.6,
+        "max_tokens": 1000
+      }
+    },
+    {
+      "player_id": "AI-Player-4",
+      "type": "ai",
+      "public_key": "GsrTaTsVG4CRdBX9x9s5Qt5t7n5nF7v4J3k8XK9mN2pL",
+      "metadata": {
+        "model_name": "claude-3-sonnet",
+        "model_id": "claude-3-sonnet-20240229",
+        "model_hash": "sha256:jkl012mno345pqr678stu901vwx234yza567bcd890efg123hij456",
+        "training_date": "2024-02-29",
+        "prompt_template": "You are playing CLAIM...",
+        "prompt_template_hash": "sha256:prompt012hash345template678",
+        "temperature": 0.7,
+        "max_tokens": 1000
+      }
+    }
+  ],
+  "moves": [
+    {
+      "index": 0,
+      "timestamp": "2025-01-15T12:00:05.000Z",
+      "player_id": "AI-Player-1",
+      "action": "pick_up",
+      "payload": {
+        "card": "AH"
+      }
+    },
+    {
+      "index": 1,
+      "timestamp": "2025-01-15T12:00:15.000Z",
+      "player_id": "AI-Player-2",
+      "action": "decline",
+      "payload": {}
+    },
+    {
+      "index": 2,
+      "timestamp": "2025-01-15T12:00:25.000Z",
+      "player_id": "AI-Player-3",
+      "action": "declare_intent",
+      "payload": {
+        "suit": "hearts",
+        "rank": "A"
+      }
+    },
+    {
+      "index": 3,
+      "timestamp": "2025-01-15T12:00:35.000Z",
+      "player_id": "AI-Player-4",
+      "action": "call_showdown",
+      "payload": {}
+    }
+  ],
+  "chain_of_thought": {
+    "AI-Player-1": [
+      {
+        "move_index": 0,
+        "timestamp": "2025-01-15T12:00:05.000Z",
+        "thought": "Looking at my hand: [2H, 3H, 4H, 5H, 6H, 7H, 8H, 9H, 10H, JH, QH, KH, AH]. I have a very strong hearts suit. The card on the table is AH (Ace of Hearts).",
+        "reasoning": "I should pick up this card because: 1) It's already in my suit, 2) I have a strong hearts hand, 3) Picking it up gives me more control.",
+        "decision": "pick_up",
+        "confidence": 0.92,
+        "alternatives_considered": ["decline", "pick_up"]
+      }
+    ],
+    "AI-Player-2": [
+      {
+        "move_index": 1,
+        "timestamp": "2025-01-15T12:00:15.000Z",
+        "thought": "Player 1 picked up the Ace of Hearts. I don't have a strong hearts hand, so I should decline.",
+        "reasoning": "Declining is the safer option since I don't have enough hearts to compete.",
+        "decision": "decline",
+        "confidence": 0.85,
+        "alternatives_considered": ["decline", "pick_up"]
+      }
+    ],
+    "AI-Player-3": [
+      {
+        "move_index": 2,
+        "timestamp": "2025-01-15T12:00:25.000Z",
+        "thought": "Player 1 declined. Now it's my turn. I have a very strong hearts hand. I should declare intent to claim hearts.",
+        "reasoning": "With 13 hearts cards, I have a high probability of winning if I declare hearts as my suit.",
+        "decision": "declare_intent",
+        "confidence": 0.88,
+        "alternatives_considered": ["decline", "declare_intent"],
+        "declared_suit": "hearts",
+        "declared_rank": "A"
+      }
+    ]
+  },
+  "model_versions": {
+    "AI-Player-1": {
+      "model_name": "claude-3-opus",
+      "model_id": "claude-3-opus-20240229",
+      "model_hash": "sha256:abc123def456ghi789jkl012mno345pqr678stu901vwx234yz",
+      "training_date": "2024-02-29",
+      "prompt_template_hash": "sha256:prompt123hash456template789",
+      "temperature": 0.7,
+      "max_tokens": 1000
+    },
+    "AI-Player-2": {
+      "model_name": "gpt-4-turbo",
+      "model_id": "gpt-4-turbo-2024-04-09",
+      "model_hash": "sha256:def456ghi789jkl012mno345pqr678stu901vwx234yza567bcd890",
+      "training_date": "2024-04-09",
+      "prompt_template_hash": "sha256:prompt456hash789template012",
+      "temperature": 0.8,
+      "max_tokens": 1000
+    },
+    "AI-Player-3": {
+      "model_name": "gemini-pro",
+      "model_id": "gemini-pro-2024-05-14",
+      "model_hash": "sha256:ghi789jkl012mno345pqr678stu901vwx234yza567bcd890efg123",
+      "training_date": "2024-05-14",
+      "prompt_template_hash": "sha256:prompt789hash012template345",
+      "temperature": 0.6,
+      "max_tokens": 1000
+    },
+    "AI-Player-4": {
+      "model_name": "claude-3-sonnet",
+      "model_id": "claude-3-sonnet-20240229",
+      "model_hash": "sha256:jkl012mno345pqr678stu901vwx234yza567bcd890efg123hij456",
+      "training_date": "2024-02-29",
+      "prompt_template_hash": "sha256:prompt012hash345template678",
+      "temperature": 0.7,
+      "max_tokens": 1000
+    }
+  },
+  "storage": {
+    "hot_url": "https://r2.example.com/matches/660e8400-e29b-41d4-a716-446655440001.json"
+  },
+  "signatures": [
+    {
+      "signer": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "sig_type": "ed25519",
+      "signature": "b4g6c9d3e2f5a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
+      "signed_at": "2025-01-15T12:45:05.000Z"
+    }
+  ]
+}
+

@@ -51,14 +51,14 @@ export class RuleEngine {
     }
   }
 
-  private validatePickUp(gameState: GameState, player: Player, isPlayerTurn: boolean): boolean {
+  private validatePickUp(gameState: GameState, _player: Player, isPlayerTurn: boolean): boolean {
     // Must be floor reveal phase and player's turn
     return gameState.phase === GamePhase.FLOOR_REVEAL && 
            isPlayerTurn && 
            gameState.floorCard !== null
   }
 
-  private validateDecline(gameState: GameState, player: Player, isPlayerTurn: boolean): boolean {
+  private validateDecline(gameState: GameState, _player: Player, isPlayerTurn: boolean): boolean {
     // Must be floor reveal phase and player's turn
     return gameState.phase === GamePhase.FLOOR_REVEAL && 
            isPlayerTurn && 

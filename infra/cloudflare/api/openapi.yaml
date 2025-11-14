@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Match Recording API
+  version: 1.0.0
+  description: |
+    API for uploading, retrieving, and managing verifiable match records.
+    Per spec Section 28.2, lines 4412-4495.
+servers:
+  - url: https://api.example.com
+    description: Production server
+  - url: http://localhost:8787
+    description: Local development server
+
+paths:
+  /api/matches/{matchId}:
+    get:
+      summary: Get match record
+      description: Retrieves a canonical match record by ID
+      operationId: getMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Match record found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchRecord'
+        '404':
+          description: Match not found
+    put:
+      summary: Upload match record
+      description: Uploads a canonical match record
+      operationId: uploadMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchRecord'
+      responses:
+        '200':
+          description: Match record uploaded successfully
+          headers:
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+        '400':
+          description: Invalid match record
+        '401':
+          description: Invalid signature
+        '429':
+          description: Rate limit exceeded
+    delete:
+      summary: Delete match record
+      description: Deletes a match record (GDPR compliance)
+      operationId: deleteMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Match record deleted
+        '404':
+          description: Match not found
+
+  /api/signed-url/{matchId}:
+    get:
+      summary: Generate signed URL
+      description: Generates a time-limited signed URL for a match record
+      operationId: generateSignedUrl
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: expiresIn
+          in: query
+          schema:
+            type: integer
+            default: 3600
+      responses:
+        '200':
+          description: Signed URL generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signedUrl:
+                    type: string
+                  expiresAt:
+                    type: string
+                    format: date-time
+                  expiresIn:
+                    type: integer
+
+  /api/disputes/{matchId}:
+    post:
+      summary: Submit dispute
+      description: Submits a dispute for a match
+      operationId: submitDispute
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Dispute'
+      responses:
+        '200':
+          description: Dispute submitted
+        '400':
+          description: Invalid dispute data
+    get:
+      summary: Get dispute
+      description: Retrieves dispute information
+      operationId: getDispute
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Dispute found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispute'
+        '404':
+          description: Dispute not found
+
+  /api/archive/{matchId}:
+    post:
+      summary: Archive match
+      description: Archives a match record for long-term storage
+      operationId: archiveMatch
+      parameters:
+        - name: matchId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Match archived successfully
+        '404':
+          description: Match not found
+
+  /api/data-export/{wallet}:
+    get:
+      summary: Export user data
+      description: Exports all match data for a wallet (GDPR compliance)
+      operationId: exportData
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data export
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  matches:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MatchRecord'
+        '404':
+          description: No data found
+
+  /api/data/{wallet}:
+    delete:
+      summary: Delete user data
+      description: Deletes all match data for a wallet (GDPR compliance)
+      operationId: deleteData
+      parameters:
+        - name: wallet
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data deleted successfully
+        '404':
+          description: No data found
+
+components:
+  schemas:
+    MatchRecord:
+      type: object
+      required:
+        - match_id
+        - version
+        - start_time
+        - players
+        - moves
+        - signatures
+      properties:
+        match_id:
+          type: string
+          format: uuid
+        version:
+          type: string
+        game:
+          type: object
+          properties:
+            name:
+              type: string
+            ruleset:
+              type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        seed:
+          type: string
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerRecord'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveRecord'
+        artifacts:
+          type: array
+        chain_of_thought:
+          type: object
+        model_versions:
+          type: object
+        storage:
+          type: object
+          properties:
+            hot_url:
+              type: string
+        signatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureRecord'
+
+    PlayerRecord:
+      type: object
+      required:
+        - player_id
+        - type
+      properties:
+        player_id:
+          type: string
+        type:
+          type: string
+          enum: [human, ai, bot]
+        public_key:
+          type: string
+        metadata:
+          type: object
+
+    MoveRecord:
+      type: object
+      required:
+        - index
+        - timestamp
+        - player_id
+        - action
+        - payload
+      properties:
+        index:
+          type: integer
+        timestamp:
+          type: string
+          format: date-time
+        player_id:
+          type: string
+        action:
+          type: string
+        payload:
+          type: object
+        proofs:
+          type: object
+
+    SignatureRecord:
+      type: object
+      required:
+        - signer
+        - sig_type
+        - signature
+        - signed_at
+      properties:
+        signer:
+          type: string
+        sig_type:
+          type: string
+          enum: [ed25519, secp256k1]
+        signature:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+
+    Dispute:
+      type: object
+      required:
+        - match_id
+        - reason
+        - evidence_hash
+      properties:
+        match_id:
+          type: string
+          format: uuid
+        reason:
+          type: integer
+          enum: [0, 1, 2, 3, 4]
+        evidence_hash:
+          type: string
+        evidence_url:
+          type: string
+

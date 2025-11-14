@@ -76,15 +76,16 @@ export function setupLogApiInterceptor(): void {
 if (typeof window !== 'undefined') {
   const storage = getLogStorage();
 
-  (window as Record<string, unknown>).__QUERY_LOGS__ = async (query: LogQuery = {}) => {
+  // Cast through unknown first to satisfy TypeScript strict type checking
+  (window as unknown as Record<string, unknown>).__QUERY_LOGS__ = async (query: LogQuery = {}) => {
     return storage.queryLogs(query);
   };
 
-  (window as Record<string, unknown>).__GET_LOG_STATS__ = async () => {
+  (window as unknown as Record<string, unknown>).__GET_LOG_STATS__ = async () => {
     return storage.getLogStats();
   };
 
-  (window as Record<string, unknown>).__CLEAR_LOGS__ = async (query?: LogQuery) => {
+  (window as unknown as Record<string, unknown>).__CLEAR_LOGS__ = async (query?: LogQuery) => {
     return storage.clearLogs(query);
   };
 

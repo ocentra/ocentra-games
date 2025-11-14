@@ -12,9 +12,8 @@ const LOG_ERROR = true
 export class OpenAIProvider implements ILLMService {
   private config: OpenAIConfig | null = null
   private apiKey: string | null = null
-  private quantPath?: string
 
-  async Initialize(modelId?: string, quantPath?: string): Promise<void> {
+  async Initialize(modelId?: string, _quantPath?: string): Promise<void> {
     try {
       // Load API key from Firebase secrets
       this.apiKey = await getProviderSecret(ProviderType.OPENAI, 'apiKey')
@@ -32,7 +31,7 @@ export class OpenAIProvider implements ILLMService {
         maxTokens: 4096,
         temperature: 0.7,
       }
-      this.quantPath = quantPath || undefined
+      void _quantPath
 
       if (LOG_GENERAL) {
         console.log(prefix, '✅ Initialized OpenAI provider')

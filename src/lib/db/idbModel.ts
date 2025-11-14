@@ -2,15 +2,18 @@ import { INFERENCE_SETTINGS_SINGLETON_ID, type InferenceSettings } from './Infer
 import { DBNames } from './idbSchema';
 
 // --- Types ---
-export enum QuantStatus {
-  Available = 'available',
-  Downloaded = 'downloaded',
-  Failed = 'failed',
-  NotFound = 'not_found',
-  Unavailable = 'unavailable',
-  Unsupported = 'unsupported',
-  ServerOnly = 'server_only',
-}
+// Per erasableSyntaxOnly: Use const object instead of enum
+export const QuantStatus = {
+  Available: 'available',
+  Downloaded: 'downloaded',
+  Failed: 'failed',
+  NotFound: 'not_found',
+  Unavailable: 'unavailable',
+  Unsupported: 'unsupported',
+  ServerOnly: 'server_only',
+} as const;
+
+export type QuantStatus = typeof QuantStatus[keyof typeof QuantStatus];
 
 export type QuantInfo = {
   files: string[]; // Full paths (rfilename) to all required files for this quant
@@ -346,7 +349,8 @@ export async function getAllCachedModels(): Promise<CachedModelInfo[]> {
         if (modelId && modelPath) {
           // Get size for non-chunked models
           let modelSize = 0;
-          if (item.data && item.data.size) {
+          // Type guard: check if data is Blob (has size property)
+          if (item.data && 'size' in item.data && typeof item.data.size === 'number') {
             modelSize = item.data.size;
           } else if (item.blob && item.blob.size) {
             modelSize = item.blob.size;

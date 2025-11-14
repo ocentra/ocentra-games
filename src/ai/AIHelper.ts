@@ -94,11 +94,11 @@ export class AIHelper {
       const allPlayersEvent = new RequestAllPlayersDataEvent()
 
       // Publish events and wait for responses
-      EventBus.publish(handEvent)
-      EventBus.publish(scoreEvent)
-      EventBus.publish(cardsCountEvent)
-      EventBus.publish(floorCardsEvent)
-      EventBus.publish(allPlayersEvent)
+      EventBus.instance.publish(handEvent)
+      EventBus.instance.publish(scoreEvent)
+      EventBus.instance.publish(cardsCountEvent)
+      EventBus.instance.publish(floorCardsEvent)
+      EventBus.instance.publish(allPlayersEvent)
 
       // Wait for deferred responses
       const [hand, scoreData, remainingCards, floorCards, allPlayers] = await Promise.all([

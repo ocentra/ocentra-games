@@ -41,7 +41,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.baseScore).toBe(39) // 14 + 13 + 12
       expect(scoreBreakdown.multiplier).toBe(3)
@@ -69,7 +69,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.baseScore).toBe(27) // 14 + 13
       expect(scoreBreakdown.multiplier).toBe(2)
@@ -97,7 +97,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.baseScore).toBe(0)
       expect(scoreBreakdown.multiplier).toBe(0)
@@ -125,7 +125,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.bonusDetails.longRuns).toBe(1)
       expect(scoreBreakdown.bonuses).toBe(75) // Clean sweep (50) + Long run (25)
@@ -153,7 +153,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.bonusDetails.longRuns).toBe(2) // Two separate runs of 4
       expect(scoreBreakdown.bonuses).toBe(100) // Clean sweep (50) + 2 Long runs (50)
@@ -177,7 +177,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.bonusDetails.longRuns).toBe(1)
       expect(scoreBreakdown.bonuses).toBe(75) // Clean sweep (50) + Long run (25)
@@ -202,7 +202,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.bonusDetails.longRuns).toBe(1) // Should still detect the run
       expect(scoreBreakdown.bonuses).toBe(75) // Clean sweep (50) + Long run (25)
@@ -229,7 +229,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.baseScore).toBe(60) // 14+13+12+11+10
       expect(scoreBreakdown.multiplier).toBe(5)
@@ -254,7 +254,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       expect(scoreBreakdown.baseScore).toBe(0)
       expect(scoreBreakdown.multiplier).toBe(0)
@@ -285,7 +285,7 @@ describe('ScoreCalculator', () => {
         isAI: false,
       }
 
-      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player, mockGameState)
+      const scoreBreakdown = scoreCalculator.calculatePlayerScore(player)
       
       const totalValue = 14 + 13 + 12 + 11 + 10 + 9 + 8 // 77
       const handSize = 7

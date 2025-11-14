@@ -5,8 +5,11 @@ import { EventArgsBase } from '../base/EventArgsBase';
 class TestEvent extends EventArgsBase {
   static readonly eventType = 'TestEvent';
 
-  constructor(public readonly payload: number) {
+  readonly payload: number;
+
+  constructor(payload: number) {
     super();
+    this.payload = payload;
   }
 }
 

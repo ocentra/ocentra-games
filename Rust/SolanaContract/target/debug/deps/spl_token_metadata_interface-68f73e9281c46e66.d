@@ -1,0 +1,8 @@
+E:\Claim\Rust\SolanaContract\target\debug\deps\spl_token_metadata_interface-68f73e9281c46e66.d: C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\lib.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\error.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\instruction.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\state.rs
+
+E:\Claim\Rust\SolanaContract\target\debug\deps\libspl_token_metadata_interface-68f73e9281c46e66.rmeta: C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\lib.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\error.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\instruction.rs C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\state.rs
+
+C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\lib.rs:
+C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\error.rs:
+C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\instruction.rs:
+C:\Users\sujan\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\spl-token-metadata-interface-0.2.0\src\state.rs:

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { GameHeader } from '@ui/components/Header/GameHeader';
 import { GameFooter } from '@ui/components/Footer/GameFooter';
 import { useAuth } from '@providers';
+import { useSolanaBridge } from '@services/solana/useSolanaBridge';
 import GameBackground from './GameBackground';
 import GameHUD from './GameHUD';
 import CardInHand from './CardInHand';
@@ -16,6 +17,9 @@ export const GameScreen: React.FC = () => {
   const { user, logout } = useAuth();
   const hudCenterRef = useRef<HTMLDivElement | null>(null);
   const [hudAnchor, setHudAnchor] = useState<{ x: number; y: number; radius: number } | null>(null);
+  
+  // Initialize Solana bridge for multiplayer
+  useSolanaBridge();
 
   useEffect(() => {
     const measure = () => {

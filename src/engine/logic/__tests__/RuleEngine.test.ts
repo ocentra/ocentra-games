@@ -168,7 +168,7 @@ describe('RuleEngine', () => {
         timestamp: new Date(),
       }
 
-      const nextPhase = ruleEngine.getNextPhase(GamePhase.FLOOR_REVEAL, action, mockGameState)
+      const nextPhase = ruleEngine.getNextPhase(GamePhase.FLOOR_REVEAL, action)
       expect(nextPhase).toBe(GamePhase.PLAYER_ACTION)
     })
 
@@ -179,7 +179,7 @@ describe('RuleEngine', () => {
         timestamp: new Date(),
       }
 
-      const nextPhase = ruleEngine.getNextPhase(GamePhase.PLAYER_ACTION, action, mockGameState)
+      const nextPhase = ruleEngine.getNextPhase(GamePhase.PLAYER_ACTION, action)
       expect(nextPhase).toBe(GamePhase.SHOWDOWN)
     })
   })

@@ -44,7 +44,9 @@ export class AIEngine {
     try {
       // Initialize the text generation pipeline
       // Using a lightweight model for game strategy decisions
-      this.generator = (await pipeline('text-generation', 'Xenova/distilgpt2')) as TextGenerationFn
+      // Break down type inference to avoid "union type too complex" error
+      const pipelineResult = await pipeline('text-generation', 'Xenova/distilgpt2')
+      this.generator = pipelineResult as unknown as TextGenerationFn
       console.log('AI engine initialized for player:', this.playerId)
     } catch (error) {
       console.error('Failed to initialize AI engine:', error)
@@ -74,6 +76,10 @@ export class AIEngine {
       const prompt = this.createGameStatePrompt(gameState, player)
       
       // Generate a decision based on the prompt
+      // Null check: generator is checked in makeDecision but TypeScript needs explicit check
+      if (!this.generator) {
+        return this.makeRuleBasedDecision(gameState, player)
+      }
       const output = await this.generator(prompt, {
         max_new_tokens: 50,
         temperature: this.getTemperature(),
@@ -218,7 +224,7 @@ What should the player do next? Choose from: pick_up, decline, declare_intent, c
     return { action: 'decline', confidence: 0.5 }
   }
 
-  private makeShowdownDecision(gameState: GameState, player: Player): AIDecision {
+  private makeShowdownDecision(_gameState: GameState, player: Player): AIDecision {
     // Only undeclared players can rebuttal
     if (player.declaredSuit) {
       return { action: 'decline', confidence: 0.5 }

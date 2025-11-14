@@ -1,0 +1,23 @@
+[package]
+name = "solana-games-program"
+version = "0.1.0"
+description = "On-chain Solana program for multiplayer games (card games, word puzzles, etc.)"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "solana_games_program"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { version = "0.29.0", features = ["init-if-needed"] }
+anchor-spl = "0.29.0"
+solana-program = "~1.18"
+uuid = { version = "1.0", features = ["v4"] }
+

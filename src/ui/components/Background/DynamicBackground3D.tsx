@@ -39,8 +39,6 @@ const logDebug = (...args: unknown[]) => {
   }
 };
 
-;
-
 logDebug('Module loaded');
 
 // Add a type for the window object
@@ -530,7 +528,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
             const loader = new THREE.TextureLoader();
             loader.load(
                 path,
-                (texture) => {
+                (texture: THREE.Texture) => {
                     logDebug('Successfully loaded texture:', path);
                     texture.needsUpdate = true;
                     
@@ -544,7 +542,10 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
                     texture.wrapT = THREE.ClampToEdgeWrapping;
                     
                     // Calculate aspect ratio from texture dimensions
-                    const aspectRatio = texture.image.width / texture.image.height;
+                    const image = texture.image as HTMLImageElement | HTMLCanvasElement | HTMLVideoElement;
+                    const aspectRatio = image && 'width' in image && 'height' in image 
+                        ? image.width / image.height 
+                        : 1.0;
                     
                     // Cache the texture
                     textureCacheRef.current[path] = { texture, aspectRatio };
@@ -553,7 +554,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
                     resolve({texture, aspectRatio});
                 },
                 undefined,
-                (error) => {
+                (error: unknown) => {
                     logDebug('Failed to load texture:', path, error);
                     // Create a fallback texture with a colored rectangle
                     const canvas = document.createElement('canvas');
@@ -1240,7 +1241,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
 
             // Dispose geometries and materials found during scene traversal
             try {
-                scene.traverse(object => {
+                scene.traverse((object: THREE.Object3D) => {
                     // Dispose Geometry
                     // Check if it's a BufferGeometry instance first
                      if (object instanceof THREE.BufferGeometry) {
@@ -1295,7 +1296,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
 
             // Also dispose gradient scene objects (specifically its geometry)
              try {
-                 gradientScene.traverse(object => {
+                 gradientScene.traverse((object: THREE.Object3D) => {
                      if (object instanceof THREE.Mesh) {
                          object.geometry?.dispose();
                          // Gradient material already handled above

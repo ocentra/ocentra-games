@@ -83,7 +83,7 @@ export class LocalLLMService implements ILLMService {
    * Get response from LLM asynchronously
    */
   async GetResponseAsync(systemMessage: string, userPrompt: string): Promise<string> {
-    if (!this.isReady()) {
+    if (!this.IsReady()) {
       throw new Error('LocalLLMService is not initialized. Call Initialize() first.')
     }
 

@@ -192,7 +192,7 @@ export class P2PManager {
     this.disconnectAll()
   }
 
-  private handleIncomingMessage(peerId: string, message: PeerMessage): void {
+  private handleIncomingMessage(_peerId: string, message: PeerMessage): void {
     if (message.type === 'chat') {
       this.onChatMessageCallback?.(message as ChatMessage)
       return

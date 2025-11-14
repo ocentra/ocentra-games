@@ -79,7 +79,7 @@ vi.mock('../connection/WebRTCHandler', () => {
     public getConnectionStatus!: ReturnType<typeof vi.fn>
     public getRemoteStream!: ReturnType<typeof vi.fn>
 
-    private localStream: unknown = null
+    public localStream: unknown = null
     private readonly connectedPeers = new Set<string>()
     private readonly remoteStreams = new Map<string, MediaStream>()
     private messageCallback?: (peerId: string, message: TestMessage) => void

@@ -6,21 +6,26 @@ export const DBNames = Object.freeze({
   // Note: Only AI-related DBs. Chat/message storage can be added later if needed for AI history
 });
 
-export enum NodeType {
-  Chat = 'chat',
-  Message = 'message',
-  Embedding = 'embedding',
-  Attachment = 'attachment',
-  Summary = 'summary',
-}
+// Per erasableSyntaxOnly: Use const object instead of enum
+export const NodeType = {
+  Chat: 'chat',
+  Message: 'message',
+  Embedding: 'embedding',
+  Attachment: 'attachment',
+  Summary: 'summary',
+} as const;
 
-export enum LogLevel {
-  Info = 'info',
-  Log = 'log',
-  Warn = 'warn',
-  Error = 'error',
-  Debug = 'debug',
-}
+export type NodeType = typeof NodeType[keyof typeof NodeType];
+
+export const LogLevel = {
+  Info: 'info',
+  Log: 'log',
+  Warn: 'warn',
+  Error: 'error',
+  Debug: 'debug',
+} as const;
+
+export type LogLevel = typeof LogLevel[keyof typeof LogLevel];
 
 export const schema = {
   [DBNames.DB_MODELS]: {

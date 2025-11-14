@@ -1,3 +1,4 @@
+/// <reference types="../vite-env" />
 // Firebase configuration
 import { initializeApp } from 'firebase/app';
 import type { FirebaseApp } from 'firebase/app';
