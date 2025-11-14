@@ -32,31 +32,35 @@ jobs:
         continue-on-error: false
       
       - name: Run unit tests
-        run: npm test
+        run: npm test -- --run --exclude='**/integration/**' --exclude='**/load/**' --exclude='**/e2e/**' --exclude='**/__tests__/integration/**' --exclude='**/__tests__/load/**' --exclude='**/__tests__/e2e/**'
         continue-on-error: false
+        env:
+          SKIP_SOLANA_TESTS: 'true'
       
       - name: Run integration tests
-        run: npm run test:integration || echo "Integration tests require Solana devnet"
+        run: npm run test:integration || echo "Integration tests require Solana devnet and IDL"
+        continue-on-error: true
+        env:
+          SKIP_SOLANA_TESTS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
       
       - name: Run E2E tests
         run: npm run test:e2e || echo "E2E tests require Solana devnet and Playwright"
+        continue-on-error: true
         env:
           SKIP_E2E_TESTS: ${{ github.event_name == 'pull_request' && github.base_ref != 'main' && 'true' || 'false' }}
       
       - name: Run load tests
-        run: |
-          npm run test:load || echo "Load tests require Solana devnet"
-          # Run load test scripts if available
-          if [ -f "scripts/load-test/run-all.ts" ]; then
-            npx tsx scripts/load-test/run-all.ts || echo "Load tests skipped"
-          fi
+        run: npm run test:load || echo "Load tests require Solana devnet and IDL"
         continue-on-error: true
         env:
           SKIP_LOAD_TESTS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+          SKIP_SOLANA_TESTS: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
       
       - name: Generate test coverage
-        run: npm test -- --coverage || echo "Coverage generation failed"
+        run: npm test -- --coverage --exclude='**/integration/**' --exclude='**/load/**' --exclude='**/e2e/**' || echo "Coverage generation failed"
         continue-on-error: true
+        env:
+          SKIP_SOLANA_TESTS: 'true'
       
       - name: Upload test coverage
         uses: codecov/codecov-action@v3

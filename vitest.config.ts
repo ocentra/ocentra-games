@@ -12,6 +12,11 @@ export default defineConfig({
       '**/e2e/**', // Exclude Playwright E2E tests
       '**/*.e2e.spec.ts',
       '**/*.e2e.test.ts',
+      // Conditionally exclude integration/load tests if SKIP_SOLANA_TESTS is set
+      ...(process.env.SKIP_SOLANA_TESTS === 'true' ? [
+        '**/integration/**',
+        '**/load/**',
+      ] : []),
     ],
     coverage: {
       provider: 'v8',
