@@ -25,12 +25,15 @@ jobs:
       
       - name: Run linter
         run: npm run lint
+        continue-on-error: false
       
       - name: Run type check
         run: npm run type-check || npx tsc --noEmit
+        continue-on-error: false
       
       - name: Run unit tests
         run: npm test -- --run
+        continue-on-error: false
       
       - name: Run integration tests
         run: npm run test:integration || echo "Integration tests require Solana devnet"
@@ -92,7 +95,7 @@ jobs:
           anchor test || echo "Rust tests require Solana validator"
       
       - name: Upload IDL artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: solana-idl
@@ -118,7 +121,7 @@ jobs:
         run: npm run build
       
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: build-artifacts
