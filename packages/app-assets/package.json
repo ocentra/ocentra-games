@@ -1,0 +1,31 @@
+{
+  "name": "@ocentra/app-assets",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./avatars": {
+      "import": "./dist/avatars.js",
+      "types": "./dist/avatars.d.ts"
+    },
+    "./commons": {
+      "import": "./dist/commons.js",
+      "types": "./dist/commons.d.ts"
+    },
+    "./placeholders": {
+      "import": "./dist/placeholders.js",
+      "types": "./dist/placeholders.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && node ../../scripts/fix-esm-imports.mjs && node scripts/fix-asset-imports.mjs && node scripts/copy-assets.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3"
+  }
+}

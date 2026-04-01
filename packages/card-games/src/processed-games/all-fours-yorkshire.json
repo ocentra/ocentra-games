@@ -1,0 +1,689 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "all-fours-yorkshire.json",
+  "name": "All Fours (Yorkshire)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "West Yorkshire All Fours is a cherished pub league tradition in Northern England, particularly centered in the Heavy Woollen District (Batley, Heckmondwike). Unlike the classic game, it uses a 'Pitch' start with no turn-up card and features unique regional etiquette such as the 'First Trick Face Up' rule.",
+    "category": "Trick-taking",
+    "subCategory": "Classic Point-scoring (Regional)",
+    "origin": "England (West Yorkshire)",
+    "originName": "West Yorkshire All Fours",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": [
+      "England"
+    ],
+    "origins": "Rooted in the industrial heartlands of Yorkshire, the game evolved alongside the textile mills. It became a formalized league sport in the mid-20th century.",
+    "timeline": [
+      "1800s: Traditional All Fours is adopted in Yorkshire taverns.",
+      "1950s: Formal leagues (like the Heckmondwike league) establish standardized regional rules.",
+      "2003: Documented extensively by card historians John and Anita Dunning."
+    ],
+    "evolution": "Yorkshire play stabilized around an 11-point target and the 'Low-to-Holder' rule, specifically rejecting the Lancashire 'Low-is-Taken' innovation.",
+    "cultural": "Matches are traditionally held in 'Tap Rooms' of pubs. The game is known for its steady, methodical pace and strict observance of 'The Pitch'.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two partnerships (North-South vs East-West).",
+    "deck": "Standard 52-card deck. Ace is high.",
+    "equipment": "Standard deck, All Fours pegging board (traditionally to 11 points).",
+    "dealing": "Each player receives 6 cards in batches of 3. No card is turned for trump.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "First team to reach 11 points (or 15 in some leagues) by winning High, Low, Jack, and Game.",
+    "gameplay": "1. The player to dealer's left pitches the first card; its suit becomes trump. 2. The first trick is kept face up with a trump visible on top; later tricks are face down. 3. If a player has no trumps and no counting cards above 9 and is not winning the current trick, they may throw in their hand and take no further part while partner continues. 4. Score points in order High, Low, Jack, Game.",
+    "keyRules": [
+      "High (1 pt): Team dealt the highest trump.",
+      "Low (1 pt): Team dealt the lowest trump (unlike Lancashire, this is awarded to the holder).",
+      "Jack (1 pt): Winning the trick containing the Jack of trumps.",
+      "Game (1 pt): Higher pip total (A=4, K=3, Q=2, J=1, 10=10).",
+      "Pitcher's partner must keep their cards face down until the Pitch is made."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "If your hand is weak but contains a lone 10, try to play it on your partner's lead early to guarantee it isn't 'filtered' out by the opponents.",
+    "intermediate": "The Throw-in: Use the 'no trumps, no count' rule strategically to reset a hand where the opponents likely have all the power cards.",
+    "advanced": "Defensive Pitching: If you have a poor hand, pitch a suit where you hold a 'bobby' (low card) in hopes that your partner can dominate with the High or Jack.",
+    "tips": [
+      "Count the pips constantly. Since A, K, Q, J, 10 represent all the value, knowing who has captured a 10 is the key to predicting the 'Game' point.",
+      "Remember that 'Low' is for the card dealt. Even if you lose your 2 of trumps on the first trick, your side still pegs the point at the end."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "heckmondwike-15",
+        "name": "Heckmondwike League Standard",
+        "description": "Played to 15 points instead of 11 to allow for longer, more strategic matches.",
+        "overrides": {
+          "engine.constants.target_score": 15
+        }
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't understand the 'no trumps no count' rule. Fails to protect Tens.",
+      "medium": "Understands the importance of the first-trick face-up trump. Tracks basic pip-counts.",
+      "hard": "Collaborates across the partnership. Uses the 'Throw-in' to negate the opponents' momentum. Calculates optimal pitch suits based on partner's potential strength."
+    },
+    "considerations": [
+      "AI must factor in the specific Yorkshire 'Low-to-Holder' rule.",
+      "The throw-in option should only trigger during play when the player is not currently winning the trick."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_all_fours_yorkshire_www_pagat_com_allfours_allfours_html",
+        "name": "Pagat - All Fours (Yorkshire)",
+        "url": "https://www.pagat.com/allfours/allfours.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "West Yorkshire All Fours"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "West Yorkshire - Play and scoring"
+          },
+          {
+            "section": "variations.list",
+            "sourcePath": "West Yorkshire variations and league notes"
+          }
+        ],
+        "localHtml": "pagat-allfours-game.html"
+      },
+      {
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "All fours overview"
+          }
+        ],
+        "url": "https://en.wikipedia.org/wiki/All_fours_(card_game)",
+        "name": "Wikipedia - All fours (card game)",
+        "id": "src:wikipedia_all_fours_yorkshire",
+        "retrievedAt": "2026-02-20",
+        "localHtml": "wiki-all-fours-2.html"
+      }
+    ],
+    "additional": [
+      "Dunning, J. & A. - The All Fours Leagues of West Yorkshire",
+      "Arthur Taylor - The Guinness Book of Pub Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "partnership",
+    "social",
+    "traditional",
+    "trump",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "pitch",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal six cards each clockwise; no turned trump card."
+      },
+      {
+        "id": "pitch",
+        "label": "Pitch for Trump",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Player left of dealer leads; suit of that card becomes trump."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card",
+          "go_out"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "settlement"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "First trick is displayed face-up with trump marker; later tricks are face-down."
+      },
+      {
+        "id": "settlement",
+        "label": "Peg Points",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Score High, Low, Jack, Game in order."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Yorkshire All Fours uses Pitch and point scoring; no ante."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes six cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer-only in deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 6
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Yorkshire uses Pitch; first lead sets trump, no turn-up."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump set by pitch card; no market."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Six cards dealt; no draw during play."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking partnership game; no fold."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Points for High, Low, Jack, Game; no betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Yorkshire All Fours scores by card points only."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds; 11-point target."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds; 11-point target."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Points at hand end; no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards played to tricks; no showdown."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award ordered hand points to teams.",
+        "cost": "0",
+        "constraints": "System action after hand completes.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card with follow-or-trump legality.",
+        "cost": "0",
+        "constraints": "On non-trump lead, player with led suit may follow or play trump; cannot discard off-suit non-trump when able to follow.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "trick"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Six cards dealt; no draw during tricks."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards played to tricks; no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pitch sets trump; no pass phase like Beg/Stand."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Yorkshire uses Pitch, not Beg; no bid."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking; High, Low, Jack, Game only."
+      },
+      "go_out": {
+        "supported": true,
+        "description": "Throw in remaining cards when player has no trumps and no counting cards and is not winning current trick.",
+        "cost": "0",
+        "constraints": "Allowed only under no-trumps-no-count condition during trick play.",
+        "isTerminating": true,
+        "effectType": "pass",
+        "effectHints": {}
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Six cards dealt; no draw during play.",
+      "discardConfig": "Cards played to tricks; no discard pile.",
+      "specialCards": "Standard 52-card deck; no special cards.",
+      "shedding": "Trick-taking; score High, Low, Jack, Game.",
+      "fishingConfig": "Yorkshire All Fours is trick-taking, not fishing.",
+      "patienceConfig": "Multiplayer trick-taking; not a patience game.",
+      "bankingConfig": "Partnership game; no banking mechanic.",
+      "meldConfig": "Trick-taking game; no meld mechanic.",
+      "declarationMechanism": "Points determined by card play; no declare phase.",
+      "marketConfig": "No market mechanic."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "standard",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 6,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "Pitch card sets trump; on non-trump leads players may follow suit or trump.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 4,
+      "max_players": 4,
+      "hand_size": 6,
+      "trick_count": 6,
+      "target_score": 11,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "team",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "first_trick_face_up",
+          "text": "First trick is stored face up with a trump visible on top to signal trump suit."
+        },
+        {
+          "id": "throw_in_no_trumps_no_count",
+          "text": "Player with no trumps and no counting cards may throw in hand while partner continues."
+        },
+        {
+          "id": "schema_trump_limitation",
+          "text": "Trump is determined by opening pitch; schema enum lacks explicit first-lead trump setting, handled in pitch phase logic."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "first_lead_sets_trump",
+        "first_trick_display_rule",
+        "throw_in_partner_continues",
+        "high_low_jack_game_scoring"
+      ]
+    },
+    "progression": [
+      "deal",
+      "pitch",
+      "trick_play",
+      "settlement"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "High-Low(Holder)-Jack-Game",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. Trump is set by the opening pitch; no jokers in this Yorkshire variant.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is set by the opening pitch (first card led); that suit outranks the others for winning tricks and for High, Low, Jack, and Game.",
+    "rankDescription": "Thirteen ranks per suit: ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three, two. Standard all-fours ranking with trump overriding plain suits when winning tricks.",
+    "dealPattern": "Deal six each; no turn-up; opening pitch establishes trumps."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "YORKSHIRE ALL FOURS",
+      "subtitle": "Tap Room Tradition",
+      "tagline": "The heavy woollen district's favorite. Pitch, peg, and win."
+    },
+    "shortDescription": "Step into the tap rooms of Batley and Heckmondwike with Yorkshire's pitch-led All Fours and precise H-L-J-G pegging.",
+    "uiThemes": [
+      "classic",
+      "traditional"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:captured_tricks"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Yorkshire All Fours. You have 6 cards. As the pitcher, your lead sets the trumps. If you've got zero trumps and zero high cards, you can throw the hand in! We play to 11 points in the traditional order: High, Low, Jack, Game.",
+    "ai": "Game: All Fours (Yorkshire). Type: Partnership Point-trick. Rules: 11 points to win. No turn-up; Pitcher leads = trump. Low point = awarded to holder. Void rule: No trumps + no count points = redeal. Order: High-Low-Jack-Game. Target: 11."
+  },
+  "scoring": {
+    "description": "Classic All Fours scoring system focused on the four specific points.",
+    "winCondition": "First team to reach 11 points wins. The strict H-L-J-G counting order is used to resolve 11-11 ties within a single hand.",
+    "cardValues": {
+      "High": "1",
+      "Low": "1",
+      "Jack": "1",
+      "Game": "1",
+      "A_any_suit_for_game": "4",
+      "K_any_suit_for_game": "3",
+      "Q_any_suit_for_game": "2",
+      "J_any_suit_for_game": "1",
+      "10_any_suit_for_game": "10"
+    },
+    "penalties": {
+      "Revoke": "Immediate 2-point penalty to the opposing team.",
+      "Early Peek": "If the pitcher's partner looks at cards before pitch, opponents score 4 points."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "In some Yorkshire leagues, if 'Game' pips are tied, the point is awarded to the team that did NOT have the Pitch.",
+    "targetScore": 11,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "West Yorkshire All Fours",
+    "Heckmondwike All Fours",
+    "Batley Carr All Fours"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Base profile uses four-player 2v2 Yorkshire league style."
+    ],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

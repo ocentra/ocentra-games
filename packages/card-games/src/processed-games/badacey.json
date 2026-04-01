@@ -1,0 +1,831 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "badacey.json",
+  "name": "Badacey",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Badacey is a high-skill, split-pot poker variant that combines the unique hand-building of Badugi with the classic Ace-to-Five Lowball. Players are dealt five cards and undergo three rounds of drawing to create two distinct winning combinations: a 4-card Badugi hand (all different suits and ranks) and a 5-card Lowball hand. It is a 'mixed game' favorite in high-stakes circles, prized for its complex mathematical crossovers.",
+    "category": "Poker",
+    "subCategory": "Triple Draw / Split Pot",
+    "origin": "USA",
+    "originName": "Badacey",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6 (due to card consumption)"
+    },
+    "deck": "52 cards",
+    "difficulty": "Expert",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Developed in the early 2000s in Las Vegas and California card rooms as part of the 'Mixed Game' movement. It was created to merge the popularity of Badugi with the more established Ace-to-Five Lowball format.",
+    "timeline": [
+      "2004: Badugi gains popularity in North American poker rooms.",
+      "2008: Badacey emerges as a staple in 'H.O.R.S.E.'-style mixed games.",
+      "Present: Frequently played in the World Series of Poker (WSOP) dealer's choice events."
+    ],
+    "evolution": "The game was designed to reduce the 'luck' factor of single-pot Lowball by forcing players to manage two different ranking systems simultaneously.",
+    "cultural": "Known as a 'Thinker's Game', often played with blinds and a fixed-limit betting structure.",
+    "hasPlaceholders": false,
+    "originCountries": [
+      "United States"
+    ]
+  },
+  "setup": {
+    "players": "Two to six players. All players post an ante; the dealer gives each player five cards face down. Play uses a dealer button with small and big blinds; the game is commonly played with fixed-limit betting in card rooms.",
+    "deck": "Standard 52-card deck (No Jokers).",
+    "equipment": "Poker chips, Dealer button, Small/Big Blind markers.",
+    "dealing": "Each player is dealt 5 cards face down. There are three drawing rounds where players can discard 0-5 cards and receive replacements.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win half the pot with the best 4-card Badugi and half with the best 5-card Ace-to-Five low.",
+    "gameplay": "1. **Blinds**: Players post small and big blinds. 2. **Deal**: 5 cards each. 3. **Betting Round 1**. 4. **First Draw**: Players discard and draw. 5. **Betting Round 2**. 6. **Second Draw**. 7. **Betting Round 3**. 8. **Third Draw**. 9. **Final Betting Round**. 10. **Showdown**: Split pot.",
+    "keyRules": [
+      "A 3-card Badugi loses to any 4-card Badugi.",
+      "In the Lowball half, if you have a pair, your low is disqualified from the top ranks.",
+      "A-2-3-4-5 is the best low; A-2-3-4 (rainbow) is the best Badugi."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize the Lowball half first. A solid A-2-3-4-5 low will almost always guarantee you a 4-card Badugi attempt. It is much easier to scoop with a strong low.",
+    "intermediate": "Draw heavy early. If you don't have three cards to a good low or Badugi, discard all five cards in the first round. Don't fall in love with a King-high Badugi.",
+    "advanced": "Snowing: A bluffing technique where you stand pat (draw zero cards) as if you have a perfect hand, forcing opponents to fold their drawing hands even if you actually have nothing.",
+    "tips": [
+      "Aces represent double value in Badacey: they are the best card for both the Low and the Badugi halves.",
+      "Pay attention to 'folded' cards if the game allows peeking at the muck; it tells you which low cards are out of play."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "badeucy",
+        "name": "Badeucy",
+        "description": "Uses Deuce-to-Seven rules for the low half instead of Ace-to-Five.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation is described at a rules level; specific engine overrides for Badeucy are not yet modeled."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Draws until they have any 4-card Badugi. Doesn't understand the 'Wheel' concept for the low half.",
+      "medium": "Understands 'Smooth' vs 'Rough' lows. Will only bet if they have at least 3 cards to an 8-low or better.",
+      "hard": "Perfectly calculates the probability of improving a 3-card Badugi based on revealed cards. Uses 'Snowing' bluffs against tight opponents."
+    },
+    "considerations": [
+      "AI must calculate two independent Hand Strengths (Badugi-Rank and Low-Rank) for a single selection.",
+      "Requires a complex discard-optimization algorithm (Which 5 to keep for the 4-card split?)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wizard_of_odds_badacey_wizardofodds_com_games_poker_badacey",
+        "name": "Wizard of Odds - Badacey",
+        "url": "https://wizardofodds.com/games/poker/badeucy-badacey/",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wizardofodds-badeucy-badacey.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "CardPlayer - Mixed Games: Badacey Strategy",
+      "World Series of Poker - Rulebook Part 4: Triple Draw Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "social",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 10
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "blinds",
+        "label": "Small and Big Blinds",
+        "actor": "current_player",
+        "legalActions": [
+          "post_blind"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "The Initital 5",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_hole_cards"
+        ],
+        "nextPhase": "betting_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_1",
+        "label": "Pre-Draw Betting",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_1",
+        "label": "The First Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "betting_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_2",
+        "label": "Post-Draw 1 Betting",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_2",
+        "label": "The Second Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "betting_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_3",
+        "label": "Post-Draw 2 Betting",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_3",
+        "label": "The Final Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "final_betting",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "final_betting",
+        "label": "Showdown Wagers",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "The Split",
+        "actor": "system",
+        "legalActions": [
+          "evaluate_badugi",
+          "evaluate_low",
+          "split_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Post ante bet before the deal. All players ante each hand.",
+        "cost": "0",
+        "constraints": "Before deal; all players must ante.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer gives each player five cards face down.",
+        "cost": "0",
+        "constraints": "Dealer only; after antes.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; five cards dealt from deck only."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw is from deck after discard; no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Replacement cards come from deck as draw; no stock purchase."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during betting when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when no bet to call in current round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current wager.",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Betting phases only; within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting or make a wager in the current round.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Betting phases only; within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current wager.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Betting phases only; within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No separate declaration; showdown reveals Badugi and low."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are revealed at showdown; no early reveal phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pot is split by system between best Badugi and best low; no single award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No card-by-card play; only draw and betting rounds."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw is combined with discard (discard 0-5 then receive replacements); use discard phase."
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard 0 to 5 cards and receive that many replacements from the deck. Stand pat by discarding zero.",
+        "cost": "0",
+        "constraints": "During draw rounds only; 0-5 cards.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Use check to pass when no bet to call; no separate pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Poker uses bet, call, raise; no auction bid."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No melds; best Badugi and best low are evaluated at showdown."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends after final betting and showdown; no go-out declaration."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [],
+      "drawCount": 5,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 5,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 5
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "blinds",
+      "deal",
+      "betting_1",
+      "draw_1",
+      "betting_2",
+      "draw_2",
+      "betting_3",
+      "draw_3",
+      "final_betting",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "post_blind",
+        "supported": true,
+        "description": "Post small and big blinds.",
+        "cost": "0",
+        "constraints": "Dealer and SB positions.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_hole_cards",
+        "supported": true,
+        "description": "Deal 5 hole cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "discard_and_draw",
+        "supported": true,
+        "description": "Discard 0-5 cards and draw replacements.",
+        "cost": "0",
+        "constraints": "Draw phase.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      {
+        "id": "evaluate_badugi",
+        "supported": true,
+        "description": "Evaluate best 4-card Badugi for half pot.",
+        "cost": "0",
+        "constraints": "Showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      {
+        "id": "evaluate_low",
+        "supported": true,
+        "description": "Evaluate best 5-card Ace-to-Five low for half pot.",
+        "cost": "0",
+        "constraints": "Showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      {
+        "id": "split_pot",
+        "supported": true,
+        "description": "Split pot between Badugi and Low winners.",
+        "cost": "0",
+        "constraints": "Showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Badugi (4-card) and Ace-to-Five Low (5-card).",
+    "rankingSystem": "Split-Pot Lowball",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card poker deck with four suits (clubs, diamonds, hearts, spades) and thirteen ranks in each suit. No jokers are used; the full deck is available to build both Badugi and Ace-to-Five lowball hands in Badacey.",
+    "suitDescription": "Four French suits (clubs, diamonds, hearts, spades). Suits matter for the Badugi half of Badacey, where a qualifying Badugi must contain four distinct suits; duplicate suits reduce the effective Badugi hand size.",
+    "rankDescription": "Standard thirteen ranks from ace through king in each suit. For the lowball half aces play low and straights and flushes are ignored; for Badugi, lower unique ranks in four different suits form the strongest qualifying hands.",
+    "dealPattern": "5 cards face down.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BADACEY",
+      "subtitle": "The Ultimate Split-Pot Duel",
+      "tagline": "Two ways to win. Half the pot. Zero high cards. Master the Triple Draw."
+    },
+    "shortDescription": "Test your stamina in the world of high-stakes mixed poker. Badacey combines the 4-card suit-tracking of Badugi with the 5-card minimalism of Ace-to-Five lowball. With three draws and two pots on the line, only the most disciplined players survive the showdown.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "hand",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to the Badacey table. You've been dealt 5 cards. Remember, you want as many different suits as possible for a Badugi, and the lowest ranks for the Lowball half. It's time for the first drawâ€”how many cards are you swapping?",
+    "ai": "Game: Badacey. Type: Triple Draw Split-Pot Poker. Rules: Half pot for best 4-card Badugi; Half pot for best 5-card Ace-to-Five low. 3 draws. Blinds applied. Discard 0-5."
+  },
+  "scoring": {
+    "description": "Pot-limit or Fixed-limit betting rounds.",
+    "winCondition": "Lowest ranks in two specific categories.",
+    "cardValues": {
+      "2-K": "2-13"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "The pot is split 50/50 between the two halves. Ties in either half result in that half being subdivided.",
+    "targetScore": null,
+    "nullReasons": {
+      "targetScore": "No fixed target; play until session ends; chip count determines winner."
+    },
+    "scoringDirection": "low_wins"
+  },
+  "alsoKnownAs": [
+    "Badugi-Ace",
+    "Badugi 5-Card Triple Draw"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,649 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "plait-solitaire.json",
+  "name": "Plait Solitaire",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Plait Solitaire (also known as 'Plaits' or 'The Braid') is a double-deck solitaire game of significant complexity and visual appeal. It is distinguished by the 'Plait'â€”a central reserve of 13 cards arranged in a braid-like pattern, where only specific cards are accessible at any time. Requiring the player to manage two sets of foundations and eight tableau piles, it is a game of foresight, sequence planning, and careful reserve management.",
+    "category": "Patience",
+    "subCategory": "Two-Deck Patience",
+    "origin": "UK / Europe",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "recommendedPlayers": 1,
+      "display": "1 (Solo)"
+    },
+    "deck": "Two standard 52-card decks (104 cards total)",
+    "difficulty": "Intermediate",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "singleplayer",
+    "originName": "Plait Solitaire"
+  },
+  "history": {
+    "origins": "Dates back to the mid-19th century as a complex 'Grand Patience' played in European parlors. The 'Plait' layout was designed to provide a decorative yet difficult reserve element.",
+    "originCountries": ["United Kingdom", "Germany"],
+    "timeline": [
+      "1865: First appearance in German and British Patience manuals.",
+      "1920s: Recorded in 'The Complete Patience' as a benchmark for high-level solo play.",
+      "1990s: Implemented in early digital solitaire collections (e.g., BVS Solitaire).",
+      "Present: Remains a favorite for players who find Klondike too simple and FreeCell too repetitive."
+    ],
+    "evolution": "The game was simplified from even more complex triple-deck versions (like 'The Rope') to maintain a balance between difficulty and table space.",
+    "cultural": "Often described as the 'Thinking Player's Solitaire' because it rewards memorization of the plait's internal layers.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "One player. Plait is a solo patience game played by a single person; BVS and historical sources describe it as a single-player card game with no opponents or partners.",
+    "deck": "104 cards (two standard 52-card decks).",
+    "equipment": "",
+    "dealing": "Deal 13 cards in a plait (open reserve). Deal 32 cards into 8 tableau piles (4 cards per pile). Place one card above as the first foundation base; the seven other cards of the same rank become foundation bases as they appear. Remainder is stock.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).",
+    "gameplay": "Build tableaus down in sequence and alternating color. Only the top card of each tableau pile and the reserve (plait) is available for play on the foundations. One card or a group of cards in proper sequence may move to another tableau pile. When a tableau is empty, any card or legal sequence may fill it. When no moves are available, turn cards from the stock one at a time; cards from stock may move to tableau or foundations. No redeal.",
+    "keyRules": [
+      "Foundations build up in same suit from base rank, wrapping King to Ace.",
+      "Tableau builds down in alternating color; only top cards and plait top are available for foundations.",
+      "One card or a legal sequence may move to another tableau; empty tableau accepts any card or legal sequence.",
+      "Turn stock one card at a time when no other moves; no redeal."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Free the Plait! The 13 cards in the Plait are your biggest obstacle. Don't use your stock cards or tableau moves if you could instead move a card from the Plait to a foundation. Every card you remove from the Plait increases your tactical options for the rest of the game.",
+    "intermediate": "Foundation Focus: Since foundations can start on any rank (like an 8), the sequence is non-standard (8-9-10-J-Q-K-A-2-3-4-5-6-7). Pay close attention to the wrap-around. Don't trap an Ace in a tableau pile unless you have already cleared the Kings for all foundations.",
+    "advanced": "The Alternating Trap: While you build down in alternating colors in the tableau, remember that you must eventually build UP in suit in the foundations. If you create a long Black-Red-Black sequence in the tableau, you might be 'Burying' a Diamond and a Heart that are needed for early foundation building. Use empty tableau columns to 'Break' and 'Sort' your suit sequences whenever possible.",
+    "tips": [
+      "Look ahead at the Plait. If the card after the current one is a high-value Base card, prioritize clearing the current card even if it's not ideal for the foundations.",
+      "Keep at least one tableau column empty for as long as possibleâ€”it is your most flexible 'Sorting' zone."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "plait-standard",
+        "name": "Standard",
+        "description": "Standard Plait: 13-card plait reserve, 8 tableau piles (4 cards each), 8 foundations (one base rank revealed at start), remainder stock; build up in suit on foundations, down alternating color on tableau; no redeal.",
+        "overrides": {},
+        "emptyOverridesReason": "Standard variant uses base game engine; no overrides needed."
+      },
+      {
+        "id": "plait-similar",
+        "name": "Similar games",
+        "description": "Braid, Cadonette and Fort are similar double-deck solitaires documented by BVS but are distinct games with their own rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Reference only; these are separate games, not engine variants."
+      },
+      {
+        "id": "plait-none",
+        "name": "Other variants",
+        "description": "No other named variants for Plait Solitaire are documented in BVS or primary sources.",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants; add overrides if sources found."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to prioritize the Plait; gets stuck in alternating color traps; ignores foundation sequences.",
+      "medium": "Reasonable plait management; basic sequence sorting; tracks the wrap-around foundations.",
+      "hard": "Expert solver; perfectly manages tableau 'Sorting' slots; predicts Plait-reveal benefits 3 moves ahead."
+    },
+    "considerations": [
+      "Sequence-sort (Tableau-Swap) optimizer.",
+      "Plait-priority (Braid-Reveal) logic.",
+      "Cyclic-foundation (Wrap-Around) tracker."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:bvs_solitaire_plait_solitaire_rules_www_bvssolitaire_com_rules_plait_htm",
+        "name": "BVS Solitaire - Plait Solitaire Rules",
+        "url": "https://www.bvssolitaire.com/rules/plait.asp",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "bvssolitaire-plait.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "David Parlett's 'Penguin Book of Patience'",
+      "Solitaire Network - Double Deck Variations"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "solitaire"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": ["deal"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Place 13 cards in plait, 32 in 8 tableau piles (4 each), one card as first foundation base, remainder as stock."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": ["play_card", "draw"],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          { "condition": "moves_available", "nextPhase": "play" },
+          { "condition": "stock_has_cards", "nextPhase": "play" }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Move cards from plait, tableau, or stock to foundations (up in suit) or tableau (down alternating color); or turn next card from stock."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Place initial layout: 13 cards in plait, 32 in 8 tableau piles (4 each), one card as first foundation base, remainder as stock.",
+        "cost": "0",
+        "constraints": "Performed once at game start by the system.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Move a card or legal sequence from plait, tableau, or stock to a foundation (build up in suit, wrap K to A) or to another tableau pile (build down, alternating color).",
+        "cost": "0",
+        "constraints": "Foundations: build up in same suit from base rank. Tableau: build down alternating color. Only top card of plait and each tableau is available for foundations. Empty tableau accepts any card or legal sequence.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": { "from": "tableau", "to": "foundation" }
+      },
+      "draw": {
+        "supported": true,
+        "description": "Turn over the next card from the stock one at a time; the revealed card may be played to foundations or tableau.",
+        "cost": "0",
+        "constraints": "Allowed when no other moves available or at player choice; one card revealed at a time; no redeal.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "singleplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": true,
+      "tableauColumns": 8,
+      "foundationCount": 8,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "fixed_player",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 2,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 104
+      },
+      {
+        "id": "custom:plait",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 13
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "foundation",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 104
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Two standard 52-card French decks (104 cards total); no jokers. Plait is a double-deck patience game: 13 cards in a plait reserve, 8 tableau piles, 8 foundations; build up in suit on foundations, down alternating color on tableau; stock turned one at a time, no redeal.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each have thirteen cards. In Plait solitaire, suit and rank determine valid builds on the layout; the exact build rule depends on the variant.",
+    "rankDescription": "Standard ranks Ace through King; Ace may count high or low depending on the build. Cards are moved or built in sequence according to the Plait layout and rules until the game is won or blocked.",
+    "dealPattern": "13 cards to plait, 32 to 8 tableau piles (4 each), 1 as first foundation base, remainder to stock.",
+    "notApplicableReasons": {
+      "drawConfig": "Stock is turned one card at a time onto the table; there is no draw-to-hand pile.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PLAIT SOLITAIRE",
+      "subtitle": "Card Game",
+      "tagline": "Plait Solitaire (also known as 'Plaits' or 'The Braid') is a double-deck solitai..."
+    },
+    "shortDescription": "Plait Solitaire (also known as 'Plaits' or 'The Braid') is a double-deck solitaire game of significant complexity and visual appeal. It is distinguish",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "custom:plait",
+        "tableau",
+        "foundation"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Plait Solitaire (also known as 'Plaits' or 'The Braid') is a double-deck solitaire game of significant complexity and visual appeal. It is distinguished by the 'Plait'â€”a central reserve of 13 cards arranged in a braid-like pattern, where only specific cards are accessible at any time. Requiring the player to manage two sets of foundations and eight tableau piles, it is a game of foresight, sequence planning, and careful reserve management.",
+    "ai": "Game: Plait Solitaire. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).",
+    "winCondition": "Move all 104 cards to 8 foundation piles, building up in suit from the Base rank (wrapping K to A).",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Patience game; win by moving all cards to foundations, not by point accumulation."
+    }
+  },
+  "alsoKnownAs": ["Plaits", "The Braid"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

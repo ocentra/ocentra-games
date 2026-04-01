@@ -1,0 +1,611 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "have-a-heart-poker.json",
+  "name": "Have a Heart",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Have a Heart is a classic trick-taking game from the Hearts family. Unlike most trick-taking games, the goal is to avoid winning certain cards. Hearts and the Queen of Spades carry penalty points. It is a game of evasion and strategic passing, requiring players to carefully manage their hand to avoid 'bleeding' points.",
+    "category": "Trick-taking",
+    "subCategory": "Evasion",
+    "origin": "USA",
+    "originName": "Hearts (card game)",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "3-6"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["France", "USA"],
+    "origins": "Derived from the 18th-century French game 'Reversis', Hearts evolved in the US during the late 19th century. 'Have a Heart' specifically refers to the standard evasion variant often played with a central betting pot.",
+    "timeline": [
+      "1750s: Reversis becomes popular in Europe.",
+      "1880s: Standard Hearts rules solidify in the United States.",
+      "1990s: Hearts becomes globally recognized due to its inclusion in the Windows operating system."
+    ],
+    "evolution": "The game moved from a complex high-card-wins system to the modern evasion-style 'Black Lady' variant.",
+    "cultural": "Known for its 'cut-throat' nature where players often galy-up against whoever is winning.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Usually 4 individual players. Can be adapted for 3, 5, or 6 by removing certain low cards.",
+    "deck": "Standard 52-card deck. Ranks: Ace (high) down to 2.",
+    "equipment": "Standard deck, score sheet.",
+    "dealing": "The entire deck is dealt out one card at a time. In a 4-player game, each player receives 13 cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Have the lowest score at the end of the game by avoiding taking tricks containing Hearts or the Queen of Spades.",
+    "gameplay": "1. PASSING: At the start of each hand, players select three cards from their hand and pass them face-down to another player (Left, Right, Across, or Hold in rotation).\n2. THE LEAD: The player holding the 2 of Clubs leads the first trick.\n3. TRICK RULES: Players must follow suit if possible. If they cannot follow suit, they may play any card, including a penalty card (except on the very first trick).\n4. WINNING TRICKS: The highest card of the suit led wins the trick and leads the next.\n5. LIMITS: Hearts cannot be led until a Heart has been 'broken' (discarded on a previous trick).",
+    "keyRules": [
+      "Must follow suit if possible.",
+      "Penalty cards: Each Heart (1 point), Queen of Spades (13 points).",
+      "Shooting the Moon: If a player takes ALL penalty cards (all 13 Hearts and the Queen of Spades), they score 0, and everyone else scores 26.",
+      "Hearts cannot be led unless they have been broken or the leader has only Hearts left."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Pass your highest clubs and spades early to avoid being forced to take the Queen or a high-heart trick.",
+    "intermediate": "Keep low cards in suits where you have many cards (long suits) to 'slough' your higher penalty cards when others lead that suit.",
+    "advanced": "Counting Spades: Monitor which spades have been played to determine if leading the Queen is safe or if you are about to be 'passed' the Queen.",
+    "tips": [
+      "Never pass all your low cards; you need them to stay under high leads.",
+      "If you have the Queen of Spades, try to play it on a high Spade lead when you are not the winner.",
+      "Watch for someone 'Shooting the Moon' early; if someone is taking every Heart, you might need to take a Heart intentionally to stop them."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "omnibus-hearts",
+        "name": "Omnibus Hearts",
+        "description": "The Jack of Diamonds is worth -10 points (a bonus).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes one card value; engine specialCards could be extended when implementing."
+      },
+      {
+        "id": "black-jack",
+        "name": "Black Jack",
+        "description": "The Jack of Spades is the penalty card instead of the Queen.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant swaps penalty card; engine specialCards could be overridden when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit but doesn't plan for 'breaking' hearts. Often holds the Queen too long.",
+      "medium": "Passes high cards and avoids taking the lead on dirty tricks. Recognizes 'Shooting the Moon'.",
+      "hard": "Expert spade counting and tactical passing. Will actively cooperate to stop a moon-shot while minimizing its own penalty."
+    },
+    "considerations": [
+      "Spade density tracking (for the Queen).",
+      "Broken hearts state management.",
+      "Pass rotation logic."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_hearts",
+        "name": "Pagat.com - Hearts",
+        "url": "https://www.pagat.com/reverse/hearts.html#haveaheart",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-hearts.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Hearts (card game)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 95,
+    "complexity": 2,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Dealing",
+        "actor": "role:dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "passing",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "All cards dealt."
+      },
+      {
+        "id": "passing",
+        "label": "Card Passing",
+        "actor": "role:all",
+        "legalActions": [
+          "pass"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "pass": "face_down"
+        },
+        "notes": "Rotation: Left, Right, Across, Hold."
+      },
+      {
+        "id": "play",
+        "label": "Trick Play",
+        "actor": "role:all",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Must lead 2 of Clubs first."
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "role:system",
+        "legalActions": ["score_hand"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Calculate penalties. Check for Moon Shot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 13 cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer only.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from hand to the trick.",
+        "cost": "0",
+        "constraints": "Must follow suit if possible. Hearts cannot be led until broken.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Select three cards to pass to an opponent.",
+        "cost": "0",
+        "constraints": "Must pass exactly three cards.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": true,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 13,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Cannot lead penalty cards unless broken or only penalty cards remain.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": null
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": [
+        {
+          "card": "Queen of Spades",
+          "penaltyPoints": 13,
+          "notes": "The 'Black Lady'"
+        },
+        {
+          "card": "Hearts",
+          "penaltyPoints": 1,
+          "notes": "All hearts"
+        }
+      ]
+    },
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "target_score_reached",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 100
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 13
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "broken_hearts",
+          "text": "Hearts cannot be led until someone has sloughed a Heart on another suit lead, or the leader has only Hearts left."
+        },
+        {
+          "id": "moon_shot",
+          "text": "Taking every Heart and the Queen of Spades results in 0 points for you and 26 for all others."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Breaking_Hearts_Logic",
+        "Shoot_The_Moon_Calculation",
+        "Pass_Rotation_Manager"
+      ]
+    },
+    "progression": ["deal", "passing", "play", "scoring"],
+    "roles": ["dealer", "all", "system"],
+    "customActions": [
+      {
+        "id": "score_hand",
+        "supported": true,
+        "description": "Calculate penalty points for the hand and check for Shoot the Moon.",
+        "cost": "0",
+        "constraints": "System only; runs after trick play.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "NA",
+    "rankingSystem": "Penalty accumulation (lowest wins).",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card deck is used, with no jokers. The deck has four suits of thirteen cards each; Ace is high. All fifty-two cards are used in the game.",
+    "suitDescription": "The four French suits are Spades, Hearts, Diamonds, and Clubs. Hearts are the penalty suit: each heart taken in a trick counts against the player at the end of the hand.",
+    "rankDescription": "Standard ranks from Ace (high) down to two (low): A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2. There are thirteen ranks per suit; no card is wild.",
+    "dealPattern": "All cards dealt.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "shedding": "Hearts is trick-taking evasion; the goal is to avoid penalty cards, not to empty your hand.",
+      "fishingConfig": "Hearts uses tricks and penalty scoring, not a fishing or capture mechanic."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HAVE A HEART",
+      "subtitle": "The Game of Evasion",
+      "tagline": "Dodge the Hearts, avoid the Queen, and keep your score low!"
+    },
+    "shortDescription": "A high-stakes trick-taking game where points are bad. Avoid Hearts and the dreaded Queen of Spades in this ultimate game of strategic passing and cut-throat play.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Have a Heart! Pass three cards to your opponent, then try to avoid taking tricks with Hearts (1 pt) or the Queen of Spades (13 pts). If you take all the penalty cards, you 'Shoot the Moon' and win big!",
+    "ai": "Game: Have a Heart (Reverse Hearts). 52 cards, 4 players. Goal: Avoid penalty cards (Hearts=1, Queen Spades=13). Breaking Hearts rule: No heart leads until discarded. Shoot the moon: 26 pts to opponents if all penalty cards taken."
+  },
+  "scoring": {
+    "description": "Hearts are 1 point each. Queen of Spades is 13 points.",
+    "winCondition": "Lowest total score after someone reaches 100 points wins.",
+    "cardValues": {
+      "Heart": "1",
+      "Queen_of_Spades": "13"
+    },
+    "penalties": {
+      "Point_Accumulation": "Total score from taken penalty cards"
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 100,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Hearts",
+    "Black Lady",
+    "The Dirty One"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,650 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pedro-sancho.json",
+  "name": "Pedro Sancho",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pedro variant (also called Nine-Five) for four to seven players. Six cards each; one round of bidding (0–18). High bidder names trumps; the 5 (pedro) and 9 (sancho) of that suit score 5 and 9 points. First to 100 wins. Bidder must lead trump; follow suit when trump is led.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "USA",
+    "originName": "Pedro Sancho",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "52 cards",
+    "difficulty": "Intermediate",
+    "duration": "30-60 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Pedro variant from the USA; a trick-taking game with 5 and 9 as permanent trumps.",
+    "timeline": ["19th century: Pedro and Cinch developed in North America from All Fours; Pedro Sancho (Nine-Five) is a variant with 5 and 9 as scoring trumps."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Four to seven; four may play as two partnerships (partners opposite).",
+    "deck": "Standard 52-card deck.",
+    "equipment": "",
+    "dealing": "Six cards each (most sources); some deal as far as cards go evenly. One round of bidding; dealer may take the bid by equalling the highest. High bidder declares trump.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "As a team or individually, be the first to reach 100 points by winning tricks containing scoring trumps: high (trump ace), low (trump two), jack (trump jack), game (trump ten), pedro (trump five, 5 points) and sancho (trump nine, 9 points). Total 18 points per deal. If the bid is made, score the points won; if the bid fails, the bidder loses the number of points bid.",
+    "gameplay": "Six cards each. One round of bidding (no minimum, max 18); dealer may take the bid by equalling the highest bid. High bidder names trumps and must lead a trump to the first trick. If a trump is led, everyone must play a trump if able; if a non-trump is led, players may follow suit or trump. Trick won by highest trump, or highest card of led suit if no trumps. Winner of each trick leads to the next. Points are counted in order: high, low, jack, game, pedro, sancho.",
+    "keyRules": [
+      "5 and 9 trump"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Pedro.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate tier documented; strategy follows standard Pedro and trick-taking principles.",
+      "advanced": "No advanced tier documented; expert play relies on partnership signalling and trump management."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard form of Pedro Sancho (Nine-Five); no regional or rule variations are documented for this game.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "medium": "No distinct medium AI tier documented; play follows legal moves and basic trump strategy.",
+      "hard": "No hard tier documented; expert AI would require partnership inference and trump timing."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-pedro-sancho",
+        "name": "Pagat Pedro Sancho",
+        "url": "https://www.pagat.com/allfours/pedro.html#sancho",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-pedro.html"
+      },
+      {
+        "id": "src:wikipedia-all-fours-card-game",
+        "name": "Wikipedia - All fours (card game)",
+        "url": "https://en.wikipedia.org/wiki/All_fours_(card_game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-all-fours-2.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public domain card game; no known trademark or license.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "bid",
+        "label": "Bid",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the current trick. If a trump is led you must play a trump if able; if a non-trump is led you may follow suit or trump. High bidder must lead a trump to the first trick. Trick is won by highest trump, or highest card of led suit if no trumps; winner leads to the next trick.",
+        "cost": "0",
+        "constraints": "Must follow suit when trump is led if holding trumps; may follow or trump when plain suit is led. Bidder must lead trump on first trick.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass during the bidding round; do not make a bid. Turn passes to the next player.",
+        "cost": "0",
+        "constraints": "Only legal during the bid phase when it is your turn to bid.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Claim a number of points (0 to 18) your side will take if allowed to choose trumps. Single round of bidding; dealer may take the bid by equalling the highest bid. Highest bidder names the trump suit.",
+        "cost": "0",
+        "constraints": "Bid must be from 0 to 18; must be higher than previous bid to stay in. Dealer may equal highest bid to take it.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [
+        {"card": "5", "rank": 5, "name": "pedro"},
+        {"card": "9", "rank": 9, "name": "sancho"}
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A,K,Q,J,10,9,8,7,6,5,4,3,2",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 6,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Bidder must lead a trump to the first trick.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "pass_or_bid",
+        "minBid": 0,
+        "maxBid": 18,
+        "passAllowed": true,
+        "doubling": false
+      },
+      "pointValues": {
+        "specificCards": [
+          {"card": "A", "points": 1},
+          {"card": "2", "points": 1},
+          {"card": "J", "points": 1},
+          {"card": "10", "points": 1},
+          {"card": "5", "points": 5},
+          {"card": "9", "points": 9}
+        ]
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 6,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["bid", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck; no jokers. Pedro Sancho is a trick-taking variant. The high bidder chooses the trump suit; within that suit the 5 (pedro) and 9 (sancho) are scoring cards worth 5 and 9 points. The other 5 is not a trump. Full deck used for four players.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each have thirteen cards. The high bidder names one suit as trump; in that suit only, the 5 (pedro) and 9 (sancho) have extra point value. Suit and rank determine trick value and following rules.",
+    "rankDescription": "Standard ranks Ace through King. In the chosen trump suit the 5 is pedro (5 points) and the 9 is sancho (9 points). Trump ranking A,K,Q,J,10,9,8,7,6,5,4,3,2. Trick order: highest trump wins, else highest card of led suit.",
+    "dealPattern": "6",
+    "notApplicableReasons": {
+      "drawConfig": "Players receive six cards at deal and do not draw from stock during play.",
+      "discardConfig": "No discard-and-replenish phase; hands are fixed after the deal."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PEDRO SANCHO",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Pedro variant: 5 and 9 are trumps (Pedro Sancho / Nine-Five).",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Scoring trumps: high (A) 1, low (2) 1, jack 1, game (10) 1, pedro (5) 5, sancho (9) 9; total 18 per deal. Counted in that order. If bid is made, team scores points won; if bid fails, bidder loses the amount bid. First to 100 wins.",
+    "winCondition": "First player or team to reach 100 points. If bid is made, add points won to total; if bid fails, subtract the bid from bidder's total.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": 100,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Points are awarded for tricks (high, low, jack, game, pedro, sancho); per-card values are in trickConfig.pointValues."
+    }
+  },
+  "alsoKnownAs": [
+    "Nine-Five"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,877 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "badugi.json",
+  "name": "Badugi",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Badugi is a unique and fascinating poker variant characterized by its triple-draw mechanic and four-card hand structure. Unlike traditional poker, where flushes and straights are valued, Badugi is a 'lowball' game that penalizes matching suits and ranks. The ultimate goal is to hold a 'Badugi'â€”four cards of distinct suits and distinct ranks, with the lowest possible values. It's a game of deception, probability, and ruthless discarded-card tracking.",
+    "category": "Poker",
+    "subCategory": "Draw / Lowball",
+    "origin": "South Korea / Canada",
+    "originName": "Badugi (Korean-derived name for a black-and-white spotted dog; also known as Off Suit Lowball in Canadian home games)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 2,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "The exact origins are debated, with strong claims from both South Korea (where the name 'Badugi' refers to a black-and-white spotted dog) and Canada (where it was played as 'Off Suit Lowball' in the 1980s).",
+    "originCountries": ["South Korea", "Canada"],
+    "timeline": [
+      "1980s: Variations appear in Canadian pool halls and South Korean social clubs.",
+      "2000s: Introduced to online poker platforms, gaining a cult following.",
+      "2008: Added to the World Series of Poker (WSOP) as part of mixed games.",
+      "Present: A staple in high-stakes '8-Game' and 'H.O.R.S.E.' mixes."
+    ],
+    "evolution": "Badugi evolved from 5-card triple draw by stripping away the fifth card to make achieving a 'four-suit' hand statistically challenging and rewarding.",
+    "cultural": "In Korea, the game is a popular television and online gambling pastime.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-8 players. Typically played with a dealer button and small/big blinds.",
+    "deck": "Standard 52 cards. Aces are always LOW.",
+    "equipment": "Standard pack, poker chips, dealer button.",
+    "dealing": "Each player is dealt 4 cards face down.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture the pot by holding the lowest qualifying hand at showdown. A 4-card 'Badugi' (all different suits/ranks) is the highest tier of hand.",
+    "gameplay": "1. **First Betting Round**: Following the blinds. 2. **First Draw**: Players discard any number of cards (0-4) and receive replacements. 3. **Second Betting Round**. 4. **Second Draw**. 5. **Third Betting Round**. 6. **Third Draw**. 7. **Final Betting Round**. 8. **Showdown**.",
+    "keyRules": [
+      "No Suits Rank: All suits are of equal value for winning purposes.",
+      "Aces Low: The Ace is the best (lowest) card.",
+      "The 'Nuts': The best hand is A-2-3-4 of four different suits."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize 'Badugi' potential. If you are dealt 3 cards of the same suit, you MUST discard two of them, leaving you with a very weak 2-card hand.",
+    "intermediate": "Snowing (Bluffing): In a triple draw game, you can 'Pat' (discard 0 cards) to make opponents think you already have a powerful Badugi, forcing them to fold or play defensively.",
+    "advanced": "Range Analysis: If an opponent draws only 1 card on the first draw and then stands pat on the second, they almost certainly have a completed Badugi. If that Badugi is an 8-high or better, you should fold unless you are drawing to a 7-high or better.",
+    "tips": [
+      "Don't fall in love with a King-high Badugi. It might be a 4-card hand, but it is easily beaten by a 3-card hand that happens to be A-2-3.",
+      "Pay attention to 'Board Cards' (what you have discarded). If you've discarded three Aces, your chances of drawing an Ace-high Badugi are significantly reduced."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "badugi-half-pot",
+        "name": "Half-Pot Badugi",
+        "description": "The pot is split between the best Badugi and the best traditional High hand (very rare).",
+        "overrides": {},
+        "emptyOverridesReason": "This variant only changes pot splitting between Badugi and a separate high hand; the underlying draw structure and engine phases match base Badugi."
+      },
+      {
+        "id": "baducy",
+        "name": "Badeucy",
+        "description": "A split-pot game between Badugi (4 cards) and 2-7 Lowball (5 cards).",
+        "overrides": {},
+        "emptyOverridesReason": "Badeucy combines Badugi and 2-7 triple draw; detailed engine overrides for the mixed hand evaluation are intentionally deferred to a dedicated blueprint."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't understand suit-clashing. Keeps a pair of 2s because '2s are low'. Draws 3 cards too often.",
+      "medium": "Draws to a 3-card Badugi properly. Folds 2-card hands after the second draw if no improvement. Never bluffs.",
+      "hard": "Performs Monte Carlo simulations on every draw. Tracks specific cards seen in previous rounds. Excels at 'Snowing' (standing pat on a 3-card hand to induce folds)."
+    },
+    "considerations": [
+      "AI must have a custom low-ball hand evaluator that handles variable hand sizes (1-4).",
+      "Draw-logic must account for 'clumping'â€”the tendency for low cards to be removed from the deck early."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_badugi_www_pagat_com_poker_variants_badugi_html",
+        "name": "Pagat - Badugi",
+        "url": "https://www.pagat.com/poker/variants/badugi.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-badugi.html"
+      },
+      {
+        "id": "src:wikipedia_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Badugi",
+        "localHtml": "wiki-badugi.html"
+      },
+      "Two Plus Two Poker Forum - Badugi Strategy",
+      "Wikipedia - Badugi"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "social",
+    "social",
+    "social",
+    "gambling",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 75,
+    "complexity": 5,
+    "luck": 5,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "blinds",
+        "label": "The Ante/Blinds",
+        "actor": "current_player",
+        "legalActions": [
+          "post_blind"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "Initial Deal (4 cards)",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_hole_cards"
+        ],
+        "nextPhase": "betting_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_1",
+        "label": "First Betting Round",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_1",
+        "label": "First Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw",
+          "stand_pat"
+        ],
+        "nextPhase": "betting_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_2",
+        "label": "Second Betting Round",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_2",
+        "label": "Second Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw",
+          "stand_pat"
+        ],
+        "nextPhase": "betting_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_3",
+        "label": "Third Betting Round",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "draw_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_3",
+        "label": "Third Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw",
+          "stand_pat"
+        ],
+        "nextPhase": "betting_final",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_final",
+        "label": "Final Betting Round",
+        "actor": "current_player",
+        "legalActions": [
+          "call",
+          "raise",
+          "fold",
+          "check"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "system",
+        "legalActions": [
+          "evaluate_badugi_hands",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi uses small and big blinds, not antes."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer (system), not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi has no market; it is draw poker with a single deck."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi has no market; drawing is from the stock only."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players receive replacements via discard-and-draw, not buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during any betting round when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when no bet has been made in the current betting round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current wager.",
+        "cost": {
+          "type": "match_current_bet"
+        },
+        "constraints": "Allowed during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open or make a bet (minimum equal to big blind).",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "Allowed when first to act or when no bet has been made in the round.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current wager.",
+        "cost": {
+          "type": "min_raise"
+        },
+        "constraints": "Allowed during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi uses showdown; there is no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are revealed at showdown by the system."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the winning player(s).",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi is draw poker; players do not play cards to a trick."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Replacements are received automatically after discarding; use discard action."
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard 0 to 4 cards and receive that many replacements from the deck.",
+        "cost": "0",
+        "constraints": "During each draw round; standing pat means discard zero cards.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Use check in betting; use stand pat in draw rounds."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi uses fixed or pot-limit betting, not bidding."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Badugi has no melding; it is triple-draw lowball."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends at showdown; there is no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 6,
+      "startingStack": 200,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "face_down",
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 4,
+          "notes": "Replacements for discarded cards; 0-4 per player per draw round."
+        }
+      ],
+      "drawCount": 4,
+      "drawTiming": "after_discard",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "any_time",
+      "discardVisibility": "face_down",
+      "discardCount": 4,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": null,
+        "frozenPileRules": null
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "badugi",
+      "low": null,
+      "lowQualifier": {
+        "maxHighCard": 13,
+        "acePlaysLow": true,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "fixed_rounds",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": 4,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 4
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "tie-split",
+          "text": "If two or more hands tie for best at showdown, the pot is split equally. Suits are not used to break ties.",
+          "appliesTo": "showdown",
+          "affects": "pot"
+        },
+        {
+          "id": "deck-reshuffle",
+          "text": "If the deck is depleted during a draw round, discarded cards are reshuffled to form a new deck and the draw continues.",
+          "appliesTo": "draw",
+          "affects": "stock"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "blinds",
+      "deal",
+      "betting_1",
+      "draw_1",
+      "betting_2",
+      "draw_2",
+      "betting_3",
+      "draw_3",
+      "betting_final",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "post_blind",
+        "supported": true,
+        "description": "Post small and big blinds.",
+        "cost": "0",
+        "constraints": "Dealer and SB positions.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_hole_cards",
+        "supported": true,
+        "description": "Deal 4 hole cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "discard_and_draw",
+        "supported": true,
+        "description": "Discard 0-4 cards and draw replacements.",
+        "cost": "0",
+        "constraints": "Draw phase.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      {
+        "id": "stand_pat",
+        "supported": true,
+        "description": "Keep hand without drawing.",
+        "cost": "0",
+        "constraints": "Draw phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      {
+        "id": "evaluate_badugi_hands",
+        "supported": true,
+        "description": "Compare Badugi hands at showdown.",
+        "cost": "0",
+        "constraints": "Showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "badugi",
+    "rankingSystem": "Off-Suit Lowball",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for Badugi, a lowball draw game where the best hand has four different suits and low cards.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). In Badugi each card in the hand must be from a different suit; duplicate suits weaken the hand. Lowest card in each suit counts.",
+    "rankDescription": "Thirteen ranks per suit; ace is low. The best Badugi hand is four low cards in four different suits (e.g. A-2-3-4 of different suits). Pairs and same-suit cards are not wanted.",
+    "dealPattern": "Hole cards.",
+    "notApplicableReasons": {
+      "trickConfig": "Badugi is draw poker with showdown; there are no tricks or trick-taking."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BADUGI",
+      "subtitle": "The Spotted Dog",
+      "tagline": "Different suits, different ranks, and as low as you can go. The ultimate triple-draw showdown."
+    },
+    "shortDescription": "Master one of the most unique variants in modern poker. In Badugi, you draw three times to build a four-card hand where every suit and every rank is unique. Outwit your opponents in this game of perfect information vs. stealthy bluffs.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "hand",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Badugi! You have 4 cards. Your goal is to have four cards with NO matching suits and NO matching ranks. If you have two Hearts, one of them doesn't count! Ace is low. You have three draws to find your perfect A-2-3-4. Are you ready?",
+    "ai": "Game: Badugi. Type: Triple Draw Lowball. Rules: 4-card hands. Maximize unique suits/ranks. 4-card 'Badugi' > 3-card hand. Tie-breaker: Low high-card. 3 draw rounds."
+  },
+  "scoring": {
+    "description": "Pot-based betting. No point-scoring.",
+    "winCondition": "Lowest hand at showdown or all other players fold.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If hands are identical in ranks (suits ignored for ties), the pot is split.",
+    "targetScore": null,
+    "nullReasons": {
+      "targetScore": "Badugi is pot-based; no target score or points.",
+      "cardValues": "Badugi is a lowball draw poker variant where pots are awarded by Badugi hand ranking, not per-card point values."
+    },
+    "scoringDirection": "low_wins"
+  },
+  "alsoKnownAs": [
+    "Off Suit Lowball",
+    "Airborn",
+    "Korean Poker",
+    "Winnipeg Lowball",
+    "badougi",
+    "paduki",
+    "padooki"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

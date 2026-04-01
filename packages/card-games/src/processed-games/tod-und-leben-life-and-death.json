@@ -1,0 +1,623 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tod-und-leben-life-and-death.json",
+  "name": "Tod und Leben",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tod und Leben (Death and Life) is a simple German card game for two players, similar to War. It is distinct in that players have their own draw piles and must win cards to stay 'alive'. The game ends when one player loses all their cards (Death) and the other has all of them (Life).",
+    "category": "War",
+    "subCategory": "War / Accumulation",
+    "origin": "Germany",
+    "originName": "Tod und Leben",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "32-card deck (german suited or french)",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Tod und Leben is a German folk game in the War family. German War-style variants including Bettelmann (Beggar Man) and Tod und Leben were documented as early as 1833 in C.F. Schenkel's Oekonomische Encyclopaedia (Berlin). The game uses a 32-card Skat pack; one reported variant was played by Günther Senst as a child in Mecklenburg. It has remained a common children's pastime in Germany, with play continuing until one player holds all cards (Life) and the other has none (Death).",
+    "originCountries": ["Germany"],
+    "timeline": ["1833: German War variants including Tod und Leben documented in Schenkel's encyclopedia.", "19th century: played in Mecklenburg and elsewhere as a children's game."],
+    "evolution": "Evolved from the broader War family; German 32-card form fixed as a two-player game with recycled or round-based play.",
+    "cultural": "Common children's game in Germany; often played with German-suited cards; no strategy, purely luck-based.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "32 cards (A, K, Q, J, 10, 9, 8, 7).",
+    "equipment": "Cards",
+    "dealing": "Deal all cards (16 each) into two face-down piles.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Collect all 32 cards by winning battles: each player reveals the top card of their pile simultaneously; the higher rank takes both cards to the bottom of their pile. On ties, war: each plays one face-down then one face-up; higher face-up wins all. The last player with cards wins (Life); the other loses (Death).",
+    "gameplay": "Simultaneous reveal of top card. Higher card wins both. Winner puts cards at bottom of their pile. Ties: War mechanism (play one down, one up, compare).",
+    "keyRules": [
+      "Higher rank wins",
+      "Win all cards to win game"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Pure luck; no skill component.",
+    "intermediate": "No distinct intermediate; game is purely luck-based.",
+    "advanced": "No advanced tier; no meaningful strategy beyond accepting outcomes.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "round-based",
+        "name": "Round-based",
+        "description": "Play through all 16 cards once per round; cards are not recycled. Whoever won more cards in the round wins. Game can continue for as many rounds as desired.",
+        "overrides": {},
+        "emptyOverridesReason": "Round-based variant differs in play structure; no engine constant overrides identified from source."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Reveals cards with no memory; plays randomly on ties.",
+      "medium": "Resolves ties deterministically; no card counting.",
+      "hard": "No skill differentiation; game is luck-only."
+    },
+    "considerations": [
+      "War-style game; no strategic decisions."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-tod-und-leben",
+        "name": "Pagat - War (Tod und Leben)",
+        "url": "https://www.pagat.com/war/war.html#tod_und_leben",
+        "retrievedAt": "2026-02-26",
+        "sections": [],
+        "localHtml": "pagat-war.html"
+      }
+    ],
+    "additional": [
+      {
+        "id": "src:wikipedia-war",
+        "name": "Wikipedia - War",
+        "url": "https://en.wikipedia.org/wiki/War_(card_game)",
+        "retrievedAt": "2026-02-26",
+        "sections": []
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_initial"
+        ],
+        "nextPhase": "battle",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "battle",
+        "label": "Battle",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "game_continues",
+            "nextPhase": "battle"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Both players reveal top card; higher wins both to bottom of pile. Tie triggers war (one down, one up)."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Reveal the top card of your face-down pile for battle. Both players reveal simultaneously; higher rank wins both cards to the bottom of winner's pile. On tie, war: each plays one face-down then one face-up; higher face-up wins all.",
+        "cost": "0",
+        "constraints": "Legal when you have at least one card in your pile; both players act simultaneously.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "German",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 16,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "battle"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_initial",
+        "supported": true,
+        "description": "Deal all 32 cards: 16 to each player face down into their pile.",
+        "cost": "0",
+        "constraints": "Performed once at start by dealer; no player choice.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Single card rank only: A (high) down to 7 (low); no hand comparison.",
+    "rankingSystem": "A K Q J 10 9 8 7 (high to low)",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A stripped French deck containing 32 cards with four suits (Hearts, Diamonds, Clubs, Spades) and eight ranks per suit (7 through Ace), created by removing all 2s through 6s from a standard 52-card deck.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy recognition during gameplay.",
+    "rankDescription": "Eight ranks per suit in ascending order: 7, 8, 9, 10, Jack (Valet), Queen (Dame), King (Roi), and Ace as the highest card, where each rank determines card strength and eligibility for building sequences.",
+    "dealPattern": "16_each",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TOD UND LEBEN",
+      "subtitle": "Card Game",
+      "tagline": "Tod und Leben (Death and Life) is a simple German card game for two players, sim..."
+    },
+    "shortDescription": "Tod und Leben (Death and Life) is a simple German card game for two players, similar to War. It is distinct in that players have their own draw piles ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tod und Leben (Death and Life) is a simple German card game for two players, similar to War. It is distinct in that players have their own draw piles and must win cards to stay 'alive'. The game ends when one player loses all their cards (Death) and the other has all of them (Life).",
+    "ai": "Game: Tod und Leben. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "No scoring. Win = all cards.",
+    "winCondition": "Win all cards.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Winner is determined by card count, not point values; no per-rank scoring."
+    }
+  },
+  "alsoKnownAs": ["Life and Death"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

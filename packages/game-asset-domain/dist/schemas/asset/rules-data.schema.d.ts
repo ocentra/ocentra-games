@@ -1,0 +1,41 @@
+import { z } from 'zod';
+export declare const RulesDataSchema: z.ZodObject<{
+    LLM: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    Player: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    objective: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    gameplay: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    keyRules: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    moveValidityConditions: z.ZodOptional<z.ZodNullable<z.ZodUnion<[z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">, z.ZodRecord<z.ZodString, z.ZodEffects<z.ZodString, string, string>>]>>>;
+    exampleHands: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    examples: z.ZodOptional<z.ZodAny>;
+    bonusRules: z.ZodOptional<z.ZodString>;
+    bonusRuleGuids: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    useTrump: z.ZodOptional<z.ZodBoolean>;
+    trumpBonusValues: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+}, "passthrough", z.ZodTypeAny, z.objectOutputType<{
+    LLM: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    Player: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    objective: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    gameplay: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    keyRules: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    moveValidityConditions: z.ZodOptional<z.ZodNullable<z.ZodUnion<[z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">, z.ZodRecord<z.ZodString, z.ZodEffects<z.ZodString, string, string>>]>>>;
+    exampleHands: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    examples: z.ZodOptional<z.ZodAny>;
+    bonusRules: z.ZodOptional<z.ZodString>;
+    bonusRuleGuids: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    useTrump: z.ZodOptional<z.ZodBoolean>;
+    trumpBonusValues: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+}, z.ZodTypeAny, "passthrough">, z.objectInputType<{
+    LLM: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    Player: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    objective: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    gameplay: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    keyRules: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    moveValidityConditions: z.ZodOptional<z.ZodNullable<z.ZodUnion<[z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">, z.ZodRecord<z.ZodString, z.ZodEffects<z.ZodString, string, string>>]>>>;
+    exampleHands: z.ZodOptional<z.ZodArray<z.ZodEffects<z.ZodString, string, string>, "many">>;
+    examples: z.ZodOptional<z.ZodAny>;
+    bonusRules: z.ZodOptional<z.ZodString>;
+    bonusRuleGuids: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
+    useTrump: z.ZodOptional<z.ZodBoolean>;
+    trumpBonusValues: z.ZodOptional<z.ZodNullable<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+}, z.ZodTypeAny, "passthrough">>;

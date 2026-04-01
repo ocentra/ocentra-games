@@ -1,0 +1,684 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "sjavs.json",
+  "name": "Sjavs",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Sjavs (pronounced 'Shows' or 'Shavs') is a popular card game in the Faroe Islands and parts of Denmark. It is a derivative of the German game Schafkopf, played with a stripped deck of 32 cards (standard Skat/Piquet deck). The game involves bidding, trump calling, and trick-taking, with a unique scoring system based on 'Rubbers' (first to reach 0 points from 24). It is highly strategic and social.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Faroe Islands / Denmark (via Germany)",
+    "originName": "Sjavs",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships) or 3 (Solo)"
+    },
+    "deck": "32 cards (Ace (11), Ten (10), King (4), Queen (3), Jack (2), 9, 8, 7)",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Faroe Islands", "Denmark"],
+    "origins": "Introduced to the Faroe Islands by Danish merchants or sailors familiar with German Schafkopf. The name 'Sjavs' likely comes from *Schafkopf*.",
+    "timeline": [
+      "1800s: Becomes the dominant game in TÃ³rshavn.",
+      "1950s: Rules codified by local clubs.",
+      "Present: Remains the most popular card game in the Faroes, often played in tournaments."
+    ],
+    "evolution": "The rubber scoring system (subtracting points) is unique to Sjavs compared to modern Schafkopf.",
+    "cultural": "Winning a rubber is cause for buying drinks. Being 'stuck' at 24 points is a humiliation.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 (Partners sit opposite).",
+    "deck": "32 cards: the 2s through 6s are removed from a standard 52-card pack. Six cards are permanent highest trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J); remaining cards rank A, K, Q, 10, 9, 8, 7. Point values: A=11, 10=10, K=4, Q=3, J=2; 120 points in the pack.",
+    "equipment": "",
+    "dealing": "Deal 8 cards each (or 3-3-2).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win tricks worth points. Reduce score from 24 to 0.",
+    "gameplay": "After the deal, dealer's left has first bid: each player states the length of their longest trump suit (five or more cards) or Pass; the longest length wins, and clubs beats another suit of the same length. The bid winner then announces trump. Dealer's left leads; play is clockwise. Players must follow suit when able and may trump or discard when void. The winner of each trick leads to the next. There are eight tricks; then each side counts card points in the tricks they won.",
+    "keyRules": [
+      "Must follow suit if able; may trump or discard when void.",
+      "Six permanent trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J) rank above trump-suit cards; then A, K, Q, 10, 9, 8, 7 in trump.",
+      "Bidding: state length of longest 5+ trump suit or Pass; longest wins; same length clubs beats. Bid winner names trump.",
+      "120 points per deal; rubber: count down from 24, first to 0 wins."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Count trumps. There are 8 cards per suit. If you have 5 trumps, bid. If you have 4, check your partner via signaling. Lead Aces of non-trump suits early to cash them in before they get trumped.",
+    "intermediate": "The 'Partner' Signal: Discard high-low to show strength. If your partner leads a suit you are void in, discard a 10 to give them points (Schummeln/Smearing).",
+    "advanced": "Rubber Strategy: If you are at 2 points and opponents are at 20, prevent them from winning a 'Grand' or high-value game even if it costs you a simple game loss. Defensive bidding to block their strong suit is key.",
+    "tips": [
+      "Clubs are often the best suit to name if lengths are equal.",
+      "Jacks are usually high trumps in Grand."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "suduroy",
+        "name": "Suðuroy (Southern island)",
+        "description": "If pack is cut, deal 3-2-3 instead of 4-4. If 60-60, next game value increases by 2 or 4 depending on winner. Many do not award double victory if losers still on 24, or extra points for single player winning all tricks.",
+        "overrides": {},
+        "emptyOverridesReason": "Deal pattern and scoring tweaks; add overrides when implementing variant."
+      },
+      {
+        "id": "three-player",
+        "name": "Three-player Sjavs",
+        "description": "10 cards each, 2 to table face down. Bidding same; one player makes trumps and plays alone vs the other two. Trump maker may discard one or two cards and pick up from table. Three columns on score sheet; soloist subtracts on win, opponents each subtract on loss.",
+        "overrides": {},
+        "emptyOverridesReason": "Player count and table cards differ; add overrides when implementing."
+      },
+      {
+        "id": "two-player",
+        "name": "Two-player Sjavs",
+        "description": "Four face-down and four face-up cards per player in rows, plus 8 cards in hand. Face-up count as hand; when a table card is played the one under it is turned up. Bidding up to 12 possible.",
+        "overrides": {},
+        "emptyOverridesReason": "Layout and hand size differ; add overrides when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Bids on short suits; wastes Aces; ignores partner.",
+      "medium": "Bids on 5+ trumps; smears points to partner.",
+      "hard": "Expert 'Bid-Optimizer'; calculates EV of bidding vs passing based on Rubber score; reads partner's signals perfectly."
+    },
+    "considerations": [
+      "Bidding-logic (Suit-Length) solver.",
+      "Rubber-score (Target-Distance) engine."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-sjavs",
+        "name": "Pagat - Sjavs",
+        "url": "https://www.pagat.com/schafkopf/sjavs.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-sjavs.html"
+      }
+    ],
+    "additional": [
+      "https://www.pagat.com/beating/sjavs.html",
+      "Faroe Islands Games",
+      "Danish Card Game History"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["perform_deal"],
+        "nextPhase": "bid",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 8 cards each: in fours if pack was cut, in eights if tapped."
+      },
+      {
+        "id": "bid",
+        "label": "Bidding",
+        "actor": "each_player_clockwise",
+        "legalActions": ["bid", "pass"],
+        "nextPhase": "announce_trump",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer's left first; state length of longest 5+ trump suit or Pass; longest wins, clubs beats same length. If no one has 5+, redeal."
+      },
+      {
+        "id": "announce_trump",
+        "label": "Announce Trump",
+        "actor": "each_player_clockwise",
+        "legalActions": ["name_trump_suit"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Bid winner announces trump suit; must choose clubs if holding equal length in clubs and another suit."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": ["play_card"],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer's left leads; must follow suit; may trump or discard when void. Trick winner leads next. Eight tricks."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass in the bidding; you do not announce a trump length this round.",
+        "cost": "0",
+        "constraints": "Only during the bidding phase when it is your turn; use when you have no five-card trump suit or choose not to outbid.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "State the length of your longest trump suit (five or more cards). Longer length beats shorter; same length, clubs beats unstated suit. Winner will name trump in next phase.",
+        "cost": "0",
+        "constraints": "Only when it is your turn in bidding; you must have at least five cards in a suit to bid that length.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 8,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [
+        {"card": "Q", "rank": null, "name": "Club Queen"},
+        {"card": "Q", "rank": null, "name": "Spade Queen"},
+        {"card": "J", "rank": null, "name": "Club Jack"},
+        {"card": "J", "rank": null, "name": "Spade Jack"},
+        {"card": "J", "rank": null, "name": "Heart Jack"},
+        {"card": "J", "rank": null, "name": "Diamond Jack"}
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A, K, Q, 10, 9, 8, 7 in trump suit (after the six permanent trumps)",
+      "canCallNoTrump": false,
+      "overtakingRule": "Six permanent trumps (Club Q, Spade Q, then Club J, Spade J, Heart J, Diamond J) are highest; then A, K, Q, 10, 9, 8, 7 in trump suit. Must follow suit; may trump or discard when void."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 8,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "any",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "pass_or_bid",
+        "minBid": 5,
+        "maxBid": 8,
+        "passAllowed": true,
+        "doubling": false
+      },
+      "pointValues": {
+        "specificCards": [
+          {"card": "A", "points": 11},
+          {"card": "10", "points": 10},
+          {"card": "K", "points": 4},
+          {"card": "Q", "points": 3},
+          {"card": "J", "points": 2}
+        ]
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "bid", "announce_trump", "play"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "perform_deal",
+        "supported": true,
+        "description": "Dealer shuffles and offers the pack to the right to cut; deals 8 cards each in fours if cut, in eights if tapped.",
+        "cost": "0",
+        "constraints": "Only the dealer; during deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "name_trump_suit",
+        "supported": true,
+        "description": "Announce your chosen trump suit. If you have more than one 5+ length suit and one is clubs, you must announce clubs.",
+        "cost": "0",
+        "constraints": "Only the bid winner; after bidding phase.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Trick rank: six permanent trumps (Club Q, Spade Q, Club J, Spade J, Heart J, Diamond J) then A, K, Q, 10, 9, 8, 7 in trump suit; in plain suits A, K, Q, 10, 9, 8, 7.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 32-card French deck formed by removing ranks 2 through 6 from a standard pack, leaving 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "4-4",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "handRanks": "Trick-taking game; winner by card points in tricks and rubber score, not poker-style hand rankings."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SJAVS",
+      "subtitle": "Card Game",
+      "tagline": "Sjavs (pronounced 'Shows' or 'Shavs') is a popular card game in the Faroe Island..."
+    },
+    "shortDescription": "Sjavs (pronounced 'Shows' or 'Shavs') is a popular card game in the Faroe Islands and parts of Denmark. It is a derivative of the German game Schafkop",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Sjavs (pronounced 'Shows' or 'Shavs') is a popular card game in the Faroe Islands and parts of Denmark. It is a derivative of the German game Schafkopf, played with a stripped deck of 32 cards (standard Skat/Piquet deck). The game involves bidding, trump calling, and trick-taking, with a unique scoring system based on 'Rubbers' (first to reach 0 points from 24). It is highly strategic and social.",
+    "ai": "Game: Sjavs. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Each deal: card points (A=11, 10=10, K=4, Q=3, J=2) in tricks determine game score. Rubber: start at 24, subtract; first side to reach 0 wins the rubber.",
+    "winCondition": "Win the rubber by reducing your side's score from 24 to 0 before the opponents.",
+    "cardValues": {"A": "11", "10": "10", "K": "4", "Q": "3", "J": "2"},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "Rubber is won by first side to reach 0 from 24; target is zero not a positive number."
+    }
+  },
+  "alsoKnownAs": ["Shows", "Shavs"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

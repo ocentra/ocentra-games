@@ -1,0 +1,482 @@
+.card-game-mechanics-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  color: #e2e8f0;
+}
+
+.card-game-mechanics-preview__hero,
+.card-game-mechanics-preview__panel,
+.card-game-mechanics-preview__story-card,
+.card-game-mechanics-preview__phase-card,
+.card-game-mechanics-preview__detail-pane,
+.card-game-mechanics-preview__action-card,
+.card-game-mechanics-preview__zone-card,
+.card-game-mechanics-preview__end-card {
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 16px;
+  box-shadow: 0 18px 42px rgba(2, 6, 23, 0.24);
+}
+
+.card-game-mechanics-preview__hero {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.9));
+}
+
+.card-game-mechanics-preview__hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-game-mechanics-preview__eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+}
+
+.card-game-mechanics-preview__hero h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+  color: #f8fafc;
+}
+
+.card-game-mechanics-preview__hero p,
+.card-game-mechanics-preview__story-card p,
+.card-game-mechanics-preview__section-header p,
+.card-game-mechanics-preview__notes,
+.card-game-mechanics-preview__action-card p,
+.card-game-mechanics-preview__end-card p,
+.card-game-mechanics-preview__empty {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.card-game-mechanics-preview__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 10px;
+}
+
+.card-game-mechanics-preview__chips span,
+.card-game-mechanics-preview__token,
+.card-game-mechanics-preview__transition-pill,
+.card-game-mechanics-preview__graph-node-meta,
+.card-game-mechanics-preview__graph-node-kind {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.card-game-mechanics-preview__chips span {
+  background: rgba(14, 116, 144, 0.18);
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  color: #e0f2fe;
+}
+
+.card-game-mechanics-preview__story-grid,
+.card-game-mechanics-preview__footer-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.card-game-mechanics-preview__story-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.card-game-mechanics-preview__story-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+}
+
+.card-game-mechanics-preview__story-index,
+.card-game-mechanics-preview__phase-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  color: #eff6ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.card-game-mechanics-preview__story-card h3,
+.card-game-mechanics-preview__section-header h3,
+.card-game-mechanics-preview__phase-card h4,
+.card-game-mechanics-preview__action-card h5,
+.card-game-mechanics-preview__zone-card h4,
+.card-game-mechanics-preview__end-card h4,
+.card-game-mechanics-preview__subsection h4 {
+  margin: 0;
+  color: #f8fafc;
+}
+
+.card-game-mechanics-preview__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+}
+
+.card-game-mechanics-preview__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-game-mechanics-preview__graph-shell {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+}
+
+.card-game-mechanics-preview__graph {
+  position: relative;
+  min-height: 280px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(2, 6, 23, 0.9)),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.08), transparent 22%);
+  border: 1px solid rgba(59, 130, 246, 0.16);
+}
+
+.card-game-mechanics-preview__graph-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.card-game-mechanics-preview__arrow-head {
+  fill: rgba(96, 165, 250, 0.95);
+}
+
+.card-game-mechanics-preview__edge {
+  fill: none;
+  stroke: rgba(96, 165, 250, 0.82);
+  stroke-width: 3;
+}
+
+.card-game-mechanics-preview__edge--conditional {
+  stroke: rgba(249, 115, 22, 0.9);
+  stroke-dasharray: 8 8;
+}
+
+.card-game-mechanics-preview__edge--loop {
+  stroke-width: 2.5;
+}
+
+.card-game-mechanics-preview__edge-label {
+  fill: #fdba74;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.card-game-mechanics-preview__graph-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 20px;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.card-game-mechanics-preview__graph-node strong {
+  color: #f8fafc;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.card-game-mechanics-preview__graph-node--phase {
+  align-items: start;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 46%),
+    rgba(15, 23, 42, 0.95);
+}
+
+.card-game-mechanics-preview__graph-node--phase:hover,
+.card-game-mechanics-preview__phase-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(8, 15, 34, 0.42);
+}
+
+.card-game-mechanics-preview__graph-node--active,
+.card-game-mechanics-preview__phase-card--active {
+  border-color: rgba(56, 189, 248, 0.82);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2), 0 18px 44px rgba(8, 15, 34, 0.46);
+}
+
+.card-game-mechanics-preview__graph-node-kind {
+  align-self: start;
+  padding-inline: 10px;
+  min-height: 26px;
+  background: rgba(14, 165, 233, 0.16);
+  border: 1px solid rgba(125, 211, 252, 0.26);
+  color: #bae6fd;
+}
+
+.card-game-mechanics-preview__graph-node-meta {
+  align-self: start;
+  min-height: 28px;
+  padding-inline: 10px;
+  background: rgba(30, 41, 59, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+}
+
+.card-game-mechanics-preview__graph-node--terminal {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.card-game-mechanics-preview__graph-node--start {
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 42%),
+    rgba(15, 23, 42, 0.94);
+}
+
+.card-game-mechanics-preview__graph-node--end {
+  background:
+    radial-gradient(circle at top left, rgba(244, 63, 94, 0.2), transparent 42%),
+    rgba(15, 23, 42, 0.94);
+}
+
+.card-game-mechanics-preview__workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 16px;
+}
+
+.card-game-mechanics-preview__phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-game-mechanics-preview__phase-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card-game-mechanics-preview__phase-card-top,
+.card-game-mechanics-preview__action-card-top,
+.card-game-mechanics-preview__detail-grid,
+.card-game-mechanics-preview__key-value-row,
+.card-game-mechanics-preview__branch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-game-mechanics-preview__phase-actor,
+.card-game-mechanics-preview__phase-optional,
+.card-game-mechanics-preview__detail-label,
+.card-game-mechanics-preview__branch-label {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card-game-mechanics-preview__phase-optional {
+  color: #fbbf24;
+}
+
+.card-game-mechanics-preview__token-row,
+.card-game-mechanics-preview__transition-list,
+.card-game-mechanics-preview__path-list,
+.card-game-mechanics-preview__action-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.card-game-mechanics-preview__token {
+  background: rgba(37, 99, 235, 0.16);
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  color: #dbeafe;
+}
+
+.card-game-mechanics-preview__token--muted,
+.card-game-mechanics-preview__transition-pill--muted {
+  background: rgba(30, 41, 59, 0.82);
+  border-color: rgba(148, 163, 184, 0.16);
+  color: #94a3b8;
+}
+
+.card-game-mechanics-preview__transition-pill {
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(251, 146, 60, 0.18);
+  color: #fed7aa;
+}
+
+.card-game-mechanics-preview__detail-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.card-game-mechanics-preview__subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-game-mechanics-preview__action-list,
+.card-game-mechanics-preview__branch-list,
+.card-game-mechanics-preview__key-value-list,
+.card-game-mechanics-preview__end-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-game-mechanics-preview__action-card,
+.card-game-mechanics-preview__end-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+}
+
+.card-game-mechanics-preview__action-card-top span,
+.card-game-mechanics-preview__action-meta span,
+.card-game-mechanics-preview__end-card span,
+.card-game-mechanics-preview__zone-card span {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.card-game-mechanics-preview__action-card-top span {
+  color: #7dd3fc;
+  font-weight: 700;
+}
+
+.card-game-mechanics-preview__action-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.card-game-mechanics-preview__callout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(14, 116, 144, 0.14);
+  border: 1px solid rgba(125, 211, 252, 0.18);
+}
+
+.card-game-mechanics-preview__callout--muted {
+  background: rgba(30, 41, 59, 0.82);
+  border-color: rgba(148, 163, 184, 0.16);
+}
+
+.card-game-mechanics-preview__callout span {
+  color: #7dd3fc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card-game-mechanics-preview__path-list code {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.card-game-mechanics-preview__footer-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.card-game-mechanics-preview__zone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.card-game-mechanics-preview__zone-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+}
+
+.card-game-mechanics-preview__panel--determinism {
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 34%),
+    rgba(15, 23, 42, 0.82);
+}
+
+@media (max-width: 1280px) {
+  .card-game-mechanics-preview__hero,
+  .card-game-mechanics-preview__workspace,
+  .card-game-mechanics-preview__footer-grid,
+  .card-game-mechanics-preview__story-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-game-mechanics-preview {
+    padding: 12px;
+  }
+
+  .card-game-mechanics-preview__hero,
+  .card-game-mechanics-preview__panel,
+  .card-game-mechanics-preview__detail-pane,
+  .card-game-mechanics-preview__story-card,
+  .card-game-mechanics-preview__phase-card {
+    padding: 14px;
+  }
+
+  .card-game-mechanics-preview__graph {
+    min-height: 260px;
+  }
+}

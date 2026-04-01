@@ -1,0 +1,642 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "katti.json",
+  "name": "Katti",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Katti (meaning 'cut' or 'bundle' in some dialects) is a traditional Indian banking and gambling game of pure chance, closely related to Andar Bahar. Originating in South India (Karnataka and Tamil Nadu), the game involves betting on which of two piles ('Andar'/Inside or 'Bahar'/Outside) will first receive a card matching the rank of a central 'House' card. It is a staple of festival gambling and modern online casinos.",
+    "category": "Banking",
+    "subCategory": "Andar Bahar",
+    "origin": "India (Karnataka/Tamil Nadu)",
+    "originName": "Mangatha (மங்காத்த) or Ullae Veliyae (Inside-Outside)",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 100,
+      "recommendedPlayers": 4,
+      "display": "1 dealer + unlimited bettors"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "1-5 minutes per round",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["India"],
+    "origins": "Believed to have originated in Bengaluru (Bangalore). In Tamil, it is often called 'Mangatha' or 'Ullae Veliyae' (Inside Outside). The game reflects the communal nature of Indian betting, where speed and simplicity are prioritized.",
+    "timeline": [
+      "Early 20th Century: Popularized in the markets and festival grounds of South India.",
+      "1990s: Becomes a staple of regional 'Matka' and gambling dens.",
+      "2010s: Gains massive popularity in Indian online casinos and mobile apps.",
+      "Present: One of India's most recognized gambling formats alongside Teen Patti."
+    ],
+    "evolution": "The game has remained largely unchanged in its core mechanic, though modern variants include side bets on the suit or rank of the house card.",
+    "cultural": "Often played during the festival of Diwali, where small-stakes gambling is a cultural tradition for inviting good luck.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "One dealer (Bank) and theoretically unlimited players.",
+    "deck": "Standard 52-card deck. Shuffled thoroughly and cut.",
+    "equipment": "",
+    "dealing": "Bank shuffles and deals one card face-up (House card), then two piles (Andar and Bahar) one card each.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Predict which of the two piles (Andar or Bahar) will be dealt a card that matches the rank of the House card.",
+    "gameplay": "1. The dealer deals one card face-up in the center (The **House Card**).\n2. Players place bets on either Andar or Bahar.\n3. **The First Deal Rule**: If the House card is **Black** (Clubs/Spades), the first card is dealt to Andar. If it is **Red** (Hearts/Diamonds), it is dealt to Bahar.\n4. The dealer continues dealing cards alternately to Andar and Bahar until a card of the same rank as the House card appears.",
+    "keyRules": [
+      "First card goes to Andar if House card is black (Clubs/Spades), to Bahar if red (Hearts/Diamonds).",
+      "Dealer deals alternately to Andar and Bahar until a card matches the House card rank.",
+      "Bets pay on the pile that receives the matching card first."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As a game of pure chance, there is no mathematical strategy to influence the outcome. However, understanding the 'First Deal' rule is essential for basic play.",
+    "intermediate": "Bet Sizing: Like other 50/50 games (Baccarat/Roulette), some players use Martingale or other betting systems, though the house edge remains constant.",
+    "advanced": "N/A (Pure chance game).",
+    "tips": [
+      "The side that receives the first card (based on the House card color) has a slightly higher statistical probability of winning (approx. 51.5% vs 48.5%).",
+      "Avoid complex side bets in online versions unless you understand the significantly higher house edge they usually carry."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard",
+        "description": "Standard rules",
+        "overrides": {},
+        "emptyOverridesReason": "Standard rules; no variant overrides documented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Places random bets.",
+      "medium": "Consistently chooses the 'First Deal' side (statistical minor advantage).",
+      "hard": "Simulates betting patterns (Martingale, etc.) to mirror human gambling behavior."
+    },
+    "considerations": [
+      "Pure RNG-driven outcome.",
+      "Color-dependent starting side logic.",
+      "Gambling psychology emulation."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_katti",
+        "name": "Pagat - Katti",
+        "url": "https://www.pagat.com/fishing/katti.html",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      }
+    ],
+    "additional": [
+      "Wikipedia - Andar Bahar",
+      "Indian Casino Guide - Katti Rules"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Gambling legality varies by jurisdiction; no single commercial status.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "bet",
+        "label": "Bet",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "bet"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Bettors place bets on Andar or Bahar."
+      },
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals one House card, then alternately to Andar and Bahar until a card matches the House rank."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Katti has no ante; players place bets on Andar or Bahar only."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal one card to House, then alternately to Andar and Bahar until a card matches the House rank.",
+        "cost": "0",
+        "constraints": "Dealer only; first card to Andar if House is black, to Bahar if House is red.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place a bet on Andar (Inside) or Bahar (Outside); the chosen pile wins if it first receives a card matching the House rank.",
+        "cost": "0",
+        "constraints": "Before the dealer begins dealing; each bettor may bet on Andar or Bahar.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "In Katti only the dealer deals cards; players do not play cards, they only place bets on Andar or Bahar."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 100,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_down",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": null,
+        "frozenPileRules": null
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": null,
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": null,
+      "canCallNoTrump": false,
+      "overtakingRule": null
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": null,
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "none",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": {
+      "high": null,
+      "low": null,
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": null,
+      "actionCards": null,
+      "bonusCards": null,
+      "penaltyCards": null
+    },
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": null,
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "custom:house",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "custom:andar",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 26
+      },
+      {
+        "id": "custom:bahar",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 26
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["bet", "deal"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Rank match only; no hand comparison. The winning pile is the one that first receives a card matching the House card rank.",
+    "rankingSystem": "Standard_52",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "One card to center (House card); then cards dealt alternately to Andar and Bahar until a card matches the House rank.",
+    "notApplicableReasons": {
+      "shedding": "Katti is a banking game; players do not hold or shed cards. Only the dealer deals to two piles.",
+      "fishingConfig": "Katti has no capture or fishing mechanic; the dealer deals alternately to Andar and Bahar until a rank matches the house card."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Katti",
+      "subtitle": "Andar Bahar",
+      "tagline": "Katti (meaning 'cut' or 'bundle' in some dialects) is a traditional Indian banking and gambling game..."
+    },
+    "shortDescription": "Katti (meaning 'cut' or 'bundle' in some dialects) is a traditional Indian banking and gambling game of pure chance, closely related to Andar Bahar. Originating in South India (Karnataka and Tamil Nadu), the game involves betting on which of two piles ('Andar'/Inside or 'Bahar'/Outside) will first receive a card matching the rank of a central 'House' card. It is a staple of festival gambling and modern online casinos.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "custom:house",
+        "custom:andar",
+        "custom:bahar"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Katti (meaning 'cut' or 'bundle' in some dialects) is a traditional Indian banking and gambling game of pure chance, closely related to Andar Bahar. Originating in South India (Karnataka and Tamil Nadu), the game involves betting on which of two piles ('Andar'/Inside or 'Bahar'/Outside) will first receive a card matching the rank of a central 'House' card. It is a staple of festival gambling and modern online casinos.",
+    "ai": "Game: Katti. See rules.objective and rules.gameplay for details."
+  },
+  "scoring": {
+    "description": "Predict which of the two piles (Andar or Bahar) will be dealt a card that matches the rank of the House card.",
+    "winCondition": "Predict which of the two piles (Andar or Bahar) will be dealt a card that matches the rank of the House card.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Katti has no point values per card; bets pay on pile match only."
+    }
+  },
+  "alsoKnownAs": [
+    "Andar Bahar",
+    "Mangatha",
+    "Ullae Veliyae"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

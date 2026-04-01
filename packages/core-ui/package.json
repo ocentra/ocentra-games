@@ -1,0 +1,43 @@
+{
+  "name": "@ocentra/core-ui",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared UI components: headers, footers. Used by main app and asset-editor.",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./Footer/GameFooter": { "import": "./dist/Footer/GameFooter.js", "types": "./dist/Footer/GameFooter.d.ts" },
+    "./Header/BaseHeader": { "import": "./dist/Header/BaseHeader.js", "types": "./dist/Header/BaseHeader.d.ts" },
+    "./Header/EditorPageHeader": { "import": "./dist/Header/EditorPageHeader.js", "types": "./dist/Header/EditorPageHeader.d.ts" },
+    "./Common/FeaturedGameCarousel/FeaturedGameCarousel": { "import": "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.js", "types": "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.d.ts" },
+    "./Common/ComingSoonCarousel/ComingSoonCarousel": { "import": "./dist/Common/ComingSoonCarousel/ComingSoonCarousel.js", "types": "./dist/Common/ComingSoonCarousel/ComingSoonCarousel.d.ts" },
+    "./GamesExplorer": { "import": "./dist/GamesExplorer/index.js", "types": "./dist/GamesExplorer/index.d.ts" }
+  },
+  "scripts": {
+    "build": "tsc && node ../../scripts/fix-esm-imports.mjs && node -e \"const fs=require('fs');const path=require('path');[['src/Footer/GameFooter.css','dist/Footer/'],['src/Header/BaseHeader.css','dist/Header/'],['src/Header/GameHeader.css','dist/Header/'],['src/Header/EditorHeader.css','dist/Header/'],['src/Header/EditorPageHeader.css','dist/Header/'],['src/Header/ProfilePictureModal.css','dist/Header/'],['src/Common/FeaturedGameCarousel/FeaturedGameCarousel.css','dist/Common/FeaturedGameCarousel/'],['src/Common/ComingSoonCarousel/ComingSoonCarousel.css','dist/Common/ComingSoonCarousel/'],['src/Common/ExploreGamesPanel/ExploreGamesPanel.css','dist/Common/ExploreGamesPanel/'],['src/Common/GameBadgesOverlay/GameBadgesOverlay.css','dist/Common/GameBadgesOverlay/'],['src/GamesExplorer/GameCard.css','dist/GamesExplorer/'],['src/GamesExplorer/GameListRow.css','dist/GamesExplorer/'],['src/GamesExplorer/ExplorerContentBar.css','dist/GamesExplorer/'],['src/GamesExplorer/ExplorerSidebar.css','dist/GamesExplorer/']].forEach(([s,d])=>{fs.mkdirSync(d,{recursive:true});fs.copyFileSync(s,d+path.basename(s));});\"",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --cache src && tsc --noEmit",
+    "lint:eslint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "@ocentra/app-assets": "*",
+    "@ocentra/behaviour-domain": "*",
+    "@ocentra/game-asset-domain": "*",
+    "@ocentra/asset-domain": "*"
+  },
+  "devDependencies": {
+    "@ocentra/app-assets": "file:../app-assets",
+    "@ocentra/asset-domain": "file:../asset-domain",
+    "@ocentra/behaviour-domain": "file:../behaviour-domain",
+    "@ocentra/game-asset-domain": "file:../game-asset-domain",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.15.0"
+  }
+}

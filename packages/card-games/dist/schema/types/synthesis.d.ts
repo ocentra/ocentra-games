@@ -1,0 +1,14 @@
+export declare const UI_THEMES_VALUES: readonly ["classic", "noir", "neon", "traditional", "arabic", "asian", "minimal", "luxury", "cartoon", "retro"];
+export declare const UI_ZONE_VALUES: readonly ["stock", "market_row", "player_hand", "pot", "declaration_area", "discard", "tableau", "foundation", "trick_area", "meld_area", "score_area", "widow", "kitty"];
+export declare const MARKET_POSITION_VALUES: readonly ["center", "center_top", "center_bottom", "left", "right"];
+export declare const STOCK_POSITION_VALUES: readonly ["center", "center_right", "center_left", "top_right", "top_left"];
+export declare const DISCARD_POSITION_VALUES: readonly ["center", "center_left", "center_right", "adjacent_stock", "NA", "Unknown"];
+export declare const PLAYER_HAND_LAYOUT_VALUES: readonly ["arc", "row", "grid", "stacked"];
+export declare const POT_POSITION_VALUES: readonly ["center", "top_center", "bottom_center"];
+export type UiTheme = (typeof UI_THEMES_VALUES)[number];
+export type UiZone = (typeof UI_ZONE_VALUES)[number];
+export type MarketPosition = (typeof MARKET_POSITION_VALUES)[number] | null;
+export type StockPosition = (typeof STOCK_POSITION_VALUES)[number] | null;
+export type DiscardPosition = (typeof DISCARD_POSITION_VALUES)[number] | null;
+export type PlayerHandLayout = (typeof PLAYER_HAND_LAYOUT_VALUES)[number];
+export type PotPosition = (typeof POT_POSITION_VALUES)[number] | null;

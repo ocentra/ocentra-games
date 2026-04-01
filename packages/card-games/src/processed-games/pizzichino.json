@@ -1,0 +1,688 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pizzichino.json",
+  "name": "Pizzichino",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pizzichino (Spizzichino) is Tressette for two. 40-card Italian pack. 10 hand + 2 packets of 5 (only top visible). Play from hand or top of packet. Buongiochi (honours: 4Ã—3/2/A, 3Ã—3/2/A, Napoletana) score extra. 51 to win. Alternately: a MetÃ  Mazzo (10 each, draw from monte after trick).",
+    "category": "Trick-taking",
+    "subCategory": "Tressette / Italian",
+    "origin": "Italy",
+    "originName": "Pizzichino (Spizzichino)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "40-card Italian",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Italy"],
+    "origins": "Tressette adaptation for two. Lozupone, Il Libro del Tressette. Paolo Ronzoni, Jean Maillard.",
+    "timeline": [
+      "Tressette family.",
+      "1981 Lozupone."
+    ],
+    "evolution": "Two variants: a Pizzichino (packets) and a MetÃ  Mazzo (draw).",
+    "cultural": "Italian.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "40-card Italian (Latin or French suits).",
+    "equipment": "40-card pack.",
+    "dealing": "8 packets of 5. Each chooses 4; 2 as hand, 2 face-up (top visible).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "51 to win. Card points 3/2/A=â…“ each, Re/Cavallo/Fante=â…“, 7-4=0. Last trick +1. Buongiochi: 4Ã—3/2/A=4, 3Ã—3/2/A=3, Napoletana(3-2-A suit)=3.",
+    "gameplay": "1. 10 hand + 2 packets (top visible). 2. Play from hand or packet top. 3. Same suit: higher wins. Different: first wins. 4. Packet: play top, next revealed. 5. Honour from packet: may put in hand. 6. Declare buongiochi when acquired. 7. 20 tricks.",
+    "keyRules": [
+      "Play from hand or packet top.",
+      "Different suit: first wins.",
+      "Buongiochi: 4/3 honours, Napoletana.",
+      "51 to win."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Use packet order. Declare buongiochi.",
+    "intermediate": "Packet selection. Honour plucking (pizzicare).",
+    "advanced": "Full Tressette 2p tactics.",
+    "tips": [
+      "Some choose packets without looking; others look at bottom.",
+      "Variants: 21 or 31 without buongiochi."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "meta-mazzo",
+        "name": "a MetÃ  Mazzo",
+        "description": "10 each; draw from monte after trick; show drawn card.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses draw-from-monte; overrides can be added when implementing."
+      },
+      {
+        "id": "no-buongiochi",
+        "name": "No Buongiochi",
+        "description": "Play to 21 or 31.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant changes target score only; no engine overrides documented yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal plays.",
+      "medium": "Packet and buongiochi.",
+      "hard": "Full Tressette 2p."
+    },
+    "considerations": [
+      "Packet visibility.",
+      "Buongiochi declaration."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat",
+        "name": "Pagat.com - Tressette in Due / Spizzichino",
+        "url": "https://www.pagat.com/tressette/spizzichino.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-spizzichino.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Lozupone, Il Libro del Tressette",
+      "Paolo Ronzoni",
+      "Jean Maillard"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "choose",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "choose",
+        "label": "Choose Packets",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "select_packets"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "declare_buongioco",
+          "lead",
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Italian",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 10,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "choose", "play"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "select_packets",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "declare_buongioco",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "lead",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 40-card Italian deck: four suits (Swords, Batons, Cups, Coins) with ranks 1–7 and 10–12 (no 8 or 9). Pizzichino is a trick-taking game; the reduced pack is dealt and trump is set by bid or turn-up; players take tricks and score points.",
+    "suitDescription": "The four Italian suits (Swords, Batons, Cups, Coins) each have ten cards in the 40-card deck. In Pizzichino, following suit is required when able; trump beats plain suits; suit and rank determine trick winners.",
+    "rankDescription": "Ranks 1 (Ace), 2–7, 10 (sota), 11 (caballo), 12 (rey); 8 and 9 omitted. Trick order follows Italian conventions; the highest card of the led suit wins unless trumped; point values may apply for scoring.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PIZZICHINO",
+      "subtitle": "Tressette for Two",
+      "tagline": "10 hand + 2 packets. Buongiochi."
+    },
+    "shortDescription": "Tressette 2p. Packets. Buongiochi. 51.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "stock"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Pizzichino: Tressette 2p. 10 hand, 2 packets. Buongiochi. 51.",
+    "ai": "Game: Pizzichino. Tressette 2p. Packets. Buongiochi."
+  },
+  "scoring": {
+    "description": "3/2/A=â…“, K/H/J=â…“, 7-4=0. Last trick +1. Buongiochi: 4Ã—honour=4, 3Ã—honour=3, Napoletana=3.",
+    "winCondition": "First to 51.",
+    "cardValues": {
+      "2": "1/3",
+      "3": "1/3",
+      "K": "1/3",
+      "H": "1/3",
+      "J": "1/3"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 51,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Spizzichino",
+    "Tressette in Due a Pizzichino",
+    "Tressette a Pizzico"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

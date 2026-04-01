@@ -1,0 +1,597 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "scopa-scalette.json",
+  "name": "Scopa con le Scalette",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Scopa variant with Scalette scoring: play as normal Scopa (or Scopa d'Assi) with extra points for sequences in coins/diamonds. Scaletta bassa (A-2-3) scores 3 points; Scaletta alta (K-Q-J) scores 5; taking all coins wins the game outright.",
+    "category": "Fishing",
+    "subCategory": "Scopa Family",
+    "origin": "Italy",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "40 cards",
+    "difficulty": "Intermediate",
+    "duration": "15-30 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Scopa con le Scalette"
+  },
+  "history": {
+    "originCountries": ["Italy"],
+    "origins": "Scalette is an Italian Scopa variant where sequence-capture rules are emphasized.",
+    "timeline": [
+      "Traditional: Scopa variant with Scalette scoring documented in Italian card-game tradition."
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Two, or four in partnerships; three possible but less satisfactory.",
+    "deck": "40-card Italian or French-suited pack (coins/cups/swords/batons or diamonds/hearts/clubs/spades). Capture values: K=10, Horse/Q=9, J=8, 7-2 face value, A=1.",
+    "equipment": "40-card pack.",
+    "dealing": "Deal three cards to each player and four face-up on the table. After all play their three cards, deal three more to each (no new table cards). Repeat until deck is exhausted. If three or four Kings appear in the initial table layout, redeal.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture cards from the table by matching a single card's value or a set of cards that sum to the played card's value; score points for sweeps (scopa), most cards, most coins/diamonds, settebello, primiera, and Scalette sequences in coins/diamonds. First to the target (typically 11 or more) wins.",
+    "gameplay": "Play as normal Scopa or Scopa d'Assi. Each turn play one card: capture one table card of equal value or a set of table cards whose values sum to the played card (if both match, take the single card). If no capture is possible, leave the card on the table. Clearing the table is a scopa (1 point). After each player has played their three cards, the dealer deals three more to each player until the deck is exhausted. Scoring adds Scalette: low sequence (A-2-3 coins) = 3 points, extend upward for more; high sequence (K-Q-J coins) = 5 points, extend downward for more; taking all coins/diamonds (Scala) wins the game outright.",
+    "keyRules": [
+      "Scalette"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Scopa.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "Core Scopa heuristics apply; no separate intermediate layer is documented.",
+      "advanced": "Available rules do not define a distinct advanced strategy tier for this variant."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Scalette form; no further regional or rule variations of Scalette are documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "medium": "No medium-strength profile is explicitly documented for this variant.",
+      "hard": "No hard-strength profile is explicitly documented for this variant."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-scopa",
+        "name": "Pagat Scopa con le Scalette",
+        "url": "https://www.pagat.com/fishing/scopa.html#scalette",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-scopa.html"
+      },
+      {
+        "id": "src:wikipedia_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "fishing",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Play one card per turn; capture by value or sum or leave on table. After hands empty, deal three more each. Game ends when deck exhausted and hand is scored."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+"play_card": {
+      "supported": true,
+      "description": "Play one card from hand to the table. If it matches the value of a single table card, capture that card; if it matches the sum of a set of table cards, capture that set (if both single and set match, single must be taken). If no capture is possible, the card remains face-up on the table. Capturing all table cards is a scopa (sweep).",
+      "cost": "0",
+      "constraints": "One card per turn. When a capture is possible, the player must capture. When both a single card and a set match the played card, the single card must be captured.",
+      "isTerminating": false,
+      "effectType": "play",
+      "effectHints": {}
+    },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Italian",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 1,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "stock_exhausted",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "table",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Primiera and capture scoring; no poker hand ranks. Winner by target score and Scalette sequences.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 40-card Italian deck with four suits (typically Cups, Coins, Swords, Batons) and ranks 1 through 7 plus three face cards per suit, used in games such as Briscola and Scopa.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "3 each, 4 face-up on table; after each round of 3 plays, deal 3 more to each until deck exhausted.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SCOPA CON LE SCALETTE",
+      "subtitle": "Card Game",
+      "tagline": "Scopa variant with Scalette scoring."
+    },
+    "shortDescription": "Scopa variant with Scalette scoring.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "table",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Scopa variant with Scalette scoring.",
+    "ai": "Game: Scopa con le Scalette. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Standard Scopa points (scopa/sweep, most cards, most coins/diamonds, settebello, primiera) plus Scalette: Scaletta bassa (A-2-3 coins) = 3 points, extend upward to Horse/Queen for up to 9; Scaletta alta (K-Q-J coins) = 5 points, extend downward to 2 for up to 11; Scala (all coins/diamonds) wins the game outright. Target typically 11 or more (21, 31, 41 when using extra Scalette points).",
+    "winCondition": "First player or team to reach the agreed target (usually 11 or more) wins. Ties broken by an extra hand. Taking all coins/diamonds (Scala) wins immediately.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Scoring uses primiera, settebello, scope and Scalette sequences; no per-card point values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,70 @@
+name: Sync Assets to R2
+
+# Production branch: R2 + Worker via production-r2-worker.yml (push to `production`).
+# Main branch: dev R2 + claim-storage-dev via development-r2-worker.yml (paths filter).
+# This workflow remains for optional manual upload-assets checks (VITE_R2_* secrets).
+on:
+  workflow_dispatch:
+
+jobs:
+  sync-assets:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            if git diff --name-only HEAD~1 HEAD | grep -q "packages/asset-editor/Resources/"; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            if git ls-tree -r --name-only HEAD | grep -q "packages/asset-editor/Resources/"; then
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+      
+      - name: Sync assets to R2
+        if: steps.check-changes.outputs.has_changes == 'true'
+        env:
+          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
+          VITE_R2_ASSETS_BUCKET: ${{ secrets.VITE_R2_ASSETS_BUCKET }}
+        run: |
+          if [ -z "$VITE_R2_WORKER_URL" ] || [ -z "$VITE_R2_ASSETS_BUCKET" ]; then
+            echo "⚠️  R2 configuration not found in secrets. Skipping sync."
+            exit 0
+          fi
+          
+          echo "🔄 Syncing assets to R2..."
+          npm run upload-assets -- --ci --check-changes
+      
+      - name: Verify R2 worker is accessible
+        if: steps.check-changes.outputs.has_changes == 'true'
+        env:
+          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
+        run: |
+          if [ -n "$VITE_R2_WORKER_URL" ]; then
+            echo "🔍 Verifying R2 worker accessibility..."
+            if curl -s -o /dev/null -w "%{http_code}" "$VITE_R2_WORKER_URL/health" | grep -q "200"; then
+              echo "✅ R2 worker is accessible"
+            else
+              echo "⚠️  R2 worker health check failed (may still be accessible)"
+            fi
+          fi
+

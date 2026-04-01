@@ -1,0 +1,670 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "giog.json",
+  "name": "Giog",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Giog is a Malaysian multi-trick game played with Xiangqi pieces used like hidden cards, where players lead valid single or multi-piece combinations and capture tricks with the highest combination of the led type.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking / Multi-game",
+    "origin": "Malaysia and Southeast Asian Chinese communities",
+    "originName": "爵 (Jué) — Giog",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "2-4"
+    },
+    "deck": "32-piece Xiangqi set",
+    "difficulty": "Expert",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["Malaysia", "China"],
+    "origins": "Giog is a Malaysian version of a game played with Chinese chess pieces used as playing-cards, with related forms across China and Southeast Asian Chinese communities.",
+    "timeline": [
+      "Traditional era: Regional chess-piece trick games developed in Chinese communities.",
+      "2019: Detailed Giog and related-variant documentation published.",
+      "2024: Documentation updated with expanded variant references and details."
+    ],
+    "evolution": "Local variants differ in distribution method, valid combinations, tie handling, and scoring, while retaining hidden-piece trick capture structure.",
+    "cultural": "The game adapts the widely available Xiangqi piece set into a social competitive trick format.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Base game is typically four players, with adapted procedures for three and two.",
+    "deck": "32 Xiangqi pieces (16 red, 16 black) ranked from red general down to black pawn in base Giog.",
+    "equipment": "Xiangqi pieces and optional racks for concealed hand management.",
+    "dealing": "Pieces are mixed face down into paired stacks. Players reveal selected bottom pieces to establish priority order, then draft stacks around the layout to form hands (8 pieces each in four-player game).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture more pieces in tricks than opponents by winning leads with stronger valid combinations of matching type.",
+    "gameplay": "Priority-order first player leads to trick one; trick winner leads next. Leader plays one valid combination face down and others must play same number of pieces face down. After reveal, highest valid combination of the same type as the lead wins the trick and captures all played pieces. In base Giog, valid lead types are: single, identical pair, Giog noble triple family, Sam Mui (three soldiers/pawns), Si Mui (four soldiers/pawns), and Wu Mui (five soldiers/pawns). A general or marshal cannot be played in first or last trick ('beheading the cock'); violating this voids all captures by that player. For three-piece leads, leader must announce whether the type is Giog or Sam Mui, since only matching type can beat it.",
+    "keyRules": [
+      "Other players may play any pieces of the required count, but only matching lead type can win.",
+      "Leader has priority in ties; otherwise tie breaks by earlier established player-priority order.",
+      "General/marshal are forbidden in first and last trick, including as part of combinations.",
+      "Hand ends when all pieces are played; player with most captured pieces wins in the base rule set."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Preserve top-ranked control pieces for key leads and late-trick control, especially around first/last trick marshal restrictions.",
+    "intermediate": "Track disclosed and inferred duplicates to judge when pair and soldier-set leads are likely unbeatable.",
+    "advanced": "Use lead-type selection to force weak responses, especially by switching between single, pair, and announced three-piece families.",
+    "tips": [
+      "When leading three pieces, announce type correctly because Giog and Sam Mui are not cross-comparable.",
+      "Priority order from distribution matters in tie cases where leader is not tied."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "ju_ma_pao",
+        "name": "Ju Ma Pao",
+        "description": "Related Malaysian form with circular two-piece stacks and modified combination set, including general+marshal as highest pair.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant rules and parameters not yet mapped to engine overrides."
+      },
+      {
+        "id": "sang_krip",
+        "name": "Sang Krip",
+        "description": "Variant with different distribution and reveal procedure where non-beating plays may remain concealed under winning stacks.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant rules and parameters not yet mapped to engine overrides."
+      },
+      {
+        "id": "da_qi_luo",
+        "name": "Da Qi Luo",
+        "description": "Northeast China versions for 2-5 players with adjusted removal/distribution and alternate combination-ranking systems.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant rules and parameters not yet mapped to engine overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal count-matching responses and simple rank comparisons.",
+      "medium": "Tracks priority tie-break implications and preserves key combination cores.",
+      "hard": "Models hidden-information combination density and chooses lead type to maximize expected capture value."
+    },
+    "considerations": [
+      "Engine must represent combination families explicitly, not just rank totals.",
+      "Tie resolution uses two layers: leader priority first, then pre-established seat priority."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_giog",
+        "name": "Pagat - Giog",
+        "url": "https://www.pagat.com/multitrk/giog.html",
+        "retrievedAt": "2026-02-24",
+        "sections": [
+          {
+            "section": "rules",
+            "sourcePath": "Players and Equipment, Deal, Play, Winning, Variations",
+            "paragraph": 1
+          }
+        ],
+        "localHtml": "pagat-giog.html"
+      },
+      {
+        "id": "src:wikipedia_whist",
+        "name": "Wikipedia - Whist",
+        "url": "https://en.wikipedia.org/wiki/Whist",
+        "retrievedAt": "2026-02-24",
+        "sections": [],
+        "localHtml": "wiki-whist-4.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Whist",
+        "localHtml": "wiki-whist.html"
+      },
+      "Whist source is contextual for generic trick-taking taxonomy; core rules come from Pagat Giog page."
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "tile",
+    "strategy",
+    "traditional",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 33,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "distribution",
+        "label": "Priority Reveal and Draft",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Mix pieces, establish priority by reveal, and distribute stack drafts into player hands."
+      },
+      {
+        "id": "trick_play",
+        "label": "Multi-Trick Combination Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "declare"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_hands_empty",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_down",
+          "declare": "face_up"
+        },
+        "notes": "Leader sets count and type; all others respond with equal count and trick resolves by matching-type strength."
+      },
+      {
+        "id": "resolution",
+        "label": "Count Captured Pieces",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count captured pieces and determine winner or draw for highest capture total."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Base Giog does not require ante staking."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Perform piece mixing, priority reveal, and stack drafting into hands.",
+        "cost": "0",
+        "constraints": "Distribution phase only.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand"
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market zone in Giog."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchasing in Giog."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock buying action in Giog."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No fold mechanic in Giog trick play."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No check mechanic in Giog."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No call mechanic in Giog."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Base Giog is not a betting-round game."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No raise mechanic in base Giog."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Announce combination type when required, especially Giog versus Sam Mui three-piece leads.",
+        "cost": "0",
+        "constraints": "During trick play and combination reveal.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not fully revealed; only played pieces are exposed per trick."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Assign winner by captured-piece counts.",
+        "cost": "0",
+        "constraints": "Resolution phase only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one or more pieces face down as a legal lead or response count.",
+        "cost": "0",
+        "constraints": "Must match lead count; marshal/general forbidden in first and last trick.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "trick"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No draw phase after distribution in Giog."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard pile mechanic in Giog."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must respond with the required count; no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding phase in Giog."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Combination plays are trick actions, not static meld laying."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Round ends when all pieces are played, not by a declared go-out event."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Xiangqi 32",
+    "suitSet": "Xiangqi_red_black",
+    "rankSet": "Xiangqi_pieces",
+    "initialHandSize": 8,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "fixed_suit",
+      "permanentTrumps": null,
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": null,
+      "canCallNoTrump": false,
+      "overtakingRule": null
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": false,
+      "canTrumpFirstTrick": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "Leader chooses combination count and valid type; same count required from all players.",
+      "trickWinCondition": "specific_card_wins",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": null,
+        "maxBid": null,
+        "passAllowed": false,
+        "doubling": false
+      },
+      "pointValues": {
+        "defaultPerSuit": {},
+        "specificCards": []
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "clockwise",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "notApplicableReasons": {
+      "drawConfig": "All pieces are distributed before play; no draw during tricks.",
+      "discardConfig": "No discard pile exists in Giog trick flow.",
+      "meldConfig": "Combination classes are used within trick play rather than persistent meld zones.",
+      "specialCards": "No wild or action pieces beyond fixed ranked Xiangqi piece identities.",
+      "shedding": "Giog is scored by captures, not by shedding hand first.",
+      "fishingConfig": "No capture-tableau fishing mechanism is used."
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": null,
+      "foundationCount": null,
+      "buildDirection": null,
+      "buildSuitRule": null,
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table"
+      },
+      {
+        "id": "custom:captured",
+        "type": "pool",
+        "visibility": "private",
+        "owner": "player"
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "beheading_the_cock",
+          "appliesTo": "first_last_trick",
+          "text": "Playing general or marshal in first or last trick voids all captures by that player.",
+          "affects": "scoring"
+        },
+        {
+          "id": "leader_priority_tie",
+          "appliesTo": "trick_resolution",
+          "text": "Leader wins ties for highest valid combination in a trick.",
+          "affects": "winner_selection"
+        },
+        {
+          "id": "priority_order_tie",
+          "appliesTo": "non_leader_tie",
+          "text": "Among tied non-leaders, earlier established distribution priority wins.",
+          "affects": "winner_selection"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "Model hidden stack-draft distribution and tie-break priority order setup.",
+        "Implement distinct combination-family ranking tables and type-matching trick resolution.",
+        "Enforce first/last trick marshal-general prohibition with capture reset penalty."
+      ]
+    },
+    "progression": [
+      "distribution",
+      "trick_play",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": null,
+    "rankingSystem": "most_captured_pieces",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Thirty-two Xiangqi (Chinese chess) pieces used face down as card-like units for trick-taking with combination ranking.",
+    "suitDescription": "No traditional card suits; pieces are divided into red and black armies with red usually ranking above black equivalent in base Giog.",
+    "rankDescription": "Piece hierarchy from high to low: General or Marshal, Guards, Elephants, Chariots, Horses, Cannons, and Soldiers or Pawns.",
+    "dealPattern": "Priority reveal from paired stacks, then directional stack draft into hand sizes by player count."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "GIOG",
+      "subtitle": "Xiangqi Piece Trick Game",
+      "tagline": "Lead hidden combos, reveal, and capture by type rank."
+    },
+    "shortDescription": "Hidden-information multi-trick game using Chinese chess pieces, with strict combination-family ranking and priority tie rules.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick",
+        "custom:captured"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "row",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Giog: choose lead type carefully, announce three-piece type correctly, and plan around first/last trick marshal restrictions.",
+    "ai": "Game: Giog. Use Xiangqi-piece ranking and combination families, enforce same-count responses and type-based trick resolution, then score by captured pieces."
+  },
+  "scoring": {
+    "description": "Base Giog winner is player with the most captured pieces after all pieces are played.",
+    "winCondition": "Capture the highest number of pieces; ties for most are drawn/shared in the base rule.",
+    "cardValues": {},
+    "penalties": {
+      "beheading_the_cock": "Illegal general or marshal in first or last trick makes player score zero captured pieces."
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Base Giog is single-hand capture comparison without fixed cumulative target score.",
+      "cardValues": "Scoring is by count of captured pieces; no per-piece point values used."
+    }
+  },
+  "alsoKnownAs": [
+    "Jue",
+    "Sanbei Qi"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "This file models the base Giog section only; Ju Ma Pao, Sang Krip, and Da Qi Luo are tracked as variations."
+    ],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benchmark Explorer - Claim Storage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100">
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 rounded-2xl shadow-2xl mb-6 p-8 text-center">
+      <h1 class="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-200">
+        🔬 Benchmark Explorer
+      </h1>
+      <p class="text-cyan-100 text-lg">AI vs AI Reproducible Benchmark Matches</p>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="flex gap-3 mb-6 flex-wrap">
+      <a href="{{baseUrl}}/explore" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        Matches
+      </a>
+      <a href="{{baseUrl}}/explore/leaderboard" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        Leaderboard
+      </a>
+      <a href="{{baseUrl}}/explore/benchmark" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-gray-900 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+        Benchmarks
+      </a>
+      <a href="{{baseUrl}}/" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        ← API
+      </a>
+    </nav>
+    
+    <!-- Controls -->
+    <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-xl border border-gray-700">
+      <div class="flex gap-4 flex-wrap items-center">
+        <input 
+          type="text" 
+          id="searchBox" 
+          placeholder="Search by model name, match ID, or seed..." 
+          class="flex-1 min-w-[250px] px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+        >
+        <button 
+          onclick="loadBenchmarks()" 
+          class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-gray-900 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+    
+    <!-- Benchmarks Container -->
+    <div id="benchmarksContainer">
+      <div class="text-center py-12 text-gray-400">
+        <div class="inline-block animate-pulse">Loading benchmark matches...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const baseUrl = '{{baseUrl}}';
+    let allBenchmarks = [];
+    let filteredBenchmarks = [];
+
+    async function loadBenchmarks() {
+      const container = document.getElementById('benchmarksContainer');
+      container.innerHTML = '<div class="text-center py-12 text-gray-400"><div class="inline-block animate-pulse">Loading benchmark matches...</div></div>';
+      
+      try {
+        const response = await fetch(baseUrl + '/api/explore/benchmarks');
+        if (!response.ok) {
+          throw new Error('Failed to load benchmarks: ' + response.statusText);
+        }
+        const data = await response.json();
+        allBenchmarks = data.benchmarks || [];
+        filteredBenchmarks = allBenchmarks;
+        renderBenchmarks();
+      } catch (error) {
+        container.innerHTML = '<div class="bg-red-900 border border-red-700 rounded-lg p-4 text-red-200">Error: ' + error.message + '</div>';
+      }
+    }
+
+    function renderBenchmarks() {
+      const container = document.getElementById('benchmarksContainer');
+      
+      if (filteredBenchmarks.length === 0) {
+        container.innerHTML = '<div class="text-center py-12 text-gray-400"><p>No benchmark matches found. Benchmark matches are AI vs AI matches with model metadata.</p></div>';
+        return;
+      }
+      
+      container.innerHTML = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>';
+      const grid = container.querySelector('.grid');
+      
+      filteredBenchmarks.forEach(benchmark => {
+        const card = createBenchmarkCard(benchmark);
+        grid.appendChild(card);
+      });
+    }
+
+    function createBenchmarkCard(benchmark) {
+      const card = document.createElement('div');
+      card.className = 'bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-cyan-500 transition-all shadow-lg hover:shadow-2xl transform hover:-translate-y-1';
+      
+      const matchId = benchmark.match_id || benchmark.matchId || 'Unknown';
+      const models = (benchmark.players || []).filter(p => p.type === 'ai' || p.player_type === 'ai').map(p => 
+        p.metadata?.model_name || p.metadata?.model_id || 'Unknown Model'
+      );
+      const seed = benchmark.seed || 'N/A';
+      const chainOfThought = benchmark.chain_of_thought ? 'Yes' : 'No';
+      
+      const matchIdShort = matchId.substring(0, 32);
+      const modelsHtml = models.map(m => '<span class="bg-gradient-to-r from-cyan-500 to-blue-500 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold mr-2 mb-2 inline-block">' + m + '</span>').join('');
+      const timestamp = benchmark.start_time || benchmark.createdAt ? new Date(benchmark.start_time || benchmark.createdAt).toLocaleString() : 'N/A';
+      
+      card.innerHTML = '<div class="font-mono text-xs text-gray-500 mb-3 break-all">' + matchIdShort + '...</div>' +
+        '<div class="mb-4"><div class="text-gray-400 text-xs mb-2 font-semibold">Models:</div><div>' + modelsHtml + '</div></div>' +
+        '<div class="space-y-2 mb-4 text-sm">' +
+        '<div class="flex justify-between"><span class="text-gray-500">Seed:</span><code class="bg-gray-900 px-2 py-1 rounded text-gray-300 text-xs">' + seed + '</code></div>' +
+        '<div class="flex justify-between"><span class="text-gray-500">Chain of Thought:</span><span class="text-gray-200 font-medium">' + chainOfThought + '</span></div>' +
+        '<div class="flex justify-between"><span class="text-gray-500">Moves:</span><span class="text-gray-200 font-medium">' + (benchmark.moves || []).length + '</span></div>' +
+        '</div>' +
+        '<div class="text-xs text-gray-500 border-t border-gray-700 pt-3 mt-4">' + timestamp + '</div>';
+      
+      return card;
+    }
+
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        filteredBenchmarks = allBenchmarks;
+      } else {
+        filteredBenchmarks = allBenchmarks.filter(b => {
+          const matchId = (b.match_id || b.matchId || '').toLowerCase();
+          const models = (b.players || []).map(p => 
+            (p.metadata?.model_name || p.metadata?.model_id || '').toLowerCase()
+          ).join(' ');
+          const seed = (b.seed || '').toLowerCase();
+          return matchId.includes(query) || models.includes(query) || seed.includes(query);
+        });
+      }
+      renderBenchmarks();
+    });
+
+    loadBenchmarks();
+  </script>
+</body>
+</html>

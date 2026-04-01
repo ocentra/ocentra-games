@@ -1,0 +1,543 @@
+name = "claim-storage"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = [
+  "enable_request_signal",
+  "request_signal_passthrough"
+]
+
+[env.development]
+name = "claim-storage-dev"
+
+[[env.development.r2_buckets]]
+binding = "MATCHES_BUCKET"
+bucket_name = "claim-matches-test"  # Test bucket for development
+
+[[env.development.r2_buckets]]
+binding = "AUDIT_ARCHIVE"
+bucket_name = "ocentra-audit-archive-dev"
+
+[[env.development.r2_buckets]]
+binding = "AVATAR_BUCKET"
+bucket_name = "ocentra-avatars-dev"
+
+[[env.development.r2_buckets]]
+binding = "ASSETS_BUCKET"
+bucket_name = "ocentra-assets-test"
+
+[[env.development.durable_objects.bindings]]
+name = "MATCH_COORDINATOR"
+class_name = "MatchCoordinatorDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "CREDITS_DO"
+class_name = "CreditsDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "USER_KEYS_DO"
+class_name = "UserKeysDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PAYMENT_DO"
+class_name = "PaymentDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "MATCH_SHARD_DO"
+class_name = "MatchShardDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PLAYER_SHARD_DO"
+class_name = "PlayerShardDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "STATE_SYNC_COORDINATOR"
+class_name = "StateSyncCoordinatorDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "LOBBY_DO"
+class_name = "LobbyDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "MATCHMAKING_DO"
+class_name = "MatchmakingDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PRESENCE_DO"
+class_name = "PresenceDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "SIGNALING_DO"
+class_name = "SignalingDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "AUDIT_LOG_DO"
+class_name = "AuditLogDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PROGRESSION_DO"
+class_name = "ProgressionDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "REWARD_DO"
+class_name = "RewardDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "ANTI_CHEAT_DO"
+class_name = "AntiCheatDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "FRAUD_DETECTION_DO"
+class_name = "FraudDetectionDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PENALTY_DO"
+class_name = "PenaltyDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PROFILE_DO"
+class_name = "ProfileDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "MESSAGE_DO"
+class_name = "MessageDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "ACTIVITY_FEED_DO"
+class_name = "ActivityFeedDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "PARTY_DO"
+class_name = "PartyDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "LEADERBOARD_DO"
+class_name = "LeaderboardDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "NOTIFICATION_DO"
+class_name = "NotificationDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "INVENTORY_DO"
+class_name = "InventoryDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "MARKETPLACE_DO"
+class_name = "MarketplaceDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "TOURNAMENT_DO"
+class_name = "TournamentDO"
+script_name = "claim-storage-dev"
+
+[[env.development.durable_objects.bindings]]
+name = "SETTINGS_DO"
+class_name = "SettingsDO"
+script_name = "claim-storage-dev"
+
+[[env.development.migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatchCoordinatorDO"]
+
+[[env.development.migrations]]
+tag = "v2"
+new_sqlite_classes = ["CreditsDO"]
+
+[[env.development.migrations]]
+tag = "v3"
+new_sqlite_classes = ["UserKeysDO"]
+
+[[env.development.migrations]]
+tag = "v4"
+new_sqlite_classes = ["PaymentDO", "MatchShardDO", "PlayerShardDO", "StateSyncCoordinatorDO", "LobbyDO", "MatchmakingDO", "PresenceDO", "SignalingDO", "AuditLogDO", "ProgressionDO", "RewardDO", "AntiCheatDO", "FraudDetectionDO", "PenaltyDO", "ProfileDO", "MessageDO", "ActivityFeedDO", "PartyDO", "LeaderboardDO", "NotificationDO", "InventoryDO", "MarketplaceDO", "TournamentDO", "SettingsDO"]
+
+[[env.development.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "logs"
+
+[[env.development.kv_namespaces]]
+binding = "LOGS_RATE_LIMIT_KV"
+id = "434852b42fb849db82ae5f4dd90b1723"
+preview_id = "a58e6460584d4165aade2a3d4ea1e223"
+
+[[env.development.kv_namespaces]]
+binding = "ADMIN_CACHE_KV"
+id = "7bd0208c440a4421a04ca45032501727"
+preview_id = "77e1fe425eb44bca9ceaf58839669330"
+
+[[env.development.kv_namespaces]]
+binding = "RESOURCES_RATE_LIMIT_KV"
+id = "1ca556c191a14c2f833aec4f080fc2a1"
+preview_id = "60c3da8e031142e9a93bc480999c7823"
+
+[[env.development.kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "48171414609e467e918fa8663e13ccf0"
+preview_id = "6108e1aebcc14428834d77fc73a96679"
+
+[[env.development.kv_namespaces]]
+binding = "DISCOVERY_KV"
+id = "4430bf090fd04a1281fc94fc34357b24"
+preview_id = "7716b640679748028ae2df4f542e6e9f"
+
+[[env.development.kv_namespaces]]
+binding = "ITEM_CATALOG_KV"
+id = "6969fe90a7ab43919029a4c50f84cc0e"
+preview_id = "cf1f839c5b794856829457b8aba87b71"
+
+[[env.development.kv_namespaces]]
+binding = "MODERATION_KV"
+id = "af31c7b558994a84b7e9b95ed8818acc"
+preview_id = "0064fa57eb4d44799912c0c782572873"
+
+[[env.development.kv_namespaces]]
+binding = "HEALTH_KV"
+id = "64c544039f09481cbf02e67737d5c6e6"
+preview_id = "7d9751ee55ce4468b73b426f20308bd0"
+
+[[env.development.kv_namespaces]]
+binding = "SECURITY_KV"
+id = "84e522d41c5f466288115b214e41682e"
+preview_id = "28ef5c03147043609b6a3ae5cbcef02c"
+
+[[env.development.kv_namespaces]]
+binding = "AI_CATALOG_KV"
+id = "6652cab4b1c240388e3be6b4f4fac9e5"
+preview_id = "20fe6410041b4c21ad2b7e916d18cef5"
+
+[[env.development.kv_namespaces]]
+binding = "PROMO_KV"
+id = "04ce9afa55754b48bad444824c3550d2"
+preview_id = "6e3c1fb772c84f6b825aee7642624628"
+
+[[env.development.kv_namespaces]]
+binding = "PRODUCT_KV"
+id = "482911fe6030483495db88ebe9e8c8bd"
+preview_id = "aaa8fe77134f430f8761fbab114246d1"
+
+[[env.development.kv_namespaces]]
+binding = "MANIFEST_CACHE_KV"
+id = "c6b6aca9b0224a69a746a89200219f07"
+preview_id = "b9be1670bc32472191b7a3bf16c7f688"
+
+[env.development.observability]
+enabled = true
+[env.development.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[env.development.vars]
+ENVIRONMENT = "development"
+FIREBASE_PROJECT_ID = "claim-b020c"
+BUCKET_NAME = "claim-matches-test"  # Test bucket name for safety checks
+# Development: Allow all origins (*) for local testing (localhost, etc.)
+# Production: Must use specific origin (https://game.ocentra.ca)
+CORS_ORIGIN = "*"  # Allows localhost:5173, localhost:3000, etc. for local dev
+# Rate limiting: Higher limit for testing (1000/hour to avoid test failures)
+RATE_LIMIT_MATCHES_PER_HOUR = "1000"
+# Signed URL secret for testing (required for signed URL tests)
+SIGNED_URL_SECRET = "test-secret-key-for-development-only-change-in-production"
+# Authentication: TEST_MODE enables test-token:userId format for local dev/testing
+# In production, TEST_MODE is not set - requires real Firebase JWT authentication
+TEST_MODE = "true"  # Enables test-token:userId format (extracts userId from token)
+# DISABLE_AUTH: allows manifest/rebuild without token (dev only - npm run dev uses this)
+DISABLE_AUTH = "true"
+# Logging: Dev/Test = all modules enabled, Production = errors/warnings only
+# Production debugging: Use X-Debug-Modules header per-request
+LOG_LEVEL = "info"
+# Test/dev only - use wrangler secret for real key in prod
+AI_MASTER_KEY = "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE="
+# Plan F: Turnstile client key (use wrangler secret in prod)
+TURNSTILE_SITE_KEY = ""
+# Public R2 base URL for assets (manifest/current.asset); set in prod to e.g. https://assets.ocentra.ca
+ASSETS_PUBLIC_URL = ""
+R2_ASSETS_BUCKET_NAME = "ocentra-assets-test"
+CLOUDFLARE_ACCOUNT_ID = "d01281f9b13a2a8c46dfa2c516094de6"
+
+[env.development.triggers]
+crons = ["0 3 * * *", "*/5 * * * *", "*/1 * * * *"]
+
+[env.production]
+name = "claim-storage"
+
+[[env.production.r2_buckets]]
+binding = "MATCHES_BUCKET"
+bucket_name = "claim-matches"  # Production bucket
+
+[[env.production.r2_buckets]]
+binding = "AUDIT_ARCHIVE"
+bucket_name = "ocentra-audit-archive"
+
+[[env.production.r2_buckets]]
+binding = "AVATAR_BUCKET"
+bucket_name = "ocentra-avatars"
+
+[[env.production.r2_buckets]]
+binding = "ASSETS_BUCKET"
+bucket_name = "ocentra-assets"
+
+[[env.production.durable_objects.bindings]]
+name = "MATCH_COORDINATOR"
+class_name = "MatchCoordinatorDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "CREDITS_DO"
+class_name = "CreditsDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "USER_KEYS_DO"
+class_name = "UserKeysDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PAYMENT_DO"
+class_name = "PaymentDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "MATCH_SHARD_DO"
+class_name = "MatchShardDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PLAYER_SHARD_DO"
+class_name = "PlayerShardDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "STATE_SYNC_COORDINATOR"
+class_name = "StateSyncCoordinatorDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "LOBBY_DO"
+class_name = "LobbyDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "MATCHMAKING_DO"
+class_name = "MatchmakingDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PRESENCE_DO"
+class_name = "PresenceDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "SIGNALING_DO"
+class_name = "SignalingDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "AUDIT_LOG_DO"
+class_name = "AuditLogDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PROGRESSION_DO"
+class_name = "ProgressionDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "REWARD_DO"
+class_name = "RewardDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "ANTI_CHEAT_DO"
+class_name = "AntiCheatDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "FRAUD_DETECTION_DO"
+class_name = "FraudDetectionDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PENALTY_DO"
+class_name = "PenaltyDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PROFILE_DO"
+class_name = "ProfileDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "MESSAGE_DO"
+class_name = "MessageDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "ACTIVITY_FEED_DO"
+class_name = "ActivityFeedDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "PARTY_DO"
+class_name = "PartyDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "LEADERBOARD_DO"
+class_name = "LeaderboardDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "NOTIFICATION_DO"
+class_name = "NotificationDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "INVENTORY_DO"
+class_name = "InventoryDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "MARKETPLACE_DO"
+class_name = "MarketplaceDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "TOURNAMENT_DO"
+class_name = "TournamentDO"
+script_name = "claim-storage"
+
+[[env.production.durable_objects.bindings]]
+name = "SETTINGS_DO"
+class_name = "SettingsDO"
+script_name = "claim-storage"
+
+[[env.production.migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatchCoordinatorDO"]
+
+[[env.production.migrations]]
+tag = "v2"
+new_sqlite_classes = ["CreditsDO"]
+
+[[env.production.migrations]]
+tag = "v3"
+new_sqlite_classes = ["UserKeysDO"]
+
+[[env.production.migrations]]
+tag = "v4"
+new_sqlite_classes = ["PaymentDO", "MatchShardDO", "PlayerShardDO", "StateSyncCoordinatorDO", "LobbyDO", "MatchmakingDO", "PresenceDO", "SignalingDO", "AuditLogDO", "ProgressionDO", "RewardDO", "AntiCheatDO", "FraudDetectionDO", "PenaltyDO", "ProfileDO", "MessageDO", "ActivityFeedDO", "PartyDO", "LeaderboardDO", "NotificationDO", "InventoryDO", "MarketplaceDO", "TournamentDO", "SettingsDO"]
+
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "logs"
+
+[[env.production.kv_namespaces]]
+binding = "LOGS_RATE_LIMIT_KV"
+id = "9334f0d3692c43d98c5f08124fa726c2"
+
+[[env.production.kv_namespaces]]
+binding = "ADMIN_CACHE_KV"
+id = "4408fcb46b404d2b9969b95952cb0719"
+
+[[env.production.kv_namespaces]]
+binding = "RESOURCES_RATE_LIMIT_KV"
+id = "8889c64a98ae44278a8ae271acda6509"
+
+[[env.production.kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "b77880d7efa843c7918c309f7ac283ad"
+
+[[env.production.kv_namespaces]]
+binding = "DISCOVERY_KV"
+id = "86bb0eab14cd407882845ebedb71d75c"
+
+[[env.production.kv_namespaces]]
+binding = "ITEM_CATALOG_KV"
+id = "64601b0df8fe43f584a0f29400f49013"
+
+[[env.production.kv_namespaces]]
+binding = "MODERATION_KV"
+id = "2779018f7add435d94ed45f8fd3b0b2e"
+
+[[env.production.kv_namespaces]]
+binding = "HEALTH_KV"
+id = "d837e54b6143466ab0874bf9c033b4e0"
+
+[[env.production.kv_namespaces]]
+binding = "SECURITY_KV"
+id = "8d9a7bf5048e4a5c803acb5f6693bf78"
+
+[[env.production.kv_namespaces]]
+binding = "AI_CATALOG_KV"
+id = "9ec2d2f326f84edfa5c3748c7710abd2"
+
+[[env.production.kv_namespaces]]
+binding = "PROMO_KV"
+id = "ca82c6ba47a44806811f2c8da7dab12c"
+
+[[env.production.kv_namespaces]]
+binding = "PRODUCT_KV"
+id = "d7f20a0eaa2e4156816ea6d3e9630453"
+
+[[env.production.kv_namespaces]]
+binding = "MANIFEST_CACHE_KV"
+id = "b342cc7238824d3ebf86bf3ac39b8eb0"
+
+[env.production.observability]
+enabled = true
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+FIREBASE_PROJECT_ID = "claim-b020c"
+# Per critique Issue #12: Reject * in production for security
+# Production domain: https://game.ocentra.ca
+CORS_ORIGIN = "https://game.ocentra.ca"
+# Rate limiting: 100 requests per minute for logs API
+RATE_LIMIT_MATCHES_PER_HOUR = "100"
+# Logging: Production = errors/warnings only (safe by default)
+# Production debugging: Use X-Debug-Modules header per-request
+LOG_LEVEL = "warn"
+# Analytics error/warn gates (free plan: 100K data points/day)
+ERROR_LOG_SAMPLE_RATE = "0.1"
+WARN_LOG_SAMPLE_RATE = "0.1"
+# Set to "true" to disable error/warn Analytics logging
+# ERROR_LOGGING_DISABLED = "false"
+# Public R2 base URL for assets (e.g. https://assets.ocentra.ca); set via wrangler secret or dashboard
+ASSETS_PUBLIC_URL = ""
+
+[env.production.alias]
+"@/logging/domain-logger-init" = "./src/logging/domain-logger-stub.ts"
+
+

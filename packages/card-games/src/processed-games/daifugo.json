@@ -1,0 +1,669 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "daifugo.json",
+  "name": "Daifugō",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Daifugō (大富豪, 'Great Millionaire') is Japan's iconic climbing card game, closely related to President/Capitalism. Players shed cards in combinations higher than the previously played combination. The hierarchy from first to go out (Daifugō = Great Millionaire) to last (Daihinmin = Great Pauper) determines a social pecking order for the next round and often involves card exchanges. The game is extraordinarily popular in Japan and known by dozens of regional variants with unique house rules.",
+    "category": "Climbing",
+    "subCategory": "Climbing / Rank-exchange",
+    "origin": "Japan",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 4,
+      "display": "3-8 (Optimal: 4-6)"
+    },
+    "deck": "52 cards",
+    "difficulty": "Intermediate",
+    "duration": "20-60 minutes",
+    "hasPlaceholders": false,
+    "originName": "大富豪 Daifugō (Great Millionaire)"
+  },
+  "history": {
+    "origins": "Daifugō emerged in Japan in the 1970s and rapidly became one of the most widely played card games in the country. It belongs to the same family as Big Two (Chinese), President (Western), and Zheng Shangyou (Chinese).",
+    "originCountries": ["Japan"],
+    "timeline": [
+      "1970s: Appears in Japan under the name Daifugō.",
+      "1980s-1990s: Spreads across Japan with numerous house-rule variants.",
+      "Present: Standard card game in Japanese households, schools, and bars."
+    ],
+    "evolution": "The Daifugō family is extraordinary for its regional rule variation—every region of Japan has its own house rules (special moves, reversal cards, joker powers, etc.), making it one of the most house-rule-rich games in the world.",
+    "cultural": "Deeply embedded in Japanese casual culture. 'Daifugō' and 'Daihinmin' are colloquial terms in Japanese for 'extremely rich' and 'extremely poor,' illustrating how the game mirrors social hierarchy.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Three to six players are typical; the game is usually played by 3 to 6, and up to 8 can take part (often with a single 53-card pack in Japan). With five or more players the full title hierarchy applies (Dai Fugō, Fugō, heimin, Hinmin, Dai Hinmin); with three or four only Fugō (winner) and Hinmin (loser) are used.",
+    "deck": "Standard 52 cards + optional Jokers.",
+    "equipment": "Cards.",
+    "dealing": "Deal entire deck evenly. Players with extra cards start at a slight disadvantage.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be first to shed all cards (Daifugō = 1st place). Avoid being last (Daihinmin = last place).",
+    "gameplay": "The player holding 3♦ (or 3♠ in some variants) leads first. On each turn, a player may:\n- Play a combination STRICTLY HIGHER than the previous combination of the SAME TYPE (single, pair, triple, sequence of 3+).\n- Or pass.\nThe played combination must match the current type (if singles are out, you must play singles). The round continues until all but one player passes; then the last player to play leads a new combination.",
+    "keyRules": [
+      "You MUST match the current play type (singles vs. pairs vs. sequences).",
+      "Revolution (four-of-a-kind) inverts rank order for rest of round.",
+      "Daifugō-Daihinmin card exchange is the defining social mechanic."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Play 2s and Jokers last—they're your highest cards and can always beat any play. Never waste them early.",
+    "intermediate": "Hand Shape: Analyze how many singles, pairs, and sequences you hold. If opponents are playing pairs, hold your pairs for later responses. Sequence play can empty 4-6 cards in one turn.",
+    "advanced": "Revolution Timing: Playing a four-of-a-kind revolution at the right moment can completely flip the power dynamic when you hold a lot of low cards. Track who has how many cards—fewer remaining cards = that player is close to ending the round.",
+    "tips": [
+      "The card exchange (Daihinmin → Daifugō) means being Great Pauper once tends to compound—focus on not finishing last.",
+      "A Joker played as a single beats everything. Save it for when you're near empty."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "daihinmin-simple",
+        "name": "Daihinmin (Simple form)",
+        "description": "No revolution, no suit lock. Simpler ruleset for beginners.",
+        "overrides": {},
+        "emptyOverridesReason": "Simple variant uses same engine constants; no numeric or structural overrides documented in source."
+      },
+      {
+        "id": "daifugo-5-player",
+        "name": "5-Player Daifugō",
+        "description": "5 players with ranks: Daifugō (1st), Fugō (2nd), Heimin (3rd), Hinmin (4th), Daihinmin (5th). Full exchange hierarchy.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes optimal player count; engine.playerConfig already supports 5; no further overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays lowest valid cards. Never passes strategically.",
+      "medium": "Saves 2s and Joker. Plays sequences efficiently. Considers passing to conserve power cards.",
+      "hard": "Tracks opponents' card counts precisely. Optimizes revolution timing. Plays to force Daihinmin onto specific opponents."
+    },
+    "considerations": [
+      "Revolution state tracking (normal vs. inverted order).",
+      "Suit lock state if using shibari rule.",
+      "Card exchange mechanic at round start.",
+      "Combo type enforcement (singles/pairs/sequences must match)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_dai_fug_www_pagat_com_climbing_daifugo_html",
+        "name": "Pagat - Dai Fugō",
+        "url": "https://www.pagat.com/climbing/daifugo.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-daifugo.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "climbing",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 85,
+    "complexity": 4,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "exchange",
+        "label": "Card Exchange (Daihinmin → Daifugō)",
+        "actor": "current_player",
+        "legalActions": [
+          "give_cards",
+          "receive_cards"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Climb or Pass",
+        "actor": "current_player",
+        "legalActions": [
+          "play_combo",
+          "pass"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo has no ante payment; players begin by receiving dealt cards."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealing is handled as setup flow, not as a player-triggered action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo has no market row or reveal-market mechanic."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are not bought from a market in Daifugo."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players never buy cards from a stock pile in this game."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo is a shedding game with pass-or-play turns, not folding."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Checking is a betting action and does not exist in Daifugo."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Calling bets is not part of Daifugo's rules."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo has no betting rounds or wager amounts."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Raising is a betting mechanic and is not used here."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo has no declaration phase such as high-low declarations."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no full-hand showdown reveal step in this game."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo has no central betting pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo primarily plays combinations; combo resolution is modeled as custom actions."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No player draw action exists after initial deal in Daifugo."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards leave hand by legal play, not by separate discard actions."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without playing this turn; you may play again when turn returns to you.",
+        "cost": "0",
+        "constraints": "You may pass when you cannot or choose not to beat the current combination; passing does not prevent you from playing on the next turn.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no contract bidding process in Daifugo."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Daifugo does not include rummy-style meld declarations."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "End-state is determined by empty hand order, not a go-out action call."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 5,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        { "type": "higher_single", "notes": null },
+        { "type": "higher_pair", "notes": null },
+        { "type": "higher_triple", "notes": null },
+        { "type": "higher_sequence", "notes": "Same number of cards, same suit, consecutive ranks. A-2-3 and 2-3-4 not valid." },
+        { "type": "same_count_higher_rank", "notes": "Four of a kind; must match type and beat current rank." }
+      ],
+      "passAllowed": true,
+      "burnRules": "Played cards are set aside face down when table is cleared; no burn pile."
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "agreed_session"
+    },
+    "notApplicableReasons": {
+      "drawConfig": "After the initial deal, players do not draw cards from any pile in Daifugo.",
+      "discardConfig": "Cards leave hand only through valid plays; there is no separate discard mechanic."
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "revolution", "text": "Revolution: four of a kind inverts rank order (3 high, 2 low) until next four of a kind or end of hand." },
+        { "id": "card_exchange", "text": "Card exchange: Dai Hinmin gives two best cards to Dai Fugō; Hinmin gives one to Fugō; winners give unwanted cards back." },
+        { "id": "first_lead", "text": "First deal: first player chosen at random (e.g. Janken). Subsequent hands: loser of previous hand deals and leads." },
+        { "id": "clear_and_lead", "text": "Last player to play clears the table and leads any new combination." },
+        { "id": "joker_substitute", "text": "Joker substitutes for any card; combination with joker equals same combination in natural cards." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["exchange", "play_loop"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "give_cards",
+        "supported": true,
+        "description": "Transfer required exchange cards from lower rank players to higher rank players at round start.",
+        "cost": "0",
+        "constraints": "Used only in exchange phase according to prior-round ranking.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "receive_cards",
+        "supported": true,
+        "description": "Receive exchange cards from opponents based on rank hierarchy before play begins.",
+        "cost": "0",
+        "constraints": "Occurs only during exchange phase and follows exchange quotas.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "play_combo",
+        "supported": true,
+        "description": "Play a legal single, pair, set, or sequence that beats the current table combination.",
+        "cost": "0",
+        "constraints": "Must match current combination type and exceed current rank under normal or revolution order.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "3<4<5<6<7<8<9<10<J<Q<K<A<2<Joker (revolution inverts).",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Deal full deck evenly."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "DAIFUGŌ",
+      "subtitle": "大富豪 · Great Millionaire",
+      "tagline": "Empty your hand first. Become the Millionaire."
+    },
+    "shortDescription": "Japan's great shedding game. Play combinations higher than the previous, or pass. Four-of-a-kind triggers the Revolution, flipping the card order. The rich give their worst cards to the poor—social hierarchy in card form.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "You hold: 3, 3, 5, 7, 7, 2, Joker. It's your lead—you can play the pair of 3s (weak but empties low cards), the pair of 7s (stronger), or the single Joker (nuclear option, wastes it). Best play: pair of 3s early—conserve 7s and Joker for responses to opponents' high pairs later.",
+    "ai": "Game: Daifugō. Japanese climbing game. Card order: 3→2→Joker (high). Play singles/pairs/triples/sequences higher than previous same-type combo. Four-of-a-kind = Revolution (inverts). First empty wins."
+  },
+  "scoring": {
+    "description": "Ranking system (1st to last) determines next round exchanges.",
+    "winCondition": "First to shed all cards = Daifugō (1st place).",
+    "cardValues": {
+      "3": "1",
+      "4": "2",
+      "5": "3",
+      "6": "4",
+      "7": "5",
+      "8": "6",
+      "9": "7",
+      "10": "8",
+      "J": "9",
+      "Q": "10",
+      "K": "11",
+      "A": "12",
+      "2": "13",
+      "Joker": "14"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 10,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "大富豪",
+    "Dai Fugō",
+    "Dai Hinmin",
+    "Daihinmin",
+    "President (Japanese variant)",
+    "Millionaire",
+    "Rich Man Poor Man"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,215 @@
+{
+  "consumer": {
+    "name": "Frontend-Tournament"
+  },
+  "interactions": [
+    {
+      "description": "a request for tournament bracket by id",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "tournament exists"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/tournaments/contract-tournament-1/bracket"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "rounds": [
+              {
+                "matches": [
+                  {}
+                ],
+                "round": 1
+              }
+            ],
+            "tournamentId": "contract-tournament-1"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.rounds": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.rounds[*].matches": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.rounds[*].round": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.tournamentId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for tournament list or base without id",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "request has no tournament id"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/tournaments"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Tournament ID required"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 400
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to register for tournament",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "tournament exists and accepts registration"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {},
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tournaments/contract-tournament-1/register"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "registered": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.registered": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.28",
+      "models": "1.3.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "Cloudflare Worker"
+  }
+}

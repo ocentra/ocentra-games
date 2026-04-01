@@ -1,0 +1,612 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "aggravation-speed.json",
+  "name": "Aggravation Speed",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Aggravation is a two-player speed-matching game where players rapidly cover same-rank matches in expanding face-up rows.",
+    "category": "Race",
+    "subCategory": "Speed Match",
+    "origin": "North America",
+    "originName": "North America (United States and Canada)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "Standard 52-card deck split into two 26-card decks",
+    "difficulty": "Intermediate",
+    "duration": "5-10 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Aggravation is documented as a California Speed family variant with expanding rows rather than fixed 2x4 layout.",
+    "originCountries": ["North America"],
+    "timeline": [
+      "Late 20th century: Speed-family games spread through schools and casual play.",
+      "Modern: Aggravation and Frustration variants remain popular reflex games."
+    ],
+    "evolution": "Compared with California Speed, players extend rows until matches appear, then cascade-cover matches rapidly.",
+    "cultural": "Known for high tempo and the win call 'Aggravation!' when deck runs out and final match is found.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 2 players.",
+    "deck": "One 52-card deck split equally into 26-card face-down player piles.",
+    "equipment": "Deck and flat table space for two parallel rows.",
+    "dealing": "Players simultaneously deal one face-up card each to begin rows, extending rows until matches occur.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be first to empty your deck and legally call 'Aggravation!' on a live match.",
+    "gameplay": "Players simultaneously extend rows from their decks. Any time equal ranks appear anywhere in layout, a player may cover matching cards with new cards from own deck. Cascades continue while matches exist. When no matches remain, both extend rows again. A player with empty deck wins by tapping a valid match and calling 'Aggravation!'.",
+    "keyRules": [
+      "Play is simultaneous, not turn-based.",
+      "Matches are by rank only; suits are irrelevant.",
+      "If no matches exist, rows are extended equally until a match appears.",
+      "A player with one last card must use it on a match, then find another match to call win.",
+      "If one player is out and no match exists, opponent continues dealing until a match appears."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Scan both rows continuously instead of tunnel-visioning your own cards.",
+    "intermediate": "Minimize hand-travel distance between likely matching zones to improve reaction speed.",
+    "advanced": "Exploit cascade timing by planning immediate follow-up covers after first match contact.",
+    "tips": [
+      "Use both hands for far-separated match pairs.",
+      "Keep rhythm between scanning and dealing so dead periods are short."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "frustration",
+        "name": "Frustration",
+        "description": "When one player runs out, both scoop local rows and restart race with remaining cards until threshold is reached.",
+        "overrides": {},
+        "emptyOverridesReason": "Frustration is documented only in prose; engine parameter differences are not yet modeled as structured overrides."
+      },
+      {
+        "id": "california_speed",
+        "name": "California Speed",
+        "description": "Fixed 2x4 layout variant instead of growing rows.",
+        "overrides": {},
+        "emptyOverridesReason": "California Speed variant is described narratively; distinct engine overrides have not been wired yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Slow reaction and frequent missed matches.",
+      "medium": "Stable match detection with moderate cascade handling.",
+      "hard": "Fast global scan and optimized cascade-cover execution."
+    },
+    "considerations": [
+      "AI should model perception lag for believable play.",
+      "Cascade matching requires repeated immediate state re-evaluation."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_aggravation_speed",
+        "name": "Pagat - California Speed / Aggravation",
+        "url": "https://www.pagat.com/patience/california_speed.html#aggravation",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Aggravation"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Aggravation"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "Aggravation"
+          }
+        ],
+        "localHtml": "pagat-california-speed.html"
+      },
+      {
+        "id": "src:wikipedia_speed_card_game",
+        "name": "Wikipedia - Speed (card game)",
+        "url": "https://en.wikipedia.org/wiki/Speed_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-speed-2.html"
+      }
+    ],
+    "additional": [
+      "Pagat Frustration variant notes"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "matching",
+    "fast-paced",
+    "social",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 2,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": "https://www.youtube.com/watch?v=o6_4WuuMfnY"
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "setup",
+        "label": "Split and Start",
+        "actor": "system",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "race",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_up"
+        },
+        "notes": "Split deck and begin with one face-up card each."
+      },
+      {
+        "id": "race",
+        "label": "Simultaneous Race",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "deal",
+          "play_card",
+          "go_out"
+        ],
+        "nextPhase": "race",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "player_calls_aggravation_with_empty_deck_on_valid_match",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "deal": "face_up",
+          "play_card": "face_up"
+        },
+        "notes": "Players extend rows and cover matching ranks in real time."
+      },
+      {
+        "id": "resolution",
+        "label": "Win Verification",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Verify call and declare winner."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; speed matching game only."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Place next top card face-up into player's row.",
+        "cost": "0",
+        "constraints": "Used to extend rows when no matches exist, or during initial setup.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "tableau",
+          "count": 1
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; players deal from own decks."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase in this game."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock purchase; each player has fixed deck."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No folding; simultaneous play only."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in speed game."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in speed game."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in speed game."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in speed game."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning is via go_out call, not declare."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands not revealed as separate action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Declare winning player after valid aggravation call.",
+        "cost": "0",
+        "constraints": "System action at end of race.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Cover a matching-rank card with top card from your deck.",
+        "cost": "0",
+        "constraints": "Only legal when a same-rank match exists in layout.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards dealt from deck to row, not draw-to-hand."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards cover matches; no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No pass; extend row or cover match only."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding in speed matching game."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No melding; rank matching only."
+      },
+      "go_out": {
+        "supported": true,
+        "description": "Call 'Aggravation!' after emptying deck and identifying valid match.",
+        "cost": "0",
+        "constraints": "Requires empty personal deck and live valid match in layout.",
+        "isTerminating": true,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "linear",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 26,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "notApplicableReasons": {
+      "drawConfig": "Players deal from own deck to row; no draw-to-hand.",
+      "discardConfig": "Cards cover matches or stay in row; no discard pile.",
+      "specialCards": "Standard 52-card deck; no special card abilities.",
+      "shedding": "Speed matching game; goal is empty deck and call, not empty hand.",
+      "fishingConfig": "Not a play-to-capture fishing game."
+    },
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "variable",
+      "startsWith": "fixed_player",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "last_player_standing"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 2,
+      "hand_size": 26,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "stack",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:score_area",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "one_card_left_finish",
+          "text": "A player with one last card must use it to cover one side of a match, then find a new live match and call Aggravation to win."
+        },
+        {
+          "id": "opponent_deals_alone_after_empty",
+          "text": "If one player has emptied their deck and no match exists, the other player continues dealing alone until a match appears."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "simultaneous_match_claims",
+        "cascade_match_resolution",
+        "aggravation_call_validation"
+      ]
+    },
+    "progression": ["setup", "race", "resolution"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Real-time rank matching and cover race",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers are used in this speed game.",
+    "suitDescription": "Four suits in the French tradition: spades (piques), hearts (cœurs), diamonds (carreaux), and clubs (trèfles). Each suit contains thirteen cards; suit may determine play order or partnerships.",
+    "rankDescription": "Thirteen ranks in each suit: ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three, and two. Standard ranking applies for play order and capturing in this game.",
+    "dealPattern": "Split deck 26/26; simultaneous row extension and match covering."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "AGGRAVATION SPEED",
+      "subtitle": "Reflex Match Race",
+      "tagline": "Find the match first."
+    },
+    "shortDescription": "A simultaneous reaction game of spotting and covering rank matches.",
+    "uiThemes": [
+      "neon",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "tableau",
+        "custom:score_area"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "row",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Aggravation Speed is a two-player reflex race: cover matching ranks fast, then call Aggravation when your deck is gone and a match is live.",
+    "ai": "Game: Aggravation Speed. Flow: setup split, simultaneous race with deal/play cover actions, valid aggravation call ends game."
+  },
+  "scoring": {
+    "description": "Single-hand winner game determined by first valid aggravation call.",
+    "winCondition": "First player to empty deck and call Aggravation on a valid match wins.",
+    "cardValues": {},
+    "penalties": {
+      "false_call": "Invalid aggravation call loses immediate claim by house rule."
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "Single-hand race; first valid aggravation call wins; no target score.",
+      "scoringDirection": "Winner-take-all; no cumulative score direction.",
+      "cardValues": "There is no per-card point system; winner is determined solely by emptying the deck and making a valid Aggravation call."
+    }
+  },
+  "alsoKnownAs": [
+    "Double Flip",
+    "Frustration (variant)"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

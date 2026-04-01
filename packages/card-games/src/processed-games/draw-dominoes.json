@@ -1,0 +1,656 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "draw-dominoes.json",
+  "name": "Draw Dominoes",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "One of the simplest and most common domino games: form a single line by matching ends; if you cannot play, draw from the boneyard until you can play or only two tiles remain. First to empty hand or lowest pips in a blocked game wins the hand; play to 100 (2P/partnership) or 61 (3–4P).",
+    "category": "Domino",
+    "subCategory": "Domino / Adding",
+    "origin": "Various",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2–4"
+    },
+    "deck": "Double-6 domino set; 7 tiles each for 2–3 players, 6 each for 4; remainder is boneyard.",
+    "difficulty": "Beginner",
+    "duration": "About 15–30 minutes per game.",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Draw Dominoes"
+  },
+  "history": {
+    "origins": "Draw Dominoes is documented in published rule references and long-running table play traditions. Modern dominoes first appeared in France in the mid-18th century and spread to Great Britain, Austria, Germany and Italy; Draw Dominoes is one of the simplest and most common Western domino games.",
+    "originCountries": ["France", "United Kingdom"],
+    "timeline": ["Mid-18th century: modern dominoes first appeared in France; line games such as Draw spread across Europe and are documented in rule references."],
+    "evolution": "Rules evolved through local table variants while preserving the core structure of Draw Dominoes.",
+    "cultural": "Draw Dominoes remains part of social and recreational card play communities.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players.",
+    "deck": "Double-6 domino set; 7 tiles each for 2–3 players, 6 for 4; remainder stays in the boneyard.",
+    "equipment": "Double-six domino set.",
+    "dealing": "7 tiles each for 2–3 players, 6 for 4 players; remainder stays in the boneyard. Players draw for lead; turn to lead passes to the left of the previous leader after each hand.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Empty your hand first by matching tile ends to the line, or have the fewest pips when the game is blocked. Draw from the boneyard when you cannot play. Game is played to 100 points (2P/partnership) or 61 (3–4P).",
+    "gameplay": "Players take turns adding tiles to either end of a single line, matching ends. Doubles are played across the line. If you cannot play, draw from the boneyard until you play a tile or the boneyard is reduced to two tiles (the last two are never drawn); with only two left and no play, pass. Hand ends when one player dominoes or the layout is blocked. Lowest pips in hand wins the hand; winner scores sum of losers' pips minus own total; tie for lowest scores nothing.",
+    "keyRules": [
+      "Match tile ends to either end of the line; doubles played across.",
+      "Draw from boneyard when unable to play until you can play or boneyard has two tiles.",
+      "Last two boneyard tiles are never drawn; if blocked with two left, pass.",
+      "Hand ends at first domino or when blocked; lowest pips wins hand; first to 100 (or 61 in 3–4P) wins game."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize legal, low-risk moves that preserve stronger options for later turns.",
+    "intermediate": "Track public information and update decisions as card distribution becomes clearer.",
+    "advanced": "Plan endgame timing early so your final sequence closes the game efficiently.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "dutch",
+        "name": "Dutch",
+        "description": "Player draws one or two tiles from the boneyard and passes if no playable tile; the double blank tile counts as 13 points.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation only describes rule differences; no engine constant overrides identified in sources."
+      },
+      {
+        "id": "puerto_rico",
+        "name": "Puerto Rico",
+        "description": "Holder of double six (or highest double dealt) starts and must lead with it; illegal to draw when able to play. Winner scores total pips in all opponents' hands; blocked game: lowest pips wins.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation only describes rule differences; no engine constant overrides identified in sources."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal moves with shallow tactical planning.",
+      "medium": "Uses basic counting and phase-aware move selection.",
+      "hard": "Optimizes expected value across hidden information and endgame states."
+    },
+    "considerations": [],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_draw_dominoes_www_pagat_com_domino_line_draw_html",
+        "name": "Pagat.com - Draw Dominoes",
+        "url": "https://www.pagat.com/domino/line/draw.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-domino-draw.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes_en_wikipedia_org_wiki_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain domino game; no specific legal or trademark status documented in sources.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal opening hand for the round."
+      },
+      {
+        "id": "main_play",
+        "label": "Main Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "draw",
+          "go_out"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Execute legal turn actions until round end condition is reached."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; ante is not a core player action in its documented rules."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards or tiles for a new hand in Draw Dominoes.",
+        "cost": "0",
+        "constraints": "Dealer only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; reveal market is not a core player action in its documented rules."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; buy market is not a core player action in its documented rules."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; buy stock is not a core player action in its documented rules."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; fold is not a core player action in its documented rules."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; check is not a core player action in its documented rules."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; call is not a core player action in its documented rules."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; bet is not a core player action in its documented rules."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; raise is not a core player action in its documented rules."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; declare is not a core player action in its documented rules."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; reveal hand is not a core player action in its documented rules."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; award pot is not a core player action in its documented rules."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a tile to either end of the line, matching the end value; doubles are played across the line.",
+        "cost": "0",
+        "constraints": "Tile must match one of the two open ends of the line.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw tiles from the boneyard until you have a playable tile or the boneyard is reduced to two tiles; last two tiles are never drawn.",
+        "cost": "0",
+        "constraints": "When unable to play, or optionally when able; draw until play or until only two tiles remain in boneyard.",
+        "isTerminating": false,
+        "effectType": "draw"
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; discard is not a core player action in its documented rules."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; pass is not a core player action in its documented rules."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; bid is not a core player action in its documented rules."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Draw Dominoes is modeled as a Domino flow; meld is not a core player action in its documented rules."
+      },
+      "go_out": {
+        "supported": true,
+        "description": "End the hand by playing your last tile (domino).",
+        "cost": "0",
+        "constraints": "Allowed only when hand is empty after playing a tile.",
+        "isTerminating": true,
+        "effectType": "custom"
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": null,
+          "notes": "Boneyard; draw until a playable tile or boneyard reduced to two tiles; last two tiles never drawn."
+        }
+      ],
+      "drawCount": null,
+      "drawTiming": "phase_specific",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "boneyard_last_two", "text": "Last two boneyard tiles are never drawn; when boneyard has only two tiles and player cannot play, they pass." },
+        { "id": "hand_end", "text": "Hand ends when one player dominoes (empties hand) or when layout is blocked and no one can play." },
+        { "id": "blocked_draw", "text": "Blocked game: both ends of the line show a number of which all tiles have been played; next player must draw all boneyard tiles except the last two." },
+        { "id": "optional_draw", "text": "Players may draw from boneyard even when able to play, to try to block or improve position." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "main_play"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A double-six domino set consisting of 28 tiles with all combinations of pips from 0 to 6, where each tile has two sides with 0 to 6 pips arranged in various combinations for domino gameplay.",
+    "suitDescription": "Domino tiles organized by pip combinations ranging from (0,0) blank to (6,6), where each combination represents a distinct tile value and contributes to the domino chain during gameplay.",
+    "rankDescription": "Domino tiles ranked by total pip count and combination type, where doubles (matching both sides) have special significance, and strategic placement along the chain determines game progression and scoring opportunities.",
+    "dealPattern": "7 tiles each for 2–3 players, 6 each for 4 players; remainder forms the boneyard.",
+    "notApplicableReasons": {
+      "trickConfig": "Draw Dominoes is a line-connection game; tiles are played to a single line, not in tricks.",
+      "meldConfig": "No melding; tiles are matched by ends to the line.",
+      "discardConfig": "Tiles are played to the line or drawn from boneyard; there is no discard pile.",
+      "patienceConfig": "Multiplayer domino game, not solitaire.",
+      "fishingConfig": "Tiles are played to a line and drawn from boneyard; no capture-from-layout fishing.",
+      "shedding": "Goal is to empty hand by playing to the line; shedding is not a separate mechanic."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Draw Dominoes",
+      "subtitle": "Domino rules and play flow",
+      "tagline": "Match ends, draw when you cannot play; first to empty hand or target score wins."
+    },
+    "shortDescription": "Form a line by matching domino ends; draw from the boneyard when you cannot play. First to empty hand or reach 100 (or 61 in 3–4P) wins.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "At end of hand each player counts pips in hand; lowest wins the hand and scores sum of losers' pips minus own total. Tie for lowest scores nothing. Game ends when a player reaches 100 (2P/partnership) or 61 (3–4P).",
+    "winCondition": "Empty your hand first (domino) or have fewest pips when blocked; first to reach target score wins the game.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "Tie for lowest hand score: nobody scores for that hand.",
+    "targetScore": 100,
+    "scoringDirection": "high_wins",
+    "nullReasons": {"cardValues": "Scoring uses pip count on domino tiles, not card face values; cardValues do not apply."}
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

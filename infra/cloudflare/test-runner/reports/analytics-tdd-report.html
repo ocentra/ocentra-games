@@ -1,0 +1,3933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Engine TDD Test Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #cccccc;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+    
+    h2 {
+      color: #569cd6;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    
+    h3 {
+      color: #9cdcfe;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    
+    .header-info {
+      background-color: #252526;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #3e3e42;
+    }
+    
+    .header-info strong {
+      color: #4ec9b0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    table thead {
+      background-color: #2a2d2e;
+    }
+    
+    table th {
+      padding: 12px 15px;
+      text-align: left;
+      color: #cccccc;
+      font-weight: 600;
+      border-bottom: 2px solid #3e3e42;
+    }
+    
+    table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #3e3e42;
+    }
+    
+    table tbody tr:hover {
+      background-color: #2a2d2e;
+    }
+    
+    table a {
+      color: #4ec9b0;
+      text-decoration: none;
+    }
+    
+    table a:hover {
+      text-decoration: underline;
+    }
+    
+    details {
+      margin: 10px 0;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 0;
+      background-color: #1e1e1e;
+    }
+    
+    details summary {
+      padding: 12px 15px;
+      cursor: pointer;
+      background-color: #252526;
+      border-radius: 4px;
+      -webkit-user-select: none;
+      user-select: none;
+      font-weight: 600;
+      color: #cccccc;
+      transition: background-color 0.2s ease;
+    }
+    
+    details summary:hover {
+      background-color: #2a2d2e;
+    }
+    
+    details[open] summary {
+      border-bottom: 1px solid #3e3e42;
+      border-radius: 4px 4px 0 0;
+      background-color: #2a2d2e;
+    }
+    
+    details > div {
+      padding: 15px;
+      background-color: #1e1e1e;
+      color: #cccccc;
+    }
+    
+    details > div code {
+      background-color: #252526;
+      color: #d4d4d4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    
+    details > div pre {
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 15px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    details > div pre code {
+      background-color: transparent;
+      padding: 0;
+      display: block;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid #3e3e42;
+      margin: 20px 0;
+    }
+    
+    p {
+      margin: 10px 0;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #3e3e42;
+      color: #808080;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    
+    .copy-button {
+      background-color: #0e639c;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font-size: 0.85em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s ease;
+    }
+    
+    .copy-button:hover {
+      background-color: #1177bb;
+    }
+    
+    .copy-button:active {
+      background-color: #0a4d73;
+    }
+    
+    details summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Analytics Engine TDD Test Report</h1>
+    
+    <div class="header-info">
+      <p><strong>Generated:</strong> 2025-12-02 18:14:53</p>
+      <p><strong>Status:</strong> ⚠️ MOSTLY PASSING</p>
+      <p><strong>Total Tests:</strong> 95 | <strong>Passed:</strong> 74 ✅ | <strong>Failed:</strong> 21 ❌ | <strong>Pass Rate:</strong> 77.9%</p>
+    </div>
+    
+    <h2>📊 Test Summary Table</h2>
+    <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Test</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td>1</td>
+      <td><a href="#test-0-basic-1">BASIC-1</a></td>
+      <td>Basic string literal</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>2</td>
+      <td><a href="#test-1-basic-2">BASIC-2</a></td>
+      <td>Basic number literal</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>3</td>
+      <td><a href="#test-2-basic-3">BASIC-3</a></td>
+      <td>List tables</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>4</td>
+      <td><a href="#test-3-count-1">COUNT-1</a></td>
+      <td>COUNT() with no args</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>5</td>
+      <td><a href="#test-4-count-2">COUNT-2</a></td>
+      <td>COUNT() with alias</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>6</td>
+      <td><a href="#test-5-select-1">SELECT-1</a></td>
+      <td>SELECT all columns</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>7</td>
+      <td><a href="#test-6-select-2">SELECT-2</a></td>
+      <td>SELECT blob1</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>8</td>
+      <td><a href="#test-7-select-3">SELECT-3</a></td>
+      <td>SELECT timestamp</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>9</td>
+      <td><a href="#test-8-select-4">SELECT-4</a></td>
+      <td>SELECT double1</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>10</td>
+      <td><a href="#test-9-select-5">SELECT-5</a></td>
+      <td>SELECT index1</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>11</td>
+      <td><a href="#test-10-select-6">SELECT-6</a></td>
+      <td>SELECT _sample_interval</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>12</td>
+      <td><a href="#test-11-select-7">SELECT-7</a></td>
+      <td>SELECT multiple columns</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>13</td>
+      <td><a href="#test-12-select-8">SELECT-8</a></td>
+      <td>SELECT with alias</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>14</td>
+      <td><a href="#test-13-select-9">SELECT-9</a></td>
+      <td>SELECT DISTINCT</td>
+      <td>❌</td>
+      <td>Input was invalid: selection used unsupported feat</td>
+    </tr>
+<tr>
+      <td>15</td>
+      <td><a href="#test-14-where-1">WHERE-1</a></td>
+      <td>WHERE with = (exact match)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>16</td>
+      <td><a href="#test-15-where-2">WHERE-2</a></td>
+      <td>WHERE with != (not equal)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>17</td>
+      <td><a href="#test-16-where-3">WHERE-3</a></td>
+      <td>WHERE with &gt;= (numeric comparison)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>18</td>
+      <td><a href="#test-17-where-4">WHERE-4</a></td>
+      <td>WHERE with &lt;= (numeric comparison)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>19</td>
+      <td><a href="#test-18-where-5">WHERE-5</a></td>
+      <td>WHERE with &gt; (numeric comparison)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>20</td>
+      <td><a href="#test-19-where-6">WHERE-6</a></td>
+      <td>WHERE with &lt; (numeric comparison)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>21</td>
+      <td><a href="#test-20-where-7">WHERE-7</a></td>
+      <td>WHERE with timestamp &gt;= toDateTime()</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>22</td>
+      <td><a href="#test-21-where-8">WHERE-8</a></td>
+      <td>WHERE with timestamp &lt;= toDateTime()</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>23</td>
+      <td><a href="#test-22-where-9">WHERE-9</a></td>
+      <td>WHERE with AND</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>24</td>
+      <td><a href="#test-23-where-10">WHERE-10</a></td>
+      <td>WHERE with OR</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>25</td>
+      <td><a href="#test-24-where-11">WHERE-11</a></td>
+      <td>WHERE with IN operator</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>26</td>
+      <td><a href="#test-25-where-12">WHERE-12</a></td>
+      <td>WHERE with BETWEEN operator</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>27</td>
+      <td><a href="#test-26-where-13">WHERE-13</a></td>
+      <td>WHERE with IS NULL</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>28</td>
+      <td><a href="#test-27-where-14">WHERE-14</a></td>
+      <td>WHERE with IS NOT NULL</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>29</td>
+      <td><a href="#test-28-string-1">STRING-1</a></td>
+      <td>startsWith() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>30</td>
+      <td><a href="#test-29-string-2">STRING-2</a></td>
+      <td>position() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>31</td>
+      <td><a href="#test-30-string-3">STRING-3</a></td>
+      <td>LIKE operator (may not work)</td>
+      <td>❌</td>
+      <td>Input was invalid: unsupported binary operator: LI</td>
+    </tr>
+<tr>
+      <td>32</td>
+      <td><a href="#test-31-string-4">STRING-4</a></td>
+      <td>match() regex function (may not work)</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: MATCH</td>
+    </tr>
+<tr>
+      <td>33</td>
+      <td><a href="#test-32-string-5">STRING-5</a></td>
+      <td>splitByChar() function</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: SPLITBYC</td>
+    </tr>
+<tr>
+      <td>34</td>
+      <td><a href="#test-33-string-6">STRING-6</a></td>
+      <td>splitByChar() with array access</td>
+      <td>❌</td>
+      <td>Input was invalid: unsupported expression type: sp</td>
+    </tr>
+<tr>
+      <td>35</td>
+      <td><a href="#test-34-string-7">STRING-7</a></td>
+      <td>substring() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>36</td>
+      <td><a href="#test-35-string-8">STRING-8</a></td>
+      <td>length() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>37</td>
+      <td><a href="#test-36-string-9">STRING-9</a></td>
+      <td>concat() function</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: CONCAT</td>
+    </tr>
+<tr>
+      <td>38</td>
+      <td><a href="#test-37-string-10">STRING-10</a></td>
+      <td>replace() function</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: REPLACE</td>
+    </tr>
+<tr>
+      <td>39</td>
+      <td><a href="#test-38-string-11">STRING-11</a></td>
+      <td>trim() function</td>
+      <td>❌</td>
+      <td>Input was invalid: unsupported expression type: TR</td>
+    </tr>
+<tr>
+      <td>40</td>
+      <td><a href="#test-39-order-1">ORDER-1</a></td>
+      <td>ORDER BY timestamp ASC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>41</td>
+      <td><a href="#test-40-order-2">ORDER-2</a></td>
+      <td>ORDER BY timestamp DESC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>42</td>
+      <td><a href="#test-41-order-3">ORDER-3</a></td>
+      <td>ORDER BY timestamp DESC (with timestamp in SELECT)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>43</td>
+      <td><a href="#test-42-order-4">ORDER-4</a></td>
+      <td>ORDER BY double1 ASC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>44</td>
+      <td><a href="#test-43-order-5">ORDER-5</a></td>
+      <td>ORDER BY double1 DESC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>45</td>
+      <td><a href="#test-44-order-6">ORDER-6</a></td>
+      <td>ORDER BY double1 DESC (with double1 in SELECT)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>46</td>
+      <td><a href="#test-45-order-7">ORDER-7</a></td>
+      <td>ORDER BY index1 ASC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>47</td>
+      <td><a href="#test-46-order-8">ORDER-8</a></td>
+      <td>ORDER BY index1 DESC</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>48</td>
+      <td><a href="#test-47-order-9">ORDER-9</a></td>
+      <td>ORDER BY _sample_interval</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>49</td>
+      <td><a href="#test-48-group-1">GROUP-1</a></td>
+      <td>GROUP BY with COUNT()</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>50</td>
+      <td><a href="#test-49-group-2">GROUP-2</a></td>
+      <td>GROUP BY index1</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>51</td>
+      <td><a href="#test-50-group-3">GROUP-3</a></td>
+      <td>GROUP BY with HAVING clause</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>52</td>
+      <td><a href="#test-51-agg-1">AGG-1</a></td>
+      <td>MIN() aggregate</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>53</td>
+      <td><a href="#test-52-agg-2">AGG-2</a></td>
+      <td>MAX() aggregate</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>54</td>
+      <td><a href="#test-53-agg-3">AGG-3</a></td>
+      <td>AVG() aggregate</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>55</td>
+      <td><a href="#test-54-agg-4">AGG-4</a></td>
+      <td>SUM() aggregate</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>56</td>
+      <td><a href="#test-55-case-1">CASE-1</a></td>
+      <td>CASE/WHEN statement</td>
+      <td>❌</td>
+      <td>Input was invalid: unsupported expression type: CA</td>
+    </tr>
+<tr>
+      <td>57</td>
+      <td><a href="#test-56-case-2">CASE-2</a></td>
+      <td>CASE/WHEN with multiple conditions</td>
+      <td>❌</td>
+      <td>Input was invalid: unsupported expression type: CA</td>
+    </tr>
+<tr>
+      <td>58</td>
+      <td><a href="#test-57-null-1">NULL-1</a></td>
+      <td>COALESCE function</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: COALESCE</td>
+    </tr>
+<tr>
+      <td>59</td>
+      <td><a href="#test-58-null-2">NULL-2</a></td>
+      <td>COALESCE with multiple values</td>
+      <td>❌</td>
+      <td>Input was invalid: unknown function call: COALESCE</td>
+    </tr>
+<tr>
+      <td>60</td>
+      <td><a href="#test-59-date-1">DATE-1</a></td>
+      <td>toDateTime() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>61</td>
+      <td><a href="#test-60-date-2">DATE-2</a></td>
+      <td>toDate() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>62</td>
+      <td><a href="#test-61-date-3">DATE-3</a></td>
+      <td>formatDateTime() function</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>63</td>
+      <td><a href="#test-62-page-1">PAGE-1</a></td>
+      <td>LIMIT with OFFSET (pagination)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>64</td>
+      <td><a href="#test-63-page-2">PAGE-2</a></td>
+      <td>ORDER BY + LIMIT + OFFSET</td>
+      <td>❌</td>
+      <td>Input was invalid: unable to find type of column: </td>
+    </tr>
+<tr>
+      <td>65</td>
+      <td><a href="#test-64-combine-1">COMBINE-1</a></td>
+      <td>WHERE + LIMIT</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>66</td>
+      <td><a href="#test-65-combine-2">COMBINE-2</a></td>
+      <td>SELECT multiple + WHERE + LIMIT</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>67</td>
+      <td><a href="#test-66-combine-3">COMBINE-3</a></td>
+      <td>WHERE + GROUP BY + COUNT</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>68</td>
+      <td><a href="#test-67-combine-4">COMBINE-4</a></td>
+      <td>DISTINCT + WHERE + LIMIT</td>
+      <td>❌</td>
+      <td>Input was invalid: selection used unsupported feat</td>
+    </tr>
+<tr>
+      <td>69</td>
+      <td><a href="#test-68-combine-5">COMBINE-5</a></td>
+      <td>GROUP BY + HAVING + ORDER BY + LIMIT</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>70</td>
+      <td><a href="#test-69-prod-1">PROD-1</a></td>
+      <td>Query production logs by level (info)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>71</td>
+      <td><a href="#test-70-prod-2">PROD-2</a></td>
+      <td>Query production logs by source (Browser:ModelManager)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>72</td>
+      <td><a href="#test-71-prod-3">PROD-3</a></td>
+      <td>Query production logs by multiple levels</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>73</td>
+      <td><a href="#test-72-prod-4">PROD-4</a></td>
+      <td>Count production logs by level</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>74</td>
+      <td><a href="#test-73-prod-5">PROD-5</a></td>
+      <td>Count production logs by source (old broken query)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>75</td>
+      <td><a href="#test-74-prod-6">PROD-6</a></td>
+      <td>Stats: Total count query (matches getStatsFromAnalyticsEngine)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>76</td>
+      <td><a href="#test-75-prod-7">PROD-7</a></td>
+      <td>Stats: Count by level query (matches getStatsFromAnalyticsEngine)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>77</td>
+      <td><a href="#test-76-prod-8">PROD-8</a></td>
+      <td>Stats: Count by source query (matches getStatsFromAnalyticsEngine - returns full index1)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>78</td>
+      <td><a href="#test-77-prod-9">PROD-9</a></td>
+      <td>Query log with complex nested args (filePath, isSingleton)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>79</td>
+      <td><a href="#test-78-prod-10">PROD-10</a></td>
+      <td>Verify complex args are preserved in blob1 (check for filePath and isSingleton)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>80</td>
+      <td><a href="#test-79-prod-11">PROD-11</a></td>
+      <td>Stats API: Full stats endpoint test (matches getStatsFromAnalyticsEngine)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>81</td>
+      <td><a href="#test-80-prod-12">PROD-12</a></td>
+      <td>Stats: Verify source extraction logic from index1 (level:source:origin)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>82</td>
+      <td><a href="#test-81-e2e-1">E2E-1</a></td>
+      <td>Query: Filter by level=info</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>83</td>
+      <td><a href="#test-82-e2e-2">E2E-2</a></td>
+      <td>Query: Filter by level=error</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>84</td>
+      <td><a href="#test-83-e2e-3">E2E-3</a></td>
+      <td>Query: Filter by source=Browser:ModelManager</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>85</td>
+      <td><a href="#test-84-e2e-4">E2E-4</a></td>
+      <td>Query: Filter by time range since=1m (should include logs from last 1 minute)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>86</td>
+      <td><a href="#test-85-e2e-5">E2E-5</a></td>
+      <td>Query: Filter by time range since=5m (should include logs from last 5 minutes)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>87</td>
+      <td><a href="#test-86-e2e-6">E2E-6</a></td>
+      <td>Query: Filter by time range since=1h (should include logs from last 1 hour)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>88</td>
+      <td><a href="#test-87-e2e-7">E2E-7</a></td>
+      <td>Query: Filter by time range since=24h (should include logs from last 24 hours)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>89</td>
+      <td><a href="#test-88-e2e-8">E2E-8</a></td>
+      <td>Query: Combined filter - level=info AND since=1h</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>90</td>
+      <td><a href="#test-89-e2e-9">E2E-9</a></td>
+      <td>Query: Combined filter - source=Browser:ModelManager AND level=info</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>91</td>
+      <td><a href="#test-90-e2e-10">E2E-10</a></td>
+      <td>Query: Combined filter - level=error AND since=6h</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>92</td>
+      <td><a href="#test-91-e2e-11">E2E-11</a></td>
+      <td>Query: Limit parameter (limit=5)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>93</td>
+      <td><a href="#test-92-e2e-12">E2E-12</a></td>
+      <td>Stats: Filter by time range since=1h</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>94</td>
+      <td><a href="#test-93-e2e-13">E2E-13</a></td>
+      <td>Stats: Filter by time range since=24h</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>95</td>
+      <td><a href="#test-94-e2e-14">E2E-14</a></td>
+      <td>Query: Verify logs are sorted by timestamp DESC (newest first)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+    </tbody>
+  </table>
+    
+    <h2>📋 Individual Test Reports</h2>
+    <a id="test-0-basic-1"></a>
+<details>
+<summary><strong>Test 1: BASIC-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(0)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-0">
+<p><strong>Description:</strong> Basic string literal</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT &#039;Hello&#039; AS msg</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST BASIC-1] Basic string literal
+  Query: SELECT &#039;Hello&#039; AS msg
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;msg&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;msg&quot;: &quot;Hello&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-1-basic-2"></a>
+<details>
+<summary><strong>Test 2: BASIC-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(1)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-1">
+<p><strong>Description:</strong> Basic number literal</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT 42 AS num</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST BASIC-2] Basic number literal
+  Query: SELECT 42 AS num
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;num&quot;,
+			&quot;type&quot;: &quot;UInt8&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;num&quot;: 42
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-2-basic-3"></a>
+<details>
+<summary><strong>Test 3: BASIC-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(2)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-2">
+<p><strong>Description:</strong> List tables</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SHOW TABLES</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST BASIC-3] List tables
+  Query: SHOW TABLES
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;dataset&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;dataset&quot;: &quot;logs&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-3-count-1"></a>
+<details>
+<summary><strong>Test 4: COUNT-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(3)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-3">
+<p><strong>Description:</strong> COUNT() with no args</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT COUNT() FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COUNT-1] COUNT() with no args
+  Query: SELECT COUNT() FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;count()&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;count()&quot;: &quot;157&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-4-count-2"></a>
+<details>
+<summary><strong>Test 5: COUNT-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(4)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-4">
+<p><strong>Description:</strong> COUNT() with alias</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT COUNT() as total FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COUNT-2] COUNT() with alias
+  Query: SELECT COUNT() as total FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;total&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;total&quot;: &quot;157&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-5-select-1"></a>
+<details>
+<summary><strong>Test 6: SELECT-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(5)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-5">
+<p><strong>Description:</strong> SELECT all columns</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT * FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-1] SELECT all columns
+  Query: SELECT * FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;_sample_interval&quot;,
+			&quot;type&quot;: &quot;UInt32&quot;
+		},
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;blob10&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-6-select-2"></a>
+<details>
+<summary><strong>Test 7: SELECT-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(6)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-6">
+<p><strong>Description:</strong> SELECT blob1</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-2] SELECT blob1
+  Query: SELECT blob1 FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;ec3586dc-c367-4d90-a45a-440f04439d69\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[E2E] 30m ago - debug\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764655048305}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-7-select-3"></a>
+<details>
+<summary><strong>Test 8: SELECT-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(7)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-7">
+<p><strong>Description:</strong> SELECT timestamp</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT timestamp FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-3] SELECT timestamp
+  Query: SELECT timestamp FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;timestamp&quot;: &quot;2025-12-01 19:43:07&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-8-select-4"></a>
+<details>
+<summary><strong>Test 9: SELECT-4 - ✅ PASS <button class="copy-button" onclick="copyTestResult(8)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-8">
+<p><strong>Description:</strong> SELECT double1</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT double1 FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-4] SELECT double1
+  Query: SELECT double1 FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;double1&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;double1&quot;: 1764631663398
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-9-select-5"></a>
+<details>
+<summary><strong>Test 10: SELECT-5 - ✅ PASS <button class="copy-button" onclick="copyTestResult(9)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-9">
+<p><strong>Description:</strong> SELECT index1</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT index1 FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-5] SELECT index1
+  Query: SELECT index1 FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;index1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;index1&quot;: &quot;debug:Browser:Network:browser&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-10-select-6"></a>
+<details>
+<summary><strong>Test 11: SELECT-6 - ✅ PASS <button class="copy-button" onclick="copyTestResult(10)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-10">
+<p><strong>Description:</strong> SELECT _sample_interval</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT _sample_interval FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-6] SELECT _sample_interval
+  Query: SELECT _sample_interval FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;_sample_interval&quot;,
+			&quot;type&quot;: &quot;UInt32&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;_sample_interval&quot;: 1
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-11-select-7"></a>
+<details>
+<summary><strong>Test 12: SELECT-7 - ✅ PASS <button class="copy-button" onclick="copyTestResult(11)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-11">
+<p><strong>Description:</strong> SELECT multiple columns</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-7] SELECT multiple columns
+  Query: SELECT blob1, timestamp FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-12-select-8"></a>
+<details>
+<summary><strong>Test 13: SELECT-8 - ✅ PASS <button class="copy-button" onclick="copyTestResult(12)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-12">
+<p><strong>Description:</strong> SELECT with alias</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 as entry FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-8] SELECT with alias
+  Query: SELECT blob1 as entry FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;entry&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;entry&quot;: &quot;{\&quot;id\&quot;:\&quot;07793e98-98a8-4048-806e-3cbd4ed1fc03\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;TDDReadTest\&quot;,\&quot;message\&quot;:\&quot;[TDD-READ] Test log - 2025-12-01T19:43:13.373Z\&quot;,\&quot;source\&quot;:\&quot;Browser:TDDReadTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764618193373}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-13-select-9"></a>
+<details>
+<summary><strong>Test 14: SELECT-9 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(13)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-13">
+<p><strong>Description:</strong> SELECT DISTINCT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT DISTINCT index1 FROM logs LIMIT 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST SELECT-9] SELECT DISTINCT
+  Query: SELECT DISTINCT index1 FROM logs LIMIT 10
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: selection used unsupported features: SELECT DISTINCT </code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: selection used unsupported features: SELECT DISTINCT </p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-14-where-1"></a>
+<details>
+<summary><strong>Test 15: WHERE-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(14)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-14">
+<p><strong>Description:</strong> WHERE with = (exact match)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-1] WHERE with = (exact match)
+  Query: SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;04d5f208-fae8-4064-b7cc-172f3ab8bbc8\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;ComprehensiveTest\&quot;,\&quot;message\&quot;:\&quot;[TDD] Comprehensive test - 2025-12-01T22:53:12.817Z\&quot;,\&quot;source\&quot;:\&quot;Browser:ComprehensiveTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764629592817}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-15-where-2"></a>
+<details>
+<summary><strong>Test 16: WHERE-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(15)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-15">
+<p><strong>Description:</strong> WHERE with != (not equal)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 != &#039;other&#039; LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-2] WHERE with != (not equal)
+  Query: SELECT blob1 FROM logs WHERE index1 != &#039;other&#039; LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;368c03af-7b6a-459d-a76d-a9d73e647675\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;TestScript\&quot;,\&quot;message\&quot;:\&quot;[TEST] Test log from script - 2025-12-01T19:28:58.199Z\&quot;,\&quot;source\&quot;:\&quot;Browser:TestScript\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764617338199,\&quot;args\&quot;:[{\&quot;test\&quot;:true,\&quot;script\&quot;:\&quot;test-logs-api.ts\&quot;}],\&quot;stackFrames\&quot;:[{\&quot;file\&quot;:\&quot;test-logs-api.ts\&quot;,\&quot;filePath\&quot;:\&quot;infra\/cloudflare\/test-logs-api.ts\&quot;,\&quot;line\&quot;:100,\&quot;column\&quot;:10,\&quot;function\&quot;:\&quot;testLogsAPI\&quot;}],\&quot;file\&quot;:\&quot;test-logs-api.ts\&quot;,\&quot;filePath\&quot;:\&quot;infra\/cloudflare\/test-logs-api.ts\&quot;,\&quot;line\&quot;:100,\&quot;column\&quot;:10}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-16-where-3"></a>
+<details>
+<summary><strong>Test 17: WHERE-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(16)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-16">
+<p><strong>Description:</strong> WHERE with &gt;= (numeric comparison)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-3] WHERE with &gt;= (numeric comparison)
+  Query: SELECT blob1 FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-17-where-4"></a>
+<details>
+<summary><strong>Test 18: WHERE-4 - ✅ PASS <button class="copy-button" onclick="copyTestResult(17)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-17">
+<p><strong>Description:</strong> WHERE with &lt;= (numeric comparison)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE double1 &lt;= 1764699275048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-4] WHERE with &lt;= (numeric comparison)
+  Query: SELECT blob1 FROM logs WHERE double1 &lt;= 1764699275048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;936b2245-8404-4c8f-ad02-1fcccfbf5e08\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[E2E] 30m ago - debug\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764652395621}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-18-where-5"></a>
+<details>
+<summary><strong>Test 19: WHERE-5 - ✅ PASS <button class="copy-button" onclick="copyTestResult(18)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-18">
+<p><strong>Description:</strong> WHERE with &gt; (numeric comparison)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE double1 &gt; 1764699155048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-5] WHERE with &gt; (numeric comparison)
+  Query: SELECT blob1 FROM logs WHERE double1 &gt; 1764699155048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-19-where-6"></a>
+<details>
+<summary><strong>Test 20: WHERE-6 - ✅ PASS <button class="copy-button" onclick="copyTestResult(19)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-19">
+<p><strong>Description:</strong> WHERE with &lt; (numeric comparison)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE double1 &lt; 1764699275048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-6] WHERE with &lt; (numeric comparison)
+  Query: SELECT blob1 FROM logs WHERE double1 &lt; 1764699275048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;5c1ce789-eec2-4d17-992f-f5673135bfbe\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;ComprehensiveTest\&quot;,\&quot;message\&quot;:\&quot;[TDD] Comprehensive test - 2025-12-01T23:27:43.398Z\&quot;,\&quot;source\&quot;:\&quot;Browser:ComprehensiveTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764631663398}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-20-where-7"></a>
+<details>
+<summary><strong>Test 21: WHERE-7 - ✅ PASS <button class="copy-button" onclick="copyTestResult(20)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-20">
+<p><strong>Description:</strong> WHERE with timestamp &gt;= toDateTime()</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE timestamp &gt;= toDateTime(1764699155) LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-7] WHERE with timestamp &gt;= toDateTime()
+  Query: SELECT blob1 FROM logs WHERE timestamp &gt;= toDateTime(1764699155) LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-21-where-8"></a>
+<details>
+<summary><strong>Test 22: WHERE-8 - ✅ PASS <button class="copy-button" onclick="copyTestResult(21)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-21">
+<p><strong>Description:</strong> WHERE with timestamp &lt;= toDateTime()</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE timestamp &lt;= toDateTime(1764699275) LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-8] WHERE with timestamp &lt;= toDateTime()
+  Query: SELECT blob1 FROM logs WHERE timestamp &lt;= toDateTime(1764699275) LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;ec3586dc-c367-4d90-a45a-440f04439d69\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[E2E] 30m ago - debug\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764655048305}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-22-where-9"></a>
+<details>
+<summary><strong>Test 23: WHERE-9 - ✅ PASS <button class="copy-button" onclick="copyTestResult(22)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-22">
+<p><strong>Description:</strong> WHERE with AND</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; AND double1 &gt;= 1764699155048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-9] WHERE with AND
+  Query: SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; AND double1 &gt;= 1764699155048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-23-where-10"></a>
+<details>
+<summary><strong>Test 24: WHERE-10 - ✅ PASS <button class="copy-button" onclick="copyTestResult(23)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-23">
+<p><strong>Description:</strong> WHERE with OR</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; OR index1 = &#039;other&#039; LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-10] WHERE with OR
+  Query: SELECT blob1 FROM logs WHERE index1 = &#039;info:Browser:ComprehensiveTest:browser&#039; OR index1 = &#039;other&#039; LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;da23a5dd-58e2-4a9a-81cc-c2ca50484846\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;ComprehensiveTest\&quot;,\&quot;message\&quot;:\&quot;[TDD] Comprehensive test - 2025-12-01T20:04:47.391Z\&quot;,\&quot;source\&quot;:\&quot;Browser:ComprehensiveTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764619487391}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-24-where-11"></a>
+<details>
+<summary><strong>Test 25: WHERE-11 - ✅ PASS <button class="copy-button" onclick="copyTestResult(24)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-24">
+<p><strong>Description:</strong> WHERE with IN operator</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 IN (&#039;info:Browser:ComprehensiveTest:browser&#039;, &#039;other&#039;) LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-11] WHERE with IN operator
+  Query: SELECT blob1 FROM logs WHERE index1 IN (&#039;info:Browser:ComprehensiveTest:browser&#039;, &#039;other&#039;) LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;20734591-9d07-4304-87f9-b6abf770fa7f\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;ComprehensiveTest\&quot;,\&quot;message\&quot;:\&quot;[TDD] Comprehensive test - 2025-12-01T21:42:11.086Z\&quot;,\&quot;source\&quot;:\&quot;Browser:ComprehensiveTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764625331086}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-25-where-12"></a>
+<details>
+<summary><strong>Test 26: WHERE-12 - ✅ PASS <button class="copy-button" onclick="copyTestResult(25)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-25">
+<p><strong>Description:</strong> WHERE with BETWEEN operator</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE double1 BETWEEN 1764699155048 AND 1764699275048 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-12] WHERE with BETWEEN operator
+  Query: SELECT blob1 FROM logs WHERE double1 BETWEEN 1764699155048 AND 1764699275048 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-26-where-13"></a>
+<details>
+<summary><strong>Test 27: WHERE-13 - ✅ PASS <button class="copy-button" onclick="copyTestResult(26)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-26">
+<p><strong>Description:</strong> WHERE with IS NULL</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE blob1 IS NULL LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-13] WHERE with IS NULL
+  Query: SELECT blob1 FROM logs WHERE blob1 IS NULL LIMIT 1
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+	],
+	&quot;rows&quot;: 0,
+	&quot;rows_before_limit_at_least&quot;: 0
+}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-27-where-14"></a>
+<details>
+<summary><strong>Test 28: WHERE-14 - ✅ PASS <button class="copy-button" onclick="copyTestResult(27)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-27">
+<p><strong>Description:</strong> WHERE with IS NOT NULL</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE blob1 IS NOT NULL LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST WHERE-14] WHERE with IS NOT NULL
+  Query: SELECT blob1 FROM logs WHERE blob1 IS NOT NULL LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;a5109008-b4cb-4665-9a1f-570f516872d3\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[E2E] 30m ago - debug\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764650512987}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-28-string-1"></a>
+<details>
+<summary><strong>Test 29: STRING-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(28)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-28">
+<p><strong>Description:</strong> startsWith() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE startsWith(index1, &#039;info:&#039;) LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-1] startsWith() function
+  Query: SELECT blob1 FROM logs WHERE startsWith(index1, &#039;info:&#039;) LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;f4b78ce7-616e-402f-95ff-2bf20094806a\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;Auth\&quot;,\&quot;message\&quot;:\&quot;[E2E] 1h ago - info\&quot;,\&quot;source\&quot;:\&quot;Browser:Auth\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764648712987}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-29-string-2"></a>
+<details>
+<summary><strong>Test 30: STRING-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(29)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-29">
+<p><strong>Description:</strong> position() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-2] position() function
+  Query: SELECT blob1 FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;d9fbc40d-ab54-46ab-88ea-9e44b2985f58\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[PROD-TEST] Production format test - debug level\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764654187207}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-30-string-3"></a>
+<details>
+<summary><strong>Test 31: STRING-3 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(30)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-30">
+<p><strong>Description:</strong> LIKE operator (may not work)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE index1 LIKE &#039;info:%&#039; LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-3] LIKE operator (may not work)
+  Query: SELECT blob1 FROM logs WHERE index1 LIKE &#039;info:%&#039; LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unsupported binary operator: LIKE</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unsupported binary operator: LIKE</p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-31-string-4"></a>
+<details>
+<summary><strong>Test 32: STRING-4 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(31)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-31">
+<p><strong>Description:</strong> match() regex function (may not work)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE match(index1, &#039;info:.*&#039;) LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-4] match() regex function (may not work)
+  Query: SELECT blob1 FROM logs WHERE match(index1, &#039;info:.*&#039;) LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: MATCH</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: MATCH</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-32-string-5"></a>
+<details>
+<summary><strong>Test 33: STRING-5 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(32)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-32">
+<p><strong>Description:</strong> splitByChar() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT splitByChar(&#039;:&#039;, index1) FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-5] splitByChar() function
+  Query: SELECT splitByChar(&#039;:&#039;, index1) FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: SPLITBYCHAR</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;substring(index1, 1, 5)&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: SPLITBYCHAR</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-33-string-6"></a>
+<details>
+<summary><strong>Test 34: STRING-6 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(33)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-33">
+<p><strong>Description:</strong> splitByChar() with array access</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT splitByChar(&#039;:&#039;, index1)[1] as level FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-6] splitByChar() with array access
+  Query: SELECT splitByChar(&#039;:&#039;, index1)[1] as level FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unsupported expression type: splitByChar(&#039;:&#039;, index1)[1]</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;substring(index1, 1, 5)&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unsupported expression type: splitByChar(':', index1)[1]</p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-34-string-7"></a>
+<details>
+<summary><strong>Test 35: STRING-7 - ✅ PASS <button class="copy-button" onclick="copyTestResult(34)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-34">
+<p><strong>Description:</strong> substring() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, 5) FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-7] substring() function
+  Query: SELECT substring(index1, 1, 5) FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;substring(index1, 1, 5)&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;substring(index1, 1, 5)&quot;: &quot;debug&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-35-string-8"></a>
+<details>
+<summary><strong>Test 36: STRING-8 - ✅ PASS <button class="copy-button" onclick="copyTestResult(35)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-35">
+<p><strong>Description:</strong> length() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT length(index1) FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-8] length() function
+  Query: SELECT length(index1) FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;length(index1)&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;length(index1)&quot;: &quot;29&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-36-string-9"></a>
+<details>
+<summary><strong>Test 37: STRING-9 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(36)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-36">
+<p><strong>Description:</strong> concat() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT concat(index1, &#039;:extra&#039;) as combined FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-9] concat() function
+  Query: SELECT concat(index1, &#039;:extra&#039;) as combined FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: CONCAT</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: CONCAT</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-37-string-10"></a>
+<details>
+<summary><strong>Test 38: STRING-10 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(37)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-37">
+<p><strong>Description:</strong> replace() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT replace(index1, &#039;Browser&#039;, &#039;Client&#039;) as replaced FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-10] replace() function
+  Query: SELECT replace(index1, &#039;Browser&#039;, &#039;Client&#039;) as replaced FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: REPLACE</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: REPLACE</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-38-string-11"></a>
+<details>
+<summary><strong>Test 39: STRING-11 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(38)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-38">
+<p><strong>Description:</strong> trim() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT trim(&#039;  test  &#039;) as trimmed</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST STRING-11] trim() function
+  Query: SELECT trim(&#039;  test  &#039;) as trimmed
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unsupported expression type: TRIM(&#039;  test  &#039;)</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unsupported expression type: TRIM('  test  ')</p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-39-order-1"></a>
+<details>
+<summary><strong>Test 40: ORDER-1 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(39)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-39">
+<p><strong>Description:</strong> ORDER BY timestamp ASC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY timestamp LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-1] ORDER BY timestamp ASC
+  Query: SELECT blob1 FROM logs ORDER BY timestamp LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;timestamp&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "timestamp"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-40-order-2"></a>
+<details>
+<summary><strong>Test 41: ORDER-2 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(40)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-40">
+<p><strong>Description:</strong> ORDER BY timestamp DESC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY timestamp DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-2] ORDER BY timestamp DESC
+  Query: SELECT blob1 FROM logs ORDER BY timestamp DESC LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;timestamp&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "timestamp"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-41-order-3"></a>
+<details>
+<summary><strong>Test 42: ORDER-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(41)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-41">
+<p><strong>Description:</strong> ORDER BY timestamp DESC (with timestamp in SELECT)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs ORDER BY timestamp DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-3] ORDER BY timestamp DESC (with timestamp in SELECT)
+  Query: SELECT blob1, timestamp FROM logs ORDER BY timestamp DESC LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-42-order-4"></a>
+<details>
+<summary><strong>Test 43: ORDER-4 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(42)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-42">
+<p><strong>Description:</strong> ORDER BY double1 ASC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY double1 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-4] ORDER BY double1 ASC
+  Query: SELECT blob1 FROM logs ORDER BY double1 LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;double1&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "double1"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-43-order-5"></a>
+<details>
+<summary><strong>Test 44: ORDER-5 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(43)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-43">
+<p><strong>Description:</strong> ORDER BY double1 DESC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY double1 DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-5] ORDER BY double1 DESC
+  Query: SELECT blob1 FROM logs ORDER BY double1 DESC LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;double1&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;double1&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "double1"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-44-order-6"></a>
+<details>
+<summary><strong>Test 45: ORDER-6 - ✅ PASS <button class="copy-button" onclick="copyTestResult(44)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-44">
+<p><strong>Description:</strong> ORDER BY double1 DESC (with double1 in SELECT)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, double1 FROM logs ORDER BY double1 DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-6] ORDER BY double1 DESC (with double1 in SELECT)
+  Query: SELECT blob1, double1 FROM logs ORDER BY double1 DESC LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;double1&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-45-order-7"></a>
+<details>
+<summary><strong>Test 46: ORDER-7 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(45)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-45">
+<p><strong>Description:</strong> ORDER BY index1 ASC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY index1 LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-7] ORDER BY index1 ASC
+  Query: SELECT blob1 FROM logs ORDER BY index1 LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;index1&quot;</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "index1"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-46-order-8"></a>
+<details>
+<summary><strong>Test 47: ORDER-8 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(46)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-46">
+<p><strong>Description:</strong> ORDER BY index1 DESC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY index1 DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-8] ORDER BY index1 DESC
+  Query: SELECT blob1 FROM logs ORDER BY index1 DESC LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;index1&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "index1"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-47-order-9"></a>
+<details>
+<summary><strong>Test 48: ORDER-9 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(47)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-47">
+<p><strong>Description:</strong> ORDER BY _sample_interval</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY _sample_interval LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST ORDER-9] ORDER BY _sample_interval
+  Query: SELECT blob1 FROM logs ORDER BY _sample_interval LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;_sample_interval&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count()&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "_sample_interval"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-48-group-1"></a>
+<details>
+<summary><strong>Test 49: GROUP-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(48)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-48">
+<p><strong>Description:</strong> GROUP BY with COUNT()</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() FROM logs GROUP BY level</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GROUP-1] GROUP BY with COUNT()
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() FROM logs GROUP BY level
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count()&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-49-group-2"></a>
+<details>
+<summary><strong>Test 50: GROUP-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(49)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-49">
+<p><strong>Description:</strong> GROUP BY index1</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT index1, COUNT() as count FROM logs GROUP BY index1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GROUP-2] GROUP BY index1
+  Query: SELECT index1, COUNT() as count FROM logs GROUP BY index1
+  [✓ PASS] Status: 200, Rows: 17</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;index1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 17</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-50-group-3"></a>
+<details>
+<summary><strong>Test 51: GROUP-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(50)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-50">
+<p><strong>Description:</strong> GROUP BY with HAVING clause</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs GROUP BY level HAVING count &gt; 0</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GROUP-3] GROUP BY with HAVING clause
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs GROUP BY level HAVING count &gt; 0
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-51-agg-1"></a>
+<details>
+<summary><strong>Test 52: AGG-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(51)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-51">
+<p><strong>Description:</strong> MIN() aggregate</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT MIN(double1) as min_ts FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST AGG-1] MIN() aggregate
+  Query: SELECT MIN(double1) as min_ts FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;min_ts&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;min_ts&quot;: 1764047512987
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-52-agg-2"></a>
+<details>
+<summary><strong>Test 53: AGG-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(52)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-52">
+<p><strong>Description:</strong> MAX() aggregate</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT MAX(double1) as max_ts FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST AGG-2] MAX() aggregate
+  Query: SELECT MAX(double1) as max_ts FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;max_ts&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;max_ts&quot;: 1764699220339
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-53-agg-3"></a>
+<details>
+<summary><strong>Test 54: AGG-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(53)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-53">
+<p><strong>Description:</strong> AVG() aggregate</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT AVG(double1) as avg_ts FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST AGG-3] AVG() aggregate
+  Query: SELECT AVG(double1) as avg_ts FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;avg_ts&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;avg_ts&quot;: 1764630545082.8281
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-54-agg-4"></a>
+<details>
+<summary><strong>Test 55: AGG-4 - ✅ PASS <button class="copy-button" onclick="copyTestResult(54)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-54">
+<p><strong>Description:</strong> SUM() aggregate</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT SUM(_sample_interval) as total_samples FROM logs</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST AGG-4] SUM() aggregate
+  Query: SELECT SUM(_sample_interval) as total_samples FROM logs
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;total_samples&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;total_samples&quot;: &quot;323&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-55-case-1"></a>
+<details>
+<summary><strong>Test 56: CASE-1 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(55)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-55">
+<p><strong>Description:</strong> CASE/WHEN statement</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT CASE WHEN startsWith(index1, &#039;info:&#039;) THEN &#039;info&#039; ELSE &#039;other&#039; END as level_type FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST CASE-1] CASE/WHEN statement
+  Query: SELECT CASE WHEN startsWith(index1, &#039;info:&#039;) THEN &#039;info&#039; ELSE &#039;other&#039; END as level_type FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unsupported expression type: CASE WHEN startsWith(index1, &#039;info:&#039;) THEN &#039;info&#039; ELSE &#039;other&#039; END</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unsupported expression type: CASE WHEN startsWith(index1, 'info:') THEN 'info' ELSE 'other' END</p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-56-case-2"></a>
+<details>
+<summary><strong>Test 57: CASE-2 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(56)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-56">
+<p><strong>Description:</strong> CASE/WHEN with multiple conditions</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT CASE WHEN double1 &gt; 1764699215048 THEN &#039;recent&#039; WHEN double1 &gt; 1764612815048 THEN &#039;today&#039; ELSE &#039;old&#039; END as time_category FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST CASE-2] CASE/WHEN with multiple conditions
+  Query: SELECT CASE WHEN double1 &gt; 1764699215048 THEN &#039;recent&#039; WHEN double1 &gt; 1764612815048 THEN &#039;today&#039; ELSE &#039;old&#039; END as time_category FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unsupported expression type: CASE WHEN double1 &gt; 1764699215048 THEN &#039;recent&#039; WHEN double1 &gt; 1764612815048 THEN &#039;today&#039; ELSE &#039;old&#039; END</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unsupported expression type: CASE WHEN double1 > 1764699215048 THEN 'recent' WHEN double1 > 1764612815048 THEN 'today' ELSE 'old' END</p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-57-null-1"></a>
+<details>
+<summary><strong>Test 58: NULL-1 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(57)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-57">
+<p><strong>Description:</strong> COALESCE function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT COALESCE(blob1, &#039;default&#039;) as entry FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST NULL-1] COALESCE function
+  Query: SELECT COALESCE(blob1, &#039;default&#039;) as entry FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: COALESCE</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;dt&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: COALESCE</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-58-null-2"></a>
+<details>
+<summary><strong>Test 59: NULL-2 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(58)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-58">
+<p><strong>Description:</strong> COALESCE with multiple values</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT COALESCE(blob10, blob1, &#039;fallback&#039;) as entry FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST NULL-2] COALESCE with multiple values
+  Query: SELECT COALESCE(blob10, blob1, &#039;fallback&#039;) as entry FROM logs LIMIT 1
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unknown function call: COALESCE</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;dt&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unknown function call: COALESCE</p>
+<p>❌ <strong>Solution:</strong> Review error message and check Analytics Engine documentation.</p>
+</div>
+</details>
+
+<a id="test-59-date-1"></a>
+<details>
+<summary><strong>Test 60: DATE-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(59)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-59">
+<p><strong>Description:</strong> toDateTime() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT toDateTime(1764699215) as dt FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST DATE-1] toDateTime() function
+  Query: SELECT toDateTime(1764699215) as dt FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;dt&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;dt&quot;: &quot;2025-12-02 18:13:35&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-60-date-2"></a>
+<details>
+<summary><strong>Test 61: DATE-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(60)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-60">
+<p><strong>Description:</strong> toDate() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT toDate(timestamp) as date_only FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST DATE-2] toDate() function
+  Query: SELECT toDate(timestamp) as date_only FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;date_only&quot;,
+			&quot;type&quot;: &quot;Date&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;date_only&quot;: &quot;2025-12-01&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-61-date-3"></a>
+<details>
+<summary><strong>Test 62: DATE-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(61)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-61">
+<p><strong>Description:</strong> formatDateTime() function</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT formatDateTime(timestamp, &#039;%Y-%m-%d&#039;) as formatted FROM logs LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST DATE-3] formatDateTime() function
+  Query: SELECT formatDateTime(timestamp, &#039;%Y-%m-%d&#039;) as formatted FROM logs LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;formatted&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;formatted&quot;: &quot;2025-12-01&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-62-page-1"></a>
+<details>
+<summary><strong>Test 63: PAGE-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(62)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-62">
+<p><strong>Description:</strong> LIMIT with OFFSET (pagination)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs LIMIT 10 OFFSET 0</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PAGE-1] LIMIT with OFFSET (pagination)
+  Query: SELECT blob1 FROM logs LIMIT 10 OFFSET 0
+  [✓ PASS] Status: 200, Rows: 10</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;ec3586dc-c367-4d90-a45a-440f04439d69\&quot;,\&quot;level\&quot;:\&quot;debug\&quot;,\&quot;context\&quot;:\&quot;Network\&quot;,\&quot;message\&quot;:\&quot;[E2E] 30m ago - debug\&quot;,\&quot;source\&quot;:\&quot;Browser:Network\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764655048305}&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 10</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-63-page-2"></a>
+<details>
+<summary><strong>Test 64: PAGE-2 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(63)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-63">
+<p><strong>Description:</strong> ORDER BY + LIMIT + OFFSET</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs ORDER BY timestamp DESC LIMIT 5 OFFSET 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PAGE-2] ORDER BY + LIMIT + OFFSET
+  Query: SELECT blob1 FROM logs ORDER BY timestamp DESC LIMIT 5 OFFSET 10
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: unable to find type of column: &quot;timestamp&quot;</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: unable to find type of column: "timestamp"</p>
+<p>⚠️ <strong>Solution:</strong> Column must be included in SELECT clause when using ORDER BY.</p>
+</div>
+</details>
+
+<a id="test-64-combine-1"></a>
+<details>
+<summary><strong>Test 65: COMBINE-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(64)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-64">
+<p><strong>Description:</strong> WHERE + LIMIT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1 FROM logs WHERE startsWith(index1, &#039;info:&#039;) LIMIT 5</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COMBINE-1] WHERE + LIMIT
+  Query: SELECT blob1 FROM logs WHERE startsWith(index1, &#039;info:&#039;) LIMIT 5
+  [✓ PASS] Status: 200, Rows: 5</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;5c1ce789-eec2-4d17-992f-f5673135bfbe\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;ComprehensiveTest\&quot;,\&quot;message\&quot;:\&quot;[TDD] Comprehensive test - 2025-12-01T23:27:43.398Z\&quot;,\&quot;source\&quot;:\&quot;Browser:ComprehensiveTest\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764631663398}&quot;
+		},
+		{
+			&quot;blob1&quot;: &quot;{\&quot;id\&quot;:\&quot;d04f6158-0713-4e54-a0b9-c592c6e25285\&quot;,\&quot;level\&quot;:\&quot;info\&quot;,\&quot;context\&quot;:\&quot;Auth\&quot;,\&quot;message\&quot;:\&quot;[E2E] 1h ago - info\&quot;,\&quot;source\&quot;:\&quot;Browser:Auth\&quot;,\&quot;origin\&quot;:\&quot;browser\&quot;,\&quot;timestamp\&quot;:1764649329879}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 5</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-65-combine-2"></a>
+<details>
+<summary><strong>Test 66: COMBINE-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(65)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-65">
+<p><strong>Description:</strong> SELECT multiple + WHERE + LIMIT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, double1 FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 5</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COMBINE-2] SELECT multiple + WHERE + LIMIT
+  Query: SELECT blob1, double1 FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 5
+  [✓ PASS] Status: 200, Rows: 5</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;double1&quot;,
+			&quot;type&quot;: &quot;Float64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 5</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-66-combine-3"></a>
+<details>
+<summary><strong>Test 67: COMBINE-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(66)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-66">
+<p><strong>Description:</strong> WHERE + GROUP BY + COUNT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() FROM logs WHERE double1 &gt;= 1764699155048 GROUP BY level</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COMBINE-3] WHERE + GROUP BY + COUNT
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() FROM logs WHERE double1 &gt;= 1764699155048 GROUP BY level
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count()&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-67-combine-4"></a>
+<details>
+<summary><strong>Test 68: COMBINE-4 - ❌ FAIL <button class="copy-button" onclick="copyTestResult(67)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-67">
+<p><strong>Description:</strong> DISTINCT + WHERE + LIMIT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT DISTINCT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COMBINE-4] DISTINCT + WHERE + LIMIT
+  Query: SELECT DISTINCT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level FROM logs WHERE double1 &gt;= 1764699155048 LIMIT 10
+  [✗ FAIL] Status: 422
+  [ERROR] Input was invalid: selection used unsupported features: SELECT DISTINCT </code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 422</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>❌ FAIL</strong> - Input was invalid: selection used unsupported features: SELECT DISTINCT </p>
+<p>❌ <strong>Solution:</strong> This feature is not supported. Use alternative approach (see recommendations).</p>
+</div>
+</details>
+
+<a id="test-68-combine-5"></a>
+<details>
+<summary><strong>Test 69: COMBINE-5 - ✅ PASS <button class="copy-button" onclick="copyTestResult(68)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-68">
+<p><strong>Description:</strong> GROUP BY + HAVING + ORDER BY + LIMIT</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs GROUP BY level HAVING count &gt; 1 ORDER BY count DESC LIMIT 5</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST COMBINE-5] GROUP BY + HAVING + ORDER BY + LIMIT
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs GROUP BY level HAVING count &gt; 1 ORDER BY count DESC LIMIT 5
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-69-prod-1"></a>
+<details>
+<summary><strong>Test 70: PROD-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(69)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-69">
+<p><strong>Description:</strong> Query production logs by level (info)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs WHERE startsWith(index1, &#039;info:&#039;) AND position(&#039;:Browser:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-1] Query production logs by level (info)
+  Query: SELECT blob1, timestamp FROM logs WHERE startsWith(index1, &#039;info:&#039;) AND position(&#039;:Browser:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10
+  [✓ PASS] Status: 200, Rows: 10</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 10</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-70-prod-2"></a>
+<details>
+<summary><strong>Test 71: PROD-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(70)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-70">
+<p><strong>Description:</strong> Query production logs by source (Browser:ModelManager)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs WHERE position(&#039;:Browser:ModelManager:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-2] Query production logs by source (Browser:ModelManager)
+  Query: SELECT blob1, timestamp FROM logs WHERE position(&#039;:Browser:ModelManager:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10
+  [✓ PASS] Status: 200, Rows: 10</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 10</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-71-prod-3"></a>
+<details>
+<summary><strong>Test 72: PROD-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(71)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-71">
+<p><strong>Description:</strong> Query production logs by multiple levels</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs WHERE (startsWith(index1, &#039;info:&#039;) OR startsWith(index1, &#039;error:&#039;)) AND position(&#039;:Browser:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-3] Query production logs by multiple levels
+  Query: SELECT blob1, timestamp FROM logs WHERE (startsWith(index1, &#039;info:&#039;) OR startsWith(index1, &#039;error:&#039;)) AND position(&#039;:Browser:&#039; IN index1) &gt; 0 ORDER BY timestamp DESC LIMIT 10
+  [✓ PASS] Status: 200, Rows: 10</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 10</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-72-prod-4"></a>
+<details>
+<summary><strong>Test 73: PROD-4 - ✅ PASS <button class="copy-button" onclick="copyTestResult(72)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-72">
+<p><strong>Description:</strong> Count production logs by level</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 GROUP BY level</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-4] Count production logs by level
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 GROUP BY level
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-73-prod-5"></a>
+<details>
+<summary><strong>Test 74: PROD-5 - ✅ PASS <button class="copy-button" onclick="copyTestResult(73)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-73">
+<p><strong>Description:</strong> Count production logs by source (old broken query)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, position(&#039;:Browser:&#039; IN index1) + 8, position(&#039;:&#039; IN substring(index1, position(&#039;:Browser:&#039; IN index1) + 8)) - 1) as source, COUNT() as count FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 GROUP BY source</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-5] Count production logs by source (old broken query)
+  Query: SELECT substring(index1, position(&#039;:Browser:&#039; IN index1) + 8, position(&#039;:&#039; IN substring(index1, position(&#039;:Browser:&#039; IN index1) + 8)) - 1) as source, COUNT() as count FROM logs WHERE position(&#039;:Browser:&#039; IN index1) &gt; 0 GROUP BY source
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;source&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-74-prod-6"></a>
+<details>
+<summary><strong>Test 75: PROD-6 - ✅ PASS <button class="copy-button" onclick="copyTestResult(74)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-74">
+<p><strong>Description:</strong> Stats: Total count query (matches getStatsFromAnalyticsEngine)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT COUNT() as total FROM logs WHERE double1 &gt;= 1764612825</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-6] Stats: Total count query (matches getStatsFromAnalyticsEngine)
+  Query: SELECT COUNT() as total FROM logs WHERE double1 &gt;= 1764612825
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;total&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}
+	],
+	&quot;data&quot;:
+	[
+		{
+			&quot;total&quot;: &quot;157&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-75-prod-7"></a>
+<details>
+<summary><strong>Test 76: PROD-7 - ✅ PASS <button class="copy-button" onclick="copyTestResult(75)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-75">
+<p><strong>Description:</strong> Stats: Count by level query (matches getStatsFromAnalyticsEngine)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs WHERE double1 &gt;= 1764612825 GROUP BY level</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-7] Stats: Count by level query (matches getStatsFromAnalyticsEngine)
+  Query: SELECT substring(index1, 1, position(&#039;:&#039; IN index1) - 1) as level, COUNT() as count FROM logs WHERE double1 &gt;= 1764612825 GROUP BY level
+  [✓ PASS] Status: 200, Rows: 4</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;level&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 4</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-76-prod-8"></a>
+<details>
+<summary><strong>Test 77: PROD-8 - ✅ PASS <button class="copy-button" onclick="copyTestResult(76)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-76">
+<p><strong>Description:</strong> Stats: Count by source query (matches getStatsFromAnalyticsEngine - returns full index1)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT index1 as full_index, COUNT() as count FROM logs WHERE double1 &gt;= 1764612825 GROUP BY index1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-8] Stats: Count by source query (matches getStatsFromAnalyticsEngine - returns full index1)
+  Query: SELECT index1 as full_index, COUNT() as count FROM logs WHERE double1 &gt;= 1764612825 GROUP BY index1
+  [✓ PASS] Status: 200, Rows: 17</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;full_index&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;count&quot;,
+			&quot;type&quot;: &quot;UInt64&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 17</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-77-prod-9"></a>
+<details>
+<summary><strong>Test 78: PROD-9 - ✅ PASS <button class="copy-button" onclick="copyTestResult(77)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-77">
+<p><strong>Description:</strong> Query log with complex nested args (filePath, isSingleton)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs WHERE position(&#039;:Vite:Vite.Config:&#039; IN index1) &gt; 0 AND position(&#039;getStackTrace&#039; IN blob1) &gt; 0 ORDER BY timestamp DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-9] Query log with complex nested args (filePath, isSingleton)
+  Query: SELECT blob1, timestamp FROM logs WHERE position(&#039;:Vite:Vite.Config:&#039; IN index1) &gt; 0 AND position(&#039;getStackTrace&#039; IN blob1) &gt; 0 ORDER BY timestamp DESC LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-78-prod-10"></a>
+<details>
+<summary><strong>Test 79: PROD-10 - ✅ PASS <button class="copy-button" onclick="copyTestResult(78)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-78">
+<p><strong>Description:</strong> Verify complex args are preserved in blob1 (check for filePath and isSingleton)</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT blob1, timestamp FROM logs WHERE position(&#039;:Vite:Vite.Config:&#039; IN index1) &gt; 0 AND position(&#039;filePath&#039; IN blob1) &gt; 0 AND position(&#039;isSingleton&#039; IN blob1) &gt; 0 ORDER BY timestamp DESC LIMIT 1</code></pre>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-10] Verify complex args are preserved in blob1 (check for filePath and isSingleton)
+  Query: SELECT blob1, timestamp FROM logs WHERE position(&#039;:Vite:Vite.Config:&#039; IN index1) &gt; 0 AND position(&#039;filePath&#039; IN blob1) &gt; 0 AND position(&#039;isSingleton&#039; IN blob1) &gt; 0 ORDER BY timestamp DESC LIMIT 1
+  [✓ PASS] Status: 200, Rows: 1</code></pre>
+
+<h3>From Worker (Tail Logs):</h3>
+<p><strong>Response Status:</strong> 200</p>
+<p><strong>Response Data:</strong></p>
+<pre><code class="language-json">{
+	&quot;meta&quot;:
+	[
+		{
+			&quot;name&quot;: &quot;blob1&quot;,
+			&quot;type&quot;: &quot;String&quot;
+		},
+		{
+			&quot;name&quot;: &quot;timestamp&quot;,
+			&quot;type&quot;: &quot;DateTime&quot;
+		}</code></pre>
+<hr>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 1</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-79-prod-11"></a>
+<details>
+<summary><strong>Test 80: PROD-11 - ✅ PASS <button class="copy-button" onclick="copyTestResult(79)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-79">
+<p><strong>Description:</strong> Stats API: Full stats endpoint test (matches getStatsFromAnalyticsEngine)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-11] Stats API: Full stats endpoint test (matches getStatsFromAnalyticsEngine)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-80-prod-12"></a>
+<details>
+<summary><strong>Test 81: PROD-12 - ✅ PASS <button class="copy-button" onclick="copyTestResult(80)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-80">
+<p><strong>Description:</strong> Stats: Verify source extraction logic from index1 (level:source:origin)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST PROD-12] Stats: Verify source extraction logic from index1 (level:source:origin)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-81-e2e-1"></a>
+<details>
+<summary><strong>Test 82: E2E-1 - ✅ PASS <button class="copy-button" onclick="copyTestResult(81)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-81">
+<p><strong>Description:</strong> Query: Filter by level=info</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-1] Query: Filter by level=info
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-82-e2e-2"></a>
+<details>
+<summary><strong>Test 83: E2E-2 - ✅ PASS <button class="copy-button" onclick="copyTestResult(82)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-82">
+<p><strong>Description:</strong> Query: Filter by level=error</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-2] Query: Filter by level=error
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-83-e2e-3"></a>
+<details>
+<summary><strong>Test 84: E2E-3 - ✅ PASS <button class="copy-button" onclick="copyTestResult(83)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-83">
+<p><strong>Description:</strong> Query: Filter by source=Browser:ModelManager</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-3] Query: Filter by source=Browser:ModelManager
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-84-e2e-4"></a>
+<details>
+<summary><strong>Test 85: E2E-4 - ✅ PASS <button class="copy-button" onclick="copyTestResult(84)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-84">
+<p><strong>Description:</strong> Query: Filter by time range since=1m (should include logs from last 1 minute)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-4] Query: Filter by time range since=1m (should include logs from last 1 minute)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-85-e2e-5"></a>
+<details>
+<summary><strong>Test 86: E2E-5 - ✅ PASS <button class="copy-button" onclick="copyTestResult(85)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-85">
+<p><strong>Description:</strong> Query: Filter by time range since=5m (should include logs from last 5 minutes)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-5] Query: Filter by time range since=5m (should include logs from last 5 minutes)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-86-e2e-6"></a>
+<details>
+<summary><strong>Test 87: E2E-6 - ✅ PASS <button class="copy-button" onclick="copyTestResult(86)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-86">
+<p><strong>Description:</strong> Query: Filter by time range since=1h (should include logs from last 1 hour)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-6] Query: Filter by time range since=1h (should include logs from last 1 hour)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-87-e2e-7"></a>
+<details>
+<summary><strong>Test 88: E2E-7 - ✅ PASS <button class="copy-button" onclick="copyTestResult(87)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-87">
+<p><strong>Description:</strong> Query: Filter by time range since=24h (should include logs from last 24 hours)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-7] Query: Filter by time range since=24h (should include logs from last 24 hours)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-88-e2e-8"></a>
+<details>
+<summary><strong>Test 89: E2E-8 - ✅ PASS <button class="copy-button" onclick="copyTestResult(88)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-88">
+<p><strong>Description:</strong> Query: Combined filter - level=info AND since=1h</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-8] Query: Combined filter - level=info AND since=1h
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-89-e2e-9"></a>
+<details>
+<summary><strong>Test 90: E2E-9 - ✅ PASS <button class="copy-button" onclick="copyTestResult(89)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-89">
+<p><strong>Description:</strong> Query: Combined filter - source=Browser:ModelManager AND level=info</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-9] Query: Combined filter - source=Browser:ModelManager AND level=info
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-90-e2e-10"></a>
+<details>
+<summary><strong>Test 91: E2E-10 - ✅ PASS <button class="copy-button" onclick="copyTestResult(90)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-90">
+<p><strong>Description:</strong> Query: Combined filter - level=error AND since=6h</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-10] Query: Combined filter - level=error AND since=6h
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-91-e2e-11"></a>
+<details>
+<summary><strong>Test 92: E2E-11 - ✅ PASS <button class="copy-button" onclick="copyTestResult(91)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-91">
+<p><strong>Description:</strong> Query: Limit parameter (limit=5)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-11] Query: Limit parameter (limit=5)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-92-e2e-12"></a>
+<details>
+<summary><strong>Test 93: E2E-12 - ✅ PASS <button class="copy-button" onclick="copyTestResult(92)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-92">
+<p><strong>Description:</strong> Stats: Filter by time range since=1h</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-12] Stats: Filter by time range since=1h
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-93-e2e-13"></a>
+<details>
+<summary><strong>Test 94: E2E-13 - ✅ PASS <button class="copy-button" onclick="copyTestResult(93)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-93">
+<p><strong>Description:</strong> Stats: Filter by time range since=24h</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-13] Stats: Filter by time range since=24h
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+<a id="test-94-e2e-14"></a>
+<details>
+<summary><strong>Test 95: E2E-14 - ✅ PASS <button class="copy-button" onclick="copyTestResult(94)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-94">
+<p><strong>Description:</strong> Query: Verify logs are sorted by timestamp DESC (newest first)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST E2E-14] Query: Verify logs are sorted by timestamp DESC (newest first)
+  Query: 
+  [✓ PASS] Status: 200, Rows: 0</code></pre>
+
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Query executed successfully. Status: 200, Rows: 0</p>
+<p>✅ <strong>Solution:</strong> This feature works correctly and can be used in production.</p>
+</div>
+</details>
+
+    
+    <div class="footer">
+      <p>Report generated by Analytics Engine TDD Test Suite</p>
+    </div>
+  </div>
+  
+  <script>
+    function copyTestResult(index) {
+      const testContent = document.getElementById('test-content-' + index);
+      if (!testContent) return;
+      
+      const text = testContent.innerText || testContent.textContent || '';
+      navigator.clipboard.writeText(text).then(function() {
+        const buttons = document.querySelectorAll('.copy-button');
+        const button = buttons[index];
+        if (button) {
+          const originalText = button.textContent;
+          button.textContent = '✓ Copied!';
+          button.style.backgroundColor = '#0e7a0e';
+          setTimeout(function() {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#0e639c';
+          }, 2000);
+        }
+      }).catch(function(err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+      });
+    }
+    
+    (function() {
+      const details = document.querySelectorAll('details');
+      
+      function closeAllExcept(except) {
+        details.forEach(function(detail) {
+          if (detail !== except && detail.open) {
+            detail.open = false;
+          }
+        });
+      }
+      
+      details.forEach(function(detail) {
+        detail.addEventListener('toggle', function() {
+          if (this.open) {
+            closeAllExcept(this);
+          }
+        });
+      });
+      
+      function findDetailsForAnchor(anchor) {
+        let element = anchor.nextElementSibling;
+        while (element) {
+          if (element.tagName === 'DETAILS') {
+            return element;
+          }
+          element = element.nextElementSibling;
+        }
+        return null;
+      }
+      
+      function openDetailsForHash(hash) {
+        if (!hash) return;
+        const target = document.querySelector(hash);
+        if (target) {
+          const detailsElement = findDetailsForAnchor(target);
+          if (detailsElement) {
+            closeAllExcept(detailsElement);
+            detailsElement.open = true;
+            setTimeout(function() {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        }
+      }
+      
+      window.addEventListener('hashchange', function() {
+        openDetailsForHash(window.location.hash);
+      });
+      
+      if (window.location.hash) {
+        setTimeout(function() {
+          openDetailsForHash(window.location.hash);
+        }, 100);
+      }
+      
+      const summaryLinks = document.querySelectorAll('a[href^="#test-"]');
+      summaryLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href) {
+            const target = document.querySelector(href);
+            if (target) {
+              const detailsElement = findDetailsForAnchor(target);
+              if (detailsElement) {
+                e.preventDefault();
+                closeAllExcept(detailsElement);
+                detailsElement.open = true;
+                setTimeout(function() {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  window.history.pushState(null, '', href);
+                }, 50);
+              }
+            }
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

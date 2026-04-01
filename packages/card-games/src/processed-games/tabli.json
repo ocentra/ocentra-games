@@ -1,0 +1,626 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tabli.json",
+  "name": "Tablić",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tablić (or Tablanette) is a fishing-style card game popular in the Balkans (Serbia, Croatia, Bosnia). Players capture face-up cards from the table by matching their value or summing to their value. Points are awarded for capturing specific high-value cards (face cards, 10s, Aces) and for having the most cards. The game is similar to Casino.",
+    "category": "Fishing",
+    "subCategory": "Casino Family",
+    "origin": "Balkans / Eastern Europe",
+    "originName": "Tablić",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Serbia", "Croatia", "Bosnia and Herzegovina"],
+    "origins": "Derived from the Casino family of fishing games; widely played in the former Yugoslavia.",
+    "timeline": ["20th century: Popular across former Yugoslavia; rules published in English (Phillips & Westall 1939)."],
+    "evolution": null,
+    "cultural": "A classic pastime in Balkan countries, often played by children and adults.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "Normally two players, or four in fixed partnerships with partners sitting opposite. A three-player game is also possible but less usual; in Serbia deal and play are counter-clockwise.",
+    "deck": "Standard 52-card deck",
+    "equipment": "Cards, score sheet",
+    "dealing": "Dealer deals 6 cards to each player and 4 face up on the table. Only the first deal places cards on the table. Subsequent deals refill hands until the deck is exhausted.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.",
+    "gameplay": "Players play one card from hand. If it matches a card on table (by rank) or a sum of cards (e.g. 9 captures 9, or 5+4), the player captures them. If no capture, the card stays on table. The player who makes the last capture takes any remaining cards at the end.",
+    "keyRules": [
+      "Capture by equality or sum",
+      "K=14, Q=13, J=12, A=1/11",
+      "Tabla bonus for clearing table",
+      "Last capture takes remainder"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Capture as many point cards as possible (10, J, Q, K, A, 2♣). Prioritize the 10♦ (2 points). Try to clear the table (Tabla) for bonus points.",
+    "intermediate": "Do not leave cards on the table that sum to easily captured numbers (like 11-14) if opponents likely hold face cards. Save high cards to make large captures.",
+    "advanced": "Track the 10♦ and 2♣. Calculate remaining points. In endgame, try to make the last capture to sweep the board.",
+    "tips": [
+      "Kings (14), Queens (13), Jacks (12) can capture sums.",
+      "Aces can be 1 or 11 - flexible.",
+      "Clearing the table is worth a point (Tabla) - except at the very end."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Placeholder slot; add variation when sources document specific variants."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Placeholder slot; add variation when sources document specific variants."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Placeholder slot; add variation when sources document specific variants."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Captures if possible; random discard.",
+      "medium": "Prioritizes point cards; avoids leaving easy sums.",
+      "hard": "Counts cards; maximizes expected points including most cards bonus; plays to force Tablas."
+    },
+    "considerations": [
+      "Subset sum problem for captures",
+      "Point density on board",
+      "Remaining deck tracking"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_tablic",
+        "name": "Pagat.com - Tablić (fishing)",
+        "url": "https://www.pagat.com/fishing/tablic.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-tablic.html"
+      },
+      {
+        "id": "src:wikipedia_tablanette",
+        "name": "Wikipedia - Tablanette",
+        "url": "https://en.wikipedia.org/wiki/Tablanette",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tablanette.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tablić",
+        "name": "Wikipedia - Tablić"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "fishing",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card from hand; capture a table card of equal value or a set of table cards that sum to the played card's value (A=1 or 11), or leave the card on the table.",
+        "cost": "0",
+        "constraints": "Legal when it is your turn; you may capture any matching card or sum, or optionally capture nothing and leave your card on the table.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 1,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 101
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "table",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "3+3 each twice (6 cards per player), 4 face up to table (talon); subsequent deals 6 each only.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TABLIĆ",
+      "subtitle": "Card Game",
+      "tagline": "Tablić (or Tablanette) is a fishing-style card game popular in the Balkans (Serb..."
+    },
+    "shortDescription": "Tablić (or Tablanette) is a fishing-style card game popular in the Balkans (Serbia, Croatia, Bosnia). Players capture face-up cards from the table by ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "table"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tablić (or Tablanette) is a fishing-style card game popular in the Balkans (Serbia, Croatia, Bosnia). Players capture face-up cards from the table by matching their value or summing to their value. Points are awarded for capturing specific high-value cards (face cards, 10s, Aces) and for having the most cards. The game is similar to Casino.",
+    "ai": "Game: Tablić. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Card values: K=14, Q=13, J=12. Ace=1 or 11. Numerals=Face value. Scoring Points: K, Q, J, A, 10s = 1 point each. 10♦ = 2 points. 2♣ = 1 point. Tabla = 1 point (clearing table during play). Most cards = 3 points.",
+    "winCondition": "Score points by capturing cards. Scores: A, K, Q, J, 10 = 1 point. 10 of Diamonds (Double Ten) = 2 points. 2 of Clubs (Little Two) = 1 point. Most cards = 3 points. Tabla (clearing the table) = 1 point.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 101,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Scoring uses capture points (face, 10s, 10♦, 2♣, tabla, most cards); no per-rank value map."
+    }
+  },
+  "alsoKnownAs": [
+    "Tablanette",
+    "Tabinet"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

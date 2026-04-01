@@ -1,0 +1,743 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "auction-poker.json",
+  "name": "Auction Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Auction Poker is a dynamic Stud variant where the primary mechanic is 'buying' improved position or cards from a communal marketplace. Unlike standard poker where you are dealt what you get, Auction Poker allows players to actively purchase cards from a face-up display or the top of the deck, paying a premium to the pot to refine their hand before betting rounds.",
+    "category": "Poker",
+    "subCategory": "Stud / Exchange",
+    "origin": "USA",
+    "originName": "Auction",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Emerging from the 'Dealer's Choice' tradition in American home games, Auction Poker (and its sibling 'Buy Your Card') was designed to increase pot sizes and reduce the impact of purely random distribution.",
+    "originCountries": ["United States"],
+    "timeline": [
+      "Mid-20th Century: Variations of 'Buying' poker appear in military and fraternal card clubs.",
+      "1980s: Cataloged by card game historians as a distinct sub-genre of 'Exchange' poker.",
+      "Present: A popular specialty game in high-stakes home games where 'The Market' is used to induce action."
+    ],
+    "evolution": "Evolution from static Stud to 'Market-based' Stud increased the skill ceiling by requiring players to value card improvements against the cost in chips.",
+    "cultural": "Often played as a 'High-Low' game to maximize participation and split pots.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-6 players (to ensure enough cards in the deck for buying rounds).",
+    "deck": "Standard 52-card deck.",
+    "equipment": "Standard pack, poker chips.",
+    "dealing": "Initial: 2 cards face down, 3 cards face up to each player. Market: 3 cards dealt face up in a row in the center.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Form the best five-card poker hand using your hole cards and purchased improvements.",
+    "gameplay": "1. **Initial Deal**: Players receive 5 cards (2 down, 3 up). 2. **Buying Round**: Starting left of dealer, each player may: (a) Buy a card at the fixed price, discard one of their current cards face down, and take the new card; (b) Pass. 3. **Replacement**: If a market card is bought, it is immediately replaced from the deck. 4. **Betting Round**: A standard round of poker betting follows each buying round. 5. **Cycles**: There are typically 3 buying rounds followed by 3 betting rounds. 6. **Showdown**: Standard poker hand rankings apply.",
+    "keyRules": [
+      "Purchased units are added to the pot immediately and do not count as 'bets' (others don't have to match them).",
+      "If you buy a card, you MUST discard one. You always maintain a 5-card hand.",
+      "High-Low Split: Often played where the highest and lowest (A-5) hands split the pot."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Don't pay for cards that only marginally improve your hand's strength. Buying a '4' to make a pair is rarely worth 2 units.",
+    "intermediate": "The 'Open Market' read: Watch what your opponents buy. If someone buys a face-up 10 and they already have a 10 showing, you know they have at least three of a kind.",
+    "advanced": "Value Betting the Market: If you have a strong hand, use the buying rounds to build the pot size without looking aggressive. The chips you pay to the market grow the pot for when you eventually win at showdown.",
+    "tips": [
+      "The '4-unit' blind draw from the deck is a gamble; only take it if the face-up market cards are useless and you are desperate for a draw.",
+      "Pay attention to 'The Replacement'. If the dealer flips a high Spade after you buy a card, and the next player is chasing a flush, you've just improved their odds."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "auction-flop",
+        "name": "Auction Flop",
+        "description": "Players bid against each other for the right to take cards from a community flop.",
+        "overrides": {},
+        "emptyOverridesReason": "Auction Flop is described in sources but its flop-bidding changes are not modeled as engine overrides yet."
+      },
+      {
+        "id": "auction-jokers-wild",
+        "name": "Market Wilds",
+        "description": "If a Joker appears in the market, its price is doubled, but it acts as a wild card.",
+        "overrides": {},
+        "emptyOverridesReason": "Market Wilds introduces jokers and wild-card behavior; engine overrides for wild cards are not represented yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Always buys the cheapest card (1 unit) regardless of rank. Never folds during betting rounds.",
+      "medium": "Understands hand potential (straights/flushes). Buys cards that have a high probability of completing a draw.",
+      "hard": "Expert at 'Pot Odds vs. Market Cost'. Calculates the exact EV of buying a card vs. staying with the current hand. Bluff-buys cards to deceive opponents about its hand strength."
+    },
+    "considerations": [
+      "AI must factor the 'Market Cost' as a non-refundable investment in its EV calculations.",
+      "Opponent modeling is critical to detect 'Bluff-Buying'."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_buy_your_card_auction_poker_www_pagat_com_poker_variants_buyyourcard_html_auction",
+        "name": "Pagat - Buy Your Card (Auction Poker)",
+        "url": "https://www.pagat.com/poker/variants/buyyourcard.html#auction",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-buy-your-card.html"
+      },
+      {
+        "id": "src:wikipedia_auction_poker",
+        "name": "Wikipedia - Auction Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [
+      "Gamerules.com - Auction Poker Guide",
+      "Traditional Texas Home Game Manuals"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "betting",
+    "social",
+    "auction",
+    "stud",
+    "gambling"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "The Ante",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "ante_up"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "Initial Deal (5 cards)",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_hole_and_community"
+        ],
+        "nextPhase": "market_round",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "market_round",
+        "label": "Buying Phase",
+        "actor": "current_player",
+        "legalActions": [
+          "buy_card",
+          "pass"
+        ],
+        "nextPhase": "betting_round",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 3,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_round",
+        "label": "Betting Phase",
+        "actor": "current_player",
+        "legalActions": [
+          "check",
+          "bet",
+          "call",
+          "raise",
+          "fold"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "system",
+        "legalActions": [
+          "evaluate_hands",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Ante is posted via ante_up custom action before deal."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealer performs deal_hole_and_community; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Market cards are dealt face-up; no separate reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Card purchase is via buy_card custom action during market round."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are bought from market or deck via buy_card; no stock purchase."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during betting when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current wager.",
+        "cost": "0",
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Standard poker betting.",
+        "cost": "0",
+        "constraints": "Pot-limit/No-limit.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current wager.",
+        "cost": "0",
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Showdown reveals hands; no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are revealed at showdown; award_pot is system action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the winning player(s).",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud variant; no play-to-table; cards bought via buy_card."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Replacement is buy_card then discard one; no separate draw."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Discard is part of buy_card (swap one out); no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No auction bidding; betting is check/bet/call/raise/fold."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Poker; no melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends at showdown or when all but one fold."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "mixed",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "face_down",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": true,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "ace_to_five_8_or_better",
+      "lowQualifier": {
+        "maxHighCard": 8,
+        "acePlaysLow": true,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": true,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": { "1": 1, "2": 2, "3": 3 },
+          "flat": null
+        },
+        "stock": {
+          "flat": 4
+        },
+        "discard": null
+      }
+    },
+    "marketConfig": {
+      "enabled": true,
+      "size": 3,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 3,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": { "ante": 1, "min_bet": 1 },
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 5
+      },
+      {
+        "id": "market",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 3
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "ante",
+      "deal",
+      "market_round",
+      "betting_round",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "ante_up",
+        "supported": true,
+        "description": "Post ante.",
+        "cost": "0",
+        "constraints": "Before deal.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_hole_and_community",
+        "supported": true,
+        "description": "Deal hole and community cards.",
+        "cost": "0",
+        "constraints": "Deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "buy_card",
+        "supported": true,
+        "description": "Discard one card and buy one of the four on offer: face-up market positions cost 1, 2, or 3 units; top of deck costs 4 units. Pay to pot.",
+        "cost": "0",
+        "constraints": "During market round; must discard one card when buying.",
+        "isTerminating": false,
+        "effectType": "buy",
+        "effectHints": {}
+      },
+      {
+        "id": "evaluate_hands",
+        "supported": true,
+        "description": "Evaluate hands at showdown.",
+        "cost": "0",
+        "constraints": "After final bet.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings (high card through royal flush).",
+    "rankingSystem": "High-Hand / High-Low Split",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for this poker variant where players bid for the right to choose the game.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Suits do not affect hand rank; standard poker hand rankings apply. The auction determines the dealer and the specific poker game to be played.",
+    "rankDescription": "Thirteen ranks per suit in standard poker order: ace high, then king, queen, jack, ten, nine, eight, seven, six, five, four, three, two. Hand rankings follow the game chosen in the auction.",
+    "dealPattern": "Hole + Door cards.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "AUCTION POKER",
+      "subtitle": "The Market Always Wins",
+      "tagline": "Don't just play the hand you're dealt. Buy the hand you want."
+    },
+    "shortDescription": "A sophisticated Stud variant where players buy individual cards from a face-up marketplace. Optimize your poker hand by paying the premium, manage your bankroll against the market costs, and dominate the showdown in this high-action classic.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "market",
+        "stock",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Auction Poker! You have two 10s showing. The Market has another 10 for just 3 units. Do you buy it now to lock in your Three-of-a-Kind, or do you save your chips for the betting round?",
+    "ai": "Game: Auction Poker (Buy Your Card). Type: Stud / Market variant. Rules: Pay 1-4 units to swap cards from a 3-card market. 3 rounds of buying/betting. Showdown: Best 5-card hand wins."
+  },
+  "scoring": {
+    "description": "Standard Poker Hand Rankings (High or High-Low).",
+    "winCondition": "Capturing the pot at showdown or by forcing all others to fold.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "High-Low split is the most common variation for Auction Poker.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Pot is won at showdown or when all others fold; no fixed target score.",
+      "cardValues": "Poker uses overall hand rankings rather than per-rank point values, so individual cardValues are not needed."
+    }
+  },
+  "alsoKnownAs": [
+    "Buy Your Card Poker",
+    "Market Poker",
+    "The Exchange Stud"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,647 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "nap-napoleon.json",
+  "name": "Nap (Napoleon)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Nap (short for Napoleon) is a classic English trick-taking game that gained massive popularity in Britain during the 19th and early 20th centuries. It is a quick, high-stakes game where players bid on how many of their five cards they can win in a trick-based battle against everyone else. It is known for its escalating bidding tiers named after Napoleonic battles (Wellington, BlÃ¼cher) and its simple yet ruthless scoring system.",
+    "category": "Trick-taking",
+    "subCategory": "Bidding",
+    "origin": "UK",
+    "originName": "Nap",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 5,
+      "display": "3-8 (5 is ideal)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "5-10 minutes per round",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["United Kingdom"],
+    "origins": "Napoleon is a classic English pub game first documented in H.E. Heather's October 1875 edition of The Bazaar. It quickly became England's national five-card game, displacing Loo. The expression 'going Nap' (meaning to risk all on one attempt) derives from this game.",
+    "timeline": [
+      "1875: Earliest rules published by H.E. Heather in The Bazaar",
+      "1885: American Hoyle incorrectly claims French origin; more likely European roots",
+      "1891: Bids of Wellington, BlÃ¼cher and MisÃ¨re added",
+      "1982: Andrew Pennycook notes Nap was 'widely played in pubs'",
+      "Present: Still played in parts of Britain"
+    ],
+    "evolution": "The game evolved from simple five-card bidding to include advanced bids like Wellington and BlÃ¼cher. Variants emerged including Peep Nap, Purchase Nap, and multi-card versions.",
+    "cultural": "A quintessential British pub game played for small stakes. The terminology reflects British military history, with bids named after the Duke of Wellington and General BlÃ¼cher who defeated Napoleon at Waterloo.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3-8 players; 4-5 is optimal. No permanent partnerships.",
+    "deck": "Standard 52-card pack. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2. Often reduced based on player count.",
+    "equipment": "Standard deck, poker chips or counters for stakes.",
+    "dealing": "Five cards to each playerâ€”either 3 then 2, or 2 then 3. Cards shuffled only at start and after successful Nap/Wellington/BlÃ¼cher.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win at least the number of tricks bid. The bidder plays against all other players who form a temporary team.",
+    "gameplay": "1. Bidding: Each player has one chance to bid, starting left of dealer. Must pass or bid higher than previous. Bids in ascending order: Three (3 tricks), Four (4 tricks), Nap (5 tricks), Wellington (5 tricks, higher stakesâ€”can only bid after Nap), BlÃ¼cher (5 tricks, highest stakesâ€”can only bid after Wellington). 2. High bidder leads first trick; suit of this card becomes trumps. 3. Players must follow suit if possible. 4. Highest trump wins trick; if no trumps, highest card of led suit wins. 5. Winner of trick leads next.",
+    "keyRules": [
+      "Five cards each; high bidder names trumps by leading",
+      "Must follow suit if possible",
+      "One bidding round onlyâ€”pass or overcall",
+      "Wellington can only be bid after Nap; BlÃ¼cher only after Wellington",
+      "Cards often not shuffled between hands (just cut)"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Be aggressive with your bids if you have a high trump (Ace or King) and at least one other card of the same suit. Since you only have 5 cards, a single strong suit can carry the whole hand. If you aren't the bidder, your only goal is to 'break' the bid by taking just one trick.",
+    "intermediate": "The 'Overbid' Defense: If you have a solid hand (e.g., King and Queen of a suit) and someone bids 3, you should consider bidding 4 just to prevent them from taking the pot. Even if you fail, you prevent them from certain victory and force them to play defensively next round.",
+    "advanced": "Counting the BlÃ¼cher: Only bid Wellington or BlÃ¼cher if you hold the Ace and King of your lead suit. If someone else holds the Ace, they will almost certainly 'break' you on the first trick. Wellington is a psychological tool to scare away weaker 'Nap' bidders.",
+    "tips": [
+      "If you are a defender, always lead through the bidder to try and find their weak suit",
+      "In Nap, the Ace is your most important cardâ€”never waste it on a trick where someone else has already played a trump unless you have to",
+      "With a balanced hand and no strong suit, consider passing rather than bidding low"
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "misere",
+        "name": "MisÃ¨re",
+        "description": "Bid to lose every trick. Worth 3 points, ranks between Three and Four.",
+        "overrides": {},
+        "emptyOverridesReason": "Misère is a bid option; no engine overrides needed beyond base game."
+      },
+      {
+        "id": "peep-nap",
+        "name": "Peep Nap",
+        "description": "Extra card dealt face-down to table. Players may pay to privately view it before bidding.",
+        "overrides": {},
+        "emptyOverridesReason": "Peep Nap adds a floater card and peep payment; overrides not yet modeled."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Bids too low; fails to follow suit; never bids BlÃ¼cher even with a perfect hand.",
+      "medium": "Excellent trick-odds calculation; manages the Wellington/BlÃ¼cher tiers well.",
+      "hard": "Expert at 'Psychological Bidding'; perfectly calculates the risk of a side-suit loser; master of the break-play as a defender."
+    },
+    "considerations": [
+      "5-card trick evaluation with limited information",
+      "Bidding-tier risk assessment",
+      "Defensive partnership (temporary) logic"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_nap_www_pagat_com_vying_nap_html",
+        "name": "Pagat.com - Nap",
+        "url": "https://www.pagat.com/trumps/nap.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-nap.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Napoleon (card game)",
+      "Denexa Games - Rule of Napoleon"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "bidding",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 4,
+    "luck": 5,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "bidding",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Five cards dealt to each player."
+      },
+      {
+        "id": "bidding",
+        "label": "Bidding",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "One round of bidding. Bids: Three, Four, Nap (5), Wellington (5+), BlÃ¼cher (5++)."
+      },
+      {
+        "id": "play",
+        "label": "Trick Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "High bidder leads. Suit led becomes trumps. Must follow suit. Five tricks total."
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "system",
+        "legalActions": [
+          "settle_stakes"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Bidder wins stakes from all if successful; pays all if unsuccessful."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the trick",
+        "cost": "0",
+        "constraints": "Must follow suit if possible",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline to bid",
+        "cost": "0",
+        "constraints": "Cannot bid later in same round",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Bid number of tricks to win",
+        "cost": "0",
+        "constraints": "Must exceed previous bid or pass",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 5,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A-K-Q-J-10-9-8-7-6-5-4-3-2",
+      "canCallNoTrump": false,
+      "overtakingRule": "Highest trump wins trick; if no trumps, highest card of led suit wins."
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 5,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "High bidder leads first trick; suit of first card led becomes trumps.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "pass_or_bid",
+        "minBid": 3,
+        "maxBid": 5,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 3,
+      "max_players": 8
+    },
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "all_pass", "text": "If all pass, the hand is not played; next dealer shuffles and deals." },
+        { "id": "wellington_blucher_order", "text": "Wellington can only be bid after another player has bid Nap; Blücher only after Wellington." },
+        { "id": "shuffle_after_high_bid", "text": "Cards are shuffled only at start and after successful Nap, Wellington or Blücher; otherwise gathered and cut." },
+        { "id": "bidder_alone", "text": "Bidder plays alone against all other players who form a temporary team." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal","bidding","play","scoring"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "settle_stakes",
+        "supported": true,
+        "description": "Settle stakes after the hand: bidder pays each opponent if they failed to make their bid, or each opponent pays the bidder if successful.",
+        "cost": "0",
+        "constraints": "Allowed only in scoring phase after all tricks are played.",
+        "isTerminating": false,
+        "effectType": "award"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Trick-taking: no hand rankings; each trick is won by highest trump in it or highest card of led suit.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "3-2",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "NAP",
+      "subtitle": "The Classic English Pub Game",
+      "tagline": "Bid bold, play smartâ€”the Duke of Wellington always beats Napoleon."
+    },
+    "shortDescription": "A spirited British trick-taking game where players bid on winning tricks with just five cards. Famous for its Napoleonic bidding tiers.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "hand",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Nap. You hold five cards and one chance to bid. Will you play it safe with Three, go for broke with Nap, or challenge an opponent's bid with Wellington?",
+    "ai": "Game: Nap (Napoleon). Type: Trick-taking/Bidding. Players: 3-8. Cards: 5 each. Bids: Three=3, Four=4, Nap=5, Wellington=10, BlÃ¼cher=20. High bidder leads and names trumps. Must follow suit."
+  },
+  "scoring": {
+    "description": "Stake-based payment system. Bidder wins stakes from all opponents if successful; pays all opponents if unsuccessful.",
+    "winCondition": "Win at least the number of tricks bid.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Nap uses stake payments per trick bid, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [
+    "Napoleon",
+    "Napoleon British",
+    "British Nap"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

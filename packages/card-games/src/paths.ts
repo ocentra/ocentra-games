@@ -1,0 +1,13 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const _distDir = path.dirname(fileURLToPath(import.meta.url));
+const PACKAGE_ROOT = path.join(_distDir, "..");
+const SRC_DIR = path.join(PACKAGE_ROOT, "src");
+
+export const PROCESSED_GAMES_DIR = path.join(SRC_DIR, "processed-games");
+export const SCHEMA_DIR = path.join(SRC_DIR, "schema");
+export const SCHEMA_DATA_DIR = path.join(SRC_DIR, "schema", "data");
+export const SOURCE_HTML_DIR = path.join(SRC_DIR, "SourceHtml");
+export const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
+export const GAME_NAMES_PAGAT_PATH = path.join(SRC_DIR, "schema", "game_names_pagat.txt");

@@ -1,0 +1,606 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "7-toed-pete-dominoes.json",
+  "name": "7-Toed Pete (Dominoes Variant)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Seven-Toed Pete is a connecting domino game in the Fives family played with a double-six set. Four players build a cross-shaped layout from a single spinner, scoring whenever the open ends total a multiple of five and taking extra turns for scoring plays or doubles.",
+    "category": "Domino",
+    "subCategory": "Fives and Threes Family",
+    "origin": "USA",
+    "originName": "Seven-Toed Pete",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "2-4"
+    },
+    "deck": "Double-six domino set (28 tiles)",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Seven-Toed Pete is an American domino game in the Fives family, using a double-six set and scoring on multiples of five.",
+    "originCountries": ["USA"],
+    "timeline": [
+      "Modern era: documented as a Fives-family domino game credited to Joe Celko and John McLeod."
+    ],
+    "evolution": "Regional rules distinguish an East Coast version, where only the first double played is a spinner, from a West Coast version in which all doubles are spinners and the game is often called Race Horse or Horse Race.",
+    "cultural": "A fast-paced social domino game played in the USA; the name Seven-Toed Pete is also used as an alternative name for Seven-Card Stud poker, though the two games are otherwise unrelated.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Four players in the basic game; two or three players can play a draw variant with a boneyard.",
+    "deck": "Double-six domino set (28 tiles)",
+    "equipment": "Double-six domino set, scoring chips or markers",
+    "dealing": "For four players, each receives seven tiles and there is no boneyard. For two or three players, each receives seven tiles and the remaining tiles form a boneyard to draw from when unable to play.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by making the open ends of the layout total a multiple of five and by winning hands with the lowest pip total; the first player to reach the agreed total of points or chips wins.",
+    "gameplay": "The game uses a double-six domino set. Each player receives seven tiles. In the four-player game there is no boneyard; in the two- or three-player variant, remaining tiles form a boneyard to draw from when a player cannot play. The first scoring tile or double led starts the layout, and the first double played becomes the only spinner, from which four arms of a cross-shaped layout grow. Players in turn match the open ends; whenever a player makes the open ends total a multiple of five or plays a double, that player takes an immediate extra turn. If a player cannot play and there is a boneyard, they must draw until able to play; otherwise they pass. A hand ends when a player dominoes with their last tile or when the game is blocked with no legal plays.",
+    "keyRules": [
+      "Member of the Fives family of domino games; scoring on multiples of five.",
+      "Uses a double-six domino set and usually four players, each taking seven tiles.",
+      "Only the first double played becomes the spinner, producing a four-armed cross layout.",
+      "Playing a double or making the open ends total a multiple of five grants an extra turn.",
+      "A hand ends when a player dominoes or the game is blocked; the winner scores from opponents' remaining tiles."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep flexible tiles that match common end values and avoid being stuck without a legal play, while looking for chances to score multiples of five.",
+    "intermediate": "Plan sequences that let you chain scoring plays or doubles to take multiple turns in a row and reduce your pip total before the layout becomes tight.",
+    "advanced": "Track which high-pip tiles and key scoring combinations are still unplayed so you can steer the layout ends to values that are awkward for opponents but favorable to your remaining tiles.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No specific mechanical variation data has been extracted yet for this game."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy tier plays dominoes randomly without tracking the line, opponents' remaining tiles, or the current total at the ends.",
+      "medium": "Medium tier tracks tiles in play and aims for standard Fives-family plays that keep flexible ends and create scoring opportunities.",
+      "hard": "Hard tier maintains perfect recall of played tiles and optimizes sequences of scoring plays and doubles to control the layout and block opponents."
+    },
+    "considerations": [
+      "Domino AI for a Fives-family scoring game"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_domino_cross_7toedpete",
+        "name": "Pagat.com - Seven-Toed Pete (domino)",
+        "url": "https://www.pagat.com/domino/cross/7toedpete.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-domino-7-toed-pete.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": {
+      "high": "Unknown",
+      "low": "Unknown",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "This is not a poker hand-ranking game; scoring is based on multiples of five and pip totals in domino tiles.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "A standard double-6 domino set of 28 tiles: each tile has two ends with values 0 through 6, with every combination represented once, used in blocking and drawing domino games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "7-TOED PETE (DOMINOES VARIANT)",
+      "subtitle": "Domino game",
+      "tagline": "Seven-Toed Pete is a fast-paced Fives-family domino game where players build a cross layout and score when the open ends total a multiple of five."
+    },
+    "shortDescription": "Seven-Toed Pete is a connecting domino game in the Fives family played with a double-six set. Players build a cross-shaped layout from a single spinner and score whenever the open ends total a multiple of five.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "Unknown",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Seven-Toed Pete is a connecting domino game in the Fives family played with a double-six set. Four players build a cross-shaped layout from a single spinner, scoring whenever the open ends total a multiple of five and taking extra turns for scoring plays or doubles.",
+    "ai": "Game: 7-Toed Pete (Dominoes Variant). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Whenever a player makes the open ends of the layout total a multiple of five, they score that total; the winner of the hand (the player who dominoes or has the fewest pips when the game blocks) scores the total pip value of opponents' remaining tiles, often divided by five into points or chips.",
+    "winCondition": "Play continues over multiple hands, and the first player to reach the agreed total of points or chips wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Scoring is based on multiples of five at the layout ends and total pip counts, not on per-tile rank values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,623 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tau-ngau.json",
+  "name": "Tau Ngau",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tau Ngau (Bull Fighting) has two main forms. Domino version: 3â€“6 players, banker deals five tiles each; discard three that total a multiple of ten (tiles 4-2 and 2-1 are wild); remaining two tiles give score (mod 10); beat the banker. Card version (Ngau/Gnau): 52-card deck, 2+ players; five cards each; choose three that sum to a multiple of 10 or are three-of-a-kind to be scoring-eligible; two remaining cards give Ox power (face=10, 3s and 6s can be 3 or 6). Hand ranks: Five Dukes, All-Small, Double-Ox, etc. Played in Southeast Asia as casual or gambling game.",
+    "category": "Banking",
+    "subCategory": "Partition / Banking",
+    "origin": "Southeast Asia (domino); Malaysian card variant",
+    "originName": "Tau Ngau",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "3â€“6 (domino); 2+ (card)"
+    },
+    "deck": "Double-six dominoes, or 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Malaysia"],
+    "origins": "Country/Region of Origin: Various\nTime Period: Early 1900s\nHistorical Development: The game evolved from traditional card games in the region\nCultural Significance: Popular social and family game",
+    "timeline": [
+      "Early 1900s: Game first documented",
+      "Mid 1900s: Spread to other regions",
+      "Modern Era: Continues to be played worldwide",
+      "Online Presence: Digital versions available"
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Minimum Players: 3\nMaximum Players: 6\nOptimal Players: 4\nPartnerships: None; onlookers may place side bets.",
+    "deck": "Type: Double-six domino set (28 tiles)\nNumber of Decks: 1\nWild tiles: 4-2 and 2-1 count as 3 or 6 for discard totals only.",
+    "equipment": "Double-six domino set\nTable space\nOptional: dice to choose banker",
+    "dealing": "Cards per Player: 5 tiles each\nDealing Pattern: Banker deals to each player\nDealer: Banker (chosen by dice for the hand)",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Have a higher hand than the banker: after discarding three tiles that total a multiple of 10, the sum of the two remaining tiles (modulo 10) must beat the banker's total.",
+    "gameplay": "1. Banker: One player is chosen by dice as banker; sets betting limits and deals.\n2. Deal: Banker deals five tiles to each player; players place bets.\n3. Discard: Each player chooses three tiles that total a multiple of 10 and discards them; the 4-2 and 2-1 tiles are wild (count as 3 or 6). If a player cannot form a multiple-of-10 discard, they lose their bet; if the banker cannot, the banker pays all who did and others get bets back.\n4. Score: Sum the pips on the two remaining tiles and take the last digit (mod 10). Higher than banker wins; lower loses; tie pushes.\n5. Bank: If the banker made a discard, the bank passes right; otherwise the banker keeps the bank.",
+    "keyRules": [
+      "Discard exactly three tiles whose pips sum to a multiple of 10; wilds 4-2 and 2-1 may stand for 3 or 6.",
+      "Hand score is the sum of the two remaining tiles modulo 10.",
+      "Beat the banker's score to win; tie is push.",
+      "Banker who cannot discard pays all players who could; players who could not discard get their bets back."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Identify tiles that can form a multiple of 10; use wilds 4-2 and 2-1 as 3 or 6 when needed.",
+    "intermediate": "Split the hand into odd- and even-pip tiles; (even+even+even), (odd+odd+even) can be multiples of 10; (odd+odd+odd) cannot.",
+    "advanced": "With five odd tiles you cannot discard and lose; with four odds start from the one even tile; with three odds look for odd+odd+even; with two odds try two odds plus one even, or three evens; with one odd treat it as flexible; with no odds search among all five.",
+    "tips": [
+      "Mental math: only even totals can be multiples of 10.",
+      "If you cannot make a discard, you lose your bet; banker in that case pays all who could and returns stakes to those who could not."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "domino",
+        "name": "Domino version",
+        "description": "Played with double-six dominoes; 3–6 players; five tiles each; discard three totalling multiple of 10; two remaining tiles score mod 10; beat the banker. Wilds 4-2 and 2-1.",
+        "overrides": {},
+        "emptyOverridesReason": "No engine overrides; same deck and core rules."
+      },
+      {
+        "id": "card-ngau",
+        "name": "Card version (Ngau/Gnau)",
+        "description": "Played with 52-card deck; 2+ players; five cards each; choose three that sum to multiple of 10 or three-of-a-kind for scoring; two remaining cards give Ox power (face=10, 3s and 6s flexible). Hand ranks include Five Dukes, All-Small, Double-Ox.",
+        "overrides": {},
+        "emptyOverridesReason": "Card variant uses different deck and hand ranks; engine would need separate config."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Basic legal move selection\nMinimal strategy\nRandom choices when equivalent",
+      "medium": "Basic strategy implementation\nSimple opponent modeling\nStandard tactical play",
+      "hard": "Advanced strategy\nPattern recognition\nOptimal play in common situations"
+    },
+    "considerations": [
+      "Tau Ngau: follow rules; strategy depends on variant."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-taungau",
+        "name": "Pagat.com",
+        "url": "https://www.pagat.com/domino/adding/taungau.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-taungau.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/domino/adding/taungau.html",
+        "localHtml": "pagat-taungau.html"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "localHtml": "wiki-list-of-card-games.html"
+      },
+      "https://boardgamegeek.com/",
+      "https://www.bicyclecards.com/"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "tile"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A double-six domino set consisting of 28 tiles with all combinations of pips from 0 to 6, where each tile has two sides with 0 to 6 pips arranged in various combinations for domino gameplay.",
+    "suitDescription": "Domino tiles organized by pip combinations ranging from (0,0) blank to (6,6), where each combination represents a distinct tile value and contributes to the domino chain during gameplay.",
+    "rankDescription": "Domino tiles ranked by total pip count and combination type, where doubles (matching both sides) have special significance, and strategic placement along the chain determines game progression and scoring opportunities.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TAU NGAU",
+      "subtitle": "Card Game",
+      "tagline": "Tau Ngau (Bull Fighting) has two main forms. Domino version: 3â€“6 players, banker..."
+    },
+    "shortDescription": "Tau Ngau (Bull Fighting) has two main forms. Domino version: 3â€“6 players, banker deals five tiles each; discard three that total a multiple of ten ([4",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tau Ngau (Bull Fighting) has two main forms. Domino version: 3â€“6 players, banker deals five tiles each; discard three that total a multiple of ten (tiles 4-2 and 2-1 are wild); remaining two tiles give score (mod 10); beat the banker. Card version (Ngau/Gnau): 52-card deck, 2+ players; five cards each; choose three that sum to a multiple of 10 or are three-of-a-kind to be scoring-eligible; two remaining cards give Ox power (face=10, 3s and 6s can be 3 or 6). Hand ranks: Five Dukes, All-Small, Double-Ox, etc. Played in Southeast Asia as casual or gambling game.",
+    "ai": "Game: Tau Ngau. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Points based on cards captured or objectives completed\nGame ends when target reached\n--",
+    "winCondition": "Be the first player to achieve the winning condition through strategic play of cards.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Scoring uses tile total modulo 10; no per-card point values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

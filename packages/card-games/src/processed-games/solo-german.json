@@ -1,0 +1,641 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "solo-german.json",
+  "name": "Solo (German)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "German Solo (often just 'Solo') is a trick-taking card game for 4 players that evolved from Quadrille and L'Hombre. It uses a 32-card deck (Aces down to 7s). It is distinct from Solo Whist. The unique feature is the 'Color' ranking (Clubs/Spades are black, Hearts/Diamonds are red) which affects the card order, and the presence of fixed top trumps called 'Matadors' (Spadille, Manille, Basto) regardless of the named trump suit.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Germany / France",
+    "originName": "Deutsches Solo",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "32 cards (Piquet deck with Ombre ranking)",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Germany", "France"],
+    "origins": "Dates back significantly to the 18th century as a simplified Quadrille. Retained the complex 'Ombre' ranking where black suits rank normally (K-Q-J-7-...) but red suits rank inversely in pip cards (A-2-3...).",
+    "timeline": [
+      "1700s: Quadrille dominates Europe.",
+      "1800s: German Solo simplifies the 40-card game to 32 cards.",
+      "Present: Played by enthusiasts of historical games."
+    ],
+    "evolution": "The term 'Solo' refers to the bidder playing alone against three defenders.",
+    "cultural": "A game for intellectuals who enjoyed the complexity of variable card rankings.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Four players. Each plays individually; temporary partnerships are formed by the outcome of bidding (in Frage or Grossfrage the declarer and the holder of the called ace are partners). Eldest hand sits to the dealer's left; deal rotates left after each hand.",
+    "deck": "A 32-card pack (Piquet or Skat pack): Ace, King, Queen, Jack, 10, 9, 8, 7 in each suit. German- or French-suited; historically German-suited. Ranks 2 through 6 are removed from a standard 52-card deck.",
+    "equipment": "",
+    "dealing": "Deal 8 cards each.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Soloist wins 5 tricks (Simple) or all tricks (Tout).",
+    "gameplay": "After the deal, eldest hand bids first. Bids in ascending order are Frage, Grossfrage, and Solo; players may pass. In Frage, the declarer names a plain-suit ace they do not hold; whoever has it is the declarer's partner (secret until play). In Grossfrage, the declarer must hold both top matadors (Spadille and Manille) and again names an ace for a partner, who chooses trump (not the called ace's suit). In Solo, the declarer chooses trump and plays alone. Trick play: forehand leads; players must follow suit if possible; highest trump wins, or if no trump, highest card of the suit led. The declaring side must win at least five of the eight tricks. After taking the first five, they may stop for a prime bonus or continue; winning all eight is a Durchmarsch (slam).",
+    "keyRules": [
+      "32-card deck; 8 cards each. Deal in 3-2-3 or 4-2-2.",
+      "Bidding: Frage, Grossfrage, Solo in ascending order; eldest hand bids first.",
+      "Matadors (Spadille, Manille, Basto) are fixed top trumps; declarer names trump suit.",
+      "Follow suit if possible; trick winner leads next. Declarer side must take 5 tricks (or all 8 for Tout)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Memorize the ranking. The complexity is the barrier. Spadille (Ace Spades) and Basto (Ace Clubs) are permanent trumps. If Hearts are trump, the Ace of Hearts (Pont) joins them. If Spades are trump, Spadille is just the Ace. Confusing? Yes. But critical.",
+    "intermediate": "The 'Renouce': You must follow suit except when playing a Matador. Matadors can be held back even if you could follow suit (reneging privilege). Use this to save them for a game-winning trick.",
+    "advanced": "Defensive Lead: Lead trumps to draw out the Soloist's Matadors. If they have none, you win easy.",
+    "tips": [
+      "A black 7 is usually a low card unless it's the Manille.",
+      "Red Aces are low in plain suits but high in trump."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "simple_five_tricks",
+        "name": "Simple (5 tricks)",
+        "description": "Declarer or declarer's side must win at least 5 of 8 tricks to fulfill the contract.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes win condition to 5 tricks; no engine constant overrides needed."
+      },
+      {
+        "id": "tout_all_tricks",
+        "name": "Tout (Durchmarsch)",
+        "description": "Declarer may announce Tout and attempt to win all 8 tricks for a bonus; may stop after 5 for prime bonus instead.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes win condition to all 8 tricks; no engine constant overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Confuses Red/Black rankings; plays Matadors too early.",
+      "medium": "Handles basic ranking; bids conservatively.",
+      "hard": "Expert 'Ombre-Logician'; perfect recall of the 32-card hierarchy; calculates probability of Matadors being held by specific defenders."
+    },
+    "considerations": [
+      "Ranking-logic (Ombre-Order) solver.",
+      "Matador-privilege (Renounce-Check) engine."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-german-solo",
+        "name": "Pagat - German Solo",
+        "url": "https://www.pagat.com/lhombre/solo.html",
+        "retrievedAt": "2026-02-24",
+        "sections": [],
+        "localHtml": "pagat-lhombre-solo.html"
+      },
+      {
+        "id": "src:wikipedia_german_solo",
+        "name": "Wikipedia - German Solo",
+        "url": "https://en.wikipedia.org/wiki/German_Solo",
+        "retrievedAt": "2026-02-24",
+        "sections": [],
+        "localHtml": "wiki-german-solo.html"
+      }
+    ],
+    "additional": [
+      "The History of Playing Cards",
+      "German Card Game Encyclopedia"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal Cards",
+        "actor": "dealer",
+        "legalActions": ["deal"],
+        "nextPhase": "bidding",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"deal": "face_down"},
+        "notes": "Deal eight cards to each of four players from a 32-card pack in 3-2-3 or 4-2-2 batches."
+      },
+      {
+        "id": "bidding",
+        "label": "Contract Bidding",
+        "actor": "each_player_clockwise",
+        "legalActions": ["bid", "pass"],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Eldest hand bids first; players bid Frage, Grossfrage, or Solo in ascending order or pass."
+      },
+      {
+        "id": "trick_play",
+        "label": "Play Tricks",
+        "actor": "each_player_clockwise",
+        "legalActions": ["play_card"],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [{"condition": "tricks_completed == 8", "nextPhase": "resolution"}],
+        "cardVisibilityChanges": {"play_card": "face_up"},
+        "notes": "Follow suit if possible; forehand leads; trick winner leads next."
+      },
+      {
+        "id": "resolution",
+        "label": "Settle Contract",
+        "actor": "system",
+        "legalActions": ["award_pot"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Declarer side wins if they take 5 or more tricks (or all 8 for Tout); apply score transfer."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal eight cards to each player from the 32-card pack in 3-2-3 or 4-2-2 batches.",
+        "cost": "0",
+        "constraints": "Dealer action at hand start; dealing begins to dealer's left.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {"target": "hand", "count": 8}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Settle contract: apply score or value transfer between declarer side and defenders based on whether 5 or more tricks were made.",
+        "cost": "0",
+        "constraints": "Resolution phase only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass during bidding when declining to overcall the current contract.",
+        "cost": "0",
+        "constraints": "Bidding phase only.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Submit a contract bid (Frage, Grossfrage, or Solo) that overcalls the current highest bid.",
+        "cost": "0",
+        "constraints": "Bidding phase only; one bid opportunity per player; higher bids override lower.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 8,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "called_by_contract",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "Matadors (Spadille, Manille, Basto) fixed as top trumps; then trump suit order.",
+      "canCallNoTrump": false,
+      "overtakingRule": "standard_trick_high_card"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 8,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Forehand leads first trick; trick winner leads next.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": null,
+        "maxBid": null,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "bidding", "trick_play", "resolution"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 32-card French deck formed by removing ranks 2 through 6 from a standard pack, leaving 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "3-2-3 or 4-2-2 batches to each player",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "roundConfig": "Hands are independent; deal rotates left each hand with no fixed round or target score."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SOLO (GERMAN)",
+      "subtitle": "Card Game",
+      "tagline": "German Solo (often just 'Solo') is a trick-taking card game for 4 players that e..."
+    },
+    "shortDescription": "German Solo (often just 'Solo') is a trick-taking card game for 4 players that evolved from Quadrille and L'Hombre. It uses a 32-card deck (Aces down ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "German Solo (often just 'Solo') is a trick-taking card game for 4 players that evolved from Quadrille and L'Hombre. It uses a 32-card deck (Aces down to 7s). It is distinct from Solo Whist. The unique feature is the 'Color' ranking (Clubs/Spades are black, Hearts/Diamonds are red) which affects the card order, and the presence of fixed top trumps called 'Matadors' (Spadille, Manille, Basto) regardless of the named trump suit.",
+    "ai": "Game: Solo (German). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Soloist wins 5 tricks (Simple) or all tricks (Tout).",
+    "winCondition": "Soloist wins 5 tricks (Simple) or all tricks (Tout).",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Scoring is by contract and tricks won, not by individual card point values."
+    }
+  },
+  "alsoKnownAs": ["Deutsches Solo", "Sollo", "German ombre", "Solo"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

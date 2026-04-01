@@ -1,0 +1,93 @@
+import type { HandlerKey } from '@/types/brands';
+
+export type { HandlerKey };
+
+export const RouteMatch = {
+  Prefix: 'prefix',
+  Exact: 'exact',
+  PrefixAndIncludes: 'prefixAndIncludes',
+} as const;
+
+export type RouteMatchType = (typeof RouteMatch)[keyof typeof RouteMatch];
+
+export const MiddlewareKey = {
+  Auth: 'auth',
+  DevOnly: 'devOnly',
+} as const;
+
+export type MiddlewareKeyType = (typeof MiddlewareKey)[keyof typeof MiddlewareKey];
+
+export const CloudflareHandlerKey = {
+  Homepage: 'homepage' as HandlerKey,
+  Explore: 'explore' as HandlerKey,
+  ExploreLeaderboard: 'exploreLeaderboard' as HandlerKey,
+  ExploreBenchmark: 'exploreBenchmark' as HandlerKey,
+  ExploreMatches: 'exploreMatches' as HandlerKey,
+  ExploreBenchmarks: 'exploreBenchmarks' as HandlerKey,
+  Anonymize: 'anonymize' as HandlerKey,
+  Matches: 'matches' as HandlerKey,
+  Disputes: 'disputes' as HandlerKey,
+  SignedUrl: 'signedUrl' as HandlerKey,
+  Archive: 'archive' as HandlerKey,
+  DataExport: 'dataExport' as HandlerKey,
+  Data: 'data' as HandlerKey,
+  AI: 'ai' as HandlerKey,
+  AICatalog: 'aiCatalog' as HandlerKey,
+  AIOAuth: 'aiOAuth' as HandlerKey,
+  AIKeys: 'aiKeys' as HandlerKey,
+  AIGenerate: 'aiGenerate' as HandlerKey,
+  AIEscrow: 'aiEscrow' as HandlerKey,
+  Leaderboard: 'leaderboard' as HandlerKey,
+  Players: 'players' as HandlerKey,
+  Credits: 'credits' as HandlerKey,
+  Badges: 'badges' as HandlerKey,
+  Logs: 'logs' as HandlerKey,
+  Resources: 'resources' as HandlerKey,
+  Slices: 'slices' as HandlerKey,
+  Assets: 'assets' as HandlerKey,
+  AssetsManifestUrl: 'assetsManifestUrl' as HandlerKey,
+  Test: 'test' as HandlerKey,
+  Docs: 'docs' as HandlerKey,
+  Openapi: 'openapi' as HandlerKey,
+  Health: 'health' as HandlerKey,
+  AppVersion: 'appVersion' as HandlerKey,
+  Metrics: 'metrics' as HandlerKey,
+  Alerts: 'alerts' as HandlerKey,
+  ImageProxy: 'imageProxy' as HandlerKey,
+
+  Payment: 'payment' as HandlerKey,
+  StripeWebhook: 'stripeWebhook' as HandlerKey,
+  Sync: 'sync' as HandlerKey,
+  Replay: 'replay' as HandlerKey,
+  Lobby: 'lobby' as HandlerKey,
+  Matchmaking: 'matchmaking' as HandlerKey,
+  Presence: 'presence' as HandlerKey,
+  Friends: 'friends' as HandlerKey,
+  Signaling: 'signaling' as HandlerKey,
+  Ws: 'ws' as HandlerKey,
+  Audit: 'audit' as HandlerKey,
+  Transparency: 'transparency' as HandlerKey,
+  Compliance: 'compliance' as HandlerKey,
+  Progression: 'progression' as HandlerKey,
+  Reward: 'reward' as HandlerKey,
+  Personalization: 'personalization' as HandlerKey,
+  Analytics: 'analytics' as HandlerKey,
+  Security: 'security' as HandlerKey,
+  Fraud: 'fraud' as HandlerKey,
+  AntiCheat: 'anticheat' as HandlerKey,
+  Profile: 'profile' as HandlerKey,
+  Message: 'message' as HandlerKey,
+  Feed: 'feed' as HandlerKey,
+  Party: 'party' as HandlerKey,
+  LeaderboardSocial: 'leaderboardSocial' as HandlerKey,
+  Notification: 'notification' as HandlerKey,
+  Discovery: 'discovery' as HandlerKey,
+  Inventory: 'inventory' as HandlerKey,
+  Marketplace: 'marketplace' as HandlerKey,
+  Tournament: 'tournament' as HandlerKey,
+  Settings: 'settings' as HandlerKey,
+  Admin: 'admin' as HandlerKey,
+  AdminProducts: 'adminProducts' as HandlerKey,
+  Shop: 'shop' as HandlerKey,
+  HealthDetail: 'healthDetail' as HandlerKey,
+} as const;

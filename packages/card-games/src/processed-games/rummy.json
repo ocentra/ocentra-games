@@ -1,0 +1,789 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "rummy.json",
+  "name": "Rummy",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Rummy is a classic draw-and-discard matching game. Players form melds (sets of three or four of a kind, or runs of three or more in suit) and try to dispose of all cards. Draw one, meld and lay off optionally, discard one. First to go out wins; others count deadwood points.",
+    "category": "Rummy",
+    "subCategory": "Draw-and-Discard / Basic Rummy",
+    "origin": "USA (possibly from Mexican Conquian)",
+    "originName": "Rummy (Straight Rummy, Basic Rummy)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2-6 (optimal 2-4)"
+    },
+    "deck": "52-card standard",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Mexico", "China", "USA", "United Kingdom"],
+    "origins": "Rummy games first appeared in the early twentieth century. Two main theories: Mexican origin from Conquian (first attested 1852), or Asian from a Mahjong-related game such as Kun P'ai. The draw-and-discard principle with melding appears in Chinese card games from the 18thâ€“19th century. The name 'rummy' may derive from British slang ('rum' = odd), Rum Poker, or the drink.",
+    "timeline": [
+      "1852: Conquian first attested in Mexico.",
+      "1900s: Name 'Rummy' appears; game spreads in USA.",
+      "1909: Gin Rummy variant created (Elwood Baker).",
+      "1910sâ€“1920s: Rummy popular in USA and UK; Gin Rummy booms during Prohibition.",
+      "1940sâ€“1950s: Canasta emerges from Uruguay.",
+      "Present: Indian Rummy (Paplu) and online platforms flourish."
+    ],
+    "evolution": "Basic Rummy (Straight Rummy) is the simplest form. Gin Rummy, 500 Rummy, Canasta, and Indian Rummy are major variants. Basic Rummy uses one draw, optional meld/lay-off, one discard; no requirement to meld before laying off on others in the standard rules.",
+    "cultural": "A staple of home and club play. Gin Rummy was associated with Hollywood and Prohibition-era America. Indian Rummy is widely played online.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2â€“6 (optimal 2â€“4). Deal alternates (2 players) or rotates clockwise.",
+    "deck": "Standard 52-card deck. Cards rank A low to K high.",
+    "equipment": "Deck, flat surface. Agree target score or number of deals before play.",
+    "dealing": "1. Deal 10 (2 players), 7 (3â€“4), or 6 (5â€“6) cards each, one at a time. 2. Remaining cards form the stock. 3. One card turned face-up starts the discard pile.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Dispose of all cards in your hand by melding, laying off, and discarding. Go out first; others count deadwood (unmelded cards) as penalty points.",
+    "gameplay": "1. **Draw**: Start your turn by taking one card from the stock or the top of the discard pile. 2. **Meld** (optional): Lay one or more valid combinations face upâ€”sets (3â€“4 of a rank) or runs (3+ consecutive in suit). 3. **Lay off** (optional): Add cards to your own or others' melds. 4. **Discard**: End your turn by placing one card face-up on the discard pile. If you drew from the discard, you cannot discard that same card to leave the pile unchanged. 5. **Going out**: First to meld, lay off, or discard away all cards wins the hand. Play stops immediately.",
+    "keyRules": [
+      "Melds: Sets = 3â€“4 of same rank. Runs = 3+ consecutive same suit (A-2-3 valid; Q-K-A usually not unless house rule).",
+      "One meld per turn (unless house rule allows multiple).",
+      "Lay off is optional; can add to any meld on the table.",
+      "Cannot discard the same card you just took from the discard pile if that would leave the pile unchanged.",
+      "When stock runs out and next player doesn't want the discard, discard pile is turned over (unshuffled) as new stock."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize runs over sets; runs are harder to block. Track discards to avoid helping opponents. Hold middle cards (5â€“9) for flexibility. Discard high deadwood early.",
+    "intermediate": "Count visible cards to estimate what's left. Defensive discarding: avoid cards that complete opponents' obvious melds. Consider holding melds to limit opponents' lay-off options.",
+    "advanced": "Use wild-card tactics when applicable: put down a meld with a wild, keep the natural card to reclaim it later. When trailing, play to help a player go out to catch a leader with high deadwood.",
+    "tips": [
+      "Runs are more flexible than sets.",
+      "Don't meld too earlyâ€”reveals your hand.",
+      "Watch what opponents take from the discard.",
+      "Manage high cards; 10 points each in deadwood."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "going-rummy",
+        "name": "Going Rummy",
+        "description": "If you go out in one turn without having melded or laid off before, score is doubled (or +10 bonus).",
+        "overrides": {},
+        "emptyOverridesReason": "Scoring bonus only; no engine structure change needed for this variant."
+      },
+      {
+        "id": "no-lay-off-until-meld",
+        "name": "No Lay-Off Until Meld",
+        "description": "You may not lay off on others' melds until you have melded at least once.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule-only variant; lay-off constraint can be enforced in rules layer."
+      },
+      {
+        "id": "ace-high-low",
+        "name": "Ace High or Low",
+        "description": "Aces can be high (Q-K-A) or low (A-2-3). Aces then count 15 in deadwood.",
+        "overrides": {},
+        "emptyOverridesReason": "Ace value and deadwood rule; engine constants could be added later."
+      },
+      {
+        "id": "block-rummy",
+        "name": "Block Rummy",
+        "description": "Discard pile is not reused. When stock runs out and next player doesn't want the discard, game ends. Lowest deadwood wins.",
+        "overrides": {},
+        "emptyOverridesReason": "Stock exhaustion and win condition; overrides can be added when building."
+      },
+      {
+        "id": "500-rummy",
+        "name": "500 Rummy",
+        "description": "Multiple cards can be taken from discard; points for melds; play to 500.",
+        "overrides": {},
+        "emptyOverridesReason": "Different game; would need separate engine config and overrides."
+      },
+      {
+        "id": "gin-rummy",
+        "name": "Gin Rummy",
+        "description": "Two players; knock when deadwood â‰¤10; no lay-off until knock.",
+        "overrides": {},
+        "emptyOverridesReason": "Different game; would need knock and deadwood limit overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Draw from stock or discard randomly. Meld as soon as possible. Discard highest deadwood. No tracking.",
+      "medium": "Track visible cards. Prefer runs. Defensive discarding. Hold middle cards. Balance meld timing.",
+      "hard": "Full card-counting. Optimize draw/discard for meld completion. Infer opponent hands. Optimal lay-off and meld timing."
+    },
+    "considerations": [
+      "AI must track stock size and discard pile contents.",
+      "Lay-off on opponents' melds can help them; timing matters.",
+      "Going Rummy (one-turn win) requires hand evaluation."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-rummy",
+        "name": "Pagat.com - Rummy (Basic)",
+        "url": "https://www.pagat.com/rummy/rummy.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-rummy-game.html"
+      },
+      {
+        "id": "src:wikipedia-rummy",
+        "name": "Wikipedia - Rummy",
+        "url": "https://en.wikipedia.org/wiki/Rummy",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-rummy-4.html"
+      },
+      {
+        "id": "src:wikipedia_rummy",
+        "name": "Wikipedia - Rummy",
+        "url": "https://en.wikipedia.org/wiki/Rummy",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-rummy-4.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/rummy/",
+        "localHtml": "pagat-rummy-index.html"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Indian_Rummy",
+        "localHtml": "wiki-indian-rummy.html"
+      },
+      "Britannica - Rummy",
+      "Rummy-Games.com"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "rummy",
+    "draw-and-discard",
+    "melding",
+    "matching",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 90,
+    "complexity": 2,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal 6â€“10 cards each; one card up for discard; rest = stock."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "draw",
+          "meld",
+          "lay_off",
+          "discard"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "player_out",
+            "nextPhase": "score"
+          },
+          {
+            "condition": "continue",
+            "nextPhase": "play"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Draw one; meld/lay off optionally; discard one."
+      },
+      {
+        "id": "score",
+        "label": "Score",
+        "actor": "system",
+        "legalActions": [
+          "count_deadwood",
+          "add_to_winner"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winner scores opponents' deadwood."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw card(s) from the configured source.",
+        "cost": "0",
+        "constraints": "Allowed only when draw timing and source rules permit.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard card(s) to the designated discard zone.",
+        "cost": "0",
+        "constraints": "Allowed only when discard timing and count rules permit.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": true,
+        "description": "Lay down a valid meld combination.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 0,
+          "notes": ""
+        },
+        {
+          "source": "discard_top",
+          "visibility": "face_up",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 0,
+          "notes": ""
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": true,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": true,
+      "discardTiming": "end_of_turn",
+      "discardVisibility": "face_up",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": true,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {
+          "type": "set",
+          "minSize": 3,
+          "maxSize": 0,
+          "acesHigh": false,
+          "wildcardAllowed": false
+        },
+        {
+          "type": "run",
+          "minSize": 3,
+          "maxSize": 0,
+          "acesHigh": false,
+          "wildcardAllowed": false
+        }
+      ],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": true,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play", "score"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "lay_off",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "count_deadwood",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "add_to_winner",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "7 each (3â€“4 players); 10 (2); 6 (5â€“6).",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "RUMMY",
+      "subtitle": "Basic Rummy",
+      "tagline": "Draw one. Meld. Discard. Go out first."
+    },
+    "shortDescription": "Classic draw-and-discard game: form sets and runs, go out first, count deadwood.",
+    "uiThemes": [
+      "classic",
+      "traditional"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center_left",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Draw one from the stock or discard. Meld sets (3â€“4 of a kind) or runs (3+ in suit). Lay off on any meld. Discard one to end your turn. First to get rid of all cards wins. Others count what's leftâ€”face cards 10, aces 1, numbers at face value.",
+    "ai": "Game: Rummy. Progression: [Deal -> Draw -> Meld/lay off (optional) -> Discard -> next player | Score if out]. Draw 1 from stock or discard_top. Meld: sets (3â€“4 same rank) or runs (3+ consecutive same suit). Lay off on melds. Discard 1 to end turn. Go out = win. Losers sum deadwood (A=1, 2â€“10=face, J/Q/K=10)."
+  },
+  "scoring": {
+    "description": "When a player goes out, others sum the point value of cards left in hand. Number cards = face value. Aces = 1. Face cards (J,Q,K) = 10. Total is added to the winner's score. Game continues until target score or agreed deals.",
+    "winCondition": "First to reach the agreed target score wins the game. Each hand: winner scores the sum of opponents' deadwood.",
+    "cardValues": {
+      "Ace": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "Jack": "10",
+      "Queen": "10",
+      "King": "10"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Straight Rummy",
+    "Basic Rummy",
+    "Paplu",
+    "Indian Rummy"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

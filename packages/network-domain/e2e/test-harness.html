@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebRTC Test Harness</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    #status {
+      padding: 10px;
+      background: #2a2a2a;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .log {
+      padding: 5px;
+      margin: 2px 0;
+      background: #2a2a2a;
+      border-left: 3px solid #4a9eff;
+    }
+    .error {
+      border-left-color: #ff4a4a;
+    }
+    .success {
+      border-left-color: #4aff4a;
+    }
+  </style>
+</head>
+<body>
+  <h1>WebRTC Test Harness</h1>
+  <div id="status">Initializing...</div>
+  <div id="logs"></div>
+
+  <script type="module">
+    const { WebRTCHandler } = await import('@ocentra/network-domain/connection/WebRTCHandler')
+    const { P2PManager } = await import('@ocentra/network-domain/managers/P2PManager')
+
+    // Expose to window for Playwright
+    // @ts-expect-error - test harness
+    window.WebRTCHandler = WebRTCHandler
+    // @ts-expect-error - test harness
+    window.P2PManager = P2PManager
+
+    const statusEl = document.getElementById('status')
+    const logsEl = document.getElementById('logs')
+
+    function log(message, type = 'info') {
+      const logEl = document.createElement('div')
+      logEl.className = `log ${type}`
+      logEl.textContent = `[${new Date().toISOString()}] ${message}`
+      logsEl.appendChild(logEl)
+      console.log(message)
+    }
+
+    function updateStatus(message) {
+      statusEl.textContent = message
+      log(message, 'info')
+    }
+
+    // Check WebRTC support
+    if (typeof RTCPeerConnection === 'undefined') {
+      updateStatus('ERROR: WebRTC not supported in this browser')
+      log('WebRTC is not available', 'error')
+    } else {
+      updateStatus('WebRTC is available - Ready for testing')
+      log('WebRTC is available', 'success')
+      log(`RTCPeerConnection: ${RTCPeerConnection.name}`, 'success')
+    }
+
+    // Expose test utilities
+    window.testUtils = {
+      log,
+      updateStatus,
+    }
+  </script>
+</body>
+</html>

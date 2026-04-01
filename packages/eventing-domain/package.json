@@ -1,0 +1,870 @@
+{
+  "name": "@ocentra/eventing-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Pub/sub eventing framework (EventBus, EventRegistrar, OperationResult). Shared by main app; provides the event runtime and shipped event contracts.",
+  "dependencies": {
+    "@ocentra/boundary-domain": "file:../boundary-domain",
+    "@ocentra/logging-domain": "file:../logging-domain"
+  },
+  "exports": {
+    "./version": {
+      "import": "./dist/version.js",
+      "types": "./dist/version.d.ts"
+    },
+    "./core/EventBus": {
+      "import": "./dist/core/EventBus.js",
+      "types": "./dist/core/EventBus.d.ts"
+    },
+    "./core/EventRegistrar": {
+      "import": "./dist/core/EventRegistrar.js",
+      "types": "./dist/core/EventRegistrar.d.ts"
+    },
+    "./core/EventArgsBase": {
+      "import": "./dist/core/EventArgsBase.js",
+      "types": "./dist/core/EventArgsBase.d.ts"
+    },
+    "./core/OperationResult": {
+      "import": "./dist/core/OperationResult.js",
+      "types": "./dist/core/OperationResult.d.ts"
+    },
+    "./core/OperationDeferred": {
+      "import": "./dist/core/OperationDeferred.js",
+      "types": "./dist/core/OperationDeferred.d.ts"
+    },
+    "./core/createEventRegistrar": {
+      "import": "./dist/core/createEventRegistrar.js",
+      "types": "./dist/core/createEventRegistrar.d.ts"
+    },
+    "./interfaces/IEventArgs": {
+      "import": "./dist/interfaces/IEventArgs.js",
+      "types": "./dist/interfaces/IEventArgs.d.ts"
+    },
+    "./interfaces/IEventBus": {
+      "import": "./dist/interfaces/IEventBus.js",
+      "types": "./dist/interfaces/IEventBus.d.ts"
+    },
+    "./interfaces/IEventHandler": {
+      "import": "./dist/interfaces/IEventHandler.js",
+      "types": "./dist/interfaces/IEventHandler.d.ts"
+    },
+    "./interfaces/IEventRegistrar": {
+      "import": "./dist/interfaces/IEventRegistrar.js",
+      "types": "./dist/interfaces/IEventRegistrar.d.ts"
+    },
+    "./interfaces/IOperationResult": {
+      "import": "./dist/interfaces/IOperationResult.js",
+      "types": "./dist/interfaces/IOperationResult.d.ts"
+    },
+    "./contracts/specs": {
+      "import": "./dist/contracts/specs.js",
+      "types": "./dist/contracts/specs.d.ts"
+    },
+    "./testing/createTestEventBus": {
+      "import": "./dist/testing/createTestEventBus.js",
+      "types": "./dist/testing/createTestEventBus.d.ts"
+    },
+    "./types/auth": {
+      "import": "./dist/types/auth.js",
+      "types": "./dist/types/auth.d.ts"
+    },
+    "./types/game": {
+      "import": "./dist/types/game.js",
+      "types": "./dist/types/game.d.ts"
+    },
+    "./types/game-events": {
+      "import": "./dist/types/game-events.js",
+      "types": "./dist/types/game-events.d.ts"
+    },
+    "./types/lobby": {
+      "import": "./dist/types/lobby.js",
+      "types": "./dist/types/lobby.d.ts"
+    },
+    "./types/meta": {
+      "import": "./dist/types/meta.js",
+      "types": "./dist/types/meta.d.ts"
+    },
+    "./types/app-stubs": {
+      "import": "./dist/types/app-stubs.js",
+      "types": "./dist/types/app-stubs.d.ts"
+    },
+    "./events/PlayerJoinedEvent": {
+      "import": "./dist/events/PlayerJoinedEvent.js",
+      "types": "./dist/events/PlayerJoinedEvent.d.ts"
+    },
+    "./events/assets/AutoFixOrphansEvent": {
+      "import": "./dist/events/assets/AutoFixOrphansEvent.js",
+      "types": "./dist/events/assets/AutoFixOrphansEvent.d.ts"
+    },
+    "./events/assets/BatchGetResourcesEvent": {
+      "import": "./dist/events/assets/BatchGetResourcesEvent.js",
+      "types": "./dist/events/assets/BatchGetResourcesEvent.d.ts"
+    },
+    "./events/assets/BatchUpdateMetadataEvent": {
+      "import": "./dist/events/assets/BatchUpdateMetadataEvent.js",
+      "types": "./dist/events/assets/BatchUpdateMetadataEvent.d.ts"
+    },
+    "./events/assets/CheckMetaFileSyncEvent": {
+      "import": "./dist/events/assets/CheckMetaFileSyncEvent.js",
+      "types": "./dist/events/assets/CheckMetaFileSyncEvent.d.ts"
+    },
+    "./events/assets/ClearDirtyAssetsEvent": {
+      "import": "./dist/events/assets/ClearDirtyAssetsEvent.js",
+      "types": "./dist/events/assets/ClearDirtyAssetsEvent.d.ts"
+    },
+    "./events/assets/CreateAssetTemplateEvent": {
+      "import": "./dist/events/assets/CreateAssetTemplateEvent.js",
+      "types": "./dist/events/assets/CreateAssetTemplateEvent.d.ts"
+    },
+    "./events/assets/DeleteAssetEvent": {
+      "import": "./dist/events/assets/DeleteAssetEvent.js",
+      "types": "./dist/events/assets/DeleteAssetEvent.d.ts"
+    },
+    "./events/assets/DetectMimeTypeEvent": {
+      "import": "./dist/events/assets/DetectMimeTypeEvent.js",
+      "types": "./dist/events/assets/DetectMimeTypeEvent.d.ts"
+    },
+    "./events/assets/EnsureMetaFileEvent": {
+      "import": "./dist/events/assets/EnsureMetaFileEvent.js",
+      "types": "./dist/events/assets/EnsureMetaFileEvent.d.ts"
+    },
+    "./events/assets/FindAssetByTypeAndNameEvent": {
+      "import": "./dist/events/assets/FindAssetByTypeAndNameEvent.js",
+      "types": "./dist/events/assets/FindAssetByTypeAndNameEvent.d.ts"
+    },
+    "./events/assets/GenerateUniqueGuidEvent": {
+      "import": "./dist/events/assets/GenerateUniqueGuidEvent.js",
+      "types": "./dist/events/assets/GenerateUniqueGuidEvent.d.ts"
+    },
+    "./events/assets/GetAssetRegistryGuidEvent": {
+      "import": "./dist/events/assets/GetAssetRegistryGuidEvent.js",
+      "types": "./dist/events/assets/GetAssetRegistryGuidEvent.d.ts"
+    },
+    "./events/assets/GetAssetRegistryResourcesEvent": {
+      "import": "./dist/events/assets/GetAssetRegistryResourcesEvent.js",
+      "types": "./dist/events/assets/GetAssetRegistryResourcesEvent.d.ts"
+    },
+    "./events/assets/GetAllAssetTypesEvent": {
+      "import": "./dist/events/assets/GetAllAssetTypesEvent.js",
+      "types": "./dist/events/assets/GetAllAssetTypesEvent.d.ts"
+    },
+    "./events/assets/GetAssetConstructorEvent": {
+      "import": "./dist/events/assets/GetAssetConstructorEvent.js",
+      "types": "./dist/events/assets/GetAssetConstructorEvent.d.ts"
+    },
+    "./events/assets/GetAssetTypeInfoEvent": {
+      "import": "./dist/events/assets/GetAssetTypeInfoEvent.js",
+      "types": "./dist/events/assets/GetAssetTypeInfoEvent.d.ts"
+    },
+    "./events/assets/GetAssetTypesByCategoryEvent": {
+      "import": "./dist/events/assets/GetAssetTypesByCategoryEvent.js",
+      "types": "./dist/events/assets/GetAssetTypesByCategoryEvent.d.ts"
+    },
+    "./events/assets/GetAssetsByGameIdEvent": {
+      "import": "./dist/events/assets/GetAssetsByGameIdEvent.js",
+      "types": "./dist/events/assets/GetAssetsByGameIdEvent.d.ts"
+    },
+    "./events/assets/GetCloudLastModifiedEvent": {
+      "import": "./dist/events/assets/GetCloudLastModifiedEvent.js",
+      "types": "./dist/events/assets/GetCloudLastModifiedEvent.d.ts"
+    },
+    "./events/assets/GetDirtyAssetsEvent": {
+      "import": "./dist/events/assets/GetDirtyAssetsEvent.js",
+      "types": "./dist/events/assets/GetDirtyAssetsEvent.d.ts"
+    },
+    "./events/assets/GetDiskGameModeEntriesEvent": {
+      "import": "./dist/events/assets/GetDiskGameModeEntriesEvent.js",
+      "types": "./dist/events/assets/GetDiskGameModeEntriesEvent.d.ts"
+    },
+    "./events/assets/GetEntryIndexGuidEvent": {
+      "import": "./dist/events/assets/GetEntryIndexGuidEvent.js",
+      "types": "./dist/events/assets/GetEntryIndexGuidEvent.d.ts"
+    },
+    "./events/assets/GetEntryIndexResourcesEvent": {
+      "import": "./dist/events/assets/GetEntryIndexResourcesEvent.js",
+      "types": "./dist/events/assets/GetEntryIndexResourcesEvent.d.ts"
+    },
+    "./events/assets/GetGameModeEntriesEvent": {
+      "import": "./dist/events/assets/GetGameModeEntriesEvent.js",
+      "types": "./dist/events/assets/GetGameModeEntriesEvent.d.ts"
+    },
+    "./events/assets/GetGameTemplateEvent": {
+      "import": "./dist/events/assets/GetGameTemplateEvent.js",
+      "types": "./dist/events/assets/GetGameTemplateEvent.d.ts"
+    },
+    "./events/assets/GetImagesByGameIdEvent": {
+      "import": "./dist/events/assets/GetImagesByGameIdEvent.js",
+      "types": "./dist/events/assets/GetImagesByGameIdEvent.d.ts"
+    },
+    "./events/assets/GetMetadataEvent": {
+      "import": "./dist/events/assets/GetMetadataEvent.js",
+      "types": "./dist/events/assets/GetMetadataEvent.d.ts"
+    },
+    "./events/assets/GetResourceByGuidEvent": {
+      "import": "./dist/events/assets/GetResourceByGuidEvent.js",
+      "types": "./dist/events/assets/GetResourceByGuidEvent.d.ts"
+    },
+    "./events/assets/GetResourceByHashEvent": {
+      "import": "./dist/events/assets/GetResourceByHashEvent.js",
+      "types": "./dist/events/assets/GetResourceByHashEvent.d.ts"
+    },
+    "./events/assets/GetResourceEvent": {
+      "import": "./dist/events/assets/GetResourceEvent.js",
+      "types": "./dist/events/assets/GetResourceEvent.d.ts"
+    },
+    "./events/assets/GetSyncMetadataEvent": {
+      "import": "./dist/events/assets/GetSyncMetadataEvent.js",
+      "types": "./dist/events/assets/GetSyncMetadataEvent.d.ts"
+    },
+    "./events/assets/GetSyncStatusEvent": {
+      "import": "./dist/events/assets/GetSyncStatusEvent.js",
+      "types": "./dist/events/assets/GetSyncStatusEvent.d.ts"
+    },
+    "./events/assets/GetTreeFolderContentEvent": {
+      "import": "./dist/events/assets/GetTreeFolderContentEvent.js",
+      "types": "./dist/events/assets/GetTreeFolderContentEvent.d.ts"
+    },
+    "./events/assets/HasAssetTypeEvent": {
+      "import": "./dist/events/assets/HasAssetTypeEvent.js",
+      "types": "./dist/events/assets/HasAssetTypeEvent.d.ts"
+    },
+    "./events/assets/IsTypeOfEvent": {
+      "import": "./dist/events/assets/IsTypeOfEvent.js",
+      "types": "./dist/events/assets/IsTypeOfEvent.d.ts"
+    },
+    "./events/assets/MarkAssetCleanEvent": {
+      "import": "./dist/events/assets/MarkAssetCleanEvent.js",
+      "types": "./dist/events/assets/MarkAssetCleanEvent.d.ts"
+    },
+    "./events/assets/MarkAssetDirtyEvent": {
+      "import": "./dist/events/assets/MarkAssetDirtyEvent.js",
+      "types": "./dist/events/assets/MarkAssetDirtyEvent.d.ts"
+    },
+    "./events/assets/ParseMetaJson5Event": {
+      "import": "./dist/events/assets/ParseMetaJson5Event.js",
+      "types": "./dist/events/assets/ParseMetaJson5Event.d.ts"
+    },
+    "./events/assets/ProcessMetaFilesEvent": {
+      "import": "./dist/events/assets/ProcessMetaFilesEvent.js",
+      "types": "./dist/events/assets/ProcessMetaFilesEvent.d.ts"
+    },
+    "./events/assets/ReadMetaFileEvent": {
+      "import": "./dist/events/assets/ReadMetaFileEvent.js",
+      "types": "./dist/events/assets/ReadMetaFileEvent.d.ts"
+    },
+    "./events/assets/RegisterGuidEvent": {
+      "import": "./dist/events/assets/RegisterGuidEvent.js",
+      "types": "./dist/events/assets/RegisterGuidEvent.d.ts"
+    },
+    "./events/assets/RegisterResourceEntryEvent": {
+      "import": "./dist/events/assets/RegisterResourceEntryEvent.js",
+      "types": "./dist/events/assets/RegisterResourceEntryEvent.d.ts"
+    },
+    "./events/assets/ReplaceAllResourcesEvent": {
+      "import": "./dist/events/assets/ReplaceAllResourcesEvent.js",
+      "types": "./dist/events/assets/ReplaceAllResourcesEvent.d.ts"
+    },
+    "./events/assets/ResourceRegisteredEvent": {
+      "import": "./dist/events/assets/ResourceRegisteredEvent.js",
+      "types": "./dist/events/assets/ResourceRegisteredEvent.d.ts"
+    },
+    "./events/assets/ScanAssetsEvent": {
+      "import": "./dist/events/assets/ScanAssetsEvent.js",
+      "types": "./dist/events/assets/ScanAssetsEvent.d.ts"
+    },
+    "./events/assets/ScanR2StatusEvent": {
+      "import": "./dist/events/assets/ScanR2StatusEvent.js",
+      "types": "./dist/events/assets/ScanR2StatusEvent.d.ts"
+    },
+    "./events/assets/SetCloudLastModifiedEvent": {
+      "import": "./dist/events/assets/SetCloudLastModifiedEvent.js",
+      "types": "./dist/events/assets/SetCloudLastModifiedEvent.d.ts"
+    },
+    "./events/assets/SetLastSyncFromCloudEvent": {
+      "import": "./dist/events/assets/SetLastSyncFromCloudEvent.js",
+      "types": "./dist/events/assets/SetLastSyncFromCloudEvent.d.ts"
+    },
+    "./events/assets/SetLastSyncToCloudEvent": {
+      "import": "./dist/events/assets/SetLastSyncToCloudEvent.js",
+      "types": "./dist/events/assets/SetLastSyncToCloudEvent.d.ts"
+    },
+    "./events/assets/SaveAssetRegistryEvent": {
+      "import": "./dist/events/assets/SaveAssetRegistryEvent.js",
+      "types": "./dist/events/assets/SaveAssetRegistryEvent.d.ts"
+    },
+    "./events/assets/SaveEntryIndexEvent": {
+      "import": "./dist/events/assets/SaveEntryIndexEvent.js",
+      "types": "./dist/events/assets/SaveEntryIndexEvent.d.ts"
+    },
+    "./events/assets/SyncAssetEvent": {
+      "import": "./dist/events/assets/SyncAssetEvent.js",
+      "types": "./dist/events/assets/SyncAssetEvent.d.ts"
+    },
+    "./events/assets/SyncFromR2Event": {
+      "import": "./dist/events/assets/SyncFromR2Event.js",
+      "types": "./dist/events/assets/SyncFromR2Event.d.ts"
+    },
+    "./events/assets/SyncToR2Event": {
+      "import": "./dist/events/assets/SyncToR2Event.js",
+      "types": "./dist/events/assets/SyncToR2Event.d.ts"
+    },
+    "./events/assets/UpdateMetaOnSaveEvent": {
+      "import": "./dist/events/assets/UpdateMetaOnSaveEvent.js",
+      "types": "./dist/events/assets/UpdateMetaOnSaveEvent.d.ts"
+    },
+    "./events/assets/UploadAssetEvent": {
+      "import": "./dist/events/assets/UploadAssetEvent.js",
+      "types": "./dist/events/assets/UploadAssetEvent.d.ts"
+    },
+    "./events/assets/UploadFilesEvent": {
+      "import": "./dist/events/assets/UploadFilesEvent.js",
+      "types": "./dist/events/assets/UploadFilesEvent.d.ts"
+    },
+    "./events/assets/UploadImageEvent": {
+      "import": "./dist/events/assets/UploadImageEvent.js",
+      "types": "./dist/events/assets/UploadImageEvent.d.ts"
+    },
+    "./events/assets/ValidateAllMetaEvent": {
+      "import": "./dist/events/assets/ValidateAllMetaEvent.js",
+      "types": "./dist/events/assets/ValidateAllMetaEvent.d.ts"
+    },
+    "./events/assets/ValidateFolderTreesEvent": {
+      "import": "./dist/events/assets/ValidateFolderTreesEvent.js",
+      "types": "./dist/events/assets/ValidateFolderTreesEvent.d.ts"
+    },
+    "./events/authentication/RequestAdditionalUserInfoEvent": {
+      "import": "./dist/events/authentication/RequestAdditionalUserInfoEvent.js",
+      "types": "./dist/events/authentication/RequestAdditionalUserInfoEvent.d.ts"
+    },
+    "./events/authentication/RequestUserCredentialsEvent": {
+      "import": "./dist/events/authentication/RequestUserCredentialsEvent.js",
+      "types": "./dist/events/authentication/RequestUserCredentialsEvent.d.ts"
+    },
+    "./events/authentication/UpdateUIInteractabilityEvent": {
+      "import": "./dist/events/authentication/UpdateUIInteractabilityEvent.js",
+      "types": "./dist/events/authentication/UpdateUIInteractabilityEvent.d.ts"
+    },
+    "./events/dev/OpenInEditorEvent": {
+      "import": "./dist/events/dev/OpenInEditorEvent.js",
+      "types": "./dist/events/dev/OpenInEditorEvent.d.ts"
+    },
+    "./events/game/AuthenticationErrorUIEvent": {
+      "import": "./dist/events/game/AuthenticationErrorUIEvent.js",
+      "types": "./dist/events/game/AuthenticationErrorUIEvent.d.ts"
+    },
+    "./events/game/AuthenticationSignOutEvent": {
+      "import": "./dist/events/game/AuthenticationSignOutEvent.js",
+      "types": "./dist/events/game/AuthenticationSignOutEvent.d.ts"
+    },
+    "./events/game/ClearGameRegistryCacheEvent": {
+      "import": "./dist/events/game/ClearGameRegistryCacheEvent.js",
+      "types": "./dist/events/game/ClearGameRegistryCacheEvent.d.ts"
+    },
+    "./events/game/DecisionTakenEvent": {
+      "import": "./dist/events/game/DecisionTakenEvent.js",
+      "types": "./dist/events/game/DecisionTakenEvent.d.ts"
+    },
+    "./events/game/DetermineWinnerEvent": {
+      "import": "./dist/events/game/DetermineWinnerEvent.js",
+      "types": "./dist/events/game/DetermineWinnerEvent.d.ts"
+    },
+    "./events/game/GetAllGameIdsEvent": {
+      "import": "./dist/events/game/GetAllGameIdsEvent.js",
+      "types": "./dist/events/game/GetAllGameIdsEvent.d.ts"
+    },
+    "./events/game/GetAssetTypeByGuidEvent": {
+      "import": "./dist/events/game/GetAssetTypeByGuidEvent.js",
+      "types": "./dist/events/game/GetAssetTypeByGuidEvent.d.ts"
+    },
+    "./events/game/GetGameInfoEvent": {
+      "import": "./dist/events/game/GetGameInfoEvent.js",
+      "types": "./dist/events/game/GetGameInfoEvent.d.ts"
+    },
+    "./events/game/GetGameModeEvent": {
+      "import": "./dist/events/game/GetGameModeEvent.js",
+      "types": "./dist/events/game/GetGameModeEvent.d.ts"
+    },
+    "./events/game/GetLocalPlayerEvent": {
+      "import": "./dist/events/game/GetLocalPlayerEvent.js",
+      "types": "./dist/events/game/GetLocalPlayerEvent.d.ts"
+    },
+    "./events/game/GetSelectedGamePageInfosEvent": {
+      "import": "./dist/events/game/GetSelectedGamePageInfosEvent.js",
+      "types": "./dist/events/game/GetSelectedGamePageInfosEvent.d.ts"
+    },
+    "./events/game/HideScreenEvent": {
+      "import": "./dist/events/game/HideScreenEvent.js",
+      "types": "./dist/events/game/HideScreenEvent.d.ts"
+    },
+    "./events/game/LayoutAssetUpdatedEvent": {
+      "import": "./dist/events/game/LayoutAssetUpdatedEvent.js",
+      "types": "./dist/events/game/LayoutAssetUpdatedEvent.d.ts"
+    },
+    "./events/game/NewRoundStartedEvent": {
+      "import": "./dist/events/game/NewRoundStartedEvent.js",
+      "types": "./dist/events/game/NewRoundStartedEvent.d.ts"
+    },
+    "./events/game/OfferContinuationEvent": {
+      "import": "./dist/events/game/OfferContinuationEvent.js",
+      "types": "./dist/events/game/OfferContinuationEvent.d.ts"
+    },
+    "./events/game/OfferNewGameEvent": {
+      "import": "./dist/events/game/OfferNewGameEvent.js",
+      "types": "./dist/events/game/OfferNewGameEvent.d.ts"
+    },
+    "./events/game/PlayerActionNewRoundEvent": {
+      "import": "./dist/events/game/PlayerActionNewRoundEvent.js",
+      "types": "./dist/events/game/PlayerActionNewRoundEvent.d.ts"
+    },
+    "./events/game/PlayerActionRaiseBetEvent": {
+      "import": "./dist/events/game/PlayerActionRaiseBetEvent.js",
+      "types": "./dist/events/game/PlayerActionRaiseBetEvent.d.ts"
+    },
+    "./events/game/PlayerActionStartNewGameEvent": {
+      "import": "./dist/events/game/PlayerActionStartNewGameEvent.js",
+      "types": "./dist/events/game/PlayerActionStartNewGameEvent.d.ts"
+    },
+    "./events/game/ProcessDecisionEvent": {
+      "import": "./dist/events/game/ProcessDecisionEvent.js",
+      "types": "./dist/events/game/ProcessDecisionEvent.d.ts"
+    },
+    "./events/game/PurchaseCoinsEvent": {
+      "import": "./dist/events/game/PurchaseCoinsEvent.js",
+      "types": "./dist/events/game/PurchaseCoinsEvent.d.ts"
+    },
+    "./events/game/RegisterHumanPlayerEvent": {
+      "import": "./dist/events/game/RegisterHumanPlayerEvent.js",
+      "types": "./dist/events/game/RegisterHumanPlayerEvent.d.ts"
+    },
+    "./events/game/RegisterLocalPlayerEvent": {
+      "import": "./dist/events/game/RegisterLocalPlayerEvent.js",
+      "types": "./dist/events/game/RegisterLocalPlayerEvent.d.ts"
+    },
+    "./events/game/RegisterPlayerListEvent": {
+      "import": "./dist/events/game/RegisterPlayerListEvent.js",
+      "types": "./dist/events/game/RegisterPlayerListEvent.d.ts"
+    },
+    "./events/game/RequestActivePlayersEvent": {
+      "import": "./dist/events/game/RequestActivePlayersEvent.js",
+      "types": "./dist/events/game/RequestActivePlayersEvent.d.ts"
+    },
+    "./events/game/RequestAllPlayersDataEvent": {
+      "import": "./dist/events/game/RequestAllPlayersDataEvent.js",
+      "types": "./dist/events/game/RequestAllPlayersDataEvent.d.ts"
+    },
+    "./events/game/RequestComputerPlayersDataEvent": {
+      "import": "./dist/events/game/RequestComputerPlayersDataEvent.js",
+      "types": "./dist/events/game/RequestComputerPlayersDataEvent.d.ts"
+    },
+    "./events/game/RequestFloorCardsDetailEvent": {
+      "import": "./dist/events/game/RequestFloorCardsDetailEvent.js",
+      "types": "./dist/events/game/RequestFloorCardsDetailEvent.d.ts"
+    },
+    "./events/game/RequestHumanPlayersDataEvent": {
+      "import": "./dist/events/game/RequestHumanPlayersDataEvent.js",
+      "types": "./dist/events/game/RequestHumanPlayersDataEvent.d.ts"
+    },
+    "./events/game/RequestLobbyPlayerDataEvent": {
+      "import": "./dist/events/game/RequestLobbyPlayerDataEvent.js",
+      "types": "./dist/events/game/RequestLobbyPlayerDataEvent.d.ts"
+    },
+    "./events/game/RequestPlayerDataFromCloudEvent": {
+      "import": "./dist/events/game/RequestPlayerDataFromCloudEvent.js",
+      "types": "./dist/events/game/RequestPlayerDataFromCloudEvent.d.ts"
+    },
+    "./events/game/RequestPlayerHandDetailEvent": {
+      "import": "./dist/events/game/RequestPlayerHandDetailEvent.js",
+      "types": "./dist/events/game/RequestPlayerHandDetailEvent.d.ts"
+    },
+    "./events/game/RequestRemainingCardsCountEvent": {
+      "import": "./dist/events/game/RequestRemainingCardsCountEvent.js",
+      "types": "./dist/events/game/RequestRemainingCardsCountEvent.d.ts"
+    },
+    "./events/game/RequestScoreManagerDetailsEvent": {
+      "import": "./dist/events/game/RequestScoreManagerDetailsEvent.js",
+      "types": "./dist/events/game/RequestScoreManagerDetailsEvent.d.ts"
+    },
+    "./events/game/SavePlayerDataToCloudEvent": {
+      "import": "./dist/events/game/SavePlayerDataToCloudEvent.js",
+      "types": "./dist/events/game/SavePlayerDataToCloudEvent.d.ts"
+    },
+    "./events/game/ScanAndPopulateEvent": {
+      "import": "./dist/events/game/ScanAndPopulateEvent.js",
+      "types": "./dist/events/game/ScanAndPopulateEvent.d.ts"
+    },
+    "./events/game/ShowAllFloorCardEvent": {
+      "import": "./dist/events/game/ShowAllFloorCardEvent.js",
+      "types": "./dist/events/game/ShowAllFloorCardEvent.d.ts"
+    },
+    "./events/game/StartMainGameEvent": {
+      "import": "./dist/events/game/StartMainGameEvent.js",
+      "types": "./dist/events/game/StartMainGameEvent.d.ts"
+    },
+    "./events/game/StartTurnManagerEvent": {
+      "import": "./dist/events/game/StartTurnManagerEvent.js",
+      "types": "./dist/events/game/StartTurnManagerEvent.d.ts"
+    },
+    "./events/game/TimerStartEvent": {
+      "import": "./dist/events/game/TimerStartEvent.js",
+      "types": "./dist/events/game/TimerStartEvent.d.ts"
+    },
+    "./events/game/TimerStopEvent": {
+      "import": "./dist/events/game/TimerStopEvent.js",
+      "types": "./dist/events/game/TimerStopEvent.d.ts"
+    },
+    "./events/game/TurnCompletedEvent": {
+      "import": "./dist/events/game/TurnCompletedEvent.js",
+      "types": "./dist/events/game/TurnCompletedEvent.d.ts"
+    },
+    "./events/game/UIMessageEvent": {
+      "import": "./dist/events/game/UIMessageEvent.js",
+      "types": "./dist/events/game/UIMessageEvent.d.ts"
+    },
+    "./events/game/UnregisterPlayerEvent": {
+      "import": "./dist/events/game/UnregisterPlayerEvent.js",
+      "types": "./dist/events/game/UnregisterPlayerEvent.d.ts"
+    },
+    "./events/game/UpdateGameRegistryViewEvent": {
+      "import": "./dist/events/game/UpdateGameRegistryViewEvent.js",
+      "types": "./dist/events/game/UpdateGameRegistryViewEvent.d.ts"
+    },
+    "./events/game/UpdateGameStateEvent": {
+      "import": "./dist/events/game/UpdateGameStateEvent.js",
+      "types": "./dist/events/game/UpdateGameStateEvent.d.ts"
+    },
+    "./events/game/UpdateNetworkPlayerUIEvent": {
+      "import": "./dist/events/game/UpdateNetworkPlayerUIEvent.js",
+      "types": "./dist/events/game/UpdateNetworkPlayerUIEvent.d.ts"
+    },
+    "./events/game/UpdatePlayerHandDisplayEvent": {
+      "import": "./dist/events/game/UpdatePlayerHandDisplayEvent.js",
+      "types": "./dist/events/game/UpdatePlayerHandDisplayEvent.d.ts"
+    },
+    "./events/game/UpdateTurnStateEvent": {
+      "import": "./dist/events/game/UpdateTurnStateEvent.js",
+      "types": "./dist/events/game/UpdateTurnStateEvent.d.ts"
+    },
+    "./events/game/UpdateWildCardsEvent": {
+      "import": "./dist/events/game/UpdateWildCardsEvent.js",
+      "types": "./dist/events/game/UpdateWildCardsEvent.d.ts"
+    },
+    "./events/game/UpdateWildCardsHighlightEvent": {
+      "import": "./dist/events/game/UpdateWildCardsHighlightEvent.js",
+      "types": "./dist/events/game/UpdateWildCardsHighlightEvent.d.ts"
+    },
+    "./events/game/ValidateMaxPlayersEvent": {
+      "import": "./dist/events/game/ValidateMaxPlayersEvent.js",
+      "types": "./dist/events/game/ValidateMaxPlayersEvent.d.ts"
+    },
+    "./events/game/playerDecision/ComputerPlayerTurnEvent": {
+      "import": "./dist/events/game/playerDecision/ComputerPlayerTurnEvent.js",
+      "types": "./dist/events/game/playerDecision/ComputerPlayerTurnEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionEvent.d.ts"
+    },
+    "./events/image/ImageBatchLoadRequestEvent": {
+      "import": "./dist/events/image/ImageBatchLoadRequestEvent.js",
+      "types": "./dist/events/image/ImageBatchLoadRequestEvent.d.ts"
+    },
+    "./events/image/ImageBatchLoadedEvent": {
+      "import": "./dist/events/image/ImageBatchLoadedEvent.js",
+      "types": "./dist/events/image/ImageBatchLoadedEvent.d.ts"
+    },
+    "./events/image/ImageLoadFailedEvent": {
+      "import": "./dist/events/image/ImageLoadFailedEvent.js",
+      "types": "./dist/events/image/ImageLoadFailedEvent.d.ts"
+    },
+    "./events/image/ImageLoadRequestEvent": {
+      "import": "./dist/events/image/ImageLoadRequestEvent.js",
+      "types": "./dist/events/image/ImageLoadRequestEvent.d.ts"
+    },
+    "./events/image/ImageLoadedEvent": {
+      "import": "./dist/events/image/ImageLoadedEvent.js",
+      "types": "./dist/events/image/ImageLoadedEvent.d.ts"
+    },
+    "./events/image/ImageUnsubscribeEvent": {
+      "import": "./dist/events/image/ImageUnsubscribeEvent.js",
+      "types": "./dist/events/image/ImageUnsubscribeEvent.d.ts"
+    },
+    "./events/lobby/ArcadeInfoEvent": {
+      "import": "./dist/events/lobby/ArcadeInfoEvent.js",
+      "types": "./dist/events/lobby/ArcadeInfoEvent.d.ts"
+    },
+    "./events/lobby/Button3DSimpleClickEvent": {
+      "import": "./dist/events/lobby/Button3DSimpleClickEvent.js",
+      "types": "./dist/events/lobby/Button3DSimpleClickEvent.d.ts"
+    },
+    "./events/lobby/CreateLobbyEvent": {
+      "import": "./dist/events/lobby/CreateLobbyEvent.js",
+      "types": "./dist/events/lobby/CreateLobbyEvent.d.ts"
+    },
+    "./events/lobby/CreateProfileEvent": {
+      "import": "./dist/events/lobby/CreateProfileEvent.js",
+      "types": "./dist/events/lobby/CreateProfileEvent.d.ts"
+    },
+    "./events/lobby/InfoSubTabStateChangedEvent": {
+      "import": "./dist/events/lobby/InfoSubTabStateChangedEvent.js",
+      "types": "./dist/events/lobby/InfoSubTabStateChangedEvent.d.ts"
+    },
+    "./events/lobby/InputLobbyPasswordEvent": {
+      "import": "./dist/events/lobby/InputLobbyPasswordEvent.js",
+      "types": "./dist/events/lobby/InputLobbyPasswordEvent.d.ts"
+    },
+    "./events/lobby/JoinLobbyEvent": {
+      "import": "./dist/events/lobby/JoinLobbyEvent.js",
+      "types": "./dist/events/lobby/JoinLobbyEvent.d.ts"
+    },
+    "./events/lobby/JoinedLobbyEvent": {
+      "import": "./dist/events/lobby/JoinedLobbyEvent.js",
+      "types": "./dist/events/lobby/JoinedLobbyEvent.d.ts"
+    },
+    "./events/lobby/LobbyInfoEvent": {
+      "import": "./dist/events/lobby/LobbyInfoEvent.js",
+      "types": "./dist/events/lobby/LobbyInfoEvent.d.ts"
+    },
+    "./events/lobby/LobbyPlayerUpdateEvent": {
+      "import": "./dist/events/lobby/LobbyPlayerUpdateEvent.js",
+      "types": "./dist/events/lobby/LobbyPlayerUpdateEvent.d.ts"
+    },
+    "./events/lobby/PlayerLeftLobbyEvent": {
+      "import": "./dist/events/lobby/PlayerLeftLobbyEvent.js",
+      "types": "./dist/events/lobby/PlayerLeftLobbyEvent.d.ts"
+    },
+    "./events/lobby/ProfileCreatedEvent": {
+      "import": "./dist/events/lobby/ProfileCreatedEvent.js",
+      "types": "./dist/events/lobby/ProfileCreatedEvent.d.ts"
+    },
+    "./events/lobby/ShowArcadeSideEvent": {
+      "import": "./dist/events/lobby/ShowArcadeSideEvent.js",
+      "types": "./dist/events/lobby/ShowArcadeSideEvent.d.ts"
+    },
+    "./events/lobby/ShowScreenEvent": {
+      "import": "./dist/events/lobby/ShowScreenEvent.js",
+      "types": "./dist/events/lobby/ShowScreenEvent.d.ts"
+    },
+    "./events/lobby/ShowSubTabEvent": {
+      "import": "./dist/events/lobby/ShowSubTabEvent.js",
+      "types": "./dist/events/lobby/ShowSubTabEvent.d.ts"
+    },
+    "./events/lobby/StartLobbyAsHostEvent": {
+      "import": "./dist/events/lobby/StartLobbyAsHostEvent.js",
+      "types": "./dist/events/lobby/StartLobbyAsHostEvent.d.ts"
+    },
+    "./events/lobby/UpdateLobbyEvent": {
+      "import": "./dist/events/lobby/UpdateLobbyEvent.js",
+      "types": "./dist/events/lobby/UpdateLobbyEvent.d.ts"
+    },
+    "./events/lobby/UpdateLobbyListEvent": {
+      "import": "./dist/events/lobby/UpdateLobbyListEvent.js",
+      "types": "./dist/events/lobby/UpdateLobbyListEvent.d.ts"
+    },
+    "./events/lobby/UpdateLobbyPlayerListEvent": {
+      "import": "./dist/events/lobby/UpdateLobbyPlayerListEvent.js",
+      "types": "./dist/events/lobby/UpdateLobbyPlayerListEvent.d.ts"
+    },
+    "./events/lobby/UpdatePlayerListEvent": {
+      "import": "./dist/events/lobby/UpdatePlayerListEvent.js",
+      "types": "./dist/events/lobby/UpdatePlayerListEvent.d.ts"
+    },
+    "./events/logs/ClearLogsEvent": {
+      "import": "./dist/events/logs/ClearLogsEvent.js",
+      "types": "./dist/events/logs/ClearLogsEvent.d.ts"
+    },
+    "./events/logs/GetLogStatsEvent": {
+      "import": "./dist/events/logs/GetLogStatsEvent.js",
+      "types": "./dist/events/logs/GetLogStatsEvent.d.ts"
+    },
+    "./events/logs/QueryLogsEvent": {
+      "import": "./dist/events/logs/QueryLogsEvent.js",
+      "types": "./dist/events/logs/QueryLogsEvent.d.ts"
+    },
+    "./events/logs/SaveLogsEvent": {
+      "import": "./dist/events/logs/SaveLogsEvent.js",
+      "types": "./dist/events/logs/SaveLogsEvent.d.ts"
+    },
+    "./events/model/ModelAvailableEvent": {
+      "import": "./dist/events/model/ModelAvailableEvent.js",
+      "types": "./dist/events/model/ModelAvailableEvent.d.ts"
+    },
+    "./events/model/ModelGenerationCompleteEvent": {
+      "import": "./dist/events/model/ModelGenerationCompleteEvent.js",
+      "types": "./dist/events/model/ModelGenerationCompleteEvent.d.ts"
+    },
+    "./events/model/ModelGenerationStoppedEvent": {
+      "import": "./dist/events/model/ModelGenerationStoppedEvent.js",
+      "types": "./dist/events/model/ModelGenerationStoppedEvent.d.ts"
+    },
+    "./events/model/ModelGenerationUpdateEvent": {
+      "import": "./dist/events/model/ModelGenerationUpdateEvent.js",
+      "types": "./dist/events/model/ModelGenerationUpdateEvent.d.ts"
+    },
+    "./events/model/ModelLoadProgressEvent": {
+      "import": "./dist/events/model/ModelLoadProgressEvent.js",
+      "types": "./dist/events/model/ModelLoadProgressEvent.d.ts"
+    },
+    "./events/model/ModelLoadedEvent": {
+      "import": "./dist/events/model/ModelLoadedEvent.js",
+      "types": "./dist/events/model/ModelLoadedEvent.d.ts"
+    },
+    "./events/model/ModelSyncAvailableEvent": {
+      "import": "./dist/events/model/ModelSyncAvailableEvent.js",
+      "types": "./dist/events/model/ModelSyncAvailableEvent.d.ts"
+    },
+    "./events/model/RequestModelGenerateEvent": {
+      "import": "./dist/events/model/RequestModelGenerateEvent.js",
+      "types": "./dist/events/model/RequestModelGenerateEvent.d.ts"
+    },
+    "./events/model/RequestModelListEvent": {
+      "import": "./dist/events/model/RequestModelListEvent.js",
+      "types": "./dist/events/model/RequestModelListEvent.d.ts"
+    },
+    "./events/model/RequestModelLoadEvent": {
+      "import": "./dist/events/model/RequestModelLoadEvent.js",
+      "types": "./dist/events/model/RequestModelLoadEvent.d.ts"
+    },
+    "./events/model/RequestModelStopEvent": {
+      "import": "./dist/events/model/RequestModelStopEvent.js",
+      "types": "./dist/events/model/RequestModelStopEvent.d.ts"
+    },
+    "./events/model/RequestProviderSwitchEvent": {
+      "import": "./dist/events/model/RequestProviderSwitchEvent.js",
+      "types": "./dist/events/model/RequestProviderSwitchEvent.d.ts"
+    },
+    "./events/EventTypes": {
+      "import": "./dist/events/EventTypes.js",
+      "types": "./dist/events/EventTypes.d.ts"
+    },
+    "./events/PlayerTypes": {
+      "import": "./dist/events/PlayerTypes.js",
+      "types": "./dist/events/PlayerTypes.d.ts"
+    },
+    "./events/authentication/AuthenticationCompletedEvent": {
+      "import": "./dist/events/authentication/AuthenticationCompletedEvent.js",
+      "types": "./dist/events/authentication/AuthenticationCompletedEvent.d.ts"
+    },
+    "./events/authentication/AuthenticationStatusEvent": {
+      "import": "./dist/events/authentication/AuthenticationStatusEvent.js",
+      "types": "./dist/events/authentication/AuthenticationStatusEvent.d.ts"
+    },
+    "./events/authentication/CreateAccountEvent": {
+      "import": "./dist/events/authentication/CreateAccountEvent.js",
+      "types": "./dist/events/authentication/CreateAccountEvent.d.ts"
+    },
+    "./events/authentication/RequestConfigManagerEvent": {
+      "import": "./dist/events/authentication/RequestConfigManagerEvent.js",
+      "types": "./dist/events/authentication/RequestConfigManagerEvent.d.ts"
+    },
+    "./events/authentication/SignInAsGuestEvent": {
+      "import": "./dist/events/authentication/SignInAsGuestEvent.js",
+      "types": "./dist/events/authentication/SignInAsGuestEvent.d.ts"
+    },
+    "./events/authentication/SignInCachedUserEvent": {
+      "import": "./dist/events/authentication/SignInCachedUserEvent.js",
+      "types": "./dist/events/authentication/SignInCachedUserEvent.d.ts"
+    },
+    "./events/authentication/SignInWithFacebookEvent": {
+      "import": "./dist/events/authentication/SignInWithFacebookEvent.js",
+      "types": "./dist/events/authentication/SignInWithFacebookEvent.d.ts"
+    },
+    "./events/authentication/SignInWithGoogleEvent": {
+      "import": "./dist/events/authentication/SignInWithGoogleEvent.js",
+      "types": "./dist/events/authentication/SignInWithGoogleEvent.d.ts"
+    },
+    "./events/authentication/SignInWithSteamEvent": {
+      "import": "./dist/events/authentication/SignInWithSteamEvent.js",
+      "types": "./dist/events/authentication/SignInWithSteamEvent.d.ts"
+    },
+    "./events/authentication/SignInWithUserPasswordEvent": {
+      "import": "./dist/events/authentication/SignInWithUserPasswordEvent.js",
+      "types": "./dist/events/authentication/SignInWithUserPasswordEvent.d.ts"
+    },
+    "./events/game/GetHomePageGamesInfosEvent": {
+      "import": "./dist/events/game/GetHomePageGamesInfosEvent.js",
+      "types": "./dist/events/game/GetHomePageGamesInfosEvent.d.ts"
+    },
+    "./events/game/GetTrumpCardEvent": {
+      "import": "./dist/events/game/GetTrumpCardEvent.js",
+      "types": "./dist/events/game/GetTrumpCardEvent.d.ts"
+    },
+    "./events/game/InitializeUIPlayersEvent": {
+      "import": "./dist/events/game/InitializeUIPlayersEvent.js",
+      "types": "./dist/events/game/InitializeUIPlayersEvent.d.ts"
+    },
+    "./events/game/NewGameEvent": {
+      "import": "./dist/events/game/NewGameEvent.js",
+      "types": "./dist/events/game/NewGameEvent.d.ts"
+    },
+    "./events/game/NewRoundEvent": {
+      "import": "./dist/events/game/NewRoundEvent.js",
+      "types": "./dist/events/game/NewRoundEvent.d.ts"
+    },
+    "./events/game/SetFloorCardEvent": {
+      "import": "./dist/events/game/SetFloorCardEvent.js",
+      "types": "./dist/events/game/SetFloorCardEvent.d.ts"
+    },
+    "./events/game/SetTrumpCardEvent": {
+      "import": "./dist/events/game/SetTrumpCardEvent.js",
+      "types": "./dist/events/game/SetTrumpCardEvent.d.ts"
+    },
+    "./events/game/UpdateFloorCardEvent": {
+      "import": "./dist/events/game/UpdateFloorCardEvent.js",
+      "types": "./dist/events/game/UpdateFloorCardEvent.d.ts"
+    },
+    "./events/game/UpdateFloorCardListEvent": {
+      "import": "./dist/events/game/UpdateFloorCardListEvent.js",
+      "types": "./dist/events/game/UpdateFloorCardListEvent.d.ts"
+    },
+    "./events/game/UpdateRoundDisplayEvent": {
+      "import": "./dist/events/game/UpdateRoundDisplayEvent.js",
+      "types": "./dist/events/game/UpdateRoundDisplayEvent.d.ts"
+    },
+    "./events/game/UpdateScoreDataEvent": {
+      "import": "./dist/events/game/UpdateScoreDataEvent.js",
+      "types": "./dist/events/game/UpdateScoreDataEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionBettingEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionBettingEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionBettingEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionPickAndSwapEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionPickAndSwapEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionPickAndSwapEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionRaiseBetEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionRaiseBetEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionRaiseBetEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionUIEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionUIEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionUIEvent.d.ts"
+    },
+    "./events/game/playerDecision/PlayerDecisionWildcardEvent": {
+      "import": "./dist/events/game/playerDecision/PlayerDecisionWildcardEvent.js",
+      "types": "./dist/events/game/playerDecision/PlayerDecisionWildcardEvent.d.ts"
+    }
+  },
+  "scripts": {
+    "generate:event-types": "npx tsx scripts/generate-event-type-maps.ts",
+    "pretest": "cd ../.. && npm run build:domains",
+    "build": "npm run generate:event-types && tsc && tsc-alias && node scripts/fix-dist-aliases.mjs && node ../../scripts/fix-esm-imports.mjs",
+    "prepare": "npm run build",
+    "type-check": "tsc --noEmit",
+    "lint": "npm run generate:event-types && eslint --cache src scripts && tsc --noEmit",
+    "lint:eslint": "eslint --cache src scripts",
+    "lint:fix": "eslint --cache src scripts --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^2.0.0"
+  }
+}

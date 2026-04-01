@@ -1,0 +1,68 @@
+---
+description: Consume fetch response bodies at the call site in infra/cloudflare (Workers request-scoped I/O).
+globs: infra/cloudflare/**/*.ts
+alwaysApply: false
+---
+
+# Cloudflare Infra – Consume Response at Call Site (MANDATORY)
+
+In Cloudflare Workers (and in code that runs inside the Workers runtime, e.g. tests under Miniflare), **I/O is request-scoped**. The runtime does not allow I/O objects from one request to be used in another. Leaving response bodies unconsumed can keep that request’s context “live” and lead to **“Cannot perform I/O on behalf of a different request (I/O type: SpanParent)”** or similar errors when the next I/O runs.
+
+**Rule: Whoever sends must consume at site.**
+
+- Any code that performs `fetch()` (or initiates an outbound request that returns a response) **must** consume the response body at the **same call site**.
+- Do not leave the body unread. Do not fire-and-forget and assume something else will clean up.
+- **Consume** means: call `response.json()`, `response.text()`, `response.arrayBuffer()`, or `response.body?.cancel()` (or otherwise fully read the body) before the function is considered done or before passing control on.
+- The **call site** is the place that invokes `fetch(...)`; that same place is responsible for consuming the returned response’s body.
+
+**Apply this to:**
+
+- Test code that calls `worker.fetch(...)`.
+- Log bridge / transport code that POSTs to the bridge or any external URL.
+- Any handler or service under `infra/cloudflare/` that does outbound `fetch()`.
+- **Durable Object-to-DO calls:** `stub.fetch(...)` is a real `fetch()`; the same rule applies.
+
+---
+
+## How to comply (PRECISE – follow every time)
+
+**Every-branch rule:** For **every** `fetch()` you do, the response body **must** be consumed on **every** code path that leaves the call site. If you `return`, `throw`, or `continue` (or fall through to more async work) without having consumed that response’s body, the rule is violated. One missed branch is enough to cause request-scoped I/O errors.
+
+**Pattern (use one of these two):**
+
+1. **You need the body**  
+   Right after `const res = await fetch(...)` (or `stub.fetch(...)`), use the body and then branch:
+   - `const data = await res.json();` (or `res.text()` / `res.arrayBuffer()`), then use `data` and only after that `return`/`throw` in each branch.  
+   In error paths you still must consume before returning: e.g. `if (!res.ok) { await res.text().catch(() => undefined); return ...; }`.
+
+2. **You don’t need the body**  
+   Consume anyway before any exit:
+   - `await res.text().catch(() => undefined);`  
+   or `await res.body?.cancel();`  
+   then `return` / `throw`. Do this in **both** success and error branches (e.g. after `if (!res.ok) { ... }` and in the `else` or fall-through).
+
+**Checklist before shipping:**
+
+- For each `fetch()` / `stub.fetch()` in the function: trace every path that does `return`, `throw`, or `continue`. On each path, confirm you have called `res.json()`, `res.text()`, `res.arrayBuffer()`, or `res.body?.cancel()` (or `res.text().catch(() => undefined)`) for that response **before** that exit. If any path exits without consuming, add the consume call.
+
+**Example (don’t need body – e.g. rollback or fire-and-forget):**
+
+```ts
+const r = await stub.fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+await r.text().catch(() => undefined);
+return { error: '...' };
+```
+
+**Example (need body in success, must still consume in error):**
+
+```ts
+const res = await stub.fetch(url, { ... });
+if (!res.ok) {
+  await res.text().catch(() => undefined);
+  return { error: '...' };
+}
+const data = await res.json();
+return { data };
+```
+
+**Reference:** Cloudflare workerd [issue #423](https://github.com/cloudflare/workerd/issues/423): “I/O objects created in the context of one request handler cannot be accessed from a different request's handler. This restriction is fundamental to workerd operation and won't be changing.” See also `infra/cloudflare/docs/TEST-RUN-SETUPS-AND-BRIDGE-FLOW.md` §1.7 (Consume response at call site).

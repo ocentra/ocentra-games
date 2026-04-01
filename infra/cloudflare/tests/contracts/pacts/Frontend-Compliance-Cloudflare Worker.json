@@ -1,0 +1,240 @@
+{
+  "consumer": {
+    "name": "Frontend-Compliance"
+  },
+  "interactions": [
+    {
+      "description": "a POST request for compliance report with admin auth",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "admin user posts compliance report request"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "reportType": "soc2"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-admin-user:admin"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/compliance/report"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "reportType": "soc2",
+            "summary": {
+              "totalEvents": 0
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.reportType": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.summary": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.summary.totalEvents": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for compliance report with admin auth",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "admin user requests compliance report"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-admin-user:admin"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/compliance/report"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "endDate": "2026-02-01",
+            "reportType": "soc2",
+            "startDate": "2026-01-01",
+            "summary": {
+              "totalEvents": 0,
+              "warnings": 0
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.endDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))?)$"
+                }
+              ]
+            },
+            "$.reportType": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.startDate": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))?)$"
+                }
+              ]
+            },
+            "$.summary": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.summary.totalEvents": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.summary.warnings": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for compliance report without auth",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no authentication"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/compliance/report"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Unauthorized"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 401
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.28",
+      "models": "1.3.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "Cloudflare Worker"
+  }
+}

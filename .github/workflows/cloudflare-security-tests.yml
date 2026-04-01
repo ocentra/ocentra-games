@@ -1,0 +1,408 @@
+# See infra/cloudflare/docs/WORKFLOW-UPDATE-GUIDE.md for test runner and trigger details.
+name: Cloudflare Security Tests
+
+on:
+  pull_request:
+    branches: [main, develop, production]
+    paths:
+      - 'infra/cloudflare/**'
+      - 'packages/endpoint-domain/**'
+      - 'packages/boundary-domain/**'
+      - 'packages/logging-domain/**'
+      - '.github/workflows/cloudflare-security-tests.yml'
+      - '.github/actions/setup-node/action.yml'
+  push:
+    branches: [main, production]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cloudflare-tests:
+    name: Cloudflare Test Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      LOG_BRIDGE_URL: https://ocentra-log-bridge-ci.ocentra.ca
+      CF_TESTS_STRIPE_SECRET_KEY: ${{ secrets.CF_TESTS_STRIPE_SECRET_KEY }}
+      CF_TESTS_FIREBASE_PRIVATE_KEY_PEM: ${{ secrets.CF_TESTS_FIREBASE_PRIVATE_KEY_PEM }}
+      CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY: ${{ secrets.CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY }}
+      CF_TESTS_AI_LEAKAGE_FAKE_KEY: ${{ secrets.CF_TESTS_AI_LEAKAGE_FAKE_KEY }}
+      CF_TESTS_AI_API_KEY: ${{ secrets.CF_TESTS_AI_API_KEY }}
+    defaults:
+      run:
+        working-directory: infra/cloudflare
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, solana; matches prebuild deps)
+        working-directory: .
+        run: |
+          cd packages/boundary-domain && npm install
+          cd ../endpoint-domain && npm install
+          cd ../logging-domain && npm install
+          cd ../behaviour-domain && npm install
+          cd ../asset-domain && npm install
+          cd ../app-core && npm install
+          cd ../credentials-domain && npm install
+          cd ../ai-domain && npm install
+          cd ../crypto-domain && npm install
+          cd ../verification-domain && npm install
+          cd ../solana-domain && npm install
+
+      - name: Install Cloudflare dependencies
+        run: npm ci
+
+      - name: Build domain packages and generate log modules
+        run: export PATH="./node_modules/.bin:$PATH" && npm run prebuild
+
+      - name: Install logging-domain deps (for bridge)
+        working-directory: packages/logging-domain
+        run: npm install
+
+      - name: Start log bridge
+        working-directory: .
+        run: |
+          cd packages/logging-domain && npm run bridge &
+          sleep 3
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8765/__health__ > /dev/null 2>&1; then
+              echo "Log bridge ready"
+              break
+            fi
+            if [ "$i" -eq 20 ]; then
+              echo "Log bridge did not become ready"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Install cloudflared
+        run: |
+          curl -sL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
+          sudo dpkg -i /tmp/cloudflared.deb
+          cloudflared --version
+
+      - name: Start CI tunnel
+        env:
+          CLOUDFLARE_TUNNEL_CI_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_CI_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_TUNNEL_CI_TOKEN" ]; then
+            echo "CLOUDFLARE_TUNNEL_CI_TOKEN secret is not set. See infra/cloudflare/docs/TUNNEL-CI.md"
+            exit 1
+          fi
+          cloudflared tunnel run --token "$CLOUDFLARE_TUNNEL_CI_TOKEN" &
+          sleep 5
+          for i in $(seq 1 30); do
+            if curl -fsS "${LOG_BRIDGE_URL}/__health__" > /dev/null 2>&1; then
+              echo "CI tunnel ready at ${LOG_BRIDGE_URL}"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "CI tunnel did not become reachable at ${LOG_BRIDGE_URL}"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Lint and type check
+        run: npm run lint
+
+      - name: Unit tests (helper)
+        run: npm run test:unit:helper
+
+      - name: Dependency kill simulation (fail-closed auth)
+        run: npm run test:unit:helper -- tests/unit/utils/auth-dependency-resilience.test.ts
+
+      - name: Integration tests (helper)
+        run: npm run test:integration:helper
+
+      - name: E2E tests (helper)
+        run: npm run test:e2e:helper
+
+      - name: Contract tests (helper)
+        run: npm run test:contract:helper
+
+      - name: Flaky detection (repeat-run smoke gate)
+        run: npm run test:flaky:detect
+
+      - name: Property-based invariants
+        run: npm run test:property
+
+      - name: Coverage run
+        run: npm run test:runner:coverage
+
+      - name: Check coverage thresholds
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = './test-runner/coverage/coverage-summary.json';
+          if (!fs.existsSync(path)) {
+            console.error('Coverage report not found at ' + path);
+            process.exit(1);
+          }
+          const report = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const { lines, branches, functions, statements } = report.total;
+          console.log(`Coverage: Lines=${lines.pct}% Branches=${branches.pct}% Functions=${functions.pct}% Statements=${statements.pct}%`);
+          const failed = [
+            lines.pct < 90 && `Line coverage ${lines.pct}% < 90%`,
+            branches.pct < 80 && `Branch coverage ${branches.pct}% < 80%`,
+            functions.pct < 85 && `Function coverage ${functions.pct}% < 85%`,
+            statements.pct < 90 && `Statement coverage ${statements.pct}% < 90%`
+          ].filter(Boolean);
+          if (failed.length) {
+            console.error(failed.join('\\n'));
+            process.exit(1);
+          }
+          "
+
+      - name: Upload Cloudflare test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-test-artifacts
+          path: |
+            infra/cloudflare/test-runner/logs/**
+            infra/cloudflare/test-runner/coverage/**
+            infra/cloudflare/test-runner/reports/**
+            infra/cloudflare/test-runner/ReportJson/**
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Note on test logs
+        if: always()
+        run: |
+          echo "Step logs above are raw terminal output (can be large)."
+          echo "Concise per-suite summaries: download artifact 'cloudflare-test-artifacts' → infra/cloudflare/test-runner/logs/ (e.g. integration-test-helper-results.txt)."
+
+  cloudflare-dynamic-security:
+    name: Cloudflare Dynamic Security Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: cloudflare-tests
+    env:
+      LOG_BRIDGE_URL: https://ocentra-log-bridge-ci.ocentra.ca
+    defaults:
+      run:
+        working-directory: infra/cloudflare
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, solana; matches prebuild deps)
+        working-directory: .
+        run: |
+          cd packages/boundary-domain && npm install
+          cd ../endpoint-domain && npm install
+          cd ../logging-domain && npm install
+          cd ../behaviour-domain && npm install
+          cd ../asset-domain && npm install
+          cd ../app-core && npm install
+          cd ../credentials-domain && npm install
+          cd ../ai-domain && npm install
+          cd ../crypto-domain && npm install
+          cd ../verification-domain && npm install
+          cd ../solana-domain && npm install
+
+      - name: Install Cloudflare dependencies
+        run: npm ci
+
+      - name: Build domain packages and generate log modules
+        run: export PATH="./node_modules/.bin:$PATH" && npm run prebuild
+
+      - name: Install logging-domain deps (for bridge)
+        working-directory: packages/logging-domain
+        run: npm install
+
+      - name: Start log bridge
+        working-directory: .
+        run: |
+          cd packages/logging-domain && npm run bridge &
+          sleep 3
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8765/__health__ > /dev/null 2>&1; then
+              echo "Log bridge ready"
+              break
+            fi
+            if [ "$i" -eq 20 ]; then
+              echo "Log bridge did not become ready"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Install cloudflared
+        run: |
+          curl -sL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
+          sudo dpkg -i /tmp/cloudflared.deb
+          cloudflared --version
+
+      - name: Start CI tunnel
+        env:
+          CLOUDFLARE_TUNNEL_CI_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_CI_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_TUNNEL_CI_TOKEN" ]; then
+            echo "CLOUDFLARE_TUNNEL_CI_TOKEN secret is not set. See infra/cloudflare/docs/TUNNEL-CI.md"
+            exit 1
+          fi
+          cloudflared tunnel run --token "$CLOUDFLARE_TUNNEL_CI_TOKEN" &
+          sleep 5
+          for i in $(seq 1 30); do
+            if curl -fsS "${LOG_BRIDGE_URL}/__health__" > /dev/null 2>&1; then
+              echo "CI tunnel ready at ${LOG_BRIDGE_URL}"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "CI tunnel did not become reachable at ${LOG_BRIDGE_URL}"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Schemathesis
+        run: pip install schemathesis
+
+      - name: Install k6
+        run: |
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Start Worker for dynamic tests
+        run: |
+          npx wrangler dev --env development --port 8787 --local &
+          echo "WRANGLER_PID=$!" >> $GITHUB_ENV
+          sleep 10
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/health > /dev/null; then
+              echo "Worker ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Worker did not become ready"
+          exit 1
+
+      - name: Generate k6 constants
+        run: npm run generate:k6-constants
+
+      - name: Schemathesis API fuzzing
+        run: npm run test:schemathesis
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+
+      - name: k6 load/concurrency
+        run: npm run test:k6
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+
+      - name: k6 soak (smoke profile)
+        run: npm run test:k6:soak
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          SOAK_WARMUP: 5s
+          SOAK_DURATION: 20s
+          SOAK_COOLDOWN: 5s
+          SOAK_TARGET_VUS: 10
+
+      - name: k6 memory pressure (smoke profile)
+        run: npm run test:k6:memory
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          MEMORY_STAGE_DURATION: 20s
+          MEMORY_TARGET_VUS: 10
+          MEMORY_PAYLOAD_KB: 64
+
+      - name: k6 FD/socket pressure (smoke profile)
+        run: npm run test:k6:fd
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          FD_STAGE_DURATION: 20s
+          FD_TARGET_VUS: 25
+          WS_HOLD_MS: 1000
+
+      - name: Stop Worker
+        if: always()
+        run: |
+          if [ -n "$WRANGLER_PID" ]; then
+            kill "$WRANGLER_PID" 2>/dev/null || true
+          fi
+          pkill -f "wrangler dev" || true
+
+      - name: Upload dynamic security artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-dynamic-security-artifacts
+          path: |
+            infra/cloudflare/test-runner/logs/**
+            infra/cloudflare/test-runner/ReportJson/**
+          retention-days: 7
+          if-no-files-found: ignore
+
+  cloudflare-static-security:
+    name: Cloudflare Static Security Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: cloudflare-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Semgrep scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/owasp-top-ten
+            p/typescript
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Analyze CodeQL
+        uses: github/codeql-action/analyze@v3
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.34.0
+        with:
+          scan-type: fs
+          scan-ref: infra/cloudflare
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

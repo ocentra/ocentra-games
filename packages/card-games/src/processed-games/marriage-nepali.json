@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "marriage-nepali.json",
+  "name": "Marriage (Nepali)",
+  "completeness": {"overview": true, "history": true, "setup": true, "rules": true, "strategy": true, "variations": true, "ai": true, "sources": true},
+  "quality": "complete",
+  "overview": {
+    "description": "Marriage is a three-pack Rummy game popular in Nepal (especially Kathmandu valley) and Bhutan, and by the Nepali diaspora. Played with 156 cards (three standard 52-card decks), each player receives 21 cards. Wild cards (tiplu, poplu, jhiplu) are determined during play. Players form sets of three: tunnela (three identical cards), pure sequence (three consecutive same suit), or trial (three same rank, different suits); the first to complete three pure sets chooses the tiplu (main wild). The first to arrange all cards into valid sets and discard wins the hand; scoring uses maal points and payments.",
+    "category": "Rummy",
+    "subCategory": "Draw and Discard",
+    "origin": "Nepal",
+    "players": {"minPlayers": 2, "maxPlayers": 5, "recommendedPlayers": 4, "display": "2-5"},
+    "deck": "156 cards (three standard 52-card packs; no printed jokers)",
+    "difficulty": "Intermediate",
+    "duration": "30-90 minutes",
+    "originName": "Marriage",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Nepal", "Bhutan"],
+    "origins": "Marriage is a three-pack Rummy game popular in Nepal, especially in the Kathmandu valley, and also played in Bhutan. It is widely played during the two main Hindu festivals Dashain (Dushera) and Tihar (Deewali) and by enthusiasts throughout the year.",
+    "timeline": ["Traditional: Played in Nepal and Bhutan for generations", "Festivals: Central to Dashain and Tihar celebrations", "Present: Popular in Nepal, Bhutan, and Nepali diaspora; multiple apps and online implementations"],
+    "evolution": "Evolved from Rummy to use three decks and a dynamic wild-card system (tiplu, poplu, jhiplu) unique to this regional variant.",
+    "cultural": "Commonly played during Dashain and Tihar as a social tradition; national card game of Nepal.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 5 players. Each plays individually.",
+    "deck": "Three standard 52-card packs shuffled together: 156 cards in all. No printed jokers; wild cards are created each deal (tiplu, poplu, jhiplu).",
+    "equipment": "",
+    "dealing": "Dealer gives 21 cards to each player. The next card is turned face up to start the discard pile; the rest form the face-down stock. Deal and play are clockwise in the most common rules; some regional rules use anticlockwise.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to complete three pure sets (tunnelas or pure sequences) to choose or see the tiplu, then arrange all cards into valid three-card sets (and optionally seven or eight dublees) and discard the last card to end the hand. Score the most points from maal and tunnelas.",
+    "gameplay": "Each turn: take one card (top of stock or the face-up discard) then discard one card. Only the latest discard may be taken. The first player to lay down three tunnelas or pure sequences chooses a card from the stock as the tiplu (face down under the stock); that rank and the cards immediately above and below it in the same suit become wild (poplu, tiplu, jhiplu). After that, use wild cards to form dirty sets. End by laying all cards in valid sets and discarding one, or by laying eight dublees.",
+    "keyRules": ["21 cards each; draw one, discard one each turn", "Only the top card of the discard pile may be taken", "First to lay three pure sets chooses the tiplu", "Valid sets: tunnela (3 identical), pure sequence (3 consecutive same suit), trial (3 same rank different suits), dirty versions with wilds", "Eight dublees (pairs of identical cards) can also win; jokers cannot form dublees"],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize forming three pure sets (tunnelas or pure sequences) so you can choose or see the tiplu. Avoid discarding cards that complete opponents' sets.",
+    "intermediate": "Track which cards have been discarded and estimate the tiplu from the first player who lays down. Use the three-deck composition to plan trials and sequences.",
+    "advanced": "Balance going out quickly versus collecting maal (tiplu, poplu, jhiplu) for points. A marriage (one jhiplu, one tiplu, one poplu) scores 10 points.",
+    "tips": ["Expose a tunnela at the start if dealt one for potential points", "If you have seen the tiplu, you cannot take a joker from the discard", "Dublee players may only take from discard if it completes the eighth dublee"],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {"id": "clockwise", "name": "Direction of play", "description": "Some play anticlockwise with first card to dealer's right; many published rules and apps use clockwise.", "overrides": {}, "emptyOverridesReason": "Direction is a play option; no engine constant overrides needed."},
+      {"id": "dhoos", "name": "Dhoos", "description": "Penalty (e.g. 15 points) for cheating or throwing maal to a player who has seen the tiplu; penalty cancelled if the offender wins the next hand.", "overrides": {}, "emptyOverridesReason": "Penalty value varies by house rules; add to engine.constants when known."},
+      {"id": "better", "name": "Better", "description": "After rounds complete, play with double points; dublee can trigger better.", "overrides": {}, "emptyOverridesReason": "Better doubles scoring; engine would need round multiplier override when specified."},
+      {"id": "open", "name": "Open", "description": "Player may see the tiplu without laying three pure sets but may only use wilds after showing three pure sets.", "overrides": {}, "emptyOverridesReason": "Open changes tiplu visibility rule; custom logic needed for variant."}
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {"easy": "Random draw/discard; ignores pure-set goal; does not track tiplu", "medium": "Prioritizes three pure sets; basic tracking of discards and tiplu", "hard": "Optimal set formation; perfect maal tracking; marriage versus speed-win tradeoffs"},
+    "considerations": ["21-card hand efficiency and set completion order", "Tiplu choice and poplu/jhiplu inference", "Dublee versus sequence path", "Maal scoring and payment calculation"],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {"id": "src:pagat_com_rummy_marriage_html", "name": "Pagat.com - Marriage", "url": "https://www.pagat.com/rummy/marriage.html", "retrievedAt": "2026-02-26", "sections": [], "localHtml": "pagat-rummy-marriage.html"},
+      {"id": "src:wikipedia_marriage_card_game", "name": "Wikipedia - Marriage (card game)", "url": "https://en.wikipedia.org/wiki/Marriage_(card_game)", "retrievedAt": "2026-02-26", "sections": []}
+    ],
+    "additional": ["Bhoos.com Marriage rules and apps", "American Nepali blog description of Marriage", "Game Rules - Nepali Marriage"],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {"status": "NA", "isCommercial": false, "trademarkNote": "", "reasonForNA": "Traditional folk game; no documented IP holder or public domain claim."},
+  "statistics": {"popularity": 1, "complexity": 1, "luck": 1, "skill": 1},
+  "media": {"videoTutorial": ""},
+  "engine": {
+    "phases": [
+      {"id": "play", "label": "Play", "actor": "current_player", "legalActions": ["draw", "discard"], "nextPhase": null, "isMandatory": true, "loopIndex": 0, "totalLoops": 0, "conditionalNext": [], "cardVisibilityChanges": {}, "notes": "Each turn: draw one card (from stock or top of discard), then discard one card. First to lay three pure sets chooses tiplu; first to go out with all cards in sets (and one discard) or with eight dublees ends the hand."}
+    ],
+    "playerActions": {
+      "ante": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no ante or betting."},
+      "deal": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "Deal is performed by the dealer; not a player action."},
+      "reveal_market": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game does not use a market to reveal."},
+      "buy_market": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no market purchase."},
+      "buy_stock": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no buying from stock."},
+      "fold": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no fold action."},
+      "check": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no check or betting."},
+      "call": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no call or betting."},
+      "bet": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no bet action."},
+      "raise": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no raise or betting."},
+      "declare": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no declare phase."},
+      "reveal_hand": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "Hands are not revealed in this phase."},
+      "award_pot": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no pot to award."},
+      "play_card": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game uses draw and discard, not play_card to a trick."},
+      "draw": {"supported": true, "description": "Take the top card from the stock or the face-up card from the discard pile (the card offered by the previous player).", "cost": "0", "constraints": "Must take exactly one card at start of turn. If taking from discard, you may not discard that same card this turn.", "isTerminating": false, "effectType": "draw", "effectHints": {}},
+      "discard": {"supported": true, "description": "Discard one card face-up onto the discard pile after drawing. That card becomes the offered card for the next player.", "cost": "0", "constraints": "Must discard exactly one card after drawing. Only the top card of the discard pile may be taken by the next player.", "isTerminating": false, "effectType": "discard", "effectHints": {}},
+      "pass": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no pass action."},
+      "bid": {"supported": false, "description": "NA", "cost": "NA", "constraints": "NA", "isTerminating": false, "effectType": "NA", "effectHints": {}, "reason": "This game has no bid action."},
+      "meld": {"supported": true, "description": "Lay down three pure sets (tunnelas or pure sequences) to choose or see the tiplu; or lay down all sets when going out. Seven dublees count as three pure sets.", "cost": "0", "constraints": "Three pure sets required to choose/see tiplu. Combinations kept in hand until going out except for the initial three to reveal tiplu.", "isTerminating": false, "effectType": "meld", "effectHints": {}},
+      "go_out": {"supported": true, "description": "End the hand by laying all cards in valid three-card sets (and one discard) or by laying eight dublees.", "cost": "0", "constraints": "Must have three pure sets already shown to use tiplu; then all cards in valid sets and one card discarded, or eight dublees laid.", "isTerminating": true, "effectType": "meld", "effectHints": {}}
+    },
+    "playerConfig": {"minPlayers": 2, "maxPlayers": 5, "optimalPlayers": 4, "startingStack": 1000, "seatLayout": "circular", "partnerships": false, "partnershipFormats": [], "playerMode": "multiplayer"},
+    "cardVisibility": {"handDefault": "face_down", "initialDeal": "face_down", "marketCards": "face_up", "stockPurchase": "face_down", "discardTop": "face_up", "tableauCards": "NA"},
+    "drawConfig": {"canDraw": true, "drawSources": [{"source": "stock", "visibility": "face_down", "isOptional": false, "canPickAny": false, "mustRevealCard": null, "maxPerTurn": 1, "notes": null}, {"source": "discard_top", "visibility": "face_up", "isOptional": false, "canPickAny": false, "mustRevealCard": null, "maxPerTurn": 1, "notes": "Only the top card of the discard pile may be taken."}], "drawCount": 1, "drawTiming": "start_of_turn", "mustDrawBeforePlay": true, "drawAndDiscard": true},
+    "discardConfig": {"hasDiscard": true, "mustDiscard": true, "discardTiming": "after_draw", "discardVisibility": "face_up", "discardCount": 1, "opponentCanPickFromDiscard": true, "discardPickRules": {"canPickTop": true, "canPickAny": false, "mustTakeAll": false, "mustUsePickedCard": true, "pickCost": "", "frozenPileRules": ""}},
+    "deckType": "Triple 52 + 6 Jokers",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 21,
+    "trumpConfig": {"hasTrump": false, "trumpDetermination": "turned_card", "permanentTrumps": [], "rightBowerLeftBower": false, "trumpSuitRanking": "", "canCallNoTrump": false, "overtakingRule": ""},
+    "meldConfig": {"hasMelding": true, "meldTypes": [{"type": "set", "minSize": 3, "maxSize": 3, "acesHigh": null, "wildcardAllowed": false}, {"type": "run", "minSize": 3, "maxSize": null, "acesHigh": null, "wildcardAllowed": true}, {"type": "triplet", "minSize": 3, "maxSize": 3, "acesHigh": null, "wildcardAllowed": true}, {"type": "pair", "minSize": 2, "maxSize": 2, "acesHigh": null, "wildcardAllowed": false}], "meldTiming": "any_time_in_turn", "layOffAllowed": false, "initialMeldRequirement": "Three pure sets (tunnelas or pure sequences) to choose or see tiplu; seven dublees count as three pure sets.", "goingOut": {"condition": "All cards in valid sets and one card discarded; or eight dublees laid.", "mustAnnounce": false, "knockOption": false, "knockDeadwoodLimit": 0}},
+    "trickConfig": {"hasTricks": false, "tricksPerRound": 0, "mustFollowSuit": false, "mustOvertrump": false, "leadRestrictions": "", "trickWinCondition": "highest_of_led_suit", "trickWinnerLeads": false, "scoredTricks": false, "bidding": {"hasBidding": false, "biddingSystem": "auction", "minBid": 0, "maxBid": 0, "passAllowed": false, "doubling": false}},
+    "declarationMechanism": {"type": "chips_in_fist", "encoding": {}, "revealTiming": "simultaneous", "pigRule": false, "pigPenalty": "forfeit_entire_pot"},
+    "handRanks": {"high": "NA", "low": "NA", "lowQualifier": {"maxHighCard": 0, "acePlaysLow": false, "straightsAndFlushesCount": false}},
+    "buyCosts": {"enabled": false, "currency": "NA", "sources": {"market": {"byRank": {}, "flat": 0}, "stock": {"flat": 0}, "discard": {"flat": 0}}},
+    "marketConfig": {"enabled": false, "size": 0, "refillFrom": "stock", "refillTiming": "immediately_after_purchase", "visibility": "face_up"},
+    "specialCards": {"wildcards": [{"card": "tiplu", "canSubstituteFor": "any_card", "restrictions": "Chosen from stock by first player to lay three pure sets.", "naturalPreferred": false}, {"card": "poplu", "canSubstituteFor": "any_card", "restrictions": "Card immediately above tiplu in same suit.", "naturalPreferred": false}, {"card": "jhiplu", "canSubstituteFor": "any_card", "restrictions": "Card immediately below tiplu in same suit.", "naturalPreferred": false}], "actionCards": [], "bonusCards": [], "penaltyCards": []},
+    "shedding": {"hasShedding": false, "sheddingGoal": "empty_hand_first", "validPlays": [], "passAllowed": false, "burnRules": ""},
+    "fishingConfig": {"hasFishing": false, "captureMethod": "matching_rank", "captureTarget": 0, "sweepBonus": 0, "tableauStartSize": 0},
+    "patienceConfig": {"isSolitaire": false, "tableauColumns": 0, "foundationCount": 0, "buildDirection": "ascending", "buildSuitRule": "same_suit", "redealAllowed": false, "redealCount": 0},
+    "bankingConfig": {"hasBanker": false, "bankerDetermination": "fixed_dealer", "targetValue": 0, "bustRule": "", "playerVsBanker": false},
+    "turnOrder": {"direction": "clockwise", "startsWith": "left_of_dealer", "dealerRotates": true},
+    "roundConfig": {"hasRounds": true, "roundCount": 0, "roundEndCondition": "player_goes_out", "gameEndCondition": "target_score_reached"},
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 3,
+    "zones": [{"id": "hand", "type": "hand", "visibility": "private", "owner": "player", "capacity": 21}, {"id": "stock", "type": "stack", "visibility": "hidden", "owner": "table", "capacity": 156}, {"id": "discard", "type": "stack", "visibility": "public", "owner": "table", "capacity": 156}],
+    "rules": {"edgeCases": [{"id": "stock_exhausted", "text": "If stock is exhausted before anyone goes out, discard pile (except last card) is shuffled and used as new stock.", "appliesTo": "play"}, {"id": "tunnela_score", "text": "Tunnela exposed at start scores only if player later lays three pure sets.", "appliesTo": "scoring"}, {"id": "no_joker_from_discard", "text": "Player who has seen tiplu cannot take a joker from the discard.", "appliesTo": "draw"}, {"id": "dublee_discard", "text": "Dublee player may take from discard only if it completes eighth dublee.", "appliesTo": "draw"}]},
+    "implementationHints": {"rngUsed": [], "authoritativeServer": false, "customLogicNeeded": ["tiplu_selection", "maal_scoring"]},
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "NA",
+    "rankingSystem": "Point scoring from maal and tunnelas; winner receives payments from others (3 or 10 points per opponent plus card-point differences).",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Three standard 52-card French decks shuffled together (156 cards). No printed jokers in the standard game; optional jokers are sometimes added (six), making 162 cards. Each suit has thirteen ranks Ace through King. Wild cards (tiplu, poplu, jhiplu) are determined during play by the first player to lay three pure sets.",
+    "suitDescription": "French suits: Hearts, Diamonds, Clubs, and Spades. Each suit has thirteen ranks: Ace (high or low in sequences), King, Queen, Jack, 10, 9, 8, 7, 6, 5, 4, 3, 2.",
+    "rankDescription": "Standard 52-card ranking. In sequences ace may be high (Q-K-A) or low (A-2-3) but not in the middle (K-A-2 is invalid).",
+    "dealPattern": "21 cards each, one at a time; next card face up for discard; remainder form stock.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {"hero": {"title": "MARRIAGE (NEPALI)", "subtitle": "Card game", "tagline": "Draw, meld, and go out."}, "shortDescription": "Marriage is a three-pack Rummy game popular in Nepal and Bhutan. Each player gets 21 cards; wild cards (tiplu, poplu, jhiplu) are chosen in play. First to complete three pure sets chooses the tiplu; first to go out wins the hand.", "uiThemes": ["classic"], "uiLayout": {"zones": ["hand", "stock", "discard"], "marketPosition": "center", "stockPosition": "center", "discardPosition": "center", "playerHandLayout": "arc", "potPosition": "center"}},
+  "prompts": {"human": "", "ai": ""},
+  "scoring": {"description": "Points from maal (tiplu, poplu, jhiplu in hand) and tunnelas exposed at start. Winner receives 3 points from each opponent who saw the tiplu, 10 from each who did not; plus 5 each if winner went out with eight dublees. Players settle card-point differences; net payments are often consolidated to or from the winner.", "winCondition": "Win the hand by going out first; win the match by scoring the most points over multiple hands.", "cardValues": {"2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "10": "10", "J": "10", "Q": "10", "K": "10", "A": "1"}, "penalties": {}, "hasPlaceholders": false, "splitRules": "", "targetScore": "NA", "scoringDirection": "high_wins", "nullReasons": {"targetScore": "Play is typically by rounds; match winner has highest total score.", "scoringDirection": "Higher total score wins the match."}},
+  "alsoKnownAs": ["Marriage Nepali", "Nepali Marriage", "Marriage"],
+  "evidence": [],
+  "extraction": {"status": "validated", "missingCritical": [], "assumptions": [], "openQuestions": [], "validatorVersion": ""},
+  "fieldStatus": {}
+}

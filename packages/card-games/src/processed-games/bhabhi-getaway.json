@@ -1,0 +1,562 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "bhabhi-getaway.json",
+  "name": "Bhabhi",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Bhabhi (meaning 'Brother's Wife' in Hindi/Punjabi, here implying a teasing burden) is a very popular shedding game in South Asia, particularly in India and Pakistan. Known as 'Getaway' in the West, it is a game of 'active avoidance' where players race to get rid of all their cards. The last player holding cards is christened the 'Bhabhi'—the loser. The game is defined by its brutal 'Thulla' mechanic: if a player cannot follow suit, the player who currently played the highest card of the led suit must pick up the entire pile.",
+    "category": "Shedding",
+    "subCategory": "Inflation / Follow-Suit Shedding",
+    "origin": "South Asia (Punjab)",
+    "originName": "Bhabhi (भाभी)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "3-6 (Best 4)"
+    },
+    "deck": "52 cards (Standard)",
+    "difficulty": "Intermediate",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Originated in the Punjab region of South Asia. While it shares some DNA with European shedding games, its unique 'highest-card-penalty' rules are distinctly South Asian.",
+    "originCountries": [
+      "India",
+      "Pakistan",
+      "Bangladesh"
+    ],
+    "timeline": [
+      "Mid-20th Century: Bhabhi becomes a standard social game in South Asian households.",
+      "1990s: Gains international visibility as 'Getaway' via the global South Asian diaspora.",
+      "Present: A staple of digital card gaming in India and Pakistan."
+    ],
+    "evolution": "The game focuses purely on avoidance (not being the last player) rather than winning, a psychological shift from traditional card games.",
+    "cultural": "Typically played with high-energy verbal teasing. The term 'Bhabhi' is used lightheartedly but signifies the 'burden' of the losing cards.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 to 6 players; 4 players provides the best balance of suit distribution.",
+    "deck": "Standard 52-card French pack (No Jokers).",
+    "equipment": "Standard pack.",
+    "dealing": "Deal the entire deck clockwise as equally as possible. Some players may have one extra card depending on the player count.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Get rid of all cards in your hand. Avoid being the last player remaining with cards.",
+    "gameplay": "1. **Start**: The player holding the Ace of Spades leads it. 2. **Trick**: Each player must follow suit if possible. 3. **The Thulla (Break)**: If a player cannot follow suit, they play a card from another suit (a 'Thulla'). This ends the trick immediately. 4. **Penalty**: The player who played the HIGHEST card of the led suit must pick up the entire pile (including the Thulla). 5. **Lead**: The penalized player leads the next trick. 6. **Escape**: Players who empty their hand successfully 'get away' and are safe.",
+    "keyRules": [
+      "Must follow suit if you hold a card of that suit.",
+      "The 'Highest Card' is always the highest of the suit originally LED.",
+      "If everyone follows suit, the highest card winner simply leads next (no penalty)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Get rid of your highest cards (Aces, Kings) when you are certain everyone else can follow suit.",
+    "intermediate": "Duck the Highs: If you suspect a 'Thulla' is coming (e.g., someone is low on a suit), play a low card of that suit even if you have a high one to avoid being the highest player.",
+    "advanced": "Void Management: Purposely create a void in a suit so you can throw your high cards from other suits onto opponents when they lead that suit.",
+    "tips": [
+      "The goal is not to win tricks, but to lose your cards.",
+      "Save a 2 or 3 of each suit as 'insurance' to play when you are afraid of a pickup penalty."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "thulla",
+        "name": "Bhabhi Thulla",
+        "description": "A variant where being caught with the final cards results in specific household penalties (e.g., performing a task).",
+        "overrides": {},
+        "emptyOverridesReason": "This variant only changes social or household penalties and does not alter engine rules or parameters."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit randomly. Plays high cards blindly without checking for voids.",
+      "medium": "Tracks Aces and Kings. Leads suits where it has low cards. Plays 'Duck' moves when it suspects a break.",
+      "hard": "Full Void Tracking. Remembers which players have previously failed to follow specific suits. Leads suits to target the player with the fewest cards remaining."
+    },
+    "considerations": [
+      "Must handle the 'Pick Up' penalty as a negative reward.",
+      "Requires probabilistic mapping of opponent voids."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_getaway",
+        "name": "Pagat - Getaway / Bhabhi",
+        "url": "https://www.pagat.com/inflation/getaway.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-getaway.html"
+      }
+    ],
+    "additional": [
+      "South Asian Card Game Traditions"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "traditional",
+    "fast-paced"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 85,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Full Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_all"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Cycle",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bhabhi is a social avoidance game played without a monetary or chip-based ante system."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck distribution at the start of the game is handled automatically by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-hand shedding game where all cards are held privately; no central market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any external area; they must succeed using their initial deal."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed at once; no cards remain in stock to be purchased during the game."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Participation is mandatory for every trick until a player's hand is completely exhausted to 'get away'."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure rather than a vying structure where checking would be an option."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot or bet to match in Bhabhi; competition is based on avoidance of card collection."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game is scored by survival order rather than through the wagering of chips or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the round cannot be increased via raises."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Play results (such as winning a trick or receiving a Thulla) are immediate and public without declaration."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands remain private until individual cards are played into tricks; no full-hand reveal phase exists."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no central pot of points or chips to be awarded to a winner in this avoidance game."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from your hand to the current trick.",
+        "cost": "0",
+        "constraints": "Must follow suit if possible; otherwise play any card (Thulla).",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are only acquired through penalty pickups rather than a standard draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the hand must be shed through trick play or passed via penalty; no discarding exists."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must always play a card to every trick if they are still in the game; passing is not allowed."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bhabhi does not utilize a bidding system to determine the dealer, trump, or game objectives."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is strictly a shedding game based on trick avoidance rather than the creation of melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "A player exits the game automatically once their hand is empty; no separate go-out action is used."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "NA"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All cards are distributed at the start; new cards are obtained only via penalty pickups.",
+      "discardConfig": "Cards are played to tricks or picked up as penalties; no waste or discard pile is utilized.",
+      "specialCards": "Certain ranks like the Ace of Spades have lead priority but do not trigger automated effects.",
+      "declarationMechanism": "The game state is determined by public card play without a hidden declaration phase.",
+      "fishingConfig": "Bhabhi is a shedding game and does not use a capture-from-tableau fishing mechanic.",
+      "trickConfig": "Bhabhi uses trick-like turns but the objective is avoidance rather than trick capture."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "higher_single",
+          "notes": "Must follow suit if possible."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "Trick ends when someone fails to follow suit."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "eldest_hand",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 13
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 6
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "dealing",
+      "trick_play"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_all",
+        "supported": true,
+        "description": "Distribute the entire 52-card deck to all players at the start of the game.",
+        "cost": "0",
+        "constraints": "Setup phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "pickup_pile",
+        "supported": true,
+        "description": "Take all cards from the current trick into the player's hand.",
+        "cost": "0",
+        "constraints": "Triggered when a suit is broken and player is highest of led suit.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card rank (Ace high) determines who must pick up the pile when a suit is broken.",
+    "rankingSystem": "Rank (A-2)",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck without jokers, using four French suits and thirteen ranks from ace down to two. It is used for Bhabhi/Getaway, where players follow suit when possible and try to shed all cards while avoiding picking up interrupted tricks.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Suits matter because players must follow the suit that was led whenever they can, and there is no fixed trump suit in Bhabhi or Getaway.",
+    "rankDescription": "Within each suit the ranks run Ace high, then K, Q, J, 10 down to 2. The highest card of the suit that was led determines who has the power and who must pick up the pile after an interrupted trick, without any separate penalty card values.",
+    "dealPattern": "Cards are dealt one at a time until the entire deck is exhausted."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BHABHI",
+      "subtitle": "Getaway",
+      "tagline": "Don't be the last one holding the bag."
+    },
+    "shortDescription": "The ultimate game of survival. Shed your cards, duck the penalties, and do whatever it takes to avoid becoming the Bhabhi. A ruthless shedding game where one mistake can leave you holding the entire deck.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Player 3 played a Diamond but you have none! This is your chance! Throw your King of Spades on the pile ('Thulla'). The player who played the Ace of Diamonds is currently winning the trick—now HE has to pick up the whole mess, including your King!",
+    "ai": "Game: Bhabhi (Getaway). Type: Shedding/Avoidance. Rule: Failure to follow suit ends trick. Highest of led suit picks up all cards. Goal: Shed all cards."
+  },
+  "scoring": {
+    "description": "No formal point system is used. Each deal produces a single loser—the last player holding cards—though groups may optionally track how many times each player loses over a session.",
+    "winCondition": "Successful shedding of all cards in hand.",
+    "cardValues": {
+      "Any card": "0"
+    },
+    "penalties": {
+      "The Bhabhi": "The last player remaining with cards is the loser of the game."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "None; the game must proceed until only one player holds cards.",
+    "targetScore": 1,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "cardValues": "All cards are treated as zero points; players only track who loses each deal rather than per-card scores.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Getaway",
+    "Bhabhi Thulla",
+    "Thulla",
+    "Jaan Pehchaan"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

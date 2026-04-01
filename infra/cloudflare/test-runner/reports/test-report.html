@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Report - All Tests</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #1e1e1e;
+  color: #cccccc;
+  line-height: 1.6;
+  padding: 10px 20px;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 100%;
+  margin: 0;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: #4ec9b0;
+  margin-bottom: 10px;
+  font-size: 2em;
+}
+
+h2 {
+  color: #569cd6;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+}
+
+h3 {
+  color: #9cdcfe;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.header-info {
+  background-color: #252526;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #3e3e42;
+}
+
+.header-info strong {
+  color: #4ec9b0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+table thead {
+  background-color: #2a2d2e;
+}
+
+table th {
+  padding: 10px;
+  text-align: left;
+  color: #cccccc;
+  font-weight: 600;
+  border-bottom: 2px solid #3e3e42;
+  font-size: 0.9em;
+}
+
+table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #3e3e42;
+  font-size: 0.9em;
+}
+
+.table-controls {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  background-color: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.control-btn:hover {
+  background-color: #1177bb;
+}
+
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  background-color: #252526;
+  color: #cccccc;
+  font-size: 0.9em;
+  min-width: 200px;
+}
+
+.test-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  background-color: #252526;
+  border: none;
+}
+
+.test-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.test-row:hover {
+  background-color: #2a2d2e;
+}
+
+.failed-row {
+  background-color: #3a1f1f;
+}
+
+.failed-row:hover {
+  background-color: #4a2f2f;
+}
+
+.passed-row {
+  background-color: #1f3a1f;
+}
+
+.passed-row:hover {
+  background-color: #2f4a2f;
+}
+
+.skipped-row {
+  background-color: #2a2a1f;
+}
+
+.warning-row {
+  background-color: #3a3a1f;
+}
+
+.warning-row:hover {
+  background-color: #4a4a2f;
+}
+
+.security-test-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.security-test-row:hover {
+  background-color: #2a2d2e;
+}
+
+.security-details-row {
+  background-color: #1a1a1a;
+  display: none;
+}
+
+.rerun-cell {
+  text-align: center;
+  padding: 4px !important;
+}
+
+.rerun-btn {
+  background-color: #0e639c;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.rerun-btn:hover {
+  background-color: #1177bb;
+}
+
+.rerun-btn:disabled {
+  background-color: #3e3e42;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.th-rerun {
+  width: 70px;
+}
+
+.expand-icon {
+  text-align: center;
+  font-size: 0.8em;
+  color: #808080;
+  transition: transform 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.test-row.expanded .expand-icon {
+  transform: rotate(90deg);
+}
+
+.test-name {
+  font-weight: 500;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-cell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.suite-cell {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.error-preview {
+  color: #ce9178;
+  font-size: 0.85em;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy-cell {
+  text-align: center;
+  cursor: pointer;
+  padding: 4px !important;
+}
+
+.copy-icon {
+  font-size: 1.2em;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.copy-cell:hover .copy-icon {
+  transform: scale(1.2);
+}
+
+.copy-cell:active .copy-icon {
+  transform: scale(0.9);
+}
+
+.test-row {
+  height: auto;
+}
+
+.test-row td {
+  vertical-align: middle;
+}
+
+.details-row {
+  background-color: #1a1a1a;
+  display: none;
+}
+
+.th-expand {
+  width: 30px;
+}
+
+.th-number {
+  width: 50px;
+}
+
+.th-status {
+  width: 100px;
+}
+
+.th-duration {
+  width: 80px;
+}
+
+.th-copy {
+  width: 50px;
+}
+
+.sortable {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+  background-color: #2a2d2e;
+}
+
+.sort-indicator {
+  color: #4ec9b0;
+  font-size: 0.8em;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.test-mode-indicator {
+  color: #51cf66;
+  font-weight: bold;
+}
+
+.test-mode-indicator-real {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.details-cell {
+  padding: 0 !important;
+}
+
+.details-content {
+  padding: 12px 15px;
+  background-color: #1a1a1a;
+  font-size: 0.9em;
+}
+
+.details-content h4 {
+  color: #ce9178;
+  margin: 8px 0 5px 0;
+  font-size: 1em;
+}
+
+.details-content pre {
+  background-color: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 8px;
+  overflow-x: auto;
+  margin: 8px 0;
+  font-size: 0.85em;
+}
+
+.details-content code {
+  color: #ce9178;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85em;
+}
+
+.details-content p {
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+.hidden {
+  display: none !important;
+}
+
+p {
+  margin: 10px 0;
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #3e3e42;
+  color: #808080;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.coverage-section {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid #3e3e42;
+}
+
+.coverage-header {
+  background-color: #252526;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #3e3e42;
+}
+
+.coverage-header strong {
+  color: #4ec9b0;
+}
+
+.coverage-overall-metrics {
+  margin: 20px 0;
+}
+
+.coverage-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  background-color: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.coverage-summary-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.coverage-summary-table th {
+  padding: 12px;
+  text-align: center;
+  background-color: #2a2d2e;
+}
+
+.coverage-passed {
+  background-color: #1f3a1f;
+}
+
+.coverage-failed {
+  background-color: #3a1f1f;
+}
+
+.coverage-file-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.coverage-file-row:hover {
+  background-color: #2a2d2e;
+}
+
+.coverage-file-name {
+  font-weight: 500;
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coverage-metric {
+  text-align: center;
+  font-weight: 600;
+}
+
+.coverage-status {
+  text-align: center;
+  font-size: 1.2em;
+}
+
+.coverage-overall-pass {
+  color: #51cf66;
+  font-weight: bold;
+}
+
+.coverage-overall-fail {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.status-pass {
+  color: #51cf66;
+  font-weight: bold;
+}
+
+.status-fail {
+  color: #ff6b6b;
+  font-weight: bold;
+}
+
+.coverage-note {
+  background-color: #2a2a1f;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #3e3e42;
+  color: #ce9178;
+}
+
+.coverage-details-row {
+  background-color: #1a1a1a;
+  display: none;
+}
+
+.coverage-metrics-table {
+  width: 100%;
+  margin-top: 10px;
+  background-color: #1a1a1a;
+  border: 1px solid #3e3e42;
+}
+
+.coverage-metrics-table th,
+.coverage-metrics-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #3e3e42;
+}
+
+.coverage-metrics-table th {
+  background-color: #252526;
+  font-weight: 600;
+}
+
+.test-table-scroll-container {
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  margin: 20px 0;
+  background-color: #252526;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.test-table-scroll-container .test-table {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.test-table-scroll-container .test-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #2a2d2e;
+}
+
+.test-table-scroll-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.test-table-scroll-container::-webkit-scrollbar-track {
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+
+.test-table-scroll-container::-webkit-scrollbar-thumb {
+  background: #3e3e42;
+  border-radius: 6px;
+  border: 2px solid #1e1e1e;
+}
+
+.test-table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #4e4e52;
+}
+
+.security-tests-section {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid #3e3e42;
+}
+
+.security-test-card {
+  background-color: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.security-test-card h3 {
+  color: #4ec9b0;
+  margin-bottom: 10px;
+}
+
+.security-test-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.security-test-status.passed {
+  background-color: #1f3a1f;
+  color: #51cf66;
+}
+
+.security-test-status.failed {
+  background-color: #3a1f1f;
+  color: #ff6b6b;
+}
+
+.security-test-status.skipped {
+  background-color: #2a2a1f;
+  color: #ce9178;
+}
+
+.security-test-status.warning {
+  background-color: #3a3a1f;
+  color: #ffd93d;
+}
+
+.security-test-output {
+  background-color: #1a1a1a;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 10px;
+  margin-top: 10px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 0.85em;
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cloudflare Worker Test Report</h1>
+    
+    <div class="header-info">
+      <p><strong>Test Mode:</strong> <span class="test-mode-indicator">✓ LOCAL TEST WORKER</span></p>
+      
+      <p><strong>Generated:</strong> 2026-02-14 16:05:39</p>
+      <p><strong>Status:</strong> ALL TESTS PASSED</p>
+       <p><strong>Total Tests:</strong> 2 total | <strong>Passed:</strong> 2 ✅ | <strong>Failed:</strong> 0 ❌ | <strong>Skipped:</strong> 0 ⏭️ | <strong>Pass Rate:</strong> 100%</p>
+       <p><strong>Test Suites (describe blocks):</strong> 1 total, 1 passed, 0 failed</p>
+       <p><strong>Test Files:</strong> 2 files</p>
+    </div>
+    
+    <h2>🧪 Test Summary Table (Click rows to expand/collapse details)</h2>
+    <p><strong>0 Failed</strong> | <strong>2 Passed</strong> | <strong>0 Skipped</strong></p>
+    <div class="table-controls">
+      <button onclick="expandAll()" class="control-btn">Expand All</button>
+      <button onclick="expandFailedOnly()" class="control-btn">Expand Failed Only</button>
+      <button onclick="collapseAll()" class="control-btn">Collapse All</button>
+      <button onclick="showFailedOnly()" class="control-btn">Show Failed Only</button>
+      <button onclick="showAll()" class="control-btn">Show All</button>
+      <button onclick="exportFailedTests()" class="control-btn" style="background: #ff6b6b; color: white;">📥 Export Failed Tests (JSON)</button>
+      <input type="text" id="searchInput" placeholder="Search tests..." class="search-input" onkeyup="filterTests()">
+    </div>
+    <div class="test-table-scroll-container">
+      <table id="testTable" class="test-table">
+        <thead>
+          <tr>
+            <th class="th-expand"></th>
+            <th class="th-number">#</th>
+            <th class="sortable" onclick="sortTable('name')" title="Click to sort by Test Name">
+              Test Name <span id="sort-indicator-name" class="sort-indicator"></span>
+            </th>
+            <th class="sortable" onclick="sortTable('suite')" title="Click to sort by Suite">
+              Suite <span id="sort-indicator-suite" class="sort-indicator"></span>
+            </th>
+            <th class="sortable th-status" onclick="sortTable('status')" title="Click to sort by Status">
+              Status <span id="sort-indicator-status" class="sort-indicator"></span>
+            </th>
+            <th class="sortable th-duration" onclick="sortTable('duration')" title="Click to sort by Duration">
+              Duration <span id="sort-indicator-duration" class="sort-indicator"></span>
+            </th>
+            <th class="sortable" onclick="sortTable('error')" title="Click to sort by Error Preview">
+              Error Preview <span id="sort-indicator-error" class="sort-indicator"></span>
+            </th>
+            <th class="th-copy">Copy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="test-row passed-row" data-test-id="0" data-original-number="1">
+       <td class="expand-icon" id="icon-0" onclick="toggleTestDetails(0)">▶</td>
+       <td class="row-number">1</td>
+       <td class="test-name" title="human misuse: rapid double-click purchase with same idempotency key applies credits once" onclick="toggleTestDetails(0)">human misuse: rapid double-click purchase with same idempotency key applies credits once</td>
+       <td class="suite-cell" title="HumanMisuse" onclick="toggleTestDetails(0)">HumanMisuse</td>
+       <td class="status-cell" onclick="toggleTestDetails(0)">✅ PASSED</td>
+       <td onclick="toggleTestDetails(0)">324ms</td>
+       <td class="error-preview" title="" onclick="toggleTestDetails(0)">-</td>
+       <td class="copy-cell" onclick="event.stopPropagation(); copyTestDetails(0, `{\n  "test": "human misuse: rapid double-click purchase with same idempotency key applies credits once",\n  "suite": "HumanMisuse",\n  "file": "E:/ocentra-games/infra/cloudflare/tests/integration/human-misuse.test.ts",\n  "status": "passed",\n  "duration": 324,\n  "error": "",\n  "logs": []\n}`)">
+         <span class="copy-icon" title="Copy test details">📋</span>
+       </td>
+     </tr>
+      <tr class="details-row" id="test-details-0">
+        <td colspan="8" class="details-cell">
+          <div class="details-content">
+            <strong>File:</strong> <code>E:/ocentra-games/infra/cloudflare/tests/integration/human-misuse.test.ts</code><br>
+            <strong>Suite:</strong> HumanMisuse<br>
+            <strong>Duration:</strong> 324ms<br>
+            <strong>Status:</strong> PASSED<br>
+            <p>Test passed successfully.</p>
+            
+          </div>
+        </td>
+      </tr>
+<tr class="test-row passed-row" data-test-id="1" data-original-number="2">
+       <td class="expand-icon" id="icon-1" onclick="toggleTestDetails(1)">▶</td>
+       <td class="row-number">2</td>
+       <td class="test-name" title="human misuse: repeated promo-code submit returns already_redeemed without extra credits" onclick="toggleTestDetails(1)">human misuse: repeated promo-code submit returns already_redeemed without extra credits</td>
+       <td class="suite-cell" title="HumanMisuse" onclick="toggleTestDetails(1)">HumanMisuse</td>
+       <td class="status-cell" onclick="toggleTestDetails(1)">✅ PASSED</td>
+       <td onclick="toggleTestDetails(1)">320ms</td>
+       <td class="error-preview" title="" onclick="toggleTestDetails(1)">-</td>
+       <td class="copy-cell" onclick="event.stopPropagation(); copyTestDetails(1, `{\n  "test": "human misuse: repeated promo-code submit returns already_redeemed without extra credits",\n  "suite": "HumanMisuse",\n  "file": "E:/ocentra-games/infra/cloudflare/tests/integration/human-misuse.test.ts",\n  "status": "passed",\n  "duration": 320,\n  "error": "",\n  "logs": []\n}`)">
+         <span class="copy-icon" title="Copy test details">📋</span>
+       </td>
+     </tr>
+      <tr class="details-row" id="test-details-1">
+        <td colspan="8" class="details-cell">
+          <div class="details-content">
+            <strong>File:</strong> <code>E:/ocentra-games/infra/cloudflare/tests/integration/human-misuse.test.ts</code><br>
+            <strong>Suite:</strong> HumanMisuse<br>
+            <strong>Duration:</strong> 320ms<br>
+            <strong>Status:</strong> PASSED<br>
+            <p>Test passed successfully.</p>
+            
+          </div>
+        </td>
+      </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div style="margin: 20px 0; padding: 15px; background: #252526; border-radius: 4px; border-left: 4px solid #ff6b6b;">
+      <h3 style="margin-top: 0; color: #ff6b6b;">📥 Export Failed Tests</h3>
+      <p style="color: #cccccc; margin-bottom: 10px;">Export all 0 failing test(s) with full error messages, logs, stdout, and stderr to JSON file.</p>
+      
+      <button onclick="exportFailedTests()" class="control-btn" style="background: #ff6b6b; color: white; font-weight: bold;">📥 Export to Logs Directory</button>
+      <p style="color: #808080; font-size: 12px; margin-top: 10px;">The JSON file includes: test name, suite, file path, duration, error messages, stdout, stderr, and console logs.</p>
+      
+    </div>
+    
+    <div class="coverage-section">
+      <h2>📊 Coverage Summary</h2>
+      <div class="coverage-header">
+        <p class="coverage-note" style="color: #51cf66;">✅ Coverage report available below. Summary data not loaded, but interactive report is accessible.</p>
+      </div>
+      <div class="coverage-iframe-section">
+        <h3>📊 Full Coverage Report (Interactive)</h3>
+        <p class="coverage-note">Full navigable coverage report embedded below. You can navigate through files, view line-by-line coverage, and use all features of the Istanbul coverage report.</p>
+        <div class="coverage-iframe-container">
+          <iframe src="../coverage/index.html" id="coverageIframe" title="Coverage Report" style="width: 100%; height: 800px; border: 1px solid #333; border-radius: 4px;"></iframe>
+        </div>
+        <p class="coverage-note" style="margin-top: 10px;">
+          <a href="../coverage/index.html" target="_blank" style="color: #4ec9b0; text-decoration: underline;">Open coverage report in new tab</a> for full-screen viewing
+        </p>
+      </div>
+    </div>
+    
+    <div class="security-tests-section">
+    <h2>🔒 Security Test Results</h2>
+    <p>Results from external security testing tools (k6, Schemathesis, Stryker)</p>
+    <div class="table-controls">
+      <button onclick="expandAllSecurity()" class="control-btn">Expand All</button>
+      <button onclick="expandFailedSecurityOnly()" class="control-btn">Expand Failed Only</button>
+      <button onclick="collapseAllSecurity()" class="control-btn">Collapse All</button>
+    </div>
+    <div class="test-table-scroll-container">
+      <table id="securityTestTable" class="test-table">
+        <thead>
+          <tr>
+            <th class="th-expand"></th>
+            <th class="th-number">#</th>
+            <th>Test Name</th>
+            <th class="th-status">Status</th>
+            <th class="th-duration">Duration</th>
+            <th>Error Preview</th>
+            <th class="th-copy">Copy</th>
+            <th class="th-rerun">Re-run</th>
+          </tr>
+        </thead>
+        <tbody><tr class="security-test-row failed-row" data-security-id="schemathesis-0" data-original-number="1">
+    <td class="expand-icon" id="security-icon-schemathesis-0" onclick="toggleSecurityDetails('schemathesis', 0)">▶</td>
+    <td class="row-number">1</td>
+    <td class="test-name" title="Schemathesis API Fuzzing" onclick="toggleSecurityDetails('schemathesis', 0)">Schemathesis API Fuzzing</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('schemathesis', 0)">❌ FAILED</td>
+    <td onclick="toggleSecurityDetails('schemathesis', 0)">300.02s</td>
+    <td class="error-preview" title="Schemathesis exited with code 124" onclick="toggleSecurityDetails('schemathesis', 0)">Schemathesis exited with code 124</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('schemathesis', 0, `{\n  "test": "Schemathesis API Fuzzing",\n  "type": "schemathesis",\n  "status": "failed",\n  "exitCode": 124,\n  "duration": 300.019,\n  "summary": "Schemathesis exited with code 124"\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('schemathesis')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-schemathesis-0">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> schemathesis<br><strong>Status:</strong> <span style="color: #ff6b6b; font-weight: bold;">FAILED</span><br><strong>Exit Code:</strong> 124<br><strong>Duration:</strong> 300.02s<br></div><div style="background: #2d1b1b; border-left: 4px solid #ff6b6b; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #ff6b6b;">❌ Failure Reason:</h4><p style="margin-top: 10px;"><strong>Summary:</strong> Schemathesis exited with code 124</p></div></div>
+    </td>
+  </tr>
+<tr class="security-test-row skipped-row" data-security-id="k6-1" data-original-number="2">
+    <td class="expand-icon" id="security-icon-k6-1" onclick="toggleSecurityDetails('k6', 1)">▶</td>
+    <td class="row-number">2</td>
+    <td class="test-name" title="k6 Concurrency/Load Tests" onclick="toggleSecurityDetails('k6', 1)">k6 Concurrency/Load Tests</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('k6', 1)">⏭️ THRESHOLD_FAILED</td>
+    <td onclick="toggleSecurityDetails('k6', 1)">76.89s</td>
+    <td class="error-preview" title="Threshold violations: http_req_duration: p(95)&amp;lt;2000" onclick="toggleSecurityDetails('k6', 1)">Threshold violations: http_req_duration: p(95)&lt;2000</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('k6', 1, `{\n  "test": "k6 Concurrency/Load Tests",\n  "type": "k6",\n  "status": "threshold_failed",\n  "exitCode": 99,\n  "errorType": "threshold_violation",\n  "duration": 76.886,\n  "errorMessage": "Threshold violations: http_req_duration: p(95)<2000",\n  "summary": "k6 completed but 1 threshold(s) violated: http_req_duration: p(95)<2000",\n  "metrics": {\n    "requests": 23,\n    "errors": 0,\n    "errorRate": 0.8695652173913043,\n    "avgResponseTime": 47064.3634652174,\n    "p95ResponseTime": 60000.61560999999,\n    "p90ResponseTime": 60000.21194,\n    "maxResponseTime": 60000.6884,\n    "throughput": 0.30104526804475773,\n    "vus": {\n      "max": 50,\n      "avg": 0\n    },\n    "thresholds": [\n      {\n        "name": "http_req_duration: p(95)<2000",\n        "passed": false,\n        "value": "FAIL",\n        "actualValue": "60000.62ms"\n      }\n    ],\n    "checkFailures": [\n      {\n        "name": "balance request succeeds",\n        "passes": 2,\n        "fails": 17,\n        "failureRate": 89.47368421052632\n      },\n      {\n        "name": "purchase request succeeds",\n        "passes": 0,\n        "fails": 2,\n        "failureRate": 100\n      },\n      {\n        "name": "purchase response has valid JSON",\n        "passes": 0,\n        "fails": 2,\n        "failureRate": 100\n      },\n      {\n        "name": "purchase increases balance correctly",\n        "passes": 0,\n        "fails": 2,\n        "failureRate": 100\n      },\n      {\n        "name": "final balance matches purchase result",\n        "passes": 0,\n        "fails": 2,\n        "failureRate": 100\n      }\n    ]\n  }\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('k6')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-k6-1">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> k6<br><strong>Status:</strong> <span style="color: #ffd93d; font-weight: bold;">THRESHOLD_FAILED</span><br><strong>Exit Code:</strong> 99<br><strong>Error Type:</strong> <span style="color: #ffd93d;">THRESHOLD VIOLATION</span><br><strong>Duration:</strong> 76.89s<br></div><h4 style="margin-top: 15px;">Summary:</h4><p>k6 completed but 1 threshold(s) violated: http_req_duration: p(95)&lt;2000</p><h4 style="margin-top: 15px;">Performance Metrics:</h4><table style="width: 100%; border-collapse: collapse; margin-top: 10px;"><thead><tr style="background: #2d2d2d;"><th style="padding: 8px; border: 1px solid #333; text-align: left;">Metric</th><th style="padding: 8px; border: 1px solid #333; text-align: left;">Value</th></tr></thead><tbody><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>Total Requests</strong></td><td style="padding: 8px; border: 1px solid #333;">23</td></tr><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>Error Rate</strong></td><td style="padding: 8px; border: 1px solid #333; color: #ff6b6b;">86.96%</td></tr><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>Avg Response Time</strong></td><td style="padding: 8px; border: 1px solid #333;">47064.36ms</td></tr><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>p95 Response Time</strong></td><td style="padding: 8px; border: 1px solid #333; color: #ff6b6b;">60000.62ms</td></tr><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>Throughput</strong></td><td style="padding: 8px; border: 1px solid #333;">0.3 req/s</td></tr><tr><td style="padding: 8px; border: 1px solid #333; color: #9cdcfe;"><strong>Max VUs</strong></td><td style="padding: 8px; border: 1px solid #333;">50</td></tr><tr><td colspan="2" style="padding: 8px; border: 1px solid #333;"><strong style="color: #9cdcfe;">Thresholds:</strong></td></tr><tr><td style="padding: 8px; border: 1px solid #333; padding-left: 20px;"><code>http_req_duration: p(95)&lt;2000</code></td><td style="padding: 8px; border: 1px solid #333; color: #ff6b6b;">❌ FAIL (FAIL)</td></tr></tbody></table></div>
+    </td>
+  </tr>
+<tr class="security-test-row skipped-row" data-security-id="mutation-2" data-original-number="3">
+    <td class="expand-icon" id="security-icon-mutation-2" onclick="toggleSecurityDetails('mutation', 2)">▶</td>
+    <td class="row-number">3</td>
+    <td class="test-name" title="Stryker Mutation Testing" onclick="toggleSecurityDetails('mutation', 2)">Stryker Mutation Testing</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('mutation', 2)">⏭️ SKIPPED</td>
+    <td onclick="toggleSecurityDetails('mutation', 2)">-</td>
+    <td class="error-preview" title="Mutation tests were skipped" onclick="toggleSecurityDetails('mutation', 2)">Mutation tests were skipped</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('mutation', 2, `{\n  "test": "Stryker Mutation Testing",\n  "type": "mutation",\n  "status": "skipped",\n  "duration": 0,\n  "summary": "Mutation tests were skipped",\n  "error": "Mutation tests were disabled by user"\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('mutation')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-mutation-2">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> mutation<br><strong>Status:</strong> <span style="color: #ffd93d; font-weight: bold;">SKIPPED</span><br></div><h4 style="margin-top: 15px;">Summary:</h4><p>Mutation tests were skipped</p><h4 style="margin-top: 15px;">Full Output:</h4><details><summary style="cursor: pointer; color: #9cdcfe; font-weight: bold; margin-bottom: 10px;">📄 View Full Output (0.0 KB)</summary><div class="security-test-output" style="max-height: 500px; overflow-y: auto; margin-top: 10px; background: #1e1e1e; padding: 15px; border-radius: 4px;"><pre style="white-space: pre-wrap; word-break: break-all; margin: 0;"><code>Mutation tests were disabled by user</code></pre></div></details></div>
+    </td>
+  </tr></tbody>
+      </table>
+    </div>
+  </div>
+    
+    <div class="security-tests-section">
+    <h2>🔍 Static Analysis Results</h2>
+    <p>Results from static analysis and vulnerability scanning tools</p>
+    <div class="table-controls">
+      <button onclick="expandAllSecurity()" class="control-btn">Expand All</button>
+      <button onclick="expandFailedSecurityOnly()" class="control-btn">Expand Failed Only</button>
+      <button onclick="collapseAllSecurity()" class="control-btn">Collapse All</button>
+    </div>
+    <div class="test-table-scroll-container">
+      <table id="staticAnalysisTable" class="test-table">
+        <thead>
+          <tr>
+            <th class="th-expand"></th>
+            <th class="th-number">#</th>
+            <th>Test Name</th>
+            <th class="th-status">Status</th>
+            <th class="th-duration">Duration</th>
+            <th>Error Preview</th>
+            <th class="th-copy">Copy</th>
+            <th class="th-rerun">Re-run</th>
+          </tr>
+        </thead>
+        <tbody><tr class="security-test-row passed-row" data-security-id="semgrep-0" data-original-number="1">
+    <td class="expand-icon" id="security-icon-semgrep-0" onclick="toggleSecurityDetails('semgrep', 0)">▶</td>
+    <td class="row-number">1</td>
+    <td class="test-name" title="Semgrep Static Analysis" onclick="toggleSecurityDetails('semgrep', 0)">Semgrep Static Analysis</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('semgrep', 0)">✅ PASSED</td>
+    <td onclick="toggleSecurityDetails('semgrep', 0)">5.18s</td>
+    <td class="error-preview" title="No security findings" onclick="toggleSecurityDetails('semgrep', 0)">No security findings</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('semgrep', 0, `{\n  "test": "Semgrep Static Analysis",\n  "type": "semgrep",\n  "status": "passed",\n  "duration": 5.184,\n  "summary": "No security findings",\n  "findings": 0\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('semgrep')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-semgrep-0">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> semgrep<br><strong>Status:</strong> <span style="color: #51cf66; font-weight: bold;">PASSED</span><br><strong>Duration:</strong> 5.18s<br></div><div style="background: #1b2d1b; border-left: 4px solid #51cf66; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #51cf66;">✅ Test Passed Successfully</h4><p>No security findings</p><p style="margin-top: 10px; color: #51cf66;"><strong>Scanned:</strong> Source code files</p><p style="color: #51cf66;"><strong>Security Findings:</strong> 0 (no issues detected)</p></div><div style="background: #1b2d1b; border-left: 4px solid #51cf66; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #51cf66;">✅ Findings: 0 findings</h4><p style="color: #51cf66;">No security findings detected.</p></div></div>
+    </td>
+  </tr>
+<tr class="security-test-row failed-row" data-security-id="codeql-1" data-original-number="2">
+    <td class="expand-icon" id="security-icon-codeql-1" onclick="toggleSecurityDetails('codeql', 1)">▶</td>
+    <td class="row-number">2</td>
+    <td class="test-name" title="CodeQL Static Analysis" onclick="toggleSecurityDetails('codeql', 1)">CodeQL Static Analysis</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('codeql', 1)">❌ FAILED</td>
+    <td onclick="toggleSecurityDetails('codeql', 1)">718.26s</td>
+    <td class="error-preview" title="14 security findings detected" onclick="toggleSecurityDetails('codeql', 1)">14 security findings detected</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('codeql', 1, `{\n  "test": "CodeQL Static Analysis",\n  "type": "codeql",\n  "status": "failed",\n  "exitCode": 0,\n  "duration": 718.256,\n  "summary": "Found 14 security findings",\n  "findings": 14\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('codeql')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-codeql-1">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> codeql<br><strong>Status:</strong> <span style="color: #ff6b6b; font-weight: bold;">FAILED</span><br><strong>Exit Code:</strong> 0<br><strong>Duration:</strong> 718.26s<br></div><div style="background: #2d1b1b; border-left: 4px solid #ff6b6b; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #ff6b6b;">❌ Failure Reason:</h4><p style="margin-top: 10px;"><strong>Summary:</strong> Found 14 security findings</p></div><div style="background: #2d1b1b; border-left: 4px solid #ff6b6b; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #ff6b6b;">❌ Findings: 14 findings</h4><div style="margin-top: 15px;"><div style="margin-bottom: 15px; padding: 10px; background: #1e1e1e; border-radius: 4px;"><h5 style="margin: 0 0 10px 0; color: #ffd93d;">[4] js/shell-command-injection-from-environment</h5><ul style="margin: 0; padding-left: 20px; list-style: none;"><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">scripts/run-suite.ts:99</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">scripts/test-runner.ts:243</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">scripts/run-suite-helper.ts:890</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">scripts/run-suite-helper.ts:946</span></li></ul></div><div style="margin-bottom: 15px; padding: 10px; background: #1e1e1e; border-radius: 4px;"><h5 style="margin: 0 0 10px 0; color: #ffd93d;">[1] js/incomplete-sanitization</h5><ul style="margin: 0; padding-left: 20px; list-style: none;"><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/durable-objects/NotificationDO.ts:171</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This replaces only the first occurrence of &#039;&gt;&#039;.</span></li></ul></div><div style="margin-bottom: 15px; padding: 10px; background: #1e1e1e; border-radius: 4px;"><h5 style="margin: 0 0 10px 0; color: #ffd93d;">[7] js/stack-trace-exposure</h5><ul style="margin: 0; padding-left: 20px; list-style: none;"><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/archive.ts:154</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/data.ts:258</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/transparency.ts:102</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/transparency.ts:144</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/transparency.ts:166</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/feature-handlers.ts:316</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/handlers/feature-handlers.ts:1229</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This information exposed to the user depends on [stack trace information](1).</span></li></ul></div><div style="margin-bottom: 15px; padding: 10px; background: #1e1e1e; border-radius: 4px;"><h5 style="margin: 0 0 10px 0; color: #ffd93d;">[2] js/insecure-randomness</h5><ul style="margin: 0; padding-left: 20px; list-style: none;"><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">src/utils/totp.ts:35</span><br><span style="color: #808080; font-size: 11px; margin-left: 10px;">This uses a cryptographically insecure random number generated at [Math.random()](1) in a security context.</span></li><li style="margin: 5px 0; font-family: monospace; font-size: 12px;"><span style="color: #9cdcfe;">tests/helpers/test-helpers.ts:110</span></li></ul></div></div></div><h4 style="margin-top: 15px;">SARIF Results:</h4><p><code>E:\ocentra-games\infra\cloudflare\test-runner\ReportJson\codeql-results.sarif</code></p></div>
+    </td>
+  </tr>
+<tr class="security-test-row warning-row" data-security-id="trivy-2" data-original-number="3">
+    <td class="expand-icon" id="security-icon-trivy-2" onclick="toggleSecurityDetails('trivy', 2)">▶</td>
+    <td class="row-number">3</td>
+    <td class="test-name" title="Trivy Vulnerability Scanner" onclick="toggleSecurityDetails('trivy', 2)">Trivy Vulnerability Scanner</td>
+    <td class="status-cell" onclick="toggleSecurityDetails('trivy', 2)">⚠️ WARNING</td>
+    <td onclick="toggleSecurityDetails('trivy', 2)">1.15s</td>
+    <td class="error-preview" title="No CRITICAL or HIGH vulnerabilities found" onclick="toggleSecurityDetails('trivy', 2)">No CRITICAL or HIGH vulnerabilities found</td>
+    <td class="copy-cell" onclick="event.stopPropagation(); copySecurityDetails('trivy', 2, `{\n  "test": "Trivy Vulnerability Scanner",\n  "type": "trivy",\n  "status": "warning",\n  "errorType": "execution_error",\n  "duration": 1.153,\n  "summary": "No CRITICAL or HIGH vulnerabilities found",\n  "vulnerabilities": 0\n}`)">
+      <span class="copy-icon" title="Copy test details">📋</span>
+    </td>
+    <td class="rerun-cell">
+      <button class="rerun-btn" onclick="event.stopPropagation(); rerunSecurityTest('trivy')" title="Re-run this test">🔄</button>
+    </td>
+  </tr>
+  <tr class="security-details-row" id="security-details-trivy-2">
+    <td colspan="8" class="details-cell">
+      <div class="details-content"><div style="margin-bottom: 20px;"><strong>Test Type:</strong> trivy<br><strong>Status:</strong> <span style="color: #ffd93d; font-weight: bold;">WARNING</span><br><strong>Error Type:</strong> <span style="color: #ff6b6b;">EXECUTION ERROR</span><br><strong>Duration:</strong> 1.15s<br></div><div style="background: #2d2b1b; border-left: 4px solid #ffd93d; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #ffd93d;">⚠️ Warning Reason:</h4><p style="color: #ff6b6b; font-weight: bold;">Tool execution failed.</p><p style="margin-top: 10px;"><strong>Summary:</strong> No CRITICAL or HIGH vulnerabilities found</p></div><div style="background: #1b2d1b; border-left: 4px solid #51cf66; padding: 15px; margin: 15px 0; border-radius: 4px;"><h4 style="margin-top: 0; color: #51cf66;">✅ Vulnerabilities: 0 CRITICAL/HIGH vulnerabilities</h4><p style="color: #51cf66;">No critical or high severity vulnerabilities detected.</p></div></div>
+    </td>
+  </tr></tbody>
+      </table>
+    </div>
+  </div>
+    
+    <div class="footer">
+      <p>Report generated by Cloudflare Worker Test Suite</p>
+    </div>
+  </div>
+  
+  <script>
+    function toggleTestDetails(testId) {
+      const row = document.querySelector(`tr[data-test-id="${testId}"]`);
+      const detailsRow = document.getElementById(`test-details-${testId}`);
+      const icon = document.getElementById(`icon-${testId}`);
+      
+      if (!row || !detailsRow) return;
+      
+      const isExpanded = row.classList.contains('expanded');
+      
+      if (isExpanded) {
+        row.classList.remove('expanded');
+        detailsRow.style.display = 'none';
+        if (icon) icon.textContent = '▶';
+      } else {
+        row.classList.add('expanded');
+        detailsRow.style.display = 'table-row';
+        if (icon) icon.textContent = '▼';
+      }
+    }
+    
+    function expandAll() {
+      document.querySelectorAll('.test-row').forEach(row => {
+        if (row.style.display === 'none') return;
+        const testId = row.getAttribute('data-test-id');
+        if (testId) {
+          const detailsRow = document.getElementById(`test-details-${testId}`);
+          const icon = document.getElementById(`icon-${testId}`);
+          if (detailsRow) {
+            row.classList.add('expanded');
+            detailsRow.style.display = 'table-row';
+            if (icon) icon.textContent = '▼';
+          }
+        }
+      });
+    }
+     
+     function expandFailedOnly() {
+       document.querySelectorAll('.test-row.failed-row').forEach(row => {
+         const testId = row.getAttribute('data-test-id');
+         if (testId) {
+           const detailsRow = document.getElementById(`test-details-${testId}`);
+           const icon = document.getElementById(`icon-${testId}`);
+           if (detailsRow) {
+             row.classList.add('expanded');
+             detailsRow.style.display = 'table-row';
+             if (icon) icon.textContent = '▼';
+           }
+         }
+       });
+     }
+     
+     function copyTestDetails(testId, testData) {
+       navigator.clipboard.writeText(testData).then(() => {
+         const icon = document.querySelector(`tr[data-test-id="${testId}"] .copy-icon`);
+         if (icon) {
+           const original = icon.textContent;
+           icon.textContent = '✓';
+           icon.style.color = '#4ec9b0';
+           setTimeout(() => {
+             icon.textContent = original;
+             icon.style.color = '';
+           }, 2000);
+         }
+       }).catch(err => {
+         console.error('Failed to copy:', err);
+         alert('Failed to copy to clipboard');
+       });
+     }
+    
+    function collapseAll() {
+      document.querySelectorAll('.test-row').forEach(row => {
+        const testId = row.getAttribute('data-test-id');
+        if (testId) {
+          const detailsRow = document.getElementById(`test-details-${testId}`);
+          const icon = document.getElementById(`icon-${testId}`);
+          if (detailsRow && detailsRow.style.display !== 'none') {
+            row.classList.remove('expanded');
+            detailsRow.style.display = 'none';
+            if (icon) icon.textContent = '▶';
+          }
+        }
+      });
+    }
+    
+    function updateRowNumbers() {
+      let visibleCount = 0;
+      document.querySelectorAll('.test-row').forEach(row => {
+        if (row.style.display !== 'none') {
+          visibleCount++;
+          const numberCell = row.querySelector('.row-number');
+          if (numberCell) {
+            numberCell.textContent = visibleCount;
+          }
+        }
+      });
+    }
+    
+    function showFailedOnly() {
+      let visibleCount = 0;
+      document.querySelectorAll('.test-row').forEach(row => {
+        if (row.classList.contains('failed-row')) {
+          row.style.display = '';
+          visibleCount++;
+          const numberCell = row.querySelector('.row-number');
+          if (numberCell) {
+            numberCell.textContent = visibleCount;
+          }
+          const testId = row.getAttribute('data-test-id');
+          if (testId) {
+            const detailsRow = document.getElementById(`test-details-${testId}`);
+            if (detailsRow) detailsRow.style.display = 'none';
+          }
+        } else {
+          row.style.display = 'none';
+          const testId = row.getAttribute('data-test-id');
+          if (testId) {
+            const detailsRow = document.getElementById(`test-details-${testId}`);
+            if (detailsRow) detailsRow.style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    function showAll() {
+      let visibleCount = 0;
+      document.querySelectorAll('.test-row').forEach(row => {
+        row.style.display = '';
+        visibleCount++;
+        const originalNumber = row.getAttribute('data-original-number');
+        const numberCell = row.querySelector('.row-number');
+        if (numberCell && originalNumber) {
+          numberCell.textContent = originalNumber;
+        }
+        const testId = row.getAttribute('data-test-id');
+        if (testId) {
+          const detailsRow = document.getElementById(`test-details-${testId}`);
+          if (detailsRow) {
+            if (row.classList.contains('expanded')) {
+              detailsRow.style.display = 'table-row';
+            } else {
+              detailsRow.style.display = 'none';
+            }
+          }
+        }
+      });
+    }
+    
+    let currentSortColumn = null;
+    let currentSortDirection = 'asc';
+    
+    function sortTable(column) {
+      const tbody = document.querySelector('#testTable tbody');
+      if (!tbody) return;
+      
+      const rows = Array.from(tbody.querySelectorAll('.test-row'));
+      const detailsRows = new Map();
+      
+      rows.forEach(row => {
+        const testId = row.getAttribute('data-test-id');
+        if (testId) {
+          const detailsRow = document.getElementById(`test-details-${testId}`);
+          if (detailsRow) {
+            detailsRows.set(testId, detailsRow);
+          }
+        }
+      });
+      
+      if (currentSortColumn === column) {
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortColumn = column;
+        currentSortDirection = 'asc';
+      }
+      
+      rows.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(column) {
+          case 'name':
+            aValue = a.querySelector('.test-name')?.textContent.trim().toLowerCase() || '';
+            bValue = b.querySelector('.test-name')?.textContent.trim().toLowerCase() || '';
+            break;
+          case 'suite':
+            aValue = a.querySelector('.suite-cell')?.textContent.trim().toLowerCase() || '';
+            bValue = b.querySelector('.suite-cell')?.textContent.trim().toLowerCase() || '';
+            break;
+          case 'status':
+            const statusOrder = { 'failed': 0, 'skipped': 1, 'pending': 1, 'passed': 2 };
+            const aStatus = a.getAttribute('data-test-id') ? 
+              (a.classList.contains('failed-row') ? 'failed' : 
+               a.classList.contains('skipped-row') ? 'skipped' : 'passed') : '';
+            const bStatus = b.getAttribute('data-test-id') ? 
+              (b.classList.contains('failed-row') ? 'failed' : 
+               b.classList.contains('skipped-row') ? 'skipped' : 'passed') : '';
+            aValue = statusOrder[aStatus] !== undefined ? statusOrder[aStatus] : 999;
+            bValue = statusOrder[bStatus] !== undefined ? statusOrder[bStatus] : 999;
+            break;
+          case 'duration':
+            const aDurationText = a.cells[5]?.textContent.trim() || '';
+            const bDurationText = b.cells[5]?.textContent.trim() || '';
+            aValue = parseDuration(aDurationText);
+            bValue = parseDuration(bDurationText);
+            break;
+          case 'error':
+            aValue = a.querySelector('.error-preview')?.textContent.trim().toLowerCase() || '';
+            bValue = b.querySelector('.error-preview')?.textContent.trim().toLowerCase() || '';
+            break;
+          default:
+            return 0;
+        }
+        
+        let comparison = 0;
+        if (aValue < bValue) comparison = -1;
+        else if (aValue > bValue) comparison = 1;
+        
+        return currentSortDirection === 'asc' ? comparison : -comparison;
+      });
+      
+      rows.forEach(row => {
+        tbody.appendChild(row);
+        const testId = row.getAttribute('data-test-id');
+        if (testId && detailsRows.has(testId)) {
+          tbody.appendChild(detailsRows.get(testId));
+        }
+        const originalNumber = row.getAttribute('data-original-number');
+        const numberCell = row.querySelector('.row-number');
+        if (numberCell && originalNumber) {
+          numberCell.textContent = originalNumber;
+        }
+      });
+      
+      updateSortIndicators();
+    }
+    
+    function parseDuration(durationStr) {
+      if (!durationStr || durationStr === '-') return 0;
+      const match = durationStr.match(/(\d+(?:\.\d+)?)(ms|s)/);
+      if (!match) return 0;
+      const value = parseFloat(match[1]);
+      if (match[2] === 'ms') return value;
+      if (match[2] === 's') return value * 1000;
+      return value;
+    }
+    
+    function updateSortIndicators() {
+      const indicators = ['name', 'suite', 'status', 'duration', 'error'];
+      indicators.forEach(col => {
+        const indicator = document.getElementById(`sort-indicator-${col}`);
+        if (indicator) {
+          if (currentSortColumn === col) {
+            indicator.textContent = currentSortDirection === 'asc' ? ' ▲' : ' ▼';
+            indicator.style.color = '#4ec9b0';
+          } else {
+            indicator.textContent = '';
+          }
+        }
+      });
+    }
+    
+    function filterTests() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase();
+      const rows = document.querySelectorAll('.test-row');
+      
+      rows.forEach(row => {
+        const testName = row.querySelector('.test-name')?.textContent.toLowerCase() || '';
+        const suite = row.cells[3]?.textContent.toLowerCase() || '';
+        const matches = testName.includes(filter) || suite.includes(filter);
+        
+        if (matches) {
+          row.style.display = '';
+          const testId = row.getAttribute('data-test-id');
+          if (testId) {
+            const detailsRow = document.getElementById(`test-details-${testId}`);
+            if (detailsRow && row.classList.contains('expanded')) {
+              detailsRow.style.display = 'table-row';
+            }
+          }
+        } else {
+          row.style.display = 'none';
+          const testId = row.getAttribute('data-test-id');
+          if (testId) {
+            const detailsRow = document.getElementById(`test-details-${testId}`);
+            if (detailsRow) detailsRow.style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    const failedTestsData = [];
+    const failedTestsFilePath = null;
+    
+    function exportFailedTests() {
+      if (!failedTestsData || failedTestsData.length === 0) {
+        alert('No failed tests to export.');
+        return;
+      }
+      
+      const dataStr = JSON.stringify(failedTestsData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'failed-tests.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      if (failedTestsFilePath) {
+        const message = `✅ File ready to save!\n\nSave it to:\n${failedTestsFilePath}\n\n(Overwrites existing file)\n\nTotal failed tests: ${failedTestsData.length}`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(failedTestsFilePath).then(() => {
+            alert(message + '\n\n✅ File path copied to clipboard!');
+          }).catch(() => {
+            alert(message);
+          });
+        } else {
+          alert(message);
+        }
+      }
+    }
+    
+    function toggleCoverageDetails(coverageId) {
+      const row = document.querySelector(`tr[data-coverage-id="${coverageId}"]`);
+      const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+      const icon = document.getElementById(`coverage-icon-${coverageId}`);
+      
+      if (!row || !detailsRow) return;
+      
+      const isExpanded = row.classList.contains('expanded');
+      
+      if (isExpanded) {
+        row.classList.remove('expanded');
+        detailsRow.style.display = 'none';
+        if (icon) icon.textContent = '▶';
+      } else {
+        row.classList.add('expanded');
+        detailsRow.style.display = 'table-row';
+        if (icon) icon.textContent = '▼';
+      }
+    }
+    
+    function expandAllCoverage() {
+      document.querySelectorAll('.coverage-file-row').forEach(row => {
+        if (row.style.display === 'none') return;
+        const coverageId = row.getAttribute('data-coverage-id');
+        if (coverageId) {
+          const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+          const icon = document.getElementById(`coverage-icon-${coverageId}`);
+          if (detailsRow) {
+            row.classList.add('expanded');
+            detailsRow.style.display = 'table-row';
+            if (icon) icon.textContent = '▼';
+          }
+        }
+      });
+    }
+    
+    function expandFailedCoverageOnly() {
+      document.querySelectorAll('.coverage-file-row.coverage-failed').forEach(row => {
+        const coverageId = row.getAttribute('data-coverage-id');
+        if (coverageId) {
+          const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+          const icon = document.getElementById(`coverage-icon-${coverageId}`);
+          if (detailsRow) {
+            row.classList.add('expanded');
+            detailsRow.style.display = 'table-row';
+            if (icon) icon.textContent = '▼';
+          }
+        }
+      });
+    }
+    
+    function collapseAllCoverage() {
+      document.querySelectorAll('.coverage-file-row').forEach(row => {
+        const coverageId = row.getAttribute('data-coverage-id');
+        if (coverageId) {
+          const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+          const icon = document.getElementById(`coverage-icon-${coverageId}`);
+          if (detailsRow && detailsRow.style.display !== 'none') {
+            row.classList.remove('expanded');
+            detailsRow.style.display = 'none';
+            if (icon) icon.textContent = '▶';
+          }
+        }
+      });
+    }
+    
+    function showFailedCoverageOnly() {
+      document.querySelectorAll('.coverage-file-row').forEach(row => {
+        if (row.classList.contains('coverage-failed')) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+          const coverageId = row.getAttribute('data-coverage-id');
+          if (coverageId) {
+            const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+            if (detailsRow) detailsRow.style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    function showAllCoverage() {
+      document.querySelectorAll('.coverage-file-row').forEach(row => {
+        row.style.display = '';
+        const coverageId = row.getAttribute('data-coverage-id');
+        if (coverageId) {
+          const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+          if (detailsRow) {
+            if (row.classList.contains('expanded')) {
+              detailsRow.style.display = 'table-row';
+            } else {
+              detailsRow.style.display = 'none';
+            }
+          }
+        }
+      });
+    }
+    
+    function filterCoverage() {
+      const input = document.getElementById('coverageSearchInput');
+      const filter = input.value.toLowerCase();
+      const rows = document.querySelectorAll('.coverage-file-row');
+      
+      rows.forEach(row => {
+        const fileName = row.querySelector('.coverage-file-name')?.textContent.toLowerCase() || '';
+        const matches = fileName.includes(filter);
+        
+        if (matches) {
+          row.style.display = '';
+          const coverageId = row.getAttribute('data-coverage-id');
+          if (coverageId) {
+            const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+            if (detailsRow && row.classList.contains('expanded')) {
+              detailsRow.style.display = 'table-row';
+            }
+          }
+        } else {
+          row.style.display = 'none';
+          const coverageId = row.getAttribute('data-coverage-id');
+          if (coverageId) {
+            const detailsRow = document.getElementById(`coverage-details-${coverageId}`);
+            if (detailsRow) detailsRow.style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    function toggleSecurityDetails(testType, index) {
+      const row = document.querySelector(`tr[data-security-id="${testType}-${index}"]`);
+      const detailsRow = document.getElementById(`security-details-${testType}-${index}`);
+      const icon = document.getElementById(`security-icon-${testType}-${index}`);
+      
+      if (!row || !detailsRow) return;
+      
+      const isExpanded = row.classList.contains('expanded');
+      
+      if (isExpanded) {
+        row.classList.remove('expanded');
+        detailsRow.style.display = 'none';
+        if (icon) icon.textContent = '▶';
+      } else {
+        row.classList.add('expanded');
+        detailsRow.style.display = 'table-row';
+        if (icon) icon.textContent = '▼';
+      }
+    }
+    
+    function copySecurityDetails(testType, index, testData) {
+      navigator.clipboard.writeText(testData).then(() => {
+        const icon = document.querySelector(`tr[data-security-id="${testType}-${index}"] .copy-icon`);
+        if (icon) {
+          const original = icon.textContent;
+          icon.textContent = '✓';
+          icon.style.color = '#4ec9b0';
+          setTimeout(() => {
+            icon.textContent = original;
+            icon.style.color = '';
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+      });
+    }
+    
+    function rerunSecurityTest(testType) {
+      const testMap = {
+        schemathesis: 'schemathesis',
+        k6: 'k6',
+        mutation: 'mutation',
+        semgrep: 'static-analysis',
+        codeql: 'static-analysis',
+        trivy: 'static-analysis'
+      };
+      
+      const skipTests = ['vitest', 'coverage', 'analytics', 'observability'];
+      if (testType === 'schemathesis' || testType === 'k6') {
+        skipTests.push('mutation', 'static-analysis');
+      } else if (testType === 'mutation') {
+        skipTests.push('schemathesis', 'k6', 'static-analysis');
+      } else {
+        skipTests.push('schemathesis', 'k6', 'mutation');
+      }
+      
+      const command = `npx tsx tests/run-all-tests.ts local --skip-tests=${skipTests.join(',')}`;
+      
+      navigator.clipboard.writeText(command).then(() => {
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✓';
+        button.style.backgroundColor = '#51cf66';
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.backgroundColor = '';
+        }, 2000);
+        alert(`Command copied to clipboard!\n\n${command}\n\nPaste and run in terminal, then refresh this page.`);
+      }).catch(err => {
+        console.error('Failed to copy command:', err);
+        alert(`Run this command in terminal:\n\n${command}\n\nThen refresh this page.`);
+      });
+    }
+    
+    function expandAllSecurity() {
+      document.querySelectorAll('.security-test-row').forEach(row => {
+        if (row.style.display === 'none') return;
+        const securityId = row.getAttribute('data-security-id');
+        if (securityId) {
+          const [testType, index] = securityId.split('-');
+          const detailsRow = document.getElementById(`security-details-${testType}-${index}`);
+          const icon = document.getElementById(`security-icon-${testType}-${index}`);
+          if (detailsRow) {
+            row.classList.add('expanded');
+            detailsRow.style.display = 'table-row';
+            if (icon) icon.textContent = '▼';
+          }
+        }
+      });
+    }
+    
+    function expandFailedSecurityOnly() {
+      document.querySelectorAll('.security-test-row.failed-row, .security-test-row.warning-row').forEach(row => {
+        const securityId = row.getAttribute('data-security-id');
+        if (securityId) {
+          const [testType, index] = securityId.split('-');
+          const detailsRow = document.getElementById(`security-details-${testType}-${index}`);
+          const icon = document.getElementById(`security-icon-${testType}-${index}`);
+          if (detailsRow) {
+            row.classList.add('expanded');
+            detailsRow.style.display = 'table-row';
+            if (icon) icon.textContent = '▼';
+          }
+        }
+      });
+    }
+    
+    function collapseAllSecurity() {
+      document.querySelectorAll('.security-test-row').forEach(row => {
+        const securityId = row.getAttribute('data-security-id');
+        if (securityId) {
+          const [testType, index] = securityId.split('-');
+          const detailsRow = document.getElementById(`security-details-${testType}-${index}`);
+          const icon = document.getElementById(`security-icon-${testType}-${index}`);
+          if (detailsRow && detailsRow.style.display !== 'none') {
+            row.classList.remove('expanded');
+            detailsRow.style.display = 'none';
+            if (icon) icon.textContent = '▶';
+          }
+        }
+      });
+    }
+    
+  </script>
+</body>
+</html>

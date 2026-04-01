@@ -1,0 +1,94 @@
+{
+  "consumer": {
+    "name": "Frontend-Assets-Manifest"
+  },
+  "interactions": [
+    {
+      "description": "a request for manifest/current.asset",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "manifest is available after rebuild"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/assets/manifest/current.asset"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "data": {
+              "resources": [
+                {
+                  "guid": "example.asset"
+                }
+              ]
+            },
+            "system": {
+              "assetType": "Manifest"
+            }
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.data.resources": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.data.resources[*].guid": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "14.0.0"
+    },
+    "pactRust": {
+      "ffi": "0.4.28",
+      "models": "1.3.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "Cloudflare Worker"
+  }
+}

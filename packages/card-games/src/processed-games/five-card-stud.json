@@ -1,0 +1,744 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "five-card-stud.json",
+  "name": "Five Card Stud",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Five Card Stud is one of the earliest forms of Stud Poker, emerging in the mid-19th century. Unlike Draw Poker, Five Card Stud is an 'open' game where most of a player's hand is visible to everyone at the table. Each player receives one hidden 'hole' card and four exposed 'up' cards, with betting rounds interspersed between each deal. This creates a high-tension environment where players must calculate their strength against the visible threats in their opponents' hands.",
+    "category": "Poker",
+    "subCategory": "Stud Poker",
+    "origin": "USA",
+    "originName": "United States",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "recommendedPlayers": 2,
+      "display": "2-10"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Five Card Stud rose to prominence during the American Civil War, evolving from earlier forms of Poker as a way to provide more information and betting opportunities per hand. It was the standard casino Poker variant for decades before being largely supplanted by Seven Card Stud in the mid-20th century.",
+    "timeline": [
+      "1860s: First recorded play during the American Civil War.",
+      "1910s: Becomes a staple of gambling houses in the United States and Europe.",
+      "1965: Famously featured as the high-stakes game in the film 'The Cincinnati Kid'.",
+      "Present: A rare but respected game in high-stakes card rooms and professional Mixed Game rotations."
+    ],
+    "evolution": "The game's transition from 5 cards to 7 cards (Seven Card Stud) allowed for more 'improvement' and complexity, which eventually pushed the 5-card version out of mainstream tournament play.",
+    "cultural": "Regarded as a 'man's game' in mid-century literature and cinema, symbolizing cold, hard calculation over the luck of the draw.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 10 players. Best with 5 to 7.",
+    "deck": "Standard 52-card deck.",
+    "equipment": "",
+    "dealing": "Cards are dealt one at a time. The first card is face-down, subsequent cards are face-up.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.",
+    "gameplay": "1. 1st Street: Each player gets one card face-down (hole) and one card face-up. Betting round begins with the lowest upcard (Bring-In).\n2. 2nd Street: A second upcard is dealt. Betting round begins with the highest visible hand.\n3. 3rd Street: A third upcard is dealt. Betting round begins with the highest visible hand.\n4. 4th Street: The final upcard is dealt. Final betting round.\n5. Showdown: hole cards are revealed.",
+    "keyRules": [
+      "The Bring-In: Unlike blinds, the first bet is forced on the player with the worst visible start (the lowest card).",
+      "Street nomenclature: The rounds are often called 'Third Street' (the first 2 cards) through 'Fifth Street' (the final card)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Fold early. If your hole card and first up-card don't form at least a high pair or a very strong high-card combination, you should rarely see the third card.",
+    "intermediate": "The 'Upcard' Check: Always look at EVERY upcard on the table. If you are drawing for a Flush in Hearts, and you see three other Heart cards in your opponents' upcards, your odds of completing your hand are significantly reduced.",
+    "advanced": "Representing a Hand: If you have a high upcard (like an Ace or King), you can bet aggressively to represent a 'Pair of Aces'. Opponents must respect the possibility that your hole card matches your visible high card.",
+    "tips": [
+      "If an opponent's visible upcards already beat your entire 5-card potential, fold immediately.",
+      "Position matters less than board texture. A player with two visible Kings is the lead, regardless of their seat position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "fifth-card-down",
+        "name": "Fifth card face down",
+        "description": "The fifth card is dealt face down so only three cards are visible in the last betting round; first to act in that round is the same as the previous round.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in rules; no engine overrides documented in sources."
+      },
+      {
+        "id": "lowball",
+        "name": "Lowball",
+        "description": "Lowest hand wins. Ace counts low. First betting round often started by highest card showing (bring-in); subsequent rounds by lowest hand showing. Standard low hand ranking (e.g. ace-to-five or ace-to-six) used at showdown.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in rules; no engine overrides documented in sources."
+      },
+      {
+        "id": "high-low",
+        "name": "Five Card Stud High-Low",
+        "description": "Pot split between highest and lowest hands; declaration (high or low) after final betting; odd chip to high. Often 8-or-better for low.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in rules; no engine overrides documented in sources."
+      },
+      {
+        "id": "soko",
+        "name": "Sökö (California Stud)",
+        "description": "Same as Five Card Stud except two extra hand ranks below a pair: 4-straight (four consecutive ranks plus odd card) and 4-flush (four of one suit plus odd card). Hand order: high card, pair, 4-straight, 4-flush, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in rules; no engine overrides documented in sources."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't look at opponent upcards; calls every bet until the final card; never bluffs.",
+      "medium": "Folds when clearly beaten by visible cards; bets high face cards; calculates basic outs.",
+      "hard": "Perfectly calculates the 'Dead Card' count based on all visible upcards; uses table-talk and betting patterns to deduce the hole card; executes sophisticated 'semi-bluffs' when holding high overcards."
+    },
+    "considerations": [
+      "AI must maintain a 'Public Information' matrix of every card that has been exposed and then folded."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_five_card_stud_www_pagat_com_poker_variants_5stud_html",
+        "name": "Pagat - Five Card Stud",
+        "url": "https://www.pagat.com/poker/variants/5stud.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-five-card-stud.html"
+      },
+      {
+        "id": "src:wikipedia_poker_en_wikipedia_org_wiki_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [
+      "Official Poker Rules - Five Card Stud Edition",
+      "Wikipedia - Five-card stud"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": ["ante"],
+        "nextPhase": "deal_1",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players place an ante in the pot."
+      },
+      {
+        "id": "deal_1",
+        "label": "Deal (1 down, 1 up)",
+        "actor": "dealer",
+        "legalActions": ["deal_stud_round"],
+        "nextPhase": "bet_1",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer gives each player one card face down (hole) and one face up."
+      },
+      {
+        "id": "bet_1",
+        "label": "Betting round 1",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "deal_2",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "First betting round; often started by lowest card (bring-in) or best hand showing."
+      },
+      {
+        "id": "deal_2",
+        "label": "Deal (3rd card up)",
+        "actor": "dealer",
+        "legalActions": ["deal_stud_round"],
+        "nextPhase": "bet_2",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer gives each active player a third card face up."
+      },
+      {
+        "id": "bet_2",
+        "label": "Betting round 2",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "deal_3",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal_3",
+        "label": "Deal (4th card up)",
+        "actor": "dealer",
+        "legalActions": ["deal_stud_round"],
+        "nextPhase": "bet_3",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer gives each active player a fourth card face up."
+      },
+      {
+        "id": "bet_3",
+        "label": "Betting round 3",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "deal_4",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal_4",
+        "label": "Deal (5th card up)",
+        "actor": "dealer",
+        "legalActions": ["deal_stud_round"],
+        "nextPhase": "bet_4",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer gives each active player a fifth card face up."
+      },
+      {
+        "id": "bet_4",
+        "label": "Betting round 4",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Final betting round."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": ["reveal_hand", "award_pot"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"reveal_hand": "face_up"},
+        "notes": "Active players reveal hole cards; best five-card hand wins the pot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Place the mandatory ante into the pot before any cards are dealt.",
+        "cost": "0",
+        "constraints": "Required for each player at start of hand.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealer manages distribution."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no market mechanic."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no market mechanic."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no stock buying."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Discard hand and forfeit all claim to the pot for this hand.",
+        "cost": "0",
+        "constraints": "Available during any betting round. Eliminates player from current hand.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action to next player without betting.",
+        "cost": "0",
+        "constraints": "Only legal when no bet has been opened in current round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current highest open bet to stay in the hand.",
+        "cost": {"type": "match_current_bet"},
+        "constraints": "Only legal when a bet or raise exists. Must match exactly.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting in a round where no bet exists yet.",
+        "cost": {"type": "min_bet"},
+        "constraints": "Only legal when no bet opened yet. Sets current bet for others to call or raise.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current bet; others must call the new amount or fold.",
+        "cost": {"type": "min_raise"},
+        "constraints": "Only legal when a bet exists. Fixed limit often allows up to three raises per round.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no declaration phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Reveal all five cards at showdown for evaluation.",
+        "cost": "0",
+        "constraints": "At showdown; all active players reveal hole cards.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Dealer or system awards the pot to the best five-card hand.",
+        "cost": "0",
+        "constraints": "Dealer or system resolves after showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Five Card Stud is deal-and-bet poker; cards are dealt and revealed at showdown, not played to a trick."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no draw mechanic."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game does not allow passing."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no bidding mechanic."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no meld mechanic."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game has no going out mechanic."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": null,
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["ante", "deal_1", "bet_1", "deal_2", "bet_2", "deal_3", "bet_3", "deal_4", "bet_4", "showdown"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_stud_round",
+        "supported": true,
+        "description": "Deal one card to each active player; face down for the hole card (first round only), face up for all others.",
+        "cost": "0",
+        "constraints": "Dealer-only. Executed once per deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard Poker ranking: High Card, Pair, Two Pair, Three of a Kind, Straight, Flush, Full House, Four of a Kind, Straight Flush",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One full deck of 52 cards using French suits (hearts, diamonds, clubs, spades) and standard ranks from ace through king, with no jokers.",
+    "suitDescription": "French suits: hearts (cœurs), diamonds (carreaux), clubs (trèfles), and spades (piques). Each suit has thirteen cards from ace through king.",
+    "rankDescription": "Standard ranking for a 52-card deck: ace (high or low by context), king, queen, jack, 10, 9, 8, 7, 6, 5, 4, 3, 2. Thirteen cards per suit.",
+    "dealPattern": "One card face down (hole), one face up; then three more face up, one per round with a betting round after each.",
+    "notApplicableReasons": {
+      "drawConfig": "Game has no draw mechanic.",
+      "discardConfig": "Game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "FIVE CARD STUD",
+      "subtitle": "Card Game",
+      "tagline": "Five Card Stud is one of the earliest forms of Stud Poker, emerging in the mid-19th century."
+    },
+    "shortDescription": "Five Card Stud is one of the earliest forms of Stud Poker, emerging in the mid-19th century. Unlike Draw Poker, Five Card Stud is an 'open' game wher",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Five Card Stud is one of the earliest forms of Stud Poker, emerging in the mid-19th century. Unlike Draw Poker, Five Card Stud is an 'open' game where most of a player's hand is visible to everyone at the table. Each player receives one hidden 'hole' card and four exposed 'up' cards, with betting rounds interspersed between each deal. This creates a high-tension environment where players must calculate their strength against the visible threats in their opponents' hands.",
+    "ai": "Game: Five Card Stud. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.",
+    "winCondition": "Win the pot by having the best 5-card poker hand or by being the last player remaining after everyone else folds.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "Game does not use target score.",
+      "scoringDirection": "Game does not use scoring direction.",
+      "cardValues": "Poker uses hand rankings, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [
+    "Five Card Stud Poker",
+    "5 Card Stud Poker"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,646 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "bauernstoss.json",
+  "name": "Bauernstoss",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Bauernstoss is a regional variant of Schafkopf played almost exclusively in the Palatinate (Pfalz) region of Germany. Unlike the Bavarian national game, Bauernstoss simplifies the trump structure significantly: the four Jacks are always the highest trumps, followed by the permanent trump suit (usually Hearts or Diamonds depending on the village), and there are no variable 'Solo' or 'Wenz' games. It is a pure partnership point-trick game played with high velocity and heavy 'klopfen' (knocking) to double the stakes.",
+    "category": "Trick-taking",
+    "subCategory": "Schafkopf Family",
+    "origin": "Germany (Palatinate)",
+    "originName": "Bauernstoss",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "32 cards (Skat deck)",
+    "difficulty": "Intermediate",
+    "duration": "10-15 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Originates from the village of Erfweiler and surrounding areas in Southwest Germany. It represents an older, more 'rustic' branch of the Schafkopf family tree that did not evolve into Skat.",
+    "originCountries": [
+      "Germany"
+    ],
+    "timeline": [
+      "19th Century: German point-trick games diverge into Schafkopf (Bavaria) and Skat (Altenburg).",
+      "1920s: Bauernstoss solidifies as the local tavern game of the Palatinate forest region.",
+      "Present: Kept alive by local clubs and village tournaments, distinct from the standardized German Schafkopf Association rules."
+    ],
+    "evolution": "The name 'Bauernstoss' (Farmer's Push/Kick) likely refers to the aggressive nature of the bidding or the 'pushing' of points to the partner.",
+    "cultural": "A game deeply rooted in local identity. Players often use specific Palatine dialect terms for the cards (e.g., 'De Alt' for the Old One/Highest Trump).",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two fixed partnerships (partners sit opposite).",
+    "deck": "32-card German or French deck. Ranks: A, 10, K, Q(Ober), J(Unter), 9, 8, 7.",
+    "equipment": "Skat pack, chalk/slate for scoring.",
+    "dealing": "Deal 8 cards to each player (usually 4-4).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score more than 60 points (out of 120) to win the deal.",
+    "gameplay": "1. **Knocking**: Before the first card is played, players can 'Knock' (Klopfen) to double the value of the game. 2. **Play**: Forehand leads. Players must follow suit (Farbzwang). If they cannot follow suit, they must play a trump (Stechzwang). If they have no trumps, they can play any card. 3. **The Trick**: Highest trump wins. If no trump, highest card of led suit wins. 4. **Scoring**: Winner of the trick takes the cards. Points are counted at the end.",
+    "keyRules": [
+      "Jacks belong to the trump suit, not their printed suit.",
+      "Stechzwang (Must Trump) applies: unlike Bavarian Schafkopf where you can discard on a void, here you MUST trump if able.",
+      "Partners must cooperate without verbal signals."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Lead your aces early (the 'Volle') to secure 11 points before they get trumped. Since you must trump if void, long suits are dangerous for opponents.",
+    "intermediate": "Trump Management: With 4 Jacks and 7 Heart trumps (11 total), the trump distribution is key. If you have J♣ and J♠, you control the game. Draw out opponents' trumps before playing your 10s.",
+    "advanced": "The 'Schmieren' (Smearing): If your partner is winning a trick, throw your 10 or Ace on it. This adds 10 or 11 points to your pile instantly. Knowing when to smear vs when to hold an Ace for a later trick is the mark of an expert.",
+    "tips": [
+      "Count the trumps played. Once the Jacks are gone, the Ace of Hearts is the boss.",
+      "If you are weak, lead a singleton to force opponents to play high or trump."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "alter-schoofkopp",
+        "name": "Alter Schoofkopp",
+        "description": "A variant from Niederhochstadt where the Queens are also trumps (below Jacks), making a very long trump suit.",
+        "overrides": {},
+        "emptyOverridesReason": "Differences such as adding queens to the trump suit are described textually and will be wired into engine overrides later."
+      },
+      {
+        "id": "ramsch",
+        "name": "Ramsch",
+        "description": "Played if everyone passes (in bidding variants). Object is to lose points.",
+        "overrides": {},
+        "emptyOverridesReason": "Ramsch scoring and objective changes are documented in prose; structured engine overrides are planned for a future revision."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit/trump rules legally. Plays aces when led. Smears randomly.",
+      "medium": "Counts trumps. Smears 10s to partner's high trumps. Leads trumps to clear opponent hands.",
+      "hard": "Perfect trump tracking. Calculates 'Schnitt' probabilities (finessing). Recognizes partner's signals (e.g., throwing a high card to signal a void)."
+    },
+    "considerations": [
+      "Must implement strict 'Stechzwang' (Trump Compulsion) logic.",
+      "Jacks must be treated conceptually as Hearts (or Trump Suit), not their printed suit."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_bauernstoss_www_pagat_com_schafkopf_bauernstoss_html",
+        "name": "Pagat - Bauernstoss",
+        "url": "https://www.pagat.com/schafkopf/bauernstoss.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-bauernstoss.html"
+      },
+      {
+        "id": "src:wikipedia_bauernstoss",
+        "name": "Wikipedia - Bauernstoss",
+        "url": "https://en.wikipedia.org/wiki/Schafkopf",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-schafkopf-3.html"
+      }
+    ],
+    "additional": [
+      "Erfweiler Village Archives",
+      "German Schafkopf Museum"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "partnership",
+    "traditional",
+    "trump",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_8_each"
+        ],
+        "nextPhase": "knocking_round",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "knocking_round",
+        "label": "Klopfen",
+        "actor": "current_player",
+        "legalActions": [
+          "knock",
+          "pass"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Trick Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "scoring",
+        "label": "Point Tally",
+        "actor": "system",
+        "legalActions": [
+          "calculate_trick_points"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bauernstoss is a point-trick partnership game where stakes are doubled via knocking rather than using antes."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The system automated dealer handles the distribution of eight cards to each of the four players at the start."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All 32 cards are dealt to the participants; there is no shared market or community card pool in the game."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no card market in Bauernstoss; players must compete using only the eight cards they were originally dealt."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed during the deal phase; no cards remain in stock to be drawn or purchased."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Partnerships are committed to playing out all eight tricks of the deal to determine the point winner."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure rather than a vying structure where checks would be a valid option."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no bet to match in this game; competition is based on trick-taking efficiency and point capture."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is measured by points earned in captured tricks rather than through financial or chip-based betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game stakes are doubled via the knocking mechanic rather than through escalating wagering rounds."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Results are calculated automatically based on the cards in the trick pile; no separate declaration is needed."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands stay private until cards are played into tricks; there is no dedicated reveal phase in the round."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winner is determined by total points on a scorecard rather than by awarding a physical or virtual pot."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the trick; follow suit and trump rules.",
+        "cost": "0",
+        "constraints": "Must follow suit; must trump if void in suit (Stechzwang).",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card is dealt at the start of the round; no drawing phase exists during the play of the hand."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the player hand must be played into a trick; no cards are discarded or buried in this game."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass during the knocking round.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The knocking action serves as the only form of bidding to double the value of the current deal."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bauernstoss is strictly a point-trick game and does not involve the formation of sets or melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The deal ends automatically once all eight tricks have been played by all participants at the table."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All cards are distributed at the start; no draw pile exists during the actual trick-taking play.",
+      "discardConfig": "Cards are played directly to tricks; no separate discard or waste pile is utilized in the game.",
+      "specialCards": "Four trumps (Jacks) have special hierarchy but do not trigger separate automated engine actions.",
+      "declarationMechanism": "The knocking round is performed openly through verbal or physical gestures rather than hidden tokens.",
+      "fishingConfig": "Bauernstoss is a trick-taking game and does not use a capture-from-tableau fishing mechanic.",
+      "meldConfig": "Points are earned only through trick capture; no melding of card sets is part of the core gameplay.",
+      "shedding": "Goal is to win tricks and score points; hands are played out in tricks, not emptied as in shedding games."
+    },
+    "deckType": "Standard 32",
+    "suitSet": "German",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 8,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "fixed_suit",
+      "permanentTrumps": [
+        { "card": "JC", "rank": null, "name": "Jack of Clubs" },
+        { "card": "JS", "rank": null, "name": "Jack of Spades" },
+        { "card": "JH", "rank": null, "name": "Jack of Hearts" },
+        { "card": "JD", "rank": null, "name": "Jack of Diamonds" }
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A-10-K-Q-9-8-7",
+      "canCallNoTrump": false,
+      "overtakingRule": "Must follow suit AND must trump if void in suit (Stechzwang)."
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 8,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "Forehand leads the first trick of the hand.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": true
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 8,
+      "target_score": 61
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 8
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "knocking_round",
+      "play_loop",
+      "scoring"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_8_each",
+        "supported": true,
+        "description": "Deal 8 cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "knock",
+        "supported": true,
+        "description": "Knock to start play (no further bidding).",
+        "cost": "0",
+        "constraints": "Knocking round.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "calculate_trick_points",
+        "supported": true,
+        "description": "Count point values of captured cards.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card point values (A=11, 10=10, K=4, Q=3, J=2) determine victory in the 120-point round.",
+    "rankingSystem": "Point-Trick (120)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 32-card deck: eight ranks (seven through ace) in each of four suits. No jokers; used for Bauernstoss (Palatinate Schafkopf variant) where the four jacks are always the highest trumps and one suit is permanent trump.",
+    "suitDescription": "Four French suits (hearts, diamonds, spades, clubs). One suit (usually hearts or diamonds) is permanent trump; the four jacks are the top trumps in jack order. Follow suit when able; point values apply for scoring.",
+    "rankDescription": "Eight ranks per suit: ace (11 points), ten (10), king (4), queen (3), jack (2), nine and eight and seven (0). In trump the jacks are highest; then the trump suit cards in standard order. Point values are used for the team total.",
+    "dealPattern": "Cards are dealt clockwise in two rounds of four cards each."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BAUERNSTOSS",
+      "subtitle": "Palatinate Schafkopf",
+      "tagline": "Four Jacks to rule them all. No solos, just hard-hitting partnership play."
+    },
+    "shortDescription": "The rustic cousin of Schafkopf from the Palatinate forest. With fixed partnerships and the four Jacks permanently leading the charge, Bauernstoss is a game of pure point-capture efficiency. Knock on the table to double the stakes and trust your partner to smear the Aces.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "You hold the Old One (Jack of Clubs) and the Ace of Hearts. Your partner leads a King of trumps. Do you play the Old One to secure it, or save it? Wait, the Old One guarantees the trick. Maybe play the Ace to 'smear' 11 points?",
+    "ai": "Game: Bauernstoss. Type: Point-Trick. Rules: Jacks > Hearts > others. Must follow suit AND Must trump. 120 points total. Partners sit opposite."
+  },
+  "scoring": {
+    "description": "Strokes (Striche) on a slate or coin payments.",
+    "winCondition": "Usually played for a set duration or until the slate is wiped.",
+    "cardValues": {
+      "Ace": "11 points",
+      "Ten": "10 points",
+      "King": "4 points",
+      "Queen": "3 points",
+      "Jack": "2 points"
+    },
+    "penalties": {
+      "Schneider": "Bonus points for winning with more than 90 points.",
+      "Schwarz": "Bonus points for winning all eight tricks."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "60-60 is a draw (split), often carried over to the next hand (Bock round).",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Play for strokes or set duration; no fixed target score.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Pfalz Schafkopf",
+    "Farmer's Push"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

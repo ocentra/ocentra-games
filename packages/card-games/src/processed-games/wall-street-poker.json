@@ -1,0 +1,609 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "wall-street-poker.json",
+  "name": "Wall Street Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Wall Street Poker is a Seven-Card Stud variant with buyable community cards. 2-7 players. 52-card deck. Deal 3 hole cards (2 down, 1 up). 4 community cards ('Wall Street') placed face-up with escalating costs (1-4 units). Players can buy a community card (goes to pot) or get a free card from deck. Named after aggressive financial bidding.",
+    "category": "Poker",
+    "subCategory": "Stud Variant",
+    "origin": "USA",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "recommendedPlayers": 4,
+      "display": "2-7"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "30-45 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Wall Street is a seven-card stud variant in the buy-your-card family where players pay fixed amounts to the pot to acquire cards. The name refers to the row of four face-up community cards (Wall Street) that players may buy at 1-4 units or pass for a free card from the deck. It shares mechanics with The Price is Right but offers four market cards and a free-card alternative; the theme evokes bidding and speculation in home poker.",
+    "originCountries": ["USA"],
+    "timeline": ["Late 20th to early 21st century: Seven-card stud variant with buyable community cards, named after the Wall Street financial district."],
+    "evolution": null,
+    "cultural": "Home poker variant.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "Standard 52-card deck; one pack. No jokers or stripped cards.",
+    "equipment": "Cards, chips",
+    "dealing": "Ante. 3 hole cards (2 down, 1 up) + 4 community 'Wall Street' cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Make the best high hand and/or the best low hand from your seven cards; after declaration, the high winner and the low winner split the pot.",
+    "gameplay": "Wall Street: 4 community cards face-up costing 1/2/3/4 units. Each round: buy a community card (fee to pot, card replaced from deck) OR get free face-up card. Continue until 4 upcards each. Final card dealt face-down. Standard betting rounds. Best 5-card hand wins.",
+    "keyRules": [
+      "Buyable community cards (1-4 units)",
+      "Bought cards replaced from deck",
+      "Free alternative if no purchase",
+      "Seven-Card Stud base",
+      "Most expensive card can be wild (variant)"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Buy when community card strongly improves hand.",
+    "intermediate": "Cost-benefit of expensive cards.",
+    "advanced": "Read opponents' purchases.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented variants; placeholder reserved for future additions."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI buys and plays with minimal hand evaluation.",
+      "medium": "No distinct medium tier; all non-easy AI uses full hand strength and position.",
+      "hard": "Hard AI optimizes purchase decisions and bet sizing."
+    },
+    "considerations": [
+      "Purchase decision analysis"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_buyyourcard",
+        "name": "Pagat.com - Buy Your Card (Wall Street section)",
+        "url": "https://www.pagat.com/poker/variants/buyyourcard.html#wall_street",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "overview",
+            "sourcePath": "Wall Street section"
+          }
+        ],
+        "localHtml": "pagat-buy-your-card.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/invented/wall_street.html",
+        "localHtml": "pagat-wall-street.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Post ante before the deal; amount goes to the pot.",
+        "cost": {"type": "flat", "value": 1},
+        "constraints": "Legal at start of hand before cards are dealt.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": true,
+        "description": "Buy one face-up card from Wall Street; price (1–4 units) paid to pot; card goes to your hand; position refilled from deck before next purchase.",
+        "cost": {"type": "byRank"},
+        "constraints": "Legal when acquiring an upcard; you may instead take a free card from the deck.",
+        "isTerminating": false,
+        "effectType": "buy",
+        "effectHints": {}
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Drop out of the current hand; no further action until next deal.",
+        "cost": "0",
+        "constraints": "Legal during any betting round.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Decline to bet when no one has bet yet in the round.",
+        "cost": "0",
+        "constraints": "Legal only when current bet to you is zero.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current bet to stay in the hand.",
+        "cost": {"type": "match_current_bet"},
+        "constraints": "Legal when there is a bet to call.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open the betting or add to the pot in a betting round.",
+        "cost": {"type": "min_bet"},
+        "constraints": "Legal during betting rounds; amount must meet game limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current bet; others must call the new amount or fold.",
+        "cost": {"type": "min_raise"},
+        "constraints": "Legal when betting is open; must raise by at least the minimum.",
+        "isTerminating": false,
+        "effectType": "raise",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": {
+      "high": "Unknown",
+      "low": "Unknown",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "WALL STREET POKER",
+      "subtitle": "Card Game",
+      "tagline": "Wall Street Poker is a Seven-Card Stud variant with buyable community cards. 2-7 players, high-low split pot."
+    },
+    "shortDescription": "Wall Street Poker is a Seven-Card Stud variant with buyable community cards. 2-7 players. 52-card deck. Deal 3 hole cards (2 down, 1 up). 4 community ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "Unknown",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Wall Street Poker is a Seven-Card Stud variant with buyable community cards. 2-7 players. 52-card deck. Deal 3 hole cards (2 down, 1 up). 4 community cards ('Wall Street') placed face-up with escalating costs (1-4 units). Players can buy a community card (goes to pot) or get a free card from deck. Named after aggressive financial bidding.",
+    "ai": "Game: Wall Street Poker. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Standard poker hand rankings.",
+    "winCondition": "Best 5-card poker hand from 7 cards.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings, not point accumulation per card."
+    }
+  },
+  "alsoKnownAs": [
+    "Wall Street"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0",
+    "overviewNaReasons": {
+      "originName": "Game has English name only; no distinct native name for USA."
+    }
+  },
+  "fieldStatus": {}
+}

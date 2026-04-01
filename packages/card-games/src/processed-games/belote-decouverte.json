@@ -1,0 +1,663 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "belote-decouverte.json",
+  "name": "Belote Découverte",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Belote Découverte (Discovered/Open Belote) is a brilliant 2-player adaptation of the classic French game. It solves the issue of hidden information by dealing cards face up and face down on the table (similar to Schnapsen or German Whist variants), creating a game of perfect information and intense calculation. Players can see many of their opponent's potential moves, making it a chess-like duel of blocking and forcing.",
+    "category": "Trick-taking",
+    "subCategory": "Belote Family",
+    "origin": "France",
+    "originName": "Belote Découverte",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "32 cards (Stripped Pack)",
+    "difficulty": "Intermediate",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "A modern adaptation created to allow Belote enthusiasts to play when a full quartet is unavailable.",
+    "originCountries": [
+      "France"
+    ],
+    "timeline": [
+      "Mid-20th Century: Emerges as a tavern filler for waiting players.",
+      "1990s: Gains popularity in digital formats as it is easier to implement for 2 players.",
+      "Present: Standard 2-player variant in most apps."
+    ],
+    "evolution": "The mechanic of Face-Up/Face-Down piles is borrowed from games like 'Straw' or 'Slovenian Tarock' 2-player variants.",
+    "cultural": "Less serious than Coinche, but respected for its analytical depth.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two players only. Belote Découverte is the two-player open-cards variant: each player has a tableau of face-up and face-down cards plus a private hand; play is head-to-head with no partnerships.",
+    "deck": "32 cards (A-10-K-Q-J-9-8-7).",
+    "equipment": "Standard 32-card French pack (Piquet deck).",
+    "dealing": "Each player receives 16 cards, but not all in hand. 1. Deal 6 cards to each player FACE DOWN in a row. 2. Deal 6 cards FACE UP on top of the face-down cards. 3. Deal the remaining 4 cards to each player's HAND (concealed).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score more points than the opponent. Standard Belote scoring applies (162 total).",
+    "gameplay": "1. **Trump Selection**: A bidding round occurs to Establish the trump suit. 2. **Play**: Non-dealer leads. 3. **The Cards**: You can play any card from your hand or any face-up card on your tableau. 4. **Uncovering**: When a face-up card is played from the tableau, the face-down card underneath it is immediately turned face up and becomes available for the next trick.",
+    "keyRules": [
+      "Must follow suit if possible.",
+      "Must trump if void in led suit.",
+      "Must over-trump if trumps are played.",
+      "Face-down cards are blocked until the covering card is played."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Identify the Trumps on the board. If the Jack is buried face down, try to dig for it. If it's visible on opponent's side, force them to use it on a low card if possible.",
+    "intermediate": "Blocking: Don't play a face-up card if it uncovers a card you suspect is useful to the opponent.",
+    "advanced": "Card Counting: You know 12+4=16 cards of your own, plus 6 of opponent's = 22 cards visible. Only 10 are hidden. Deducing the opponent's hand is trivial.",
+    "tips": [
+      "Keep high cards in your hand as surprises.",
+      "Clear your face-up cards to access the hidden value underneath."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "classic-2p",
+        "name": "Standard 2-Player",
+        "description": "Standard hand deal (6 cards each), draw pile. Less strategic than Découverte.",
+        "overrides": {},
+        "emptyOverridesReason": "This variant describes standard two-player Belote; detailed engine differences from Découverte are left to future overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays random legal moves from hand or tableau. Uncovers cards blindly.",
+      "medium": "Prioritizes uncovering cards to increase options. Avoids leading into visible Aces.",
+      "hard": "Minimax Solver. Since the branching factor is low and information is high, the AI looks ahead to guarantee optimal play."
+    },
+    "considerations": [
+      "The tableau state is an extension of the hand.",
+      "Uncovering a card adds a random variable that must be modeled probabilistically."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_belote",
+        "name": "Pagat - Belote",
+        "url": "https://www.pagat.com/jass/belote.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-belote.html"
+      }
+    ],
+    "additional": [
+      "French Federation of Belote (FFB) Official Rules"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 40,
+    "complexity": 5,
+    "luck": 2,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Tableau Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_tableau"
+        ],
+        "nextPhase": "auction",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "auction",
+        "label": "Bidding",
+        "actor": "current_player",
+        "legalActions": [
+          "take_trump",
+          "pass"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Dual-Source Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_from_hand",
+          "play_from_tableau"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "scoring",
+        "label": "Point Tally",
+        "actor": "system",
+        "legalActions": [
+          "calculate_game_points"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Belote Découverte is a point-based trick-taking game and does not utilize a monetary or chip-based ante."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The complex tableau and hand distribution are performed automatically by the system dealer at the start of the hand."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire 32-card deck is distributed to the players' tableau and hands; no central market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any external area; they must succeed using only their provided cards."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is exhausted during the initial distribution phase; no cards remain in stock to be drawn."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Both players are committed to playing out all tricks to determine the final point winner of the deal."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure rather than a vying structure where checking would be a valid option."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot to match in this game; competition is based strictly on card point accumulation."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is determined by total points on a scorecard rather than through financial or chip-based betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the deal cannot be increased via raises."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Declare melds or Belote (King and Queen of trumps).",
+        "cost": "0",
+        "constraints": "During trick play.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand cards remain private until played; the tableau cards are already public information."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning points are added to a cumulative total rather than distributed from a physical pot of assets."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from hand or tableau to the current trick.",
+        "cost": "0",
+        "constraints": "Must follow suit; must trump if void in suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards are distributed at the start; no drawing phase exists during the play of the tricks."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the player hand and tableau must be played into a trick; no cards are discarded."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass during the trump selection phase.",
+        "cost": "0",
+        "constraints": "Allowed when choosing not to accept the proposed trump suit.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The trump is selected through an acceptance phase rather than a competitive bidding auction."
+      },
+      "meld": {
+        "supported": true,
+        "description": "Declare valid sequences or groups for bonus points.",
+        "cost": "0",
+        "constraints": "Declared during the play of the first trick.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The hand terminates automatically once all cards from the tableau and hands have been played."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "mixed",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "The full hand and tableau are distributed at the start; no draw pile exists during trick play.",
+      "discardConfig": "Cards are played directly to tricks; no separate waste or discard pile is utilized.",
+      "specialCards": "Certain ranks (Jack and 9) have high point values in trumps but do not trigger automated engine actions.",
+      "declarationMechanism": "Trump selection is performed via a simple acceptance check; no hidden declaration is required.",
+      "fishingConfig": "Belote Découverte is a trick-taking game and does not use a capture-from-tableau fishing mechanic.",
+      "shedding": "Goal is to reach target score via tricks and melds; hands are played out in tricks, not emptied as in shedding games."
+    },
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "J-9-A-10-K-Q-8-7",
+      "canCallNoTrump": false,
+      "overtakingRule": "Must over-trump if possible when trumps are played."
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        { "type": "pair", "minSize": 2, "maxSize": 2, "acesHigh": null, "wildcardAllowed": false }
+      ],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "Must hold cards in hand or tableau.",
+      "goingOut": {
+        "condition": "Total match points reached",
+        "mustAnnounce": true,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 16,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "Non-dealer leads first trick.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 4,
+      "trick_count": 16
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 4
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": 12
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 2
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "dealing",
+      "auction",
+      "play_loop",
+      "scoring"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_tableau",
+        "supported": true,
+        "description": "Distribute six stacks of two cards (one up, one down) to each player.",
+        "cost": "0",
+        "constraints": "Setup phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "take_trump",
+        "supported": true,
+        "description": "Accept the turned card as trump.",
+        "cost": "0",
+        "constraints": "Auction phase.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "play_from_hand",
+        "supported": true,
+        "description": "Select a card from the private hand to play to the trick.",
+        "cost": "0",
+        "constraints": "Player's turn.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "play_from_tableau",
+        "supported": true,
+        "description": "Select an available face-up tableau card to play to the trick.",
+        "cost": "0",
+        "constraints": "Player's turn.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "calculate_game_points",
+        "supported": true,
+        "description": "Sum point values from captured tricks and declarations.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card value comparison (J=20, 9=14, A=11...) determines trick winner.",
+    "rankingSystem": "Belote (J-9 High)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 32-card deck: eight ranks (seven through ace) in each of four French suits. No jokers; used for Belote Découverte where part of the hand is exposed and the jack and nine of trump are the two highest cards.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is determined by the turned card or bid; follow suit when able. The jack and nine of trump outrank all other trumps; marriages score as in Belote.",
+    "rankDescription": "Eight ranks per suit: seven, eight, nine, ten, jack, queen, king, ace. In trump: jack highest, then nine, ace, ten, king, queen, eight, seven. In plain suits: ace, ten, king, queen, jack, nine, eight, seven. Point values follow Belote.",
+    "dealPattern": "6 stacks of 2 per player, plus 4 cards to each private hand."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "OPEN BELOTE",
+      "subtitle": "La Découverte",
+      "tagline": "No secrets. No hiding. Only pure calculation."
+    },
+    "shortDescription": "A chess-like duel for two players. With half the deck visible on the table, you can plan your attack with surgical precision. But beware—every card you play reveals a new threat from the depths of the face-down pile.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "tableau",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "You see the Jack of Trumps on your opponent's tableau, covering a face-down card. If you lead a small trump, they MUST play it! Force it out early so your 9 becomes the boss.",
+    "ai": "Game: Belote Découverte. Type: Open Info. Rules: 2 players. 6 stacks of 2 (1 up/1 down) + 4 in hand. J>9>A. Mechanics: Playing Tableau Card flips underlying card."
+  },
+  "scoring": {
+    "description": "Standard Belote ranking/values apply to all captured tricks.",
+    "winCondition": "Usually played to 500 or 1000 total points.",
+    "cardValues": {
+      "Trump Jack": "20 points",
+      "Trump Nine": "14 points",
+      "Ace": "11 points",
+      "Ten": "10 points",
+      "King": "4 points",
+      "Queen": "3 points",
+      "Jack (Other)": "2 points"
+    },
+    "penalties": {
+      "Dix de Der": "Winning the last (16th) trick awards a 10-point bonus."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "Ties are broken by the team that won the last trick.",
+    "targetScore": 500,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Open Belote",
+    "Belote a la Découverte",
+    "Two-Player Belote"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Validation Test Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #cccccc;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+    
+    h2 {
+      color: #569cd6;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    
+    h3 {
+      color: #9cdcfe;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    
+    .header-info {
+      background-color: #252526;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #3e3e42;
+    }
+    
+    .header-info strong {
+      color: #4ec9b0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    table thead {
+      background-color: #2a2d2e;
+    }
+    
+    table th {
+      padding: 12px 15px;
+      text-align: left;
+      color: #cccccc;
+      font-weight: 600;
+      border-bottom: 2px solid #3e3e42;
+    }
+    
+    table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #3e3e42;
+    }
+    
+    table tbody tr:hover {
+      background-color: #2a2d2e;
+    }
+    
+    table a {
+      color: #4ec9b0;
+      text-decoration: none;
+    }
+    
+    table a:hover {
+      text-decoration: underline;
+    }
+    
+    details {
+      margin: 10px 0;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 0;
+      background-color: #1e1e1e;
+    }
+    
+    details summary {
+      padding: 12px 15px;
+      cursor: pointer;
+      background-color: #252526;
+      border-radius: 4px;
+      -webkit-user-select: none;
+      user-select: none;
+      font-weight: 600;
+      color: #cccccc;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    details summary:hover {
+      background-color: #2a2d2e;
+    }
+    
+    details[open] summary {
+      border-bottom: 1px solid #3e3e42;
+      border-radius: 4px 4px 0 0;
+      background-color: #2a2d2e;
+    }
+    
+    details > div {
+      padding: 15px;
+      background-color: #1e1e1e;
+      color: #cccccc;
+    }
+    
+    details > div code {
+      background-color: #252526;
+      color: #d4d4d4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    
+    details > div pre {
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 15px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    details > div pre code {
+      background-color: transparent;
+      padding: 0;
+      display: block;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid #3e3e42;
+      margin: 20px 0;
+    }
+    
+    p {
+      margin: 10px 0;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #3e3e42;
+      color: #808080;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    
+    .copy-button {
+      background-color: #0e639c;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font-size: 0.85em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s ease;
+    }
+    
+    .copy-button:hover {
+      background-color: #1177bb;
+    }
+    
+    .copy-button:active {
+      background-color: #0a4d73;
+    }
+    
+    .copy-feedback {
+      color: #0e7a0e;
+      margin-left: 10px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MCP Validation Test Report</h1>
+    
+    <div class="header-info">
+      <p><strong>Generated:</strong> 2025-12-02 17:38:00</p>
+      <p><strong>Status:</strong> ✅ ALL TESTS PASSED</p>
+      <p><strong>Total Tests:</strong> 21 | <strong>Passed:</strong> 21 ✅ | <strong>Failed:</strong> 0 ❌ | <strong>Pass Rate:</strong> 100%</p>
+      <p><strong>Test Database:</strong> Isolated test database in <code>database/McpTestLog.db</code> (separate from production)</p>
+    </div>
+    
+    <h2>📊 Test Summary Table</h2>
+    <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Test</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      <td>1</td>
+      <td><a href="#test-0-total-logs-count">Total Logs Count</a></td>
+      <td>Verify total logs count matches between SQL and MCP (should be 35)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>2</td>
+      <td><a href="#test-1-guidregistry-source">GuidRegistry Source</a></td>
+      <td>Query logs by source (partial match: GuidRegistry)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>3</td>
+      <td><a href="#test-2-guidregistry-warn-level">GuidRegistry Warn Level</a></td>
+      <td>Query logs by source and level (GuidRegistry + warn)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>4</td>
+      <td><a href="#test-3-gameregistry-source">GameRegistry Source</a></td>
+      <td>Query logs by source (partial match: GameRegistry)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>5</td>
+      <td><a href="#test-4-error-level">Error Level</a></td>
+      <td>Query logs by level (error) using get_errors MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>6</td>
+      <td><a href="#test-5-get-log-by-id">Get Log by ID</a></td>
+      <td>Query log by specific ID using get_log_by_id MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>7</td>
+      <td><a href="#test-6-time-range-query">Time Range Query</a></td>
+      <td>Query logs by time range using get_logs_by_time_range MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>8</td>
+      <td><a href="#test-7-context-filter">Context Filter</a></td>
+      <td>Query logs by context using get_logs_by_context MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>9</td>
+      <td><a href="#test-8-get-log-stats">Get Log Stats</a></td>
+      <td>Get log statistics using get_log_stats MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>10</td>
+      <td><a href="#test-9-query-logs">Query Logs</a></td>
+      <td>Query all logs using query_logs MCP tool with limit</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>11</td>
+      <td><a href="#test-10-query-logs-by-id">Query Logs by ID</a></td>
+      <td>Query log by ID using query_logs MCP tool with id parameter</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>12</td>
+      <td><a href="#test-11-get-vite-logs">Get Vite Logs</a></td>
+      <td>Query Vite logs using get_vite_logs MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>13</td>
+      <td><a href="#test-12-get-vite-log-stats">Get Vite Log Stats</a></td>
+      <td>Get Vite log statistics using get_vite_log_stats MCP tool</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>14</td>
+      <td><a href="#test-13-get-logs-by-tags">Get Logs By Tags</a></td>
+      <td>Verify get_logs_by_tags returns expected error (not implemented)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>15</td>
+      <td><a href="#test-14-all-log-levels">All Log Levels</a></td>
+      <td>Query logs by all log levels (info, warn, error, debug, log)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>16</td>
+      <td><a href="#test-15-all-sources">All Sources</a></td>
+      <td>Query logs by all sources (12 different sources)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>17</td>
+      <td><a href="#test-16-all-contexts">All Contexts</a></td>
+      <td>Query logs by all contexts (6 different contexts)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>18</td>
+      <td><a href="#test-17-time-ranges">Time Ranges</a></td>
+      <td>Query logs by various time ranges (4 different ranges)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>19</td>
+      <td><a href="#test-18-origin-filter">Origin Filter</a></td>
+      <td>Filter logs by origin (Browser vs Vite) using source prefix</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>20</td>
+      <td><a href="#test-19-combined-filters---source---level">Combined Filters - Source + Level</a></td>
+      <td>Query logs with combined filters (source + level)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr>
+      <td>21</td>
+      <td><a href="#test-20-combined-filters---source---context">Combined Filters - Source + Context</a></td>
+      <td>Query logs with combined filters (source + context)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+    </tbody>
+  </table>
+    
+    <h2>📋 Individual Test Reports</h2>
+    <a id="test-0-total-logs-count"></a>
+<details>
+<summary><strong>Test 1: Total Logs Count - ✅ PASS <button class="copy-button" onclick="copyTestResult(0)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-0">
+<p><strong>Description:</strong> Verify total logs count matches between SQL and MCP (should be 35)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Total Logs Count] Verify total logs count matches between SQL and MCP (should be 35)
+[✓ PASS] SQL Count: 35, MCP Count: 35
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 35, MCP Count: 35</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-1-guidregistry-source"></a>
+<details>
+<summary><strong>Test 2: GuidRegistry Source - ✅ PASS <button class="copy-button" onclick="copyTestResult(1)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-1">
+<p><strong>Description:</strong> Query logs by source (partial match: GuidRegistry)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GuidRegistry Source] Query logs by source (partial match: GuidRegistry)
+[✓ PASS] SQL Count: 10, MCP Count: 10
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 10, MCP Count: 10</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-2-guidregistry-warn-level"></a>
+<details>
+<summary><strong>Test 3: GuidRegistry Warn Level - ✅ PASS <button class="copy-button" onclick="copyTestResult(2)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-2">
+<p><strong>Description:</strong> Query logs by source and level (GuidRegistry + warn)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GuidRegistry Warn Level] Query logs by source and level (GuidRegistry + warn)
+[✓ PASS] SQL Count: 10, MCP Count: 10
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 10, MCP Count: 10</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-3-gameregistry-source"></a>
+<details>
+<summary><strong>Test 4: GameRegistry Source - ✅ PASS <button class="copy-button" onclick="copyTestResult(3)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-3">
+<p><strong>Description:</strong> Query logs by source (partial match: GameRegistry)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST GameRegistry Source] Query logs by source (partial match: GameRegistry)
+[✓ PASS] SQL Count: 4, MCP Count: 4
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 4, MCP Count: 4</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-4-error-level"></a>
+<details>
+<summary><strong>Test 5: Error Level - ✅ PASS <button class="copy-button" onclick="copyTestResult(4)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-4">
+<p><strong>Description:</strong> Query logs by level (error) using get_errors MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Error Level] Query logs by level (error) using get_errors MCP tool
+[✓ PASS] SQL Count: 5, MCP Count: 5
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 5, MCP Count: 5</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-5-get-log-by-id"></a>
+<details>
+<summary><strong>Test 6: Get Log by ID - ✅ PASS <button class="copy-button" onclick="copyTestResult(5)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-5">
+<p><strong>Description:</strong> Query log by specific ID using get_log_by_id MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Get Log by ID] Query log by specific ID using get_log_by_id MCP tool
+[✓ PASS] SQL Count: 1, MCP Count: 1
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 1, MCP Count: 1</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-6-time-range-query"></a>
+<details>
+<summary><strong>Test 7: Time Range Query - ✅ PASS <button class="copy-button" onclick="copyTestResult(6)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-6">
+<p><strong>Description:</strong> Query logs by time range using get_logs_by_time_range MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Time Range Query] Query logs by time range using get_logs_by_time_range MCP tool
+[✓ PASS] SQL Count: 5, MCP Count: 5
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 5, MCP Count: 5</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-7-context-filter"></a>
+<details>
+<summary><strong>Test 8: Context Filter - ✅ PASS <button class="copy-button" onclick="copyTestResult(7)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-7">
+<p><strong>Description:</strong> Query logs by context using get_logs_by_context MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Context Filter] Query logs by context using get_logs_by_context MCP tool
+[✓ PASS] SQL Count: 10, MCP Count: 10
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 10, MCP Count: 10</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-8-get-log-stats"></a>
+<details>
+<summary><strong>Test 9: Get Log Stats - ✅ PASS <button class="copy-button" onclick="copyTestResult(8)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-8">
+<p><strong>Description:</strong> Get log statistics using get_log_stats MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Get Log Stats] Get log statistics using get_log_stats MCP tool
+[✓ PASS] SQL Count: 35, MCP Count: 35
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 35, MCP Count: 35</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-9-query-logs"></a>
+<details>
+<summary><strong>Test 10: Query Logs - ✅ PASS <button class="copy-button" onclick="copyTestResult(9)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-9">
+<p><strong>Description:</strong> Query all logs using query_logs MCP tool with limit</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Query Logs] Query all logs using query_logs MCP tool with limit
+[✓ PASS] SQL Count: 35, MCP Count: 35
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 35, MCP Count: 35</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-10-query-logs-by-id"></a>
+<details>
+<summary><strong>Test 11: Query Logs by ID - ✅ PASS <button class="copy-button" onclick="copyTestResult(10)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-10">
+<p><strong>Description:</strong> Query log by ID using query_logs MCP tool with id parameter</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Query Logs by ID] Query log by ID using query_logs MCP tool with id parameter
+[✓ PASS] SQL Count: 1, MCP Count: 1
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 1, MCP Count: 1</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-11-get-vite-logs"></a>
+<details>
+<summary><strong>Test 12: Get Vite Logs - ✅ PASS <button class="copy-button" onclick="copyTestResult(11)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-11">
+<p><strong>Description:</strong> Query Vite logs using get_vite_logs MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Get Vite Logs] Query Vite logs using get_vite_logs MCP tool
+[✓ PASS] SQL Count: 7, MCP Count: 7
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 7, MCP Count: 7</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-12-get-vite-log-stats"></a>
+<details>
+<summary><strong>Test 13: Get Vite Log Stats - ✅ PASS <button class="copy-button" onclick="copyTestResult(12)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-12">
+<p><strong>Description:</strong> Get Vite log statistics using get_vite_log_stats MCP tool</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Get Vite Log Stats] Get Vite log statistics using get_vite_log_stats MCP tool
+[✓ PASS] SQL Count: 35, MCP Count: 35
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 35, MCP Count: 35</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-13-get-logs-by-tags"></a>
+<details>
+<summary><strong>Test 14: Get Logs By Tags - ✅ PASS <button class="copy-button" onclick="copyTestResult(13)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-13">
+<p><strong>Description:</strong> Verify get_logs_by_tags returns expected error (not implemented)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Get Logs By Tags] Verify get_logs_by_tags returns expected error (not implemented)
+[✓ PASS] SQL Count: N/A, MCP Count: N/A
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: N/A, MCP Count: N/A</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-14-all-log-levels"></a>
+<details>
+<summary><strong>Test 15: All Log Levels - ✅ PASS <button class="copy-button" onclick="copyTestResult(14)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-14">
+<p><strong>Description:</strong> Query logs by all log levels (info, warn, error, debug, log)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST All Log Levels] Query logs by all log levels (info, warn, error, debug, log)
+[✓ PASS] SQL Count: N/A, MCP Count: N/A
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: N/A, MCP Count: N/A</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-15-all-sources"></a>
+<details>
+<summary><strong>Test 16: All Sources - ✅ PASS <button class="copy-button" onclick="copyTestResult(15)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-15">
+<p><strong>Description:</strong> Query logs by all sources (12 different sources)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST All Sources] Query logs by all sources (12 different sources)
+[✓ PASS] SQL Count: N/A, MCP Count: N/A
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: N/A, MCP Count: N/A</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-16-all-contexts"></a>
+<details>
+<summary><strong>Test 17: All Contexts - ✅ PASS <button class="copy-button" onclick="copyTestResult(16)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-16">
+<p><strong>Description:</strong> Query logs by all contexts (6 different contexts)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST All Contexts] Query logs by all contexts (6 different contexts)
+[✓ PASS] SQL Count: N/A, MCP Count: N/A
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: N/A, MCP Count: N/A</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-17-time-ranges"></a>
+<details>
+<summary><strong>Test 18: Time Ranges - ✅ PASS <button class="copy-button" onclick="copyTestResult(17)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-17">
+<p><strong>Description:</strong> Query logs by various time ranges (4 different ranges)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Time Ranges] Query logs by various time ranges (4 different ranges)
+[✓ PASS] SQL Count: N/A, MCP Count: N/A
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: N/A, MCP Count: N/A</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-18-origin-filter"></a>
+<details>
+<summary><strong>Test 19: Origin Filter - ✅ PASS <button class="copy-button" onclick="copyTestResult(18)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-18">
+<p><strong>Description:</strong> Filter logs by origin (Browser vs Vite) using source prefix</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Origin Filter] Filter logs by origin (Browser vs Vite) using source prefix
+[✓ PASS] SQL Count: 35, MCP Count: 35
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 35, MCP Count: 35</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-19-combined-filters---source---level"></a>
+<details>
+<summary><strong>Test 20: Combined Filters - Source + Level - ✅ PASS <button class="copy-button" onclick="copyTestResult(19)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-19">
+<p><strong>Description:</strong> Query logs with combined filters (source + level)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Combined Filters - Source + Level] Query logs with combined filters (source + level)
+[✓ PASS] SQL Count: 3, MCP Count: 3
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 3, MCP Count: 3</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+<a id="test-20-combined-filters---source---context"></a>
+<details>
+<summary><strong>Test 21: Combined Filters - Source + Context - ✅ PASS <button class="copy-button" onclick="copyTestResult(20)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-20">
+<p><strong>Description:</strong> Query logs with combined filters (source + context)</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Combined Filters - Source + Context] Query logs with combined filters (source + context)
+[✓ PASS] SQL Count: 5, MCP Count: 5
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - MCP tool returned correct results. SQL Count: 5, MCP Count: 5</p>
+<p>✅ <strong>Solution:</strong> This MCP tool works correctly and matches direct SQL queries.</p>
+</div>
+</details>
+
+    
+    <div class="footer">
+      <p>Report generated by MCP Validation Test Suite</p>
+      <p>Validates MCP tools against direct SQL queries using isolated test database</p>
+    </div>
+  </div>
+  
+  <script>
+    function copyTestResult(index) {
+      const testContent = document.getElementById('test-content-' + index);
+      if (!testContent) return;
+      
+      const text = testContent.innerText || testContent.textContent || '';
+      navigator.clipboard.writeText(text).then(function() {
+        const buttons = document.querySelectorAll('.copy-button');
+        const button = buttons[index];
+        if (button) {
+          const originalText = button.textContent;
+          button.textContent = '✓ Copied!';
+          button.style.backgroundColor = '#0e7a0e';
+          setTimeout(function() {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#0e639c';
+          }, 2000);
+        }
+      }).catch(function(err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+      });
+    }
+    
+    (function() {
+      const details = document.querySelectorAll('details');
+      
+      function closeAllExcept(except) {
+        details.forEach(function(detail) {
+          if (detail !== except && detail.open) {
+            detail.open = false;
+          }
+        });
+      }
+      
+      details.forEach(function(detail) {
+        detail.addEventListener('toggle', function() {
+          if (this.open) {
+            closeAllExcept(this);
+          }
+        });
+      });
+      
+      function findDetailsForAnchor(anchor) {
+        let element = anchor.nextElementSibling;
+        while (element) {
+          if (element.tagName === 'DETAILS') {
+            return element;
+          }
+          element = element.nextElementSibling;
+        }
+        return null;
+      }
+      
+      function openDetailsForHash(hash) {
+        if (!hash) return;
+        const target = document.querySelector(hash);
+        if (target) {
+          const detailsElement = findDetailsForAnchor(target);
+          if (detailsElement) {
+            closeAllExcept(detailsElement);
+            detailsElement.open = true;
+            setTimeout(function() {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        }
+      }
+      
+      window.addEventListener('hashchange', function() {
+        openDetailsForHash(window.location.hash);
+      });
+      
+      if (window.location.hash) {
+        setTimeout(function() {
+          openDetailsForHash(window.location.hash);
+        }, 100);
+      }
+      
+      const summaryLinks = document.querySelectorAll('a[href^="#test-"]');
+      summaryLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href) {
+            const target = document.querySelector(href);
+            if (target) {
+              const detailsElement = findDetailsForAnchor(target);
+              if (detailsElement) {
+                e.preventDefault();
+                closeAllExcept(detailsElement);
+                detailsElement.open = true;
+                setTimeout(function() {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  window.history.pushState(null, '', href);
+                }, 50);
+              }
+            }
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

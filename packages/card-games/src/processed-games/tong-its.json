@@ -1,0 +1,667 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tong-its.json",
+  "name": "Tong Its",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tong Its is a popular Rummy-style game from the Philippines for three players. It involves drawing, melding sets/runs, and discarding. Players aim to empty their hands ('Tong Its') or minimize points. It features a mechanism to 'Draw' (fight) where players compare scores to end the hand early.",
+    "category": "Rummy",
+    "subCategory": "Draw and Discard / Meld",
+    "origin": "Philippines",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "3"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Tong-its gained popularity in the 1990s in Luzon, the largest island of the Philippines. Its precise origin remains undocumented, but it is widely believed to have been introduced or influenced by US military presence in the 1940s and adapted from the American card game Tonk (1930s). The game was evolved and popularized among Ilocanos as Tong-its and spread to regions such as Pangasinan by the mid-1980s, where it is also known as Tung-it. Both the name and structure suggest a direct relationship to Tonk; Tong-its is effectively an extended version played with 12-card hands.",
+    "originCountries": ["Philippines"],
+    "timeline": ["Late 20th century: Tong-Its appeared in the northern Philippines, extended version of Tonk with 12-card hands."],
+    "evolution": "Derived from Tonk and Mahjong mechanics.",
+    "cultural": "A favorite pastime in the Philippines.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Three players only.",
+    "deck": "Standard 52-card. Values: Face=10, A=1, Num=Face.",
+    "equipment": "Cards, chips/money",
+    "dealing": "Dealer 13 cards, others 12.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.",
+    "gameplay": "1. Draw (from Stock or Discard if meldable). 2. Meld (Bahay) optional. 3. Sapaw (Lay off) on others' melds. 4. Discard. Winning: 'Tong Its' (0 cards). 'Draw' (Call comparison). Stack run out.",
+    "keyRules": [
+      "Sapaw (laying off) is key",
+      "Cannot call Draw if Sapawed recently",
+      "Burned (Sunog) if no melds open"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Meld early to avoid burning. Dump high cards.",
+    "intermediate": "Hold cards to Sapaw opponents (preventing them from calling Draw). Call Draw when you have low points and opponents are likely heavy.",
+    "advanced": "Card counting. Bluffing strength by not melding.",
+    "tips": [
+      "Don't delay opening.",
+      "Watch the 'Draw' conditions."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "extra-run-bonus",
+        "name": "Extra chips for long runs",
+        "description": "Some play with more special hands that earn extra chips, e.g. 3 chips for any 5-card or longer run that the winner has.",
+        "overrides": {},
+        "emptyOverridesReason": "Optional chip bonus; no engine constant changes specified in source."
+      },
+      {
+        "id": "reduced-bonus",
+        "name": "Reduced bonus payments",
+        "description": "Some play with a payment of only 2 chips instead of 3 for secret sets of 4, Tongit, and winning a challenge after a Draw.",
+        "overrides": {},
+        "emptyOverridesReason": "Chip amounts vary by house rules; no engine overrides defined."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Melds available; discards high.",
+      "medium": "Evaluates Draw probability.",
+      "hard": "Strategic Sapaw usage."
+    },
+    "considerations": [
+      "Draw threshold",
+      "Sapaw opportunities"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-tongits",
+        "name": "Pagat.com - Tong Its",
+        "url": "https://www.pagat.com/rummy/tong-its.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-tong-its.html"
+      },
+      {
+        "id": "src:wikipedia_rummy",
+        "name": "Wikipedia - Rummy",
+        "url": "https://en.wikipedia.org/wiki/Rummy",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-rummy-4.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Tong-its",
+        "localHtml": "wiki-tong-its.html"
+      },
+      {
+        "url": "https://www.pagat.com/rummy/tong-its.html",
+        "localHtml": "pagat-tong-its.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "melding",
+    "draw-and-discard"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "draw",
+          "meld",
+          "discard",
+          "go_out"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each turn: draw one from stock or discard (if meldable), optionally meld or lay off (sapaw), then discard one. Go out by Tong It (empty hand) or calling Draw."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tong Its uses draw, meld, discard, and go_out; there is no generic play_card action."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Take one card from the top of the stock or the top card of the discard pile (if it can form a meld with cards in hand; then must expose that meld).",
+        "cost": "0",
+        "constraints": "Must draw at start of turn. Discard pile only if the taken card is used immediately in a new meld.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Place one card from hand face up on the discard pile. Completes the turn.",
+        "cost": "0",
+        "constraints": "One card must be discarded at end of each turn.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": true,
+        "description": "Expose one or more valid sets (three or four of same rank) or runs (three or more consecutive same suit) on the table. Optional when drawing from stock; required when drawing from discard to complete a meld.",
+        "cost": "0",
+        "constraints": "Valid melds: sets of 3-4 same rank, runs of 3+ same suit (Ace low). A 4-card set may be laid face down to open without revealing (secret set).",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": true,
+        "description": "Call Tong It when all cards are in melds or laid off; or call Draw at start of turn (before drawing) to compare point totals. Draw is only legal if no one laid off on your melds since your last turn.",
+        "cost": "0",
+        "constraints": "Tong It: all cards melded or laid off. Draw: must have opened; cannot call if sapaw on your melds since last turn.",
+        "isTerminating": true,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 1,
+          "notes": "Default draw; one card per turn."
+        },
+        {
+          "source": "discard_top",
+          "visibility": "face_up",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": true,
+          "maxPerTurn": 1,
+          "notes": "Only if the card completes a meld; then must expose that meld."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": true,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": true,
+      "discardTiming": "end_of_turn",
+      "discardVisibility": "face_up",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": true,
+      "discardPickRules": {
+        "canPickTop": true,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": true,
+        "pickCost": null,
+        "frozenPileRules": "Card from discard must be used in a new meld immediately; cannot take just to lay off."
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 12,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {
+          "type": "set",
+          "minSize": 3,
+          "maxSize": 4,
+          "acesHigh": null,
+          "wildcardAllowed": false
+        },
+        {
+          "type": "run",
+          "minSize": 3,
+          "maxSize": null,
+          "acesHigh": false,
+          "wildcardAllowed": false
+        }
+      ],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": true,
+      "initialMeldRequirement": "Must expose at least one meld to open; required to call or challenge Draw.",
+      "goingOut": {
+        "condition": "Tong It: zero cards in hand. Draw: call at start of turn to compare deadwood; lowest wins.",
+        "mustAnnounce": true,
+        "knockOption": true,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Dealer 13 cards, each other player 12; one at a time counterclockwise.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TONG ITS",
+      "subtitle": "Card Game",
+      "tagline": "Tong Its is a popular Rummy-style game from the Philippines for three players. I..."
+    },
+    "shortDescription": "Tong Its is a popular Rummy-style game from the Philippines for three players. It involves drawing, melding sets/runs, and discarding. Players aim to ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "discard"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tong Its is a popular Rummy-style game from the Philippines for three players. It involves drawing, melding sets/runs, and discarding. Players aim to empty their hands ('Tong Its') or minimize points. It features a mechanism to 'Draw' (fight) where players compare scores to end the hand early.",
+    "ai": "Game: Tong Its. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Winner gets paid by losers based on points or fixed stake. Burned (Sunog) if no meld laid.",
+    "winCondition": "Empty hand (Tong Its) or have lowest points when Draw is called/deck runs out.",
+    "cardValues": {"A": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9", "10": "10", "J": "10", "Q": "10", "K": "10"},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules."
+    }
+  },
+  "alsoKnownAs": ["Tongits", "Tongit", "Thong", "Tung-it"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "",
+    "overviewNaReasons": {
+      "originName": "No documented native or alternate name for Tong Its in sources; game is commonly known by this name."
+    }
+  },
+  "fieldStatus": {}
+}

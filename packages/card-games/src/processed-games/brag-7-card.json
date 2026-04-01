@@ -1,0 +1,647 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "brag-7-card.json",
+  "name": "7-Card Brag",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "7-Card Brag is a strategic partition variant of the British vying game Brag. Every player is dealt seven cards and must divide them into two independent three-card hands, leaving one card as a 'discard' (muck). This variant offers the highest level of hand optimization in the partition family, allowing players to build extremely strong combinations from their seven cards. Once partitions are set, play follows the traditional British vying structure where bluffing and 'Blind' betting are key.",
+    "category": "Vying",
+    "subCategory": "Brag Variant",
+    "origin": "Great Britain",
+    "originName": "7-card Brag",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2-6"
+    },
+    "deck": "52 cards (Standard)",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Developed as a high-skill extension of standard 3-Card Brag, 7-Card Brag appeared in card rooms as a faster-playing alternative to 9-Card Brag (Crash). It emphasizes the tactical discard of the seventh card to perfectly balance two hands.",
+    "originCountries": [
+      "Great Britain"
+    ],
+    "timeline": [
+      "Mid-20th Century: Multi-hand Brag variants evolve in the UK.",
+      "1980s: 7-Card variant becomes a staple of high-stakes social gaming.",
+      "Present: Popular in British card clubs and as a digital competitive format."
+    ],
+    "evolution": "The addition of a seventh card and a muck mechanic allows for much more flexible hand construction than the rigid 6-card or 9-card partition variants.",
+    "cultural": "Regarded as a game of 'perfect balance', where the ability to split 7 cards into two winning three-card units is the hallmark of a master player.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Typically 3 to 6 players playing individually.",
+    "deck": "Standard 52-card French pack (No Jokers).",
+    "equipment": "Standard pack, betting chips or currency.",
+    "dealing": "Deal seven cards face-down to each player. Players divide their cards into two three-card hands and muck the seventh card.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by having the highest-ranked hands across the partition or by forcing others to fold.",
+    "gameplay": "1. **Partition**: Players split 7 cards into Hand A (3 cards), Hand B (3 cards), and 1 Muck card. 2. **Vying**: Standard Brag betting follows. Players choose to play 'Blind' (before seeing the 7 cards) or 'See'. 3. **Ranks**: Prial > Running Flush > Run > Flush > Pair > High Card.",
+    "keyRules": [
+      "Both three-card hands must be legal Brag combinations.",
+      "In many house rules, a player must win both comparisons to sweep the pot.",
+      "A Seeing player bets double the cost of a Blind player."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Use the seventh card to remove a rank that doesn't fit into a pair or sequence. With 7 cards, you should aim for at least two Flushes or one strong Run.",
+    "intermediate": "The 'Sacrifice' Discard: If you have a choice between making one almost-unbeatable Prial or two very strong Runs, the two Runs are often statistically safer for winning multi-hand comparisons.",
+    "advanced": "Kicker Optimization: When building your two hands, ensure Hand B (the weaker hand) has the highest possible kickers. Many rounds are won on Hand B tie-breakers.",
+    "tips": [
+      "Track the mucked cards in your head—knowing which ranks are 'dead' helps you read opponent partitions.",
+      "Don't ignore the Blind bet; the half-price advantage is massive even with 7 cards to choose from."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "brag-6",
+        "name": "6-Card Brag",
+        "description": "Partitioning six cards with no muck card.",
+        "overrides": {},
+        "emptyOverridesReason": "Engine-level overrides for 6-Card Brag are not yet modeled; this entry only links the closely related partition variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Partitions hands based on total rank sum. Never bluffs. Always sees cards immediately.",
+      "medium": "Optimizes for the highest single hand. Understands basic tie-breaking. Stays blind for 1 round.",
+      "hard": "Full combinatorial optimization (7-choose-3-choose-3). Tracks mucked cards from previous rounds. Coordinates betting with partition strength."
+    },
+    "considerations": [
+      "Requires a 7-choose-3-choose-3 optimization engine.",
+      "Betting engine must handle multi-hand showdown resolution."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_brag_7",
+        "name": "Pagat - Brag variations",
+        "url": "https://www.pagat.com/vying/brag.html#seven",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-vying-brag.html"
+      }
+    ],
+    "additional": [
+      "Rules of British Card Games (Hoyle Classics)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "betting",
+    "traditional",
+    "bluffing",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Initial Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_7_each"
+        ],
+        "nextPhase": "partition",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "partition",
+        "label": "Hand Division",
+        "actor": "current_player",
+        "legalActions": [
+          "split_7_into_two_hands"
+        ],
+        "nextPhase": "vying",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "vying",
+        "label": "Betting Round",
+        "actor": "current_player",
+        "legalActions": [
+          "bet_blind",
+          "see_cards",
+          "bet_seeing",
+          "request_showdown",
+          "fold"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "Dual Hand Comparison",
+        "actor": "system",
+        "legalActions": [
+          "compare_partitions",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Contribute a fixed amount to the pot before the deal.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Allowed only during the ante phase.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The distribution of seven cards face-down to all players is handled by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "7-Card Brag is a hole-card game where all cards are held privately; no shared market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase cards from a market; hand optimization is restricted to the initial partition."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no drawing or buying from the stock during play; the round uses the seven cards dealt at the start."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Abandon the hand and forfeit all chips in the pot.",
+        "cost": "0",
+        "constraints": "Allowed during the vying phase when facing a bet.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Standard Brag requires an active bet to remain in the hand; checking is generally not supported."
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current bet level (price depends on whether player is Blind or Seeing).",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Allowed only during the vying phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place or increase a wager into the pot.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Seeing players must bet at least double the Blind bet amount.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the size of the current bet.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Allowed during the vying phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand results are established during the showdown comparison rather than through a separate declaration."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The system automatically reveals partitions at the request of a player who pays the 'See' double-cost."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Distribute the pot to the winner at showdown or the last player standing.",
+        "cost": "0",
+        "constraints": "System only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "7-Card Brag is a partition vying game where cards are held rather than played to tricks."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All seven cards are received at the start; no drawing phase exists during the play of the hand."
+      },
+      "discard": {
+        "supported": true,
+        "description": "Muck the seventh card face-down into the shared discard pile.",
+        "cost": "0",
+        "constraints": "Mandatory to complete the Hand A and Hand B partition.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must either bet, see, or fold during their turn; a simple pass is not supported."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Brag uses a wagering system rather than an auction-style bidding system for contracts."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand resolution is based strictly on three-card poker hierarchies rather than forming melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The hand terminates only after a showdown occurs or all but one player have folded."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": true,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_down",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": null
+    },
+    "notApplicableReasons": {
+      "drawConfig": "Standard 7-card Brag does not include a draw pile or exchange mechanic after the initial partition.",
+      "specialCards": "Cards contribute only their rank and suit values to hand combinations; no individual card has a secondary effect.",
+      "declarationMechanism": "Wagering results are immediate and public; no hidden tokens are required.",
+      "fishingConfig": "7-Card Brag is a partition/vying game and does not use a capture-from-tableau fishing mechanic."
+    ,
+      "shedding": "This game is not a shedding game; players maintain their hands throughout the deal."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": {
+      "high": "standard_poker",
+      "low": null,
+      "lowQualifier": null
+    },
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 7,
+      "hand_size": 3
+    },
+    "finalHandSize": 6,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 7
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "7-choose-3-choose-3 partition logic.",
+        "Multi-hand comparison win conditions.",
+        "Dual-cost betting system (Blind/See)."
+      ]
+    },
+    "progression": [
+      "dealing",
+      "partition",
+      "vying",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_7_each",
+        "supported": true,
+        "description": "Distribute seven cards face-down to each player at the start of the round.",
+        "cost": "0",
+        "constraints": "Setup.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "split_7_into_two_hands",
+        "supported": true,
+        "description": "Divide the seven dealt cards into Hand A (3 cards), Hand B (3 cards), and 1 Muck card.",
+        "cost": "0",
+        "constraints": "Partition phase.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "bet_blind",
+        "supported": true,
+        "description": "Bet on the hand without looking at the chosen three cards.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Betting phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "see_cards",
+        "supported": true,
+        "description": "Pay double price to see the cards before betting.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Betting phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "bet_seeing",
+        "supported": true,
+        "description": "Bet on the hand after paying to see the cards.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Betting phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "request_showdown",
+        "supported": true,
+        "description": "Request a showdown to determine the winner between remaining players.",
+        "cost": "0",
+        "constraints": "Betting phase.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "compare_partitions",
+        "supported": true,
+        "description": "Compare the three-card partition hands according to Brag hierarchy rules.",
+        "cost": "0",
+        "constraints": "Showdown phase.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; specialized Brag hierarchy determines the winning hands at showdown.",
+    "rankingSystem": "Brag Partitioning",
+    "bettingLimits": "No Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for seven-card Brag where prials, runs, and flushes are ranked and ace may be high or low in runs.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Flushes (seven of the same suit) and running flushes (seven consecutive ranks in the same suit) are ranked hands. Suits do not break ties between equal hand types in Brag.",
+    "rankDescription": "Thirteen ranks per suit; for prials the three is the highest rank, then two, ace, king down to four. For runs, ace may be high or low. Standard Brag order: prial of threes best, then runs, then flushes, then pairs, then high card.",
+    "dealPattern": "Seven cards dealt clockwise individually."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "7-CARD BRAG",
+      "subtitle": "The Master Partition",
+      "tagline": "Seven cards in hand. Two hands on the table. One winner takes all."
+    },
+    "shortDescription": "The ultimate test of hand management in the Brag family. Partition seven cards into two separate units and choose the perfect muck card to maximize your win-probability. With more information and better combinations, 7-Card Brag is the preferred choice for strategic vying.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "pot"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "You hold three 3s, two Kings, and two random cards. This is a monster deal! Keep the Prial of 3s as your Hand A and the pair of Kings as Hand B. Muck the weakest card and start betting!",
+    "ai": "Game: 7-Card Brag. Type: Partition/Vying. Rules: 7 cards dealt, split into 2 hands of 3, discard 1. Brag rankings apply. Win both hand comparisons to claim pot."
+  },
+  "scoring": {
+    "description": "Standard pot-based resolution across dual-hand comparisons.",
+    "winCondition": "Win both hand comparisons OR be the last player standing.",
+    "cardValues": {},
+    "penalties": {
+      "Carryover": "If hand comparisons result in a split win between players, the pot remains for the next hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "Pot carried forward if no single player wins both comparisons.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play until the session concludes.",
+      "cardValues": "Individual cards determine hand rankings rather than having point values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "7-card Brag"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

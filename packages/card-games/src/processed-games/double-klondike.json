@@ -1,0 +1,650 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "double-klondike.json",
+  "name": "Double Klondike",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Double Klondike is a challenging two-deck variation of the world-famous Klondike Solitaire. By using 104 cards, the game features a larger tableau of nine columns and eight foundation piles. While the fundamental rules of alternating colors and building sequences remain the same, the increased volume of cards creates more opportunities for advanced maneuvering and sequencing.",
+    "category": "Patience",
+    "subCategory": "Solitaire",
+    "origin": "UK / Europe",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "recommendedPlayers": 1,
+      "display": "1"
+    },
+    "deck": "Two standard 52-card decks (104 cards total)",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "singleplayer"
+  },
+  "history": {
+    "originCountries": ["Canada", "UK"],
+    "origins": "Klondike itself originated during the 19th-century gold rush in the Yukon. The 'Double' version emerged in the early 20th century as players sought a more complex and longer-lasting challenge than the standard 52-card version.",
+    "timeline": [
+      "Late 1800s: Standard Klondike becomes popular in mining camps.",
+      "1920s: Double-deck solitaire variations begin appearing in rulebooks like Hoyle.",
+      "1990s: Becomes a staple in digital solitaire collections on personal computers."
+    ],
+    "evolution": "The expansion from 7 to 9 tableau columns was designed to maintain the balance of hidden cards while providing enough 'legal move' space for the 104-card deck.",
+    "cultural": "Often played as a relaxing yet mentally stimulating solo activity; recognized as one of the most popular 'big' solitaire games.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "One player (solitaire). The player works alone with two combined 52-card decks, building the tableau of nine columns and eight foundation piles until all 104 cards are moved to the foundations.",
+    "deck": "104 cards (Two identical 52-card decks).",
+    "equipment": "Two card decks, large playing surface.",
+    "dealing": "Deal 9 tableau columns: Column 1 has 1 card, Column 2 has 2, ..., Column 9 has 9 cards. Only the top card of each column is face-up. Remaining cards form the Stock.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King.",
+    "gameplay": "1. Building the Tableau: You can move cards within the tableau to build sequences in alternating colors (e.g., a Black 7 on a Red 8).\n2. Foundations: Move Aces to the foundations as soon as they become available. Build foundations UP by suit (A-2-3...K).\n3. The Stock: Flip cards from the stock (usually 3 at a time) to find moves. In some variations, you can only go through the stock once.",
+    "keyRules": [
+      "Only a King (or a sequence starting with a King) can be moved into an empty tableau space.",
+      "Whole sequences can be moved as long as the bottom card follows the alternating-color rule for the target column.",
+      "There are 8 foundation slots; each suit must be completed twice."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Always prioritize uncovering hidden cards in the tableau over drawing from the stock.",
+    "intermediate": "Empty slots: Do not create an empty column unless you have a King ready to fill it, as empty columns are the only way to move large card blocks.",
+    "advanced": "Foundation Balance: Build the foundation piles evenly. If you move one Red suit to the foundations but leave the other Red suit in the tableau, you may block your ability to move Black cards in the tableau.",
+    "tips": [
+      "Keep the foundations balanced between the two copies of each suit.",
+      "Scan all 9 columns before every stock draw; it's easy to miss a lead with so many cards in play."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants with engine overrides; placeholder for future variants."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants with engine overrides; placeholder for future variants."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants with engine overrides; placeholder for future variants."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Makes immediate moves to foundations; fails to plan for future empty columns.",
+      "medium": "Prioritizes hidden card revelation; manages stock draws effectively.",
+      "hard": "Simulates potential outcomes of moving specific sequences to maximize tableau flexibility."
+    },
+    "considerations": [
+      "AI needs a weighted heuristic for tableau vs. foundation priority, as moving to foundations too quickly can 'lock' the tableau."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_patience_game_en_wikipedia_org_wiki_patience_game",
+        "name": "Wikipedia - Patience (game)",
+        "url": "https://en.wikipedia.org/wiki/Patience_(game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-patience.html"
+      }
+    ],
+    "additional": [
+      "Hoyle's Rules of Games",
+      "Wikipedia - Klondike Solitaire"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional patience game; no documented IP holder or public domain claim."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal opening hand for the round."
+      },
+      {
+        "id": "main_play",
+        "label": "Main Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "draw",
+          "discard"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Execute legal turn actions until round end condition is reached."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; ante is not a core player action in its documented rules."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards or tiles for a new hand in Double Klondike.",
+        "cost": "0",
+        "constraints": "Dealer only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; reveal market is not a core player action in its documented rules."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; buy market is not a core player action in its documented rules."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; buy stock is not a core player action in its documented rules."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; fold is not a core player action in its documented rules."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; check is not a core player action in its documented rules."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; call is not a core player action in its documented rules."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; bet is not a core player action in its documented rules."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; raise is not a core player action in its documented rules."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; declare is not a core player action in its documented rules."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; reveal hand is not a core player action in its documented rules."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; award pot is not a core player action in its documented rules."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card or tile to the shared play area.",
+        "cost": "0",
+        "constraints": "Must obey follow-suit, rank, or placement constraints.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from the allowed source when the turn rules permit it.",
+        "cost": "0",
+        "constraints": "Only from permitted draw sources during draw timing.",
+        "isTerminating": false,
+        "effectType": "draw"
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard according to the current phase constraints.",
+        "cost": "0",
+        "constraints": "Must follow discard timing and count limits.",
+        "isTerminating": false,
+        "effectType": "discard"
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; pass is not a core player action in its documented rules."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; bid is not a core player action in its documented rules."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; meld is not a core player action in its documented rules."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Klondike is modeled as a Patience flow; go out is not a core player action in its documented rules."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "singleplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "main_play"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Double Klondike",
+      "subtitle": "Patience rules and play flow",
+      "tagline": "Double Klondike is a challenging two-deck variation of the world-famous Klondike Solitaire."
+    },
+    "shortDescription": "Double Klondike is a challenging two-deck variation of the world-famous Klondike Solitaire. By using 104 cards, the game features a larger tableau of nine columns and eight foundation piles. While the fundamental rules of alternating colors and building sequences remain the same, the increased volume of cards creates more opportunities for advanced maneuvering and sequencing.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Scoring uses the documented rules for Double Klondike and determines round or match winners accordingly.",
+    "winCondition": "Move all 104 cards to the 8 foundation piles (2 for each suit), building each suit from Ace to King.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "Target score depends on the selected table variant rather than one fixed universal value.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Patience win is by completing foundations; no point values for cards."
+    }
+  },
+  "alsoKnownAs": ["Double Solitaire"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "",
+    "overviewNaReasons": {
+      "originName": "Origin name not documented; game known by English name Double Klondike only."
+    }
+  },
+  "fieldStatus": {}
+}

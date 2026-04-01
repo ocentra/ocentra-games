@@ -1,0 +1,99 @@
+{
+  "consumer": {
+    "name": "Credits-Handler"
+  },
+  "interactions": [
+    {
+      "description": "a request for balance from handler",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "DO has balance state"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/balance"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "ac_balance": 0,
+            "gp_balance": 0,
+            "total_ac_purchased": 0,
+            "total_ac_spent": 0,
+            "total_gp_earned": 0
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.ac_balance": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.gp_balance": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.total_ac_purchased": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.total_ac_spent": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.total_gp_earned": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "14.0.0"
+    },
+    "pactRust": {
+      "ffi": "0.4.28",
+      "models": "1.3.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "CreditsDO"
+  }
+}

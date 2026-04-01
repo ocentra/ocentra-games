@@ -1,0 +1,797 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "arizona-29-card-pitch.json",
+  "name": "Arizona 29-card Pitch",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+  "description": "Arizona 29-card Pitch is a specialized regional evolution of the classic American game Pitch (Setback). It uses a condensed 29-card deck and incorporates an unbeatable Joker into the trump hierarchy. Played in partnerships, it rewards both the capture of legendary cards (High, Low, Jack) and the strategic management of a 5-card kitty.",
+  "category": "Trick-taking",
+  "subCategory": "Pitch / All Fours Family",
+  "origin": "USA (Arizona)",
+  "originName": "Arizona 29-card Pitch",
+  "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "29 cards (A,K,Q,J,10,9,6 of all suits + 1 Joker)",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+  "origins": "Developed in the Southwestern United States as a faster, more intense version of the standard 52-card Partnership Pitch. The use of the '6' as the low card instead of the '2' is a regional hallmark.",
+  "originCountries": ["United States"],
+  "timeline": [
+      "1800s: Pitch (Setback) becomes popular in back-woods America.",
+      "mid-20th C.: Arizona players standardize the 29-card 'short deck' format.",
+      "Present: Remains a popular 'Social Club' game in Arizona and neighboring states."
+    ],
+    "evolution": "The transition to a 29-card deck was likely an adaptation to make the Joker (a common 53rd card) more central to the gameplay, as it acts as a 'Middle-Trump'.",
+    "cultural": "In Arizona, this game is often preferred over standard 'Seven Up' for its predictive bidding and the power of the 'Kitty' exchange.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two partnerships (North-South vs East-West).",
+    "deck": "29 cards: Ace, King, Queen, Jack, Ten, Nine, Six of each suit, plus one Joker. Remove 2, 3, 4, 5, 7, and 8 from a standard deck.",
+    "equipment": "Standard pack (modified), score sheet.",
+    "dealing": "Each player is dealt 6 cards in batches of 3. The 5 remaining cards are placed face down as the 'Kitty'.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "The bidding team must earn at least as many points as they bid. Points are scored for High, Low, Jack, Joker, and Game.",
+    "gameplay": "1. **Bidding**: Starting left of the dealer, players bid for the right to 'Pitch' (name trump). Bids range from 1 to 5. 2. **The Kitty**: The high bidder takes the 5-card kitty and discards 5 cards to return to a 6-card hand. 3. **The Pitch**: The high bidder leads the first card; the suit of this card is trumps. 4. **Trump Hierarchy**: A (High), K, Q, J, Joker, 10, 9, 6 (Low). 5. **Trick Play**: Must follow suit if possible; else any card. Highest trump wins the trick; if no trump, highest card of led suit wins. 6. **Scoring**: At hand's end, count points.",
+    "keyRules": [
+      "High (1 pt): Winning or holding the highest trump in play (Ace).",
+      "Low (1 pt): Winning or holding the lowest trump in play (Six).",
+      "Jack (1 pt): Capturing the Jack of trumps in a trick.",
+      "Joker (1 pt): Capturing the Joker in a trick.",
+      "Game (1 pt): Winning the highest total value of pip-cards (A=4, K=3, Q=2, J=1, 10=10)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "If you win the bid, use the kitty to 'flush' your hand of non-trump suits. Keeping only trumps and high cards (Aces/Tens) is the path to winning the 'Game' point.",
+    "intermediate": "Trump Pulling: If you have the Ace of trumps, lead it early to draw out the opponents' Joker and Jack. This 'purifies' the remaining trumps for your partner.",
+    "advanced": "Defense: If the opponents bid 5 (the maximum), your only goal is to 'Set' them by stealing just one of the 5 points. Focus your play on capturing the Joker or the Jack specifically.",
+    "tips": [
+      "The Nine and Six are often overlooked, but they contribute to the 'Game' point count if they capture a Ten.",
+      "Joker Management: The Joker is a 'wild' trump that ranks between the Jack and the Ten. Use it to kill a King or Queen lead if the Jack is already gone."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "full-deck-pitch",
+        "name": "Standard Partnership Pitch",
+        "description": "Played with the full 52-card deck (minus Joker). High to Low is A to 2.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation is described textually; specific engine overrides for the full-deck version are not yet modeled."
+      },
+      {
+        "id": "no-kitty-pitch",
+        "name": "Flat Pitch",
+        "description": "No kitty is dealt; players play only with the 6 cards originally dealt.",
+        "overrides": {},
+        "emptyOverridesReason": "Flat Pitch removes the kitty but keeps the same core flow; engine-level override values will be added when that variant is modeled."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Bids 2-3 with only one high trump. Fails to use the kitty to create voids in plain suits.",
+      "medium": "Consistently bids 4 with the Ace and Joker. Protects the Jack when possible.",
+      "hard": "Expertly calculates 'Game' pip potential. Sacrifices the Six (Low) to ensure a Ten is captured for the team. Leads low trumps to 'smoke out' opponents' higher ranks."
+    },
+    "considerations": [
+      "AI must handle a non-standard 29-card deck mapping.",
+      "The 'Kitty' logic requires the AI to weight cards based on suit-strength and 'Game' point values (A=4, 10=10)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_arizona_29_card_pitch_www_pagat_com_allfours_pitch_html_29_card",
+        "name": "Pagat - Arizona 29-card Pitch",
+        "url": "https://www.pagat.com/allfours/pitch.html#29-card",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-pitch.html"
+      },
+      {
+        "sections": [],
+        "url": "https://en.wikipedia.org/wiki/Pitch_(card_game)",
+        "name": "Wikipedia - Pitch (card game)",
+        "id": "src:wikipedia_arizona_29_card_pitch",
+        "retrievedAt": "2026-02-20",
+        "localHtml": "wiki-pitch-5.html"
+      }
+    ],
+    "additional": [
+      "GameRules.com - Arizona Pitch Guides",
+      "Traditional American Card Game Compendium"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "social",
+    "social",
+    "partnership"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Dealing (6-card hand)",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_six_and_kitty"
+        ],
+        "nextPhase": "bidding",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "bidding",
+        "label": "Bidding Round",
+        "actor": "current_player",
+        "legalActions": [
+          "pass",
+          "bid_one_to_five"
+        ],
+        "nextPhase": "kitty_exchange",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "kitty_exchange",
+        "label": "The Exchange",
+        "actor": "current_player",
+        "legalActions": [
+          "take_kitty",
+          "discard_five"
+        ],
+        "nextPhase": "the_pitch",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "the_pitch",
+        "label": "Leading Trump",
+        "actor": "current_player",
+        "legalActions": [
+          "lead_trump_card"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play (6 total)",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "tally",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 6,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "tally",
+        "label": "Calculation",
+        "actor": "system",
+        "legalActions": [
+          "calculate_setback_score"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch has no ante; it uses bidding for the right to name trump."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealing is performed by the system via custom action deal_six_and_kitty."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch has no market; the kitty is taken by the bid winner."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no market or card purchase; the bid winner takes the kitty."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not buy from stock; the bid winner takes the kitty and discards five."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch is trick-taking; there is no fold; all four players play every hand."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Check is not used; players either bid or pass during the bidding phase."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch has no betting rounds; it uses bidding for trump, not call."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch has no betting; it uses bidding (1-5) for the right to pitch."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no raise; only bidding for trump in Arizona Pitch."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch has no declaration phase; points are tallied after tricks."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Reveal is implicit as cards are played to tricks; no separate reveal action."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is performed by the system via calculate_setback_score, not a pot award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Must follow suit if able.",
+        "cost": "0",
+        "constraints": "Trump rule A-K-Q-J-Joker-10-9-6.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Drawing is only via taking the kitty (custom action take_kitty), not a general draw pile."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Discarding is done via custom action discard_five after taking the kitty, not a separate action."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bidding is done via custom action bid_one_to_five (bid 1-5 for points to make), not generic bid."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Arizona Pitch is trick-taking; there is no melding or laying down sets."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Going out is not a mechanic; the hand ends after six tricks are played."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Drawing is only via kitty exchange (bid winner takes kitty and discards five); there is no general draw pile."
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": true,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 5,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 32 + Joker(s)",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "kitty",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 5
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "bidding",
+      "kitty_exchange",
+      "the_pitch",
+      "trick_play",
+      "tally"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_six_and_kitty",
+        "supported": true,
+        "description": "Deal 6 cards to each player and 5 to kitty.",
+        "cost": "0",
+        "constraints": "Deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "bid_one_to_five",
+        "supported": true,
+        "description": "Bid 1-5 for number of points to win.",
+        "cost": "0",
+        "constraints": "Bidding phase.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "take_kitty",
+        "supported": true,
+        "description": "Take kitty cards.",
+        "cost": "0",
+        "constraints": "Bid winner.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "discard_five",
+        "supported": true,
+        "description": "Discard 5 cards after taking kitty.",
+        "cost": "0",
+        "constraints": "After taking kitty.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      {
+        "id": "lead_trump_card",
+        "supported": true,
+        "description": "Lead a trump card (the pitch).",
+        "cost": "0",
+        "constraints": "Bid winner leads.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "calculate_setback_score",
+        "supported": true,
+        "description": "Calculate setback and round score.",
+        "cost": "0",
+        "constraints": "After all tricks.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "High-Low-Jack-Joker-Game",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "Twenty-nine cards total: seven ranks (ace, king, queen, jack, ten, nine, six) in each of four French suits, plus one joker. The joker serves as the middle trump in this pitch variant; twos, threes, fours, fives, sevens, and eights are removed.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Each suit has seven cards in this stripped pack. Trump is determined by the bid; the joker is the middle trump (between jack and ten of trump). Follow suit when able.",
+    "rankDescription": "Seven ranks per suit used in play: ace, king, queen, jack, ten, nine, six (twos through fives and eights removed). One joker counts as the middle trump. Standard pitch ranking with the joker as a permanent trump card.",
+    "dealPattern": "3 at a time."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ARIZONA PITCH",
+      "subtitle": "29 cards. Infinite Strategy.",
+      "tagline": "The desert variant of America's favorite setback game."
+    },
+    "shortDescription": "Experience the high-stakes world of Arizona 29-card Pitch. Use the kitty to perfect your hand, leverage the Joker to smash your opponents, and don't get 'Set Back'!",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "kitty",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Arizona Pitch! You have 6 cards and a 5-card kitty is waiting. Bid what you think you can takeâ€”but be careful, if you miss your bid, your score goes down! Will you call Spades with that Joker?",
+    "ai": "Game: Arizona 29-card Pitch. Type: Partnership Special-Deck Trick-taking. Rules: 29 cards. Trump order: A-K-Q-J-Joker-10-9-6. Points: High, Low, Jack, Joker, Game. Setback if bid missed."
+  },
+  "scoring": {
+    "description": "Pitch uses a 'Setback' scoring system where failing a bid subtracts from your total.",
+    "winCondition": "Usually played to a target score of 21 or 31 points.",
+    "cardValues": {},
+    "penalties": {
+      "Setback": "If the bidding team fails to meet their bid, the full amount of the bid is subtracted from their score."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "If 'Game' pips are tied, the point is not awarded.",
+    "targetScore": 21,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Game scoring uses standard Pitch pip totals (A=4, K=3, Q=2, J=1, 10=10); a separate per-rank map is not repeated here."
+    }
+  },
+  "alsoKnownAs": [
+    "Arizona Pitch",
+    "29-Card Setback",
+    "Joker Pitch"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,90 @@
+{
+  "consumer": {
+    "name": "Frontend-Lobby"
+  },
+  "interactions": [
+    {
+      "description": "a request for rooms list",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "lobby has rooms"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/rooms"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "rooms": [
+              {
+                "hostId": "test-user",
+                "roomId": "room-1"
+              }
+            ]
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.rooms": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.rooms[*].hostId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.rooms[*].roomId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "14.0.0"
+    },
+    "pactRust": {
+      "ffi": "0.4.28",
+      "models": "1.3.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "Cloudflare Worker"
+  }
+}

@@ -1,0 +1,653 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "gh-rat.json",
+  "name": "Gharat",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Gharat is an Iranian fishing-loot game where players match ranks to steal cards from the central play pile or from the top of opponents' capture piles.",
+    "category": "Fishing",
+    "subCategory": "Casino / Capture",
+    "origin": "Iran",
+    "originName": "Ghârat (غارت)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck without jokers",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["Iran"],
+    "origins": "Gharat was documented in Iran as a fishing game whose name means loot, reflecting rank-match theft from visible pile tops.",
+    "timeline": [
+      "Traditional era: Played as a local Iranian rank-matching capture game.",
+      "Modern era: Documented in international rule collections and English-language card-game references."
+    ],
+    "evolution": "Core rules remained stable; some tables add a pair-play convenience variant.",
+    "cultural": "The game emphasizes hidden stack memory and tactical stealing from opponents.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2, 3, or 4 players, with optional partnerships at 4.",
+    "deck": "Standard 52-card international deck, rank-only comparisons.",
+    "equipment": "Score sheet for cumulative target race.",
+    "dealing": "Start play pile with four face-up stacked cards (only top visible), deal four cards to each player, and keep remainder as face-down stock for future 4-card redeals.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture high-value cards and reach agreed cumulative target score before opponents.",
+    "gameplay": "Play begins with player to dealer's right and proceeds counterclockwise. On turn, play exactly one card from hand. If its rank matches the top of any table pile (central play pile or any capture pile), take that top card plus any immediately underlying equal-rank cards and place them on top of your capture pile. If no match exists, place played card on top of central play pile. After all players exhaust current 4-card hands, dealer gives another 4 to each if stock remains. Continue until stock and hands are empty.",
+    "keyRules": [
+      "Only top cards of piles are visible and inspectable; hidden underlying cards are unknown until uncovered.",
+      "Suits are irrelevant; rank only matters for matching.",
+      "A player may effectively steal from their own capture pile by matching its top rank.",
+      "Uncaptured cards left in play pile at end score for nobody."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Avoid feeding obvious top-rank matches to opponents when you cannot immediately reclaim them.",
+    "intermediate": "Track likely hidden runs under pile tops to predict high-value future captures.",
+    "advanced": "Control top-rank exposure timing so opponents reveal useful buried cards that you can steal next turn.",
+    "tips": [
+      "Ace captures are especially valuable and worth protecting from immediate theft.",
+      "In team play, coordinate top-rank setup rather than competing for the same pile."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "pair_play_easy",
+        "name": "Pair Play Easy Variant",
+        "description": "A player holding a pair may place both to capture pile in one turn, then skips later turn(s) to compensate card count.",
+        "overrides": {},
+        "emptyOverridesReason": "Pair-play variant only changes turn count; no engine constants or config overrides are documented in sources."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Matches visible ranks greedily with no hidden-stack memory.",
+      "medium": "Balances immediate capture with protection against immediate counter-steal.",
+      "hard": "Maintains probabilistic hidden-stack memory and optimizes expected value per top-rank exposure."
+    },
+    "considerations": [
+      "AI should model hidden-under-top cards as uncertain state updated by revealed captures.",
+      "Capture choices can target either central pile or opponent pile tops with different future risk profiles."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_gharat",
+        "name": "Pagat - Gharat",
+        "url": "https://www.pagat.com/fishing/gharat.html",
+        "retrievedAt": "2026-02-24",
+        "sections": [
+          {
+            "section": "rules",
+            "sourcePath": "Deal, Play, Scoring",
+            "paragraph": 1
+          }
+        ],
+        "localHtml": "pagat-gharat.html"
+      },
+      {
+        "id": "src:wikipedia_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-24",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "localHtml": "wiki-scopa.html"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Scopone",
+        "localHtml": "wiki-scopone.html"
+      },
+      "Scopa links are fishing-family context; detailed Gharat mechanics are taken from Pagat."
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "fishing",
+    "strategy",
+    "traditional",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Initial Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Create stacked play pile and deal four cards to each player."
+      },
+      {
+        "id": "play_loop",
+        "label": "Play and Capture",
+        "actor": "each_player_counterclockwise",
+        "legalActions": [
+          "play_card",
+          "deal"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_hands_empty_and_stock_empty",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "On hand exhaustion, dealer redeals four cards each if stock remains."
+      },
+      {
+        "id": "resolution",
+        "label": "Score Round",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Apply card-value scoring and update cumulative totals."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Gharat has no ante or betting round."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal four cards to each player at start and at each redeal checkpoint.",
+        "cost": "0",
+        "constraints": "Dealer action after everyone has played current four-card hands.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 4
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market mechanism exists in Gharat."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase mechanic exists in Gharat."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are received only through scheduled redeals, not stock buying."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not fold in this capture game."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting checks in Gharat."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting calls in Gharat."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting mechanism in Gharat."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting mechanism in Gharat."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase in Gharat."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No showdown hand reveal step is used."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply card-value points to each player's cumulative total.",
+        "cost": "0",
+        "constraints": "Resolution phase only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card and either capture matching top-rank cards or add card to central play pile.",
+        "cost": "0",
+        "constraints": "Exactly one card per turn; rank matching only.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "table"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No turn-by-turn draw action exists beyond scheduled redeals."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played to piles or captured, not discarded in a separate mechanic."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Each turn requires one card play from hand while cards remain."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Gharat has no bidding stage."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No meld declaration mechanic in Gharat."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Round ends when all cards are played and scored, not by first empty hand winner."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "individual",
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "matching_rank",
+      "captureTarget": null,
+      "sweepBonus": null,
+      "tableauStartSize": 4
+    },
+    "notApplicableReasons": {
+      "drawConfig": "No per-turn draw from stock; cards are redealt in fixed four-card batches.",
+      "discardConfig": "Cards are either added to piles or captured, not sent to a discard pile.",
+      "specialCards": "No wild or action cards; rank matching only.",
+      "shedding": "Gharat is a fishing-capture points game and not a shedding game."
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": null,
+      "foundationCount": null,
+      "buildDirection": null,
+      "buildSuitRule": null,
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "target_score": 500,
+      "hand_size": 4
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      },
+      {
+        "id": "table",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table"
+      },
+      {
+        "id": "custom:capture",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "player"
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "stack_visibility",
+          "appliesTo": "all_turns",
+          "text": "Only top card of each pile is visible; hidden underlying cards cannot be inspected.",
+          "affects": "information"
+        },
+        {
+          "id": "end_pile_no_score",
+          "appliesTo": "resolution",
+          "text": "Cards left in central play pile at end score for no player.",
+          "affects": "scoring"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "Capture operation must include immediate hidden run of equal ranks beneath matched top.",
+        "Support stealing from any player's capture pile top, including own pile.",
+        "Redeal exactly four cards per player when all current hands are empty and stock remains."
+      ]
+    },
+    "progression": [
+      "deal",
+      "play_loop",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "card_value_capture",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "The deck is a standard fifty-two-card pack; only rank is used for comparisons and scoring, so suits are irrelevant and each rank has a fixed point value used to total hand and trick scores.",
+    "suitDescription": "The four French suits are Hearts, Diamonds, Clubs, and Spades; suits are ignored in play and scoring, and only the rank of each card determines its value and trick outcome.",
+    "rankDescription": "Ranks are valued for scoring with Aces high; each rank has a fixed point value and rank order determines trick wins, with no suit hierarchy or trump in this rank-only game.",
+    "dealPattern": "Initial 4-card hand each and repeated 4-card redeals until stock exhausted."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "GHARAT",
+      "subtitle": "Iranian Loot Fishing",
+      "tagline": "Match top ranks, steal stacks, and race to the target."
+    },
+    "shortDescription": "Iranian fishing game where matching top ranks can steal cards from center or opponents' capture piles.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "table",
+        "custom:capture"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Gharat: protect high-value tops in your capture pile and steal exposed ranks before opponents can chain them.",
+    "ai": "Game: Gharat. Play one card per turn, capture matching top ranks (including hidden same-rank runs), and score captures at 5/10/20 by rank class toward target."
+  },
+  "scoring": {
+    "description": "Number cards score 5 each, J/Q/K score 10 each, and Aces score 20 each from captured piles only.",
+    "winCondition": "First player or team to reach or exceed agreed target total, usually 500 or 1000, wins.",
+    "cardValues": {
+      "2": "5",
+      "3": "5",
+      "4": "5",
+      "5": "5",
+      "6": "5",
+      "7": "5",
+      "8": "5",
+      "9": "5",
+      "10": "5",
+      "J": "10",
+      "Q": "10",
+      "K": "10",
+      "A": "20"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 500,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Gharat",
+    "Ghârat"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Scopa URLs in checklist are treated as fishing-family context only, not as direct rule source for Gharat."
+    ],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

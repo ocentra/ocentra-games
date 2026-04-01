@@ -1,0 +1,66 @@
+name: Cloudflare Preflight
+
+on:
+  pull_request:
+    branches: [main, develop, production]
+    paths:
+      - 'infra/cloudflare/**'
+      - 'packages/**'
+      - '.github/workflows/cloudflare-preflight.yml'
+      - '.github/workflows/cloudflare-security-tests.yml'
+      - '.github/actions/setup-node/action.yml'
+  push:
+    branches: [main, production]
+    paths:
+      - 'infra/cloudflare/**'
+      - 'packages/**'
+      - '.github/workflows/cloudflare-preflight.yml'
+      - '.github/workflows/cloudflare-security-tests.yml'
+      - '.github/actions/setup-node/action.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cloudflare-preflight:
+    name: Cloudflare Prebuild Preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: infra/cloudflare
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, solana)
+        working-directory: .
+        run: |
+          cd packages/boundary-domain && npm install
+          cd ../endpoint-domain && npm install
+          cd ../logging-domain && npm install
+          cd ../behaviour-domain && npm install
+          cd ../asset-domain && npm install
+          cd ../app-core && npm install
+          cd ../credentials-domain && npm install
+          cd ../ai-domain && npm install
+          cd ../crypto-domain && npm install
+          cd ../verification-domain && npm install
+          cd ../solana-domain && npm install
+
+      - name: Install Cloudflare dependencies
+        run: npm ci
+
+      - name: Run prebuild (same path as security tests)
+        run: export PATH="./node_modules/.bin:$PATH" && npm run prebuild

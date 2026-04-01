@@ -1,0 +1,728 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "perevodnoy-durak.json",
+  "name": "Perevodnoy Durak",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Perevodnoy Durak (Transfer Fool) is a Durak variant where the defender can transfer the attack to the next player by playing a card of the same rank. Otherwise like Podkidnoy Durak: 36 cards, attack/defend, last with cards = Fool. Works well with 2 players.",
+    "category": "Shedding",
+    "subCategory": "Shedding",
+    "origin": "Russia, Ukraine, Belarus",
+    "originName": "Переводной Дурак",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6"
+    },
+    "deck": "36 cards (6-A)",
+    "difficulty": "Intermediate",
+    "duration": "15-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Variant of Podkidnoy Durak. 'Perevodnoy' = transfer. Defender passes attack by matching rank.",
+    "originCountries": ["Russia", "Ukraine", "Belarus"],
+    "timeline": [
+      "See Durak. Transfer variant popular in Russia/Ukraine."
+    ],
+    "evolution": "Transfer adds tactical depth. Kiev variation: transfer after beating some cards.",
+    "cultural": "Russian/Ukrainian card tradition.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-6. Individuals (no partnerships).",
+    "deck": "36 cards. Rank A-K-Q-J-10-9-8-7-6.",
+    "equipment": "36-card pack.",
+    "dealing": "6 each. Turn one for trump. Stock face-down.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Get rid of all your cards. The last player holding cards at the end of the game is the Durak (Fool) and loses.",
+    "gameplay": "As Podkidnoy Durak, except: defender with card of SAME RANK as first attack card can TRANSFER: play it, attack passes to next player with both cards. New defender can add same rank, transfer again. Cannot transfer if new defender has too few cards to defend. Alternative: beat or pick up.",
+    "keyRules": [
+      "Transfer: play equal rank to pass attack to next player.",
+      "Transfer adds your card to attack; next must defend or transfer.",
+      "Cannot transfer if new defender cannot defend (e.g. only 1 card vs 2-card attack).",
+      "Once a card beaten, transfer no longer possible for that bout.",
+      "Otherwise as Podkidnoy: attack, defend, throw in, draw to 6."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Transfer when defender has few cards. Beat with trump to stop transfer.",
+    "intermediate": "Lead two of same rank to block transfer. Save equal ranks for transfer.",
+    "advanced": "Endgame: force opponent to pick up. Transfer to exhausted player.",
+    "tips": [
+      "Kiev: can transfer after beating first cards, for new thrown-in cards.",
+      "Pass card variant: show trump of same rank to transfer without playing it."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "kiev",
+        "name": "Kiev",
+        "description": "After beating some cards, defender can transfer new thrown-in cards by playing equal.",
+        "overrides": {},
+        "emptyOverridesReason": "Kiev variant only changes transfer timing; no engine constant overrides identified yet."
+      },
+      {
+        "id": "pass-card",
+        "name": "Pass Card",
+        "description": "Trump of same rank: show (don't play) to transfer; keep card.",
+        "overrides": {},
+        "emptyOverridesReason": "Pass card variant changes transfer mechanic only; no engine overrides needed for base build."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal attack/defend/transfer.",
+      "medium": "Transfer when advantageous.",
+      "hard": "Full transfer/block strategy."
+    },
+    "considerations": [
+      "Transfer legality (card count).",
+      "Beating vs transferring."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-perevodnoy-durak",
+        "name": "Pagat.com - Perevodnoy Durak",
+        "url": "https://www.pagat.com/beating/perevodnoy_durak.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-perevodnoy-durak.html"
+      },
+      {
+        "id": "src:wikipedia_durak",
+        "name": "Wikipedia - Durak",
+        "url": "https://en.wikipedia.org/wiki/Durak",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-durak-3.html"
+      }
+    ],
+    "additional": [
+      "Chris Gillespie (Kiev rules)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 65,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "attack",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "attack",
+        "label": "Attack",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "attack"
+        ],
+        "nextPhase": "defend",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "defend",
+        "label": "Defend",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "beat",
+          "transfer",
+          "pick_up"
+        ],
+        "nextPhase": "draw",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw",
+        "label": "Draw",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "draw"
+        ],
+        "nextPhase": "attack",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game uses custom actions attack, beat, transfer, and pick_up instead of generic play_card."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Replenish hand from stock up to 6 cards after each bout. Original attacker draws first, then other attackers clockwise, then defender. Trump card is drawn last.",
+        "cost": "0",
+        "constraints": "Only when stock has cards; draw until hand has 6 or stock is empty.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 0,
+          "notes": "Replenish to 6 after each bout; attacker draws first, then attackers clockwise, then defender; trump card drawn last."
+        }
+      ],
+      "drawCount": null,
+      "drawTiming": "end_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "deckType": "Standard 36",
+    "suitSet": "French",
+    "rankSet": "Stripped_36",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "6 low to Ace high in each suit",
+      "canCallNoTrump": false,
+      "overtakingRule": "Defender must play higher card of same suit or any trump to beat; trump beats non-trump."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "transfer-card-count",
+          "text": "Cannot transfer the attack if the new defender has fewer cards than the number of attack cards (e.g. two-card attack but new defender has only one card)."
+        },
+        {
+          "id": "transfer-after-beat",
+          "text": "Once an attack card has been beaten, that attack can no longer be transferred; further cards may be thrown in and defender must beat or pick up."
+        },
+        {
+          "id": "replenish-order",
+          "text": "After a transferred attack, when replenishing: original attacker draws first, then other attackers clockwise, then defender."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "attack", "defend", "draw"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "attack",
+        "supported": true,
+        "description": "Lead one or more cards to attack the defender; may lead two or more cards of the same rank. Attack passes to next player if defender transfers.",
+        "cost": "0",
+        "constraints": "Attacker must have cards; attack size cannot exceed six cards or defender's hand size for transfer.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "beat",
+        "supported": true,
+        "description": "Play a higher card of the same suit or any trump to beat an attack card; once beaten, that card can no longer be transferred.",
+        "cost": "0",
+        "constraints": "Card must be same suit and higher, or trump; defender may beat all attack cards or pick up.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "transfer",
+        "supported": true,
+        "description": "Play a card of the same rank as the first attack card to transfer the attack to the next player; you become attacker, they defend the combined attack.",
+        "cost": "0",
+        "constraints": "Only if you have a card matching the rank of the first attack card; cannot transfer if the next player has fewer cards than the number of attack cards.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "pick_up",
+        "supported": true,
+        "description": "Take all attack cards (and any beaten cards) into your hand; you become the next attacker.",
+        "cost": "0",
+        "constraints": "Allowed when defender cannot or chooses not to beat or transfer; all table cards go to defender's hand.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": null,
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 36-card stripped deck: four French suits with ranks 6 through Ace (Ace high). Perevodnoy Durak is a Russian shedding game; the defender may transfer attacks to an opponent by playing a matching rank; last player with cards loses.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each have nine cards in the 36-card deck. In Durak, suits must match when defending or transferring; trump is determined by a turned card.",
+    "rankDescription": "Ranks 6, 7, 8, 9, 10, Jack, Queen, King, Ace in each suit; Ace is high. Only the same rank can beat or transfer an attack; trump beats non-trump; order is standard within suit and trump.",
+    "dealPattern": "6 each; turn one card for trump under stock, stock face-down on top.",
+    "notApplicableReasons": {
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PEREVODNOY DURAK",
+      "subtitle": "Transfer Fool",
+      "tagline": "Transfer the attack. Don't be last."
+    },
+    "shortDescription": "Durak with transfer. Match rank to pass attack. 2-6p.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Perevodnoy Durak: transfer attack by playing same rank. Else as Podkidnoy. Last with cards = Fool.",
+    "ai": "Game: Perevodnoy Durak. Transfer by equal rank. 36 cards. 2-6p."
+  },
+  "scoring": {
+    "description": "Last with cards = Durak (Fool).",
+    "winCondition": "Empty hand when stock exhausted.",
+    "cardValues": {"6":"6","7":"7","8":"8","9":"9","10":"10","J":"11","Q":"12","K":"13","A":"14"},
+    "penalties": {
+      "durak": "loser"
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Transfer Fool",
+    "Perevodnoy Durak",
+    "Переводной Дурак"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

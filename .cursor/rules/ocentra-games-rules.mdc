@@ -1,0 +1,229 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules for Claim Game Project
+
+<MCP_USE_GUIDELINE>
+  <INSTRUCTION>
+    Use MCP tools when working on Solana-related features or debugging/logging issues.
+  </INSTRUCTION>
+  <TOOLS>
+    Solana tools:
+    - "Solana Expert: Ask For Help": Ask detailed questions about Solana (how-to, concepts, APIs, SDKs, errors). Provide context.
+    - "Solana Documentation Search": Search Solana documentation corpus.
+    - "Ask Solana Anchor Framework Expert": Questions about Anchor Framework APIs, SDKs, error handling.
+    
+    Project MCP tools (claim-logs server):
+    - "get_errors": Get error logs (default: last 24h, limit 50). Use when debugging errors.
+    - "get_recent_logs": Get recent logs (default: last 1h, limit 50). Use for general debugging.
+    - "get_logs_by_source": Get logs by source (e.g., Auth, GameEngine). Required: source parameter.
+    - "get_logs_by_time_range": Get logs within time range. Required: from parameter.
+    - "get_logs_by_context": Get logs by context/module name. Required: context parameter.
+    - "get_logs_by_tags": Get logs by tags array. Required: tags parameter.
+    - "get_log_stats": Get statistics about stored logs (counts by level, source, context).
+    - "query_logs": Query logs with flexible filters (backward compatible, default limit 50).
+    - "clear_logs": Clear all logs from IndexedDB.
+    
+    When to use project MCP tools:
+    - Debugging errors: Use get_errors or get_logs_by_source with source="ErrorHandler"
+    - Investigating specific module: Use get_logs_by_context with context parameter
+    - Time-based debugging: Use get_logs_by_time_range with from/to parameters
+    - General debugging: Use get_recent_logs or query_logs with filters
+    - Always set reasonable limits (default 50) to prevent context spam
+  </TOOLS>
+</MCP_USE_GUIDELINE>
+
+## Constants and String Literals
+
+### Rule 1: Never Use String Literals for Constants
+- NEVER use string literals like 'GameMode', 'Card', 'pick_up', 'spades' in code
+- ALWAYS use constants from @/constants
+- Examples:
+  - `__assetType: 'GameMode'` -> `__assetType: AssetType.GameMode`
+  - `type: 'pick_up'` -> `type: PlayerActionType.PICK_UP`
+  - `suit: 'spades'` -> `suit: Suit.SPADES`
+
+### Rule 2: Centralized Constants Structure
+- ALL shared constants in `src/constants/` folder
+- Atomic files - one per category:
+  - `assets.ts` - Asset types, status, categories, schema versions
+  - `game.ts` - Game constants, player actions, phases, personalities
+  - `errors.ts` - Error codes
+  - `ai.ts` - AI provider types, quantization, pipelines
+  - `cards.ts` - Card constants, suit symbols
+  - `network.ts` - Network connection status
+  - `database.ts` - Database node types, log levels
+  - `index.ts` - Main export file
+- Module-specific constants stay in their module
+- Use `as const` pattern for type safety
+
+### Rule 3: Re-exports for Backward Compatibility
+- Keep original exports when moving constants to centralized location
+- Original files re-export from @/constants
+
+## Import Rules
+
+### Rule 4: Always Use @ Aliases, Never Relative Imports
+- NEVER use relative imports like `../` or `./` (except CSS in same directory)
+- ALWAYS use @ aliases for code imports
+- Examples:
+  - `import { AssetType } from '../assets/AssetPathResolver'` -> `import { AssetType } from '@/lib/assets/AssetPathResolver'`
+  - `import { Suit } from '../types/game'` -> `import { Suit } from '@/constants/game'`
+- Exception: CSS imports like `'./Component.css'` allowed
+
+### Rule 5: Import Constants from Centralized Location
+- ALWAYS import constants from @/constants or specific constant files
+- Use @/constants for multiple, specific files for single imports
+
+### Rule 5.1: NEVER Use Barrel Imports or Unnecessary Re-exports (CRITICAL PERFORMANCE RULE)
+- **FORBIDDEN**: Barrel imports from ANYWHERE (`index.ts` files that re-export multiple modules)
+- **FORBIDDEN**: `import { ... } from '@/constants/index'`
+- **FORBIDDEN**: `import { ... } from '@/constants'` (when it resolves to index)
+- **FORBIDDEN**: `import { ... } from '@/utils'` (if utils has index.ts)
+- **FORBIDDEN**: `import { ... } from '@/logic'` (if logic has index.ts)
+- **FORBIDDEN**: Any `index.ts` file that re-exports multiple modules (barrel files)
+- **REQUIRED**: Import directly from specific files
+- **WHY**: Barrel imports load ALL files in the barrel, causing:
+  - Slow module resolution
+  - Slow test execution
+  - Large dependency trees
+  - Poor tree-shaking
+  - Memory waste (loading unused code)
+
+**Examples:**
+```typescript
+// ❌ FORBIDDEN - Barrel imports from anywhere
+import { HttpMethod, HttpStatus, ErrorMessage } from '@/constants/index';
+import { HttpMethod, HttpStatus } from '@/constants';
+import { validatePath, sanitizePath } from '@/utils';  // If utils has index.ts
+import { purchaseCredits, consumeCredits } from '@/logic';  // If logic has index.ts
+
+// ✅ REQUIRED - Direct imports from specific files
+import { HttpMethod, HttpStatus } from '@/constants/http';
+import { ErrorMessage } from '@/constants/errors';
+import { PathValidator } from '@ocentra/endpoint-domain/validators/path-validators';
+import { sanitizePathComponent } from '@ocentra/endpoint-domain/utils/path-sanitizer';
+import { purchaseCredits } from '@/logic/credits';
+```
+
+**Exception**: Only allowed if importing from a single specific file that happens to be named `index.ts`:
+- `import { ... } from '@/constants/paths'` (if paths.ts exists) - OK
+- `import { ... } from '@/constants/index'` - FORBIDDEN (barrel file)
+- `import { ... } from '@/utils/router'` - OK (direct file import)
+
+**Barrel File Definition**: Any `index.ts` file that re-exports from multiple other files is a barrel file and MUST be deleted or avoided.
+
+**When Re-exports Are Acceptable (VERY RARE - Must Justify):**
+- **Type-only re-exports** (no runtime impact): `export type { User } from './user'` - OK if truly needed
+- **Library public API** (if building a library consumed by others) - Must justify why library needs it
+- **NOT acceptable**: 
+  - Backward compatibility (lazy shortcut - fix the code instead)
+  - Convenience shortcuts ("cleaner imports")
+  - Avoiding typing longer paths (use `@/` aliases instead)
+  - "It's easier" (not a valid reason)
+
+**Re-export Decision Process:**
+1. **First ask: "Why do I need this re-export?"**
+2. **If answer is**: "It's easier", "Shorter imports", "Backward compatibility", "Cleaner" → **REJECTED**
+3. **If answer is**: "Type-only export with no runtime cost" → **MAYBE** (still prefer direct imports)
+4. **If answer is**: "Library public API boundary" → **MAYBE** (must justify why library needs it)
+5. **Default answer**: **NO RE-EXPORTS** - Use direct imports with `@/` aliases
+
+**Why Re-exports Are Lazy Shortcuts:**
+- In application code, re-exports are shortcuts that:
+  - Hide real dependencies (makes refactoring harder)
+  - Load unnecessary code (performance cost)
+  - Make it unclear where things come from
+  - Don't provide real value (just save typing)
+  - Backward compatibility via re-exports = technical debt (fix the code instead)
+- Use `@/` path aliases instead: `@/constants/http` is clear, explicit, and performant
+
+**Enforcement**: This rule applies to ALL files:
+- `src/utils/**/*.ts` - Must use direct imports
+- `src/logic/**/*.ts` - Must use direct imports
+- `src/handlers/**/*.ts` - Must use direct imports
+- `src/constants/**/*.ts` - Must use direct imports
+- `src/monitoring/**/*.ts` - Must use direct imports
+- Test files - Must use direct imports
+- **ALL** source files - No barrel imports allowed anywhere
+
+## Code Quality Rules
+
+### Rule 6: No Comments in Code Files
+- ZERO comments in code files - remove all comments unless absolutely necessary
+- Code must be self-documenting - if code needs explanation, refactor to make it clearer instead of adding comments
+- NEVER add comments for:
+  - Implementation details or how code works
+  - Explaining constants, exports, or function behavior
+  - Describing what code does (code should speak for itself)
+- ONLY keep comments if they are absolutely necessary and make real good sense (e.g., spec references, critical business logic notes that cannot be expressed in code)
+- If you find yourself wanting to add a comment, refactor the code to be clearer instead
+
+### Rule 7: Type Safety with Constants
+- Use `as const` for all constant objects
+- Export both constant object and type:
+  ```typescript
+  export const AssetType = {
+    Card: 'Card',
+    GameMode: 'GameMode',
+  } as const;
+  
+  export type AssetType = typeof AssetType[keyof typeof AssetType];
+  ```
+
+### Rule 8: Schema Versions as Constants
+- NEVER use magic numbers like `__schemaVersion: 1`
+- ALWAYS use `AssetSchemaVersion.V1` or `AssetSchemaVersion.V2`
+- Import from @/constants/assets
+
+### Rule 11: Never Use console.log/error/warn Directly
+- NEVER use `console.log`, `console.error`, `console.warn`, `console.info`, `console.debug` directly
+- ALWAYS use logging system from `@/lib/logging` or `@/lib/logging/logger`
+- Why: Logs are stored in IndexedDB and accessible via MCP tools for debugging. Console logs can slip to production.
+- Logging is gated by LOG_FLAGS - logs only appear in console if flag is enabled (default: all false)
+- All logs are stored in IndexedDB regardless of flags, accessible via MCP tools
+
+Available logging functions:
+- Module-specific: `logUI()`, `logAI()`, `logGameEngine()`, `logNetwork()`, `logAssets()`, `logStore()`
+- Level-based: `logInfo(module, ...args)`, `logWarn(module, ...args)`, `logError(module, ...args)`, `logDebug(module, ...args)`
+- Prefixed logger: `createModuleLogger(module, { prefix: '...' })`
+
+Examples:
+- `console.log('Loading asset:', id)` -> `logInfo('ASSETS', 'Loading asset:', id)`
+- `console.error('Failed to load:', error)` -> `logError('ASSETS', 'Failed to load:', error)`
+- `console.warn('Slow render')` -> `logWarn('UI', 'Slow render')`
+- For AI: `logAI('Model loaded:', modelId)`
+- For repeated logging: `const logger = createModuleLogger('ASSETS', { prefix: '[TextureLoader]' }); logger.logInfo('Loaded texture', { id })`
+
+Modules: 'UI', 'GAME_ENGINE', 'AI', 'NETWORK', 'ASSETS', 'STORE'
+
+## File Organization
+
+### Rule 9: Atomic Constant Files
+- Each constant category in own file
+- Small, focused files
+- Easy refactoring with @ aliases
+
+### Rule 10: Test Files Follow Same Rules
+- Test files use @ aliases, not relative imports
+- Test files use constants, not string literals
+
+## When Adding New Constants
+
+1. Check if constant exists in src/constants/
+2. If shared (2+ modules): Add to appropriate src/constants/*.ts file
+3. If module-specific: Keep in module with `as const` pattern
+4. Update src/constants/index.ts if adding new file
+5. Use @ aliases when importing
+
+## Checklist
+
+- No string literals for asset types, actions, suits, phases
+- All imports use @ aliases (no ../ or ./ except CSS)
+- Constants imported from @/constants
+- Schema versions use AssetSchemaVersion.*
+- Zero comments (code must be self-documenting)
+- Constants use `as const` pattern
+- Shared constants in src/constants/
+- No console.log/error/warn - use logging system from @/lib/logging

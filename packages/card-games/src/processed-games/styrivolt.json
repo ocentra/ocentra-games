@@ -1,0 +1,639 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "styrivolt.json",
+  "name": "Stýrivolt",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Stýrivolt is a four-player partnership trick-taking game from the Faroe Islands, belonging to the Karnöffel group. A 48-card pack is used (tens removed from a standard French deck). Each player receives 9 cards in batches of three; 12 cards remain as stock. The dealer determines two chosen suits from the stock; cards in those suits have special powers (stikkar, lambs, taking cards). There is no requirement to follow suit. The team that wins at least five of the nine tricks wins the hand. Winning the first five tricks (vol) scores a bonus.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Faroe Islands (Denmark origin)",
+    "originName": "Stýrivolt",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "Standard 48-card deck (tens removed from French pack). Nine cards each, 12-card stock.",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Denmark", "Faroe Islands"],
+    "origins": "Stýrivolt descends from the German game Karnöffel and probably evolved in the early 17th century, spreading to Scandinavia; the name stýr-wålt appears in Sweden in 1658 (Georg Stiernhielm's poem Hercules). It has been played on the Faroe Islands since the 18th century and is documented in Jens Christian Svabo's travel writings (1781–1782) and in Danish game compendia from 1774 onward. The game survived as a Faroese tradition while largely disappearing from Denmark; rules were recorded in the cultural magazine Varðin (1975) and in later English-language rule publications.",
+    "timeline": [
+      "1800s: Staple in Faroese homes.",
+      "Today: Still played, rules preserved orally."
+    ],
+    "evolution": "The term 'Stýrivolt' likely comes from Danish/German terms (Steuervalt? steer/rule?).",
+    "cultural": "Used chalk marks (scoring) on the table.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 (Partners opposite).",
+    "deck": "48 cards (tens removed). Deal 9 each; 12-card stock.",
+    "equipment": "",
+    "dealing": "Deal 9 cards to each player, 3 at a time. Twelve cards remain as stock; the dealer uses them to determine the two chosen suits.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Each partnership aims to win at least five of the nine tricks. The team that wins the majority scores on a chalk-up by erasing strokes; the first side to erase all three strokes (or eliminate the opponents' crosses) scores a cross. Making vol (winning the first five tricks) or taking all nine tricks scores extra.",
+    "gameplay": "The player to the left of the dealer leads to the first trick. Play is clockwise. Any card may be played; there is no requirement to follow suit or to beat the lead. Trick winner is determined by the game's ranking: permanent stikkar and chosen-suit stikkar beat other cards; chosen sevens (lambs) win the trick when led but cannot lead to the first trick. Whoever wins a trick leads to the next. A team that has taken five tricks may stop or continue; taking the first five (vol) or all nine scores bonus strokes.",
+    "keyRules": [
+      "No requirement to follow suit.",
+      "Two chosen suits per deal, determined by dealer from stock.",
+      "Permanent and chosen-suit stikkar outrank normal cards; lambs (chosen 7s) win when led.",
+      "Trader (chosen 5) may be exchanged for the exposed card of that suit.",
+      "Hand with no stikkar may exchange hand for the stock before the first trick is complete."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep high cards (Aces/Kings). Since you don't have to follow suit, you can throw trash on opponent's winning trick or save an Ace for when you lead.",
+    "intermediate": "The 'Vol' Attempt: If you have 5 sure winners, lead them out to win instantly without letting opponents play. Since they don't have to follow suit, they can't trump you (no trumps?).",
+    "advanced": "Tracking: 16 cards are undealt. Don't rely on counting specific obscure cards, but track Aces. If all 4 Aces are gone, Kings are bosses.",
+    "tips": [
+      "9 tricks total.",
+      "Winning 5 is the goal."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "cutting-stikkar",
+        "name": "Cutting for a stikkar",
+        "description": "Cards are cut before the deal; the cutter may look at the bottom card of the stock. If it is a permanent stikkar, it is exposed and can be exchanged by the holder of the king of that suit before the first trick.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation changes only procedural rules; no engine constant overrides."
+      },
+      {
+        "id": "choosing-suits-face-up",
+        "name": "Choosing suits face up",
+        "description": "As the dealer chooses suits, the cards turned from the stock are laid face up so everyone can see them.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation changes only visibility of suit selection; no engine constant overrides."
+      },
+      {
+        "id": "compulsory-beating",
+        "name": "Play with compulsory beating",
+        "description": "Every player must beat the highest card so far played to the trick if possible, unless that card was played by their partner.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation would require different play constraints; overrides not yet mapped to engine paths."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Leads low; throws high cards randomly.",
+      "medium": "Leads Aces if possible for easy tricks.",
+      "hard": "Expert 'Vol-Hunter'; calculates probability of opponents holding higher cards (limited info due to undealt pile); plays to win 5th trick precisely."
+    },
+    "considerations": [
+      "Trick-probability (Unknown-Card) solver.",
+      "Vol-attempt (Greedy) engine."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-styrivolt",
+        "name": "Pagat - Stýrivolt",
+        "url": "https://www.pagat.com/karnoeffel/styrivolt.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-styrivolt.html"
+      },
+      {
+        "id": "src:wikipedia-styrivolt",
+        "name": "Wikipedia - Stýrivolt",
+        "url": "https://en.wikipedia.org/wiki/St%C3%BDrivolt",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-strivolt.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/St%C3%BDrivolt",
+        "localHtml": "wiki-strivolt.html"
+      },
+      {
+        "url": "https://www.pagat.com/karnoeffel/styrivolt.html",
+        "localHtml": "pagat-styrivolt.html"
+      },
+      "Faroese Games",
+      "Nordic Card Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Nine tricks; left of dealer leads first; no follow suit; trick winner leads next; team with 5+ tricks wins the hand."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 48",
+    "suitSet": "French",
+    "rankSet": "Stripped_48",
+    "initialHandSize": 9,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [
+        {"card": "2H", "rank": null, "name": "bird"},
+        {"card": "4C", "rank": null, "name": "fyrik"},
+        {"card": "8S", "rank": null, "name": "eight"},
+        {"card": "9H", "rank": null, "name": "hay-yard mare"},
+        {"card": "9D", "rank": null, "name": "mare of diamonds"}
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "Two chosen suits per deal; stikkar and taking cards beat unchosen cards; lambs (chosen 7s) win when led.",
+      "canCallNoTrump": false,
+      "overtakingRule": "First of two equal chosen-suit cards played wins the trick."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 9,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "Lamb cannot lead to the first trick.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+      {"id": "stock-exchange", "text": "Player with no stikkar may exchange hand for the 12-card stock before the first trick is complete; right passes clockwise."},
+      {"id": "trader-exchange", "text": "Trader (5 of a chosen suit) may be exchanged for the exposed card of that suit at any time."},
+      {"id": "four-of-a-kind", "text": "Four cards of the same rank in one hand all count as the best of that rank (e.g. four 2s become four birds)."},
+      {"id": "lamb-lead", "text": "Lamb (chosen 7) cannot be led to the first trick; may only be led by a player who has already won a trick."}
+    ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Trick-taking with Karnöffel-style ranking; no poker hand comparison.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 48-card French deck formed by removing the tens from a standard 52-card pack. Four suits (Hearts, Diamonds, Clubs, Spades), each with twelve ranks: Ace, King, Queen, Jack, 9, 8, 7, 6, 5, 4, 3, 2. Used for Stýrivolt and other Karnöffel-group games.",
+    "suitDescription": "Standard French suits: Hearts, Diamonds, Clubs, and Spades. Two suits are chosen each deal from the stock and act as partial trumps.",
+    "rankDescription": "Stripped ranking without tens: A, K, Q, J, 9, 8, 7, 6, 5, 4, 3, 2. In play, permanent stikkar and chosen-suit cards have special trick-taking order.",
+    "dealPattern": "3,3,3",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "STÝRIVOLT",
+      "subtitle": "Card Game",
+      "tagline": "Four-player partnership trick-taking from the Faroe Islands; 48 cards, two chosen suits, no follow suit."
+    },
+    "shortDescription": "Stýrivolt is a four-player partnership trick-taking game from the Faroe Islands. 48-card deck, 9 cards each, two chosen suits; win 5 of 9 tricks.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Stýrivolt: four players in partnerships, 48-card deck (tens removed), 9 cards each, 12-card stock. Two chosen suits per deal; no follow suit. Win 5 of 9 tricks; vol (first 5) scores bonus.",
+    "ai": "Game: Stýrivolt. Logic: rules.objective and rules.gameplay; Karnöffel-style ranking and chalk-up scoring."
+  },
+  "scoring": {
+    "description": "Chalk Marks. Vertical line with 3 cross strokes. Erase strokes as you win games. First to erase 3 strokes wins.",
+    "winCondition": "Win 5 tricks out of 9.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Trick-taking game; scoring is by tricks and chalk marks, not card point values.",
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": ["Stýrvolt"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

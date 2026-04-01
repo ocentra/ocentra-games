@@ -1,0 +1,685 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "poch-poker-ancestor.json",
+  "name": "Poch (Pochen)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Poch (or Pochen) is an ancient German family game documented as far back as 1441. It is widely recognized as one of the primary ancestors of modern Poker, particularly for its 'Pochen' (vying or betting) phase. Played with a specialized board (Pochbrett), it combines elements of luck, betting, and strategic card-shedding. It is a 'Three-in-One' game where a single deal is used to play three distinct sub-games, rewarded by different portions of a central pot.",
+    "category": "Matching",
+    "subCategory": "Matching",
+    "origin": "Germany (Strasbourg/Bavaria)",
+    "originName": "Pochspiel",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "recommendedPlayers": 3,
+      "display": "3-6"
+    },
+    "deck": "32-card German or Piquet deck (7s to Aces)",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Germany", "France"],
+    "origins": "One of the oldest recorded card games in European history. The name 'Pochen' means 'to brag' or 'to knock' (on the table to indicate a bet), which evolved into the word 'Poker'.",
+    "timeline": [
+      "1441: First historical mention in Strasbourg, Germany.",
+      "1600s: Becomes a staple in German and French courts as 'Poque'.",
+      "1800s: Influences the developement of English 'Brag' and American 'Poker'.",
+      "Present: Still played in traditional German social clubs and as a historical folk game."
+    ],
+    "evolution": "The transition to the United States via French 'Poque' players in New Orleans is the missing link that led to the creation of the 5-card Poker game known today.",
+    "cultural": "Traditional versions use a wooden board with nine carved bowls to hold tokens, making it as much a 'Board Game' as a card game.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3-6 is optimal.",
+    "deck": "32 cards (if 3-4 players) or 52 cards (if 5-6).",
+    "equipment": "Poch board (Pochbrett) with nine pools for stakes: Ace, King, Queen, Jack, Ten, Marriage, Sequence (7-8-9), Pochen (Joker), and centre pot (Pinke).",
+    "dealing": "Dealer deals clockwise one card at a time until one card remains; that card is turned face up to set the pay suit (trump). In the 5-cards-each variant, five cards per player then one card turned for trump. Before each deal every player antes one chip to each of the nine pools.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win chips from the Poch-board by holding specific cards, winning the bet, and being the first to shed all cards.",
+    "gameplay": "Three stages per deal. Stage 1 (sweepstakes): players with Ace, King, Queen, Jack or Ten of the pay suit collect from those pools; King+Queen of pay suit wins Marriage; 7-8-9 of pay suit wins Sequence. Stage 2 (Pochen): players bet on best set (four of a kind beats three of a kind beats pair); pass, bet, match or raise, or fold; best set wins Pochen pool and all stakes; winner (or left of dealer if all pass) leads Stage 3. Stage 3 (shedding): play any card; whoever has next higher in same suit plays; sequence continues until no one can play; last to play starts a new sequence; first out of cards wins centre pot plus one chip per card from each opponent.",
+    "keyRules": [
+      "Before each deal every player puts one chip in each of the nine board pools.",
+      "Pay suit (trump) is the suit of the turned card; it breaks ties in Pochen (pair with pay-suit card beats same-rank pair).",
+      "In Pochen only pairs, triples and fours of a kind count; higher set beats lower; you may pass or drop out and forfeit stakes already placed.",
+      "In the shedding stage you must play the next higher card in the same suit when you have it; the player who played the last card of a sequence leads the next."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Conserve your high cards for Phase 3! While you might want to use your Aces to win a bet in Phase 2, an Ace is a 'Stop' card in Phase 3. If you hold an Ace, you have the power to stop an opponent's sequence and start your own, which is the fastest way to win the shedding round. Don't go 'All-In' during the Pochen phase unless you have at least 3-of-a-kind; the competition for the central pot is fierce.",
+    "intermediate": "The 'Pinke' Bluff: Because you don't always have to show your hand if everyone else folds, use the Pochen phase to bluff as if you have a high set. If you win that pot, you get the initiative to lead in the shedding phase. Choice of the lead card in Phase 3 is 50% of the game; lead a suit you are 'Long' in to control the board.",
+    "advanced": "Marriage Management: If you hold the King of Trump but not the Queen, watch the board. If no one claims the 'Marriage' bowl in Phase 1, it stays there and grows. In the next round, if you hold the Queen, you can aggressively bid to win the right to name trump (in some variants) or just play defensively to ensure you capture that overflowing bowl later.",
+    "tips": [
+      "Always follow the sequence in Phase 3! If you forget your card and someone else plays it, you lose your turn.",
+      "If you have a 4-of-a-kind, you are almost guaranteed the Phase 2 pot. Don't be afraid to raise to the maximum."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "dealer_takes_pool",
+        "name": "Dealer takes pool on face-card turn-up",
+        "description": "If the turned card is Ace, King, Queen, Jack or Ten, the dealer takes the corresponding pool instead of it carrying over.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant described in sources; engine overrides not yet mapped."
+      },
+      {
+        "id": "52_cards_five_six",
+        "name": "52 cards for 5-6 players",
+        "description": "When five or six play, use a 52-card pack instead of 32; dealing and play otherwise as normal.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant described in sources; engine overrides not yet mapped."
+      },
+      {
+        "id": "no_pair_can_vie",
+        "name": "No pair can participate in Pochen",
+        "description": "Some play that you may vie without a pair; highest single card wins if no one has a pair; Skat suit order (clubs high) breaks ties.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant described in sources; engine overrides not yet mapped."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to claim sweepstakes; doesn't bluff in Pochen; leads cards that allow opponent sequences.",
+      "medium": "Reasonable betting logic; tracks sequence breaks; basic sweepstakes awareness.",
+      "hard": "Expert at 'Initiative Manipulation'; bluffs perfectly to win Phase 2 just to lead in Phase 3; master of 'Stop-Card' timing."
+    },
+    "considerations": [
+      "Multi-stage (Game-Flow) solver.",
+      "Betting-behavioral (Bluff) engine.",
+      "Sequence-completion (Pathfinding) algorithm."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_stops_poch",
+        "name": "Pagat - Poch / Le Poque",
+        "url": "https://www.pagat.com/stops/poch.html",
+        "retrievedAt": "2026-02-26",
+        "sections": [],
+        "localHtml": "pagat-poch.html"
+      },
+      {
+        "id": "src:wikipedia_poch",
+        "name": "Wikipedia - Poch",
+        "url": "https://en.wikipedia.org/wiki/Poch",
+        "retrievedAt": "2026-02-26",
+        "sections": [],
+        "localHtml": "wiki-poch.html"
+      }
+    ],
+    "additional": [
+      "Bayerischer Pochverein - Traditional Regulations"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain card game; no specific legal status researched.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "sweepstakes",
+        "label": "Sweepstakes",
+        "actor": "all_simultaneous",
+        "legalActions": ["claim_sweepstakes"],
+        "nextPhase": "pochen",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players with Ace, King, Queen, Jack, Ten of pay suit collect those pools; King+Queen wins Marriage; 7-8-9 wins Sequence."
+      },
+      {
+        "id": "pochen",
+        "label": "Pochen",
+        "actor": "current_player",
+        "legalActions": ["bet", "call", "raise", "fold"],
+        "nextPhase": "shedding",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Vying on best set (four of a kind, three of a kind, or pair). Left of dealer starts; pass, bet, match or raise, or fold."
+      },
+      {
+        "id": "shedding",
+        "label": "Shedding",
+        "actor": "current_player",
+        "legalActions": ["play_card"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winner of Pochen leads; play any card; next higher in same suit plays until sequence stops; last player starts new sequence; first out wins centre pot and one chip per card from each opponent."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Before each deal every player places one chip into each of the nine board pools (Ace, King, Queen, Jack, Ten, Marriage, Sequence, Pochen, centre).",
+        "cost": {"type": "flat", "value": 9},
+        "constraints": "Mandatory before the deal; performed by each player in turn or simultaneously depending on variant.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Drop out of the Pochen betting; forfeit any chips already staked in the current round.",
+        "cost": "0",
+        "constraints": "Legal during Pochen (stage 2) when you do not wish to match or raise; you leave the vying and cannot win the Pochen pool.",
+        "isTerminating": true,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current bet in the Pochen round (Ich halte); place the same number of chips as the knocker to stay in.",
+        "cost": {"type": "match_current_bet"},
+        "constraints": "Legal in Pochen when you have a set (pair or better) and wish to stay in; you must match the amount staked by the current bettor.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open or increase the stake in Pochen (Ich poche N); place one or more chips toward the centre to claim you have the best set.",
+        "cost": {"type": "min_bet"},
+        "constraints": "Legal in Pochen when you have at least a pair; first better is left of dealer; you state how many chips you stake.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Raise the stake in Pochen (Ich poche nach); stake more chips than the current bet to increase the pot.",
+        "cost": {"type": "min_raise"},
+        "constraints": "Legal in Pochen when you have a set and wish to raise; you must stake more than the current bet; others must match or fold.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "In the shedding stage: play one card to the table. If starting a sequence, play any card; otherwise play the next higher card in the same suit when you have it.",
+        "cost": "0",
+        "constraints": "Legal when it is your turn in the shedding phase; if a sequence is in progress you must play the next card in suit if you hold it; if you cannot or the sequence has stopped, you start a new sequence with any card.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "In Pochen, dropping out is represented by fold; there is no check or pass without staking."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 32",
+    "suitSet": "German",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [{"type": "higher_single", "notes": "Next higher card in same suit; sequence continues until no one can play, then last player leads a new sequence."}],
+      "passAllowed": false,
+      "burnRules": "When no one has the next card in suit the sequence stops; the player who played the last card leads a new sequence with any card."
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "elimination"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["sweepstakes", "pochen", "shedding"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "claim_sweepstakes",
+        "supported": true,
+        "description": "Reveal cards matching board pools and collect chips: Ace, King, Queen, Jack or Ten of the pay suit from the corresponding pool; King+Queen of pay suit also wins Marriage; 7-8-9 of pay suit wins Sequence.",
+        "cost": "0",
+        "constraints": "You may claim only for cards you hold in the pay suit; each pool is claimed by the player who holds the matching card or combination.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "In Pochen stage only: four of a kind, three of a kind, pair (no full house or other poker hands). Pay suit breaks pair ties.",
+    "rankingSystem": "A-K-Q-J-10-9-8-7 in each suit; pay suit is determined by the turned card.",
+    "bettingLimits": "No Limit",
+    "useTrump": true,
+    "deckDescription": "A 32-card German deck with four suits (Hearts, Bells, Acorns, Leaves) and ranks 7 through 10 plus Unter, Ober, King, and Ace, used in many Central European card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "One card at a time clockwise until one card remains (that card is turned for pay suit). In 5-cards-each variant: five cards per player then next card turned for trump.",
+    "notApplicableReasons": {
+      "drawConfig": "All cards are dealt (or five each in some variants); there is no draw-from-stock during play.",
+      "discardConfig": "There is no discard pile; cards are played to the table in sequences during the shedding stage."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "POCH (POCHEN)",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Poch (or Pochen) is an ancient German family game documented as far back as 1441. It is widely recognized as one of the primary ancestors of modern Poker, particularly for its 'Pochen' (vying or betti",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Game continues until a player cannot ante (lacks nine chips for the next deal). Winner is the player with the most chips; first to shed all cards in a deal wins the centre pot and one chip per card from each opponent for that deal.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Poch uses chips and set rankings (pair, triple, four of a kind), not point values per card."
+    }
+  },
+  "alsoKnownAs": [
+    "Bock",
+    "Bog",
+    "Pochen",
+    "Pochspiel",
+    "Le Poque",
+    "Poque"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

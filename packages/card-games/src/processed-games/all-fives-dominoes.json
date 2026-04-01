@@ -1,0 +1,757 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "all-fives-dominoes.json",
+  "name": "All Fives (Dominoes)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "All Fives is the quintessential American domino game. Played with a double-six set, it challenges players to create 'scoring ends' that sum to a multiple of five. It is a game of rapid math, blocking, and tactical placement.",
+    "category": "Domino",
+    "subCategory": "Fives and Threes Family",
+    "origin": "USA / Europe",
+    "originName": "All Fives",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2, 3, or 4 (Partnerships)"
+    },
+    "deck": "Double-six domino set (28 tiles)",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Derived from traditional European tile games, All Fives gained immense popularity in North America in the late 19th century. It is often referred to as 'Muggins' when played without the rule to call out scores.",
+    "originCountries": [
+      "Europe",
+      "United States"
+    ],
+    "timeline": [
+      "1880s: Muggins rules first standardized in American game manuals.",
+      "1920s: The 'Five Up' variant (using all doubles as spinners) becomes popular in the West Coast USA.",
+      "Modern: Standard game for professional domino tournaments in the US."
+    ],
+    "evolution": "Shifted from a simple 'blocking' game to a point-rich strategic game where players calculate 2-3 moves ahead to maximize 'multiple of 5' scoring.",
+    "cultural": "Used as a competitive social game in clubs and barbershops across the US. A specialized 'domino cribbage' board is often used for scoring.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 players (7 tiles each) or 4 players in partnerships (5 tiles each).",
+    "deck": "Standard 28-tile double-six set, from 0-0 to 6-6.",
+    "equipment": "Domino set, score sheet or scoreboard.",
+    "dealing": "Tiles are 'washed' (shuffled) face down. Players draw their hand; remaining tiles are the 'Boneyard'.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to reach the target score (usually 100, 200, or 250) by creating end-totals that are multiples of five.",
+    "gameplay": "1. **Leading**: Any tile can be led. 2. **Matching**: Subsequent tiles must match the pips of an open end. 3. **Doubles**: Placed crosswise. They count as the sum of their pips until matched on both sides. 4. **The Spinner**: The first double played is the 'Spinner'. Once matched on its sides, tiles can be played off its ends, creating 4 open ends. 5. **Scoring**: After playing a tile, sum all open ends. If the total is a multiple of 5 (5, 10, 15, 20, etc.), the player immediately scores that many points. 6. **Boneyard**: If you cannot play, you must draw from the boneyard until you can. 7. **Dominoing**: The hand ends when a player uses their last tile. They score the remaining pips in their opponents' hands (rounded to the nearest 5).",
+    "keyRules": [
+      "Must play if able. You cannot draw from the boneyard if you have a legal play.",
+      "Only the first double is a spinner. All other doubles are 'dead' once matched.",
+      "Muggins: If a player fails to claim a scoring total, an opponent may shout 'Muggins!' and take the points for themselves.",
+      "If the game is blocked (no one can play), the player with the lowest pip total wins the hand bonus."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Always look for plays that sum to 10 or 15. The 5-5 (double-five) tile is the strongest opener as it scores 10 points immediately.",
+    "intermediate": "Blocking: If you have many 4s but your opponent is low, try to keep an open 4 on the board while matching other ends to suits you control.",
+    "advanced": "The 'End Control': If three ends are 6, 4, and 5 (Total 15), look for a play that changes the 6/4 to something that keeps the total as a multiple of 5 (e.g., matching the 6 with a 6-1 to make the ends 1, 4, 5 = 10).",
+    "tips": [
+      "Keep track of the 0-0 (double-blank) tile. It is a powerful reset for end totals.",
+      "If playing partnerships, try to leave ends that your partner has expressed interest in by their previous draws."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "five-up",
+        "name": "Five Up",
+        "description": "West Coast variant where every double is a spinner, potentially creating a many-armed layout.",
+        "overrides": {},
+        "emptyOverridesReason": "Five Up changes which doubles act as spinners; base scoring and flow stay the same."
+      },
+      {
+        "id": "sniff",
+        "name": "Sniff",
+        "description": "A variant where the first double *can* be used as a spinner, but only after it has been played off of.",
+        "overrides": {},
+        "emptyOverridesReason": "Sniff adjusts spinner usage and timing but keeps the same deck, players, and scoring structure."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Only takes the most obvious scoring play (e.g., making a 5). Doesn't block opponents.",
+      "medium": "Calculates the best immediate score. Recognizes the spinner and uses all 4 arms.",
+      "hard": "Optimal blocking. Tracks all 28 tiles. Calculates the expected value of drawing from the boneyard vs playing a low-scoring tile."
+    },
+    "considerations": [
+      "AI must handle the 'multiple of 5' math in real-time.",
+      "The 'Spinner' branching four-way logic must be handled in the move-validator."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_all_fives_dominoes_www_pagat_com_domino_cross_all_fives_html",
+        "name": "Pagat - All Fives (Dominoes)",
+        "url": "https://www.pagat.com/domino/cross/all_fives.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "#deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "#play"
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "#scoring"
+          },
+          {
+            "section": "variations.list",
+            "sourcePath": "#variations"
+          }
+        ],
+        "localHtml": "pagat-domino-all-fives.html"
+      },
+      {
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "Overview"
+          }
+        ],
+        "url": "https://en.wikipedia.org/wiki/Muggins",
+        "name": "Wikipedia - Muggins",
+        "id": "src:wikipedia_all_fives_dominoes",
+        "retrievedAt": "2026-02-20",
+        "localHtml": "wiki-muggins.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/domino/cross/nos.html",
+        "localHtml": "pagat-domino-nos.html"
+      },
+      {
+        "url": "https://www.pagat.com/domino/tree/horserace.html",
+        "localHtml": "pagat-horserace.html"
+      },
+      {
+        "url": "https://www.pagat.com/domino/cross/7toedpete.html",
+        "localHtml": "pagat-domino-7-toed-pete.html"
+      },
+      {
+        "url": "https://www.pagat.com/domino/cross/7rocks.html",
+        "localHtml": "pagat-domino-7-rocks.html"
+      },
+      "USA Domino Association Official Rules",
+      "Wikipedia - Muggins"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "social",
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 95,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_tiles",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Wash and draw hands; remaining tiles become boneyard."
+      },
+      {
+        "id": "play_tiles",
+        "label": "Play Tiles",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card",
+          "draw",
+          "pass"
+        ],
+        "nextPhase": "play_tiles",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_tiles_played == true",
+            "nextPhase": "hand_summary"
+          },
+          {
+            "condition": "all_players_blocked == true",
+            "nextPhase": "hand_summary"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Place matching tile; if no legal play, draw from boneyard until playable or empty, then pass."
+      },
+      {
+        "id": "hand_summary",
+        "label": "Settlement",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Apply end-of-hand bonus from opponents' pips rounded to nearest five."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All Fives dominoes scores by multiples of five; no ante."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Draw starting hands from washed tiles (2p:9, 3p:7, 4p:5), leaving boneyard.",
+        "cost": "0",
+        "constraints": "System/dealer action at hand start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; tiles are in hand and boneyard. First double is spinner."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase; draw from boneyard only when blocked."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Boneyard is for drawing when no legal play; no separate buy."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "You must play or draw when blocked; no fold. First to target score wins."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; score by making end-totals multiples of five."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tile-matching game; no call or betting. Muggins is optional score claim."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is by end-sums and hand bonus; no betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in All Fives dominoes."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase; play tiles to layout ends, score on multiples of 5."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand is played out tile by tile; no formal reveal. Blocked hand scores by pips."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award hand bonus from rounded opponent pips and update running score.",
+        "cost": "0",
+        "constraints": "System action at hand end.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Place one legal domino tile to an open end of the layout.",
+        "cost": "0",
+        "constraints": "Tile must match an open end; if playable tile exists, drawing is not allowed first.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from boneyard when no legal placement is available.",
+        "cost": "0",
+        "constraints": "Only when player has no legal play; stop when playable tile is drawn or boneyard is empty.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        }
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are placed on layout ends; no discard pile. Draw when blocked."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass turn when boneyard is empty and no legal play exists.",
+        "cost": "0",
+        "constraints": "Only legal after exhausting draw options.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; any tile may be led. Score by matching ends and multiples of 5."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Domino placement game; no melds. Tiles match open ends only."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when a player dominoes (plays last tile) or game is blocked."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 28,
+          "notes": "Draw repeatedly until playable tile is found or boneyard is empty."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Tiles are placed on layout ends; there is no discard pile. Draw from boneyard when blocked."
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "NA",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "hand_size": 7,
+      "target_score": 250,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 9
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 28
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "single_spinner_rule",
+          "text": "Only the first double played in a hand is treated as spinner."
+        },
+        {
+          "id": "must_play_before_draw",
+          "text": "A player with any legal placement must play and may not draw first."
+        },
+        {
+          "id": "blocked_hand_scoring",
+          "text": "In a blocked hand, lowest remaining pip total wins; ties score by local rule."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal",
+        "draw"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "spinner_branching_logic",
+        "multiple_of_five_end_scoring",
+        "rounded_pip_bonus",
+        "muggins_optional_call"
+      ]
+    },
+    "progression": [
+      "deal",
+      "play_tiles",
+      "hand_summary"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Sum of Ends (Multiples of 5)",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "One standard 28-tile double-six domino set. Tiles have two ends, each showing zero to six pips; every combination from 0-0 through 6-6 appears exactly once. No playing cards or jokers are used.",
+    "suitDescription": "Tiles are matched by pip value at the open ends of the layout. There are no traditional suits; each end value zero through six can connect to any tile sharing that value on one of its two ends.",
+    "rankDescription": "There is no rank hierarchy between tiles; play legality is determined solely by matching the pip value at an open end. Doubles (same pips on both ends) are often played crosswise and may open the layout.",
+    "dealPattern": "7 tiles each; boneyard draw."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALL FIVES",
+      "subtitle": "The King of Stones",
+      "tagline": "Match, Sum, and Score. The legendary American domino challenge."
+    },
+    "shortDescription": "Tackle the most popular domino game in the world. Calculate your ends, play your doubles, and race to 250 points in this deep, tactical battle of tiles.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "tableau"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to All Fives. You have 7 tiles. Match the pips on layout ends. If the ends add up to a multiple of 5, you score that value. The first double is the spinner and can open four arms.",
+    "ai": "Game: All Fives (Dominoes). Type: Point-oriented Tile Game. Rules: Sum of open ends must be multiple of 5. Spinner creates 4 ends. Hand winner gets rounded opponent pips. Boneyard draw allowed if blocked."
+  },
+  "scoring": {
+    "description": "Points are scored both during play and at the end of the hand.",
+    "winCondition": "First player/team to reach 250 points (standard) Wins.",
+    "cardValues": {},
+    "penalties": {
+      "Miscount": "Claiming a multiple of 5 that is incorrect usually results in a points penalty or loss of the turn's points."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "Hand bonus pips are rounded to the nearest 5. E.g., 7 pips becomes 5; 8 pips becomes 10.",
+    "targetScore": 250,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Domino tiles do not have fixed per-tile point values; scoring comes from layout end totals and rounded pip bonuses."
+    }
+  },
+  "alsoKnownAs": [
+    "Muggins",
+    "Five Up",
+    "Single Spinner",
+    "The 5-Point Game"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

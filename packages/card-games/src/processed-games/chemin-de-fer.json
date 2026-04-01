@@ -1,0 +1,852 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "chemin-de-fer.json",
+  "name": "Chemin de Fer",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Chemin de Fer is the original version of Baccarat, popularized in French casinos and famously played by James Bond in the original 007 novels. Unlike its modern cousin, Punto Banco, where all moves are mechanical, Chemin de Fer is a social and strategic game where players take turns acting as the Banker and make active drawing decisions. The name, French for 'Railway', refers to how the dealing shoe travels around the table like a train.",
+    "category": "Banking",
+    "subCategory": "Baccarat Family",
+    "origin": "France",
+    "originName": "Chemin de Fer",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 14,
+      "recommendedPlayers": 2,
+      "display": "2-14"
+    },
+    "deck": "6 Standard 52-card decks",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes per bank",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["France"],
+    "origins": "Emerging in late 19th-century France as a modification of the older Baccarat Banque. It became the preferred game of European high society during the Belle Ã‰poque.",
+    "timeline": [
+      "1837: Baccarat is outlawed in France, leading to the rise of games like Chemin de Fer in private clubs.",
+      "1900s: Becomes the flagship game of Monte Carlo and the French Riviera.",
+      "1953: Iconic appearance in Ian Fleming's 'Casino Royale'.",
+      "Late 20th Century: Largely replaced in American casinos by Punto Banco, but remains popular in European salons."
+    ],
+    "evolution": "The game shifted the role of the banker from the house to the players themselves, turning Baccarat into a game of psychological maneuvering between participants.",
+    "cultural": "Regarded as the 'purest' form of Baccarat, requiring both capital and the nerve to make the right drawing call on a total of 5.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Variable, typically 8 to 12. One player acts as Banker; others are 'Punters'.",
+    "deck": "Six decks shuffled together.",
+    "equipment": "Special oval Baccarat table, a 'Sabot' (shoe) for dealing, a 'Palette' for moving cards, and a discard cylinder.",
+    "dealing": "The Banker deals two face-down hands: one for 'The Player' (representing all Punters) and one for 'The Banker'.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Achieve a hand total as close to 9 as possible. Players bet against the Banker's bankroll.",
+    "gameplay": "1. **Initial Deal**: Both sides receive two cards face down. 2. **Naturals**: If either has 8 or 9, they show immediately and the round ends. 3. **The Player's Choice**: If the Player has 0-4, they MUST draw. If 6-7, they MUST stand. If 5, they can choose to draw or stand. 4. **The Banker's Move**: The Banker then acts, with similar choices, often guided by high-probability tables. 5. **Showdown**: Cards are compared; closest to 9 wins the pot.",
+    "keyRules": [
+      "Rotating Bank: If the Banker wins, they can choose to stay Banker and keep the winnings in the bank, or pass the shoe.",
+      "5% Tax: The house typically takes 5% of all winning Banker bets as a hosting fee.",
+      "Totaling: Use Modulo 10 logic (only the last digit of the sum counts)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As the Player, always draw on a 0-4 and stand on 6-7. On a 5, the standard tactical choice is to draw, but standing can be used as a bluff to make the Banker think you have a 6 or 7.",
+    "intermediate": "As the Banker, monitor the Punters' patterns. If a Punter always draws on a 5, you know they hold a 0-5 hand. If they stand, they likely have a 6 or 7.",
+    "advanced": "Bankroll Management: Don't 'Banco' unless you are prepared to lose the stake. In Chemin de Fer, the Banker has a slight mathematical advantage, so holding the shoe as long as possible is generally profitable.",
+    "tips": [
+      "In 'James Bond' style play, psychology is as important as the cards. Use your 5-draw choice to vary your 'vibe'.",
+      "If you are the Banker and win several hands in a row, consider 'cashing out' and passing the shoe to protect your profit."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "baccarat-banque",
+        "name": "Baccarat Banque",
+        "description": "The position of Banker is auctioned off or held longer, and the Banker plays against two separate hands at once.",
+        "overrides": {},
+        "emptyOverridesReason": "Baccarat Banque differs in banker selection and number of hands; engine overrides to be added when implementing this variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Always draws on 5 and never bluffs. Bets randomly against the Banker.",
+      "medium": "Follows the optimal 'Baccarat Table' for all decisions. Never 'Bancos' unless holding a large stack.",
+      "hard": "Incorporates psychological modeling. Will stand on a 5 to induce the Banker to miscalculate their own draw. Expertly manages the bankroll across multiple shoes."
+    },
+    "considerations": [
+      "AI must handle the 'Active Banker' role, deciding whether to 'Suivie' (triple the bet) or retire.",
+      "Decision-making logic for the 5-point draw choice must include a randomized bluff frequency."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_baccarat_chemin_de_fer_www_pagat_com_banking_baccarat_html_chemindefer",
+        "name": "Pagat - Baccarat (Chemin de Fer)",
+        "url": "https://www.pagat.com/banking/baccarat.html#chemindefer",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-baccarat.html"
+      },
+      {
+        "id": "src:wikipedia_baccarat",
+        "name": "Wikipedia - Baccarat",
+        "url": "https://en.wikipedia.org/wiki/Baccarat",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-baccarat-alt.html"
+      }
+    ],
+    "additional": [
+      "Ian Fleming - Casino Royale (Game Description)",
+      "French Casino Regulations - Baccarat Sections"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "banking",
+    "gambling",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 80,
+    "complexity": 5,
+    "luck": 8,
+    "skill": 4
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "auction_bank",
+        "label": "Setting the Bank",
+        "actor": "system",
+        "legalActions": [
+          "declare_bank_amount"
+        ],
+        "nextPhase": "punting",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "punting",
+        "label": "Player Betting",
+        "actor": "current_player",
+        "legalActions": [
+          "place_bet",
+          "banco",
+          "pass_punt"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "Initial Deal (2x2 Hidden)",
+        "actor": "system",
+        "legalActions": [
+          "deal_hole_cards"
+        ],
+        "nextPhase": "natural_check",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "natural_check",
+        "label": "The Reveal",
+        "actor": "system",
+        "legalActions": [
+          "check_for_8_or_9"
+        ],
+        "nextPhase": "player_choice",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "player_choice",
+        "label": "Punter's Decision",
+        "actor": "current_player",
+        "legalActions": [
+          "draw_on_5",
+          "stand_on_5",
+          "auto_draw",
+          "auto_stand"
+        ],
+        "nextPhase": "banker_choice",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "banker_choice",
+        "label": "Banker's Decision",
+        "actor": "system",
+        "legalActions": [
+          "draw_final",
+          "stand_final"
+        ],
+        "nextPhase": "payout",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "payout",
+        "label": "Clearing the Tableau",
+        "actor": "system",
+        "legalActions": [
+          "resolve_bets",
+          "shift_shoe_if_lost"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Chemin de Fer uses fixed bets against the bank; there is no ante phase."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Banker deals two cards face down to the Player hand and two to the Banker hand.",
+        "cost": "0",
+        "constraints": "Only the actor with the banker role during the deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Banking game with no market or tableau reveal mechanic."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are dealt from the shoe only; there is no market to buy from."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Third card is dealt on request; players do not buy from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players commit to bets before the deal and cannot fold."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No check; punters either bet or pass when the bank is offered."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No raise or call; bets are placed once per coup."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Punters place wagers against the Banker's stake. Total bets cannot exceed the bank.",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "Betting phase. Counter-clockwise from banker's right.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Single betting opportunity per coup; no raising."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Naturals (8 or 9) are shown by turning cards; no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Hands are revealed when natural (8 or 9) or after draw decisions.",
+        "cost": "0",
+        "constraints": "Natural check or showdown phase.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Banker pays winning punters or collects from losing ones; higher total wins.",
+        "cost": "0",
+        "constraints": "Resolution phase after both hands are final.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are dealt and optionally draw a third card; no card-by-card play."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Active player or banker requests a third card. Must draw on 0-4, stand on 6-7, optional on 5.",
+        "cost": "0",
+        "constraints": "Player or banker choice phase when total is 7 or less.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard pile; only draw or stand on the third card."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Stake the bank; banker puts up a stake that punters bet against. Bank rotates on loss.",
+        "cost": {
+          "type": "pot_limit"
+        },
+        "constraints": "Setting the bank or when taking over the bank.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are valued by total modulo 10; no melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Coup ends by comparing totals; no go-out mechanic."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 14,
+      "optimalPlayers": 9,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "No discard pile; players only draw a third card or stand."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 2,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 9,
+      "bustRule": "",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 3,
+    "deckCount": 6,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 312
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 3
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["auction_bank", "punting", "deal", "natural_check", "player_choice", "banker_choice", "payout"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "declare_bank_amount",
+        "supported": true,
+        "description": "Banker declares the amount they put in the bank.",
+        "cost": "0",
+        "constraints": "Banker-only. Before punting phase.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      {
+        "id": "place_bet",
+        "supported": true,
+        "description": "Punter places a bet on the Player hand.",
+        "cost": "0",
+        "constraints": "Punter-only. Within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "banco",
+        "supported": true,
+        "description": "Punter challenges the Bank by covering the full bank amount.",
+        "cost": "0",
+        "constraints": "Punter-only. Must cover total bank.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "pass_punt",
+        "supported": true,
+        "description": "Punter declines to bet or Banco.",
+        "cost": "0",
+        "constraints": "Punter-only during punting phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_hole_cards",
+        "supported": true,
+        "description": "Deal two cards each to Player and Banker.",
+        "cost": "0",
+        "constraints": "Banker deals.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "check_for_8_or_9",
+        "supported": true,
+        "description": "Check for natural 8 or 9; resolve if present.",
+        "cost": "0",
+        "constraints": "Automatic check.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      {
+        "id": "draw_on_5",
+        "supported": true,
+        "description": "Player draws third card when holding 5.",
+        "cost": "0",
+        "constraints": "Player total is 5; optional.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "stand_on_5",
+        "supported": true,
+        "description": "Player stands when holding 5.",
+        "cost": "0",
+        "constraints": "Player total is 5; optional.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      {
+        "id": "auto_draw",
+        "supported": true,
+        "description": "Mandatory draw when holding 0-4.",
+        "cost": "0",
+        "constraints": "Player total 0-4; fixed rules.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "auto_stand",
+        "supported": true,
+        "description": "Mandatory stand when holding 6 or 7.",
+        "cost": "0",
+        "constraints": "Player total 6-7; fixed rules.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      {
+        "id": "draw_final",
+        "supported": true,
+        "description": "Banker draws third card.",
+        "cost": "0",
+        "constraints": "Banker follows drawing rules.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "stand_final",
+        "supported": true,
+        "description": "Banker stands on current hand.",
+        "cost": "0",
+        "constraints": "Banker decision.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      {
+        "id": "resolve_bets",
+        "supported": true,
+        "description": "Compare hands and pay out winners.",
+        "cost": "0",
+        "constraints": "After both hands finalized.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      {
+        "id": "shift_shoe_if_lost",
+        "supported": true,
+        "description": "If Banker lost, shoe passes to next player.",
+        "cost": "0",
+        "constraints": "Banker lost; rotate dealer.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Baccarat-Total (Modulo 10)",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Player vs Banker."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "CHEMIN DE FER",
+      "subtitle": "The Railway to Riches",
+      "tagline": "The shoe rotates. The pressure builds. Will you draw on a five?"
+    },
+    "shortDescription": "Step into the shoes of high society. Chemin de Fer is the sophisticated ancestor of modern Baccarat, where the players take the Bank and every draw is a calculated risk. Experience the game that defined the Golden Age of casinos.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "hand",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "The shoe has reached you! Will you accept the Bank? Name your stake. Punters, place your bets. Will someone cry 'Banco' and challenge the table?",
+    "ai": "Game: Chemin de Fer. Type: Rotating-Banker Baccarat. Rules: 6 decks. Player chooses to draw or stand on 5 points. Banker has similar agency. Closest to 9 wins. House edge is lower for Banker."
+  },
+  "scoring": {
+    "description": "Pot-based; Banker pays out punters or collects from them.",
+    "winCondition": "Highest score (modulo 10).",
+    "cardValues": {
+      "Ace": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "0",
+      "Jack": "0",
+      "Queen": "0",
+      "King": "0"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "Ties result in no money changing hands (Push).",
+    "targetScore": 9,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Baccarat Chemin de Fer",
+    "Chemin de Fer Baccarat",
+    "Chemmy",
+    "Shimmy",
+    "Railway Baccarat"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

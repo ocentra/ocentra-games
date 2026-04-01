@@ -1,0 +1,395 @@
+import { ApiEndpoint } from '@/constants/cloudflare';
+import { StripeEndpoint } from '@/constants/stripe';
+import { PathValue } from '@/constants/paths';
+import { HttpMethod } from '@/constants/http';
+import {
+  CloudflareHandlerKey,
+  MiddlewareKey,
+  RouteMatch,
+  type HandlerKey,
+  type MiddlewareKeyType,
+  type RouteMatchType,
+} from '@/constants/cloudflare-route-keys';
+import type { PathSegment } from '@/types/brands';
+
+export type { HandlerKey } from '@/types/brands';
+export type { MiddlewareKeyType, RouteMatchType } from '@/constants/cloudflare-route-keys';
+
+export interface RouteSpec {
+  path: string;
+  paths?: readonly string[];
+  match: RouteMatchType;
+  includes?: PathSegment;
+  handlerKey: HandlerKey;
+  priority?: number;
+  method?: HttpMethod;
+  middleware?: readonly MiddlewareKeyType[];
+}
+
+export const CloudflareRouteManifest: readonly RouteSpec[] = [
+  {
+    path: ApiEndpoint.Root,
+    paths: [ApiEndpoint.Root, PathValue.Empty],
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Homepage,
+    priority: 100,
+  },
+  { path: ApiEndpoint.Explore.Base, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.Explore },
+  {
+    path: ApiEndpoint.Explore.Leaderboard,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.ExploreLeaderboard,
+  },
+  {
+    path: ApiEndpoint.Explore.Benchmark,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.ExploreBenchmark,
+  },
+  {
+    path: ApiEndpoint.ExploreApi.Matches,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.ExploreMatches,
+  },
+  {
+    path: ApiEndpoint.ExploreApi.Benchmarks,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.ExploreBenchmarks,
+  },
+  {
+    path: ApiEndpoint.Matches.Base,
+    match: RouteMatch.PrefixAndIncludes,
+    includes: ApiEndpoint.Matches.AnonymizeSegment,
+    handlerKey: CloudflareHandlerKey.Anonymize,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Matches.Base,
+    match: RouteMatch.PrefixAndIncludes,
+    includes: ApiEndpoint.Matches.TransparencySegment,
+    handlerKey: CloudflareHandlerKey.Transparency,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Matches.Base,
+    match: RouteMatch.PrefixAndIncludes,
+    includes: ApiEndpoint.Matches.VerifySegment,
+    handlerKey: CloudflareHandlerKey.Transparency,
+    priority: 10,
+  },
+  { path: ApiEndpoint.Matches.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Matches },
+  {
+    path: ApiEndpoint.Disputes.Base,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Disputes,
+    method: HttpMethod.Post,
+  },
+  {
+    path: ApiEndpoint.Disputes.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Disputes,
+  },
+  {
+    path: ApiEndpoint.SignedUrl.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.SignedUrl,
+  },
+  {
+    path: ApiEndpoint.Archive.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Archive,
+  },
+  {
+    path: ApiEndpoint.DataExport.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.DataExport,
+  },
+  {
+    path: ApiEndpoint.Data.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Data,
+  },
+  {
+    path: ApiEndpoint.AI.Catalog,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AICatalog,
+    method: HttpMethod.Get,
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.AI.OAuthStart,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AIOAuth,
+    method: HttpMethod.Get,
+    middleware: [MiddlewareKey.Auth],
+    priority: 18,
+  },
+  {
+    path: ApiEndpoint.AI.OAuthCallback,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AIOAuth,
+    method: HttpMethod.Get,
+    priority: 25,
+  },
+  {
+    path: ApiEndpoint.AI.Keys,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.AIKeys,
+    middleware: [MiddlewareKey.Auth],
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.AI.EscrowReserve,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AIEscrow,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 20,
+  },
+  {
+    path: ApiEndpoint.AI.EscrowConsume,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AIEscrow,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 20,
+  },
+  {
+    path: ApiEndpoint.AI.Generate,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AIGenerate,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 22,
+  },
+  {
+    path: ApiEndpoint.AI.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.AI,
+    middleware: [MiddlewareKey.Auth],
+  },
+  {
+    path: ApiEndpoint.AI.Base,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AI,
+    middleware: [MiddlewareKey.Auth],
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Leaderboard.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Leaderboard,
+  },
+  {
+    path: ApiEndpoint.Players.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Players,
+  },
+  {
+    path: ApiEndpoint.Credits.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Credits,
+  },
+  {
+    path: ApiEndpoint.Badges.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Badges,
+  },
+  {
+    path: ApiEndpoint.Logs.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Logs,
+  },
+  {
+    path: ApiEndpoint.Slices.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Slices,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Assets.ManifestUrl,
+    match: RouteMatch.Exact,
+    method: HttpMethod.Get,
+    handlerKey: CloudflareHandlerKey.AssetsManifestUrl,
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.Assets.DownloadUrl,
+    match: RouteMatch.Exact,
+    method: HttpMethod.Get,
+    handlerKey: CloudflareHandlerKey.Assets,
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.Assets.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Assets,
+    priority: 5,
+  },
+  {
+    path: ApiEndpoint.Resources.Base,
+    match: RouteMatch.Exact,
+    method: HttpMethod.Get,
+    handlerKey: CloudflareHandlerKey.Assets,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Manifest.Current,
+    match: RouteMatch.Exact,
+    method: HttpMethod.Get,
+    handlerKey: CloudflareHandlerKey.Assets,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Test.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Test,
+    middleware: [MiddlewareKey.DevOnly],
+  },
+  {
+    path: ApiEndpoint.Docs.Swagger,
+    paths: [ApiEndpoint.Docs.Swagger, ApiEndpoint.Docs.Base],
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Docs,
+  },
+  {
+    path: ApiEndpoint.OpenApiJson,
+    paths: [ApiEndpoint.OpenApiJson, ApiEndpoint.Docs.SwaggerJson],
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Openapi,
+  },
+  {
+    path: ApiEndpoint.Health,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Health,
+  },
+  {
+    path: ApiEndpoint.AppVersion,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.AppVersion,
+  },
+  {
+    path: ApiEndpoint.Metrics,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Metrics,
+  },
+  {
+    path: ApiEndpoint.Alerts,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Alerts,
+  },
+  {
+    path: ApiEndpoint.ImageProxy,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.ImageProxy,
+  },
+  {
+    path: ApiEndpoint.Sync.Health,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Sync,
+    method: HttpMethod.Get,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Sync.FromSolana,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Sync,
+    method: HttpMethod.Post,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Sync.Reconcile,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Sync,
+    method: HttpMethod.Post,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Sync.ToSolana,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Sync,
+    method: HttpMethod.Post,
+    priority: 10,
+  },
+  {
+    path: ApiEndpoint.Sync.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Sync,
+    priority: 5,
+  },
+  {
+    path: ApiEndpoint.Replay.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Replay,
+    priority: 10,
+  },
+  { path: ApiEndpoint.Ws.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Ws, priority: 12 },
+  {
+    path: StripeEndpoint.Webhook,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.StripeWebhook,
+    method: HttpMethod.Post,
+    priority: 15,
+  },
+  {
+    path: StripeEndpoint.TestInitPayment,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Payment,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 16,
+  },
+  {
+    path: StripeEndpoint.CreateCheckoutSession,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Payment,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.Payment.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Payment,
+    priority: 10,
+  },
+  { path: ApiEndpoint.Rooms.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Lobby, priority: 10 },
+  { path: ApiEndpoint.Matchmaking.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Matchmaking, priority: 10 },
+  { path: ApiEndpoint.Presence.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Presence, priority: 10 },
+  { path: ApiEndpoint.Friends.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Friends, middleware: [MiddlewareKey.Auth], priority: 10 },
+  { path: ApiEndpoint.Users.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Friends, middleware: [MiddlewareKey.Auth], priority: 10 },
+  { path: ApiEndpoint.Audit.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Audit, priority: 10 },
+  { path: ApiEndpoint.Progression.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Progression, priority: 10 },
+  { path: ApiEndpoint.Rewards.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Reward, priority: 10 },
+  { path: ApiEndpoint.Missions.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Reward, priority: 10 },
+  { path: ApiEndpoint.Personalization.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Personalization, priority: 10 },
+  { path: ApiEndpoint.Analytics.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Analytics, priority: 10 },
+  { path: ApiEndpoint.Security.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Security, priority: 10 },
+  { path: ApiEndpoint.Fraud.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Fraud, priority: 10 },
+  { path: ApiEndpoint.AntiCheat.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.AntiCheat, priority: 10 },
+  { path: ApiEndpoint.Profile.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Profile, priority: 10 },
+  { path: ApiEndpoint.Message.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Message, priority: 10 },
+  { path: ApiEndpoint.Feed.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Feed, priority: 10 },
+  { path: ApiEndpoint.Party.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Party, priority: 10 },
+  { path: ApiEndpoint.Notification.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Notification, priority: 10 },
+  { path: ApiEndpoint.Discovery.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Discovery, priority: 10 },
+  { path: ApiEndpoint.Inventory.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Inventory, priority: 10 },
+  { path: ApiEndpoint.Marketplace.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Marketplace, priority: 10 },
+  { path: ApiEndpoint.Tournament.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Tournament, priority: 10 },
+  { path: ApiEndpoint.Settings.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Settings, priority: 10 },
+  { path: ApiEndpoint.Admin.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Admin, priority: 10 },
+  {
+    path: ApiEndpoint.Admin.Products,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.AdminProducts,
+    middleware: [MiddlewareKey.Auth],
+    priority: 15,
+  },
+  {
+    path: ApiEndpoint.Shop.Products,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Shop,
+    priority: 10,
+  },
+  { path: ApiEndpoint.Compliance.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Compliance, priority: 10 },
+  { path: ApiEndpoint.HealthDetail, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.HealthDetail, priority: 15 },
+] as const;

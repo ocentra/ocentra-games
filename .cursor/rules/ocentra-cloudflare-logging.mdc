@@ -1,0 +1,99 @@
+---
+description: Use standard Logger pattern in all new infra/cloudflare handlers, Durable Objects, and tests.
+globs: infra/cloudflare/**/*.ts
+alwaysApply: false
+---
+
+# Cloudflare Infra – Standard Logger Pattern (MANDATORY for New Code)
+
+When creating or editing **any new file** under `infra/cloudflare/` (handlers, Durable Objects, services, tests), **always** use the shared Logger pattern below. Add it even if the file does not log yet, so the wiring is consistent and you can call the helpers when needed.
+
+---
+
+## 1. Imports
+
+```ts
+import { Logger, getStackTrace } from '@/logging/domain-logger-init';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+```
+
+(Use the correct path alias for the worker: `@/logging/domain-logger-init` in infra/cloudflare.)
+
+---
+
+## 2. Registration and helpers
+
+**In handlers and tests** (module scope, right after imports):
+
+```ts
+const log = Logger.instance;
+log.register(import.meta.url);
+
+const logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  log.logInfo(message, stackTrace, data, enabled);
+};
+
+const logWarn = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  log.logWarn(message, stackTrace, data, enabled);
+};
+
+const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
+  log.logError(message, stackTrace, data);
+};
+
+const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  log.logDebug(message, stackTrace, data, enabled);
+};
+```
+
+**In Durable Objects** (class members, after constructor):
+
+```ts
+private readonly log = Logger.instance;
+
+constructor(..., env: Env) {
+  this.log.register(import.meta.url);
+}
+
+private logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  this.log.logInfo(message, stackTrace, data, enabled);
+};
+
+private logWarn = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  this.log.logWarn(message, stackTrace, data, enabled);
+};
+
+private logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
+  this.log.logError(message, stackTrace, data);
+};
+
+private logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  this.log.logDebug(message, stackTrace, data, enabled);
+};
+```
+
+---
+
+## 3. Usage at “confusing” points
+
+In **handlers** and **DOs**, call the helpers at:
+
+- **Entry**: path, method, or main params (e.g. `logInfo('...', getStackTrace(), { path, method })`).
+- **Branch points**: which path was taken (e.g. reserve vs consume, verify vs get-state).
+- **Errors**: validation failure, DO missing, upstream error (use `logWarn` or `logError` with `getStackTrace()`, plus relevant data).
+- **Success**: important outcomes (e.g. escrow created, reconcile result) so logs show the path taken.
+
+Always pass **getStackTrace()** as the second argument when calling `logInfo`, `logWarn`, `logError`, or `logDebug`.
+
+---
+
+## 4. Tests
+
+In test files under `infra/cloudflare/tests/`, use the **same module-level pattern** (log, register, logInfo, logWarn, logError, logDebug). Use `describe(extractName(import.meta.url), TestSuiteType.Unit|Integration, () => { ... })` and `it(testName('...'), async () => { ... })` as per existing test rules.
+
+---
+
+## 5. Rule summary
+
+- **Every new** handler, DO, and test file in `infra/cloudflare/` must include the Logger registration and the four helpers (logInfo, logWarn, logError, logDebug), even if some are unused at first.
+- Use the helpers (with `getStackTrace()`) at entry, branch points, errors, and important successes so logs are clear and debuggable.

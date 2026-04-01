@@ -1,0 +1,832 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "albastini.json",
+  "name": "Albastini",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Albastini is a sophisticated point-trick game from Tanzania, likely derived from the Portuguese game Bisca. It features unique rules such as a total absence of the follow-suit requirement and a bidding phase where players sacrifice cards to set the trump.",
+    "category": "Trick-taking",
+    "subCategory": "Point-trick",
+    "origin": "Tanzania / East Africa",
+    "originName": "Albastini",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2, 3, 4, or 6"
+    },
+    "deck": "36-card stripped deck (A, 7, K, J, Q, 6, 5, 4, 3)",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Believed to have been introduced to East Africa by Portuguese sailors or traders, Albastini (corruption of 'Al-Bisca' or similar) evolved into a distinct Tanzanian game with localized terminology like 'Mrithi' and 'Ndoa'.",
+    "originCountries": [
+      "Tanzania",
+      "Portugal"
+    ],
+    "timeline": [
+      "16th-18th Century: Portuguese Bisca enters East African ports (Zanzibar, Dar es Salaam).",
+      "Late 20th Century: Formalized local rules documented in Tanzania.",
+      "2010s: Digital versions by local developers (like Augustino Mponzi) popularize it in the app stores."
+    ],
+    "evolution": "While Bisca required following suit or trumping in its Italian/Portuguese origins, Albastini dropped this constraint, allowing for deeper 'sacrifice' plays.",
+    "cultural": "Commonly played in 'vijiwe' (social meeting points) in Tanzania. Winning a trick is called 'Kula' (eating).",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2, 3, or teams of 2 (4 players) or 3 (6 players).",
+    "deck": "36-card standard (Remove 2s, 8s, 9s, 10s).",
+    "equipment": "Standard modified deck, score sheet.",
+    "dealing": "5 cards dealt to each player. Remaining cards form the stock. Dealer is chosen by agreement.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture tricks containing high-value cards to surpass 60 points (out of 120 total).",
+    "gameplay": "1. **Bidding (Otea)**: Dealer's opponents place one card face-up. This signifies their desire for that suit to be trumps. 2. **Trump Flip**: Dealer turns up the top card of the stock. This suit becomes trump. If an opponent bid that suit, they swap their bid card for the trump card. 3. **The Play**: Lead any card. Others play any card (no follow-suit requirement). 4. **Winning**: Highest trump wins. If no trump, highest card of the led suit wins. 5. **Drawing**: Winner 'eats' the trick, draws a new card from the stock first, then others draw. Lead next. 6. **Endings**: Play continues until stock and hands are empty.",
+    "keyRules": [
+      "Card Values: Ace=11, 7=10, King=4, Jack=3, Queen=2. Total in deck = 120.",
+      "Ndoa (Marriage): When a 7 is captured by an Ace of the same suit.",
+      "Mrithi (Target): To avoid a double-loss, you must reach a minimum point threshold (10 for individuals, 20 for 4-player teams, 30 for 6-player teams).",
+      "No follow-suit requirement: You can play any card at any time."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Don't waste your trumps early. Use low-value cards (6, 5, 4, 3) to probe your opponents and safe-guard your points.",
+    "intermediate": "Strategic Passing: Since you don't have to follow suit, use your point-cards (Ace/7) to win tricks that contain high-value discards from your partner.",
+    "advanced": "Card Counting: There are only 36 cards. If you track the fallen 10s and face cards, you can calculate precisely when it's safe to drop your 7s.",
+    "tips": [
+      "The '7' is the second highest card in Albastini—it is extremely valuable and should be protected/hunted.",
+      "Always try to win the second-to-last trick to draw the face-up trump card."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "albastini-6p",
+        "name": "Six Player Albastini",
+        "description": "Two teams of three. Requires reaching 30 points (Mrithi) to avoid the double-loss.",
+        "overrides": {},
+        "emptyOverridesReason": "Six-player team format only adjusts point thresholds described in rules, so no separate engine overrides are needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows legal moves but often wastes high trumps (A/7) on low-value tricks.",
+      "medium": "Tries to reach Mrithi. Saves Aces for tricks containing 7s.",
+      "hard": "Tracks cards in opponents' hands based on their 'Otea' bids. Knows when to throw away a King to save an Ace."
+    },
+    "considerations": [
+      "AI must operate without a 'Follow Suit' constraint, which increases the branching factor significantly.",
+      "Bidding logic (Otea) should focus on sacrificing 6s or 5s."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_albastini_www_pagat_com_aceten_albastini_html",
+        "name": "Pagat - Albastini",
+        "url": "https://www.pagat.com/aceten/albastini.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "#deal,#bidding"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "#play"
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "#scoring"
+          },
+          {
+            "section": "variations.list",
+            "sourcePath": "#variations"
+          }
+        ],
+        "localHtml": "pagat-albastini.html"
+      },
+      {
+        "id": "src:wikipedia_bisca_card_game",
+        "name": "Wikipedia - Bisca (card game)",
+        "url": "https://en.wikipedia.org/wiki/Bisca_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "history.evolution",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-bisca.html"
+      }
+    ],
+    "additional": [
+      "Augustino Mponzi - Tanzanian Card Game Standards",
+      "Wikipedia - Bisca (historical roots)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 35,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "otea",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal five cards to each player, then place the remainder as stock."
+      },
+      {
+        "id": "otea",
+        "label": "Bidding (Otea)",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "trump_reveal",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "bid": "face_up"
+        },
+        "notes": "Only dealer opponents may bid; each bid suit must be different."
+      },
+      {
+        "id": "trump_reveal",
+        "label": "Reveal Trump",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_market"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_market": "face_up"
+        },
+        "notes": "Top stock card determines trump suit and may be exchanged with matching bid."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "draw_replenish",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "No follow-suit rule. Highest trump wins; otherwise highest of led suit."
+      },
+      {
+        "id": "draw_replenish",
+        "label": "Draw Replenish",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "draw"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "stock_empty == true",
+            "nextPhase": "trick_play"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "After each trick while stock remains, trick winner draws first and others follow."
+      },
+      {
+        "id": "resolution",
+        "label": "Score Hand",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count card points and award 1 or 2 victory points by Mrithi thresholds."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Albastini has no ante; trump is set by Otea bids and dealer's stock flip."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes five cards to each player and initializes stock.",
+        "cost": "0",
+        "constraints": "Dealer-only at start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 5
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal top stock card as trump indicator and resolve matching bid swap.",
+        "cost": "0",
+        "constraints": "Dealer-only after bidding.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {
+          "from": "stock",
+          "to": "custom:trump_indicator",
+          "count": 1
+        }
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market pile; cards come from deal and from stock after each trick."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "You draw from stock after winning a trick; there is no separate stock purchase."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "You must play one card each trick; there is no fold."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Albastini is point-trick only; no betting rounds or check."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is by card points and Mrithi; no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; victory is by capturing high-point cards and reaching 60."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds; Otea is card-bidding for trump, not chips."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump is set by dealer's stock flip and bid swap; no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are shown only when empty at end of hand; no reveal action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award hand victory points based on card totals and Mrithi thresholds.",
+        "cost": "0",
+        "constraints": "System scoring action after all tricks are complete.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play any card from hand.",
+        "cost": "0",
+        "constraints": "No follow-suit required.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "trick"
+        }
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from stock to replenish hand after each trick while stock remains.",
+        "cost": "0",
+        "constraints": "Trick winner draws first, then others in play order.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        }
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played to the trick; there is no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline to place an Otea bid card.",
+        "cost": "0",
+        "constraints": "Only during bidding window.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Place one face-up card to nominate a potential trump suit for exchange.",
+        "cost": "0",
+        "constraints": "Dealer and dealer partners cannot bid; bid suits must be unique among bidders.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {
+          "min": 1,
+          "max": 1,
+          "declarationType": "trump_suit"
+        }
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Point-trick game; no melds. Ndoa is a capture rule, not a meld."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when stock and all hands are empty; no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2",
+        "3v3"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 1,
+          "notes": "Winner of each trick draws first."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Cards are played to the trick and captured by the winner; there is no discard pile."
+    },
+    "deckType": "Standard 36",
+    "suitSet": "French",
+    "rankSet": "Stripped_36",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "standard",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": false,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": 1,
+        "maxBid": 1,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "points",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 6,
+      "hand_size": 5,
+      "trick_count": 0,
+      "target_score": 5,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:trump_indicator",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 5
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 6
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "team",
+        "capacity": null
+      },
+      {
+        "id": "custom:score_area",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "forced_bid_swap",
+          "text": "A player whose bid suit matches trump must swap bid card for indicator even when receiving a lower card."
+        },
+        {
+          "id": "trump_indicator_last_draw",
+          "text": "Face-up trump indicator is drawn as last stock card by the player who draws last in that draw cycle."
+        },
+        {
+          "id": "five_player_variant",
+          "text": "With five players only 35 cards are used; face-up trump indicator remains out of play for scoring."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal",
+        "draw"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "otea_unique_suit_constraint",
+        "mandatory_trump_swap",
+        "mrithi_vp_award",
+        "team_capture_scoring"
+      ]
+    },
+    "progression": [
+      "deal",
+      "otea",
+      "trump_reveal",
+      "trick_play",
+      "draw_replenish",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "",
+    "rankingSystem": "Point-Trick (No Follow Suit)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 36-card deck made by removing twos, eights, nines, tens, and jokers from a standard 52-card pack. Four French suits remain, each with nine ranks, used for this Italian trick-taking game.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs) are used. There is no follow-suit obligation during play; card power is determined by the unique point and trick order of Albastini.",
+    "rankDescription": "Nine ranks per suit in trick order: ace high, then seven, king, jack, queen, six, five, four, three. Point values are ace eleven, seven ten, king four, jack three, queen two; other cards zero.",
+    "dealPattern": "5 cards each; draw after tricks."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALBASTINI",
+      "subtitle": "The Queen of Tanzanian Cards",
+      "tagline": "Follow no suits, follow only your strategy."
+    },
+    "shortDescription": "Tanzania's favorite trick-taking challenge. With 36 cards and no rules on following suits, tactical sacrifices and high-point captures are the path to victory.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:trump_indicator",
+        "custom:captured_tricks",
+        "custom:score_area"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Albastini. You have 5 cards. This is a trick-taking game where you can play ANY card at any time—you don't have to follow suit. Try to capture Aces (11 pts) and 7s (10 pts) to score over 60. Watch out for 'Ndoa' and reach your 'Mrithi' to stay in the game!",
+    "ai": "Game: Albastini. Type: Point-trick. Deck: 36 cards (A=11, 7=10, K=4, J=3, Q=2). Rule: NO follow-suit requirement. Strategy: Sacrifice low cards in 'Otea' phase, save A/7 for winning rounds."
+  },
+  "scoring": {
+    "description": "Scoring is based on the total 120 card points and 'Victory Points' (VP).",
+    "winCondition": "The side with >60 card points wins the hand.",
+    "cardValues": {
+      "3": "0",
+      "4": "0",
+      "5": "0",
+      "6": "0",
+      "7": "10",
+      "A": "11",
+      "K": "4",
+      "J": "3",
+      "Q": "2"
+    },
+    "penalties": {
+      "Single Loss": "Winner gets 1 VP if loser reached Mrithi.",
+      "Double Loss": "Winner gets 2 VP if loser failed to reach Mrithi."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "If points are 60-60 exactly, no victory points are awarded.",
+    "targetScore": 5,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Tanzanian Bisca",
+    "East African Bisca",
+    "Kula (Traditional Name)"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

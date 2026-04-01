@@ -1,0 +1,639 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kvitlech.json",
+  "name": "Kvitlech",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kvitlech (Yiddish for 'Little Notes') is a unique Jewish card game developed in the late 18th century, primarily played by Ashkenazi Jews during the festival of Hanukkah. It is a variant of Blackjack or 21, but played with a specialized 'Kosher' deck that lacks standard suits and Christian-influenced imagery. Instead, the deck consists of 24 to 31 cards featuring simple numbers or Hebrew identifiers.",
+    "category": "Banking",
+    "subCategory": "21 / Blackjack Variant",
+    "origin": "Poland / Galicia (Ashkenazi Jewish)",
+    "originName": "Kvitlech (קוויטלעך)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "recommendedPlayers": 5,
+      "display": "2-10 (Best with 5+)"
+    },
+    "deck": "Special Kvitlech deck (usually 24 or 31 cards, numbers only)",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Poland"],
+    "origins": "Developed by Hassidic and Orthodox Jews in Galicia to bypass the use of 'standard' cards, which were seen as potentially idolatrous or too secular. Hanukkah was the only time card-playing was culturally permitted in many strict communities.",
+    "timeline": [
+      "Late 1700s: First handmade Kvitlech decks appear.",
+      "1800s: The game becomes a central secular tradition for the third night of Hanukkah.",
+      "1910s: Piatnik (Vienna) begins commercial production of Kvitlech decks.",
+      "Present: Still played in many Jewish households, often using the game as a charitable fundraiser for 'Hanukkah Gelt'."
+    ],
+    "evolution": "The point values were adjusted over time; originally based on games like 'Pochen', it stabilized as a 21-clone with unique 'framed' card bonuses.",
+    "cultural": "Known colloquially as 'Klein Shas' (Small Talmud) because the wooden boxes for the cards resembled Talmud volumes.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "A Banker is chosen; other players are bettors.",
+    "deck": "Standard 24-card deck contains two sets of numbers 1-12. No suits, Kings, or Queens.",
+    "equipment": "",
+    "dealing": "The Banker deals one card face-down to each player and one to themselves.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Get a card total of exactly 21, or as close as possible without exceeding it (busting).",
+    "gameplay": "1. Players bet against the house.\n2. Players can 'Hit' (draw more cards) one by one.\n3. If a player reaches 21, they win immediately.\n4. If they exceed 21, they are out.\n5. The Banker draws last and must beat all 'Open' hands to win their bets.",
+    "keyRules": [
+      "24-card deck: two sets of numbers 1-12",
+      "No standard suits or court cards",
+      "12 can count as 12 or 9 (player's choice)",
+      "1 (Ace) always counts as 1 (never 11)",
+      "Framed 2s and 11s together count as automatic 21",
+      "Banker plays last and must beat all remaining hands"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Be conservative. Given the deck only goes up to 12, 'busting' is very easy if you have a total of 15 or higher. Stand on 16.",
+    "intermediate": "The 12 Shift: Use the 12 card's flexibility. If you have a total of 11, and draw a 12, value it at 9 to hit 20. If you have a total of 9 and draw a 12, value it at 12 to hit 21 exactly.",
+    "advanced": "Banker Tracking: In the 24-card deck (two of each number), pay attention to which 11s and 12s have already appeared. If three 12s have been played, you know the next high draw is more likely to be an 8 or 10.",
+    "tips": [
+      "Always take the Banker role if the 'Framed Cards = 21' rule is in effect; it statistically favors the house in most rotations.",
+      "Remember that the Ace (1) is only 1 point; it is a very weak card for building a high total fast."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "31-card",
+        "name": "31-card Kvitlech",
+        "description": "An older variant with a different number set.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses different card count; engine overrides not yet documented."
+      },
+      {
+        "id": "kosher-poker",
+        "name": "Kosher Poker",
+        "description": "A similar concept applied to Poker logic.",
+        "overrides": {},
+        "emptyOverridesReason": "Separate game with poker logic; overrides not applicable to base Kvitlech."
+      },
+      {
+        "id": "oglon",
+        "name": "Oglon",
+        "description": "A related Polish/Jewish gambling game.",
+        "overrides": {},
+        "emptyOverridesReason": "Related game; engine overrides not yet documented from sources."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't use the 12-value swap; hits on 20 points; ignores the framed card bonus.",
+      "medium": "Reasonable 'Stand' thresholds (17+); uses 12 as a 9/12 swap correctly.",
+      "hard": "Expert deck-tracker; calculates the house edge for every hit; masters the Hanukkah Gelt optimization."
+    },
+    "considerations": [
+      "Special card logic (12 swap).",
+      "Framed-card pairing detection.",
+      "Banker vs Player hit heuristics."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_kvitlech",
+        "name": "Wikipedia - Kvitlech",
+        "url": "https://en.wikipedia.org/wiki/Kvitlech",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/banking/quitlok.html",
+        "localHtml": "pagat-quitlok.html"
+      },
+      "Chabad - The History of Hanukkah Cards",
+      "Pagat - Showdown Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "banking"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 20,
+    "complexity": 2,
+    "luck": 6,
+    "skill": 4
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "player_turns",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "One card face-down to each player and banker"
+      },
+      {
+        "id": "player_turns",
+        "label": "Player Turns",
+        "actor": "current_player",
+        "legalActions": [
+          "draw",
+          "pass"
+        ],
+        "nextPhase": "banker_turn",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players hit or stand"
+      },
+      {
+        "id": "banker_turn",
+        "label": "Banker Turn",
+        "actor": "system",
+        "legalActions": [
+          "draw",
+          "pass"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Banker plays last, must beat all open hands"
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Closest to 21 without busting wins"
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Place mandatory ante before cards are dealt.",
+        "cost": {
+          "type": "flat",
+          "value": 1
+        },
+        "constraints": "Before cards dealt; amount per table rules.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal one card face-down to each player",
+        "cost": "0",
+        "constraints": "Banker only",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place initial bet before cards are dealt.",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "Before dealing; within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award bets to winners",
+        "cost": "0",
+        "constraints": "System action",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Hit - draw another card",
+        "cost": "0",
+        "constraints": "While under 21",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Stand - stop drawing",
+        "cost": "0",
+        "constraints": "End turn",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "optimalPlayers": 5,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": 1,
+          "notes": null
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "any_time",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 1,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [
+        {
+          "card": "Framed 2 + Framed 11",
+          "bonusPoints": 21,
+          "condition": "Automatic 21"
+        }
+      ],
+      "penaltyCards": []
+    },
+    "shedding": "NA",
+    "fishingConfig": null,
+    "patienceConfig": "NA",
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "rotating",
+      "targetValue": 21,
+      "bustRule": "over_21_loses",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": null,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "framed_cards",
+          "text": "Framed 2 + Framed 11 together count as automatic 21"
+        },
+        {
+          "id": "twelve_value",
+          "text": "12 can be counted as 12 or 9 at player's choice"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "flexible_12_value",
+        "framed_card_detection"
+      ]
+    },
+    "progression": ["deal", "player_turns", "banker_turn", "scoring"],
+    "roles": [
+      "banker",
+      "player"
+    ],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Total card value closest to 21 without exceeding",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "One card face-down each",
+    "notApplicableReasons": {
+      "discardConfig": "This game has no discard pile.",
+      "fishingConfig": "This game does not use a fishing mechanic of capturing cards from a central tableau.",
+      "shedding": "Kvitlech is a banking game; the goal is to reach or avoid 21, not to empty the hand."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "KVITLECH",
+      "subtitle": "Jewish Hanukkah Banking Game",
+      "tagline": "A kosher twist on 21, played with a unique numbered deck."
+    },
+    "shortDescription": "Kvitlech is a Jewish banking game similar to 21, played with a special 24-card deck without suits.",
+    "uiThemes": [
+      "traditional"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Kvitlech is a Jewish Hanukkah banking game similar to 21. 24-card deck (two sets 1-12, no suits). Get closest to 21 without busting. 12 can be 12 or 9. Ace always = 1. Banker plays last and must beat all hands.",
+    "ai": "Game: Kvitlech. Logic: Banking game to 21. Key: 12 can be 12/9, Ace=1, framed 2+11=auto 21. Banker plays last."
+  },
+  "scoring": {
+    "description": "Closest to 21 without exceeding wins. 21 is automatic winner.",
+    "winCondition": "Closest to 21 without busting",
+    "cardValues": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "11": "11",
+      "12": "12 or 9"
+    },
+    "penalties": {
+      "bust": "lose_bet"
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 21,
+    "scoringDirection": "closest_to_target",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Quitlok",
+    "Little Notes"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

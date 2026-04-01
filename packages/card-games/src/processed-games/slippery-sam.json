@@ -1,0 +1,713 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "slippery-sam.json",
+  "name": "Slippery Sam",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Banking game: dealer puts up a stake; dealer deals three cards face-down to each player (players do not look), then turns cards face up until a six or lower appears; each player in turn bets on having a higher card of the same suit than that spot card; after betting, the hand is exposed and the player wins from or pays into the pot.",
+    "category": "Banking",
+    "subCategory": "Banking",
+    "origin": "USA",
+    "originName": "Slippery Sam",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2+"
+    },
+    "deck": "52 cards",
+    "difficulty": "Intermediate",
+    "duration": "10-20 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Slippery Sam is a variant of Red Dog (also called High Card Pool), a banking game in which players bet on having a card of the same suit and higher rank than a card dealt from the pack. In Slippery Sam, also known as Six-Spot Red Dog, the dealer turns cards face up until a six or lower appears; players bet on that spot card without having seen their own hands. The card games literature varies on how the names Red Dog, Slippery Sam and Shoot are assigned to the different versions.",
+    "originCountries": ["USA"],
+    "timeline": [
+      "20th century: Red Dog variant documented as Slippery Sam (Six-Spot Red Dog); players bet on dealer's turned card without seeing their hands.",
+      "1973: John Scarne's Encyclopedia of Games describes a Fort Wayne, Indiana variation with optional extra cards for a fee."
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Two or more players; one is dealer and banker each hand.",
+    "deck": "Standard 52-card deck.",
+    "equipment": "Chips or money for the pot and bets.",
+    "dealing": "Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up from the deck until a six or lower appears; that card is the spot card for the hand.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win money by betting that your hand contains a higher card of the same suit than the dealer's spot card (a six or lower); the dealer banks the pot and pays or collects each bet.",
+    "gameplay": "Dealer puts up a stake (the pot). Dealer deals three cards face-down to each other player; players must not look at their cards. Dealer then turns cards face up in the centre until a six or lower appears; that card is the spot card. In turn, each player bets an amount between an agreed minimum and the current pot that they hold a higher card of the same suit than the spot card. After the player bets, the player's hand is exposed. If it contains a higher card of the same suit, the player wins that stake from the pot; otherwise the bet is added to the pot. If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot. At the end of the hand, the dealer keeps whatever remains in the pot and the deal passes to the next player.",
+    "keyRules": [
+      "Six-spot: dealer turns cards until a six or lower appears; players bet on having a higher same-suit card.",
+      "Players do not look at their cards until after they have bet.",
+      "Bet between agreed minimum and current pot."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As banking.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate tier; strategy is banking and spread.",
+      "advanced": "No advanced tier beyond optimal spread and bet sizing."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Six-Spot form; one optional local variant (Fort Wayne) is noted in Scarne but not enumerated as a distinct variation.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "medium": "No distinct medium tier; AI uses basic banking logic.",
+      "hard": "Hard AI uses optimal spread and bet sizing."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-red-dog",
+        "name": "Pagat Slippery Sam",
+        "url": "https://www.pagat.com/banking/reddog.html#slippery-sam",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-reddog.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "banking",
+    "gambling"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_three_each"
+        ],
+        "nextPhase": "reveal_spot",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "reveal_spot",
+        "label": "Reveal spot card",
+        "actor": "dealer",
+        "legalActions": [
+          "turn_until_six_or_lower"
+        ],
+        "nextPhase": "player_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "player_bet",
+        "label": "Player bet",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bet"
+        ],
+        "nextPhase": "settle",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "settle",
+        "label": "Settle",
+        "actor": "system",
+        "legalActions": [
+          "reveal_hand_and_settle"
+        ],
+        "nextPhase": "player_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_players_bet",
+            "nextPhase": "end_hand"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "end_hand",
+        "label": "End hand",
+        "actor": "system",
+        "legalActions": [
+          "dealer_keeps_remainder"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Bet an amount between the agreed minimum and the current pot that your hand contains a higher card of the same suit than the dealer's spot card; after you bet, your hand is exposed and you win that stake from the pot or your bet is added to the pot.",
+        "cost": "0",
+        "constraints": "Legal when it is your turn to bet; amount must be between the agreed minimum and the current pot.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not play cards to a trick; they bet then reveal their hand for comparison with the spot card."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": null,
+      "bustRule": "If the pot becomes empty during the hand, the deal passes to the next player who creates a new pot.",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "custom:spot",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "reveal_spot", "player_bet", "settle", "end_hand"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_three_each",
+        "supported": true,
+        "description": "Deal three cards face-down to each non-dealer player; players must not look at their cards.",
+        "cost": "0",
+        "constraints": "Legal during deal phase when acting as dealer.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "turn_until_six_or_lower",
+        "supported": true,
+        "description": "Turn cards face up from the deck until a six or lower appears; that card becomes the spot card for the hand.",
+        "cost": "0",
+        "constraints": "Legal during reveal_spot phase when acting as dealer.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "reveal_hand_and_settle",
+        "supported": true,
+        "description": "Expose the current player's hand; if it contains a higher card of the same suit than the spot card, pay the stake from the pot to the player; otherwise add the bet to the pot.",
+        "cost": "0",
+        "constraints": "Legal during settle phase; applies to the player who just bet.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "dealer_keeps_remainder",
+        "supported": true,
+        "description": "Dealer takes whatever remains in the pot; deal passes to the next player.",
+        "cost": "0",
+        "constraints": "Legal during end_hand phase when all players have bet.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Win by having at least one card in hand that is the same suit as and higher in rank than the dealer's spot card (six or lower).",
+    "rankingSystem": "",
+    "bettingLimits": "Pot Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Three cards to each non-dealer player; players must not look at their cards until their turn to bet.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SLIPPERY SAM",
+      "subtitle": "Card Game",
+      "tagline": "Red Dog variant: six-spot. Also Six-spot Red Dog."
+    },
+    "shortDescription": "Red Dog variant: six-spot. Also Six-spot Red Dog.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Red Dog variant: six-spot. Also Six-spot Red Dog.",
+    "ai": "Game: Slippery Sam. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Paytable",
+    "winCondition": "Player wins stake from pot if hand contains a higher card of the same suit as the spot card; otherwise bet is added to pot. Dealer keeps remainder at end of hand.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Banking game; cards are compared by rank and suit for win or lose, not point values.",
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Six-spot Red Dog"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

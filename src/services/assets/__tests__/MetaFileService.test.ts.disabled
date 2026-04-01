@@ -1,0 +1,232 @@
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { writeFile, mkdir, rm } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import { EventBus, createOperationDeferred } from '@/lib/eventing';
+import { ValidateAllMetaEvent, ReadMetaFileEvent, MarkAssetDirtyEvent, MarkAssetCleanEvent, GetDirtyAssetsEvent, ClearDirtyAssetsEvent, DetectMimeTypeEvent } from '@/lib/eventing/events/assets';
+import type { GuidValidationResult, MetaData } from '@/types/meta';
+
+const TEST_DIR = join(process.cwd(), 'packages', 'asset-editor', 'Resources', '__test_metafileservice__');
+
+describe('MetaFileService', () => {
+  beforeEach(async () => {
+    if (!existsSync(TEST_DIR)) {
+      await mkdir(TEST_DIR, { recursive: true });
+    }
+  });
+
+  afterEach(async () => {
+    if (existsSync(TEST_DIR)) {
+      await rm(TEST_DIR, { recursive: true, force: true });
+    }
+  });
+
+  describe('readMetaFile', () => {
+    it('should parse valid YAML meta file', async () => {
+      const testMetaPath = join(TEST_DIR, 'test.asset.meta');
+      const testMetaContent = `guid: 123e4567-e89b-12d3-a456-426614174000
+type: asset
+assetType: Card
+mimeType: application/x-asset+yaml
+createdAt: "2025-01-01T00:00:00.000Z"
+modifiedAt: "2025-01-01T00:00:00.000Z"
+fileSize: 100
+checksum: abc123`;
+
+      await writeFile(testMetaPath, testMetaContent, 'utf-8');
+
+      const readDeferred = createOperationDeferred<MetaData>();
+      await EventBus.instance.publishAsync(new ReadMetaFileEvent(`/Resources/__test_metafileservice__/test.asset.meta`, readDeferred));
+      const readResult = await readDeferred.promise;
+
+      expect(readResult.isSuccess).toBe(true);
+      if (readResult.isSuccess && readResult.value) {
+        expect(readResult.value.guid).toBe('123e4567-e89b-12d3-a456-426614174000');
+        expect(readResult.value.type).toBe('asset');
+        expect(readResult.value.assetType).toBe('Card');
+      }
+    });
+
+    it('should return error for invalid meta file (missing guid)', async () => {
+      const testMetaPath = join(TEST_DIR, 'invalid1.asset.meta');
+      const testMetaContent = `type: asset`;
+
+      await writeFile(testMetaPath, testMetaContent, 'utf-8');
+
+      const readDeferred = createOperationDeferred<MetaData>();
+      await EventBus.instance.publishAsync(new ReadMetaFileEvent(`/Resources/__test_metafileservice__/invalid1.asset.meta`, readDeferred));
+      const readResult = await readDeferred.promise;
+
+      expect(readResult.isSuccess).toBe(false);
+      expect(readResult.errorMessage).toContain('Invalid .meta file');
+    });
+
+    it('should return error for invalid meta file (missing type)', async () => {
+      const testMetaPath = join(TEST_DIR, 'invalid2.asset.meta');
+      const testMetaContent = `guid: 123e4567-e89b-12d3-a456-426614174000`;
+
+      await writeFile(testMetaPath, testMetaContent, 'utf-8');
+
+      const readDeferred = createOperationDeferred<MetaData>();
+      await EventBus.instance.publishAsync(new ReadMetaFileEvent(`/Resources/__test_metafileservice__/invalid2.asset.meta`, readDeferred));
+      const readResult = await readDeferred.promise;
+
+      expect(readResult.isSuccess).toBe(false);
+      expect(readResult.errorMessage).toContain('Invalid .meta file');
+    });
+  });
+
+  describe('validateAllMeta', () => {
+    it('should validate all meta files and detect duplicates', async () => {
+      const testMeta1Path = join(TEST_DIR, 'test1.asset.meta');
+      const testMeta2Path = join(TEST_DIR, 'test2.asset.meta');
+      const duplicateGuid = '123e4567-e89b-12d3-a456-426614174000';
+      const testMetaContent = `guid: ${duplicateGuid}
+type: asset
+assetType: Card`;
+
+      await writeFile(testMeta1Path, testMetaContent, 'utf-8');
+      await writeFile(testMeta2Path, testMetaContent, 'utf-8');
+
+      const validateDeferred = createOperationDeferred<GuidValidationResult>();
+      await EventBus.instance.publishAsync(new ValidateAllMetaEvent(validateDeferred));
+      const validateResult = await validateDeferred.promise;
+
+      expect(validateResult.isSuccess).toBe(true);
+      if (validateResult.isSuccess && validateResult.value) {
+        expect(validateResult.value.isValid).toBe(false);
+        expect(validateResult.value.errors.length).toBeGreaterThan(0);
+        expect(validateResult.value.duplicates).toBeDefined();
+        if (validateResult.value.duplicates) {
+          expect(validateResult.value.duplicates.has(duplicateGuid)).toBe(true);
+        }
+      }
+    });
+
+    it('should return valid result when no duplicates found', async () => {
+      const testMetaPath = join(TEST_DIR, 'unique.asset.meta');
+      const testMetaContent = `guid: 223e4567-e89b-12d3-a456-426614174001
+type: asset
+assetType: Card`;
+
+      await writeFile(testMetaPath, testMetaContent, 'utf-8');
+
+      const validateDeferred = createOperationDeferred<GuidValidationResult>();
+      await EventBus.instance.publishAsync(new ValidateAllMetaEvent(validateDeferred));
+      const validateResult = await validateDeferred.promise;
+
+      expect(validateResult.isSuccess).toBe(true);
+      if (validateResult.isSuccess && validateResult.value) {
+        const hasErrors = validateResult.value.errors.length > 0;
+        if (hasErrors) {
+          const testErrors = validateResult.value.errors.filter(e => e.includes('__test_metafileservice__'));
+          expect(testErrors.length).toBe(0);
+        }
+      }
+    });
+  });
+
+  describe('dirty tracking', () => {
+    it('should mark asset as dirty', async () => {
+      const testGuid = 'test-guid-123';
+
+      await EventBus.instance.publishAsync(new MarkAssetDirtyEvent(testGuid));
+
+      const getDirtyDeferred = createOperationDeferred<string[]>();
+      await EventBus.instance.publishAsync(new GetDirtyAssetsEvent(getDirtyDeferred));
+      const getDirtyResult = await getDirtyDeferred.promise;
+
+      expect(getDirtyResult.isSuccess).toBe(true);
+      if (getDirtyResult.isSuccess && getDirtyResult.value) {
+        expect(getDirtyResult.value).toContain(testGuid);
+      }
+    });
+
+    it('should mark asset as clean', async () => {
+      const testGuid = 'test-guid-456';
+
+      await EventBus.instance.publishAsync(new MarkAssetDirtyEvent(testGuid));
+      await EventBus.instance.publishAsync(new MarkAssetCleanEvent(testGuid));
+
+      const getDirtyDeferred = createOperationDeferred<string[]>();
+      await EventBus.instance.publishAsync(new GetDirtyAssetsEvent(getDirtyDeferred));
+      const getDirtyResult = await getDirtyDeferred.promise;
+
+      expect(getDirtyResult.isSuccess).toBe(true);
+      if (getDirtyResult.isSuccess && getDirtyResult.value) {
+        expect(getDirtyResult.value).not.toContain(testGuid);
+      }
+    });
+
+    it('should return empty array when no dirty assets', async () => {
+      await EventBus.instance.publishAsync(new ClearDirtyAssetsEvent());
+
+      const getDirtyDeferred = createOperationDeferred<string[]>();
+      await EventBus.instance.publishAsync(new GetDirtyAssetsEvent(getDirtyDeferred));
+      const getDirtyResult = await getDirtyDeferred.promise;
+
+      expect(getDirtyResult.isSuccess).toBe(true);
+      if (getDirtyResult.isSuccess && getDirtyResult.value) {
+        expect(getDirtyResult.value.length).toBe(0);
+      }
+    });
+  });
+
+  describe('detectMimeType', () => {
+    it('should detect asset MIME type', async () => {
+      const testAssetPath = join(TEST_DIR, 'test.asset');
+      await writeFile(testAssetPath, 'test content', 'utf-8');
+
+      const detectDeferred = createOperationDeferred<string>();
+      await EventBus.instance.publishAsync(new DetectMimeTypeEvent(`/Resources/__test_metafileservice__/test.asset`, detectDeferred));
+      const detectResult = await detectDeferred.promise;
+
+      expect(detectResult.isSuccess).toBe(true);
+      if (detectResult.isSuccess && detectResult.value) {
+        expect(detectResult.value).toBe('application/x-asset+yaml');
+      }
+    });
+
+    it('should detect PNG MIME type', async () => {
+      const testPngPath = join(TEST_DIR, 'test.png');
+      await writeFile(testPngPath, Buffer.from([0x89, 0x50, 0x4E, 0x47]), 'binary');
+
+      const detectDeferred = createOperationDeferred<string>();
+      await EventBus.instance.publishAsync(new DetectMimeTypeEvent(`/Resources/__test_metafileservice__/test.png`, detectDeferred));
+      const detectResult = await detectDeferred.promise;
+
+      expect(detectResult.isSuccess).toBe(true);
+      if (detectResult.isSuccess && detectResult.value) {
+        expect(detectResult.value).toBe('image/png');
+      }
+    });
+
+    it('should detect JSON MIME type', async () => {
+      const testJsonPath = join(TEST_DIR, 'test.json');
+      await writeFile(testJsonPath, '{"test": "data"}', 'utf-8');
+
+      const detectDeferred = createOperationDeferred<string>();
+      await EventBus.instance.publishAsync(new DetectMimeTypeEvent(`/Resources/__test_metafileservice__/test.json`, detectDeferred));
+      const detectResult = await detectDeferred.promise;
+
+      expect(detectResult.isSuccess).toBe(true);
+      if (detectResult.isSuccess && detectResult.value) {
+        expect(detectResult.value).toBe('application/json');
+      }
+    });
+
+    it('should default to octet-stream for unknown types', async () => {
+      const testUnknownPath = join(TEST_DIR, 'test.unknown');
+      await writeFile(testUnknownPath, 'test content', 'utf-8');
+
+      const detectDeferred = createOperationDeferred<string>();
+      await EventBus.instance.publishAsync(new DetectMimeTypeEvent(`/Resources/__test_metafileservice__/test.unknown`, detectDeferred));
+      const detectResult = await detectDeferred.promise;
+
+      expect(detectResult.isSuccess).toBe(true);
+      if (detectResult.isSuccess && detectResult.value) {
+        expect(detectResult.value).toBe('application/octet-stream');
+      }
+    });
+  });
+});

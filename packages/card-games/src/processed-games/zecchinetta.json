@@ -1,0 +1,679 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "zecchinetta.json",
+  "name": "Zecchinetta",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Zecchinetta (Lansquenet) is an Italian banking/gambling game. Banker vs players. 40-card Italian deck. Banker deals 2 player cards + 1 banker card face-up. Players bet on player cards. Banker draws cards: match player card = banker pays; match banker card = banker wins all bets. New unmatched cards become additional betting options.",
+    "category": "Banking",
+    "subCategory": "Gambling / Banking",
+    "origin": "Italy (Southern) / Germany",
+    "originName": "Zecchinetta (Italian); Lansquenet / Landsknecht (German)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2+"
+    },
+    "deck": "40-card Italian deck",
+    "difficulty": "Beginner",
+    "duration": "Variable",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Zecchinetta is the Italian variant of Lansquenet, one of Europe's oldest recorded banking games. Lansquenet is named after the German Landsknecht (medieval mercenary) and appears in Rabelais' Gargantua (1542). The Italian form became especially associated with Sicily and southern Italy and was carried to the USA by Italian immigrants as Ziginette. Traditionally played with a 40-card Italian pack, it remains popular in private play in Italy despite being illegal in public places.",
+    "originCountries": ["Germany", "Italy"],
+    "timeline": ["1542: Lansquenet mentioned in Rabelais' Gargantua.", "19th century: French Lansquenet documented; Italian Zecchinetta variant popular in Sicily."],
+    "evolution": "One of Europe's oldest banking games.",
+    "cultural": "Popular in Campania, Sicily, Lazio.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "40-card Italian deck.",
+    "equipment": "Cards, betting chips/money",
+    "dealing": "2 player cards + 1 banker card face-up.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Players: bet card matches drawn before banker's. Banker: collect when banker card matches.",
+    "gameplay": "Deal 2 player cards + 1 banker card. Players bet on player cards. Draw cards: match player = banker pays. Match banker = banker wins all. New rank = new betting card. Bank passes after banker match.",
+    "keyRules": [
+      "Player card match = player wins",
+      "Banker card match = banker wins all",
+      "New ranks create new betting cards",
+      "Bank rotates after banker loss"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Pure gambling — no decisions.",
+    "intermediate": "Bet sizing.",
+    "advanced": "Track remaining cards.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "first_banker_ace",
+        "name": "First banker by ace",
+        "description": "First banker is chosen by dealing cards around until a player receives an ace.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes first-banker selection; no engine overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI bets at random; trivial mostly random game.",
+      "medium": "No distinct medium tier; game is mostly chance.",
+      "hard": "Hard AI uses basic bank odds; game remains trivial."
+    },
+    "considerations": [
+      "Trivial — mostly random"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_lansquenet",
+        "name": "Pagat - Lansquenet",
+        "url": "https://www.pagat.com/banking/lansquenet.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-lansquenet.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "banking",
+    "gambling"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal_initial",
+        "label": "Deal initial cards",
+        "actor": "dealer",
+        "legalActions": ["dealer_reveal_initial"],
+        "nextPhase": "place_bets",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Banker reveals top two cards for players (Per voi), then third for banker (Per me)."
+      },
+      {
+        "id": "place_bets",
+        "label": "Place bets",
+        "actor": "each_player_clockwise",
+        "legalActions": ["bet"],
+        "nextPhase": "reveal_round",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players bet on the two player cards within banker min and max."
+      },
+      {
+        "id": "reveal_round",
+        "label": "Banker reveals cards",
+        "actor": "dealer",
+        "legalActions": ["dealer_reveal_next"],
+        "nextPhase": "settle",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Banker turns up cards one at a time; match player card banker wins that card's bets, match banker card banker pays and bank passes right."
+      },
+      {
+        "id": "settle",
+        "label": "Settle",
+        "actor": "system",
+        "legalActions": ["system_settle"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Resolve payouts; bank passes to right if banker lost."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no separate ante round; players bet during the betting phase."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place a stake on one of the players' cards within the banker's minimum and maximum limits.",
+        "cost": "0",
+        "constraints": "During the betting phase; amount must be within banker-set min and max for the deal.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not play cards; the banker reveals cards from the stock one at a time."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Italian",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "highest_cut",
+      "targetValue": null,
+      "bustRule": null,
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+      {"id": "equal_first_two", "text": "If first two cards (Per voi) are equal rank, reshuffle and redeal with same banker."},
+      {"id": "third_matches_player", "text": "If third card (Per me) matches a player card, banker wins all bets and bank passes to the right."},
+      {"id": "carta_buona", "text": "New rank (carta buona) becomes an extra betting card; players may bet on it."},
+      {"id": "carta_mala", "text": "Rank already seen twice (carta mala) is discarded and deal continues."}
+    ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal_initial", "place_bets", "reveal_round", "settle"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "dealer_reveal_initial",
+        "supported": true,
+        "description": "Banker reveals top two cards (Per voi) for players, then third card (Per me) for banker.",
+        "constraints": "Dealer only; at start of deal.",
+        "cost": "0",
+        "effectType": "deal",
+        "isTerminating": false,
+        "effectHints": {}
+      },
+      {
+        "id": "dealer_reveal_next",
+        "supported": true,
+        "description": "Banker turns up next card from stock; match player card banker wins that card's bets, match banker card banker pays and bank passes.",
+        "constraints": "Dealer only; during reveal round.",
+        "cost": "0",
+        "effectType": "play",
+        "isTerminating": false,
+        "effectHints": {}
+      },
+      {
+        "id": "system_settle",
+        "supported": true,
+        "description": "Resolve payouts; bank passes to right if banker lost.",
+        "constraints": "System only; after reveal round ends.",
+        "cost": "0",
+        "effectType": "award",
+        "isTerminating": false,
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "Italian 40-card pack used for Zecchinetta: no 8s, 9s or 10s. Four suits (Coins, Swords, Cups, Batons or regional equivalents). Ranks per suit: Ace, 2, 3, 4, 5, 6, 7, Fante (Jack), Cavallo (Knight), Re (King).",
+    "suitDescription": "Italian suits: Coins (Denari), Swords (Spade), Cups (Coppe), Batons (Bastoni). Latin-suited designs are sometimes used in Italy for this game.",
+    "rankDescription": "Stripped 40-card ranks: Ace, 2 through 7, Fante (Jack), Cavallo (Knight), Re (King). Only rank identity matters for matching; suits are irrelevant.",
+    "dealPattern": "Two cards face-up for players (Per voi), one face-up for banker (Per me); no cards to hand.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play; the banker reveals cards from the stock.",
+      "discardConfig": "This game has no discard pile; matched ranks are discarded from play.",
+      "roundConfig": "Hands continue until banker's card or all player cards are matched; no fixed round count.",
+      "specialCards": "Standard Italian 40-card deck; no card has a special action or bonus value.",
+      "shedding": "Zecchinetta is a banking and matching game, not a shedding game.",
+      "fishingConfig": "Zecchinetta uses banker-reveal and bet resolution, not a play-to-capture fishing mechanic."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ZECCHINETTA",
+      "subtitle": "Card Game",
+      "tagline": "Zecchinetta (Lansquenet) is an Italian banking/gambling game. Banker vs players...."
+    },
+    "shortDescription": "Zecchinetta (Lansquenet) is an Italian banking/gambling game. Banker vs players. 40-card Italian deck. Banker deals 2 player cards + 1 banker card fac",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Zecchinetta (Lansquenet) is an Italian banking/gambling game. Banker vs players. 40-card Italian deck. Banker deals 2 player cards + 1 banker card face-up. Players bet on player cards. Banker draws cards: match player card = banker pays; match banker card = banker wins all bets. New unmatched cards become additional betting options.",
+    "ai": "Game: Zecchinetta. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Betting-based. Even money payouts.",
+    "winCondition": "Players: bet card matches drawn before banker's. Banker: collect when banker card matches.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Banking game; wins are even-money payouts on bets, no card point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Lansquenet",
+    "Lasqueneet",
+    "Ziginette"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,672 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "knaves.json",
+  "name": "Knaves",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Knaves is a fast-paced trick-taking card game for three players. It is an avoidance game where the primary objective is to gain points for tricks while avoiding the 'Knaves' (Jacks), which carry heavy negative scores. It blends traditional trick-play with the high-stakes risk-management found in games like Hearts.",
+    "category": "Trick-taking",
+    "subCategory": "Avoidance",
+    "origin": "UK / USA",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "recommendedPlayers": 3,
+      "display": "3-4"
+    },
+    "deck": "Standard 52-card deck (minus one card for 3 players)",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["United Kingdom", "USA"],
+    "origins": "Dates to the early 1900s. It was popularized as a 'social' card game that simplified the complexity of Bridge or Whist, adding a more humorous 'hot potato' element with the penalty Jacks.",
+    "timeline": [
+      "1910s: First appears in English card game anthologies.",
+      "1950s: Becomes a staple family game in the UK.",
+      "Present: Occasionally played as a lighter alternative to Hearts or Skat."
+    ],
+    "evolution": "The game's point structure (Positive for tricks, Negative for Jacks) was designed to prevent 'sandbagging' (winning no tricks), a common issue in pure-avoidance games.",
+    "cultural": "The word 'Knave' is the archaic English term for a Jack, and the game preserves this terminology to emphasize the cards as 'villains'.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 players (standard).",
+    "deck": "52 cards. Remove the Two of Spades to leave 51 cards (17 cards per player).",
+    "equipment": "",
+    "dealing": "Deal all 51 cards face-down. The player to the dealer's left leads the first trick.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points for tricks won while avoiding winning tricks that contain Jacks.",
+    "gameplay": "1. Standard trick-taking. Must follow suit. If unable, play any card.\n2. No trumps are used.\n3. Highest card of the led suit wins the trick.",
+    "keyRules": [
+      "Each trick won: +1 point",
+      "Knave of Hearts: -20 points",
+      "Knave of Diamonds: -15 points",
+      "Knave of Clubs: -10 points",
+      "Knave of Spades: -5 points",
+      "Must follow suit"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Avoid high cards in the Heart suit. Since the Knave of Hearts is the most expensive penalty, holding the Ace or King of Hearts is a major risk.",
+    "intermediate": "The 'Trick Buffer': Since each trick is worth +1 point, you can afford to take a few 'clean' tricks to offset the -5 penalty of the Knave of Spades. Never take a Heart trick if you can avoid it.",
+    "advanced": "Voiding for Safety: Try to exhaust one suit (e.g., Clubs) as quickly as possible. This allows you to discard your high cards in other suits safely throughout the hand.",
+    "tips": [
+      "Pay attention to who won the last trick. If a player is leading Hearts, they are likely trying to flush out the Knave from someone else.",
+      "If you are forced to win a trick, try to ensure it doesn't contain a Jack by leading a low card in a suit where you think others have high cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "four-player",
+        "name": "Four-Player Knaves",
+        "description": "Use a full 52-card deck (13 cards each).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses same engine; only deck count and deal size differ; overrides can be added when needed."
+      },
+      {
+        "id": "reverse",
+        "name": "Reverse Knaves",
+        "description": "Winning Jacks gives positive points, tricks give negative.",
+        "overrides": {},
+        "emptyOverridesReason": "Reverse scoring variant; cardValues and win condition overrides to be added from source when documented."
+      },
+      {
+        "id": "super",
+        "name": "Super Knaves",
+        "description": "Bonus penalties for the Queen of Spades (Hearts style).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant adds penalty card; specialCards and scoring overrides to be added when documented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Takes tricks with high cards too early; fails to avoid the Knave of Hearts.",
+      "medium": "Reasonable heart-avoidance; basic card counting.",
+      "hard": "Expert at suit-voiding; perfectly balances trick-capture (+1) with penalty-risk; can 'force' opponents into winning Jacks."
+    },
+    "considerations": [
+      "Penalty card valuation (-20/-15/-10/-5).",
+      "Trick count tracking (+1).",
+      "Hand exhaustion probability."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_knaves",
+        "name": "Pagat.com - Knaves",
+        "url": "https://www.pagat.com/stops/knaves.html",
+        "retrievedAt": "2026-02-19",
+        "sections": []
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/reverse/knaves.html",
+        "localHtml": "pagat-knaves.html"
+      },
+      "Encyclopedia of Card Games - Knaves Section",
+      "Wikipedia - Knaves (game)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 2,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 17 cards to each player"
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 17,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "17 tricks, must follow suit, highest of led suit wins"
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "system",
+        "legalActions": ["score_round"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count trick points and penalty cards"
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 17 cards to each player (3-player)",
+        "cost": "0",
+        "constraints": "Remove 2 of Spades for 3 players",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play card to trick",
+        "cost": "0",
+        "constraints": "Must follow suit if possible",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 17,
+    "trumpConfig": null,
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 17,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": [
+        {
+          "card": "Jack of Hearts",
+          "penaltyPoints": 20,
+          "notes": null
+        },
+        {
+          "card": "Jack of Diamonds",
+          "penaltyPoints": 15,
+          "notes": null
+        },
+        {
+          "card": "Jack of Clubs",
+          "penaltyPoints": 10,
+          "notes": null
+        },
+        {
+          "card": "Jack of Spades",
+          "penaltyPoints": 5,
+          "notes": null
+        }
+      ]
+    },
+    "shedding": "NA",
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play", "scoring"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "score_round",
+        "supported": true,
+        "description": "Count trick points (+1 each) and penalty cards (Jacks), update player totals.",
+        "cost": "0",
+        "constraints": "System runs after all tricks are played.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "standard",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "17 cards each (3-player)",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "shedding": "Knaves is a trick-taking game; the goal is to win tricks, not to empty the hand."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Knaves",
+      "subtitle": "Card Game",
+      "tagline": "The British avoidance game - win tricks but beware the villainous Jacks!"
+    },
+    "shortDescription": "Knaves is a trick-taking avoidance game where players score points for tricks but lose points for capturing Jacks.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Knaves is a trick-taking avoidance game for 3 players. Score points for winning tricks but avoid the 'Knaves' (Jacks) which carry heavy negative scores.",
+    "ai": "Game: Knaves. Logic: Trick-taking avoidance game with penalty Jacks."
+  },
+  "scoring": {
+    "description": "Each trick: +1 point. Knave of Hearts: -20, Diamonds: -15, Clubs: -10, Spades: -5. Game to 20 or 50 points.",
+    "winCondition": "Reach target score (20 or 50 points)",
+    "cardValues": {
+      "trick": "1"
+    },
+    "penalties": {
+      "jack_of_hearts": "20",
+      "jack_of_diamonds": "15",
+      "jack_of_clubs": "10",
+      "jack_of_spades": "05"
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 20,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Jack Avoidance"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0",
+    "overviewNaReasons": {
+      "originName": "Game known only by English name Knaves; no documented native name in sources."
+    }
+  },
+  "fieldStatus": {}
+}

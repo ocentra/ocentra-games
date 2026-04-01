@@ -1,0 +1,43 @@
+{
+  "name": "@ocentra/network-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "P2P WebRTC networking types, WebRTCHandler, P2PManager, and router-type re-exports. Shared by main app.",
+  "dependencies": {
+    "@ocentra/boundary-domain": "file:../boundary-domain",
+    "@ocentra/logging-domain": "file:../logging-domain"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true }
+  },
+  "exports": {
+    "./types": { "import": "./dist/types.js", "types": "./dist/types.d.ts" },
+    "./connection/WebRTCHandler": { "import": "./dist/connection/WebRTCHandler.js", "types": "./dist/connection/WebRTCHandler.d.ts" },
+    "./managers/P2PManager": { "import": "./dist/managers/P2PManager.js", "types": "./dist/managers/P2PManager.d.ts" },
+    "./hooks/useP2PNetworking": { "import": "./dist/hooks/useP2PNetworking.js", "types": "./dist/hooks/useP2PNetworking.d.ts" },
+    "./router-types": { "import": "./dist/router-types.js", "types": "./dist/router-types.d.ts" }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node ../../scripts/fix-esm-imports.mjs",
+    "prepare": "npm run build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --cache src tests && tsc --noEmit",
+    "lint:eslint": "eslint --cache src tests",
+    "lint:fix": "eslint --cache src tests --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "react": "^19.0.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,0 +1,720 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "sevens-dominoes.json",
+  "name": "Sevens Dominoes",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Sevens is a domino layout game where players build a triangular pattern from doubles and sequential non-doubles, trying to be first to play all tiles.",
+    "category": "Domino",
+    "subCategory": "Cross / Block Game",
+    "origin": "Europe / North America",
+    "originName": "Sevens",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "2-3"
+    },
+    "deck": "Double-six domino set (28 tiles)",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Sevens Dominoes is described as the domino equivalent of Fan Tan (Sevens), documented in modern form through published internet rules.",
+    "originCountries": ["USA", "Netherlands"],
+    "timeline": [
+      "2001: Documented by Joe Celko in online domino references.",
+      "2020: Rules page updated with triangular build pattern and lead rules."
+    ],
+    "evolution": null,
+    "cultural": null,
+    "nullReasons": {
+      "evolution": "Most table variation concerns lead tile freedom and random start options.",
+      "cultural": "Played as a tactical social domino shedding game."
+    },
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Best for 2-3 players; 4 players leave no boneyard.",
+    "deck": "Standard 28-tile double-six set, from 0-0 to 6-6.",
+    "equipment": "Double-six dominoes and table space for a triangle layout.",
+    "dealing": "Each player draws 7 tiles; remaining tiles form a boneyard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to domino by playing all tiles.",
+    "gameplay": "Highest double leads; if no one has a double, redeal. Players then place tiles into the Sevens triangle pattern: doubles progress by adjacent rank on the top row, while non-doubles are placed beneath according to the one-step pip progression pattern. If a player can play, they must play. If not, they draw one tile from boneyard; when boneyard is empty and no play is possible, they pass.",
+    "keyRules": [
+      "Highest double starts the hand.",
+      "If no double is held by any player, redeal.",
+      "Must play if able.",
+      "Draw from boneyard when blocked; pass only when boneyard is empty."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize moves that keep future placement options open in multiple triangle lanes.",
+    "intermediate": "Track missing doubles and near-needed connector tiles to anticipate forced draws.",
+    "advanced": "Steer play toward branches where opponents are likely to stall and draw repeatedly.",
+    "tips": [
+      "Early control of top-row doubles strongly shapes the lower triangle development.",
+      "Preserve flexible tiles that can satisfy multiple potential placements."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "free-start-variation",
+        "name": "Free Start",
+        "description": "Some groups allow any opening tile or a random boneyard starter instead of highest double.",
+        "overrides": {},
+        "emptyOverridesReason": "Free Start only changes opening tile rule; no engine constant overrides documented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal tiles with limited lookahead into the triangle pattern.",
+      "medium": "Balances immediate legal options against likely future branch closures.",
+      "hard": "Models full triangle state and optimizes for fastest path to empty hand."
+    },
+    "considerations": [
+      "Triangle placement legality is stricter than standard end-matching domino games.",
+      "AI must enforce forced-play and draw-when-blocked rules."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-sevens-dominoes",
+        "name": "Pagat - Sevens (Dominoes)",
+        "url": "https://www.pagat.com/domino/grid/sevens.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "#deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "#play"
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "#scoring"
+          },
+          {
+            "section": "variations.list",
+            "sourcePath": "#variations"
+          }
+        ],
+        "localHtml": "pagat-grid-sevens.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/domino/line/sevens.html"
+      },
+      {
+        "url": "https://www.pagat.com/layout/sevens.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "tile",
+    "strategy",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_tiles",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Each player receives 7 tiles; undealt tiles form the boneyard."
+      },
+      {
+        "id": "play_tiles",
+        "label": "Play Tiles",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card",
+          "draw",
+          "pass"
+        ],
+        "nextPhase": "play_tiles",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_tiles_played == true",
+            "nextPhase": "hand_summary"
+          },
+          {
+            "condition": "all_players_blocked == true",
+            "nextPhase": "hand_summary"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Play legal triangle-placement tile, or draw from boneyard if blocked."
+      },
+      {
+        "id": "hand_summary",
+        "label": "Settlement",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Apply end-of-hand bonus from opponents' pips rounded to nearest five."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All Fives dominoes scores by multiples of five; no ante."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal seven dominoes to each player and leave remainder as boneyard.",
+        "cost": "0",
+        "constraints": "System/dealer action at hand start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 7
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market exists in Sevens Dominoes."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchases exist in Sevens Dominoes."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Drawing from boneyard is modeled by draw action, not a buy action."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No folding exists; players must play, draw, or pass by legality."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; score by making end-totals multiples of five."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tile-matching game; no call or betting. Muggins is optional score claim."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is by end-sums and hand bonus; no betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in All Fives dominoes."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase; play tiles to layout ends, score on multiples of 5."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand is played out tile by tile; no formal reveal. Blocked hand scores by pips."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award hand bonus from rounded opponent pips and update running score.",
+        "cost": "0",
+        "constraints": "System action at hand end.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Place one legal domino tile into the Sevens triangle layout.",
+        "cost": "0",
+        "constraints": "Tile must satisfy Sevens triangle placement rules for doubles/non-doubles.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw one tile from boneyard when no legal play is available.",
+        "cost": "0",
+        "constraints": "Only legal when player has no playable tile in hand.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        }
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are placed on layout ends; no discard pile. Draw when blocked."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass only when no legal play exists and boneyard is empty.",
+        "cost": "0",
+        "constraints": "Only legal after draw is unavailable or boneyard exhausted.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; any tile may be led. Score by matching ends and multiples of 5."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Domino placement game; no melds. Tiles match open ends only."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when a player dominoes (plays last tile) or game is blocked."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 1,
+          "notes": "Draw occurs only when player has no legal placement."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Tiles are played to layout ends; there is no discard pile."
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "NA",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 28
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 28
+      },
+      {
+        "id": "custom:triangle",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 28
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "highest_double_leads",
+          "text": "Highest double starts; if no one holds a double, redeal."
+        },
+        {
+          "id": "forced_play_rule",
+          "text": "Player must play a legal tile if available before drawing."
+        },
+        {
+          "id": "triangle_placement_rule",
+          "text": "Non-double tiles must follow Sevens triangle progression beneath the doubles row."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "highest_double_opening_and_redeal",
+        "triangle_placement_validator",
+        "forced_play_draw_pass_order"
+      ]
+    },
+    "progression": ["deal", "play_tiles", "hand_summary"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Not applicable (domino scoring).",
+    "rankingSystem": "First player to empty hand wins hand (domino).",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard double-6 domino set of 28 tiles: each tile has two ends with values 0 through 6, with every combination represented once, used in blocking and drawing domino games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "7 tiles per player; remaining tiles become boneyard."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SEVENS DOMINOES",
+      "subtitle": "Triangle Layout Game",
+      "tagline": "Build the Sevens triangle and domino before opponents."
+    },
+    "shortDescription": "Sevens Dominoes is a tactical layout game where doubles form the top row and non-doubles expand a strict triangular progression.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "custom:triangle"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "In Sevens Dominoes, preserve tiles that keep multiple future triangle placements available and avoid forced draws from the boneyard.",
+    "ai": "Game: Sevens Dominoes. Enforce highest-double opening, strict triangle placement legality, and forced play-before-draw rules."
+  },
+  "scoring": {
+    "description": "No running points are required in the core rules; the hand winner is the first player to domino.",
+    "winCondition": "Be first to play all tiles.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Winner is first to empty hand; tiles have no point values.",
+      "targetScore": "Core rules are hand-win based and do not require a fixed cumulative target.",
+      "scoringDirection": "Outcome is determined by first-to-empty-hand, not directional point totals."
+    }
+  },
+  "alsoKnownAs": [
+    "Sevens",
+    "Domino Sevens"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

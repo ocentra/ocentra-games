@@ -1,0 +1,701 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pyanitsa-drunkard.json",
+  "name": "P'yanitsa (Russian Drunkard)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "P'yanitsa (The Drunkard) is the most popular children's card game in Russia, acting as the Eastern European equivalent to the western game of 'War'. It is a game of pure chance and endurance where players aim to capture the entire deck. Its unique characteristic is the '6 beats Ace' rule, which prevents the highest card from being invincible. It is exceptionally simple, making it a staple of Russian childhood and social gatherings.",
+    "category": "War",
+    "subCategory": "War / Accumulation",
+    "origin": "Russia",
+    "originName": "Пьяница",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "36-card Russian deck (6 to Ace)",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Russia"],
+    "origins": "Dates back to the 19th century in the Russian Empire. It was originally played with the standard 36-card deck used for Durak and other traditional Russian games.",
+    "timeline": [
+      "1850s: First documented rules in Russian game manuals.",
+      "1917: Survives the revolution as a popular 'proletariat' game due to its simplicity.",
+      "1960s: Standardized children's version ('Drunkard') becomes a household name in the USSR.",
+      "Present: Still the first game taught to most Russian children."
+    ],
+    "evolution": "The '6 beats Ace' rule was likely added to simulate folk stories of the 'little guy' overcoming the powerful.",
+    "cultural": "The name 'P'yanitsa' (Drunkard) comes from the way the cards 'toss and turn' without player control, much like a person in an intoxicated state.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 is standard; up to 4 is possible.",
+    "deck": "36 cards (6, 7, 8, 9, 10, J, Q, K, A).",
+    "equipment": "36-card deck.",
+    "dealing": "The entire deck is dealt face-down to all players. Players do not look at their cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture the entire deck by winning tricks: each round players reveal the top card simultaneously; the higher rank takes the trick (six beats ace). The player who collects all the cards wins; the opponent left with no cards is the loser, the drunkard.",
+    "gameplay": "1. Each player turns over their top card simultaneously. 2. The highest card wins all cards in the trick. 3. Winning cards are placed at the bottom of the winner's deck. 4. Exception: An Ace is the highest card, UNLESS a 6 is played against it. A 6 beats an Ace (but loses to every other card).",
+    "keyRules": [
+      "6 beats Ace (but loses to all other cards).",
+      "Disputes: same rank playedâ€”each adds one face-down, one face-up; highest face-up wins pile.",
+      "Last player with cards wins."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As a game of 100% chance, there is no active strategy. However, the '6 beats Ace' mechanic means that your deck's health is cyclical. If you have many 6s, you are effectively protected against an opponent with many Aces.",
+    "intermediate": "The 'Bottom-Loading' Effect: In physical play, the order in which you pick up the tricks and place them at the bottom of your deck matters. Savvy players try to sandwich high cards between lower cards to avoid 'Dispute' clusters later in the game.",
+    "advanced": "Stamina Tracking: In long games, players begin to memorize the 'Loop' of their cards. If you know a cluster of Jacks is coming up, you can predict when you might enter a Dispute round.",
+    "tips": [
+      "Play with the 'Giveaway' variant if the game lasts too longâ€”whoever loses all their cards first wins.",
+      "Be careful during Disputes; losing a high-stakes Dispute can flip the entire game balance in seconds."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "giveaway",
+        "name": "Drunkard (Giveaway)",
+        "description": "The first person to run out of cards wins.",
+        "overrides": {},
+        "emptyOverridesReason": "Giveaway inverts win condition only; no engine constant overrides."
+      },
+      {
+        "id": "52-card",
+        "name": "52-Card Drunkard",
+        "description": "Uses a full deck; 2 beats Ace.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses full deck and 2-beats-Ace; no engine overrides documented."
+      },
+      {
+        "id": "group",
+        "name": "Group Drunkard",
+        "description": "4 players; creates massive win piles.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant is player-count only; no engine constant overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Standard automated play; no predictive logic.",
+      "medium": "Tracks deck cycles; predicts Win/Loss streaks for UI feedback.",
+      "hard": "Simulates 10,000 game paths to determine current win-probability based on card order."
+    },
+    "considerations": [
+      "Linear deck-looping simulation.",
+      "6-vs-Ace logic override.",
+      "Dispute-resolution (recursion) engine."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-pyanitsa",
+        "name": "Pagat - War / P'yanitsa",
+        "url": "https://www.pagat.com/beating/pyanitsa.html",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia-durak",
+        "name": "Wikipedia - Durak",
+        "url": "https://en.wikipedia.org/wiki/Durak",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-durak-3.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - P'yanitsa (card game)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "war",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 65,
+    "complexity": 1,
+    "luck": 10,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "reveal",
+        "label": "Reveal",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "reveal_top"
+        ],
+        "nextPhase": "capture",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "capture",
+        "label": "Capture",
+        "actor": "system",
+        "legalActions": [
+          "award_trick"
+        ],
+        "nextPhase": "reveal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "dispute",
+        "label": "Dispute",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "add_face_down",
+          "add_face_up"
+        ],
+        "nextPhase": "capture",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 36",
+    "suitSet": "French",
+    "rankSet": "Stripped_36",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["reveal", "capture", "dispute"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "reveal_top",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "award_trick",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "add_face_down",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "add_face_up",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 36-card stripped deck: four French suits with ranks 6 through Ace (six high). Pyanitsa (Drunkard) is a simple comparison or war-like game; players turn cards; higher rank wins the trick; last with cards may lose or drink; Russian tradition.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each have nine cards in the stripped deck. Suits typically do not outrank each other; the higher rank wins when two cards are compared.",
+    "rankDescription": "Ranks 6, 7, 8, 9, 10, Jack, Queen, King, Ace; Ace is usually high. In Pyanitsa the higher rank wins the comparison; no trump; simple turn-and-compare or war-style play.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "P'YANITSA",
+      "subtitle": "Russian Drunkard",
+      "tagline": "6 beats Ace. Capture the deck."
+    },
+    "shortDescription": "Russian children's War variant. Highest card wins; 6 beats Ace. Capture the whole deck.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "P'yanitsa: Turn your top card. Highest wins the trickâ€”except 6 beats Ace! Put won cards at the bottom. First to get all cards wins.",
+    "ai": "Game: P'yanitsa. War variant. 6 beats Ace. Simultaneous reveal. Winner takes all. Disputes: add face-down then face-up; high face-up wins pile."
+  },
+  "scoring": {
+    "description": "No point scoring. Goal is to capture the entire deck.",
+    "winCondition": "Last player with cards wins; or in Giveaway variant, first to lose all cards wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "No point scoring; winner is last player with cards; no per-card values."
+    }
+  },
+  "alsoKnownAs": [
+    "P'yanitsa Drunkard"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

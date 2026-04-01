@@ -1,0 +1,668 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "san-francisco-poker.json",
+  "name": "San Francisco Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "San Francisco: 7-card stud variant where all Queens are wild. Same deal and betting as 7-card stud; any Queen counts as any card. USA; dealer's choice.",
+    "category": "Poker",
+    "subCategory": "Seven Card Stud Variant",
+    "origin": "USA",
+    "originName": "San Francisco",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 2,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "10-15 minutes (per hand)",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "American 7-card stud variant; Queens wild. Popular in home and dealer's choice games.",
+    "timeline": [
+      "20th century: Home poker variant",
+      "Present: Played in wild-card and mixed games"
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "From two to eight players may take part. The game is best for five to seven players; with eight players the deck can run short on the final deal. All four Queens are wild for every player.",
+    "deck": "Standard 52-card deck. No jokers.",
+    "equipment": "Chips; table space.",
+    "dealing": "Same as 7-card stud. All Queens are wild for all players.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Make the best five-card poker hand from seven cards; all Queens are wild.",
+    "gameplay": "Betting as in 7-card stud. At showdown, any Queen substitutes for any card; use any five of seven for best hand.",
+    "keyRules": [
+      "All Queens are wild for everyone",
+      "Standard 7-card stud deal and betting"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Four Queens in deck make straights and flushes more common; play for big hands.",
+    "intermediate": "Track exposed Queens; fewer Queens out means your hand is less likely to be outdrawn.",
+    "advanced": "Variant-specific bluffing when Queens are showing.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard (Queens wild)",
+        "description": "Sources describe only the standard form; all four Queens are wild for all players. Same deal and betting as 7-card stud.",
+        "overrides": {},
+        "emptyOverridesReason": "No engine overrides; variation is rule-level only."
+      }
+    ],
+    "noVariationsReason": "Sources describe only the standard form; no regional or rule variations documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal moves; treat Queens as wild in hand evaluation.",
+      "medium": "Queen counting; hand strength with four wilds in deck.",
+      "hard": "Full hand-reading with global wild card tracking."
+    },
+    "considerations": [
+      "Four Queens are wild for all players; shared wild resource."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-variants",
+        "name": "Pagat.com - 7-Card Stud Variants (San Francisco)",
+        "url": "https://www.pagat.com/poker/variants/7stud.html#sanfrancisco",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-seven-card-stud.html"
+      },
+      {
+        "id": "src:wikipedia_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante_round",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": ["ante"],
+        "nextPhase": "third_street_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players post ante; then two down and one up card dealt per player."
+      },
+      {
+        "id": "third_street_bet",
+        "label": "Third Street",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "fourth_street_bet",
+        "isMandatory": false,
+        "loopIndex": 1,
+        "totalLoops": 5,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after first three cards (two down, one up)."
+      },
+      {
+        "id": "fourth_street_bet",
+        "label": "Fourth Street",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "fifth_street_bet",
+        "isMandatory": false,
+        "loopIndex": 2,
+        "totalLoops": 5,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after fourth card (face up)."
+      },
+      {
+        "id": "fifth_street_bet",
+        "label": "Fifth Street",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "sixth_street_bet",
+        "isMandatory": false,
+        "loopIndex": 3,
+        "totalLoops": 5,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after fifth card (face up)."
+      },
+      {
+        "id": "sixth_street_bet",
+        "label": "Sixth Street",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "seventh_street_bet",
+        "isMandatory": false,
+        "loopIndex": 4,
+        "totalLoops": 5,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after sixth card (face up)."
+      },
+      {
+        "id": "seventh_street_bet",
+        "label": "Seventh Street",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": 5,
+        "totalLoops": 5,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after seventh card (face down)."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": ["reveal_hand", "award_pot"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": { "reveal_hand": "face_up" },
+        "notes": "Active players reveal hands; best five of seven wins (Queens wild)."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Post the mandatory ante before cards are dealt.",
+        "cost": "0",
+        "constraints": "Required for each player at start of hand before initial deal.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Discard hand and forfeit all claim to the pot for this hand.",
+        "cost": "0",
+        "constraints": "Available during any betting round. Eliminates player from current hand.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action to next player without betting.",
+        "cost": "0",
+        "constraints": "Only legal when no bet has been opened in current round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current highest open bet to stay in the hand.",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Only legal when a bet or raise exists. Must match exactly.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting in a round where no bet exists yet.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Only legal when no bet opened yet. Sets current bet for others to call or raise.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase current bet above existing open bet.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Only legal when bet or raise exists. Subject to fixed-limit raise caps.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Flip all hole cards face-up for showdown.",
+        "cost": "0",
+        "constraints": "Triggered at showdown for all active players.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the player with the best five-card hand (Queens wild).",
+        "cost": "0",
+        "constraints": "Dealer or system resolves after all hands revealed.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud poker has no card-play phase; cards are dealt and revealed at showdown."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": { "high": "standard_poker", "low": null, "lowQualifier": null },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [{ "card": "Queen", "canSubstituteFor": "any_card", "restrictions": null, "naturalPreferred": false }],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["ante_round", "third_street_bet", "fourth_street_bet", "fifth_street_bet", "sixth_street_bet", "seventh_street_bet", "showdown"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SAN FRANCISCO POKER",
+      "subtitle": "Card Game",
+      "tagline": "San Francisco: 7-card stud variant where all Queens are wild. Same deal and bett..."
+    },
+    "shortDescription": "San Francisco: 7-card stud variant where all Queens are wild. Same deal and betting as 7-card stud; any Queen counts as any card. USA; dealer's choice",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "San Francisco: 7-card stud variant where all Queens are wild. Same deal and betting as 7-card stud; any Queen counts as any card. USA; dealer's choice.",
+    "ai": "Game: San Francisco Poker. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Pot to best hand. Standard poker hand rankings.",
+    "winCondition": "Make the best five-card poker hand from seven cards; all Queens are wild.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

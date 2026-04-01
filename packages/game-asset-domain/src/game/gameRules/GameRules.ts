@@ -1,0 +1,97 @@
+import 'reflect-metadata';
+import { serializable, serializableClass } from '@ocentra/asset-domain/serialization/decorators';
+import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
+import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
+import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
+import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
+import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
+import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
+import { createAssetGuid } from '@/AssetCreation';
+import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
+import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
+
+@serializableClass({
+  assetType: 'GameRules',
+  displayName: 'Game Rules',
+  icon: '📜',
+  category: AssetTypeCategory.Game,
+})
+export class GameRules extends ScriptableObject {
+
+  static readonly requiresInspector = true;
+  static override createTemplate(): Record<string, unknown> {
+    return {
+      LLM: '',
+      Player: '',
+      objective: '',
+      gameplay: '',
+      keyRules: [],
+    };
+  }
+
+  @serializable({ label: 'LLM Rules' })
+  LLM: string = '';
+
+  @serializable({ label: 'Player Rules' })
+  Player: string = '';
+
+  @serializable({ label: 'Objective', group: 'Rules Section' })
+  objective: string = '';
+
+  @serializable({ label: 'Gameplay', group: 'Rules Section' })
+  gameplay: string = '';
+
+  @serializable({ label: 'Key Rules', group: 'Rules Section', elementType: String })
+  keyRules: string[] = [];
+
+  @serializable({ label: 'Move Validity Conditions' })
+  moveValidityConditions: Record<string, string> | null = null;
+
+  @serializable({ label: 'Example Hands' })
+  exampleHands: string[] = [];
+
+  @serializable({ label: 'Bonus Rules' })
+  bonusRules: string = '';
+
+  static async create(context: AssetCreationContext): Promise<CreatedAsset> {
+    const deferred = new OperationDeferred<string>();
+    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
+    let guid: AssetGUIDType;
+    if (!publishResult.isSuccess) {
+      guid = createAssetGuid();
+      const log = MainAppLogger.instance;
+      log.logWarn('[GameRules] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
+        assetType: 'GameRules',
+        gameId: context.gameId,
+        fallbackGuid: guid,
+      });
+    } else {
+      const result = await deferred.promise;
+      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
+      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
+      if (!result.isSuccess || !result.value) {
+        const log = MainAppLogger.instance;
+        log.logWarn('[GameRules] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
+          assetType: 'GameRules',
+          gameId: context.gameId,
+          fallbackGuid: guid,
+        });
+      }
+    }
+    const assetId = `${context.gameId}-rules`;
+    const data: Record<string, unknown> = {
+      LLM: `Rules for ${context.displayName}.`,
+      Player: `Rules for ${context.displayName}.`,
+    };
+
+    return {
+      assetId,
+      fileName: `${context.gameId}Rules.asset`,
+      guid,
+      data,
+    };
+  }
+}
+

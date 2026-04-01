@@ -1,0 +1,624 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "agram.json",
+  "name": "Agram",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Agram is a West African last-trick game in which only the final trick decides the hand winner.",
+    "category": "Trick-taking",
+    "subCategory": "Last-trick",
+    "origin": "Niger / Mali",
+    "originName": "Agram",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "recommendedPlayers": 4,
+      "display": "2-5"
+    },
+    "deck": "Agram stripped pack (35 cards)",
+    "difficulty": "Intermediate",
+    "duration": "5-10 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+  "origins": "Agram is one of the most popular card games in Niger. Another version is played in northern Mali (Gao, Timbuktu, Kidal) and has spread to Cameroon as Fapfap. It is related to Spar or Sipa in Ghana and West Africa, probably descended from a European game introduced during the slave trade era.",
+  "originCountries": [
+    "Niger",
+    "Mali"
+  ],
+  "timeline": [
+      "Documented in modern card-game surveys as a popular Niger game.",
+      "Related local forms such as Sink-Sink and Fapfap use similar last-trick structure."
+    ],
+    "evolution": "Regional variants mostly change hand size and scoring stakes, while keeping the last-trick objective.",
+    "cultural": "Known for tactical card conservation because only the final trick matters.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two to five players; typically two to four. With six cards each and a 35-card pack, five is the maximum.",
+    "deck": "35-card pack from a standard deck with K, Q, J, all 2s, and Ace of spades removed.",
+    "equipment": "Deck and optional score or stake tracking.",
+    "dealing": "Deal 6 cards each in two batches of 3 (counterclockwise in common Niger form).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the sixth and final trick of the hand; the player who takes that last trick wins the game.",
+    "gameplay": "Player to dealer's right leads first trick. Players must follow suit if able; otherwise they may discard any card. Highest card in led suit wins the trick and leads next. Winner of trick six wins the hand.",
+    "keyRules": [
+      "No trump suit.",
+      "Must follow suit when possible.",
+      "Only led suit can win a trick.",
+      "Winner of final trick wins the deal."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Preserve control cards for late tricks rather than spending them early.",
+    "intermediate": "Track void suits to predict forced discards before final trick.",
+    "advanced": "Shape trick flow so your lead/control aligns with trick six rather than intermediate trick count.",
+    "tips": [
+      "Early sacrifice can be correct if it improves your final-trick position.",
+      "Count remaining high cards in each suit as tricks progress."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "sink_sink",
+        "name": "Sink-Sink",
+        "description": "Variant dealing five cards; winner of fifth trick wins.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant is described in text; engine overrides will be added when fully modelled."
+      },
+      {
+        "id": "mali_pack",
+        "name": "Mali Pack",
+        "description": "Uses 31-card Mali pack with adjusted top spade ordering.",
+        "overrides": {},
+        "emptyOverridesReason": "Mali pack variant is documented; engine override details are not yet encoded."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays highest legal card too often in early tricks.",
+      "medium": "Balances suit-follow with final-trick preservation.",
+      "hard": "Optimizes lead transfer and endgame card timing for trick six control."
+    },
+    "considerations": [
+      "Final-trick optimization is primary objective.",
+      "Suit-follow constraints must be strictly enforced."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_agram",
+        "name": "Pagat - Agram",
+        "url": "https://www.pagat.com/last/agram.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.deck",
+            "sourcePath": "#players"
+          },
+          {
+            "section": "setup.dealing",
+            "sourcePath": "#deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "#play"
+          },
+          {
+            "section": "variations.list",
+            "sourcePath": "#sinksink,#fapfap"
+          }
+        ],
+        "localHtml": "pagat-agram.html"
+      },
+      {
+        "id": "src:wikipedia_agram_card_game",
+        "name": "Wikipedia - Agram (card game)",
+        "url": "https://en.wikipedia.org/wiki/Agram_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "overview.description",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-agram-2.html"
+      }
+    ],
+    "additional": [
+      "Regional play notes for Sink-Sink and Fapfap"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "no-trump",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal six cards to each player."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "trick_count == 6",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Follow-suit trick play; winner leads next trick."
+      },
+      {
+        "id": "resolution",
+        "label": "Final Trick Resolution",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winner of sixth trick wins hand."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; Agram is trick-taking only."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes six cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer-only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 6
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; trick-taking with dealt hands only."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase in this game."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock purchase; cards dealt only."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No folding; must play to each trick."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in Agram; trick-taking only."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in Agram; trick-taking only."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in Agram; trick-taking only."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in Agram; trick-taking only."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase; last trick wins hand."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand revealed by play; no separate reveal action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award hand to winner of final trick.",
+        "cost": "0",
+        "constraints": "System action after trick six completes.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to current trick.",
+        "cost": "0",
+        "constraints": "Must follow suit if possible; otherwise play any card.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No draw phase; fixed deal of six cards."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards played to trick; no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Must follow suit or play any; no pass."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; last-trick game only."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking only; no melding."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends after sixth trick; no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 36",
+    "suitSet": "French",
+    "rankSet": "Stripped_36",
+    "initialHandSize": 6,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 6,
+      "mustFollowSuit": true,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": null
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "notApplicableReasons": {
+      "drawConfig": "Fixed deal of six cards; no draw-from-pile.",
+      "discardConfig": "Cards played to trick; no discard pile.",
+      "specialCards": "Stripped 35-card pack; no special card abilities.",
+      "shedding": "Trick-taking; goal is win last trick, not empty hand.",
+      "fishingConfig": "Not a play-to-capture fishing game."
+    },
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 5,
+      "hand_size": 6,
+      "trick_count": 6,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 5
+      },
+      {
+        "id": "custom:score_area",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "spade_ace_removed",
+          "text": "In spades, 10 becomes highest card because Ace of spades is removed."
+        },
+        {
+          "id": "winner_deals_next",
+          "text": "Winner of the last trick deals the next hand."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "last_trick_resolution",
+        "stripped_deck_rank_order"
+      ]
+    },
+    "progression": ["deal", "trick_play", "resolution"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": null,
+    "rankingSystem": "Final-trick winner under led-suit trick ranking",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "Agram uses a stripped pack: thirty-five cards from a standard deck with kings, queens, jacks, all twos, and the ace of spades removed. Some variants use thirty-six cards; we model the standard thirty-six-card French stripped deck for compatibility.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs) are used. Each suit has nine cards in the standard Agram strip: ace (except spades), ten, nine, eight, seven, six, five, four, and three.",
+    "rankDescription": "In each suit the ranks are ace (where present), ten, nine, eight, seven, six, five, four, and three. In spades the ten is the highest card because the ace of spades is removed from the pack.",
+    "dealPattern": "Deal six cards each in two packets of three."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "AGRAM",
+      "subtitle": "Niger Last-Trick Game",
+      "tagline": "Only trick six matters."
+    },
+    "shortDescription": "A no-trump trick game where winning the final trick decides the hand.",
+    "uiThemes": [
+      "traditional"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick",
+        "custom:score_area"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Agram is about survival to the last trick: conserve control cards and time your leads for trick six.",
+    "ai": "Game: Agram. Flow: deal 6 each, play 6 follow-suit tricks, winner of trick six wins hand."
+  },
+  "scoring": {
+  "description": "Each hand is decided by final-trick winner; match or stake structures vary by table.",
+  "winCondition": "Win the sixth and final trick.",
+  "cardValues": {},
+  "penalties": {},
+  "hasPlaceholders": false,
+  "splitRules": null,
+  "targetScore": "NA",
+  "scoringDirection": null,
+  "nullReasons": {
+      "targetScore": "Hand-by-hand game; no fixed target score.",
+      "scoringDirection": "Single-trick winner per hand; no cumulative direction.",
+      "cardValues": "No numeric point values are tracked; only winner of the final trick matters."
+  }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

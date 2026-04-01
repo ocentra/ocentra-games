@@ -1,0 +1,642 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "woolworth-poker.json",
+  "name": "Woolworth Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Woolworth Poker is a home poker variant where 5s and 10s are wild cards (named after Woolworth's 'five and dime' stores). Any standard poker variant can use Woolworth rules. Wild 5s and 10s can represent any card. Five-of-a-kind becomes possible and ranks above straight flush.",
+    "category": "Poker",
+    "subCategory": "Casino Poker",
+    "origin": "USA",
+    "originName": "Woolworth Poker",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 4,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "Variable",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Woolworth Poker is named after the American retailer F.W. Woolworth and his famous five-and-dime stores, where items cost five or ten cents. The game makes 5s and 10s wild as a playful reference to those prices and became a common home poker rule in 20th-century American play.",
+    "originCountries": ["USA"],
+    "timeline": ["20th century: American home poker wild-card rule named after F.W. Woolworth five and dime stores."],
+    "evolution": "Common home poker wild card rule.",
+    "cultural": "American home poker tradition.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "52 cards. 5s and 10s are WILD.",
+    "equipment": "Cards, chips",
+    "dealing": "Per base poker variant rules.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by having the best five-card poker hand at showdown. All 5s and 10s are wild; five-of-a-kind is possible and ranks above straight flush.",
+    "gameplay": "Standard poker rules. All 5s and 10s are wild (represent any card). Five-of-a-kind is possible (beats straight flush). Apply to any poker variant (Draw, Stud, Hold'em).",
+    "keyRules": [
+      "5s and 10s = wild cards",
+      "Five-of-a-kind possible",
+      "Applies to any poker base game",
+      "8 wild cards total"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Wild cards make strong hands common.",
+    "intermediate": "Adjust hand strength expectations.",
+    "advanced": "Wild card bluffing.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "extra-card-for-two",
+        "name": "Extra Card for a Two",
+        "description": "Some play that a player who is dealt a two receives an extra card (similar to Baseball's four).",
+        "overrides": {},
+        "emptyOverridesReason": "Variation rules are descriptive only; no engine overrides documented for this variant."
+      },
+      {
+        "id": "pay-for-face-up-wilds",
+        "name": "Pay for Face-Up 5s and 10s",
+        "description": "Arthur Buderick version: players must pay a fixed amount (e.g. $1) to the pot for each 10 or 5 received face up; no extra cards dealt.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation rules are descriptive only; no engine overrides documented for this variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI plays with minimal hand evaluation.",
+      "medium": "No distinct medium tier; all non-easy AI uses full hand and Woolworth rules.",
+      "hard": "Hard AI optimizes adjusted hand probabilities."
+    },
+    "considerations": [
+      "Adjusted hand probabilities"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_baseball",
+        "name": "PokerNews - Woolworth",
+        "url": "https://www.pagat.com/poker/variants/baseball.html#woolworth",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "overview",
+            "sourcePath": "Full article"
+          }
+        ],
+        "localHtml": "pagat-baseball-poker.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "bet_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals per base variant (e.g. 5 cards each for Draw, 2 down 1 up for Stud)."
+      },
+      {
+        "id": "bet_round",
+        "label": "Betting Round",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Standard poker betting; when all have acted, proceed to showdown."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_hand",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_hand": "face_up"
+        },
+        "notes": "Best five-card hand wins; 5s and 10s wild; five-of-a-kind beats straight flush."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer deals cards to each player per base variant (e.g. five cards each for Draw, or 2 down and 1 up for Stud).",
+        "cost": "0",
+        "constraints": "Dealer-only; triggered at start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Discard hand and forfeit all claim to the pot for this hand.",
+        "cost": "0",
+        "constraints": "Available during any betting round. Eliminates player from current hand.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action to next player without betting.",
+        "cost": "0",
+        "constraints": "Only legal when no bet has been opened in current round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current highest open bet to stay in the hand.",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Only legal when a bet or raise exists. Must match exactly.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting in a round where no bet exists yet.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Only legal when no bet opened yet. Sets current bet for others to call or raise.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase current bet above existing open bet.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Only legal when bet or raise exists. Subject to table stakes.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Reveal hand face-up for comparison at showdown.",
+        "cost": "0",
+        "constraints": "At showdown; best five-card hand wins (5s and 10s wild, five-of-a-kind beats straight flush).",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the player with the best hand at showdown.",
+        "cost": "0",
+        "constraints": "Dealer or system; after all hands revealed.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": null,
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [
+        { "card": "5", "canSubstituteFor": "any_card", "restrictions": null, "naturalPreferred": false },
+        { "card": "10", "canSubstituteFor": "any_card", "restrictions": null, "naturalPreferred": false }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "bet_round", "showdown"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "WOOLWORTH POKER",
+      "subtitle": "Card Game",
+      "tagline": "Woolworth Poker is a home poker variant where 5s and 10s are wild cards (named a..."
+    },
+    "shortDescription": "Woolworth Poker is a home poker variant where 5s and 10s are wild cards (named after Woolworth's 'five and dime' stores). Any standard poker variant c",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Woolworth Poker is a home poker variant where 5s and 10s are wild cards (named after Woolworth's 'five and dime' stores). Any standard poker variant can use Woolworth rules. Wild 5s and 10s can represent any card. Five-of-a-kind becomes possible and ranks above straight flush.",
+    "ai": "Game: Woolworth Poker. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Standard poker + five-of-a-kind (highest).",
+    "winCondition": "Best poker hand wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings for comparison; there are no point values per card."
+    }
+  },
+  "alsoKnownAs": ["Woolworth"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

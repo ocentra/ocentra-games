@@ -1,0 +1,649 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pinochle-double-deck.json",
+  "name": "Pinochle Double Deck",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Partnership trick-and-meld game for four players using two 40-card pinochle packs (80 cards, nines removed). Bid to name trump, meld for points, then play 20 tricks; first team to reach the target score (e.g. 1500) wins.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "USA",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "80 cards (two 40-card pinochle packs, nines removed)",
+    "difficulty": "Intermediate",
+    "duration": "30-60 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Pinochle"
+  },
+  "history": {
+    "origins": "Pinochle descends from the European games bezique and Binokel. German immigrants brought Binokel to America in the last quarter of the 19th century, where it was mispronounced and spelled as pinochle; it became popular among American Jewish and Irish immigrant communities. The double-deck variant uses two 40-card pinochle packs (80 cards total, nines removed) for four-player partnership play, with hand sizes and minimum bids scaled up; it shares this American cultural origin and was likewise temporarily banned in some US cities during World War I due to anti-German sentiment, before regaining popularity.",
+    "originCountries": ["USA"],
+    "timeline": ["Late 19th century: German immigrants brought Binokel to America; game adopted as Pinochle. Double-deck variant used for four-player partnership play."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Four players in two partnerships; partners sit opposite.",
+    "deck": "80 cards (two 40-card packs).",
+    "equipment": "",
+    "dealing": "All 80 cards dealt, 20 per player; typically in packets of four or five, clockwise from left of dealer.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Partnerships bid for the right to name trump; the bidding team must meet their contract by combining meld points and trick points. First partnership to reach the agreed target score (e.g. 1500) wins.",
+    "gameplay": "Each hand has three phases: auction (players bid; high bidder declares trump), melding (all players show melds; points counted), and trick play (high bidder leads; follow suit; trump wins if unable to follow). Trick points plus meld must meet or exceed the bid or the team is set (bid subtracted).",
+    "keyRules": [
+      "Double deck (80 cards, no nines)",
+      "20 cards each",
+      "Minimum bid 500",
+      "Bid then meld then tricks",
+      "Partnerships opposite"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Pinochle.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate tier documented; strategy follows standard Pinochle bidding and meld timing.",
+      "advanced": "No advanced tier documented; expert play involves count and partnership signalling."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard double-deck partnership form; no regional or rule variations documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "medium": "No distinct medium AI tier documented; play follows legal bids and melds.",
+      "hard": "No hard tier documented; expert AI would require count and partnership inference."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat",
+        "name": "Pagat Pinochle Double",
+        "url": "https://www.pagat.com/marriage/pinochle.html#double",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_pinochle",
+        "name": "Wikipedia - Pinochle",
+        "url": "https://en.wikipedia.org/wiki/Pinochle",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-pinochle-2.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional folk card game; no documented IP holder or trademark claim.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "bid",
+        "label": "Auction",
+        "actor": "each_player_clockwise",
+        "legalActions": ["bid", "pass"],
+        "nextPhase": "meld",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Bidding until three pass; high bidder declares trump."
+      },
+      {
+        "id": "meld",
+        "label": "Melding",
+        "actor": "each_player_clockwise",
+        "legalActions": ["meld"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players show melds; bid winner first."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": ["play_card"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Trick play; high bidder leads; follow suit; trump when void."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump is declared by bid winner after auction; no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the trick; must follow lead suit if possible; if void in suit must play trump if able; must overtake when required by house rules.",
+        "cost": "0",
+        "constraints": "Follow suit; when void, play trump; identical cards, first played wins.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass (drop out of the auction); once passed, may not bid again that round.",
+        "cost": "0",
+        "constraints": "Only during auction; after passing cannot re-enter bidding.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Bid a number (minimum 500); each bid must be higher than previous; bid is the contract the team must make in meld plus tricks.",
+        "cost": "0",
+        "constraints": "Bids in increments (e.g. 10 until 600, then 50); must exceed current bid or pass.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": true,
+        "description": "Display melds face-up for count: runs, marriages, arounds, pinochle, dix; each card may count in one meld per type.",
+        "cost": "0",
+        "constraints": "Bid winner melds first; then all players; melds scored by type (run 150/250, marriage 20/40, pinochle 40/150, etc.).",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 40",
+    "suitSet": "French",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 20,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A 10 K Q J",
+      "canCallNoTrump": false,
+      "overtakingRule": "Must overtake when trump led in some rule sets."
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {"type": "run", "minSize": 5, "maxSize": null, "acesHigh": true, "wildcardAllowed": false},
+        {"type": "flush", "minSize": 5, "maxSize": null, "acesHigh": true, "wildcardAllowed": false},
+        {"type": "set", "minSize": 4, "maxSize": null, "acesHigh": null, "wildcardAllowed": false},
+        {"type": "special", "minSize": 1, "maxSize": 2, "acesHigh": null, "wildcardAllowed": false}
+      ],
+      "meldTiming": "at_any_time",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "Bid winner melds first; all players meld.",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 20,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "High bidder leads first trick.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": 500,
+        "maxBid": null,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 2,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 20
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 80
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+      {"id": "technical_misdeal", "text": "Technical misdeal: 13+ non-counters and no aces may declare before first trick; hand redealt.", "appliesTo": "deal"},
+      {"id": "identical_cards", "text": "Identical cards: first played wins the trick.", "appliesTo": "play"},
+      {"id": "set", "text": "Set: bidding team fails to make contract; bid subtracted from score; meld may be lost.", "appliesTo": "scoring"}
+    ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["bid", "meld", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Trick rank: A 10 K Q J; no poker hand comparison.",
+    "rankingSystem": "Trick-taking: highest card of led suit wins unless trumped; trump A 10 K Q J.",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Double-deck pinochle uses two 40-card pinochle packs (nines removed): 80 cards total. Each pack has four French suits with two copies of 10, Jack, Queen, King, and Ace per suit. Used for partnership play with 20 cards per player.",
+    "suitDescription": "Four French suits (hearts, diamonds, clubs, spades). Each suit has twenty cards across the two 40-card packs. Trump is declared by the bid winner; marriages and melds use suit and rank; following suit applies in tricks.",
+    "rankDescription": "Double-deck uses 40-card rank set: 10, Jack, Queen, King, Ace (no nines). Order in play A, 10, K, Q, J high to low. Jack of trump and Queen of trump are highest trumps. Rank sets trick winners and meld values.",
+    "dealPattern": "All 80 cards dealt; 20 per player; typically four or five cards at a time clockwise from left of dealer.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PINOCHLE DOUBLE DECK",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Pinochle with double deck (80 cards); four players.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Meld points plus trick points (counters) per hand; bidding team must make contract or is set (bid subtracted). First partnership to reach target (e.g. 1500) wins.",
+    "winCondition": "First partnership to reach the agreed target score (commonly 1000 or 1500) wins the game.",
+    "cardValues": {"A": "11", "10": "10", "K": "4", "Q": "3", "J": "2"},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": 1500,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": ["Double-deck Pinochle", "Double Deck Pinochle", "Pinocle Double Deck", "Penuchle Double Deck"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

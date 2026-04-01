@@ -1,0 +1,593 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "billitonnen.json",
+  "name": "Billitonnen",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Billitonnen is a traditional Dutch domino game belonging to the 'Blind Hughie' family. Players draw their tiles but keep them face-down in a row, turning them over one at a time to play. The strong element of luck is tempered by memory—if you can remember the positions of tiles you've seen others fail to play, you gain a significant advantage. Traditionally played as light relief after a session of the more serious Dutch game Nos.",
+    "category": "Domino",
+    "subCategory": "Block / Blind",
+    "origin": "Netherlands",
+    "originName": "Billitonnen (Dutch variant of Blind Hughie)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 3,
+      "display": "2-4 (Best 3)"
+    },
+    "deck": "28 dominoes (Double-6 Set)",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Originating in the Netherlands, Billitonnen takes its name from Billiton (Belitung), an Indonesian island formerly part of the Dutch East Indies. It is a lighthearted variant of European line games, prized for its chaotic and social nature.",
+    "originCountries": [
+      "Netherlands"
+    ],
+    "timeline": [
+      "19th Century: Blind domino games become popular in European cafes.",
+      "Early 20th Century: Billitonnen establishes itself as the standard Dutch 'wind-down' game.",
+      "Present: Still played in traditional Dutch gaming circles and recorded in national heritage archives."
+    ],
+    "evolution": "The game follows the 'Blind Hughie' template but introduces the strict 'Leftmost First' rule, which increases the frustration and humor of the game.",
+    "cultural": "A classic 'after-match' game, meant to be played with drinks and conversation rather than intense competitive focus.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players.",
+    "deck": "Standard double-six domino set (28 tiles).",
+    "equipment": "Standard pack.",
+    "dealing": "Players draw tiles based on count (2p=7, 3p=7, 4p=6). Tiles are placed in a face-down row in front of each player. No one may look at their tiles.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to empty your face-down row by matching tiles to the central line.",
+    "gameplay": "1. **Start**: A tile is drawn from the boneyard to start the line. 2. **The Turn**: On your turn, flip over the LEFTMOST face-down tile in your row. 3. **The Match**: If the tile matches either open end of the central line, you must play it. 4. **The Failure**: If the tile does not match, you must turn it face down again in its original position. 5. **Boneyard**: Unused tiles are not drawn; the game relies only on the initial hand.",
+    "keyRules": [
+      "You must always turn the leftmost tile first.",
+      "Memory is your only tool: you must remember what tiles were returned face-down.",
+      "The game ends when someone goes domino (empties row) or when no one can move (blocked)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Memory is essential. When you flip a tile that doesn't match, memorize its pip values. When the line ends change later, you'll know if that specific tile can be played.",
+    "intermediate": "Opponent Tracking: Watch what your opponents flip and return. If they return a 5-2, and you have control over the line ends, try to make one of the ends a 5 or 2 to force them to play a tile they might not want to.",
+    "advanced": "Block Prevention: If you know your leftmost tile matches an end, but playing it would change that end to a value you know your *next* tile cannot match, consider the risk of blocking yourself.",
+    "tips": [
+      "Don't worry about strategy too much—the 'Leftmost' rule makes it highly luck-dependent.",
+      "Try to keep the line ends varied to maximize your chances of a match."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "blind-hughie",
+        "name": "Blind Hughie",
+        "description": "The English variant where players may sometimes choose which tile to flip instead of the leftmost.",
+        "overrides": {},
+        "emptyOverridesReason": "Blind Hughie is documented as the parent game; no separate engine overrides for it are modeled in this Billitonnen file yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to remember previously flipped tiles. Purely random performance.",
+      "medium": "Remembers its own flipped tiles. Knows when to play based on memory.",
+      "hard": "Remembers all tiles flipped by all players. Calculates the probability of a block based on the boneyard's hidden tiles."
+    },
+    "considerations": [
+      "Must implement a 'Hidden Hand' state where even the owner doesn't know the values.",
+      "Memory decay should be simulated for lower difficulties."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_billitonnen",
+        "name": "Pagat - Blind Hughie / Billitonnen",
+        "url": "https://www.pagat.com/domino/line/blind_hughie.html#billitonnen",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-blind-hughie.html"
+      }
+    ],
+    "additional": [
+      "Traditional Dutch Games (Groningen Archive)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "traditional",
+    "matching",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 15,
+    "complexity": 1,
+    "luck": 9,
+    "skill": 2
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Draw Phase",
+        "actor": "system",
+        "legalActions": [
+          "deal_tiles_facedown"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "The Turn",
+        "actor": "current_player",
+        "legalActions": [
+          "flip_leftmost_tile"
+        ],
+        "nextPhase": "resolution",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "resolution",
+        "label": "Play or Return",
+        "actor": "current_player",
+        "legalActions": [
+          "place_on_line",
+          "return_facedown"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Billitonnen is a casual social game played for pride and memory rather than monetary antes."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The initial distribution of tiles into face-down rows is performed by the system automated dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-tile memory game where all tiles are face-down; no public market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap tiles from any external area; they must play from their face-down row."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The boneyard is not used during play in this variant; every tile must come from the initial deal."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Participation is mandatory for every turn until a player goes domino or the game becomes blocked."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a matching structure rather than a vying structure where checking would be appropriate."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no bet to match in Billitonnen; competition is based on tile matching and memory."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Progress is measured by emptying the player's row rather than through the wagering of chips or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the hand cannot be increased via raises."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Results are immediate upon flipping a matching tile; no separate declaration phase is required."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles remain face down even from their owner until they are flipped for the turn's play attempt."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winner is determined by emptying their row rather than by awarding a physical or virtual pot."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Billitonnen is a domino game where tiles are placed on a line; card playing engine logic does not apply."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All tiles are distributed at the start; no drawing phase exists once the play loop begins."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles must be matched to the line to be removed from the player row; no separate discard pile is used."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must flip a tile every turn until they have no tiles left or the game is blocked."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game does not use a bidding system to determine the dealer or game objectives."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a line-matching game based on single tiles rather than creating sets or sequences."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The round concludes automatically when a player flips and plays their final face-down tile."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All tiles are distributed to the player rows at the start; no draw pile exists during the game.",
+      "discardConfig": "Tiles are played to the line or returned face-down; no waste or discard pile is utilized.",
+      "specialCards": "Domino tiles contribute only their pip values; no individual tile has a secondary action effect.",
+      "declarationMechanism": "Results are determined by immediate physical tile matches; no hidden declaration tokens are required.",
+      "fishingConfig": "Billitonnen is a line-matching game and does not use a capture-from-tableau fishing mechanic.",
+      "trickConfig": "The game is a line-building shedding race rather than a competitive trick-taking game."
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Must flip the leftmost face-down tile in the row to play."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "Central line remains until the round concludes or is blocked."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 7
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "hidden",
+        "owner": "player",
+        "capacity": 7
+      },
+      {
+        "id": "custom:line",
+        "type": "track",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 28
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "dealing",
+      "play_loop",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_tiles_facedown",
+        "supported": true,
+        "description": "Distribute tiles to each player's row face-down without being looked at.",
+        "cost": "0",
+        "constraints": "Setup phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "flip_leftmost_tile",
+        "supported": true,
+        "description": "Reveal the leftmost face-down tile in the player's row.",
+        "cost": "0",
+        "constraints": "Start of turn.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      {
+        "id": "place_on_line",
+        "supported": true,
+        "description": "Connect the flipped tile to a matching end of the central line.",
+        "cost": "0",
+        "constraints": "Must match a line end.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "return_facedown",
+        "supported": true,
+        "description": "Place the flipped tile back in its row face-down.",
+        "cost": "0",
+        "constraints": "Only if tile cannot be played.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; victory is determined by being the first to empty the face-down row.",
+    "rankingSystem": "Shedding / Blind Memory",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 28-tile double-six domino set. Each tile has two ends showing zero to six pips; every combination from 0-0 through 6-6 appears exactly once. No playing cards or jokers; used for Billitonnen (blocking domino) where the line is extended by matching ends.",
+    "suitDescription": "Tiles are matched by pip value at the open ends of the layout. There are no traditional suits; each end value zero through six can connect to any tile sharing that value on one of its two ends.",
+    "rankDescription": "There is no rank hierarchy between tiles; play legality is determined by matching the pip value at an open end. Doubles (same pips on both ends) may be played crosswise. The first player to empty their hand wins in this block game.",
+    "dealPattern": "Tiles are drawn clockwise and placed in a hidden row."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BILLITONNEN",
+      "subtitle": "The Dutch Blind Domino Game",
+      "tagline": "You can't see your tiles. Turn, match, or remember."
+    },
+    "shortDescription": "A charming Dutch blind domino game. Your tiles sit face-down in a row — turn over the leftmost one and hope it matches. If not, flip it back and remember where it is. Memory is your only weapon in this luck-heavy, laugh-filled game.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "custom:line"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Your row (face-down): [?] [?] [?] [?] [?]. The line ends are [3] and [5]. Turn over your leftmost tile: it's [2|4]. Doesn't match 3 or 5. Turn it back face-down. Remember: position 1 = [2|4]. Next turn you'll flip position 2. If the ends become 2 or 4 later, you'll know position 1 will play.",
+    "ai": "Game: Billitonnen. 28 dominoes (double-6). 2-4 players. Tiles drawn face-down in a row. On turn: flip leftmost unflipped tile. If it matches either open end of the line, play it. If not, return it face-down. First to empty hand or fewest tiles at block wins. Memory of returned tiles is key advantage."
+  },
+  "scoring": {
+    "description": "The player who empties their hand first wins the round. In a blocked game, the player with the fewest remaining tiles wins.",
+    "winCondition": "Emptying the player's row or having the fewest tiles at a block.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If blocked game is tied for fewest tiles, the player with the lowest total pip count wins.",
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "Victory is determined by hand state rather than reaching a numerical point threshold.",
+      "cardValues": "Tiles contribute to the shedding objective rather than having point values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Blind Hughie"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

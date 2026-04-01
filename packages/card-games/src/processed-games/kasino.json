@@ -1,0 +1,664 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kasino.json",
+  "name": "Kasino (Standard, International)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kasino (Standard Casino) is the international version of the classic 'fishing' card game. Played with a standard 52-card deck, players aim to capture cards from a central table layout by matching ranks or combining values to a sum. It is a game of memory, card-counting, and tactical 'building', forming the basis for numerous regional variants like Scopa (Italy) and Nordic Casino.",
+    "category": "Fishing",
+    "subCategory": "Casino",
+    "origin": "Italy (as Scopa) / Global",
+    "originName": "Casino (also Cassino)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Origins trace back to 15th-century Italy with the 'fishing' family of games (Scopa, Primiera). It spread through Europe and was standardized in the 19th century in the English-speaking world and Russia.",
+    "originCountries": ["Italy", "United Kingdom", "Russia", "USA"],
+    "timeline": [
+      "1792: First documented in English as 'Casino'.",
+      "1800s: The rule for 'Building' (combining cards for later capture) is introduced.",
+      "1900s: Standardized for official tournaments and social play worldwide.",
+      "Present: Remains a popular 'gateway' game for children and a competitive game for advanced counters."
+    ],
+    "evolution": "The game transitioned from a simple matching game into a complex strategy game through the invention of 'Multiple Building' and 'Trailing'.",
+    "cultural": "In many cultures, Casino is the first 'adult' card game taught to children due to its reinforcement of arithmetic skills.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Optimal with 2 players (heads-up).",
+    "deck": "Standard 52-card deck. No Jokers.",
+    "equipment": "",
+    "dealing": "Each player is dealt 4 cards. 4 cards are dealt face-up to the table. The remainder of the deck is dealt in groups of 4 as players exhaust their hands.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture 'Points' by taking cards from the table. The first player to reach 21 or 31 points wins.",
+    "gameplay": "1. **Matching**: Play a card to capture a card of the same rank.\n2. **Combining**: Play a card (e.g., 9) to capture multiple cards that sum to that value (e.g., 5 + 4).\n3. **Building**: Place a card on a table card to form a sum (e.g., place a 2 on a 5 and call '7') IF you hold a 7 in your hand for a later turn.\n4. **Trailing**: If you cannot capture or build, you must 'trail' (discard) a card onto the table.",
+    "keyRules": [
+      "Face cards (J, Q, K) capture only by matching rank; one matching card per face card played.",
+      "Numeral cards (A–10) capture same rank or any set of table cards that sum to the card's value; Aces count as 1.",
+      "A build must include the card you just played; you must hold a card that can capture the build. Builds can only be captured by the announced rank.",
+      "If you added to a build, you must capture or build on your turn; trailing is not allowed. Last captor takes remaining table cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize the 10 of Diamonds. If you don't have a 10, try to be the last person to make a capture in a deal to secure the 'Most Cards' bonus.",
+    "intermediate": "Building Safely: Don't build a 9 unless you hold two 9s. If you only hold one, and your opponent has a 9, they will 'steal' your build and take all the points.",
+    "advanced": "Multiple Building: If you have a build of 8 on the table (5+3) and you hold another 8, and there is a lone 8 on the table, you can 'collect' them into a single build that can only be captured by an 8.",
+    "tips": [
+      "Always count the Aces. There are four points tied to themâ€”more than the Big Casino.",
+      "If you are trailing, play a card that your opponent is unlikely to have (e.g., a card of a rank that has already appeared three times)."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "sweep-point",
+        "name": "Sweep (Clear) Bonus",
+        "description": "A sweep (taking all table cards in one capture) scores one bonus point. The capturing card is stored face-up to count sweeps.",
+        "overrides": {},
+        "emptyOverridesReason": "Sweep bonus is a scoring rule only; no engine constant overrides needed for this variant."
+      },
+      {
+        "id": "target-11",
+        "name": "Play to 11",
+        "description": "Some play to 11 points instead of 21. In two-player or partnership, the player with more points in a round scores the difference.",
+        "overrides": {},
+        "emptyOverridesReason": "Only target_score differs; add engine.constants.target_score when we support variation overrides."
+      },
+      {
+        "id": "spade-casino",
+        "name": "Spade Casino",
+        "description": "Each spade captured counts 1 point; Jack of Spades counts an extra point. Big and Little Casino and aces still count; total points (excluding sweeps) are 24.",
+        "overrides": {},
+        "emptyOverridesReason": "Spade Casino uses different point total (24); scoring rules need variant-specific overrides when supported."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to build; only captures single matches; ignores point-valuation.",
+      "medium": "Reasonable building (Simple Builds only); prioritizes 10D and Aces.",
+      "hard": "Expert at Multiple Building and 'Build Theft' prevention; perfectly calculates the probabilities of remaining cards to optimize 'Trailing'."
+    },
+    "considerations": [
+      "Building state-machine.",
+      "Sum-set partition search.",
+      "Inventory card-counting."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_kasino_www_pagat_com_fishing_casino_html",
+        "name": "Pagat.com - Kasino",
+        "url": "https://www.pagat.com/fishing/casino.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-casino.html"
+      },
+      {
+        "id": "src:wikipedia_casino",
+        "name": "Wikipedia - Casino (card game)",
+        "url": "https://en.wikipedia.org/wiki/Casino_(card_game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-casino.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Casino (card game)",
+      "Bicycle Cards - How to Play Casino"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain card game; no documented IP holder.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["deal"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": ["play_card"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Capture by match or sum, build, or trail. Last captor takes remaining table cards."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+      "supported": true,
+      "description": "Deal four cards to each player and four face-up to the table. After each round of play, deal four more to each player until the deck is exhausted; no additional cards to the table after the first deal.",
+      "cost": "0",
+      "constraints": "Dealer deals four to each player and four face-up to tableau. Announce 'last' when dealing the final cards.",
+      "isTerminating": false,
+      "effectType": "deal",
+      "effectHints": {}
+    },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+"play_card": {
+      "supported": true,
+      "description": "Capture table cards by matching rank or by playing a numeral that equals the sum of table cards; build by combining your card with table cards and announcing the capture value (must hold the capturing card); or trail by playing a card face-up to the table without capturing. If you added to a build on the table, you must capture or build on your turn if possible.",
+      "cost": "0",
+      "constraints": "One card per turn. Face cards (J,Q,K) only capture matching rank. Numeral cards capture same rank or sets that sum to the card's value. Builds can be stolen by an opponent with the announced rank. Last captor takes any remaining table cards.",
+      "isTerminating": false,
+      "effectType": "play",
+      "effectHints": {}
+    },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 1,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {"target_score": 21},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "tableau",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {"id": "last-captor-residue", "text": "Last player to make a capture in the final deal takes all remaining table cards (residue)."},
+        {"id": "must-capture-if-build", "text": "If you added to a build on the table, you must capture or build on your turn if possible; trailing is not allowed in that case."},
+        {"id": "build-theft", "text": "A build can be stolen by an opponent who plays the announced capturing rank."},
+        {"id": "sweep-bonus", "text": "Sweep (taking all table cards in one capture) scores one bonus point; the capturing card is stored face-up to count sweeps."},
+        {"id": "tie-no-point", "text": "Tie for Most Cards or Most Spades: no one gets that point."}
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "4 each to players, 4 face-up to table. After each round of play, deal 4 more to each player until deck exhausted; no additional cards to table after first deal.",
+    "notApplicableReasons": {
+      "drawConfig": "Cards are dealt in batches of four when hands are empty; there is no draw-from-stock during play.",
+      "discardConfig": "Players trail cards to the tableau; there is no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "KASINO (STANDARD/INTERNATIONAL)",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Kasino (Standard Casino) is the international version of the classic 'fishing' card game. Played with a standard 52-card deck, players aim to capture cards from a central table layout by matching rank",
+    "uiThemes": [
+      "classic"
+    ],
+"uiLayout": {
+    "zones": [
+      "hand",
+      "stock",
+      "tableau"
+    ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Eleven points per hand: Most Cards (3), Most Spades (1), each Ace (1), Big Casino 10♦ (2), Little Casino 2♠ (1). Sweep bonus (1) if played. First to 21 wins.",
+    "winCondition": "First to 21 or more points wins. If two reach target in same round, higher score wins; if tie, another round is played.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "Tie for Most Cards or Most Spades: no one gets that point.",
+    "targetScore": 21,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Points come from bonuses (Most Cards, Aces, Big and Little Casino, sweeps), not from per-rank card values."
+    }
+  },
+  "alsoKnownAs": ["Casino", "Cassino", "Kasino"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

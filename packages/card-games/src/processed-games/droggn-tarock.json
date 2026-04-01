@@ -1,0 +1,690 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "droggn-tarock.json",
+  "name": "Droggn Tarock",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Droggn (a Tyrolean dialect for 'playing Tarock') is a unique three-player card game from the Stubai Valley in Austria. Unlike the major Austrian Tarock games like Königrufen, Droggn is a direct descendant of the archaic Tarok L'Hombre family. It uses a rare 66-card French-suited Tarock deck and is known for its complex trick-play and specialized Tyrolean terminology. The game was nearly extinct until recorded by card game historians in the late 1990s.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Austria (Tyrol - Stubai Valley)",
+    "originName": "Droggn (Tyrolean: to play Tarock)",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "recommendedPlayers": 3,
+      "display": "3-4"
+    },
+    "deck": "66-card French-suited Tarock pack",
+    "difficulty": "Intermediate",
+    "duration": "30–50 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Austria"
+    ],
+    "origins": "Droggn is native to the Stubai Valley, specifically the villages of Fulpmes and Telfes. Local tradition suggests it was either brought by Tyrolean hero Andreas Hofer from Switzerland or introduced by Italian door-to-door salesmen ('kraxn-drogar').",
+    "timeline": [
+      "1810s: Possible introduction during the Napoleonic Wars.",
+      "1900s: Becomes a staple social game in Stubaital tavern culture.",
+      "1996: Documented by John McLeod and Remigius Geiser to prevent the rules from being lost."
+    ],
+    "evolution": "It diverged from the mainstream evolution of Austrian Tarock, preserving 18th-century L'Hombre patterns that were forgotten in Vienna and Linz.",
+    "cultural": "Used to be played extensively in the Gasthof Jenewein in Fulpmes; the dialect terms used in the game are specific to Tyrolean German.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 active players. If 4 play, the dealer 'feiert' (celebrates/sits out).",
+    "deck": "66-card deck. Includes 21 trumps (XXI–I), the Gstieß (fool), and 44 suit cards (king, queen, rider, jack, and pips per suit).",
+    "equipment": "66-card Tarock deck, score sheet.",
+    "dealing": "Each player is dealt 21 cards in three batches of 7. The last 3 cards form the talon face down in the centre.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win tricks to capture card points. Total card points in the pack amount to 74; the declarer needs at least 37 to win.",
+    "gameplay": "1. Bidding: Starting left of dealer, each player has one opportunity to bid (weiter, Ansager, Solo, Super, Super Mord). Highest bidder is declarer.\n2. Talon: Declarer takes the 3-card talon (Ansager/Solo), discards 3 face-down, and in Ansager buys one card from opponents.\n3. Trick play: Declarer leads. Follow suit if possible; if void, must trump. Gstieß may be played anytime and never wins the trick (except last trick of Super Mord).",
+    "keyRules": [
+      "Gstieß (Sküs): The fool; not a trump; may be played anytime to avoid following suit; never wins a trick except last trick of Super Mord.",
+      "Tarock I Ultimo: Bonus for winning the final trick with trump I; may be announced by laying it out before play.",
+      "Trump control: 21 trumps (XXI–I) plus Gstieß; follow suit, must trump when void; winner of trick leads next."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize capturing Kings; they are the highest value non-trump cards and often swing the game.",
+    "intermediate": "The 'Fox' (Fuchs): A singleton card (not a King) kept by the declarer to bait opponents into playing their high court cards early.",
+    "advanced": "Middle Man Defense: Defenders must ensure they 'sandwich' the declarer. The defender to the declarer's right should attempt to win tricks so that the declarer is forced to play second to subsequent leads.",
+    "tips": [
+      "Count the trumps! If you know the defenders are out of trumps, your long suit can run unchecked.",
+      "Use the Gstieß defensively to protect your high Picture cards from being captured by the 21."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "deal_talon_position",
+        "name": "Deal and talon position",
+        "description": "The talon may be dealt in the middle of the deal (e.g. after the second batch of 7) rather than at the end. One variant is deal in batches of 5-5-5-3-3 then talon.",
+        "overrides": {},
+        "emptyOverridesReason": "Deal and talon placement variants are optional; no engine overrides needed for base game."
+      },
+      {
+        "id": "expose_talon",
+        "name": "Exposing the talon",
+        "description": "In ordinary game some players expose the talon before declarer picks it up; in Solo it is picked up without showing. Other informants said declarer never shows the talon.",
+        "overrides": {},
+        "emptyOverridesReason": "Talon visibility is procedural; no engine overrides required for this variant."
+      },
+      {
+        "id": "game_78_cards",
+        "name": "Game with 78 cards",
+        "description": "Played with 78 cards: deal in 5s, 39 card points needed by declarer to win. Otherwise rules the same; Super Mord score probably 169.",
+        "overrides": {},
+        "emptyOverridesReason": "78-card variant would need deck and constant overrides; not yet modeled."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to recognize 'void' suit opportunities; loses Kings to low Tarocks.",
+      "medium": "Understands Tyrolean L'Hombre bidding; uses the talon effectively to shorten suits.",
+      "hard": "Expert at 'Fox' play; tracks 22 trumps and 44 suit cards perfectly to identify winning lines."
+    },
+    "considerations": [
+      "AI must accommodate the 66-card deck structure which is non-standard for both Tarot and regular card games."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_droggn_www_pagat_com_tarot_stubtar_html",
+        "name": "Pagat - Droggn",
+        "url": "https://www.pagat.com/tarot/stubtar.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-stubtar.html"
+      },
+      {
+        "id": "src:wikipedia_tarot_en_wikipedia_org_wiki_tarot",
+        "name": "Wikipedia - Tarot",
+        "url": "https://en.wikipedia.org/wiki/Tarot",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tarot-2.html"
+      }
+    ],
+    "additional": [
+      "Michael Dummett, 'The Game of Tarot' (1980)",
+      "Remigius Geiser, 'Tyrolean Card Game Research'"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional folk game; no documented IP holder or public domain claim.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal opening hand for the round."
+      },
+      {
+        "id": "main_play",
+        "label": "Main Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "bid",
+          "declare"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Execute legal turn actions until round end condition is reached."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; ante is not a core player action in its documented rules."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards or tiles for a new hand in Droggn Tarock.",
+        "cost": "0",
+        "constraints": "Dealer only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; reveal market is not a core player action in its documented rules."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; buy market is not a core player action in its documented rules."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; buy stock is not a core player action in its documented rules."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; fold is not a core player action in its documented rules."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; check is not a core player action in its documented rules."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; call is not a core player action in its documented rules."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; bet is not a core player action in its documented rules."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; raise is not a core player action in its documented rules."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Declare contract, trump, or announcement allowed by rules.",
+        "cost": "0",
+        "constraints": "Only valid declarations are accepted.",
+        "isTerminating": false,
+        "effectType": "declare"
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; reveal hand is not a core player action in its documented rules."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; award pot is not a core player action in its documented rules."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card or tile to the shared play area.",
+        "cost": "0",
+        "constraints": "Must obey follow-suit, rank, or placement constraints.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; draw is not a core player action in its documented rules."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; discard is not a core player action in its documented rules."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; pass is not a core player action in its documented rules."
+      },
+      "bid": {
+        "supported": true,
+        "description": "Submit a legal bid in the bidding phase.",
+        "cost": "0",
+        "constraints": "Must be within allowed bid range and step.",
+        "isTerminating": false,
+        "effectType": "bid"
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; meld is not a core player action in its documented rules."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Droggn Tarock is modeled as a Trick-taking flow; go out is not a core player action in its documented rules."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Tarot 66",
+    "suitSet": "French_tarock",
+    "rankSet": "Tarot_66",
+    "initialHandSize": 21,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "permanent_rank",
+      "permanentTrumps": [
+        {
+          "card": "Tarocks I–XXI",
+          "rank": null,
+          "name": "21 numbered trumps"
+        },
+        {
+          "card": "Gstieß",
+          "rank": null,
+          "name": "Fool; playable anytime, never wins trick except last of Super Mord"
+        }
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "XXI high to I low; Gstieß is excuse",
+      "canCallNoTrump": false,
+      "overtakingRule": "Gstieß may be played to any trick without following suit; it never wins the trick and goes to the side that played it."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 21,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "Declarer leads to first trick.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "pass_or_bid",
+        "minBid": null,
+        "maxBid": null,
+        "passAllowed": true,
+        "doubling": true
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 66
+      },
+      {
+        "id": "talon",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 3
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "main_play"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Point count; cards counted in threes (minus 2 per group); 74 points in pack; declarer needs at least 37 to win.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 66-card French-suited tarock deck with 21 trumps plus the Fool and 44 suit cards. Black suits keep King, Queen, Cavalier, Jack, 10 down to 4; red suits keep King, Queen, Cavalier, Jack, Ace down to 7.",
+    "suitDescription": "Spades and Clubs are the long black suits; Hearts and Diamonds are the round red suits. The two colour groups keep different pip subsets.",
+    "rankDescription": "Courts are King, Queen, Cavalier, and Jack. The long black suits rank 10 down to 4 beneath the courts; the round red suits rank Ace down to 7 beneath the courts.",
+    "dealPattern": "Three batches of 7 cards to each player; last 3 cards form the talon face down.",
+    "notApplicableReasons": {
+      "drawConfig": "Players do not draw from a pile during play; cards are dealt once and played in tricks.",
+      "discardConfig": "Declarer discards from hand to talon at start, but there is no per-turn draw or discard phase.",
+      "meldConfig": "Droggn is trick-taking with point scoring; there is no melding of card combinations.",
+      "marketConfig": "There is no market or face-up purchase pile; only the talon and optional card buy in Ansager.",
+      "shedding": "Players play to tricks; the goal is not to empty the hand first by shedding.",
+      "fishingConfig": "No fishing or capture-from-tableau mechanic; cards are played to tricks.",
+      "patienceConfig": "Droggn is a three- or four-player trick-taking game, not solitaire.",
+      "bankingConfig": "No banker; scoring is game points (Ansager 20, Solo 40, Super 80, etc.) and stakes in Groschen."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Droggn Tarock",
+      "subtitle": "Trick-taking rules and play flow",
+      "tagline": "Droggn (a Tyrolean dialect for 'playing Tarock') is a unique three-player card game from the Stubai Valley in Austria."
+    },
+    "shortDescription": "Droggn (a Tyrolean dialect for 'playing Tarock') is a unique three-player card game from the Stubai Valley in Austria. Unlike the major Austrian Tarock games like Königrufen, Droggn is a direct descendant of the archaic Tarok L'Hombre family. It uses a rare 66-card French-suited Tarock deck and is known for its complex trick-play and specialized Tyrolean terminology. The game was nearly extinct until recorded by card game historians in the late 1990s.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "talon",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Scoring uses the documented rules for Droggn Tarock and determines round or match winners accordingly.",
+    "winCondition": "Declarer wins by taking at least 37 of 74 card points in tricks; opponents win if they take more than 37.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "Target score depends on the selected table variant rather than one fixed universal value.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Point values are documented in engine.rankDescription and rules; no separate cardValues map needed."
+    }
+  },
+  "alsoKnownAs": [
+    "Droggn",
+    "Stubai Valley Tarock",
+    "Stubaital Tarock"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

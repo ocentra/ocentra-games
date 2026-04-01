@@ -1,0 +1,670 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "marias.json",
+  "name": "Mariáš",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Mariáš is the national card game of the Czech Republic and Slovakia, derived from the historical Mariagespiel. It is a highly competitive trick-taking and bidding game typically played by three players with a 32-card German-suited deck. The game involves complex bidding for different contracts (Standard, Seven, Betl, Durch) and is famous for its strict play rules: you must follow suit, you must trump, and you must win the trick if possible.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Czech Republic / Slovakia",
+    "originName": "Mariáš (Czech and Slovak)",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "recommendedPlayers": 3,
+      "display": "3 (Active) / 4 (One sitting out)"
+    },
+    "deck": "32-card German-suited (Tell deck)",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes (Per hand)",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Developed from 18th-century Austrian/German games, it solidified into its current 'Marias' form in the Czech lands during the 19th century.",
+    "originCountries": ["Czech Republic", "Slovakia"],
+    "timeline": [
+      "1890s: Marias clubs appear in Prague and Bratislava.",
+      "1920: Rules for the 'Betl' and 'Durch' variants are standardized.",
+      "Present: Remains the most popular card game in pubs across both countries, with national and international tournaments.",
+      "20th Century: Influenced by bridge and skat to include more complex bidding trees."
+    ],
+    "evolution": "The game's 'Seven' (Sedma) contract is a unique feature where the player must win the LAST trick with the Seven of Trumps.",
+    "cultural": "Commonly played for small stakes (e.g., Koruna or Euro-cents) in a loud, social pub atmosphere.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 players. One is the 'Declarer' (Solo), playing against the other two (Defenders).",
+    "deck": "32 cards: Ace, 10, King, Queen, Jack, 9, 8, 7.",
+    "equipment": "",
+    "dealing": "Dealer deals 12-10-10 cards or 7-5-5-5-5-5. The declarer gets a 'Talon' (2 cards) to discard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score 100+ points (Standard) or fulfill a special contract.",
+    "gameplay": "1. Must follow suit.\n2. If void, MUST play a trump card.\n3. **Must Overtake**: You must play a card higher than the current winning card if you have it.",
+    "keyRules": [
+      "Must follow suit. If void in led suit, must play a trump.",
+      "Must overtake: play a card higher than the current winning card when possible (even if partner is winning).",
+      "Declarer plays alone against the two defenders, who form a team.",
+      "Contracts (Suit, Betl, Durch, Open Betl, Open Durch) are chosen by bidding; forehand must name a contract, others say 'good' or 'bad' to take over."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "In a Standard game, focus on 'killing' the opponent's Aces and Tens. Use your trumps to seize the lead when you are void in a suit, then lead your own Ten to force them to play their King or Queen into your pile.",
+    "intermediate": "The Seven Management: If you bid 'Seven', you must keep the 7 of Trumps until the very last turn. This means you need enough other trumps to defend yourself throughout the round so you aren't forced to play the 7 early.",
+    "advanced": "Defensive Coordination: In the 2-vs-1 setup, the defenders must work together. If your partner is leading a suit, and you have the Ten, play it! You are giving points to the partnership rather than letting the declarer take them later.",
+    "tips": [
+      "Count the trumps. There are 8 in total. If you have 5 and your opponents play 2, only one remains. You are now the master of the table.",
+      "In 'Betl', discard your highest cards (Ace, Ten) as soon as possible into suits where you are void."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "suit",
+        "name": "Suit",
+        "description": "Ordinary game with trumps. Declarer aims to take more card points than the two defenders together. Bonuses for seven (last trick with trump 7), 100+ points, and marriages (king+over).",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in description; engine overrides not yet specified."
+      },
+      {
+        "id": "betl",
+        "name": "Betl",
+        "description": "No trumps. Declarer must lose every trick to win. Opponents win if they force the declarer to take any trick.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in description; engine overrides not yet specified."
+      },
+      {
+        "id": "durch",
+        "name": "Durch",
+        "description": "No trumps. Declarer must win every trick. If opponents take any trick, declarer loses.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in description; engine overrides not yet specified."
+      },
+      {
+        "id": "open-betl",
+        "name": "Open Betl",
+        "description": "Like Betl but after the first trick the declarer's cards are placed face up; all remaining cards must be the lowest outstanding in their suits.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in description; engine overrides not yet specified."
+      },
+      {
+        "id": "open-durch",
+        "name": "Open Durch",
+        "description": "Like Durch but after the first trick the declarer's cards are face up; all remaining must be the highest outstanding in their suits.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described in description; engine overrides not yet specified."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't overtake when mandatory; fails to hide the 7 in a 'Seven' bid; wastes trumps on empty tricks.",
+      "medium": "Reasonable 'Talon' disposal logic; understands the coordinate defense for defenders.",
+      "hard": "Expert at 'Inference Tracking'; perfectly calculates the risk of 'Betl' vs 'Durch'; masters the psychological bidding bluff."
+    },
+    "considerations": [
+      "Mandatory-play constraint engine (Follow/Trump/Overtake).",
+      "Talon-optimization algorithm (Solo player).",
+      "Partnership coordination logic (Defenders)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_marias",
+        "name": "Pagat - Mariáš",
+        "url": "https://www.pagat.com/marriage/marias.html",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "pagat-marias.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Mari%C3%A1%C5%A1",
+        "localHtml": "wiki-mari.html"
+      },
+      "Wikipedia - Mariáš"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain card game; no specific legal claim or trademark known.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "contract",
+        "label": "Select contract",
+        "actor": "current_player",
+        "legalActions": [
+          "bid"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the trick. Must follow suit; if void, must play a trump; must overtake (play higher than current winning card) when possible.",
+        "cost": "0",
+        "constraints": "Must follow suit. If void in led suit, must play a trump. If possible, must play a card that beats the current winning card (including partner's).",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": true,
+        "description": "Announce or take over the contract (Suit, Betl, Durch, Open Betl, Open Durch). Forehand must name a contract; others answer 'good' or 'bad' to take over with a higher contract.",
+        "cost": "0",
+        "constraints": "Forehand must play if no one says 'bad'. Contracts in ascending order: Suit, Betl, Durch, Open Betl, Open Durch.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["variable"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 32",
+    "suitSet": "German",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 10,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "Ace, 10, King, Over, Under, 9, 8, 7 (suit contracts); no trump in Betl/Durch",
+      "canCallNoTrump": true,
+      "overtakingRule": "Must play higher than current winning card when possible; must trump if void in led suit."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 10,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": null,
+        "maxBid": null,
+        "passAllowed": false,
+        "doubling": true
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 10,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["contract", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 32-card German deck with four suits (Hearts, Bells, Acorns, Leaves) and ranks 7 through 10 plus Unter, Ober, King, and Ace, used in many Central European card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "7-5-5-5-5-5 (forehand 12, others 10); declarer discards 2 to talon.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Mariáš",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Mariáš is the national card game of the Czech Republic and Slovakia, derived from the historical Mariagespiel. It is a highly competitive trick-taking and bidding game typically played by three players with a 32-card German-suited deck.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "In suit contract: take more card points than the two defenders together (100+ with marriage, or majority of 90 card points plus last trick and marriages). In Betl: lose every trick. In Durch: win every trick.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Point values are ace and ten 10 each, last trick 10; marriages 40 or 20; see winCondition."
+    }
+  },
+  "alsoKnownAs": ["Mariasch"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,694 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "money-matching.json",
+  "name": "Money (Traditional Capture Game)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Money is a traditional two-player card game popular in Arab nations such as Jordan, Syria, and Egypt. It is a high-speed capture game that uses a standard deck modified by separating the face cards (the 'Money') from the numeral cards. Players compete to capture numeral cards from a central pile by matching their values, while simultaneously using their 'Bank' of picture cards as currency to buy cards from their opponent. The goal is to accumulate all the cards in the game.",
+    "category": "War",
+    "subCategory": "War / Accumulation",
+    "origin": "Middle East (Levant / Egypt)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Part of a family of speed-based capture games like 'Beggar My Neighbour'. It evolved a unique financial metaphor where face cards serve as permanent capital.",
+    "originCountries": ["Jordan", "Syria", "Egypt"],
+    "timeline": [
+      "Early 20th Century: Variations of the game are orally transmitted across rural Jordan and Syria.",
+      "1970s: Becomes a standard childhood and adult coffeehouse game in Cairo.",
+      "Present: Remains a popular pastime, with rules documented as a curiosity of Middle Eastern card culture.",
+      "21st Century: Often played by expats as a way to maintain cultural traditions."
+    ],
+    "evolution": "The 'Buying' mechanic is the game's most distinct innovation, turning a simple capture game into a rudimentary economic simulation.",
+    "cultural": "Reflects the importance of 'The Bank' and trade in the social life of the Levant.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two players. The game is normally played with a standard 52-card pack; in some variants two Jokers are added. Each player receives six picture cards (two each of King, Queen, Jack) as their bank and twenty numeral cards face-down to form their play stack.",
+    "deck": "52 cards. Remove all J, Q, K (12 cards). Each player takes 2 Jacks, 2 Queens, and 2 Kings as their 'Bank'.",
+    "equipment": "",
+    "dealing": "Remaining 40 numeral cards are dealt face-down (20 each). Aces count as 1.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "The objective is to collect all the cards in the game—both the numeral cards and the picture cards (money)—leaving the opponent with nothing. The player who has all the cards is the winner.",
+    "gameplay": "1. Players take turns flipping the top card of their deck into a central pile.\n2. **Match Capture**: If the flipped card matches the rank of the card on top of the pile, the player captures the entire pile.\n3. **Buying**: If a player needs cards (or if certain conditions are met), they can 'buy' cards from the floor or from their opponent's 'Bank' by trading their own picture cards. Values: King > Queen > Jack.",
+    "keyRules": [
+      "Throw the top card of your face-down stack to the play pile (floor); if it matches the top card's rank you capture the whole pile. When out of numeral cards you must buy: from the floor if at least 5 numeral cards are on it, otherwise from the opponent. Money values: King = 5 cards, Queen = 15, Jack = 10. False capture attempt forfeits the pile to the opponent. Card must be flipped fairly without peeking."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep track of the cards on the pile. If you know there is a 7 on the bottom and a 7 just came up, try to play fast so you can capture before the opponent. Protect your 'Bank' cards; using a King to buy low-value numerals is usually a bad deal unless you are about to run out of cards.",
+    "intermediate": "The 'Buying' Timing: Only buy from the opponent when they are low on cards and you can reasonably expect to 'starve' them of capture opportunities. If they have no numeral cards, they are forced to use their Bank cards to continue, which eventually leads to their bankruptcy.",
+    "advanced": "Match Perception: In high-speed play, develop the ability to see the next card before it fully lands. Anticipating matches allows you to prepare for the 'buying' phase if the capture fails.",
+    "tips": [
+      "Speed is key. The faster you play, the less time your opponent has to calculate if they should buy from the floor.",
+      "If you have many Jacks but few Kings, try to trade your Jacks early for high-value numeral cards to maintain your deck volume."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "jokers",
+        "name": "Jokers",
+        "description": "Two Jokers added; each player has 21 numeral cards. Jokers match only each other.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant changes deck size and match rule only; engine overrides can be added when implementing."
+      },
+      {
+        "id": "egyptian",
+        "name": "Egyptian Money (floos)",
+        "description": "No speed element: match always captures. Players may buy or exchange at start of any turn. Opponent gives cards from bottom of stack. Different money values (e.g. Queen 5, King 10, Jack 15 or Queen 10, King 15, Jack 20). Optional: Aces as money worth 30 each; or Seven of diamonds captures any pile.",
+        "overrides": {},
+        "emptyOverridesReason": "Egyptian rules differ in buy timing and money values; overrides to be added when implementing."
+      },
+      {
+        "id": "syrian",
+        "name": "Syrian Buying-Selling",
+        "description": "54 cards with two Jokers as money (5 cards each). Jack 10, Queen 15, King 20. Numeral cards bought from floor are taken from the top of the play pile, not the bottom.",
+        "overrides": {},
+        "emptyOverridesReason": "Syrian variant uses different deck and buy source; overrides to be added when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Slow reactions; wastes Bank cards on small piles; misses matches.",
+      "medium": "Excellent capture-timing; manages Bank value effectively.",
+      "hard": "Expert at 'Economic Starvation'; perfectly times the purchase of the opponent's Bank; master of the high-speed match."
+    },
+    "considerations": [
+      "Matching-speed simulation.",
+      "Economic value-exchange engine.",
+      "Capture-probability logic."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_money_www_pagat_com_war_money_html",
+        "name": "Pagat.com - Money",
+        "url": "https://www.pagat.com/war/money.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-war-money.html"
+      }
+    ],
+    "additional": [
+      "Card Games of the Middle East",
+      "Traditional Arabic Children's Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional folk game; no documented IP holder or public domain claim."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["deal_initial"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "buy_cards"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play the top card of your face-down stack to the play pile (floor). If its rank matches the top card of the pile you capture the entire pile and add it face-down to the bottom of your stack.",
+        "cost": "0",
+        "constraints": "Legal when you have numeral cards in hand. Card must be thrown and turned face-up fairly; attempting to take the pile when cards do not match forfeits the pile to the opponent.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 20,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": true,
+      "currency": "money",
+      "sources": {
+        "market": {
+          "byRank": {"K": 5, "Q": 15, "J": 10},
+          "flat": null
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "matching_rank",
+      "captureTarget": 1,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "custom:bank",
+        "type": "hand",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": 12
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "market",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {"id": "late_capture", "text": "If a player throws a matching card but does not notice before the opponent plays, the capture is lost."},
+        {"id": "false_capture", "text": "If a player wrongly attempts to take the pile when cards do not match, the opponent may claim the pile."},
+        {"id": "must_buy", "text": "When out of numeral cards the player must buy: from the floor if at least 5 numeral cards are on it, otherwise from the opponent."},
+        {"id": "money_values", "text": "Money card values: King = 5 numeral cards, Queen = 15, Jack = 10. Full value must be given when buying; no partial acceptance."}
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_initial",
+        "supported": true,
+        "description": "Dealer gives each player 6 picture cards (2 each of J, Q, K) to their bank and 20 numeral cards face-down.",
+        "cost": "0",
+        "constraints": "Dealer performs this once at game start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "buy_cards",
+        "supported": true,
+        "description": "When you have no numeral cards, use a picture card from your bank to buy numeral cards: from the floor if at least 5 numeral cards are on the play pile, otherwise from the opponent. King = 5 cards, Queen = 15, Jack = 10. You may also exchange money cards for equal value or take part exchange.",
+        "cost": {"type": "byRank"},
+        "constraints": "Legal only when your hand has no numeral cards. Must buy from floor if floor has 5 or more numeral cards; otherwise must buy from opponent. Full value of the money card must be given (King = 5, Queen = 15, Jack = 10).",
+        "isTerminating": false,
+        "effectType": "buy",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Standard 52-card French deck. For this game picture cards (J, Q, K) are separated as money and 40 numeral cards (A–10, Aces count as 1) are used for play. Each player starts with 6 picture cards in their bank and 20 numeral cards face-down.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "20 numeral cards to each player face-down; 6 picture cards (2 each of J, Q, K) to each player's bank face-up.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MONEY (TRADITIONAL CAPTURE GAME)",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Money is a traditional two-player card game popular in Arab nations such as Jordan, Syria, and Egypt. It is a high-speed capture game that uses a standard deck modified by separating the face cards (t",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "custom:bank",
+        "stock",
+        "market",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Collect all cards (numeral and money); the player who has every card and leaves the opponent with nothing wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Winning is by capturing all cards; no point values for individual cards."
+    }
+  },
+  "alsoKnownAs": ["Buying-Selling", "Floos"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "",
+    "overviewNaReasons": {
+      "originName": "No single documented native name for the base game; Egyptian variant is Floos (فلوس)."
+    }
+  },
+  "fieldStatus": {}
+}

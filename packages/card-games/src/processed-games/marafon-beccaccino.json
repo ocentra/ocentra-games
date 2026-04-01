@@ -1,0 +1,699 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "marafon-beccaccino.json",
+  "name": "Marafon-Beccaccino",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Marafon (also known as Beccaccino) is the 'King of Romagna Card Games', a sophisticated partnership trick-taking game played with a 40-card Italian deck. It combines the precise point-structure of Tressette (where 3s and 2s are high) with the power of a Trump suit. Famous for its 'silent play' etiquette and complex signaling system, it demands perfect memory and seamless teamwork. A match typically races to 41 points, with bonuses for holding the 'Cricca' (the top three trumps).",
+    "category": "Trick-taking",
+    "subCategory": "Tressette Family",
+    "origin": "Italy (Romagna)",
+    "originName": "Marafon (Beccaccino)",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "40-card Italian deck (Piacentine/Romagnole)",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Italy"],
+    "origins": "Developed in the 19th century in the Romagna region (ForlÃ¬, Ravenna, Cesena) as an evolution of Tressette, adding the concept of 'Trionfo' (Trump) to the rigorous ranking system.",
+    "timeline": [
+      "1800s: Tressette variants with trump appear in Northern Italy.",
+      "1920s: The name 'Marafon' (possibly implying a long, grueling game) becomes standard in rural zones, while 'Beccaccino' is used in city clubs.",
+      "1970s: Codification of signaling rules to prevent cheating.",
+      "Present: Highly active tournament scene in Central Italy, often played alongside 'Pizzata'."
+    ],
+    "evolution": "The game is essentially Tressette with a Trump suit chosen by the dealer (or turned card). The 'Cricca' declaration adds a meld-like bonus to the otherwise pure trick-taking flow.",
+    "cultural": "In Romagna, playing without knowing the proper 'Busso' (Knock) signals is considered rude. The game is often played in absolute silence, broken only by the sharp slap of a winning card.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two fixed partnerships (partners sit opposite).",
+    "deck": "40 cards. Ranking in all suits: 3 (Highest), 2, Ace, King, Knight (Cavallo), Jack (Fante), 7, 6, 5, 4 (Lowest).",
+    "equipment": "Italian deck (or 52-card deck with 8s, 9s, 10s removed). Score sheet.",
+    "dealing": "Dealer deals 10 cards to each player. The Trump suit is determined by turning the last card dealt to the dealer (or by dealer declaration in some variants).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score game points by winning card points in tricks. First team to 41 Game Points wins.",
+    "gameplay": "1. **Lead**: Player to dealer's right leads. 2. **Follow Suit**: Players MUST follow suit. 3. **Trump**: If void in led suit, you may play a Trump (rank rules apply) or discard. You are not forced to trump if you can discard (unlike some games). 4. **Winning**: Highest Trump wins. If no trump, highest card of led suit wins. 5. **Signals**: Players observe strict signaling rules when playing cards (e.g., knocking on the table).",
+    "keyRules": [
+      "The 3 is higher than the 2, which is higher than the Ace.",
+      "You do not have to head the trick if you follow suit.",
+      "Trumping is optional if void in led suit (you can undercut/discard)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Remember that the Ace is the most valuable card (1 point) but it is vulnerable to the 2 and 3. Don't play an Ace unless you know the 2 and 3 are gone or your partner sits behind you to protect it.",
+    "intermediate": "The 'Busso': Use the Knock signal only when you command the suit (e.g., you hold 3-2-K). Your partner is obligated (strategically) to return that suit to you.",
+    "advanced": "Counting the 11/3s: There are 10.66 points in the deck. You must count exactly how many 'pieces' (Figures) have been played to know if the remaining cards are worth fighting for.",
+    "tips": [
+      "In Trumps, lead the 3 or 2 early to draw out the opponents' trumps.",
+      "Saving the Ace of Trumps for the last trick guarantees 2 points (1 for Ace + 1 for Final Trick)."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "beccaccino",
+        "name": "Beccaccino Proper",
+        "description": "Usually played to 31 points instead of 41. Often allows 'Busso' only.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs in target score (31) and Busso rules; overrides can map constants.target_score when added."
+      },
+      {
+        "id": "tressette-donne",
+        "name": "Tressette a Donne",
+        "description": "Variant where declarations (Napola) are more elaborate, including sets of 3s, 2s, or Aces.",
+        "overrides": {},
+        "emptyOverridesReason": "Declaration mechanism and meld-like bonuses differ; overrides to be added when mapping declaration and scoring."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit. Plays high cards randomly. Ignores fractional point values.",
+      "medium": "Responds to 'Busso' signals if observed. Counts trumps played. Protects Aces.",
+      "hard": "Perfect Card Counter. Infers partner's hand from 'Striscio' signals. Calculates the exact probability of winning the Last Trick bonus from turn 1."
+    },
+    "considerations": [
+      "The 3-2-Ace ranking is non-standard for most engines.",
+      "Signaling logic must be treated as a visible game state (AI must 'see' the Knock)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_beccaccino_www_pagat_com_tressette_beccaccino_html",
+        "name": "Pagat - Beccaccino",
+        "url": "https://www.pagat.com/tressette/beccaccino.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-beccaccino.html"
+      },
+      {
+        "id": "src:wikipedia_tressette_en_wikipedia_org_wiki_tressette",
+        "name": "Wikipedia - Tressette",
+        "url": "https://en.wikipedia.org/wiki/Tressette",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tressette-2.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Marafon",
+        "localHtml": "wiki-marafon.html"
+      },
+      "Accademia del Marafon (Ravenna)",
+      "Romagna Card Games Anthology"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "partnership",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_10_each",
+          "turn_trump"
+        ],
+        "nextPhase": "declare_cricca",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "declare_cricca",
+        "label": "Declarations",
+        "actor": "current_player",
+        "legalActions": [
+          "declare_cricca",
+          "pass"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Trick Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card_with_signal"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "fixed_partnerships",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Italian",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 10,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "3-2-A-K-C-J-7-6-5-4",
+      "canCallNoTrump": false,
+      "overtakingRule": "Optional when void in led suit; may trump or discard."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 10,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": { "declare_cricca": "high", "pass": "pass" },
+      "revealTiming": "clockwise",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 10,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 41
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "battezzante", "text": "First deal: holder of 4 of coins is battezzante and leads; later deals battezzante is player to dealer's right and deals next hand." },
+        { "id": "cricca", "text": "Cricca (marafona): holding 3-2-A of trumps may be declared during first trick for 3 bonus points." },
+        { "id": "claim_41", "text": "A player may claim 41 points during play; if correct their side wins, if incorrect their side loses." },
+        { "id": "last_trick_points", "text": "Last trick awards 1 extra point. Card points: Ace 1, 3/2/K/C/J one-third each; fractions discarded at end of deal." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "declare_cricca", "play_loop"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_10_each",
+        "supported": true,
+        "description": "Dealer deals 10 cards to each player anticlockwise in two batches of five.",
+        "cost": "0",
+        "constraints": "Dealer only; after shuffle and cut by player to dealer's left.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "turn_trump",
+        "supported": true,
+        "description": "The battezzante chooses and announces the trump suit (first deal: holder of 4 of coins; later deals: player to dealer's right).",
+        "cost": "0",
+        "constraints": "No discussion or signalling; partner of battezzante may not look at cards before trump is announced.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "declare_cricca",
+        "supported": true,
+        "description": "Declare holding the three highest trumps (3, 2, Ace) for 3 bonus points, or pass.",
+        "cost": "0",
+        "constraints": "During first trick only; optional.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "play_card_with_signal",
+        "supported": true,
+        "description": "Play a card to the trick; when leading, may signal Busso (knock), Volo (throw), or Striscio (slide) per game rules.",
+        "cost": "0",
+        "constraints": "Must follow suit if possible; if void may trump or discard. Winner of trick leads next.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Trick points only; no hand comparison. Tressette ranking 3-2-A-K-C-J-7-6-5-4.",
+    "rankingSystem": "Tressette (3-2-A-K-C-J-7-6-5-4)",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 40-card Italian deck with four suits (typically Cups, Coins, Swords, Batons) and ranks 1 through 7 plus three face cards per suit, used in games such as Briscola and Scopa.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "5-5 or 10 at once.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MARAFON",
+      "subtitle": "Beccaccino",
+      "tagline": "Silence is golden. The Ace is silver. The Three is King."
+    },
+    "shortDescription": "The definitive Romagnole card game. A partnership challenge where the 3 beats the 2, the 2 beats the Ace, and the Ace is worth everything. Master the subtle art of the 'Busso' (Knock) to signal your partner without saying a word.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "You hold the 3 of Clubs (Trump) and the King of Clubs. You play the King first and KNOCK on the table (Busso). You are telling your partner: 'I have the Master (the 3)! Lead this suit back to me immediately when you get in!'",
+    "ai": "Game: Marafon-Beccaccino. Type: Tressette with Trump. Rank: 3 > 2 > A > K > C > J. Goal: 41 points. Signals: Busso (Knock), Striscio (Slide), Volo (Fly)."
+  },
+  "scoring": {
+    "description": "Points are tallied cumulatively.",
+    "winCondition": "First to 41 points.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If both teams reach 41 in the same deal, the team with more points in that specific deal wins.",
+    "targetScore": 41,
+    "scoringDirection": "high_wins",
+    "nullReasons": {"cardValues": "Points are Ace 1 and one-third each for 3, 2, K, C, J; fractions discarded at end of deal."}
+  },
+  "alsoKnownAs": [
+    "Beccaccino",
+    "Marafon",
+    "Marafona",
+    "Tressette con Trionfo",
+    "Tre Sette with Trump"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

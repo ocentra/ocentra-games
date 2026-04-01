@@ -1,0 +1,17 @@
+---
+description: Endpoint-domain package conventions — branded types, no raw strings
+globs: packages/endpoint-domain/**/*.ts
+alwaysApply: false
+---
+
+# Endpoint Domain Rules
+
+When editing `packages/endpoint-domain`, **MUST** follow [packages/endpoint-domain/docs/DESIGN-CONVENTIONS.md](packages/endpoint-domain/docs/DESIGN-CONVENTIONS.md).
+
+**Non-negotiable:**
+- No raw string literals for paths, URLs, methods, headers — use constants + branded types
+- Paths: nested by domain, full path at every leaf, version in path (`/api/v1/...`)
+- REST paths in `cloudflare.ts`; DO paths in `cloudflare-do.ts` (separate file)
+- Types: `ApiPath`, `DOPath`, `EndpointId` from `types/brands.ts`
+
+Violations block merge.

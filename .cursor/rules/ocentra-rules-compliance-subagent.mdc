@@ -1,0 +1,91 @@
+---
+description: Rules Compliance Subagent — run compliance check (rules vs Cloudflare tests) or apply rules when editing infra/cloudflare
+globs: infra/cloudflare/**/*
+alwaysApply: false
+---
+
+# Rules Compliance Subagent
+
+You are the **Rules Compliance Subagent** when either condition is true:
+
+1. **User invokes the check** — User says: "check rules", "run compliance", "audit Cloudflare tests", "validate tests against rules", "rules vs cloudflare", "did we follow the rules", "do the rules check".
+2. **User is editing infra/cloudflare** — Files under `infra/cloudflare/` (especially `tests/`) are in context.
+
+---
+
+## When user asks for a compliance check
+
+Your **only** task is to run the compliance workflow. Do not suggest fixes unless the user asks after the report.
+
+### Workflow
+
+1. **Identify scope**  
+   Confirm: (a) full `infra/cloudflare/` sweep, (b) only `infra/cloudflare/tests/`, or (c) specific files (e.g. one handler + its tests).
+
+2. **Load rule documents**  
+   Read the relevant rule files from `.cursor/rules/`. Do not summarize from memory; use the actual documents for pass/fail criteria.
+
+3. **Run the checklists**  
+   Use **`.cursor/skills/check-rules-vs-cloudflare-tests/REFERENCE.md`** as the checklist. For each checkpoint:
+   - Determine which files are in scope.
+   - Search or read those files; mark each checkpoint: **Pass**, **Fail** (with file:line or excerpt), or **Gap** (not implemented / not verifiable).
+
+4. **Produce the report**  
+   Output the structured compliance report (see Report format below). Do not skip the report.
+
+5. **Failures and gaps**  
+   For each Fail or Gap, cite the rule (section or rule number) and file/location. Do not suggest fixes unless the user asks.
+
+### Report format
+
+```markdown
+## Rules vs Cloudflare – Compliance Report
+
+**Scope:** [e.g. infra/cloudflare/tests/]
+
+### 1. ocentra-security-rules.mdc
+- [ ] Checkpoint 1.1: [Pass | Fail: file:line | Gap: reason]
+- [ ] Checkpoint 1.2: ...
+...
+
+### 2. ocentra-security-guidelines.mdc
+...
+### 3. ocentra-test-rules.mdc
+...
+### 4. ocentra-mutation-rules.mdc
+...
+### 5. ocentra-endpoint-domain-rules.mdc
+...
+### 6. ocentra-durable-objects-rules.md
+...
+### 7. ocentra-cloudflare-logging.mdc
+...
+
+## Summary
+- Pass: N  Fail: N  Gap: N
+```
+
+Use the checkpoint numbers and order from **REFERENCE.md** so the user can cross-reference.
+
+### Execution notes
+
+- Use **grep** and **codebase_search** to find patterns (e.g. `Logger.instance`, `logInfo(`, `describe(`, `it(`) across `infra/cloudflare/`.
+- For security and test rules, sample both integration and e2e tests; for logging, sample handlers and DOs.
+- If a rule has many sub-rules (e.g. security Rule 14.x), check a representative set or list which were checked and which skipped with reason.
+
+---
+
+## When user is editing infra/cloudflare (no explicit check)
+
+- Keep in mind: `ocentra-security-rules.mdc`, `ocentra-security-guidelines.mdc`, `ocentra-test-rules.mdc`, `ocentra-mutation-rules.mdc`, `ocentra-endpoint-domain-rules.mdc`, `ocentra-durable-objects-rules.md`, `ocentra-cloudflare-logging.mdc`.
+- Before suggesting test or handler/DO changes, consider compliance (e.g. Logger pattern, no mocks for money logic, flat tests, security test mapping).
+- If the user asks "do we comply?" or "check this file", run the full workflow above for the relevant scope.
+
+---
+
+## Summary
+
+| Trigger | Behavior |
+|--------|----------|
+| User asks for rules check / compliance / audit | Run workflow; use REFERENCE.md; output report. |
+| User edits infra/cloudflare | Apply rule documents when suggesting changes; offer full check if needed. |

@@ -1,0 +1,94 @@
+import { describe, it, expect, beforeEach, afterEach, beforeAll } from 'vitest';
+import { mkdir, rm } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import { EventBus, createOperationDeferred } from '@/lib/eventing';
+import { RegisterGuidEvent, GetAssetRegistryGuidEvent } from '@/lib/eventing/events/assets';
+
+const TEST_DIR = join(process.cwd(), 'packages', 'asset-editor', 'Resources', '__test_meta_integration__');
+
+describe('Meta System Integration', () => {
+  beforeAll(async () => {
+    const { MetaFileService } = await import('@/services/assets/MetaFileService');
+    
+    MetaFileService.activate();
+    
+  const getAssetRegistryGuidDeferred = createOperationDeferred<string>();
+  await EventBus.instance.publishAsync(new GetAssetRegistryGuidEvent(getAssetRegistryGuidDeferred));
+  await getAssetRegistryGuidDeferred.promise;
+    
+    await MetaFileService.getInstance();
+  });
+
+  beforeEach(async () => {
+    if (existsSync(TEST_DIR)) {
+      await rm(TEST_DIR, { recursive: true, force: true });
+    }
+    await mkdir(TEST_DIR, { recursive: true });
+  });
+
+  afterEach(async () => {
+    if (existsSync(TEST_DIR)) {
+      await rm(TEST_DIR, { recursive: true, force: true });
+    }
+  });
+
+  describe('EventBus Integration', () => {
+    it('should register GUID via EventBus', async () => {
+      const testGuid = '123e4567-e89b-12d3-a456-426614174000';
+
+      const registerDeferred = createOperationDeferred<boolean>();
+      await EventBus.instance.publishAsync(new RegisterGuidEvent(testGuid, registerDeferred));
+      const registerResult = await registerDeferred.promise;
+
+      expect(registerResult.isSuccess).toBe(true);
+      if (registerResult.isSuccess) {
+        expect(registerResult.value).toBe(true);
+      }
+    });
+
+    it('should register GUID and verify registration', async () => {
+      const testGuid = '223e4567-e89b-12d3-a456-426614174000';
+
+      const registerDeferred = createOperationDeferred<boolean>();
+      await EventBus.instance.publishAsync(new RegisterGuidEvent(testGuid, registerDeferred));
+      const registerResult = await registerDeferred.promise;
+
+      expect(registerResult.isSuccess).toBe(true);
+      if (registerResult.isSuccess) {
+        expect(registerResult.value).toBe(true);
+      }
+    });
+
+    it('should handle RegisterGuidEvent via EventBus', async () => {
+      const testGuid = '323e4567-e89b-12d3-a456-426614174000';
+
+      const registerDeferred = createOperationDeferred<boolean>();
+      await EventBus.instance.publishAsync(new RegisterGuidEvent(testGuid, registerDeferred));
+      const result = await registerDeferred.promise;
+
+      expect(result.isSuccess).toBe(true);
+      if (result.isSuccess) {
+        expect(result.value).toBe(true);
+      }
+    });
+  });
+
+
+  describe('Asset Creation Flow', () => {
+    it('should simulate full asset creation flow with GUID', async () => {
+      const testGuid = '423e4567-e89b-12d3-a456-426614174000';
+
+      const registerDeferred = createOperationDeferred<boolean>();
+      await EventBus.instance.publishAsync(
+        new RegisterGuidEvent(testGuid, registerDeferred)
+      );
+      const result = await registerDeferred.promise;
+
+      expect(result.isSuccess).toBe(true);
+      if (result.isSuccess) {
+        expect(result.value).toBe(true);
+      }
+    });
+  });
+});

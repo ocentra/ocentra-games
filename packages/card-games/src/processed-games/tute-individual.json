@@ -1,0 +1,607 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tute-individual.json",
+  "name": "Tute individual",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tute for two players; no partnerships. Standard 40-card Spanish deck. Ten cards each, stock with face-up trump; follow suit and overtake; Cantes (40/20) after winning a trick; Tute (4 Kings or 4 Knights) wins the deal. Most points in the deal wins that game; session is multiple deals.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Spain",
+    "originName": "Tute (Spanish); Tutti (Italian)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "40-card Spanish",
+    "difficulty": "Intermediate",
+    "duration": "20-30 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Originated in Italy (as tutti); spread to Spain in the 19th century where it became one of the most popular card games. Two-player individual variant.",
+    "originCountries": ["Italy", "Spain"],
+    "timeline": ["19th century: Tute spread from Italy to Spain; two-player individual variant became widely played."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Two players (or three).",
+    "deck": "Standard Spanish pack of 40 cards: four suits (Swords/espadas, Batons/bastos, Cups/copas, Coins/oros). Ranks and point values: Ace 11, Three 10, King 4, Horse 3, Jack 2; Seven through Two count zero. One suit is trump each deal, determined by the face-up card.",
+    "equipment": "Cards",
+    "dealing": "10 each, next card face up for trump, remainder as stock; after each trick winner draws first then others anticlockwise.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score the most points in the deal (card points, Cantes, last trick). Follow suit and overtake when possible; trump if void. Declare 40 or 20 after winning a trick; Tute (4 Kings or 4 Knights) wins the deal outright.",
+    "gameplay": "Dealer deals 10 cards each; next card is trump, rest form stock. Player to dealer's right leads. Follow suit; must beat led suit if possible; if void must trump if possible. Trick winner draws first from stock, then opponent. After winning a trick you may declare one Cante (King+Horse of same suit: 40 in trumps, 20 in other). Declaring Tute (all four Kings or all four Horses) wins the deal. Last trick scores 10 extra. Most points wins the deal.",
+    "keyRules": [
+      "2 or 3 players, no partnerships",
+      "10 cards each, stock, face-up trump",
+      "Follow suit and overtake; trump when void",
+      "Cantes 40/20 after winning trick; Tute wins deal",
+      "Last trick 10 points"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Tute.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate tier; strategy scales with two-player Tute.",
+      "advanced": "Advanced play is full two-player Tute; no separate tier."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Individual Tute form (two or three players, no partnerships); other Tute forms (corriente, habanero, americano, etc.) are distinct variants documented separately.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": "Tute strategy",
+      "hard": null
+    },
+    "considerations": [
+      "2p"
+    ],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "hard": "Hard AI plays full two-player Tute to 101 points."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-tute",
+        "name": "Pagat Tute individual",
+        "url": "https://www.pagat.com/marriage/tute.html#individual",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-tute.html"
+      },
+      {
+        "id": "src:wikipedia_tute",
+        "name": "Wikipedia - Tute",
+        "url": "https://en.wikipedia.org/wiki/Tute",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tute-2.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_counterclockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Play tricks; follow suit and overtake; after each trick winner draws first from stock then opponent; Cantes and Tute declared after winning a trick."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+"play_card": {
+      "supported": true,
+      "description": "Play one card to the trick. Must follow suit if possible; must beat the highest card of the led suit if able; if void in led suit must play trump and overtake if possible. Trick winner draws first from stock, then opponent.",
+      "cost": "0",
+      "constraints": "Legal when it is your turn to play to the trick; card must satisfy follow-suit and overtake rules.",
+      "isTerminating": false,
+      "effectType": "play",
+      "effectHints": {}
+    },
+    "draw": {
+      "supported": false,
+      "description": "NA",
+      "cost": "NA",
+      "constraints": "NA",
+      "isTerminating": false,
+      "effectType": "NA",
+      "effectHints": {},
+      "reason": "Drawing from stock is automatic after each trick (winner first, then others); not a separate player action."
+    },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Spanish",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 10,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "Ace high then 3,Knight,Jack,7,6,5,4,2",
+      "canCallNoTrump": false,
+      "overtakingRule": "Must follow suit and beat led card if possible; if void must trump and overtake if possible."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 10,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "cantes", "text": "After winning a trick, may declare one King+Horse of same suit (40 in trumps, 20 in other); must declare 40 before 20 if both held." },
+        { "id": "tute", "text": "Holding all four Kings or all four Horses and declaring after winning a trick wins the deal outright." },
+        { "id": "last_trick", "text": "Winner of last trick scores 10 extra points (diez de últimas)." },
+        { "id": "trump_last", "text": "In two-player game the face-up trump is the last card drawn from stock." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Point-based: Ace 11, Three 10, King 4, Knight 3, Jack 2; trick won by highest trump or highest of led suit; last trick 10 extra; Cantes 40/20.",
+    "rankingSystem": "Trick rank: Ace and Three high; trumps beat other suits.",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "Standard Spanish 40-card deck: four suits (Oros, Copas, Espadas, Bastos), ten ranks per suit (2 through 7, Sota, Caballo, Rey, As). Used for Tute and many Spanish and Latin American games.",
+    "suitDescription": "Four Spanish suits: Oros (Coins), Copas (Cups), Espadas (Swords), Bastos (Batons). Each suit has ten cards with distinct traditional Spanish card imagery.",
+    "rankDescription": "Ten ranks per suit in play order (high to low): As 11 points, Tres 10, Rey 4, Caballo 3, Sota 2, then 7-6-5-4-2 worth zero. Trick order: Ace and Three are highest; no Queen in Spanish deck.",
+    "dealPattern": "10 each, next face up for trump, remainder as stock",
+    "notApplicableReasons": {
+      "drawConfig": "Draws from stock are triggered by trick completion (winner first, then others); no separate draw-from-pile config.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TUTE INDIVIDUAL",
+      "subtitle": "Card Game",
+      "tagline": "Tute for two players; no partnerships. Same 40-card Spanish deck, Cantes, Tute (..."
+    },
+    "shortDescription": "Tute for two players; no partnerships. Same 40-card Spanish deck, Cantes, Tute (4 Kings/4 Knights). First to 101 points wins.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tute for two players; no partnerships. Same 40-card Spanish deck, Cantes, Tute (4 Kings/4 Knights). First to 101 points wins.",
+    "ai": "Game: Tute individual. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "A=11,3=10,K=4,Kt=3,J=2; Cantes 40/20; last trick 10",
+    "winCondition": "Most points in the deal wins (card points, Cantes, last trick 10). Tute (4 Kings or 4 Knights) declared after winning a trick wins the deal outright.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Point values (Ace 11, Three 10, King 4, Knight 3, Jack 2, others 0) are in scoring.description and engine; deal totals determine winner."
+    }
+  },
+  "alsoKnownAs": [
+      "Individual Tute"
+    ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

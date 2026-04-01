@@ -1,0 +1,756 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "all-fours-trinidad.json",
+  "name": "All Fours (Trinidad)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "All Fours, colloquially known as 'All Foes', is the national card game of Trinidad and Tobago. It is a highly competitive, anti-clockwise partnership game where 'hanging the Jack' (capturing the opponent's Jack) is considered the ultimate tactical victory.",
+    "category": "Trick-taking",
+    "subCategory": "Classic Point-scoring (Caribbean)",
+    "origin": "Trinidad and Tobago",
+    "originName": "All Fours (Trinidad 'All Foes' partnership form)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "30-60 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Brought to the Caribbean by English colonial administrators, the game took deep root in Trinidadian culture, evolving from a simple tavern game into a sophisticated sport with national tournaments.",
+    "originCountries": [
+      "England",
+      "Trinidad and Tobago"
+    ],
+    "timeline": [
+      "1800s: Traditional English All Fours is introduced to Trinidad.",
+      "Early 1900s: Rules shift to an anti-clockwise direction and a 14-point target.",
+      "Present: A central part of social life, played in community centers and sanctioned leagues across the island."
+    ],
+    "evolution": "The most significant Caribbean innovations were the 'Hang Jack' bonus (3 points) and the immediate scoring of turn-up cards (Ace, Six, Jack).",
+    "cultural": "All Fours in Trinidad is noted for its high-tension atmosphere and loud, physical card-playing style (often 'slamming' cards for emphasis).",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two partnerships (sitting opposite).",
+    "deck": "Standard 52-card deck. Ace is high.",
+    "equipment": "Standard deck, 14-point pegboard.",
+    "dealing": "Deal and play are STRICTLY anti-clockwise. Each player receives 6 cards (usually dealt 3 at a time). The 25th card is turned up for trumps.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be first to 14 or more points by combining turn-up bonuses with High, Low, Jack, and Game.",
+    "gameplay": "1. **Trump Bonus**: If the turned-up card is an Ace (1 pt), Six (2 pts), or Jack (3 pts), the dealer's team scores immediately. 2. **The Beg**: The player to the dealer's right (Eldest) chooses to 'Stand' or 'Beg'. 3. **The Gift/Run**: If they beg, dealer can gift 1 point to opponents or 'Run the cards' (deal 3 more and flip new trump). Score again for new A/6/J. 4. **Trick Play**: Follow suit or trump. 5. **Counting Out**: Points are scored in order: High, Low, Jack, Game.",
+    "keyRules": [
+      "High (1 pt): Team dealt the highest trump.",
+      "Low (1 pt): Team dealt the lowest trump.",
+      "Jack (1 pt): Winning a trick with the Jack of trumps.",
+      "Hang Jack (3 pts): Winning a trick containing an opponent's Jack of trumps.",
+      "Game (1 pt): Team with most card pips (A=4, K=3, Q=2, J=1, 10=10).",
+      "Direction: Dealing, play, and turn-order are all anti-clockwise."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize capturing the 10s of any suit; they are the fastest way to win the 'Game' point.",
+    "intermediate": "The Lead: If your partner has the High trump (Ace), lead a small trump to 'pull' the opponent's trumps and expose their Jack.",
+    "advanced": "Hanging the Jack: High-level play revolves around detecting who holds the Jack. If you suspect an opponent has a 'lone' Jack, lead an Ace of trumps immediately to 'Hang' it for 3 points.",
+    "tips": [
+      "Never lead the Jack unless you are 100% sure it will win. It's a 3-point liability.",
+      "The 6 of trumps is a key swing card because it can score as a turn-up bonus and still matter in trick control."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "tobago-six",
+        "name": "Tobago Variety",
+        "description": "Turning a Six of trumps only counts for 1 point instead of 2 in some local house rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Scoring tweak is captured in rules text; engine overrides will be added when score parameters are fully modeled."
+      },
+      {
+        "id": "no-undertrump",
+        "name": "No Undertrumping",
+        "description": "Rules requiring that if you trump, you must beat any existing trump on the trick if possible.",
+        "overrides": {},
+        "emptyOverridesReason": "Undertrumping restriction is documented; engine override flags will be wired once trick rules are parameterized."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't realize the Jack is worth 3 points if 'hung'. Plays clockwise by mistake (violating anti-clockwise rules).",
+      "medium": "Understands turn-up scoring. Begs when having no trumps. Tries to save partner's Tens.",
+      "hard": "Simulates the 'Major Revoke' risk. Tracks the probability of an opponent holding a 'lone' Jack to execute a 'Hang Jack' play."
+    },
+    "considerations": [
+      "AI engine must support anti-clockwise turn order.",
+      "Point hierarchy (H-L-J-G) must be used to evaluate winning moves in the endgame."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_all_fours_trinidad_www_pagat_com_allfours_allfours_html",
+        "name": "Pagat - All Fours (Trinidad)",
+        "url": "https://www.pagat.com/allfours/allfours.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "All Fours in Trinidad - Deal and Play"
+          },
+          {
+            "section": "scoring.cardValues",
+            "sourcePath": "All Fours in Trinidad - Scoring"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "All Fours in Trinidad - Irregularities"
+          }
+        ],
+        "localHtml": "pagat-allfours-game.html"
+      },
+      {
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "All fours overview"
+          }
+        ],
+        "url": "https://en.wikipedia.org/wiki/All_fours_(card_game)",
+        "name": "Wikipedia - All fours (card game)",
+        "id": "src:wikipedia_all_fours_trinidad",
+        "retrievedAt": "2026-02-20",
+        "localHtml": "wiki-all-fours-2.html"
+      }
+    ],
+    "additional": [
+      "Glen Benjamin - Trinidad All Fours Heritage",
+      "Manitoba All Fours Association - Tournament Standards"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "partnership",
+    "trump",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 95,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal Anti-Clockwise",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "reveal_trump",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal six cards each; deal and play proceed anti-clockwise."
+      },
+      {
+        "id": "reveal_trump",
+        "label": "Turn Trump Card",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_market"
+        ],
+        "nextPhase": "beg_or_stand",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_market": "face_up"
+        },
+        "notes": "Turn up trump and apply immediate dealer-team bonus for A/6/J."
+      },
+      {
+        "id": "beg_or_stand",
+        "label": "Eldest Decision",
+        "actor": "current_player",
+        "legalActions": [
+          "pass",
+          "bid"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "action == 'pass'",
+            "nextPhase": "trick_play"
+          },
+          {
+            "condition": "action == 'bid'",
+            "nextPhase": "dealer_response"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Player on dealer's right stands or begs."
+      },
+      {
+        "id": "dealer_response",
+        "label": "Take One or Run Cards",
+        "actor": "dealer",
+        "legalActions": [
+          "check",
+          "deal",
+          "reveal_market"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "action == 'check'",
+            "nextPhase": "trick_play"
+          },
+          {
+            "condition": "action == 'deal' && trump_changed == false",
+            "nextPhase": "dealer_response"
+          },
+          {
+            "condition": "action == 'deal' && trump_changed == true",
+            "nextPhase": "trick_play"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Take one gifts one point to opponents; run-cards deals 3 each and turns again until suit changes."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "settlement"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "When trumps are run, larger hands are played out fully (9, 12, etc.)."
+      },
+      {
+        "id": "settlement",
+        "label": "Score Hand",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Score High, Low, Jack, and Game in fixed order."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trinidad All Fours uses Beg/Stand and point scoring; no ante."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes initial cards and run-card packets.",
+        "cost": "0",
+        "constraints": "Dealer-only in deal/response phases.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 6
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal trump indicator card.",
+        "cost": "0",
+        "constraints": "Dealer-only after deal packets.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump set by turn-up and Beg; no market."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Six cards dealt; no draw during play."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Partnership trick-taking; no fold."
+      },
+      "check": {
+        "supported": true,
+        "description": "Dealer keeps trump and gives one point to opponents (take one).",
+        "cost": "0",
+        "constraints": "Dealer-response phase only.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Points for High, Low, Jack, Game; no betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trinidad All Fours scores by card points only."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Points at hand end; no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards played to tricks; no showdown."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply turn-up bonuses and hand points to team scores.",
+        "cost": "0",
+        "constraints": "System action after hand play completes.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card under Trinidad follow/trump constraints.",
+        "cost": "0",
+        "constraints": "On trump lead, must play trump if possible; on non-trump lead, may follow suit or play trump if able to follow.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "trick"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Six cards dealt; no draw during tricks."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards played to tricks; no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Stand on current turned trump suit.",
+        "cost": "0",
+        "constraints": "Eldest decision phase only.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Beg for trump change.",
+        "cost": "0",
+        "constraints": "Eldest decision phase only.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking; High, Low, Jack, Game only."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when all tricks are played."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Six cards dealt; no draw during play.",
+      "discardConfig": "Cards played to tricks; no discard pile.",
+      "specialCards": "Standard 52-card deck; no special cards.",
+      "shedding": "Trick-taking; score High, Low, Jack, Game.",
+      "fishingConfig": "Trinidad All Fours is trick-taking, not fishing."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "standard",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "Trump lead forces trump if possible; non-trump lead allows either follow suit or trump when suit is held.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 4,
+      "max_players": 4,
+      "hand_size": 6,
+      "target_score": 14,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:trump_indicator",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 24
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "team",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "run_cards_repeat",
+          "text": "If new turn-up suit matches previous turn-up, dealer repeats deal-three-and-turn cycle."
+        },
+        {
+          "id": "deck_exhausted_redeal",
+          "text": "If deck is exhausted before trump suit changes, cards are reshuffled and redealt while keeping already-earned turn-up bonus points."
+        },
+        {
+          "id": "major_revoke_loss",
+          "text": "Failing to follow trump lead while holding top-five trump can lose the whole game under major revoke rule."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "counterclockwise_turn_manager",
+        "turn_up_bonus_scoring",
+        "beg_take_one_or_run_cards",
+        "trinidad_follow_or_trump_constraints",
+        "hang_jack_resolution"
+      ]
+    },
+    "progression": [
+      "deal",
+      "reveal_trump",
+      "beg_or_stand",
+      "dealer_response",
+      "trick_play",
+      "settlement"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "High-Low-Jack-Game (Hierarchy)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. Turned suit is trump; a run card may be exchanged; no jokers.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). The turned suit is trump for the hand; the dealer may replace the turn-up with a run card from hand. Trump outranks plain suits.",
+    "rankDescription": "Thirteen ranks per suit in order ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three, two. Trick and scoring follow standard all-fours with trump override in this Trinidad variant.",
+    "dealPattern": "Deal six each anti-clockwise, turn trump, optional run-cards, then play all cards."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALL FOURS TRINIDAD",
+      "subtitle": "The Soul of the Caribbean",
+      "tagline": "Watch your Jack! The national game where every slam counts."
+    },
+    "shortDescription": "Experience the intense, anti-clockwise battle of 'All Foes'. Hunt the Jack for 3 points, score bonuses on the flip, and reach 14 to become the island champion.",
+    "uiThemes": [
+      "classic",
+      "traditional"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:trump_indicator",
+        "custom:captured_tricks"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Trini All Fours. Play is anti-clockwise. Turn-up Ace, Six, or Jack gives the dealer side immediate points, and hanging an opponent's Jack is worth 3. First side to 14 or more wins.",
+    "ai": "Game: All Fours (Trinidad). Type: Anti-clockwise Partnership Point-trick. Rules: 14 points to win. Turn-up bonuses: A(1), 6(2), J(3). Hang Jack = 3 pts. Order: High-Low-Jack-Game. Target: 14."
+  },
+  "scoring": {
+    "description": "Points are scored 1-by-1 in a specific hierarchy.",
+    "winCondition": "First team to reach 14 or more points wins.",
+    "cardValues": {
+      "High": "1",
+      "Low": "1",
+      "Jack": "1",
+      "Hang_Jack": "3",
+      "Game": "1",
+      "Turned_Ace": "1",
+      "Turned_Six": "2",
+      "Turned_Jack": "3",
+      "A_any_suit_for_game": "4",
+      "K_any_suit_for_game": "3",
+      "Q_any_suit_for_game": "2",
+      "J_any_suit_for_game": "1",
+      "10_any_suit_for_game": "10"
+    },
+    "penalties": {
+      "Revoke (Standard)": "Opponents get 1 point.",
+      "Major Revoke": "If you fail to follow a trump lead when holding a top 5 trump, your team immediately LOSES the entire game (14 points)."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "If 'Game' pips are tied, no 'Game' point is awarded for that hand.",
+    "targetScore": 14,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "All Foes",
+    "Trini All Fours",
+    "National Game of Trinidad"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Base profile models four-player partnership form, while two-player form is treated as secondary."
+    ],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

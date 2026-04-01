@@ -1,0 +1,1473 @@
+---
+alwaysApply: true
+---
+
+# Ocentra Games – Security Testing Guidelines (MANDATORY)
+
+> This document defines **mandatory security testing, coverage tooling, and setup** for this repository.
+>
+> The system is a **money-critical, Solana-based blockchain game backend** with a decoupled architecture (Cloudflare is NOT a trusted boundary).
+>
+> This spec is authoritative. Cursor MUST set up tooling and tests accordingly.
+
+---
+
+## Document Purpose & Scope
+
+This document defines **HOW to test security** (tooling, CI mechanics, test setup).
+
+**This document does NOT define:**
+
+- Security guarantees and threats (see `ocentra-security-rules.mdc`)
+- Test quality standards (see `ocentra-test-rules.mdc` §0.2)
+- How to write tests (see `ocentra-test-rules.mdc`)
+
+**Key Principle:**
+> For security guarantees and numbered rules, refer to `ocentra-security-rules.mdc`.  
+> For test writing standards, refer to `ocentra-test-rules.mdc`.
+
+---
+
+## 0. NON-NEGOTIABLE SECURITY PRINCIPLES
+
+These principles align with security guarantees defined in `ocentra-security-rules.mdc`:
+
+- **Coding with AI is guaranteed to screw up without tests** - See §2.9 for comprehensive testing checklist
+- Line coverage ≠ security coverage
+- Cloudflare ≠ security boundary
+- Client input is hostile
+- Concurrency is a first-class threat
+- Partial failure must be economically neutral (see Rule 0.1.1 in `ocentra-security-rules.mdc`)
+- Replay must never produce profit (see Rule 0.1.1 in `ocentra-security-rules.mdc`)
+- Security failures must fail CI
+- Time is a first-class adversary (see Rule 0.1.2 in `ocentra-security-rules.mdc`)
+- Internal APIs are as hostile as public ones (see Rule 0.1.5 in `ocentra-security-rules.mdc`)
+- Backend must never sign what it cannot independently verify (see Rule 0.1.3 in `ocentra-security-rules.mdc`)
+- Attacker cost ≥ system cost (see Rule 0.1.1 in `ocentra-security-rules.mdc`)
+- Compensation paths must be idempotent and replay-safe (see Rule 0.1.1 in `ocentra-security-rules.mdc`)
+- Emergency controls must reduce blast radius, not increase it (see Rule 0.1.5 in `ocentra-security-rules.mdc`)
+- Tests themselves are security-critical
+
+---
+
+## 0.5. EXPLICIT THREAT MODEL
+
+This section defines **who attacks, how, and what we protect**.
+
+> **Note:** For detailed threat requirements and numbered rules, see `ocentra-security-rules.mdc` sections 1-15.
+
+### Attacker Capabilities
+
+- Full control over client-side code
+- Ability to replay, mutate, or automate any request
+- Control over timing (clock skew, delays, retries)
+- Ability to generate arbitrary signatures (wrong signer, wrong message)
+- Ability to spam transactions (economic exhaustion)
+- Ability to exploit partial failures and rollbacks
+- Ability to forge internal headers and bypass gateways
+- Ability to manipulate serialization and encoding
+
+### Attacker Goals
+
+- Extract value (credits, rewards, assets)
+- Cause economic exhaustion (system cost > attacker cost)
+- Exploit partial failures for profit
+- Bypass security controls (auth, rate limits, kill switches)
+- Cause inconsistent state (split-brain, rollback abuse)
+- Exploit time-based logic (cooldowns, expiry, epochs)
+
+### Non-Goals (Out of Scope)
+
+- Physical infrastructure attacks
+- Social engineering
+- Supply chain attacks on dependencies (handled separately)
+- Zero-day exploits in underlying platforms
+
+### Assumed Trusted Components (Minimal)
+
+- Solana validator network (finality assumptions)
+- Cryptographic primitives (Ed25519, SHA-256)
+- Hardware security modules (if used for backend signing)
+
+### Explicitly Rejected Assumptions
+
+- Client clock is accurate (see Rule 0.1.2 in `ocentra-security-rules.mdc`)
+- Client randomness is unpredictable
+- Network latency is bounded
+- RPC nodes are honest
+- Internal services are trusted (see Rule 0.1.5 in `ocentra-security-rules.mdc`)
+- Error handlers are safe
+- Rollback logic is correct by default (see Rule 0.1.4 in `ocentra-security-rules.mdc`)
+- Time-based logic is safe by default (see Rule 0.1.2 in `ocentra-security-rules.mdc`)
+- Administrative actions are inherently safe (see Rule 0.1.5 in `ocentra-security-rules.mdc`)
+
+### Threat → Test Mapping Requirement
+
+Every threat MUST map to:
+
+- At least one property-based test
+- At least one integration test
+- At least one fuzz test (where applicable)
+
+**Rule**
+
+> If a threat cannot be mapped to tests, the threat model is incomplete.
+
+For specific threat requirements, see `ocentra-security-rules.mdc` sections 1-15.
+
+---
+
+## 1. BASE ASSUMPTIONS
+
+### Backend
+
+- Node.js (TypeScript preferred)
+- REST + WebSocket APIs
+- Solana interaction via RPC
+- Stateless services where possible
+
+### Solana Programs (On-Chain)
+
+- Rust (Anchor framework)
+- Solana program instructions
+- Cross-Program Invocations (CPI)
+- Program Derived Addresses (PDA)
+- On-chain state management
+- Instruction-level security boundaries
+
+### Frontend
+
+- React (Vite / Next / CRA)
+- Wallet-based auth
+- No client-side trust
+
+---
+
+## 2. REQUIRED TOOLING (MUST INSTALL)
+
+### 2.1 Code Coverage (Baseline)
+
+Used only to ensure tests exist.
+
+- c8 or nyc
+- vitest or jest
+
+**Requirements**
+
+- ≥ 90% line coverage
+- ≥ 80% branch coverage
+- Coverage collected in CI
+
+---
+
+### 2.2 API Contract & Fuzz Coverage
+
+Used to ensure endpoint/state coverage.
+
+- Schemathesis (OpenAPI-based fuzzing)
+- RESTler (stateful API fuzzing)
+
+**Requirements**
+
+- All API endpoints described via OpenAPI
+- Schemathesis run in CI
+- Tests include:
+  - unauthenticated
+  - malformed
+  - replayed
+  - partial payloads
+
+---
+
+### 2.3 Property-Based & Invariant Testing
+
+Used to protect **economics and logic**.
+
+- fast-check (JS property-based testing)
+
+**Required invariants** (see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6 for guarantees):
+
+- Same request twice ≠ more value
+- Failure ≠ reward
+- Retry ≠ mutation
+- Partial failure ≠ profit
+- Order of independent actions ≠ advantage
+- Attacker cost ≥ system cost (economic exhaustion)
+- Compensation paths are idempotent and replay-safe
+- Time-based assumptions fail closed
+- Backend never signs what it cannot verify
+- Emergency controls reduce blast radius
+
+---
+
+### 2.4 Concurrency & Race Testing
+
+Used to simulate attacker parallelism.
+
+- k6 (preferred) or Artillery
+
+**Required tests** (see `ocentra-security-rules.mdc` Rule 15.5 for concurrency requirements):
+
+- Parallel identical requests
+- Parallel conflicting requests
+- Retry storms
+- WebSocket + REST races
+- Cross-region timing skew (simulated)
+
+---
+
+### 2.5 Solana / Blockchain Testing
+
+Used to verify chain assumptions.
+
+- solana-test-validator
+- Anchor test framework (for Rust/Anchor programs)
+- Bankrun (alternative testing framework)
+- Rust program unit tests
+- TypeScript integration tests for on-chain programs
+
+**Required coverage** (see `ocentra-security-rules.mdc` Rule 3.1, 3.2, 7.1, 7.2 for Solana-specific requirements):
+
+- Instruction execution paths (Rust program instructions)
+- Replay attempts
+- Slot timing edge cases
+- CPI boundary assumptions (Cross-Program Invocations)
+- Simulation vs execution mismatches
+- Key lifecycle abuse (compromised keys, rotation)
+- Signing abuse (blind signing, wrong message)
+- Nonce / blockhash reuse
+- Signer order and injection attacks
+- PDA (Program Derived Address) security
+- Anchor account validation
+- Rust program state transitions
+
+---
+
+### 2.6 Static & Dependency Scanning (Signal Only)
+
+Used to catch obvious mistakes.
+
+- Semgrep
+- CodeQL
+- Trivy
+
+**Rule**
+
+- Scanners do NOT replace logic tests
+- Static analysis findings MUST NOT block merges unless mapped to an exploitable threat
+
+---
+
+### 2.7 Observability as Security
+
+Used to ensure attacks are detectable.
+
+- OpenTelemetry
+- Structured logs with correlation IDs
+
+**Required** (see `ocentra-security-rules.mdc` Rule 15.8 for observability requirements):
+
+- All money-critical paths emit security logs
+- Logs sufficient for post-incident reconstruction
+- No sampling on security events
+- All property-based test failures log counterexamples
+- All fuzz test failures log seeds and inputs
+- Test execution logs are immutable and auditable
+
+### 2.8 Test Integrity & Reproducibility
+
+Used to ensure tests themselves are secure and reproducible.
+
+- Deterministic random seed generation
+- Test isolation verification
+- Counterexample persistence
+
+**Required** (see `ocentra-test-rules.mdc` §11 for test integrity rules):
+
+- All fuzz tests use deterministic seeds (reproducible)
+- Property-based tests log failing inputs
+- Test suite passes in any execution order
+- No shared mutable global state between tests
+- CI randomness is reproducible (seed logged)
+
+---
+
+### 2.9 COMPREHENSIVE TESTING TOOLING REFERENCE (AI CODING CHECKLIST)
+
+> **CRITICAL:** When coding with AI, tests are **guaranteed to be missing or incorrect** unless explicitly verified. This section provides a comprehensive reference of testing categories and tools that MUST be considered for every code change.
+
+**AI MUST reference this section when:**
+- Writing new code
+- Refactoring existing code
+- Adding features
+- Fixing bugs
+- Reviewing pull requests
+
+**Rule:**
+> Coding with AI without tests = guaranteed bugs. Every code change MUST include appropriate tests from the categories below.
+
+#### 2.9.1 Foundation Testing (Unit | Integration | E2E)
+
+**Required for all code changes:**
+
+- **Unit Tests**: Vitest | Jest | JUnit
+  - Test individual functions/modules in isolation
+  - Fast execution, high coverage
+  - Must test edge cases, not just happy paths
+
+- **Integration Tests**: Vitest | Jest | Testcontainers
+  - Test component interactions
+  - Real database (Testcontainers), not mocks
+  - Seeded prod-like data
+
+- **E2E Tests**: Cypress | Playwright
+  - Full user workflows
+  - Browser automation
+  - Real user interactions
+
+**AI Checklist:**
+- [ ] Unit tests cover all branches
+- [ ] Integration tests use real dependencies (no mocks for money logic)
+- [ ] E2E tests cover critical user flows
+- [ ] Tests fail when code is broken (verify by temporarily breaking code)
+
+---
+
+#### 2.9.2 Advanced Testing Techniques (Invariant | Property-Based | Mutation | Differential)
+
+**Required for logic and economic code:**
+
+- **Invariant Testing**: fast-check | Hypothesis
+  - Properties that must ALWAYS be true
+  - Economic invariants (balance ≥ 0, no double-spend)
+  - State invariants (valid transitions only)
+
+- **Property-Based Testing**: fast-check | Hypothesis
+  - Generate random inputs, verify properties hold
+  - Find edge cases automatically
+  - Log counterexamples on failure
+
+- **Mutation Testing**: Stryker
+  - Verify tests detect bugs
+  - Only on `@mutation`-decorated code (see `ocentra-mutation-rules.mdc`)
+  - Mutation score ≥ 80% for decorated code
+
+- **Differential Testing**: diff-test harness
+  - Compare implementations
+  - Verify consistent behavior
+  - Catch regression bugs
+
+**AI Checklist:**
+- [ ] Property-based tests for all economic logic
+- [ ] Invariants explicitly stated and tested
+- [ ] Mutation testing enabled for critical logic (with `@mutation` decorator)
+- [ ] Counterexamples logged for property test failures
+
+---
+
+#### 2.9.3 Mocking Philosophy (No Mock or Limited Mock | Beyond Happy Path | No Fake Green)
+
+**CRITICAL RULES:**
+
+- **No Mocks for Money Logic**: Real database (Testcontainers), real storage, real dependencies
+- **Beyond Happy Path**: Test errors, edge cases, abuse scenarios
+- **No Fake Green**: Tests must fail when code is broken (verify this)
+
+**Allowed Mocking:**
+- External services (payment processors, third-party APIs)
+- Time (controlled clocks)
+- Randomness (deterministic generators)
+
+**Forbidden Mocking:**
+- Storage (use Testcontainers or real test storage)
+- Business logic functions
+- Economic calculations
+- Authorization logic
+
+**AI Checklist:**
+- [ ] No mocks for money-critical code
+- [ ] Real database/storage in tests
+- [ ] Error paths tested, not just success
+- [ ] Tests verified to fail when code is broken
+
+---
+
+#### 2.9.4 Authentication & Authorization Testing
+
+**Required for all authenticated endpoints:**
+
+- **Authentication (AuthN)**: OPA tests | custom auth tests
+  - Missing tokens
+  - Expired tokens
+  - Invalid signatures
+  - Token replay
+
+- **Authorization Matrix (AuthZ)**: custom RBAC matrix tests
+  - Role × action matrix
+  - All forbidden combinations tested
+  - Permission creep prevention
+
+- **Privilege Escalation**: OWASP ZAP auth scripts | custom tests
+  - User cannot elevate privileges
+  - Cross-user access attempts
+  - Admin endpoint protection
+
+- **Token Lifecycle**: custom tests
+  - Token creation
+  - Token refresh
+  - Token revocation
+  - Token expiration
+
+- **Replay Protection**: custom tests
+  - Same token cannot be reused
+  - Nonce validation
+  - Timestamp validation
+
+**AI Checklist:**
+- [ ] AuthN tests for all authenticated endpoints
+- [ ] AuthZ matrix covers all role × action combinations
+- [ ] Privilege escalation attempts rejected
+- [ ] Token lifecycle fully tested
+- [ ] Replay protection verified
+
+---
+
+#### 2.9.5 Security Testing (Dedicated Security Tests | Smuggling | Desync | Cache Poisoning)
+
+**Required for all HTTP endpoints:**
+
+- **Dedicated Security Tests**: OWASP ZAP | Burp Suite
+  - Automated security scanning
+  - Vulnerability detection
+  - Security regression prevention
+
+- **Request Smuggling**: Smuggler.py | custom tests
+  - HTTP/1.1 smuggling
+  - HTTP/2 smuggling
+  - CL.TE / TE.CL attacks
+  - Header size limits
+
+- **Desync Attacks**: custom tests
+  - Request/response desynchronization
+  - Connection reuse abuse
+  - Pipeline poisoning
+
+- **Cache Poisoning**: custom tests
+  - Cache key confusion
+  - Header injection via cache
+  - Cache authenticated responses
+  - Cache key isolation
+
+**AI Checklist:**
+- [ ] Security tests run in CI
+- [ ] Request smuggling prevented
+- [ ] Desync attacks tested
+- [ ] Cache poisoning prevented
+
+---
+
+#### 2.9.6 API Fuzzing & Schema Testing
+
+**Required for all API endpoints:**
+
+- **API Fuzzing**: RESTler | Schemathesis
+  - Random input generation
+  - Malformed payloads
+  - Type violations
+  - Boundary value testing
+
+- **Schema Fuzzing**: Schemathesis | OpenAPI fuzzing
+  - Schema validation bypass attempts
+  - Extra fields
+  - Missing required fields
+  - Type coercion abuse
+
+- **GraphQL Depth**: InQL | graphql-cop
+  - Query depth limits
+  - Recursive query prevention
+  - Resource exhaustion via deep queries
+
+**AI Checklist:**
+- [ ] API fuzzing in CI pipeline
+- [ ] Schema violations rejected
+- [ ] GraphQL depth limits enforced (if applicable)
+- [ ] Fuzz test failures logged with seeds
+
+---
+
+#### 2.9.7 Rate Limiting & Abuse Testing
+
+**Required for all public endpoints:**
+
+- **Rate Limiting**: k6 | Artillery | Locust
+  - Per-IP limits
+  - Per-user limits
+  - Per-endpoint limits
+  - Burst protection
+
+- **Abuse Testing**: k6 | Artillery
+  - Slow-drip attacks
+  - Distributed abuse
+  - Header manipulation bypass attempts
+
+- **Brute Force**: custom tests | k6
+  - Credential stuffing
+  - Account enumeration prevention
+  - Progressive delays
+
+- **DoS Testing**: k6 | Artillery | stress-ng
+  - Volume-based attacks
+  - Resource exhaustion
+  - Connection exhaustion
+  - Memory exhaustion
+
+**AI Checklist:**
+- [ ] Rate limits enforced
+- [ ] Abuse scenarios tested
+- [ ] Brute force protection verified
+- [ ] DoS resistance tested
+
+---
+
+#### 2.9.8 CORS & Origin Security Testing
+
+**Required for all web endpoints:**
+
+- **CORS Testing**: ZAP | Burp | custom curl matrix
+  - Untrusted origins rejected
+  - Wildcard rejection in prod
+  - Credential handling
+  - Preflight validation
+
+- **Origin Validation**: custom tests
+  - Missing Origin header
+  - Null origin
+  - Subdomain takeover attempts
+  - Scheme/port mismatches
+
+- **Header Injection**: Nuclei | Burp extensions
+  - CRLF injection
+  - Header splitting
+  - Host header manipulation
+
+- **Redirect Security**: custom tests
+  - Open redirect prevention
+  - Redirect loop detection
+  - Unsafe redirect targets
+
+- **URL Hijacking**: custom tests
+  - Path traversal (`../`)
+  - Encoded traversal
+  - Double-encoded traversal
+
+**AI Checklist:**
+- [ ] CORS headers correct for all origins
+- [ ] Origin validation strict
+- [ ] Header injection prevented
+- [ ] Redirects validated
+- [ ] URL traversal prevented
+
+---
+
+#### 2.9.9 Concurrency & Race Condition Testing
+
+**Required for all stateful operations:**
+
+- **Concurrency Testing**: k6 scenarios | custom tests
+  - Parallel identical requests
+  - Parallel conflicting requests
+  - Retry storms
+  - WebSocket + REST races
+
+- **Race Conditions**: Jepsen-style tests | custom chaos scripts
+  - Concurrent state mutations
+  - Lock contention
+  - Eventual consistency abuse
+  - Split-brain scenarios
+
+- **Idempotency**: custom tests
+  - Same request twice = same result
+  - Idempotency keys validated
+  - Replay safety verified
+
+- **Replay Protection**: custom tests
+  - Request replay rejected
+  - Nonce validation
+  - Timestamp validation
+
+- **Ordering**: custom tests
+  - Out-of-order requests handled
+  - State transitions enforced
+  - Invalid sequences rejected
+
+**AI Checklist:**
+- [ ] Concurrency tests for stateful operations
+- [ ] Race conditions tested
+- [ ] Idempotency verified
+- [ ] Replay protection enforced
+- [ ] Ordering constraints tested
+
+---
+
+#### 2.9.10 Load & Stress Testing
+
+**Required for production readiness:**
+
+- **Load Testing**: k6 | Artillery
+  - Expected traffic volumes
+  - Response time under load
+  - Throughput limits
+
+- **Spike Testing**: k6 | Artillery
+  - Sudden traffic increases
+  - Graceful degradation
+  - Recovery after spike
+
+- **Soak Testing**: k6 | Artillery
+  - Sustained load over time
+  - Memory leaks detection
+  - Resource exhaustion over time
+
+- **Memory Testing**: stress-ng | custom tests
+  - Memory limits
+  - Memory leaks
+  - OOM handling
+
+- **File Descriptor Exhaustion**: custom tests
+  - FD limits
+  - Connection limits
+  - Resource cleanup
+
+- **Connection Exhaustion**: k6 | Artillery
+  - Max connections
+  - Connection pooling
+  - Connection reuse
+
+**AI Checklist:**
+- [ ] Load tests cover expected traffic
+- [ ] Spike handling tested
+- [ ] Soak tests for memory leaks
+- [ ] Resource limits enforced
+
+---
+
+#### 2.9.11 Database & Migration Testing
+
+**Required for all schema changes:**
+
+- **Migration Testing**: Flyway test mode | Liquibase | Atlas | dbmate
+  - Forward migrations
+  - Rollback migrations
+  - Data preservation
+  - Migration idempotency
+
+- **Rollback Testing**: custom tests
+  - Rollback safety
+  - Data consistency after rollback
+  - Partial migration handling
+
+- **Backward Compatibility**: custom tests
+  - Old client compatibility
+  - Schema versioning
+  - Deprecated field handling
+
+- **Schema Drift**: custom tests
+  - Schema validation
+  - Drift detection
+  - Schema evolution safety
+
+**AI Checklist:**
+- [ ] Migrations tested forward and backward
+- [ ] Rollback safety verified
+- [ ] Backward compatibility maintained
+- [ ] Schema drift detected
+
+---
+
+#### 2.9.12 Contract & API Version Testing
+
+**Required for all API changes:**
+
+Contract tests verify that **consumers and providers agree on API behavior**.
+They ensure API changes do **not break clients**, even when unit and integration tests pass.
+
+**What Contract Tests Verify:**
+
+A contract defines:
+- Request shape (path, method, params, headers)
+- Response shape (status, body, headers)
+- Required fields and types
+- Error behavior
+
+**Important Distinctions:**
+
+- Contract tests are **not E2E tests** and **do not test business logic**
+- They only validate interface promises
+- Unit tests protect **your code**
+- Integration tests protect **your setup**
+- Contract tests protect **your users**
+
+**When to Use Contract Tests:**
+
+- Frontend ↔ backend
+- Service ↔ service
+- Public or versioned APIs
+- AI-generated or refactored code
+
+**How to Implement (Consumer-Driven):**
+
+1. Consumer defines expected API behavior
+2. Generate a contract file
+3. Provider validates implementation against the contract in CI
+
+**Tooling:**
+
+- **Contract Testing**: Pact | OpenAPI diff
+  - Consumer-driven contracts
+  - Provider verification
+  - Contract evolution
+
+- **Consumer-Driven Contracts**: Pact
+  - Client expectations
+  - Provider verification
+  - Breaking change detection
+
+- **Version Skew**: protobuf breaking check | OpenAPI diff
+  - Backward compatibility
+  - Forward compatibility
+  - Version negotiation
+
+**Acceptance Criteria:**
+
+- Provider CI fails if response shape, status code, or headers change
+- Optional fields allowed, required fields enforced
+- Backward compatibility verified
+
+**AI Checklist:**
+- [ ] Contracts defined and tested
+- [ ] Breaking changes detected
+- [ ] Version compatibility verified
+- [ ] Consumer expectations captured
+- [ ] Provider validates against contracts in CI
+
+---
+
+#### 2.9.13 Chaos & Resilience Testing
+
+**Required for production systems:**
+
+- **Chaos Engineering**: Chaos Mesh | Gremlin
+  - Random failures injected
+  - Service outages simulated
+  - Network partitions
+
+- **Partial Outage**: Toxiproxy | custom tests
+  - Dependency failures
+  - Graceful degradation
+  - Circuit breakers
+
+- **Slow Dependencies**: Toxiproxy | custom tests
+  - Timeout handling
+  - Retry logic
+  - Backpressure
+
+- **Retry Storms**: custom tests
+  - Exponential backoff
+  - Retry limits
+  - Idempotency under retries
+
+**AI Checklist:**
+- [ ] Chaos tests in staging
+- [ ] Partial outages handled gracefully
+- [ ] Slow dependencies don't cascade
+- [ ] Retry storms prevented
+
+---
+
+#### 2.9.14 Time & Clock Testing
+
+**Required for all time-dependent logic:**
+
+- **Clock Skew**: libfaketime | time-skew container
+  - Client/server time differences
+  - Timezone handling
+  - Clock manipulation attempts
+
+- **Expiry Boundary**: custom tests
+  - Just-before-expiry
+  - Just-after-expiry
+  - Boundary conditions
+
+- **DST (Daylight Saving Time)**: custom tests
+  - DST transitions
+  - Timezone changes
+  - Ambiguous times
+
+**AI Checklist:**
+- [ ] Clock skew handled
+- [ ] Expiry boundaries tested
+- [ ] DST transitions safe
+- [ ] Server time always used (never client time)
+
+---
+
+#### 2.9.15 AI-Specific Testing (Prompt Injection | Hallucination | Regression | Output Invariant)
+
+**Required for all AI/LLM features:**
+
+- **Prompt Injection**: OpenAI evals | promptfoo | custom golden tests
+  - Injection attempts detected
+  - System prompt protection
+  - User input sanitization
+
+- **Hallucination Detection**: promptfoo | custom tests
+  - Factual accuracy
+  - Source attribution
+  - Confidence thresholds
+
+- **Regression Testing**: OpenAI evals | promptfoo
+  - Output consistency
+  - Quality degradation detection
+  - Version comparison
+
+- **Output Invariant**: custom tests
+  - Required fields present
+  - Format consistency
+  - Schema compliance
+
+- **Temperature Sensitivity**: promptfoo matrix | custom tests
+  - Output variance acceptable
+  - Deterministic paths tested
+  - Randomness boundaries
+
+- **Safety Boundaries**: red-team prompts | custom tests
+  - Harmful content rejection
+  - Safety filters working
+  - Edge case handling
+
+**AI Checklist:**
+- [ ] Prompt injection prevented
+- [ ] Hallucination detection enabled
+- [ ] Regression tests for AI outputs
+- [ ] Output invariants verified
+- [ ] Safety boundaries tested
+
+---
+
+#### 2.9.16 Observability Testing
+
+**Required for all production code:**
+
+- **Logging Assertion**: OpenTelemetry tests | custom tests
+  - Required logs emitted
+  - Log structure correct
+  - Correlation IDs present
+
+- **Metrics Sanity**: Prometheus rules | custom tests
+  - Metrics defined
+  - Metrics updated correctly
+  - Metric labels correct
+
+- **Tracing Completeness**: OpenTelemetry tests | custom tests
+  - Spans created
+  - Trace context propagated
+  - Trace completeness
+
+- **Alert Firing**: Alertmanager test rules | custom tests
+  - Alerts trigger correctly
+  - Alert conditions tested
+  - Alert thresholds validated
+
+- **Error Budget Burn**: SLO burn simulators | custom tests
+  - SLO tracking
+  - Error budget calculation
+  - Burn rate monitoring
+
+**AI Checklist:**
+- [ ] Logging verified in tests
+- [ ] Metrics sanity checked
+- [ ] Tracing complete
+- [ ] Alerts tested
+- [ ] Error budgets tracked
+
+---
+
+#### 2.9.17 Test Quality & CI Testing
+
+**Required for test infrastructure:**
+
+- **Flaky Test Detection**: Flaky-test reruns | custom detection
+  - Non-deterministic tests identified
+  - Flaky tests fixed or removed
+  - Test stability verified
+
+- **Mutation Score**: Stryker gates | custom checks
+  - Mutation score thresholds
+  - Surviving mutants addressed
+  - Test effectiveness verified
+
+- **CI Dependency Kill**: chaos CI step | custom tests
+  - Dependency failures handled
+  - CI resilience
+  - Build stability
+
+**AI Checklist:**
+- [ ] Flaky tests detected and fixed
+- [ ] Mutation score meets threshold
+- [ ] CI resilient to failures
+
+---
+
+#### 2.9.18 Deployment & Rollback Testing
+
+**Required for deployment processes:**
+
+- **Canary Testing**: Argo Rollouts | Flagger
+  - Gradual rollout
+  - Error rate monitoring
+  - Automatic rollback
+
+- **Rollback Validation**: custom tests
+  - Rollback safety
+  - Data consistency
+  - Service availability
+
+**AI Checklist:**
+- [ ] Canary deployments tested
+- [ ] Rollback procedures validated
+- [ ] Rollback safety verified
+
+---
+
+#### 2.9.19 Human Misuse & Edge Case Testing
+
+**Required for user-facing features:**
+
+- **Human Misuse**: Playwright user flows | custom tests
+  - Double submit prevention
+  - Refresh abuse prevention
+  - Back button handling
+
+- **Mobile Quirks**: BrowserStack | Detox
+  - Mobile browser differences
+  - Touch event handling
+  - Viewport issues
+
+- **Browser Compatibility**: Playwright | BrowserStack
+  - Cross-browser testing
+  - Feature detection
+  - Polyfill requirements
+
+**AI Checklist:**
+- [ ] Double submit prevented
+- [ ] Refresh abuse handled
+- [ ] Mobile quirks tested
+- [ ] Browser compatibility verified
+
+---
+
+#### 2.9.20 AI Coding Checklist Summary
+
+**When writing ANY code, AI MUST verify:**
+
+- [ ] **Foundation**: Unit/integration/E2E tests exist
+- [ ] **Advanced**: Property-based/mutation/invariant tests where applicable
+- [ ] **No Mocks**: Real dependencies for money logic
+- [ ] **Beyond Happy Path**: Error cases tested
+- [ ] **Auth**: AuthN/AuthZ/privilege escalation tested
+- [ ] **Security**: Smuggling/desync/cache poisoning tested
+- [ ] **Fuzzing**: API/schema fuzzing enabled
+- [ ] **Rate Limits**: Abuse/DoS testing done
+- [ ] **CORS**: Origin/header/redirect security tested
+- [ ] **Concurrency**: Race/idempotency/replay tested
+- [ ] **Load**: Load/spike/soak testing done
+- [ ] **Migration**: Rollback/compatibility tested
+- [ ] **Contract**: API contracts verified
+- [ ] **Chaos**: Resilience testing done
+- [ ] **Time**: Clock skew/expiry tested
+- [ ] **AI Features**: Prompt injection/hallucination tested
+- [ ] **Observability**: Logging/metrics/tracing verified
+- [ ] **Test Quality**: Flaky/mutation score checked
+- [ ] **Deployment**: Canary/rollback tested
+- [ ] **Edge Cases**: Human misuse/mobile quirks tested
+
+**Rule:**
+> If any applicable category is missing tests, the code is incomplete and MUST NOT be merged.
+
+---
+
+## 3. REQUIRED TEST CATEGORIES
+
+> **Note:** For detailed, numbered security test requirements, see `ocentra-security-rules.mdc` sections 1-15.  
+> This section provides a high-level overview. All specific rules are in the security rules document.
+
+Cursor MUST scaffold tests for ALL categories below. Each category maps to specific numbered rules in `ocentra-security-rules.mdc`:
+
+### 3.1 Authentication & Authorization
+
+See `ocentra-security-rules.mdc` Rule 2.1, 2.2
+
+### 3.2 CORS / Origin Enforcement
+
+See `ocentra-security-rules.mdc` Rule 1.1, 1.2
+
+### 3.3 Input Validation & Schema Enforcement
+
+See `ocentra-security-rules.mdc` Rule 5.1, 5.2
+
+### 3.4 URL / Path Manipulation
+
+See `ocentra-security-rules.mdc` Rule 14.4
+
+### 3.5 Replay & Idempotency (Money-Critical)
+
+See `ocentra-security-rules.mdc` Rule 6.1, 6.2, 14.8
+
+### 3.6 Partial Failure Exploitation
+
+See `ocentra-security-rules.mdc` Rule 12.1.1, 12.1.2
+
+### 3.7 State & Logic Abuse
+
+See `ocentra-security-rules.mdc` Rule 6.1, 6.2, 14.9
+
+### 3.8 DDoS & Resource Exhaustion
+
+See `ocentra-security-rules.mdc` Rule 4.1, 4.2, 4.3, 14.10
+
+### 3.9 Solana / Blockchain Abuse
+
+See `ocentra-security-rules.mdc` Rule 3.1, 3.2, 7.1, 7.2
+
+**Note:** For authoritative signing requirements and invariants, see `ocentra-security-rules.mdc` Rule 3.13.
+
+### 3.10 Request Smuggling & Protocol Abuse
+
+See `ocentra-security-rules.mdc` Rule 9.1, 9.2, 14.15
+
+### 3.11 API & WebSocket Security
+
+See `ocentra-security-rules.mdc` for WebSocket-specific requirements
+
+### 3.12 Error Handling & Information Leakage
+
+See `ocentra-security-rules.mdc` Rule 10.1, 10.2
+
+### 3.13 Key & Signing Security (Money-Critical)
+
+See `ocentra-security-rules.mdc` Rule 3.1, 3.2, 0.1.3 (G3)
+
+### 3.14 Time, Clock & Drift Attacks
+
+See `ocentra-security-rules.mdc` Rule 15.3, 0.1.2 (G2)
+
+### 3.15 Economic Resource Exhaustion (Distinct from DDoS)
+
+See `ocentra-security-rules.mdc` Rule 15.4, 0.1.1 (G1)
+
+### 3.16 Rollback & Recovery Abuse
+
+See `ocentra-security-rules.mdc` Rule 12.1.1, 12.1.2, 0.1.4 (G4)
+
+### 3.17 Cross-Component Trust Violations
+
+See `ocentra-security-rules.mdc` Rule 12.3.1, 12.3.2, 0.1.5 (G5)
+
+### 3.18 Serialization & Encoding Attacks
+
+See `ocentra-security-rules.mdc` for serialization requirements
+
+### 3.19 Kill Switch & Circuit Breaker Abuse
+
+See `ocentra-security-rules.mdc` Rule 15.7
+
+### 3.20 Test Integrity (Meta-Security)
+
+See `ocentra-test-rules.mdc` §11 and `ocentra-security-rules.mdc` Rule 15.8
+
+---
+
+## 4. COVERAGE REQUIREMENTS (FAIL CI IF VIOLATED)
+
+CI MUST FAIL IF:
+
+- Any money-critical endpoint lacks required test categories (see `ocentra-security-rules.mdc` Rule 14.16):
+  - negative tests
+  - replay tests
+  - concurrency tests
+  - rollback/compensation tests
+  - economic exhaustion tests
+  - time-based attack tests
+  - signing/verification tests
+- Any invariant test fails (see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- Schemathesis finds new failing cases
+- Coverage thresholds drop
+- Kill-switch tests are missing (see `ocentra-security-rules.mdc` Rule 15.7)
+- Test integrity violations (non-deterministic tests, shared state) - see `ocentra-test-rules.mdc` §11
+- Property-based tests fail without logging counterexamples
+- Fuzz tests fail without logging seeds
+
+---
+
+## 5. REQUIRED CI PIPELINE STEPS
+
+1. Install dependencies
+2. Run unit + coverage tests
+3. Run property-based tests (with counterexample logging)
+4. Run API fuzzing (with seed persistence)
+5. Run concurrency tests (limited)
+6. Run Solana localnet tests (including signing abuse tests - see `ocentra-security-rules.mdc` Rule 3.1, 3.2)
+7. Run static analysis
+8. Verify observability hooks (see `ocentra-security-rules.mdc` Rule 15.8)
+9. Run rollback/compensation tests (see `ocentra-security-rules.mdc` Rule 12.1.1, 12.1.2)
+10. Run economic exhaustion tests (see `ocentra-security-rules.mdc` Rule 15.4)
+11. Run time-based attack tests (see `ocentra-security-rules.mdc` Rule 15.3)
+12. Run test integrity checks (order independence, no shared state) - see `ocentra-test-rules.mdc` §11
+13. Verify threat model → test mapping completeness (see `ocentra-security-rules.mdc` Rule 15.9)
+
+---
+
+## 6. DOCUMENTATION & TRACEABILITY
+
+Every money-critical endpoint MUST document:
+
+- Economic invariants (see `ocentra-security-rules.mdc` Rule 0.1.1)
+- Idempotency scope
+- Replay behavior
+- Failure behavior
+- Rollback/compensation behavior (see `ocentra-security-rules.mdc` Rule 0.1.4)
+- Time-based assumptions (cooldowns, expiry) - see `ocentra-security-rules.mdc` Rule 0.1.2
+- Signing/verification requirements (see `ocentra-security-rules.mdc` Rule 0.1.3)
+- Economic cost analysis (attacker cost vs system cost) - see `ocentra-security-rules.mdc` Rule 0.1.1
+- Threat model mapping (which threats this endpoint addresses) - see `ocentra-security-rules.mdc` Rule 15.9
+
+Every test MUST document:
+
+- Which threat(s) it addresses (reference specific rules from `ocentra-security-rules.mdc`)
+- Which invariant(s) it verifies (reference Rule 0.1.1-0.1.6 from `ocentra-security-rules.mdc`)
+- Reproducibility requirements (seeds, inputs)
+- Failure conditions (what breaks if this test fails)
+
+---
+
+## 7. FINAL RULE
+
+If a test only verifies a happy path, it is NOT a security test.
+
+This spec overrides convenience.
+
+### 7.1 Security Test Quality Checklist
+
+A security test is valid only if (see also `ocentra-test-rules.mdc` §20 and `ocentra-security-rules.mdc` Rule 13):
+
+- [ ] It fails when protection is removed
+- [ ] It asserts exact rejection behavior
+- [ ] It does NOT rely on "no crash"
+- [ ] It tests behavior, not configuration
+- [ ] It assumes a hostile client
+- [ ] It maps to an explicit threat in the threat model (reference `ocentra-security-rules.mdc`)
+- [ ] It verifies an invariant (reference `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- [ ] It is reproducible (deterministic seeds/logs)
+
+If any box is unchecked → **test rejected**.
+
+### 7.2 Common Security Test Failures
+
+**BANNED PATTERNS:**
+
+- Tests that pass when logic is deleted
+- Tests that only assert "success"
+- Tests without explicit threat mapping (must reference `ocentra-security-rules.mdc`)
+- Non-reproducible fuzz tests
+- Tests with shared mutable state
+- Tests that depend on execution order
+- Property-based tests without counterexample logging
+
+**REQUIRED PATTERNS:**
+
+- Explicit threat → test mapping (reference `ocentra-security-rules.mdc` sections 1-15)
+- Invariant verification (reference `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- Economic cost analysis (see `ocentra-security-rules.mdc` Rule 0.1.1)
+- Time-based assumption testing (see `ocentra-security-rules.mdc` Rule 0.1.2)
+- Rollback/compensation idempotency (see `ocentra-security-rules.mdc` Rule 0.1.4)
+- Signing/verification correctness (see `ocentra-security-rules.mdc` Rule 0.1.3)
+
+---
+
+## 8. SECURITY ENFORCEMENT & COMPLIANCE RULES
+
+**(Non-Negotiable, Tool-Agnostic)**
+
+This section defines **HOW security requirements are enforced**, **WHO is allowed to bypass them (nobody)**, and **WHAT fails the build**.
+
+This applies to:
+
+- Humans
+- AI coding tools
+- Refactors
+- Emergencies
+- Deadlines
+- "Temporary" changes
+
+**There are no exceptions.**
+
+### 8.1 Authority & Precedence
+
+1. This enforcement spec overrides:
+   - Developer convenience
+   - AI suggestions
+   - Refactoring heuristics
+   - Performance optimizations
+   - Deadlines
+   - "We'll add tests later"
+
+2. If any instruction conflicts with:
+   - An AI suggestion
+   - A developer opinion
+   - A performance optimization
+
+   → **THIS DOCUMENT WINS**
+
+3. Silence is NOT permission.
+   - If a behavior is not explicitly allowed, it is **forbidden**.
+
+### 8.2 Definition: Money-Critical Code
+
+Any code that:
+
+- Creates, transfers, modifies, or destroys value
+- Triggers Solana instructions
+- Signs messages
+- Performs economic calculations
+- Applies rewards, credits, balances, cooldowns
+- Executes rollbacks or compensation
+- Changes time-based state
+- Enables or disables kill switches
+
+**IS MONEY-CRITICAL**
+
+> If unsure → treat as money-critical.
+
+### 8.3 Absolute Enforcement Rules (FAIL CI)
+
+#### 8.3.1 Code Cannot Be Merged Unless ALL Are True
+
+For **every money-critical change** (see `ocentra-security-rules.mdc` Rule 14.16):
+
+- [ ] Negative tests exist
+- [ ] Replay tests exist (see `ocentra-security-rules.mdc` Rule 6.1, 14.8)
+- [ ] Concurrency tests exist (see `ocentra-security-rules.mdc` Rule 15.5)
+- [ ] Rollback/compensation tests exist (see `ocentra-security-rules.mdc` Rule 12.1.1, 12.1.2)
+- [ ] Time-based attack tests exist (see `ocentra-security-rules.mdc` Rule 15.3)
+- [ ] Economic exhaustion tests exist (see `ocentra-security-rules.mdc` Rule 15.4)
+- [ ] Signing/verification tests exist (see `ocentra-security-rules.mdc` Rule 3.1, 3.2, 0.1.3)
+- [ ] Threat → test mapping exists (see `ocentra-security-rules.mdc` Rule 15.9)
+- [ ] Invariants are explicitly asserted (see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- [ ] Tests fail if protection is removed
+
+**If any box is unchecked → CI FAILS**
+
+### 8.4 Test Enforcement Rules
+
+#### 8.4.1 Banned Test Patterns (Immediate Rejection)
+
+The following patterns are **explicitly forbidden** (see also `ocentra-test-rules.mdc` §7):
+
+- Tests that only assert "success"
+- Tests that pass if logic is removed
+- Tests that rely on "no crash"
+- Snapshot-only tests
+- Tests without threat mapping (must reference `ocentra-security-rules.mdc`)
+- Tests without invariant assertions (must reference `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- Non-deterministic fuzz tests
+- Tests that depend on execution order
+- Tests that mutate global state
+- Tests that rely on mocks for money logic
+
+**Presence of any banned pattern → CI FAILS**
+
+#### 8.4.2 Required Test Properties
+
+Every security test MUST (see `ocentra-security-rules.mdc` Rule 13 and `ocentra-test-rules.mdc` §0.2):
+
+1. Assert **rejection behavior**, not success
+2. Assert **exact failure mode**
+3. Be reproducible (seed logged)
+4. Fail if the protection is removed
+5. Map to a specific threat (reference `ocentra-security-rules.mdc`)
+6. Assert an invariant (reference `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+
+If any property is missing → **test invalid**
+
+### 8.5 Threat → Test → Invariant Enforcement
+
+#### 8.5.1 Mandatory Mapping
+
+For every money-critical endpoint (see `ocentra-security-rules.mdc` Rule 15.9):
+
+- At least **1 threat** (reference `ocentra-security-rules.mdc` sections 1-15)
+- At least **1 invariant** (reference `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- At least **1 property-based test**
+- At least **1 concurrency test** (see `ocentra-security-rules.mdc` Rule 15.5)
+- At least **1 replay test** (see `ocentra-security-rules.mdc` Rule 6.1, 14.8)
+
+**Unmapped logic is forbidden logic.**
+
+#### 8.5.2 Invariant Violations
+
+If an invariant fails (see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6):
+
+- CI fails immediately
+- No retries
+- No flakiness allowance
+- No "known issue" bypass
+
+**Invariant failure = security failure**
+
+### 8.6 Signing & Cryptography Enforcement
+
+#### 8.6.1 Absolute Rules
+
+See `ocentra-security-rules.mdc` Rule 0.1.3 (G3) and Rule 3.1, 3.2 for detailed requirements.
+
+- Backend MUST NOT sign:
+  - Client-provided raw messages
+  - Messages it cannot reconstruct
+  - Messages it cannot verify independently
+
+- All signed messages MUST:
+  - Be canonically serialized
+  - Be reproducible from request context
+  - Be logged with correlation IDs
+
+**Violation → CI FAILS**
+
+### 8.7 Time & Economic Enforcement
+
+#### 8.7.1 Time Rules
+
+See `ocentra-security-rules.mdc` Rule 0.1.2 (G2) and Rule 15.3 for detailed requirements.
+
+- Client time is NEVER trusted
+- All time checks use server time
+- Clock skew tolerance MUST be explicit
+- Expiry logic MUST fail closed
+
+Any logic relying on implicit time behavior → **forbidden**
+
+#### 8.7.2 Economic Rules
+
+See `ocentra-security-rules.mdc` Rule 0.1.1 (G1) and Rule 15.4 for detailed requirements.
+
+- Attacker cost MUST be ≥ system cost
+- Free retries with non-zero backend cost are forbidden
+- Dust-value operations MUST be bounded
+- Micro-reward farming MUST be explicitly tested
+
+**Economic imbalance → CI FAILS**
+
+### 8.8 Rollback & Failure Enforcement
+
+#### 8.8.1 Mandatory Properties
+
+See `ocentra-security-rules.mdc` Rule 0.1.4 (G4) and Rule 12.1.1, 12.1.2 for detailed requirements.
+
+Rollback / compensation logic MUST be:
+
+- Idempotent
+- Replay-safe
+- Atomic
+- Exactly-once
+
+Rollback code WITHOUT tests → **merge forbidden**
+
+### 8.9 Internal Boundary Enforcement
+
+#### 8.9.1 Trust Rules
+
+See `ocentra-security-rules.mdc` Rule 0.1.5 (G5) and Rule 12.3.1, 12.3.2 for detailed requirements.
+
+- Internal APIs are hostile
+- Internal headers are untrusted
+- Network topology provides ZERO security
+
+Any internal endpoint without explicit auth → **CI FAILS**
+
+### 8.10 Kill Switch & Emergency Controls
+
+#### 8.10.1 Enforcement
+
+See `ocentra-security-rules.mdc` Rule 15.7 for detailed requirements.
+
+Kill switches MUST:
+
+- Halt all money-critical operations
+- Be atomic across services
+- Be authenticated
+- Be audited
+- Be replay-safe
+
+Kill switch logic WITHOUT attack tests → **merge forbidden**
+
+### 8.11 Test Integrity Enforcement (Meta-Security)
+
+#### 8.11.1 Determinism
+
+See `ocentra-test-rules.mdc` §11 for detailed requirements.
+
+- All fuzz tests MUST log seeds
+- All property tests MUST log counterexamples
+- CI randomness MUST be reproducible
+
+Flaky tests are treated as **security bugs**, not test bugs.
+
+#### 8.11.2 Order Independence
+
+See `ocentra-test-rules.mdc` §11 for detailed requirements.
+
+- Tests MUST pass in any order
+- Shared mutable state is forbidden
+- Global mutations are forbidden
+
+Violation → **CI FAILS**
+
+### 8.12 AI & Tool Enforcement (Important)
+
+#### 8.12.1 AI Is Not an Authority
+
+AI tools:
+
+- Cannot waive requirements
+- Cannot simplify tests
+- Cannot remove "redundant" tests
+- Cannot replace invariants with mocks
+- Cannot downgrade security tests to unit tests
+
+**AI output is treated as untrusted input.**
+
+### 8.13 Review & Merge Rules
+
+#### 8.13.1 Merge Blocking Conditions
+
+A change MUST NOT be merged if:
+
+- Any required test category is missing (see `ocentra-security-rules.mdc` Rule 14.16)
+- Any invariant is undocumented (see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6)
+- Any threat is unmapped (see `ocentra-security-rules.mdc` Rule 15.9)
+- Any economic assumption is implicit (see `ocentra-security-rules.mdc` Rule 0.1.1)
+- Any rollback path lacks tests (see `ocentra-security-rules.mdc` Rule 12.1.1, 12.1.2)
+- Any signing path lacks verification tests (see `ocentra-security-rules.mdc` Rule 3.1, 3.2)
+
+### 8.14 Final Enforcement Rule
+
+> **If a change cannot be proven safe under adversarial conditions, it is unsafe.**
+
+Security is not a phase.
+Security is not a checklist.
+Security is enforced **by default**.
+
+**This document overrides convenience.**
+
+---
+
+This spec overrides convenience, refactoring heuristics, and AI defaults.

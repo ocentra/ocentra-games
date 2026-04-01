@@ -1,0 +1,672 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "buck-euchre.json",
+  "name": "Buck Euchre",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Buck Euchre is a cutthroat (non-partnership) version of Euchre for 4-6 players. Each player plays entirely for themselves. Unlike standard Euchre's fixed 4-player partnerships, Buck Euchre is a standalone player-vs-all game. The dealer selects trump by flipping the top card of the kitty, and each player may order up or pass. The player who orders wins or loses alone based on how many tricks they take.",
+    "category": "Trick-taking",
+    "subCategory": "Euchre Family / Individual",
+    "origin": "United States (Midwest)",
+    "originName": "Buck Euchre / Dirty Clubs",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "4-6"
+    },
+    "deck": "32 cards (Euchre deck: 9, 10, J, Q, K, A in 4 suits; 2-8 removed)",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Buck Euchre is an American variant of standard 4-player Euchre, adapted for larger groups where partnership play is impractical. It is particularly popular in the American Midwest.",
+    "originCountries": ["United States"],
+    "timeline": [
+      "1800s: Standard Euchre firmly established in the American Midwest.",
+      "Late 1800s-1900s: Buck Euchre variants emerge for four players in Ohio and for three players in Indiana.",
+      "Present: Regional variant; popular in rural Midwest and other North American card nights."
+    ],
+    "evolution": "By removing partnerships and making each player responsible for their own trump bid and tricks, Buck Euchre shifts the game from coordinated partnership play to individual risk management, closer to Rams-style penalty games.",
+    "cultural": "A staple of American Midwest and broader North American card culture, often played at home games, community halls, and social gatherings where everyone plays for themselves.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Four players, each for themselves; some groups extend to 5-6 players by adding extra low cards as described in Dirty Clubs variants.",
+    "deck": "24 cards (A, K, Q, J, 10, 9 of each French suit) for the core four-player Buck Euchre game; groups that add players can extend the pack with extra low cards such as eights and sevens.",
+    "equipment": "Cards. Score tokens or paper.",
+    "dealing": "5 cards each. Remaining cards form a kitty; top card turned face-up to propose trump.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by successfully making your trick bid, or lose points for failing.",
+    "gameplay": "Whoever orders up is the Maker and plays alone. Others try to prevent them from making their contract. Maker must win 3 of 5 tricks to succeed.",
+    "keyRules": [
+      "Jacks of trump (Right Bower) and Jacks matching trump color (Left Bower) are the two highest trump cards.",
+      "Maker plays aloneâ€”no partners.",
+      "Euchred = lose 2 points, regardless of how many tricks were taken."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Only order up if you hold both Bowers or an Ace of the proposed trump suit plus at least 2 more trump cards.",
+    "intermediate": "Void Strategy: Having a void suit allows you to trump early. In Buck Euchre, no one is helping youâ€”voids are both an asset (can trump) and a risk (others know your distribution).",
+    "advanced": "Card counting across 4-6 players is difficult. Focus on knowing where the Right Bower is when you hold the Left Bowerâ€”bids with Left Bower only but no Right Bower are very risky.",
+    "tips": [
+      "Going alone with both Bowers + Ace of trump is a near-certain March (5 tricks).",
+      "Watch the discard from the kittyâ€”it tells you what suit was rejected."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "dirty-clubs",
+        "name": "Dirty Clubs",
+        "description": "Dirty Clubs is a related variant in which players bid for the right to name trumps (or no trumps), clubs can be called as trump even when not turned, and extra low cards are added when more than four players sit down.",
+        "overrides": {},
+        "emptyOverridesReason": "Dirty Clubs rule differences are described in the source text; structured engine-level overrides for bidding and deck size are not yet encoded."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Orders up with any 2 trump. No euchre risk assessment.",
+      "medium": "Orders up with 3+ trump including at least one Bower. Tracks which Bower was seen.",
+      "hard": "Full Bower tracking. Calculates euchre risk by counting trump held by opponents. Optimal ordering threshold based on table position."
+    },
+    "considerations": [
+      "Bower hierarchy (Right > Left > Ace of trump > others) must be core to AI.",
+      "Individual play (no partner) shifts all risk to the Maker.",
+      "Multiple-player trick counting with no partnership signals."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_buck_euchre_www_pagat_com_euchre_buck_html",
+        "name": "Pagat - Buck Euchre",
+        "url": "https://www.pagat.com/euchre/buck.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-buck.html"
+      },
+      {
+        "id": "src:wikipedia_euchre_en_wikipedia_org_wiki_euchre",
+        "name": "Wikipedia - Euchre",
+        "url": "https://en.wikipedia.org/wiki/Euchre",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-euchre-3.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 40,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal 5 + Kitty",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_5_turn_kitty"
+        ],
+        "nextPhase": "trump_selection",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trump_selection",
+        "label": "Order Up / Pass",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "order_up",
+          "pass",
+          "name_suit"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "5 Tricks",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Follow suit; if void, trump or play any.",
+        "cost": "0",
+        "constraints": "Must follow suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 6,
+      "optimalPlayers": 5,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 10
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "trump_selection",
+      "play_loop"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_5_turn_kitty",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "order_up",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "name_suit",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "",
+    "rankingSystem": "Euchre: Right Bower > Left Bower > A > K > Q > 10 > 9 of trump; A > K > Q > J > 10 > 9 off-suit.",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "One standard 24-card deck: six ranks (nine through ace) in each of four French suits. No jokers; used for Buck Euchre (two-hand euchre) where the jack of trump (right bower) is the highest card and players try to take at least three tricks.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is chosen by the dealer or by the turned card; the jack of trump (right bower) and the jack of the same color (left bower) are the two highest trumps. Follow suit when able.",
+    "rankDescription": "Six ranks per suit: nine, ten, jack, queen, king, ace. In trump the right bower is highest, then left bower, then ace, king, queen, ten, nine. In plain suits ace is high. Three or more tricks are needed to score in Buck Euchre.",
+    "dealPattern": "5 each + kitty.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BUCK EUCHRE",
+      "subtitle": "Every Hand for Yourself",
+      "tagline": "Order up alone. Make 3 tricks. Or get euchred."
+    },
+    "shortDescription": "Euchre without the partnershipâ€”pure individual cutthroat play. Order up trump yourself, play alone against the table, and score points OR take the euchre penalty. Classic American Midwest card action.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "The up-card is King of Hearts. You hold Right Bower (Jâ™¥), Left Bower (Jâ™¦), Ace of Hearts, Queen of Hearts, and 9 of Spades. Order it up! You have Right Bower, Left Bower, Ace of trump + another trump = near-certain March (all 5 tricks).",
+    "ai": "Game: Buck Euchre. 32-card Euchre deck. 4-6 players. Individual (no partnerships). Trump: Bowers (Right=J-trump, Left=J-same-color). Maker needs 3/5 tricks. Euchre = -2pts."
+  },
+  "scoring": {
+    "description": "Points for making/missing contract.",
+    "winCondition": "First to agreed target (e.g., 10 points).",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 10,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Buck Euchre scores by tricks taken and fixed penalties for euchres or zero tricks, not by per-card point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Dirty Clubs",
+    "Buck"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

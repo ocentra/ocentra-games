@@ -1,0 +1,759 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "auction-draw-dominoes.json",
+  "name": "Auction Draw Dominoes",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Auction Draw Dominoes is a high-stakes gambling variant of the classic Draw Dominoes game. It introduces a chip-based economy where players pay to draw tiles from the boneyard, and most uniquely, participate in a competitive auction for the final two remaining tiles in the boneyard. The winner of the hand claims the entire accumulated chip pool.",
+    "category": "Domino",
+    "subCategory": "Line / Draw",
+    "origin": "Modern gambling variant of Draw dominoes played with chips and an auction for the last tiles, described in English-language domino circles.",
+    "originName": "Auction Draw",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Double-Six Domino Set (28 tiles)",
+    "difficulty": "Intermediate",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "A derivative of the standard 'Draw' domino game, adding elements of poker-style betting and auction theory. Likely developed in tavern settings where gambling on dominoes was a common pastime, and documented in English domino circles.",
+    "originCountries": [
+      "England"
+    ],
+    "timeline": [
+      "Unknown: Traditional Draw dominoes establishes the core matching mechanic.",
+      "1900s: Gambling variants like Auction emerge, adding chip pools to social games.",
+      "Present: Popular in regions where dominoes remains a primary social competition."
+    ],
+    "evolution": "The transition from score-based winning to pool-based winning allows for shorter, more intense rounds.",
+    "cultural": "Used as a 'session game' where players can drop in and out of the pool between rounds.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-4 players. Each starts with an equal stack of chips.",
+    "deck": "Standard Double-Six set (28 tiles, 0-0 to 6-6).",
+    "equipment": "Domino set, poker chips, table.",
+    "dealing": "2-3 players: 7 tiles each. 4 players: 6 tiles each. Remaining tiles form the 'Boneyard'.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to 'Domino' (play all tiles) to win the chip pool. If the game is blocked, the player with the lowest total pips wins.",
+    "gameplay": "1. **Matching**: On your turn, you must match one end of a tile in your hand to an open end on the board. 2. **Drawing**: If you cannot play, you must draw tiles from the boneyard one at a time. For each tile drawn, you must pay 1 chip into the pool. 3. **The Auction**: When the boneyard is reduced to exactly **two tiles**, play freezes. An auction begins for those two tiles. 4. **Bidding**: Every player has a chance to bid twice (or check) in clockwise order. The highest bidder takes BOTH tiles into their hand and adds their bid to the pool. 5. **Ending**: A player wins by playing their last tile. If no one can play and the boneyard is empty, the game is 'Blocked'.",
+    "keyRules": [
+      "Bid Limit: You cannot bid more chips than you currently possess.",
+      "Blocked Win: In a blocked game, the player with the lowest pip total on their remaining tiles wins the pool.",
+      "No Passing: You MUST play if you can. You MUST draw if you can't play and tiles are available."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep track of which numbers are 'open'. Avoid being the one who has to draw and pay chips into the pool.",
+    "intermediate": "The Auction Decision: Bid for the last two tiles if your hand is nearly complete and needs 'flexibility' (new numbers), or if you want to prevent an opponent from potentially winning.",
+    "advanced": "Value of Information: In the auction, if you hold most of the remaining 5s and 6s, and the board has open 5s and 6s, the auction tiles are less valuable to you because you already control those paths.",
+    "tips": [
+      "Don't overbid in the auction unless you are 80% sure you will Domino. Losing the auction AND the hand is a double loss.",
+      "Save your doubles for late-game play if they match the board ends."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "auction-ante-heavy",
+        "name": "Heavy Ante",
+        "description": "Players contribute a larger initial amount, making the auction bid relatively less significant.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation only changes how many chips players ante at the start; the core phases and engine settings stay the same."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Never bids in the auction. Spends all its chips drawing tiles even when it's statistically better to 'pass' if the rules allowed it.",
+      "medium": "Bids 1-3 chips in the auction. Prioritizes playing tiles that reduce its pip total.",
+      "hard": "Simulates the content of the boneyard based on visible tiles and opponent draws. Bids aggressively if it identifies the two auction tiles likely contain its winning number."
+    },
+    "considerations": [
+      "AI needs a 'Pay-to-Draw' logic that weights the cost of a chip vs. current hand strength.",
+      "Auction bidding engine must use Monte Carlo simulation for boneyard content probability."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_auction_draw_dominoes_www_pagat_com_domino_line_auction_html",
+        "name": "Pagat - Auction Draw Dominoes",
+        "url": "https://www.pagat.com/domino/line/auction.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-domino-auction.html"
+      },
+      {
+        "id": "src:wikipedia_auction_draw_dominoes",
+        "name": "Wikipedia - Auction Draw Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [
+      "The Domino Book - Traditional Games and Rules",
+      "World Domino Federation - Line Game Variants"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "gambling",
+    "auction",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "The Ante",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "place_initial_chip"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "Dealing Tiles",
+        "actor": "system",
+        "legalActions": [
+          "distribute_tiles"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "The Match",
+        "actor": "current_player",
+        "legalActions": [
+          "match_tile",
+          "draw_tile"
+        ],
+        "nextPhase": "auction",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "auction",
+        "label": "Last Chance Auction",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "bid_chips",
+          "check"
+        ],
+        "nextPhase": "play_to_end",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_to_end",
+        "label": "Final Tiles",
+        "actor": "current_player",
+        "legalActions": [
+          "match_tile"
+        ],
+        "nextPhase": "payout",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "payout",
+        "label": "Pool Claims",
+        "actor": "system",
+        "legalActions": [
+          "assign_pool_to_winner"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dominoes uses tile ante to pool; no card ante."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are distributed by system; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; only boneyard draw and auction."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Drawing from boneyard costs chips; use draw_tile action."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dominoes; play until someone dominoes or block."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dominoes; play until someone dominoes or block."
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {},
+        "reason": "Auction uses chip bids; no call in card sense."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Chip bids only in final auction; use bid_chips."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction bidding via bid_chips custom action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase in Auction Draw Dominoes."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winner is first to empty hand or lowest pips in block."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pool is assigned by system via assign_pool_to_winner."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are played via match_tile custom action."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Drawing from boneyard is via draw_tile custom action."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are played to layout; no discard pile."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction uses chip bids; no call in card sense."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Must play or draw when possible; check only in auction."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Chip bidding is via bid_chips in auction phase."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Domino matching game; no melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Round ends when a player dominoes or game is blocked."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Tiles are played to the layout; there is no discard pile."
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 28
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 28
+      },
+      {
+        "id": "tableau",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 28
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "ante",
+      "deal",
+      "play_loop",
+      "auction",
+      "play_to_end",
+      "payout"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "place_initial_chip",
+        "supported": true,
+        "description": "Place initial chip in pool.",
+        "cost": "0",
+        "constraints": "Setup.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "distribute_tiles",
+        "supported": true,
+        "description": "Distribute tiles to players.",
+        "cost": "0",
+        "constraints": "Deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "match_tile",
+        "supported": true,
+        "description": "Play a matching tile to the layout.",
+        "cost": "0",
+        "constraints": "Tile must match open end.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "draw_tile",
+        "supported": true,
+        "description": "Draw from boneyard when no play.",
+        "cost": "0",
+        "constraints": "When no matching tile.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "bid_chips",
+        "supported": true,
+        "description": "Bid chips for pool.",
+        "cost": "0",
+        "constraints": "Auction phase.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "assign_pool_to_winner",
+        "supported": true,
+        "description": "Assign pool to round winner.",
+        "cost": "0",
+        "constraints": "After round ends.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Lowest-Pip / Domino First",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "One standard 28-tile double-six domino set. Each tile has two ends showing zero to six pips; every combination from 0-0 through 6-6 appears exactly once. Players bid and draw; no playing cards or jokers.",
+    "suitDescription": "Tiles are matched by pip value at the open ends of the layout. There are no traditional suits; each end value zero through six can connect to any tile sharing that value on one of its two ends.",
+    "rankDescription": "There is no rank hierarchy between tiles; play legality is determined by matching the pip value at an open end. Doubles (same pips on both ends) are often played crosswise; high bid leads in this auction variant.",
+    "dealPattern": "Draw from center."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "AUCTION DRAW",
+      "subtitle": "Dominoes for High Rollers",
+      "tagline": "Place your match, pav the price, and win the auction. Every tile has a cost."
+    },
+    "shortDescription": "Experience Draw Dominoes with a cutthroat gambling twist. Manage your chips as you draw from the boneyard, then compete in the final high-stakes auction for the last remaining tiles. Empty your hand and sweep the pool.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "tableau",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Auction Draw Dominoes! Match your tiles to the board or pay a chip to draw. If you're patient, you might win the final auction. Do you have enough chips to stay in the game?",
+    "ai": "Game: Auction Draw Dominoes. Type: Match-and-Draw Gambling. Rules: Double-6 set. Draw cost: 1 chip. Special: Auction for last 2 tiles. Goal: Domino first to win the pool."
+  },
+  "scoring": {
+    "description": "Winner takes the entire pool accrued from the ante, the draw payments, and the auction bid.",
+    "winCondition": "Emptying your hand first or holding the lowest pips in a block.",
+    "cardValues": {},
+    "penalties": {
+      "Drawing Debt": "Each tile drawn from the boneyard costs 1 chip."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "In case of a tie in pips during a block, the pool is split equally.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Winner takes the pool; no fixed target score per round.",
+      "cardValues": "Domino scoring in this game is based on pip totals and the chip pool, not on fixed per-tile point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Draw Dominoes (with Auction)",
+    "Boneyard Auction"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

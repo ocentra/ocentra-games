@@ -1,0 +1,685 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "razboi-romanian-war.json",
+  "name": "RÄƒzboi",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "RÄƒzboi (Romanian for 'War') is a classic, high-energy card game of chance played primarily by children and families in Romania. While globally known as 'War', the Romanian variant features specific point-values for face cards (often treated as 10s) and a unique 'Escalation' rule for ties, where the number of cards laid down during a conflict depends on the rank of the card that triggered the war. It is a game of pure persistence and endurance.",
+    "category": "War",
+    "subCategory": "War / Accumulation",
+    "origin": "Romania",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck (Ace High)",
+    "difficulty": "Intermediate",
+    "duration": "10-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Război"
+  },
+  "history": {
+    "originCountries": ["Romania"],
+    "origins": "Part of the ancient 'Battle' family of card games that appeared in Europe in the 17th century. The Romanian version, RÄƒzboi, has been a cultural staple in schools and villages for generations.",
+    "timeline": [
+      "1800s: Traditional 'War' variants become popular in the Balkans.",
+      "1950s: RÄƒzboi is standardized in Romanian youth publications.",
+      "Present: One of the most common introductory card games in modern Romania."
+    ],
+    "evolution": "The game evolved into a simple educational tool for teaching children number comparison and the value of perseverance.",
+    "cultural": "In Romania, 'RÄƒzboi' is often the first card game a child learns from their grandparents.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "Standard 52-card French deck; Ace ranks high. The deck is divided evenly among the players. Suits are ignored; only rank matters for battles and wars.",
+    "equipment": "",
+    "dealing": "Deal the entire deck equally (26 cards each for 2 players). Cards are kept in a face-down stack; players never look at their own cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win all 52 cards by winning battles and wars. Higher card wins each battle (Ace high). On tie, escalation war: number of face-down cards depends on the rank that caused the tie (e.g. 7 to 7 cards, King to 10, Ace to 11); then one face-up card decides; repeat until one player wins the pile.",
+    "gameplay": "1. Both players flip top card. 2. Higher wins; winner takes both to bottom. 3. Tie = War: lay cards face-down by rank (7â†’7 cards, Kâ†’10, Aâ†’11); flip last; higher wins all. 4. Repeat War if last cards tie. 5. Win all 52 cards.",
+    "keyRules": [
+      "Simultaneous flip of top card from each player's stack.",
+      "Higher rank wins the battle (Ace high); winner takes both cards to bottom of stack.",
+      "Tie triggers war: escalation by rank (e.g. 7 lays 7 face-down, King 10, Ace 11), then one face-up; higher wins all.",
+      "Repeat war if face-up cards tie; game ends when one player has all 52 cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Pure Chance. RÄƒzboi is a game of zero-volition; the deck order is fixed once dealt. However, in physical play, the way you place won cards at the bottom of your deck matters. Grouping face-cards together can lead to 'Streaks' that allow you to win several rounds in a row.",
+    "intermediate": "The 'End-Game' Shuffle: Physical cards often get 'clumped' after a large war. Since wars are often decided by face-cards, if you win a 20-card war, be careful how you order the won cards. Putting your high cards at the very bottom might mean you are vulnerable to a 'War' later when your stack is low.",
+    "advanced": "Stamina Management: The game can last a very long time. In competitive settings, 'Card-Tracking' isn't necessary, but mental focus is. If you lose several wars, stay calmâ€”the deck order will cycle back eventually.",
+    "tips": [
+      "If you are playing with 3+ players, the person with the highest card takes everyone's card. If there's a tie, only the tying players go to war.",
+      "The Ace is the most powerful card; protect it at all costs by hoping it doesn't get drawn into a war against another Ace."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard-war",
+        "name": "Standard War",
+        "description": "3 face-down cards during war.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described for reference; engine overrides to be added when implemented."
+      },
+      {
+        "id": "peace",
+        "name": "Peace",
+        "description": "Lower card wins (Reverse War).",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described for reference; engine overrides to be added when implemented."
+      },
+      {
+        "id": "draft-war",
+        "name": "Draft War",
+        "description": "Hand of 3 to choose from.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation described for reference; engine overrides to be added when implemented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "No decisions; strictly deterministic.",
+      "medium": "No decisions; strictly deterministic.",
+      "hard": "Optimal 'Won-Card' ordering (if allowed by rules) to maximize future war victory probability."
+    },
+    "considerations": [
+      "Simulation-speed (Monte-Carlo) optimizer.",
+      "Tie-break (Escalation-Rank) logic.",
+      "End-game (Exhaustion) detection."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_war__card_game",
+        "name": "Wikipedia - War (card game)",
+        "url": "https://en.wikipedia.org/wiki/War_(card_game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-war-3.html"
+      }
+    ],
+    "additional": [
+      "BoardGames-Blog.ro",
+      "Cazino365"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional public-domain card game; no proprietary claim."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "flip",
+        "label": "Flip",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "flip"
+        ],
+        "nextPhase": "resolve",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "resolve",
+        "label": "Resolve",
+        "actor": "system",
+        "legalActions": [
+          "take",
+          "war"
+        ],
+        "nextPhase": "flip",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "out_of_cards_during_war",
+          "text": "If a player runs out of cards during a war, that player loses immediately (or in some variants may play their last card as the face-up card for the remainder of that war)."
+        },
+        {
+          "id": "multiplayer_war_tie",
+          "appliesTo": "3+ players",
+          "text": "When two or more tie for highest card, only those tying players participate in the war; others do not lay down cards."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["flip", "resolve"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "flip",
+        "supported": true,
+        "description": "Reveal the top card of your face-down stack simultaneously with opponent(s). Higher rank wins the battle (Ace high); equal rank triggers war.",
+        "cost": "0",
+        "constraints": "Legal at start of each battle when the system requests a flip.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "take",
+        "supported": true,
+        "description": "Winner takes all cards from the current battle or war and adds them to the bottom of their stack.",
+        "cost": "0",
+        "constraints": "Applied by the system when one player's card is higher than all others.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "war",
+        "supported": true,
+        "description": "On tie, place a number of face-down cards depending on the tied rank (e.g. 7 to 7, King to 10, Ace to 11), then one face-up; higher face-up wins all. Repeat war if face-up cards tie.",
+        "cost": "0",
+        "constraints": "Triggered when revealed cards are equal rank; in 3+ players only the tying players participate.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Entire deck divided equally among players; each gets one face-down stack (26 each for 2 players, 17 each for 3, 13 each for 4).",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "RÄƑZBOI",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "RÄƒzboi (Romanian for 'War') is a classic, high-energy card game of chance played primarily by children and families in Romania. While globally known as 'War', the Romanian variant features specific p",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Win all 52 cards.",
+    "winCondition": "Take entire deck.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "War uses card capture, not point values; no per-card scoring."
+    }
+  },
+  "alsoKnownAs": ["Război"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

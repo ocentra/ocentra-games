@@ -1,0 +1,149 @@
+/* =========================================================
+   cge-control-bar — always-visible second row
+   Sort dropdown on far RIGHT; A–Z + layout toggle on LEFT
+   (alphabet view only for letters/toggle)
+   ========================================================= */
+
+.cge-control-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  margin: 0 0.75rem;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Sort dropdown ── */
+.cge-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.cge-sort-icon {
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1;
+}
+
+.cge-sort-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cge-sort-select {
+  height: 30px;
+  padding: 0 1.75rem 0 0.65rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #f9fafb;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  transition: border-color 0.15s, background-color 0.15s;
+  outline: none;
+}
+
+.cge-sort-select:hover {
+  border-color: #3b82f6;
+  background-color: #374151;
+}
+
+.cge-sort-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* ── Alphabet layout toggle ── */
+.cge-alphabet-layout-btns {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cge-alphabet-layout-btn {
+  height: 30px;
+  padding: 0 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cge-alphabet-layout-btn:hover {
+  color: #f9fafb;
+  background: #1f2937;
+}
+
+.cge-alphabet-layout-btn.is-active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+/* ── Letters ── */
+.cge-control-bar__letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  justify-content: center;
+}
+
+.cge-alpha-letter {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.cge-alpha-letter:hover:not(.is-disabled) {
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.cge-alpha-letter.is-active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.cge-alpha-letter.is-disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}

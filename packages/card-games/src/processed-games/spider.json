@@ -1,0 +1,624 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "spider.json",
+  "name": "Spider (Solitaire)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Spider is one of the most popular two-deck solitaire games. The goal is to assemble 13 cards of a suit (K down to A) on the tableau, which then automatically removes itself from play. It is typically played with two decks (104 cards). The difficulty varies massively depending on the number of suits used (1 Suit = Easy, 2 Suits = Medium, 4 Suits = Hard).",
+    "category": "Patience",
+    "subCategory": "Two-Deck Patience",
+    "origin": "Likely US (Early 20th Century)",
+    "originName": "Spider",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "recommendedPlayers": 1,
+      "display": "1"
+    },
+    "deck": "Two Standard 52-card decks (104 cards total)",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "singleplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Spider is a type of patience game and one of the more popular two-deck solitaires. The game originated in 1949; its name comes from a spider's eight legs, referencing the eight foundation piles (complete King-to-Ace same-suit sequences) that must be removed to win. It was said to be a favorite of Franklin D. Roosevelt. Spider became widely known through Microsoft Plus! 98 for Windows 98 (1998) and remains a standard computerized solitaire.",
+    "timeline": [
+      "1917: Appears in game rule books.",
+      "1998: Included in Windows 98 Plus! Pack.",
+      "Present: A standard on every PC."
+    ],
+    "evolution": "The 1-Suit variation was popularized by computers to make the game approachable.",
+    "cultural": "Known for its 'impossible' deals in 4-Suit mode requiring undo or pure luck.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "One player only. Spider is a solitaire (patience) game played by a single player against the tableau and stock.",
+    "deck": "104 cards (two standard 52-card decks).",
+    "equipment": "Table space for 10 tableau columns and stock.",
+    "dealing": "Deal 54 cards to the tableau in 10 columns: first 4 columns get 6 cards each, remaining 6 columns get 5 cards each; only the top card of each column is face up. The remaining 50 cards form the stock. When no column is empty, the player may deal 10 more cards from the stock (one to each column).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.",
+    "gameplay": "Build down by rank on the tableau (any suit); in-suit sequences may be moved together. A complete run of 13 cards in one suit (King down to Ace) is removed from the tableau. When no column is empty, deal 10 cards from the stock (one per column). Continue until all eight sequences are removed (win) or no legal move and no deal remains (loss).",
+    "keyRules": [
+      "Tableau builds down by rank; any suit.",
+      "In-suit sequences may be moved as a unit.",
+      "Complete K-to-A same suit is removed from play.",
+      "Deal 10 from stock only when no column is empty."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize emptying piles to turn over face-down cards. An empty pile is goldâ€”it lets you move any junk card there to unblock others. In 2/4 Suit, try to keep piles 'pure' (same suit) as much as possible so you can move them later.",
+    "intermediate": "The 'Tidy Up' Phase: Before dealing a new row, tidy up your runs. Make sure sequences are as consolidated as possible. If you have a choice between putting a 5-Hearts on a 6-Hearts or 6-Spades, choose Hearts.",
+    "advanced": "Sacrificing a Run: Sometimes playing a 5-Hearts on a 6-Spades (blocking the run) is necessary to uncover a face-down card that might be a King. Uncovering cards > Maintaining runs.",
+    "tips": [
+      "Don't fill an empty space with a King unless necessary.",
+      "Undo is your friend in 4-Suit."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "spider-1-suit",
+        "name": "Spider 1 Suit",
+        "description": "Played with one suit only (usually Spades). Easiest variant; all cards are the same suit so any sequence can be moved.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation differs only by suit count; no engine constant overrides in schema for suit subset."
+      },
+      {
+        "id": "spider-2-suit",
+        "name": "Spider 2 Suit",
+        "description": "Played with two suits (usually Spades and Hearts). Medium difficulty; in-suit builds matter for moving sequences.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation differs only by suit count; no engine constant overrides in schema for suit subset."
+      },
+      {
+        "id": "spider-4-suit",
+        "name": "Spider 4 Suit",
+        "description": "Classic Spider with all four suits. Hardest variant; many deals are unwinnable without undo or luck.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation differs only by suit count; no engine constant overrides in schema for suit subset."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Makes random legal moves; blocks runs with mixed suits.",
+      "medium": "Prioritizes same-suit builds; empties columns.",
+      "hard": "Expert 'Spider-Solver'; looks ahead 10 moves; calculates probability of hidden cards; optimizes 'tidy up' before dealing; manages empty spaces perfectly."
+    },
+    "considerations": [
+      "Run-maintenance (Suit-Check) solver.",
+      "Hidden-card-reveal (Priority) engine."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-spider",
+        "name": "Pagat - Spider",
+        "url": "https://www.pagat.com/patience/spider.html",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_spider_solitaire",
+        "name": "Wikipedia - Spider Solitaire",
+        "url": "https://en.wikipedia.org/wiki/Spider_(solitaire)",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-spider.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Spider Solitaire",
+      "Microsoft Spider Help"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "solitaire"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "deal"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "game_continues",
+            "nextPhase": "play"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Player moves cards on tableau or deals 10 from stock when no column is empty. Game ends when eight complete sequences removed (win) or no legal move and no deal (loss)."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 10 cards from the stock, one to each tableau column. Allowed only when no column is empty.",
+        "cost": "0",
+        "constraints": "Legal only when no tableau column is empty; stock must have at least 10 cards.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "tableau",
+          "count": 10
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Move a card or in-suit sequence from one tableau column to another, building down by rank (any suit). A complete K-to-A same-suit run is removed from the tableau.",
+        "cost": "0",
+        "constraints": "Card or sequence must build down by rank on destination; only the top card of a column or an in-suit run may be moved.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "tableau",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Spider deals 10 cards from stock to tableau at a time; there is no draw-to-hand action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "singleplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": true,
+      "tableauColumns": 10,
+      "foundationCount": 8,
+      "buildDirection": "descending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 2,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 104
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 104
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {"id": "empty_column_any_card", "text": "An empty tableau column may receive any single card or legal in-suit sequence."},
+        {"id": "deal_only_when_full", "text": "Deal 10 from stock is allowed only when no tableau column is empty."}
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Complete descending same-suit sequences (King to Ace) are removed from the tableau; no poker hand ranking.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Two standard 52-card French decks shuffled together (104 cards total). Each deck has four suits (Hearts, Diamonds, Clubs, Spades) and thirteen ranks (Ace through King). Spider uses the full double deck.",
+    "suitDescription": "French suits: Hearts, Diamonds, Clubs, Spades. In 1-Suit and 2-Suit variants only a subset of suits is used.",
+    "rankDescription": "Standard ranks Ace through King. Tableau builds down by rank; complete sequences are King down to Ace in one suit.",
+    "dealPattern": "54 cards: 6 each in first 4 columns, 5 each in last 6 columns, top card face up. Remaining 50 dealt 10 at a time (one per column) when no column is empty.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SPIDER (SOLITAIRE)",
+      "subtitle": "Card Game",
+      "tagline": "Spider is one of the most popular two-deck solitaire games. The goal is to assem..."
+    },
+    "shortDescription": "Spider is one of the most popular two-deck solitaire games. The goal is to assemble 13 cards of a suit (K down to A) on the tableau, which then automa",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "tableau"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Spider is one of the most popular two-deck solitaire games. The goal is to assemble 13 cards of a suit (K down to A) on the tableau, which then automatically removes itself from play. It is typically played with two decks (104 cards). The difficulty varies massively depending on the number of suits used (1 Suit = Easy, 2 Suits = Medium, 4 Suits = Hard).",
+    "ai": "Game: Spider (Solitaire). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.",
+    "winCondition": "assemble 8 full sequences (K-Q-J...A) of the SAME SUIT.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Spider has no point values for cards; winning is by completing eight K-to-A same-suit sequences."
+    }
+  },
+  "alsoKnownAs": ["Spider Solitaire", "Spider (solitaire)"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

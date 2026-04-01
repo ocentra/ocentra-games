@@ -1,0 +1,776 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "all-fives-cards.json",
+  "name": "All Fives (Cards)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "All Fives is a specialized descendant of the All Fours family. While it retains the trick-taking and 'Begging' mechanics of its parent, it shifts the focus entirely to capturing specific point-bearing trumps, most notably the 10 and the 5.",
+    "category": "Trick-taking",
+    "subCategory": "Point-trick",
+    "origin": "USA / England",
+    "originName": "All Fives",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 3,
+      "recommendedPlayers": 2,
+      "display": "2 or 3"
+    },
+    "deck": "52-card standard",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Developed as a point-heavy variant of All Fours in the 19th century. Is often confused with the domino game of the same name, though they are entirely unrelated in mechanics.",
+    "originCountries": ["United States", "England"],
+    "timeline": [
+      "1800s: All Fives diverges from Seven-Up/All Fours in the United States.",
+      "1900s: Becomes a popular gambling variant where point-capture requires tighter trump management.",
+      "Present: Still played as a retro variant of the All Fours family."
+    ],
+    "evolution": "Replaces the 'High, Low, Jack, Game' points of All Fours with a fixed point schedule for specific cards (A, K, Q, J, 10, 5 of trumps).",
+    "cultural": "Often played in American south and rural England as a faster, more score-dense version of traditional trick games.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 or 3 (individual play).",
+    "deck": "Standard 52-card deck.",
+    "equipment": "Standard deck, score tracking to 61.",
+    "dealing": "Dealer gives 6 cards to each player. The next card is turned up for trumps.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score 61 points by winning tricks containing the Ace, King, Queen, Jack, 10, or 5 of the trump suit.",
+    "gameplay": "1. **Trump Determination**: Eldest hand can 'Stand' or 'Beg'. If they beg, the dealer either gifts 1 point to the opponent or deals 3 more cards to each player to find a new trump suit. 2. **Trick Play**: Winner of the lead (or eldest) leads the first trick. Players must follow suit if they can, or they may trump. 3. **Winning**: Highest trump wins. If no trumps, the highest card of the led suit wins. 4. **Point Capture**: Points are ONLY awarded for the following cards IN THE TRUMP SUIT: \n   - **Ten**: 10 points\n   - **Five**: 5 points\n   - **Ace**: 4 points\n   - **King**: 3 points\n   - **Queen**: 2 points\n   - **Jack**: 1 point\n5. **Total**: There are 25 total points available in each hand. The first to reach 61 wins.",
+    "keyRules": [
+      "Only trumps score. Non-trump cards are worth 0 points.",
+      "The 'Beg' rule is identical to All Fours: dealer must either gift a point or run the cards (deal 3 more each).",
+      "Winning the 10 and the 5 of trumps is the core goal, as they represent 60% of the total points."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "If you hold the 10 or 5 of trumps, do not lead them! Wait until a higher trump (Ace or King) has been played so you can safely drop them on a winning trick.",
+    "intermediate": "Begging is more common in All Fives than All Fours because you need a high-point trump suit to score effectively. If the turned-up trump is a suit you are short in, always beg.",
+    "advanced": "Defensive Trumping: If an opponent leads a high non-trump suit (e.g., Ace of Spades) and you suspect they have the point-trumps, trump early to 'steal' the lead and force them to play their trumps out of order.",
+    "tips": [
+      "The 5 of trumps is a huge prize. It often gets lost in early tricks; keep track of it.",
+      "If you have the 10 and the Ace of trumps, you have a guaranteed 14 points if you lead correctly."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "all-fives-no-beg",
+        "name": "No-Beg Variation",
+        "description": "The first turned-up card is trumps, no begging allowed.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation is described in sources but engine overrides for beg removal are not yet encoded."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Leads the 10 of trumps as soon as possible, often losing it to the King. Never begs.",
+      "medium": "Saves the 5 and 10 for the middle tricks. Begs if they have fewer than 2 trumps.",
+      "hard": "Tracks which trumps (10, 5, A) have fallen. Uses the 'Beg' strategically to secure a suit where they hold the 5."
+    },
+    "considerations": [
+      "AI must prioritize the capture of point-trumps over winning generic tricks.",
+      "The 'Beg' logic must evaluate the risk of a new trump suit vs the 1-point gift."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_all_fives_cards_www_pagat_com_allfours_allfives_html",
+        "name": "Pagat - All Fives (Cards)",
+        "url": "https://www.pagat.com/allfours/allfives.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "overview.description",
+            "sourcePath": "Main page summary"
+          },
+          {
+            "section": "scoring.cardValues",
+            "sourcePath": "Point-card values summary"
+          }
+        ],
+        "localHtml": "pagat-allfives.html"
+      },
+      {
+        "id": "src:webarchive_dbarker_all_fives",
+        "name": "Web Archive - Dave Barker Rules for All Fives",
+        "url": "https://web.archive.org/web/20021201161652/w3.one.net/~dbarker/cards/all-fives.html",
+        "retrievedAt": "2026-02-22",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Play"
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "Scoring + Revoking"
+          }
+        ]
+      }
+    ],
+    "additional": [
+      "Wikipedia - All Fours Variants",
+      "The Complete Card Player - 19th Century Edition"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 4,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "reveal_trump",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal six cards each."
+      },
+      {
+        "id": "reveal_trump",
+        "label": "Reveal Trump",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_market"
+        ],
+        "nextPhase": "haggling",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_market": "face_up"
+        },
+        "notes": "Turn up next card to indicate trump suit."
+      },
+      {
+        "id": "haggling",
+        "label": "The Beg",
+        "actor": "current_player",
+        "legalActions": [
+          "pass",
+          "bid"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "action == 'pass'",
+            "nextPhase": "play_tricks"
+          },
+          {
+            "condition": "action == 'bid'",
+            "nextPhase": "dealer_choice"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Eldest hand stands or begs."
+      },
+      {
+        "id": "dealer_choice",
+        "label": "Dealer's Response",
+        "actor": "dealer",
+        "legalActions": [
+          "check",
+          "deal"
+        ],
+        "nextPhase": "play_tricks",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer either gives one point to eldest hand or runs cards (deal 3 each, set new trump)."
+      },
+      {
+        "id": "play_tricks",
+        "label": "Trick Play",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "play_tricks",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "tally"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Follow suit if possible; otherwise play any card including trumps."
+      },
+      {
+        "id": "tally",
+        "label": "Settlement",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count trump point cards won in tricks and apply revoke penalties if any."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All Fives uses Beg/Stand and trump point scoring; no ante."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes cards and may run cards during beg response.",
+        "cost": "0",
+        "constraints": "Dealer-only in deal and dealer-response phases.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 6
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal trump indicator card.",
+        "cost": "0",
+        "constraints": "Dealer-only immediately after initial deal or run-cards update.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; trump from turn-up and Beg determines run or one point."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock purchase; deal and run-cards only. First to 61 wins."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Point-trick; you must play to each trick. No fold."
+      },
+      "check": {
+        "supported": true,
+        "description": "Dealer takes one (gives one point to eldest hand) instead of running cards.",
+        "cost": "0",
+        "constraints": "Dealer-response phase only.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; scoring is by capturing trump point cards to 61."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All Fives is point-trick only; no chip betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds; bid is Beg for trump, not raise."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump is set by turn-up and Beg; no separate declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are played out in tricks; no formal reveal action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply hand scoring from captured trump point cards and any revoke penalty.",
+        "cost": "0",
+        "constraints": "System action after hand ends.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play card into trick.",
+        "cost": "0",
+        "constraints": "Follow suit or trump.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No draw-to-hand; 6 cards dealt, run-cards on Beg only."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played to the trick and captured; no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Stand on current trump (do not beg).",
+        "cost": "0",
+        "constraints": "Eldest hand decision in beg phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Beg for a different trump suit.",
+        "cost": "0",
+        "constraints": "Eldest hand decision in beg phase.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Point-trick; no melds. Only trump cards (10,5,A,K,Q,J) score."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when tricks are done; first to 61 total points wins game."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 3,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All Fives uses stock replenishment after each play to keep six cards in hand; draw is not a separate phase.",
+      "discardConfig": "Cards are played to tricks; won tricks are kept by the winner. There is no discard pile."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "standard",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": true,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 3,
+      "hand_size": 6,
+      "trick_count": 6,
+      "target_score": 61,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:trump_indicator",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 9
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 3
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "dealer_take_one",
+          "text": "If eldest hand begs, dealer may concede one point instead of running cards."
+        },
+        {
+          "id": "run_cards_repeat",
+          "text": "Running cards repeats deal-three-and-reveal cycle until trump suit changes."
+        },
+        {
+          "id": "revoke_penalty",
+          "text": "Failure to follow suit when able causes offender to lose points scored in the hand."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "beg_vs_stand_flow",
+        "run_cards_trump_refresh",
+        "trump_point_capture_scoring",
+        "revoke_detection"
+      ]
+    },
+    "progression": ["deal", "reveal_trump", "haggling", "dealer_choice", "play_tricks", "tally"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "",
+    "rankingSystem": "Point-Trick (All Fours Family)",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. Trump suit is determined by a turned-up card; no jokers.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Players must follow suit when possible; otherwise they may trump or discard. The trump suit outranks plain suits for the hand.",
+    "rankDescription": "Thirteen ranks per suit in standard trick order (ace high). In trump, standard ranking applies; only certain trump cards (e.g. five, jack, ace of trump) score points in this variant.",
+    "dealPattern": "6 cards each; turn-up-beg mechanism."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALL FIVES",
+      "subtitle": "The Trump Hunter",
+      "tagline": "Forget the tricks. Hunt the Fives and Tens."
+    },
+    "shortDescription": "A point-focused descendant of All Fours. This isn't about how many tricks you win, but which specific trumps you capture. First to 60 points of pure trump power wins.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:trump_indicator",
+        "custom:captured_tricks"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to All Fives. You get 6 cards and a chance to beg for a better trump suit. In this game, only trumps are worth points! Capturing the 10 and 5 of trumps is the key to victory. Reach 60 points before your opponent to win.",
+    "ai": "Game: All Fives (Cards). Type: Point-Trick (All Fours family). Scoring: Trump 10=10, 5=5, A=4, K=3, Q=2, J=1. All other cards=0. Rules: Stand/Beg mechanics. Target: 60."
+  },
+  "scoring": {
+    "description": "Points are scored immediately upon winning a trick containing a point-card.",
+    "winCondition": "First player to reach 61 points wins.",
+    "cardValues": {
+      "10_trump": "10",
+      "5_trump": "5",
+      "A_trump": "4",
+      "K_trump": "3",
+      "Q_trump": "2",
+      "J_trump": "1"
+    },
+    "penalties": {
+      "Revoke": "Failing to follow suit results in the loss of all points scored in that hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "If multiple players reach 60 in the same hand, the points are counted in order: 10, 5, A, K, Q, J.",
+    "targetScore": 61,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "All Fours Variation",
+    "Point All Fours",
+    "Fives (All Fours)"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

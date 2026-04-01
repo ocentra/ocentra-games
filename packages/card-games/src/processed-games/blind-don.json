@@ -1,0 +1,664 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "blind-don.json",
+  "name": "Blind Don",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Blind Don is the strategic two-player variation of Nine-Card Don, a traditional British pub game from the All Fours family. Popular in Lancashire and South Wales, it features a unique two-part deal where players play through the entire deck in two separate phases. The game centers on capturing high-point cards, particularly the Nines and the 'Don' (Five of Trumps). It is a game of perfect memory, as the cards played in the first half reveal the exact contents of the opponent's hand in the second half.",
+    "category": "Trick-taking",
+    "subCategory": "Pitch / All Fours Family",
+    "origin": "Great Britain (Lancashire)",
+    "originName": "Blind Don (Two Player Don)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "52 cards (Standard)",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Descended from the 17th-century game All Fours via the Irish game Dom Pedro. 'Don' emerged as a distinct British regional variant, with Blind Don being the adaptation for two players to maintain the competitive tension of the partnership version.",
+    "originCountries": [
+      "United Kingdom"
+    ],
+    "timeline": [
+      "1800s: All Fours variants like Dom Pedro spread through the UK and Ireland.",
+      "1900s: Nine-Card Don becomes a staple pub game in Lancashire.",
+      "Present: Survival as a niche traditional game in British regional card clubs."
+    ],
+    "evolution": "The game's 'two-part' deal structure was developed to allow two players to use the full deck while maintaining small, manageable hand sizes.",
+    "cultural": "Reflects the 'Old School' British pub gaming culture where memory and card-counting are highly respected skills.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 2 players.",
+    "deck": "Standard 52-card French pack. Ranks: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2.",
+    "equipment": "Standard pack, score pad.",
+    "dealing": "Deal 13 cards to each player. The remaining 26 cards are set aside face-down for the second half of the game. The first card played (the 'pitch') by the non-dealer sets the trump suit for the entire hand.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by capturing specific cards in tricks. Points: Nines (9 each), Fives (5 each), Aces (4 each), Kings (3), Queens (2), Jacks (1).",
+    "gameplay": "1. **Part One**: Play 13 tricks with the first deal. Trump is set by the first card led. 2. **Part Two**: Deal the remaining 26 cards (13 each). Play the remaining 13 tricks using the same trump suit. 3. **The Play**: Must follow suit if possible. If void, may trump or discard.",
+    "keyRules": [
+      "The Five of Trumps is known as the 'Don'.",
+      "Winning the last trick of the game (the 26th trick) scores no bonus points, but captures the cards.",
+      "Players must follow suit if they can; trumps rank high."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize capturing the Nines. Since a single Nine is worth 9 points (more than an Ace and King combined), it is the most efficient way to build a lead.",
+    "intermediate": "The 'Part Two' Advantage: Use the first 13 tricks to identify which high cards your opponent is holding. In the second half, you will know exactly which suits they are void in.",
+    "advanced": "Trump Control: Save your 'Don' (5 of trumps) to capture an opponent's high-point Nine when they are forced to lead it or play it on a side-suit void.",
+    "tips": [
+      "Never lead a Nine unless you are certain it will win the trick.",
+      "Count the trumps carefully; there are 13 in total across both phases."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "nine-card-don",
+        "name": "Nine-Card Don",
+        "description": "The standard 4-player partnership version using 9 cards each.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation points to the standard four-player Nine-Card Don, which is represented by its own JSON file so no engine overrides are necessary here."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit legally. Plays high cards early. Does not track cards between Part One and Part Two.",
+      "medium": "Tracks the played Nines. Deduces basic opponent voids. Remembers cards from the first half.",
+      "hard": "Perfect card counter. After Part One, uses full-knowledge of the opponent's hand to optimize Part Two play. Executes precise 'endplays' to capture remaining Nines."
+    },
+    "considerations": [
+      "Must implement a cross-phase memory state.",
+      "Hand evaluation must be point-centric (valuing Nines above Aces)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_don",
+        "name": "Pagat - Nine-Card Don / Blind Don",
+        "url": "https://www.pagat.com/allfours/don.html#blind",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-don.html"
+      }
+    ],
+    "additional": [
+      "Traditional Pub Games of Lancashire"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 25,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing_1",
+        "label": "Part One Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_13_each"
+        ],
+        "nextPhase": "pitch",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "pitch",
+        "label": "Trump Establishment",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "trick_play_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trick_play_1",
+        "label": "First 13 Tricks",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "dealing_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 13,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "dealing_2",
+        "label": "Part Two Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_remaining_26"
+        ],
+        "nextPhase": "trick_play_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trick_play_2",
+        "label": "Second 13 Tricks",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 13,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "scoring",
+        "label": "Round Tally",
+        "actor": "system",
+        "legalActions": [
+          "calculate_don_points"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Blind Don is a point-trick game and does not utilize a monetary or chip-based ante system."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The two-part distribution of 13 cards per phase is handled automatically by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-hand game where cards are either in players' hands or the face-down reserve."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any market area; they must play with their dealt hands."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed in two fixed dealing phases; no cards can be bought from the stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Both players must participate in all 26 tricks of the deal to determine the final point winner."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure rather than a vying structure where checking would be an option."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot or bet to match in Blind Don; competition is based on card point accumulation."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is determined by card points won in tricks rather than through financial or chip-based betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the deal cannot be increased via raises."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand resolution is based on objective trick counts and point cards without a declaration phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands remain private until individual cards are played into tricks; no full-hand reveal occurs."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning is determined by cumulative match points rather than by awarding a physical or virtual pot."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the current trick; follow suit if possible.",
+        "cost": "0",
+        "constraints": "Must follow suit; highest trump or highest led card wins.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards are distributed in two dealing phases; no drawing phase exists during the play of tricks."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the hand must be played into a trick; no cards are discarded or buried."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must always play a card to every trick; passing a turn without action is not allowed."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The trump suit is determined by the rank of the first card led rather than through a bidding auction."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a point-trick game based on single cards rather than forming sequences or melds in hand."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game ends automatically once all 26 tricks have been played by both participants."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Cards are received in two fixed dealing rounds; no draw pile exists during the trick play.",
+      "discardConfig": "Cards are played directly to tricks; no separate waste or discard pile is utilized.",
+      "specialCards": "Nines and Fives have high point values but do not trigger automated secondary engine actions.",
+      "declarationMechanism": "The trump is set by the physical card led; no hidden tokens or declaration phase exists.",
+      "fishingConfig": "Blind Don is a trick-taking game and does not use a capture-from-tableau fishing mechanic.",
+      "meldConfig": "Points are earned strictly through trick capture; no melding of card sets is part of the gameplay.",
+      "shedding": "Blind Don is a trick-taking game where players maintain their hand throughout the hand; the goal is winning tricks, not emptying the hand."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A-K-Q-J-10-9-8-7-6-5-4-3-2",
+      "canCallNoTrump": false,
+      "overtakingRule": "Highest card of led suit or highest trump wins the trick."
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 26,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Non-dealer leads ('pitches') first card to Part One.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 13,
+      "target_score": 80
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 13
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 26
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 2
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Multi-phase deal logic (Part One and Part Two).",
+        "Point card value weighting (Nines = 9 pts).",
+        "Trump establishment via first card led."
+      ]
+    },
+    "progression": [
+      "dealing_1",
+      "pitch",
+      "trick_play_1",
+      "dealing_2",
+      "trick_play_2",
+      "scoring"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_13_each",
+        "supported": true,
+        "description": "Distribute thirteen cards to each player for Part One.",
+        "cost": "0",
+        "constraints": "Start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_remaining_26",
+        "supported": true,
+        "description": "Distribute the remaining cards for Part Two.",
+        "cost": "0",
+        "constraints": "After 13 tricks.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "calculate_don_points",
+        "supported": true,
+        "description": "Sum card point values in captured tricks.",
+        "cost": "0",
+        "constraints": "System only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card point values (9=9, 5=5, A=4...) determine victory in the deal.",
+    "rankingSystem": "Point-Trick (All Fours type)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck with four French suits (spades, hearts, diamonds, clubs), each containing thirteen ranks from ace down to two. No jokers are used; this deck supports Blind Don, a Lancashire pub point-trick game in which nines, fives, aces, kings, queens and jacks carry scoring values.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is chosen by the first card led to the opening trick (the pitch), and players must follow suit whenever able. Point values are assigned to specific ranks (nine nine points, five five points, ace four, king three, queen two, jack one); other ranks score zero.",
+    "rankDescription": "Thirteen ranks per suit; point values: nine counts nine, five counts five, ace four, king three, queen two, jack one, others zero. Trick order is standard; the goal is to reach a target score through taking point cards in tricks.",
+    "dealPattern": "Thirteen cards to each player in two separate deals."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BLIND DON",
+      "subtitle": "The Two-Part Lancashire Duel",
+      "tagline": "Pitch the trump. Hunt the Nines. Remember every card."
+    },
+    "shortDescription": "A strategic two-player variation of Nine-Card Don from Northern England. Pitch a card to set the trump, battle through 13 tricks, then deal the rest and play with perfect knowledge. With Nines worth a massive 9 points each, every play is a high-stakes calculation.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "You hold the 9 of Clubs, 5 of Clubs, and the Ace of Hearts. Your first lead sets trumps! Do you pitch the 5♣ to lock in Clubs, protecting your high-value 9♣ under your own 'Don'?",
+    "ai": "Game: Blind Don. Type: Point-Trick. Rules: 2 players. 13+13 deal. Rank: A>K...2. Point values: 9=9, 5=5, A=4, K=3, Q=2, J=1. First lead sets trump. Memory of Part One is critical for Part Two."
+  },
+  "scoring": {
+    "description": "Points are tallied after all 26 tricks. First to reach 80 points wins the match.",
+    "winCondition": "First player to reach 80 points.",
+    "cardValues": {
+      "Nine": "9 points",
+      "Five (Don)": "5 points",
+      "Ace": "4 points",
+      "King": "3 points",
+      "Queen": "2 points",
+      "Jack": "1 point"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "None; only one player wins the match.",
+    "targetScore": 80,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Two Player Don",
+    "Don (2-player)"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

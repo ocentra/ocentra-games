@@ -1,0 +1,673 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "high-card-flush.json",
+  "name": "High Card Flush",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "High Card Flush is a popular casino table game that focuses exclusively on flushes. Unlike standard poker, straights, pairs, and other hands do not matter. The goal is simply to have more cards of the same suit in a seven-card hand than the dealer. It combines simplicity with high-payout bonus bets.",
+    "category": "Poker",
+    "subCategory": "Casino Poker",
+    "origin": "USA",
+    "originName": "United States of America",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "recommendedPlayers": 1,
+      "display": "1 dealer vs up to 6 players"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "5 minutes per hand",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Introduced in US casinos (notably in Nevada and Atlantic City) in the early 2010s. It was designed to provide a proprietary table game that was easier to understand than traditional poker-based games.",
+    "timeline": [
+      "2011: High Card Flush filed for patent.",
+      "2012-2013: Spreads rapidly through major US casino markets.",
+      "Present: A staple in most large casinos and online regulated gaming sites."
+    ],
+    "evolution": "The game was specifically engineered to allow for large 'progressive' or side bet payouts, similar to Three Card Poker.",
+    "cultural": "Represents the modern trend of 'simplified poker' casino games that appeal to casual gamblers.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "1 dealer and 1-6 players.",
+    "deck": "Standard 52-card deck.",
+    "equipment": "",
+    "dealing": "Each player and the dealer receive 7 cards face down.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+    "gameplay": "1. Players place an **Ante** bet.\n2. Both player and dealer are dealt 7 cards.\n3. Players either **Fold** (lose Ante) or **Raise** based on their hand.\n4. **Raise Amounts**:\n   - 4-card flush or lower: Raise = 1x Ante.\n   - 5-card flush: Raise = Up to 2x Ante.\n   - 6 or 7-card flush: Raise = Up to 3x Ante.\n5. Dealer reveals their hand. The dealer must **Qualify** with at least a 3-card 9-high flush.",
+    "keyRules": [
+      "Dealer qualifies with at least 3-card flush 9-high.",
+      "Raise cap: 1x ante (two- to four-card max flush), 2x (five-card), 3x (six- or seven-card).",
+      "Win by having more cards in your longest flush than dealer, or higher rank within same length."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Always raise if you have a 3-card J-10-2 flush or better. The house edge is optimized by folding Very weak hands.",
+    "intermediate": "Follow the 'Wizard of Odds' strategy: Fold any 3-card flush lower than 9-8-2. Play all 3-card flushes 9-high or higher.",
+    "advanced": "Always make the maximum allowed Raise for 5, 6, or 7-card flushes, as they are strong favorites against the dealer's qualifying hand.",
+    "tips": [
+      "The side bets have a significantly higher house edge than the main game. Use them sparingly.",
+      "The dealer only qualifies about 75% of the time, so even a mediocre 3-card flush can win when the dealer fails to qualify."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants found in sources; add overrides when variants are identified."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "No documented rule variants found in sources; add overrides when variants are identified."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Calls everything; no folding.",
+      "medium": "Basic strategy (folds 3-card flushes below Jack-high).",
+      "hard": "Perfect strategy implementation; 100% adherence to optimal folding and raising thresholds."
+    },
+    "considerations": [
+      "Fixed strategy based on hand strength relative to the dealer's qualification threshold.",
+      "Management of banking bankroll and side-bet percentages."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wizard_of_odds_high_card_flush_wizardofodds_com_games_high_card_flush",
+        "name": "Wizard of Odds - High Card Flush",
+        "url": "https://wizardofodds.com/games/high-card-flush/",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wizardofodds-high-card-flush.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Gaming Today - High Card Flush Rules"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": ["ante"],
+        "nextPhase": "deal",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players place mandatory ante wager to receive cards."
+      },
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["deal_7_cards"],
+        "nextPhase": "decide",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals seven cards face down to each player who anted and seven to the dealer."
+      },
+      {
+        "id": "decide",
+        "label": "Fold or Raise",
+        "actor": "each_player_clockwise",
+        "legalActions": ["fold", "raise"],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each player either folds (lose ante) or raises; raise amount is 1x, 2x, or 3x ante based on maximum flush length."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "system",
+        "legalActions": ["settle_showdown"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer reveals; must qualify with at least 3-card flush 9-high. Compare hands; settle ante and raise bets. Dealer non-qualify: antes paid, raises push."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Place a mandatory ante wager before the deal to receive seven cards. Required to participate in the hand.",
+        "cost": {"type": "min_bet"},
+        "constraints": "Before cards are dealt; each player who wishes to receive cards must ante.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Forfeit the hand after viewing seven cards. Ante bet is lost; no raise bet is placed.",
+        "cost": "0",
+        "constraints": "After viewing your seven cards; alternative to placing a raise bet.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": true,
+        "description": "Place a raise bet to continue to showdown. Maximum raise is 1x ante (two- to four-card max flush), 2x ante (five-card flush), or 3x ante (six- or seven-card flush). Always make the maximum allowed raise.",
+        "cost": {"type": "min_raise"},
+        "constraints": "After viewing your seven cards; amount depends on maximum flush length: 1x ante for two- to four-card flush, 2x for five-card, 3x for six- or seven-card flush.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "High Card Flush has no card-playing phase; players only fold or raise after viewing their seven cards."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 6,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 7,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 7,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [{"id": "dealer_qualify", "text": "Dealer must qualify with at least 3-card flush 9-high; if dealer does not qualify, all remaining players' antes are paid and raise bets push.", "appliesTo": "showdown"}, {"id": "push_tie", "text": "Same ranking hand as dealer pushes both ante and raise.", "appliesTo": "showdown"}]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["ante", "deal", "decide", "showdown"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_7_cards",
+        "supported": true,
+        "description": "Dealer deals seven cards face down to each player who anted and seven cards to the dealer.",
+        "cost": "0",
+        "constraints": "Dealer only; performed once after ante phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "settle_showdown",
+        "supported": true,
+        "description": "Reveal dealer hand, check dealer qualification (3-card flush 9-high), compare flush lengths and ranks, settle ante and raise bets.",
+        "cost": "0",
+        "constraints": "System only; after all players have folded or raised.",
+        "isTerminating": true,
+        "effectType": "reveal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Maximum flush length first, then standard poker ranking within the flush suit (Ace high to two).",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card deck is used, with no jokers. All fifty-two cards are in play. High Card Flush is a poker variant where hands are ranked by flush length and high cards in the flush suit.",
+    "suitDescription": "The four French suits are Spades, Hearts, Diamonds, and Clubs. Each suit has thirteen cards; flushes are made from five or more cards of the same suit, with the highest card in the flush breaking ties.",
+    "rankDescription": "Standard ranks from Ace (high) down to two (low) in each suit. There are thirteen ranks per suit; ranking determines the value of cards within a flush for comparison and tie-breaking.",
+    "dealPattern": "7 cards to each player who anted and 7 to the dealer, all face down.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HIGH CARD FLUSH",
+      "subtitle": "Card Game",
+      "tagline": "High Card Flush is a popular casino table game that focuses exclusively on flush..."
+    },
+    "shortDescription": "High Card Flush is a popular casino table game that focuses exclusively on flushes. Unlike standard poker, straights, pairs, and other hands do not ma",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "High Card Flush is a popular casino table game that focuses exclusively on flushes. Unlike standard poker, straights, pairs, and other hands do not matter. The goal is simply to have more cards of the same suit in a seven-card hand than the dealer. It combines simplicity with high-payout bonus bets.",
+    "ai": "Game: High Card Flush. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+    "winCondition": "Have a flush consisting of more cards than the dealer's flush. If the card counts are equal, the higher-ranking cards within the flush win.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings and flush comparison, not point values for cards."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

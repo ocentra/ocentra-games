@@ -1,0 +1,683 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "hol-s-der-geier.json",
+  "name": "Hol's der Geier",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Hol's der Geier (Beat the Buzzard) is a quick-fire tactical bidding game designed by the legendary Alex Randolph. Players compete to capture 'Mouse' cards (positive points) while avoiding 'Vulture' cards (negative points). It is famous for its simple ruleset that yields surprisingly deep psychological gameplay and second-guessing.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "USA / Germany (1988, by Alex Randolph)",
+    "originName": "Hol's der Geier",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "recommendedPlayers": 2,
+      "display": "2-5"
+    },
+    "deck": "75 Playing cards (5 sets of 1-15), 15 Prize cards",
+    "difficulty": "Beginner",
+    "duration": "15-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Germany", "USA"],
+    "origins": "Designed by Alex Randolph and first published by Ravensburger in 1988. It has been released under multiple titles including 'Stupide Vautour' (France) and 'Beat the Buzzard' (UK).",
+    "timeline": [
+      "1988: Original German publication.",
+      "1990s: Becomes a staple in 'filler' game collections.",
+      "Present: Remains in print and widely played online.",
+      "2000s: Released in multiple languages with various animal themes."
+    ],
+    "evolution": "The game's math is extremely tight; the removal of duplicate highest/lowest bids creates a 'Prisoner's Dilemma' style dynamic.",
+    "cultural": "A classic example of 'minimalist' game design where most of the game happens in the players' heads.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 5 players.",
+    "deck": "The 15 prize cards (10 Mice valued +1 to +10, 5 Vultures valued -1 to -5) are shuffled and placed face-down.",
+    "equipment": "",
+    "dealing": "Deal and setup follow the standard procedure for Hol's der Geier, then play begins in turn order.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Players attempt to win Mouse cards (positive points) while avoiding Vulture cards (negative points). At the end of 15 rounds, each player adds up their Mouse and Vulture scores; the player with the highest total is the winner.",
+    "gameplay": "1. Reveal the top prize card (Mouse or Vulture).\n2. **Bidding**: Each player secretly chooses one card from their hand and reveals it simultaneously.\n3. **Winning the Prize**: - **Mouse (Positive)**: The HIGHEST card wins. If there's a tie for highest, those cards are ignored and the NEXT highest wins. - **Vulture (Negative)**: The LOWEST card 'loses' and must take the negative card. If there's a tie for lowest, those cards are ignored and the NEXT lowest takes it.\n4. **Tie Rule**: If ALL players tie or all valid cards are canceled, the prize card stays in the middle and is added to the NEXT prize card's total value.",
+    "keyRules": [
+      "Follow the legal action constraints defined for Hol's der Geier.",
+      "Round outcome is resolved by the scoring method: Scoring summary: Scoring follows the game-specific point or pot rules.",
+      "Winning condition: Have the highest total score after 15 rounds."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Save your high cards (13, 14, 15) for high-value Mice (+8, +9, +10). Use your low cards (1, 2) to avoid taking Vultures.",
+    "intermediate": "The 'Cancellation' rule is key. If you think your opponent will play a 15 for a +10 mouse, playing a 15 yourself cancels both, letting a player who played a 1 win the high-value card.",
+    "advanced": "Level-k thinking: 'I know they think I'll play a 15, so they will play a 15 to cancel me, so I'll play a 14 to win when their 15s are gone.'",
+    "tips": [
+      "Don't waste 15s on small mice; sometimes a 7 or 8 is enough to win a +3 mouse.",
+      "Vultures are dangerous; sometimes you have to burn a mid-range card just to be safe."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "animal_theme",
+        "name": "Animal theme variants",
+        "description": "In some editions vultures are replaced with cats (e.g. Il Gioco dei Gatti) or mice with meerkats (Chinese version). Rules unchanged.",
+        "overrides": {},
+        "emptyOverridesReason": "Theme-only variants; no engine constant or rule overrides required."
+      },
+      {
+        "id": "combined_prize",
+        "name": "Combined tie prize",
+        "description": "When all players tie or all valid bids are cancelled, the prize card stays in the centre and its value is added to the next revealed prize.",
+        "overrides": {},
+        "emptyOverridesReason": "Core rule already in engine edge cases; no overrides needed."
+      },
+      {
+        "id": "player_count",
+        "name": "Player count",
+        "description": "Best with 2; playable with 2 to 5. Each player always has 15 bidding cards; with fewer than 5 players some sets are unused.",
+        "overrides": {},
+        "emptyOverridesReason": "Player count is fixed in playerConfig; variant is descriptive only."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays cards randomly based on prize value.",
+      "medium": "Reasonable bidding that avoids playing identical high cards to opponents.",
+      "hard": "Psychological modeling; tracks all cards played and uses Game Theory (Nash Equilibrium) to determine optimal bids."
+    },
+    "considerations": [
+      "Cancellation logic simulation.",
+      "Prize valuation heuristic (Absolute value of the card).",
+      "Opponent hand tracking (crucial for final 5 rounds)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_what_the_heck",
+        "name": "Wikipedia - What the Heck?",
+        "url": "https://en.wikipedia.org/wiki/What_the_Heck%3F",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-hols-der-geier.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Hol's_der_Geier",
+        "localHtml": "wiki-hols-der-geier.html"
+      },
+      "BoardGameGeek - Hol's der Geier"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional commercial game; Ravensburger holds publishing rights; no separate legal clarification sought.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Choose one bidding card and reveal it simultaneously with other players. For a Mouse prize the highest unique number wins the card; for a Vulture the lowest unique number takes the negative card.",
+        "cost": "0",
+        "constraints": "Must play exactly one card from hand. All players reveal chosen cards simultaneously. Tied values are cancelled; next highest (Mouse) or next lowest (Vulture) determines winner.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Hols der Geier 75",
+    "suitSet": "Hols_der_Geier_colors",
+    "rankSet": "Hols_der_Geier_1_15",
+    "initialHandSize": 15,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 1,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 15,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "fixed_rounds_complete"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "combined_prize_tie",
+          "text": "If all players tie or all valid bids are cancelled, the prize card remains in the centre and is added to the next round's prize (combined value).",
+          "appliesTo": "round"
+        },
+        {
+          "id": "unique_bid_resolution",
+          "text": "Highest unique bid wins a Mouse; lowest unique bid takes the Vulture. Tied bids are ignored for resolution.",
+          "appliesTo": "trick"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Seventy-five bidding cards in five color-coded sets, each set containing one card of each rank from 1 to 15. Used with a separate deck of 15 prize cards (10 Mice +1 to +10, 5 Vultures -1 to -5).",
+    "suitDescription": "Five color-coded sets (suits) for the bidding cards; each set has 15 cards numbered 1 to 15. No traditional suit hierarchy; colors distinguish player sets only.",
+    "rankDescription": "Numeric ranks 1 (low) through 15 (high). Used to bid each round; highest unique bid wins a Mouse card, lowest unique bid takes the Vulture card.",
+    "dealPattern": "Each player receives one complete set of 15 cards (one card of each rank 1 to 15).",
+    "notApplicableReasons": {
+      "drawConfig": "Players do not draw from a stock; each player has a fixed hand of 15 bidding cards for the game.",
+      "discardConfig": "There is no discard pile; each player plays one card per round from hand.",
+      "trumpConfig": "No trump; resolution is by numeric value (highest or lowest unique).",
+      "meldConfig": "No melding; players only play single cards each round.",
+      "marketConfig": "No market; prize cards are revealed one at a time from a face-down stack.",
+      "specialCards": "Prize cards (Mice and Vultures) are a separate deck; bidding cards are numbered 1-15 only.",
+      "shedding": "Not a shedding game; players play one card per round to compete for or avoid the prize.",
+      "fishingConfig": "No fishing or capture mechanic.",
+      "bankingConfig": "No banker; scoring is by prize cards won or taken.",
+      "patienceConfig": "Not a solitaire game."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HOL'S DER GEIER",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Hol's der Geier (Beat the Buzzard) is a quick-fire tactical bidding game designed by the legendary Alex Randolph.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Hol's der Geier: play by the rules, manage scoring opportunities, and pursue the win condition.",
+    "ai": "Game: Hol's der Geier. Objective: Have the highest total score after 15 rounds."
+  },
+  "scoring": {
+    "description": "Players earn points from Mouse cards (+1 to +10) they win and lose points from Vulture cards (-1 to -5) they take. Sum all prize cards collected; highest total after 15 rounds wins.",
+    "winCondition": "Have the highest total score after 15 rounds.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; winner is the player with highest total after 15 rounds.",
+      "cardValues": "Points come from prize cards (Mice +1 to +10, Vultures -1 to -5); bidding cards have no point values."
+    }
+  },
+  "alsoKnownAs": [
+    "What the Heck",
+    "Beat the Buzzard",
+    "Stupide Vautour",
+    "Il Gioco dei Gatti",
+    "Korppikotka",
+    "Pas op voor de gier",
+    "Drommels, nog aan toe",
+    "Sup aby to vzai",
+    "Stupid Vulture",
+    "Watch Out for the Vulture",
+    "Vulture Takes It",
+    "Vulture Prey"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

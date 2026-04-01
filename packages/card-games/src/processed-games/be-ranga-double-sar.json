@@ -1,0 +1,641 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "be-ranga-double-sar.json",
+  "name": "Be-Ranga Double Sar",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+  "description": "Be-Ranga Double Sar (often called just 'Double Sir' or 'Coat Piece') is the premier partnership trick-taking game of South Asia (India and Pakistan). Unlike Western whist, tricks are not collected immediately after winning. Instead, they pile up in the center (the 'Heap') and can only be captured by a player who wins TWO consecutive tricks (a 'Double Sar'). This unique mechanic creates immense tension, as a heap of 10 or 12 cards can be stolen by a single well-timed King.",
+  "category": "Trick-taking",
+  "subCategory": "Whist Family",
+  "origin": "India / Pakistan",
+  "originName": "Be-Ranga Double Sar (South Asian 'Double Sir' variant of Court Piece/Rang)",
+  "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+  "origins": "Derived from the game 'Court Piece' (or Kot Pees), which likely evolved from Whist introduced by the British but adapted with local 'accumulation' mechanics found in games like Iranian 'Ganjifa'.",
+  "originCountries": ["India", "Pakistan"],
+  "timeline": [
+      "19th Century: Whist spreads to India under colonial rule.",
+      "Early 20th Century: Local variants emerge where tricks accumulate (Sar = Head/Trick).",
+      "Present: The dominant card game in Punjab and Gujarat, often played with spectators betting on the 'Kot' (Slam)."
+    ],
+    "evolution": "The name 'Be-Ranga' implies 'No Trump', referring to a variation where the trump is revealed later, but the core 'Double Sar' mechanic is what defines the modern game.",
+    "cultural": "Winning a 'Kot' (taking all 13 tricks) is considered a massive humiliation for the losing team, often resulting in them dealing the next hand (a sign of subservience).",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in fixed partnerships.",
+    "deck": "Standard 52-card deck. A-K-Q-J-10...2.",
+    "equipment": "Standard pack.",
+    "dealing": "Deal 5 cards to each player. The 'Trump Caller' (usually right of dealer) looks at their 5 cards and calls the Trump Suit (Rung). Then the remaining cards are dealt (8 more to each) for a total of 13 each.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the majority of the 13 tricks (7 or more) by capturing the accumulated heaps. Or inflict a 'Kot' (Slam) by winning all tricks.",
+    "gameplay": "1. **Trump Call**: The Caller names the suit (Rung) based on their first 5 cards. 2. **The Lead**: Caller leads the first trick. 3. **The Trick**: Players must follow suit. Highest trump wins; if no trump, highest card of led suit wins. 4. **Accumulation Rule**: When a player wins a trick, they DO NOT collect the cards yet. The cards remain face down in the center heap. 5. **Double Sar Rule**: If the SAME player wins the *next* trick (two in a row), they capture the ENTIRE heap (all previous uncollected tricks) and place them in their team's pile. 6. **13th Trick**: The winner of the 13th (final) trick captures strictly that trick plus any uncollected heap remaining.",
+    "keyRules": [
+      "You must win TWO consecutive tricks to 'consume' the heap.",
+      "If Partner A wins Trick 1, and Partner B wins Trick 2, the heap is NOT captured. The *same individual* must win twice (or Partner B must win Trick 3 to capture Trick 2 + 3, but Trick 1 might be lost).",
+      "Ideally, you want to let the opponents win single tricks to build the heap, then intercept with two powerful cards to steal it all."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Save your high cards (Aces/Kings) for consecutive plays. Winning one Ace is useless if you lose the next trick. You need Ace THEN King to secure the pile.",
+    "intermediate": "The 'Break' Strategy: If the opponents have a huge heap building up, throw your highest card to win ONE trick just to break their streak, even if you can't win the second one. This keeps the heap in limbo.",
+    "advanced": "Signaling: Discarding a specific low card to tell your partner 'I have the master of this suit, let me win the next one'. In 'No Trump' variants, leading a suit often calls for a trump based on suit preference.",
+    "tips": [
+      "The Trump Caller usually has a strong hand. Let them lead the attack.",
+      "Don't waste a Trump on a single trick unless it's to stop the opponents from getting a Double Sar."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "single-sar",
+        "name": "Single Sar (Court Piece)",
+        "description": "Standard game where every trick is collected immediately. No accumulation.",
+      "overrides": {},
+      "emptyOverridesReason": "This variant changes only when tricks are collected; the same engine structure as the base game still applies."
+      },
+      {
+        "id": "hidden-rung",
+        "name": "Hidden Rung (Chup)",
+        "description": "The trump is not announced. The Caller places a trump card face down. It is revealed only when a player cannot follow suit.",
+      "overrides": {},
+      "emptyOverridesReason": "Hidden Rung modifies how trumps are revealed during play but does not require a separate engine ruleset yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Wins tricks whenever possible. Ignores the 'Double Sar' accumulation rule (greedy).",
+      "medium": "Saves Aces for when it holds the King. Tries to win consecutive tricks.",
+      "hard": "Counts cards perfectly. Will intentionally lose a trick to set up a massive capture later. Recognizes 'Hidden Rung' implications."
+    },
+    "considerations": [
+      "State tracking must include the 'Current Winner' of the previous trick to validate the Double Sar condition.",
+      "Heap size valuation is criticalâ€”AI should fight harder for a heap of 8 cards than 4."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_court_piece_rang_www_pagat_com_whist_rang_html_beranga",
+        "name": "Pagat - Court Piece / Rang",
+        "url": "https://www.pagat.com/whist/rang.html#beranga",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-rang.html"
+      },
+      {
+        "id": "src:wikipedia_be-ranga_double_sar",
+        "name": "Wikipedia - Be-Ranga Double Sar",
+        "url": "https://en.wikipedia.org/wiki/Whist",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-whist-4.html"
+      }
+    ],
+    "additional": [
+      "Rules of Games in Pakistan",
+      "South Asian Card Games Federation"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "partnership",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 80,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal_first_5",
+        "label": "First Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_5_each"
+        ],
+        "nextPhase": "trump_call",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trump_call",
+        "label": "Call Rung",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "call_trump_suit"
+        ],
+        "nextPhase": "deal_remaining_8",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal_remaining_8",
+        "label": "Second Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_8_each"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Play Tricks",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 13,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Be-Ranga is a traditional partnership trick-taking game scored with match points rather than monetary antes."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The initial distribution of thirteen cards per player is performed by the system dealer at the start of each hand."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All 52 cards are distributed among the players; there is no public market or shared pool of cards in this game."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must succeed using only the hand they were dealt; there is no option to buy or swap cards from a market."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed at the start of the hand; no cards remain in stock to be purchased during play."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Partnerships must participate in all thirteen tricks to satisfy the requirements of the accumulation mechanic."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure with accumulation rather than a vying structure where checks would apply."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no bet to match in this game; competition is based on winning consecutive tricks to capture the heap."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Progress is tracked via trick count and game points rather than through the wagering of chips or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The stakes of the round are fixed; there are no wagering rounds where players could increase the value."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand resolution is based purely on trick capture without a separate declaration phase for melds."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands stay private until cards are played into tricks; there is no full reveal phase during the hand."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winners are determined by game points on a scorecard rather than by awarding a central pot of assets."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Each player receives thirteen cards at the start and no further drawing occurs during the play of the hand."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the player's hand must be played into a trick; no cards are discarded to a waste pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must always play a card to every trick if possible; passing a turn without action is not permitted."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The trump suit is called directly by the designated player rather than determined through a bidding auction."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is strictly a trick-taking game based on card values rather than the formation of sets or melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The hand terminates only after all thirteen tricks have been played and the final scores are calculated."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "NA"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All cards are distributed at the start; no draw pile exists during trick play.",
+      "discardConfig": "Cards are played directly to tricks; no discard pile.",
+      "specialCards": "Standard 52-card deck; no card has a special action or bonus value.",
+      "shedding": "Goal is to win tricks and score points; hands are played out in tricks, not emptied as in shedding games.",
+      "fishingConfig": "Be-Ranga is a trick-taking game and does not use a capture-from-tableau fishing mechanic."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A-K-Q-J-10-9-8-7-6-5-4-3-2",
+      "canCallNoTrump": false,
+      "overtakingRule": "None; highest card of lead suit or highest trump wins the trick."
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 13,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Forehand leads first trick.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 13,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 7
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal_first_5",
+      "trump_call",
+      "deal_remaining_8",
+      "play_loop"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_5_each",
+        "supported": true,
+        "description": "Distribute initial hand of five cards to each player.",
+        "cost": "0",
+        "constraints": "Start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "call_trump_suit",
+        "supported": true,
+        "description": "Designated player names the trump suit based on their first five cards.",
+        "cost": "0",
+        "constraints": "After first deal.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_8_each",
+        "supported": true,
+        "description": "Distribute remaining eight cards to each player.",
+        "cost": "0",
+        "constraints": "After trump call.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card value comparison determines trick winner (Ace is high).",
+    "rankingSystem": "Trick-Taking (Accumulation)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for Be Ranga Double Sar (South Asian partnership game) where ace is the highest rank and tricks are captured in pairs (Double Sar).",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is called by the player who will declare; follow suit when able. Suits and trump order follow standard whist-style rules for this game.",
+    "rankDescription": "Thirteen ranks per suit with ace high, then king, queen, jack, ten down to two. Tricks pile in the center until a player wins two consecutive tricks (Double Sar) and captures the heap. Standard trick order applies.",
+    "dealPattern": "Initial deal of five cards, then a final deal of eight cards."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "DOUBLE SIR",
+      "subtitle": "Be-Ranga",
+      "tagline": "One trick isn't enough. Win two to take the pile."
+    },
+    "shortDescription": "The ultimate test of patience and timing. In this South Asian classic, winning a single trick gets you nothing but the lead. To capture the massive heap of cards in the center, you must win consecutive tricks. Build the pot, bait your opponents, and strike with a 'Double Sar' to sweep the board.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "The heap has 10 cards in it. You just won the last trick with a King. Now you lead an Ace of Trumps. If it holds, you win the Ace's trick AND the 10 cards in the heap! Don't let them trump you.",
+    "ai": "Game: Be-Ranga Double Sar. Type: Trick-Taking. Rules: Must follow suit. Win 2 consecutive tricks to capture the center heap. First to 7 tricks wins the deal."
+  },
+  "scoring": {
+    "description": "Scoring is usually tracked by 'Games' or 'Kots'.",
+    "winCondition": "Winning 7+ tricks = 1 Game Point. Winning 13 tricks (Kot) = 5 Game Points (or instant victory).",
+    "cardValues": {},
+    "penalties": {
+      "Kot": "Winning all 13 tricks results in a Kot, awarding multiple game points and stripping the opponent of their deal."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "6-6 with one trick uncaptured (rare) is a draw.",
+    "targetScore": 7,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Winning the majority of tricks (7 out of 13) is the primary round objective.",
+      "cardValues": "Cards contribute to trick wins rather than having discrete point values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Double Sir",
+    "Double Sar",
+    "Be-Ranga",
+    "Court Piece",
+    "Coat Piece",
+    "Seven Hands"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

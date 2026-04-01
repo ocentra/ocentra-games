@@ -1,0 +1,409 @@
+/* PreviewPanel Styles */
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.preview-panel--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-panel__placeholder {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.preview-panel__placeholder-subtitle {
+  font-size: 13px;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.preview-panel__loading {
+  margin-bottom: 16px;
+}
+
+.preview-panel__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #4a9eff;
+  border-radius: 50%;
+  animation: preview-panel-spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes preview-panel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.preview-panel__error {
+  color: #f44336;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.preview-panel__error-message {
+  color: rgba(255, 107, 107, 0.7);
+  font-size: 12px;
+  max-width: 400px;
+  word-wrap: break-word;
+}
+
+.preview-panel__header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #333;
+  background: #252525;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.preview-panel__header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.preview-panel__header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a9eff;
+}
+
+.preview-panel__back-button {
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  color: #e0e8ff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.preview-panel__back-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(163, 182, 255, 0.4);
+}
+
+.preview-panel__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+}
+
+.preview-panel__breadcrumb-item {
+  cursor: pointer;
+  color: #4a9eff;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.preview-panel__breadcrumb-item:hover {
+  color: #c5d0ff;
+  text-decoration: underline;
+}
+
+.preview-panel__breadcrumb-item--current {
+  color: rgba(255, 255, 255, 0.9);
+  cursor: default;
+}
+
+.preview-panel__breadcrumb-item--current:hover {
+  text-decoration: none;
+}
+
+.preview-panel__breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.preview-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-panel__tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px;
+  border-radius: 0;
+}
+
+.preview-panel__tab {
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.preview-panel__tab:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.preview-panel__tab--active {
+  background: rgba(163, 182, 255, 0.2);
+  color: #4a9eff;
+}
+
+.preview-panel__summary-preview {
+  padding: 0;
+  overflow-y: auto;
+}
+
+.preview-panel__raw-view {
+  padding: 24px;
+}
+
+.preview-panel__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.preview-panel__content--json {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.preview-panel__json {
+  margin: 0;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e0e8ff;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Card Preview */
+.preview-panel__content--card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(15, 29, 62, 0.5), rgba(30, 37, 92, 0.3));
+}
+
+.card-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-preview__card {
+  width: 250px;
+  height: 350px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-preview__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-preview__image--hidden {
+  display: none;
+}
+
+.card-preview__image--visible {
+  display: block;
+}
+
+.card-preview__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.4);
+  gap: 12px;
+  background: rgba(240, 240, 240, 0.5);
+}
+
+.card-preview__placeholder-icon {
+  font-size: 64px;
+  opacity: 0.5;
+}
+
+.card-preview__placeholder-text {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 500;
+}
+
+.card-preview__loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Image Preview */
+.preview-panel__content--image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 24px;
+}
+
+.preview-panel__image-container {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-panel__image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Add styles for regenerate button and actions container */
+.game-info-inspector__actions {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  padding: 1rem; /* Add some padding */
+  background-color: var(--background-primary, #121212); /* Match header/footer background */
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.game-info-inspector__button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-info-inspector__button--primary {
+  background-color: #4a9eff; /* Primary blue color */
+  color: #ffffff;
+}
+
+.game-info-inspector__button--primary:hover {
+  background-color: #6bb0ff;
+}
+
+.game-info-inspector__button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+
+/* ========== GAMEINFO PREVIEW STYLES ========== */
+/* Architecture: GameInfo-Decoupling-Implementation-Plan.md */
+/* Purpose: Style GameInfo asset preview in Asset Editor */
+
+/* Main container - remove default padding, use full height */
+.preview-panel__content--game-info {
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--background-secondary, #1a1a1a);
+}
+
+/* Ensure GameInfoTabs fills container vertically */
+.preview-panel__content--game-info .game-info-tabs {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab content area - scrollable, padded */
+.preview-panel__content--game-info .tabs-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Tab header - sticky at top */
+.preview-panel__content--game-info .tabs-header {
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  padding: 0 1rem;
+  background: var(--background-primary, #121212);
+  flex-shrink: 0;
+}
+
+/* Tab buttons - ensure visibility and interactivity */
+.preview-panel__content--game-info .tab-button {
+  opacity: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Active tab indicator */
+.preview-panel__content--game-info .tab-button.active {
+  border-bottom-color: var(--primary-color, #00d4ff);
+  color: var(--primary-color, #00d4ff);
+}
+
+/* Hover effect */
+.preview-panel__content--game-info .tab-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Footer with navigation buttons */
+.preview-panel__content--game-info .tabs-footer {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  background: var(--background-primary, #121212);
+}
+
+/* Responsive - reduce padding on mobile */
+@media (max-width: 768px) {
+  .preview-panel__content--game-info .tabs-content {
+    padding: 1rem;
+  }
+}
+
+/* ========== END GAMEINFO PREVIEW STYLES ========== */

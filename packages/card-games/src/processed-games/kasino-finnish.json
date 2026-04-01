@@ -1,0 +1,632 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kasino-finnish.json",
+  "name": "Kasino (Finnish)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kasino (Finnish Casino) is the most popular fishing card game in Finland. Unlike standard Casino, it uses 'Royal' capture values (J=11, Q=12, K=13) and features a unique 'In-Hand Value' system where Aces and the two Kasino cards (10D and 2S) have higher values when held in the hand than when on the table. It is a game of calculation, memory, and defensive stalling.",
+    "category": "Fishing",
+    "subCategory": "Nordic Casino",
+    "origin": "Finland",
+    "originName": "Kasino",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Finland"],
+    "origins": "Derived from the Italian game Scopa and the international Casino, it was localized in Finland in the early 20th century. The Finnish additions (like the MÃ¶kkis) make it more aggressive than the Russian or American versions.",
+    "timeline": [
+      "Early 1900s: Fishing games gain popularity in the Nordic region.",
+      "1920s: The specific Finnish scoring (10D=16, 2S=15 in hand) becomes standardized.",
+      "1980s: Standard rules published; becomes a staple of Finnish youth culture.",
+      "Present: Played both socially and in organized regional tournaments."
+    ],
+    "evolution": "The game's evolution focused on enlarging the capture possibilities through the 'In-Hand Value' rule, allowing for massive table sweeps.",
+    "cultural": "Finnish Kasino is traditionally played alongside 'MÃ¶kki' (cottage) life; the term for clearing the table is actually 'MÃ¶kki'.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Optimal with 2 players (heads-up) or 4 in pairs.",
+    "deck": "Standard 52-card deck. No Jokers.",
+    "equipment": "",
+    "dealing": "Each player is dealt 4 cards (in two batches of 2). 4 cards are dealt face-up to the table. Rounds continue until the deck is empty.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture cards to score points. The first player to reach 16 points wins the match.",
+    "gameplay": "1. Match: Play a card from hand to capture any group of cards on the table whose values sum to the hand card's value.\n2. Building: In the Finnish variant, direct building is less common than in English Casino; capture by sum is the primary mechanic.\n3. **MÃ¶kki**: If you clear the entire table, you score 1 point immediately (turn the card face-up in your pile).",
+    "keyRules": [
+      "Play one card from hand per turn; capture by same value or by sum of table cards; captures are not compulsory.",
+      "Ace counts 1 on table, 14 from hand; cannot capture a single Ace.",
+      "2 of Spades (Small Kasino): 2 on table, 15 from hand. 10 of Diamonds (Big Kasino): 10 on table, 16 from hand.",
+      "Sweep (mökki): clearing the table scores 1 point; card placed face up in capture pile. If all players have a sweep, they cancel.",
+      "No sweep points after the last deal; no sweep points if any player has 10 or more.",
+      "First to 16 points wins. Aces and Kasino points awarded when captured; game can end mid-hand. Tiebreak: Aces and Kasino first, then spades, then cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Priority: Capture the 10 of Diamonds (Big Kasino) and the 2 of Spades. Always try to leave the board with sums that DON'T equal 15 or 16.",
+    "intermediate": "The 'Spade Flush': Since most Spades are worth 2 points (the second highest scoring category), focus on capturing small Spades early to secure the lead.",
+    "advanced": "MÃ¶kki Defense: If there are only a few cards on the table, play a card that makes the total sum impossible for your opponent to capture (e.g., if there is a 7, don't play a 3 if your opponent might have a 5 to make a 15-capture).",
+    "tips": [
+      "The 'Last Trick' bonus: The person who makes the last capture of the round takes all remaining cards from the table.",
+      "Aces are flexible (1 or 14). Use them to capture multiple small cards (1+2+3+8) to win the 'Most Cards' bonus."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard",
+        "description": "Standard rules",
+        "overrides": {},
+        "emptyOverridesReason": "Standard variant only; no alternate rules documented in primary source."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Only captures single matches (7 for 7); fails to see sum-captures; ignores MÃ¶kki opportunities.",
+      "medium": "Reasonable sum-capture logic; prioritizes Kasino cards; basic 'Most Cards' tracking.",
+      "hard": "Expert at MÃ¶kki prevention; perfectly calculates 'In-Hand' vs 'Table' values (15/16); tracks every played Spade."
+    },
+    "considerations": [
+      "In-hand value mapping (15/16/14).",
+      "Table clearance detection (MÃ¶kki).",
+      "Partition-sum calculation for captures."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_kasino_finnish",
+        "name": "Pagat - Kasino (Finnish)",
+        "url": "https://www.pagat.com/fishing/nordic_casino.html#finland",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-nordic-casino.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Kasino (korttipeli)",
+      "Finnish Card Game Society - Kasino Guide"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain card game; no known trademark or commercial restriction.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 4 cards to each player in two batches of 2, and 4 cards face-up to the table. When hands are exhausted, deal 4 more to each (no new cards to table) until the deck is empty.",
+        "cost": "0",
+        "constraints": "Dealer only; player to dealer's left plays first.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card from hand to the table. Optionally capture: same value, or a set of table cards whose capture values sum to the played card's value. Multiple captures allowed in one play. Captures are not compulsory.",
+        "cost": "0",
+        "constraints": "One card per turn; capture values: 2-10 face value, J=11, Q=12, K=13; Ace 1 on table/14 from hand; 2S 2 on table/15 from hand; 10D 10 on table/16 from hand.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": null,
+        "frozenPileRules": null
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": null,
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": null,
+      "canCallNoTrump": false,
+      "overtakingRule": null
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": null,
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "none",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": {
+      "high": null,
+      "low": null,
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": true,
+      "size": 4,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": null,
+      "actionCards": null,
+      "bonusCards": null,
+      "penaltyCards": null
+    },
+    "shedding": "NA",
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 1,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": null,
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "market",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "ace-capture", "text": "Ace cannot capture a single Ace (Ace is 1 on table, 14 from hand)." },
+        { "id": "sweep-cancel", "text": "If all players have a sweep (mökki), the sweeps cancel." },
+        { "id": "no-sweep-after-last-deal", "text": "No sweep points after the dealer deals the last 4 cards to each player." },
+        { "id": "no-sweep-if-10-plus", "text": "No sweep points if any player has a score of 10 or more." },
+        { "id": "tiebreak", "text": "Tiebreak at 16: Aces and Big/Small Kasino first, then spades, then cards." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Standard_52",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Standard deal",
+    "notApplicableReasons": {
+      "shedding": "Finnish Casino is a fishing game; the goal is to capture table cards, not to empty the hand first."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Kasino (Finnish)",
+      "subtitle": "Nordic Casino",
+      "tagline": "Kasino (Finnish Casino) is the most popular fishing card game in Finland. Unlike standard Casino, it..."
+    },
+    "shortDescription": "Kasino (Finnish Casino) is the most popular fishing card game in Finland. Unlike standard Casino, it uses 'Royal' capture values (J=11, Q=12, K=13) and features a unique 'In-Hand Value' system where Aces and the two Kasino cards (10D and 2S) have higher values when held in the hand than when on the table. It is a game of calculation, memory, and defensive stalling.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "market",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Kasino (Finnish Casino) is the most popular fishing card game in Finland. Unlike standard Casino, it uses 'Royal' capture values (J=11, Q=12, K=13) and features a unique 'In-Hand Value' system where Aces and the two Kasino cards (10D and 2S) have higher values when held in the hand than when on the table. It is a game of calculation, memory, and defensive stalling.",
+    "ai": "Game: Kasino (Finnish). See rules.objective and rules.gameplay for details."
+  },
+  "scoring": {
+    "description": "Capture cards to score points. The first player to reach 16 points wins the match.",
+    "winCondition": "Capture cards to score points. The first player to reach 16 points wins the match.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 16,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Points come from Aces, Big/Small Kasino, spades and most cards; see rules.keyRules."
+    }
+  },
+  "alsoKnownAs": [
+    "Finnish Casino",
+    "Kasino"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

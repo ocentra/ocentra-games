@@ -1,0 +1,30 @@
+{
+  "name": "ocentra-firebase-infrastructure",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "firebase emulators:start",
+    "deploy": "firebase deploy",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage:rules",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:all": "firebase deploy",
+    "login": "firebase login",
+    "use:prod": "firebase use production",
+    "use:dev": "firebase use development",
+    "scripts:set-admin": "npx tsx scripts/set-admin-users.ts",
+    "scripts:check-admin": "npx tsx scripts/check-admin-status.ts",
+    "build": "cd functions && npm run build",
+    "test": "cd functions && npm test"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "firebase-tools": "^13.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0"
+  }
+}
+

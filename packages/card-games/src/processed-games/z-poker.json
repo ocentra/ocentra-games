@@ -1,0 +1,737 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "z-poker.json",
+  "name": "Z Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Z Poker is a little-known community card poker variant with 4 community cards instead of 5. Players get 2 hole cards and use a modified community card structure. Home game variant — unlikely found in casinos.",
+    "category": "Poker",
+    "subCategory": "Community Card",
+    "origin": "USA",
+    "originName": "Z Poker",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 5,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "Variable",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Poker variants were largely created in the United States from the mid-1800s through the early 1900s. Z Poker belongs to the community card poker family, in which each player's hidden hand is combined with shared face-up cards; it is typically played in home games, often as part of dealer's choice, and uses four community cards instead of the usual five.",
+    "timeline": ["20th century: home poker variant with 4 community cards; documented in US."],
+    "evolution": null,
+    "cultural": "Home poker innovation.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "One standard 52-card French deck; no jokers. Same deck as Texas hold'em and other community card games.",
+    "equipment": "Cards, chips",
+    "dealing": "2 hole cards each + 4 community.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by making the best 5-card poker hand using your 2 hole cards and the 4 community cards.",
+    "gameplay": "2 hole cards. 4 community cards dealt in stages. Betting rounds. Showdown: best 5-card hand using hole + community cards.",
+    "keyRules": [
+      "4 community cards (not 5)",
+      "2 hole cards",
+      "Standard betting structure"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Adjust for fewer community cards.",
+    "intermediate": "Position play.",
+    "advanced": "Modified odds calculation.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "none",
+        "name": "None documented",
+        "description": "No common variations documented for Z Poker.",
+        "overrides": {},
+        "emptyOverridesReason": "No common variations documented; overrides would apply if variants were added."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI plays with minimal hand evaluation.",
+      "medium": "No distinct medium tier; all non-easy AI uses full hand and position.",
+      "hard": "Hard AI optimizes for 4-card community structure."
+    },
+    "considerations": [],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:poker_variants",
+        "name": "Poker Variants - Z Poker",
+        "url": "https://en.wikipedia.org/wiki/List_of_poker_variants",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-list-of-poker-variants.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["deal_hole_cards"],
+        "nextPhase": "preflop_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"deal_hole_cards": "face_down"},
+        "notes": "Dealer deals 2 hole cards to each player face-down."
+      },
+      {
+        "id": "preflop_bet",
+        "label": "Pre-flop Betting",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "flop",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round before any community cards. First player left of dealer acts."
+      },
+      {
+        "id": "flop",
+        "label": "Flop",
+        "actor": "dealer",
+        "legalActions": ["deal_flop"],
+        "nextPhase": "flop_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"deal_flop": "face_up"},
+        "notes": "Dealer burns one card, then deals 2 community cards face-up to the board."
+      },
+      {
+        "id": "flop_bet",
+        "label": "Flop Betting",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "turn",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after flop."
+      },
+      {
+        "id": "turn",
+        "label": "Turn",
+        "actor": "dealer",
+        "legalActions": ["deal_turn"],
+        "nextPhase": "turn_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"deal_turn": "face_up"},
+        "notes": "Dealer burns one card, then deals 1 community card face-up to the board."
+      },
+      {
+        "id": "turn_bet",
+        "label": "Turn Betting",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "river",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Betting round after turn."
+      },
+      {
+        "id": "river",
+        "label": "River",
+        "actor": "dealer",
+        "legalActions": ["deal_river"],
+        "nextPhase": "river_bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"deal_river": "face_up"},
+        "notes": "Dealer burns one card, then deals 1 community card face-up to the board (4 community cards total)."
+      },
+      {
+        "id": "river_bet",
+        "label": "River Betting",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "bet", "raise"],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Final betting round before showdown."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": ["reveal_hand", "award_pot"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"reveal_hand": "face_up"},
+        "notes": "Remaining players reveal hands. Best 5-card hand from 2 hole plus 4 community wins the pot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Z Poker typically uses blinds; no mandatory ante in base rules."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Discard your hand and forfeit all claim to the pot for this hand.",
+        "cost": "0",
+        "constraints": "Available during any betting round. Eliminates you from the current hand.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action to the next player without putting chips in the pot.",
+        "cost": "0",
+        "constraints": "Only legal when no bet has been made in the current round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current bet to stay in the hand.",
+        "cost": {"type": "match_current_bet"},
+        "constraints": "Only legal when a bet or raise has been made. You must match the current bet amount.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open the betting by placing a bet.",
+        "cost": {"type": "min_bet"},
+        "constraints": "Only legal when no bet has been made in the current round. Sets the amount others must call or raise.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current bet.",
+        "cost": {"type": "min_raise"},
+        "constraints": "Only legal when a bet or raise has been made. Must be at least the minimum raise amount.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Reveal your hole cards for showdown. Best 5-card hand from your 2 hole cards plus 4 community cards wins.",
+        "cost": "0",
+        "constraints": "At showdown; all remaining players reveal.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the player with the best 5-card poker hand.",
+        "cost": "0",
+        "constraints": "Dealer or system resolves showdown and pushes pot to winner.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Community card poker; players do not play cards to the board; dealer deals community cards."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 5,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 2,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "custom:board",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "preflop_bet", "flop", "flop_bet", "turn", "turn_bet", "river", "river_bet", "showdown"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_hole_cards",
+        "supported": true,
+        "description": "Deal 2 hole cards face-down to each player.",
+        "cost": "0",
+        "constraints": "Dealer only. Performed once at start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {"target": "hand", "count": 2}
+      },
+      {
+        "id": "deal_flop",
+        "supported": true,
+        "description": "Burn one card, then deal 2 community cards face-up to the board.",
+        "cost": "0",
+        "constraints": "Dealer only. After preflop betting.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {"target": "custom:board", "count": 2}
+      },
+      {
+        "id": "deal_turn",
+        "supported": true,
+        "description": "Burn one card, then deal 1 community card face-up to the board.",
+        "cost": "0",
+        "constraints": "Dealer only. After flop betting.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {"target": "custom:board", "count": 1}
+      },
+      {
+        "id": "deal_river",
+        "supported": true,
+        "description": "Burn one card, then deal 1 community card face-up to the board (4 community cards total).",
+        "cost": "0",
+        "constraints": "Dealer only. After turn betting.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {"target": "custom:board", "count": 1}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "No Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "2 hole cards each; then 2-1-1 community (flop, turn, river).",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Z POKER",
+      "subtitle": "Card Game",
+      "tagline": "Z Poker is a little-known community card poker variant with 4 community cards in..."
+    },
+    "shortDescription": "Z Poker is a little-known community card poker variant with 4 community cards instead of 5. Players get 2 hole cards and use a modified community card",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "custom:board"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Z Poker is a little-known community card poker variant with 4 community cards instead of 5. Players get 2 hole cards and use a modified community card structure. Home game variant — unlikely found in casinos.",
+    "ai": "Game: Z Poker. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Standard poker rankings.",
+    "winCondition": "Best 5-card poker hand.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

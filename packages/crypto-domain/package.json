@@ -1,0 +1,39 @@
+{
+  "name": "@ocentra/crypto-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Cryptographic primitives for match hashing and Ed25519 signing. Shared by main app, Solana services, and scripts.",
+  "exports": {
+    "./services/HashService": {
+      "import": "./dist/services/HashService.js",
+      "types": "./dist/services/HashService.d.ts"
+    },
+    "./services/KeyManager": {
+      "import": "./dist/services/KeyManager.js",
+      "types": "./dist/services/KeyManager.d.ts"
+    },
+    "./services/SignatureService": {
+      "import": "./dist/services/SignatureService.js",
+      "types": "./dist/services/SignatureService.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node ../../scripts/fix-esm-imports.mjs",
+    "prepare": "npm run build",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --cache src tests && tsc --noEmit",
+    "lint:eslint": "eslint --cache src tests",
+    "lint:fix": "eslint --cache src tests --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^2.0.0"
+  }
+}

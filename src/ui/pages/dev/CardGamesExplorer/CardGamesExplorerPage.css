@@ -1,0 +1,185 @@
+/* =========================================================
+   CardGamesExplorerPage — full-page shell
+   ========================================================= */
+
+.cge-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+  color: #f9fafb;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Body: sidebar + content side-by-side, pushed below sticky GameHeader */
+.cge-page__top-bar {
+  padding: calc(max(7vh, 50px) + 1.125rem) 0.75rem 0 0.75rem;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.cge-page__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 0.75rem;
+  /* Standard outer margin */
+  overflow: hidden;
+  gap: 0.75rem;
+  /* Standard gap between sidebar and content */
+}
+
+/* Content column */
+.cge-page__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 0.75rem;
+}
+
+.cge-page__body.is-sidebar-collapsed .cge-page__content {
+  padding-left: 1.5rem;
+  /* Room for the toggle handle */
+}
+
+/* Scrollable game area */
+.cge-page__games-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #374151 transparent;
+  padding: 0 0 1rem 0;
+}
+
+.cge-page__games-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cge-page__games-area::-webkit-scrollbar-track {
+  background: #0a0f1a;
+}
+
+.cge-page__games-area::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.cge-page__games-area::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Loading / empty / error states */
+.cge-page__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.cge-page__state h3 {
+  color: #f9fafb;
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.cge-page__state p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.cge-page__empty-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.cge-page__error-msg {
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.cge-page__error-pre {
+  font-size: 0.8rem;
+  background: #1f2937;
+  border: 1px solid #374151;
+  padding: 10px 16px;
+  border-radius: 8px;
+  overflow: auto;
+  max-width: 90vw;
+  text-align: left;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.cge-page__error-hint {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.cge-page__error-hint code {
+  background: #1f2937;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.cge-page__refresh-btn {
+  padding: 0.5rem 1.25rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.cge-page__refresh-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* Spinner */
+.cge-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #1f2937;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: cge-page-spin 0.8s linear infinite;
+}
+
+@keyframes cge-page-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Games grid */
+.cge-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  padding: 0 0.75rem 0.75rem 0.75rem;
+}
+
+/* Games list */
+.cge-games-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.75rem 0.75rem 0.75rem;
+}

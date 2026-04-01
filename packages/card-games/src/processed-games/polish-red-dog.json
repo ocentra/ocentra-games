@@ -1,0 +1,683 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "polish-red-dog.json",
+  "name": "Polish Red Dog",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Banking game: players bet without seeing their cards or the dealer's card that they hold a same-suit card higher than the dealer's upcard; winner is paid twice the bet from the pot. Also Stitch, Polski Pachuck.",
+    "category": "Banking",
+    "subCategory": "Banking",
+    "origin": "Poland",
+    "originName": "Polski Pachuck",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 4,
+      "display": "2-8"
+    },
+    "deck": "52 cards",
+    "difficulty": "Beginner",
+    "duration": "10-20 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Poland"],
+    "origins": "Polish Red Dog is a variant of the Red Dog banking game family, similar to Slippery Sam but with fully blind betting: players bet without seeing either their own three cards or the dealer's card. It was described in Ostrow's Complete Card Player (1945) and reprinted in various later card-game books; alternative names include Stitch and Polski Pachuck.",
+    "timeline": ["1945: Described in Ostrow's Complete Card Player (1945); Polish variant of Red Dog. Recorded in Austro-Hungarian region as early as 1836."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Two to about eight; one is dealer (banker), others bet in turn.",
+    "deck": "Standard 52-card deck.",
+    "equipment": "",
+    "dealing": "Dealer puts up a fixed initial stake. Dealer deals three cards face down to each other player; players do not look at their cards until after betting.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Players bet that they hold a card of the same suit as and higher than the card the dealer will turn up; they do not see their own cards or the dealer's card before betting. Winner is paid twice the bet from the pot; otherwise the bet goes to the pot.",
+    "gameplay": "Banker puts up a fixed stake. Each player in turn may bet up to half the current pot without seeing their cards or the dealer's card. Dealer burns one card then turns up one card; player's three cards are exposed. If the player has a higher card of the same suit as the dealer's card, the player is paid twice the bet from the pot; otherwise the bet is added to the pot. If the pot is busted, deal passes. When the pot reaches at least three times its initial size, the dealer may declare a stitch round (final deal) and then keep any remainder; deal then passes left.",
+    "keyRules": [
+      "No one sees cards before bet",
+      "Max bet half pot",
+      "Burn one then reveal dealer card",
+      "Same suit higher wins 2× bet",
+      "Stitch when pot ≥ 3× initial"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As banking.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate level; the game scales only with basic spread-guessing and bank management.",
+      "advanced": "No advanced tier beyond optimal spread play; the game is not deep enough for a dedicated advanced strategy."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard form; no regional or rule variations documented for Polish Red Dog.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "medium": "No distinct medium tier; all non-easy AI plays with full spread evaluation.",
+      "hard": "Hard AI maintains optimal spread and bank decisions; no separate hard tier defined."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat",
+        "name": "Pagat Polish Red Dog",
+        "url": "https://www.pagat.com/banking/reddog.html#polish-red-dog",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-reddog.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "banking",
+    "gambling"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["perform_deal"],
+        "nextPhase": "bet",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals three cards face down to each non-dealer."
+      },
+      {
+        "id": "bet",
+        "label": "Bet",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bet"
+        ],
+        "nextPhase": "reveal",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Player bets up to half the pot without seeing cards."
+      },
+      {
+        "id": "reveal",
+        "label": "Reveal",
+        "actor": "dealer",
+        "legalActions": ["burn_and_reveal"],
+        "nextPhase": "resolve",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer burns one card, turns up one card; player's hand is exposed."
+      },
+      {
+        "id": "resolve",
+        "label": "Resolve",
+        "actor": "dealer",
+        "legalActions": ["resolve_bet"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "If player has same-suit higher card, pay 2× bet from pot; else add bet to pot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place a bet against the pot; maximum is half the current pot. You do not see your cards or the dealer's card before betting.",
+        "cost": { "type": "pot_limit" },
+        "constraints": "When it is your turn to bet; bet amount between agreed minimum and half the pot.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Polish Red Dog has no card play; players only bet and then hands are exposed for comparison."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "rotating",
+      "targetValue": 0,
+      "bustRule": "If pot is busted, deal immediately passes to next player.",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "burn_before_reveal", "text": "Dealer burns one card before turning up the dealer's card." },
+        { "id": "stitch_round", "text": "When pot reaches at least three times initial size, dealer may declare a stitch round (final deal) and then keep any remainder; deal passes left." },
+        { "id": "pot_busted", "text": "If pot is busted mid-hand, deal passes immediately to next player." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "bet", "reveal", "resolve"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "perform_deal",
+        "supported": true,
+        "description": "Dealer deals three cards face down to each non-dealer.",
+        "cost": "0",
+        "constraints": "Dealer acts in deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "burn_and_reveal",
+        "supported": true,
+        "description": "Dealer burns one card, then turns up one card; player's three cards are exposed.",
+        "cost": "0",
+        "constraints": "Dealer acts in reveal phase.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      {
+        "id": "resolve_bet",
+        "supported": true,
+        "description": "If player has same-suit higher card than dealer's upcard, pay twice the bet from pot; otherwise add bet to pot.",
+        "cost": "0",
+        "constraints": "Dealer acts in resolve phase.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Player wins if their hand contains at least one card of the same suit as the dealer's upcard and higher in rank (Ace high).",
+    "rankingSystem": "",
+    "bettingLimits": "Pot Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck; no jokers. Polish Red Dog is a banking game: dealer turns up one card; players bet blind that they hold a card of the same suit and higher rank; winner is paid twice the bet from the pot.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each have thirteen cards. The player must hold a card of the same suit as the dealer's upcard and higher in rank to win.",
+    "rankDescription": "Standard ranks Ace (high) down to two (low). The player wins if any of their three cards is the same suit as the dealer's upcard and higher in rank.",
+    "dealPattern": "3 cards to each non-dealer; players do not look at their cards until after betting.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "POLISH RED DOG",
+      "subtitle": "Card Game",
+      "tagline": "Banking game: bet blind that you hold a same-suit higher card; win 2× bet from pot."
+    },
+    "shortDescription": "Banking game: bet without seeing cards; same-suit higher wins twice the bet. Also Stitch, Polski Pachuck.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Banking game: bet up to half the pot without seeing your cards or the dealer's card; same-suit higher wins 2× bet.",
+    "ai": "Game: Polish Red Dog. Banking: bet (max half pot), dealer burns one and turns one card, expose hand; same-suit higher pays 2× bet from pot."
+  },
+  "scoring": {
+    "description": "Player wins 2× bet if same-suit higher card; else bet to pot. Stitch: when pot ≥ 3× initial, dealer may declare final round and keep remainder.",
+    "winCondition": "Player wins twice the bet from pot if hand contains a same-suit card higher than dealer's upcard; otherwise bet is added to pot.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Banking game; win is determined by same-suit higher card comparison, not by card point values.",
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Polski Pachuck",
+    "Stitch"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

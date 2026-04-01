@@ -1,0 +1,208 @@
+---
+description: Mandatory redaction layer for logs — scrub secrets before console/files/CI (Firebase, Stripe, Solana, Workers)
+globs: packages/logging-domain/**/*.ts, **/buildStructuredLogPayload*, **/cloudflareStorage*, **/domain-logger-init*, **/internalLogEntry*
+alwaysApply: false
+---
+
+# Ocentra Log Redaction Guide (Mandatory Sink Layer)
+
+This guide defines the **mandatory redaction layer** for all logging: even if someone logs the wrong thing, it gets scrubbed before it hits console, files, or CI.
+
+**Related:** `ocentra-build-flags-guide.mdc` (controls *when* we log); this guide controls *what* gets through.
+
+**Reference:** `ocentra-security-rules.mdc` Rule 10.1 (Error Handling & Observability), Rule 10.1.6 (Sensitive data in logs).
+
+---
+
+## Core Principle
+
+**Make it impossible to leak secrets by accident** by centralizing all logging through a redaction layer. All log output (console, Analytics Engine, R2, NDJSON, bridge) must pass through redaction before being written.
+
+> Redaction is the seatbelt; compile-time stripping is the brakes. Use both.
+
+---
+
+## Where Redaction Lives
+
+Redaction must run inside `@ocentra/logging-domain`:
+
+- **Insertion point:** After building the log payload (e.g. in `buildStructuredLogPayload` or before `storeLogEntry`) and before any sink (console, Analytics Engine, R2, bridge, NDJSON).
+- **Scope:** Applies to `data`, `message` (if it contains concatenated secrets), and any nested objects in the payload.
+- **Runtimes:** MainAppLogger and CloudflareLogger both use the same domain — redaction in the domain protects both.
+
+---
+
+## 1. Central "Redact Before Output" Wrapper
+
+A single `redact(obj)` function must:
+
+1. **Walk** logged objects recursively (including arrays and nested objects).
+2. **Strip or mask** known sensitive keys.
+3. **Detect and mask** secret-like patterns in strings.
+4. **Truncate** huge blobs (e.g. > 1KB) to prevent accidental dumps.
+5. **Optionally hash** tokens for correlation (see §6).
+
+Conceptually:
+
+```ts
+log.logInfo("request", getStackTrace(), { headers, body });
+// -> internally: redact({ headers, body }) -> then output
+```
+
+---
+
+## 2. Key-Based Redaction Rules
+
+**Case-insensitive** — any key matching these (including nested paths like `config.apiKey`) gets value replaced with `"[REDACTED]"`:
+
+| Key pattern | Examples |
+|-------------|----------|
+| Auth headers | `authorization`, `cookie`, `set-cookie`, `x-auth-token` |
+| Tokens | `token`, `id_token`, `access_token`, `refresh_token`, `bearer` |
+| API / secrets | `apiKey`, `api_key`, `secret`, `privateKey`, `private_key`, `x-api-key` |
+| Wallet / keys | `seed`, `mnemonic`, `wallet`, `signingKey` |
+| Passwords | `password`, `pass`, `pwd`, `passphrase` |
+| Provider-specific | `stripe`, `stripe_secret`, `firebase`, `firebaseToken` |
+
+---
+
+## 3. Pattern-Based Redaction Rules
+
+If a **string value** matches these patterns, mask it:
+
+| Pattern | Description | Example |
+|---------|-------------|---------|
+| Bearer token | `Bearer\s+<non-whitespace>` | `Bearer eyJhbGc...` |
+| JWT | Three base64 segments separated by `.` | `eyJ.eyJ.xxx` |
+| Stripe live key | Stripe live-mode secret prefix (documented Stripe pattern) | Mask entire value |
+| Stripe test key | Stripe test-mode secret prefix (documented Stripe pattern) | Mask entire value |
+| Google/Firebase key | Google browser API key prefix (documented Google pattern) | Mask entire value |
+| PEM private key | PEM block header for PKCS#8 private keys (standard line) | Full PEM block |
+| Solana secret | Base58 string of typical key length | 88 chars, base58 |
+| Long base64 | > 32 chars, base64-like | Random tokens |
+| Hex private key | 64 hex chars (Solana 32-byte) | `a1b2c3...` |
+
+---
+
+## 4. Hard Fail in Dev/Test
+
+In **dev/test only**, if the redactor detects a value that looks like a **real secret** (not just "maybe sensitive"), it should:
+
+- **Throw** or **fail the test** (so the log call is fixed), or
+- **Warn** and replace (depending on policy).
+
+**Forbidden patterns** (trigger hard fail in dev):
+
+- Stripe live-mode secret material (never ship)
+- Google or Firebase API key material
+- PEM-encoded private key material
+- Solana secret key (base58, correct length)
+- JWT embedding other secret material
+
+This catches "oops we shipped logs" before it reaches production.
+
+---
+
+## 5. Structured Logging for Reliable Redaction
+
+Redaction works on **structured data**, not free-form strings.
+
+**Preferred:**
+
+```ts
+log.logInfo("auth header", getStackTrace(), { authorization: req.headers.get("Authorization") });
+```
+
+**Avoid:**
+
+```ts
+log.logInfo("auth header is " + req.headers.get("Authorization"), getStackTrace());
+```
+
+Concatenating secrets into the message string makes redaction unreliable. Always pass secrets as object values so the redactor can walk and mask them.
+
+---
+
+## 6. Hash Instead of Mask (Optional, for Correlation)
+
+When you need to know two requests used the *same* token without seeing it:
+
+- Replace secret with `[REDACTED sha256:abcd1234]` (truncated hash).
+- Use a stable hash of the value so the same input produces the same replacement.
+- Enables debugging ("same token was used") without leaking.
+
+---
+
+## 7. CI-Safe: Route Logs to File, Not Terminal
+
+For CI:
+
+- Write logs to NDJSON files (already done via bridge) — **redaction still applies** before write.
+- Output only a summary to terminal.
+- If a leak occurs, file logs are redacted; terminal stays minimal.
+
+---
+
+## 8. Stack-Specific Redaction (Ocentra)
+
+| Stack | What to redact |
+|-------|----------------|
+| **Firebase** | `AIza...` keys, ID tokens, refresh tokens, `firebaseToken` |
+| **Stripe** | Live/test/publishable key material (documented Stripe prefixes — mask all) |
+| **Solana** | Base58 seeds, 64-byte hex arrays, `privateKey`, `signingKey` |
+| **Cloudflare Workers** | `Authorization`, `Cookie`, `CF-*` headers carrying tokens, R2/KV URLs with creds |
+| **R2 / KV** | URLs or config containing credentials |
+
+---
+
+## 9. Truncation Rules
+
+- **Strings:** If length > 1024 chars, truncate to 256 + `"...[TRUNCATED]"`.
+- **Arrays:** If length > 100, truncate to first 20 + `"...[TRUNCATED N more]"`.
+- **Nested depth:** Limit recursion (e.g. 10 levels) to prevent DoS.
+
+---
+
+## AI Fix Checklist — Log Redaction
+
+**Invocation:** When the user says **"fix log redaction"**, **"audit for secret leakage"**, **"add redaction"**, or **"check logging for secrets"**.
+
+### Before adding redaction
+
+- [ ] Identify insertion point in `@ocentra/logging-domain` (e.g. `buildStructuredLogPayload` or before `storeLogEntry`).
+- [ ] Ensure redaction runs for **all** sinks: console, Analytics Engine, R2, bridge, NDJSON.
+
+### When adding new log call sites
+
+- [ ] Pass sensitive data as **object values**, not concatenated into `message`.
+- [ ] Avoid logging raw `req.headers`, `req.body`, or full request objects — log only safe fields or pre-redacted subsets.
+- [ ] Do not log: `Authorization`, `Cookie`, `apiKey`, `token`, `secret`, `password`, `privateKey`, `seed`, `mnemonic`.
+
+### When auditing existing logs
+
+- [ ] Search for `headers`, `body`, `authorization`, `cookie`, `token`, `secret`, `password` in log call arguments.
+- [ ] Ensure no Stripe/Firebase/Solana secrets in message strings.
+- [ ] Verify redaction runs before any external sink (Analytics Engine, R2, bridge).
+
+---
+
+## Summary
+
+| Mechanism | Purpose |
+|-----------|---------|
+| Key-based redaction | Mask known sensitive keys |
+| Pattern-based redaction | Mask secret-like strings |
+| Hard fail in dev | Catch real secrets before ship |
+| Structured logging | Enable reliable redaction |
+| Hash for correlation | Debug without leaking |
+| Truncation | Prevent huge dumps |
+| CI routing | Minimize terminal, file logs still redacted |
+
+---
+
+## Cross-References
+
+- `ocentra-build-flags-guide.mdc` — When to log (stripping, CI suppression)
+- `ocentra-security-rules.mdc` — Rule 10.1 (error handling, sensitive data)
+- `ocentra-cloudflare-logging.mdc` — Logger pattern (ensures logs go through domain)
+- `packages/logging-domain/ARCHITECTURE.md` — Log flow, where to insert redaction

@@ -1,0 +1,29 @@
+# Copy to `.dev.vars` in this directory (same folder as `wrangler.toml`).
+# File name must be exactly `.dev.vars` — it is gitignored.
+#
+# Used by `wrangler dev --env development` for Worker runtime bindings.
+#
+# --- R2 presigned GET URLs (`GET /api/v1/assets/download-url`) ---
+# When `ASSETS_PUBLIC_URL` is empty, the worker returns a presigned S3-compatible
+# GET URL for R2. That requires all of the following to be set and consistent:
+#
+# 1) CLOUDFLARE_ACCOUNT_ID
+#    Cloudflare dashboard → any zone or Workers overview → Account ID (32-char hex).
+#
+# 2) R2_ASSETS_BUCKET_NAME
+#    Must match the bucket name backing the `ASSETS_BUCKET` binding in
+#    `wrangler.toml` → `[[env.development.r2_buckets]]` where `binding = "ASSETS_BUCKET"`.
+#    Default in repo dev env: ocentra-assets-test
+#
+# 3) R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY
+#    Cloudflare dashboard → R2 → Overview → Manage R2 API Tokens.
+#    Create a token with Object Read (and only the bucket you use for assets if scoped).
+#    These are the S3-compatible access key id and secret — not the global API token.
+#
+# If any of the above are missing, `download-url` returns 503 (presign not configured)
+# unless you set ASSETS_PUBLIC_URL to a public CDN base (then delivery is `public`).
+
+CLOUDFLARE_ACCOUNT_ID=d01281f9b13a2a8c46dfa2c516094de6
+R2_ASSETS_BUCKET_NAME=ocentra-assets-test
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=

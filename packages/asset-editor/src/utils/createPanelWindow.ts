@@ -1,0 +1,51 @@
+import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger'
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace'
+
+export function isTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
+}
+
+const log = AssetEditorLogger.instance
+log.register(import.meta.url)
+
+export const ASSET_SELECTION_CHANNEL = 'ocentra-asset-editor-selection'
+
+export function getStandalonePanelUrl(
+  panel: 'preview' | 'inspector',
+  assetPath: string,
+  locked?: boolean
+): string {
+  const base = `${window.location.origin}${window.location.pathname || '/'}`
+  const params = new URLSearchParams()
+  params.set('standalone', panel)
+  params.set('assetPath', assetPath)
+  if (locked !== undefined) params.set('locked', String(locked))
+  return `${base}?${params.toString()}`
+}
+
+export async function createPanelWindow(
+  panel: 'preview' | 'inspector',
+  assetPath: string,
+  title?: string,
+  locked?: boolean
+): Promise<void> {
+  if (!isTauri()) return
+
+  const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
+  const url = getStandalonePanelUrl(panel, assetPath, locked)
+  const label = `panel-${panel}-${Date.now()}`
+  const size = panel === 'preview' ? { width: 1100, height: 720 } : { width: 420, height: 720 }
+
+  const webview = new WebviewWindow(label, {
+    url,
+    title: title ?? `${panel === 'preview' ? 'Preview' : 'Inspector'}: ${assetPath.split('/').pop() ?? assetPath}`,
+    width: size.width,
+    height: size.height,
+    resizable: true,
+    decorations: true,
+  })
+
+  webview.once('tauri://error', (e) => {
+    log.logError('[createPanelWindow] Failed to create window', getStackTrace(), { error: e })
+  })
+}

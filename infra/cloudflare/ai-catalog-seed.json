@@ -1,0 +1,611 @@
+{
+  "version": 1,
+  "pricing": {
+    "gpt-4o": {
+      "inputPer1k": 0.5,
+      "outputPer1k": 1.5
+    },
+    "gpt-4o-mini": {
+      "inputPer1k": 0.015,
+      "outputPer1k": 0.06
+    },
+    "claude-sonnet-4-5": {
+      "inputPer1k": 0.3,
+      "outputPer1k": 1.5
+    },
+    "claude-haiku-4-5": {
+      "inputPer1k": 0.08,
+      "outputPer1k": 0.4
+    },
+    "deepseek-r1": {
+      "inputPer1k": 0.14,
+      "outputPer1k": 0.28
+    }
+  },
+  "providers": [
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "description": "GPT-4o, o1, and other models",
+      "website": "https://openai.com",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "gpt-4o",
+          "name": "GPT-4o",
+          "contextWindow": 128000
+        },
+        {
+          "id": "gpt-4o-mini",
+          "name": "GPT-4o Mini",
+          "contextWindow": 128000
+        },
+        {
+          "id": "o1",
+          "name": "o1",
+          "contextWindow": 200000
+        },
+        {
+          "id": "o3-mini",
+          "name": "o3-mini",
+          "contextWindow": 200000
+        }
+      ]
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic Claude",
+      "description": "Claude Sonnet, Haiku, and Opus",
+      "website": "https://anthropic.com",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "claude-sonnet-4-5-20250929",
+          "name": "Claude Sonnet 4.5",
+          "contextWindow": 200000
+        },
+        {
+          "id": "claude-haiku-4-5-20251001",
+          "name": "Claude Haiku 4.5",
+          "contextWindow": 200000
+        }
+      ]
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "description": "Gemini 2.0 Flash, 1.5 Pro (API key)",
+      "website": "https://ai.google.dev",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "gemini-2.0-flash",
+          "name": "Gemini 2.0 Flash",
+          "contextWindow": 1000000
+        },
+        {
+          "id": "gemini-1.5-pro",
+          "name": "Gemini 1.5 Pro",
+          "contextWindow": 2000000
+        }
+      ]
+    },
+    {
+      "id": "google_gemini",
+      "name": "Google Gemini",
+      "description": "Connect with Google (OAuth) or paste API key",
+      "website": "https://ai.google.dev",
+      "authType": "oauth",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "gemini-2.0-flash",
+          "name": "Gemini 2.0 Flash",
+          "contextWindow": 1000000
+        },
+        {
+          "id": "gemini-1.5-pro",
+          "name": "Gemini 1.5 Pro",
+          "contextWindow": 2000000
+        }
+      ]
+    },
+    {
+      "id": "groq",
+      "name": "Groq",
+      "description": "Fast inference with Llama, Mixtral",
+      "website": "https://groq.com",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "llama-3.3-70b-versatile",
+          "name": "Llama 3.3 70B",
+          "contextWindow": 131072
+        },
+        {
+          "id": "mixtral-8x7b-32768",
+          "name": "Mixtral 8x7B",
+          "contextWindow": 32768
+        }
+      ]
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "description": "DeepSeek Chat and Coder",
+      "website": "https://deepseek.com",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "deepseek-chat",
+          "name": "DeepSeek Chat",
+          "contextWindow": 64000
+        },
+        {
+          "id": "deepseek-coder",
+          "name": "DeepSeek Coder",
+          "contextWindow": 64000
+        }
+      ]
+    },
+    {
+      "id": "together",
+      "name": "Together",
+      "description": "Open-source models via API",
+      "website": "https://together.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "meta-llama/Llama-3.1-70B-Instruct-Turbo",
+          "name": "Llama 3.1 70B",
+          "contextWindow": 131072
+        }
+      ]
+    },
+    {
+      "id": "fireworks",
+      "name": "Fireworks",
+      "description": "Llama, Mistral, and more",
+      "website": "https://fireworks.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "accounts/fireworks/models/llama-v3p1-70b-instruct",
+          "name": "Llama 3.1 70B",
+          "contextWindow": 131072
+        }
+      ]
+    },
+    {
+      "id": "perplexity",
+      "name": "Perplexity",
+      "description": "AI search and chat",
+      "website": "https://perplexity.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "llama-3.1-sonar-small-128k-online",
+          "name": "Sonar Small",
+          "contextWindow": 128000
+        },
+        {
+          "id": "llama-3.1-sonar-large-128k-online",
+          "name": "Sonar Large",
+          "contextWindow": 128000
+        }
+      ]
+    },
+    {
+      "id": "xai",
+      "name": "xAI Grok",
+      "description": "Grok 2 and other models",
+      "website": "https://x.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "grok-2",
+          "name": "Grok 2",
+          "contextWindow": 131072
+        }
+      ]
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral AI",
+      "description": "Mistral Large and Small",
+      "website": "https://mistral.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "mistral-large-latest",
+          "name": "Mistral Large",
+          "contextWindow": 128000
+        },
+        {
+          "id": "mistral-small-latest",
+          "name": "Mistral Small",
+          "contextWindow": 32000
+        }
+      ]
+    },
+    {
+      "id": "cohere",
+      "name": "Cohere",
+      "description": "Command R and R+",
+      "website": "https://cohere.com",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "command-r-plus",
+          "name": "Command R+",
+          "contextWindow": 128000
+        },
+        {
+          "id": "command-r",
+          "name": "Command R",
+          "contextWindow": 128000
+        }
+      ]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "description": "Unified access to 200+ models",
+      "website": "https://openrouter.ai",
+      "authType": "api_key",
+      "category": "cloud_api",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "API Base URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://api.example.com/v1"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "openai/gpt-4o",
+          "name": "GPT-4o (via OpenRouter)",
+          "contextWindow": 128000
+        },
+        {
+          "id": "anthropic/claude-sonnet-4",
+          "name": "Claude Sonnet 4 (via OpenRouter)",
+          "contextWindow": 200000
+        }
+      ]
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "description": "Local LLMs via Ollama",
+      "website": "https://ollama.ai",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": true,
+      "supportsModelListing": true,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "Server URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "http://localhost:11434"
+        }
+      ],
+      "defaultModels": [
+        {
+          "id": "llama3.2",
+          "name": "Llama 3.2",
+          "contextWindow": 128000
+        },
+        {
+          "id": "mistral",
+          "name": "Mistral",
+          "contextWindow": 32000
+        }
+      ]
+    },
+    {
+      "id": "lmstudio",
+      "name": "LM Studio",
+      "description": "Local models via LM Studio",
+      "website": "https://lmstudio.ai",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "LM Studio URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "http://localhost:1234/v1"
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "vllm",
+      "name": "vLLM",
+      "description": "High-throughput local inference",
+      "website": "https://vllm.ai",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "vLLM Server URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "http://localhost:8000/v1"
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "localai",
+      "name": "LocalAI",
+      "description": "Local OpenAI-compatible API",
+      "website": "https://localai.io",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "LocalAI URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "http://localhost:8080/v1"
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "koboldcpp",
+      "name": "KoboldCpp",
+      "description": "GGML models via KoboldCpp",
+      "website": "https://github.com/LostRuins/koboldcpp",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": false,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "KoboldCpp URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "http://localhost:5001"
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "local_transformers",
+      "name": "Local Transformers.js",
+      "description": "Models running in the browser",
+      "website": "https://huggingface.co/docs/transformers.js",
+      "authType": "none",
+      "category": "in_browser",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "modelId",
+          "label": "Model ID",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "quantPath",
+          "label": "Quant Path",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "webllm",
+      "name": "WebLLM",
+      "description": "WebGPU-accelerated local inference",
+      "website": "https://webllm.mlc.ai",
+      "authType": "none",
+      "category": "in_browser",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "modelId",
+          "label": "Model ID",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "defaultModels": []
+    },
+    {
+      "id": "native",
+      "name": "Native App",
+      "description": "Connect to native desktop app",
+      "website": "https://github.com",
+      "authType": "none",
+      "category": "local_server",
+      "supportsStreaming": true,
+      "supportsModelListing": false,
+      "configFields": [
+        {
+          "key": "baseUrl",
+          "label": "Native URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "key": "connectionType",
+          "label": "Connection",
+          "type": "select",
+          "required": true,
+          "options": [
+            "http",
+            "stdin",
+            "native_messaging",
+            "webrtc"
+          ]
+        }
+      ],
+      "defaultModels": []
+    }
+  ]
+}

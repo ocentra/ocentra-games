@@ -1,0 +1,172 @@
+{
+  "name": "@ocentra/asset-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./core/Timestamp": {
+      "import": "./dist/core/Timestamp.js",
+      "types": "./dist/core/Timestamp.d.ts"
+    },
+    "./types/assetIdentifier": {
+      "import": "./dist/types/assetIdentifier.js",
+      "types": "./dist/types/assetIdentifier.d.ts"
+    },
+    "./types/assetType": {
+      "import": "./dist/types/assetType.js",
+      "types": "./dist/types/assetType.d.ts"
+    },
+    "./serialization/NestedAsset": {
+      "import": "./dist/serialization/NestedAsset.js",
+      "types": "./dist/serialization/NestedAsset.d.ts"
+    },
+    "./ScriptableObject": {
+      "import": "./dist/ScriptableObject.js",
+      "types": "./dist/ScriptableObject.d.ts"
+    },
+    "./ScriptableSingleton": {
+      "import": "./dist/serialization/ScriptableSingleton.js",
+      "types": "./dist/serialization/ScriptableSingleton.d.ts"
+    },
+    "./ScriptableObjectRegistry": {
+      "import": "./dist/serialization/ScriptableObjectRegistry.js",
+      "types": "./dist/serialization/ScriptableObjectRegistry.d.ts"
+    },
+    "./AssetReference": {
+      "import": "./dist/serialization/AssetReference.js",
+      "types": "./dist/serialization/AssetReference.d.ts"
+    },
+    "./AssetGUID": {
+      "import": "./dist/AssetGUID.js",
+      "types": "./dist/AssetGUID.d.ts"
+    },
+    "./Serializable": {
+      "import": "./dist/Serializable.js",
+      "types": "./dist/Serializable.d.ts"
+    },
+    "./ISaveAsset": {
+      "import": "./dist/ISaveAsset.js",
+      "types": "./dist/ISaveAsset.d.ts"
+    },
+    "./validation/types": {
+      "import": "./dist/validation/types.js",
+      "types": "./dist/validation/types.d.ts"
+    },
+    "./validation/runtimeAssetValidator": {
+      "import": "./dist/validation/runtimeAssetValidator.js",
+      "types": "./dist/validation/runtimeAssetValidator.d.ts"
+    },
+    "./utils/assetTypeUtils": {
+      "import": "./dist/utils/assetTypeUtils.js",
+      "types": "./dist/utils/assetTypeUtils.d.ts"
+    },
+    "./constants/assets": {
+      "import": "./dist/constants/assets.js",
+      "types": "./dist/constants/assets.d.ts"
+    },
+    "./constants/sync": {
+      "import": "./dist/constants/sync.js",
+      "types": "./dist/constants/sync.d.ts"
+    },
+    "./resourceEntry/ResourceEntry": {
+      "import": "./dist/resourceEntry/ResourceEntry.js",
+      "types": "./dist/resourceEntry/ResourceEntry.d.ts"
+    },
+    "./resourceEntry/AssetResourceEntry": {
+      "import": "./dist/resourceEntry/AssetResourceEntry.js",
+      "types": "./dist/resourceEntry/AssetResourceEntry.d.ts"
+    },
+    "./resourceEntry/AssetResourceEntryFactory": {
+      "import": "./dist/resourceEntry/AssetResourceEntryFactory.js",
+      "types": "./dist/resourceEntry/AssetResourceEntryFactory.d.ts"
+    },
+    "./resourceEntry/ImageResourceEntry": {
+      "import": "./dist/resourceEntry/ImageResourceEntry.js",
+      "types": "./dist/resourceEntry/ImageResourceEntry.d.ts"
+    },
+    "./resourceEntry/FileResourceEntry": {
+      "import": "./dist/resourceEntry/FileResourceEntry.js",
+      "types": "./dist/resourceEntry/FileResourceEntry.d.ts"
+    },
+    "./resourceEntry/SoundResourceEntry": {
+      "import": "./dist/resourceEntry/SoundResourceEntry.js",
+      "types": "./dist/resourceEntry/SoundResourceEntry.d.ts"
+    },
+    "./resourceEntry/VideoResourceEntry": {
+      "import": "./dist/resourceEntry/VideoResourceEntry.js",
+      "types": "./dist/resourceEntry/VideoResourceEntry.d.ts"
+    },
+    "./resourceEntry/FolderResourceEntry": {
+      "import": "./dist/resourceEntry/FolderResourceEntry.js",
+      "types": "./dist/resourceEntry/FolderResourceEntry.d.ts"
+    },
+    "./resourceEntry/types": {
+      "import": "./dist/resourceEntry/types.js",
+      "types": "./dist/resourceEntry/types.d.ts"
+    },
+    "./serialization/decorators": {
+      "import": "./dist/serialization/decorators.js",
+      "types": "./dist/serialization/decorators.d.ts"
+    },
+    "./serialization/ResourceEntrySerializer": {
+      "import": "./dist/serialization/ResourceEntrySerializer.js",
+      "types": "./dist/serialization/ResourceEntrySerializer.d.ts"
+    },
+    "./registry/AssetTypeRegistry": {
+      "import": "./dist/registry/AssetTypeRegistry.js",
+      "types": "./dist/registry/AssetTypeRegistry.d.ts"
+    },
+    "./storage/IStorageAdapter": {
+      "import": "./dist/storage/IStorageAdapter.js",
+      "types": "./dist/storage/IStorageAdapter.d.ts"
+    },
+    "./loader/AssetLoader": {
+      "import": "./dist/loader/AssetLoader.js",
+      "types": "./dist/loader/AssetLoader.d.ts"
+    },
+    "./loader/assetLoaderContext": {
+      "import": "./dist/loader/assetLoaderContext.js",
+      "types": "./dist/loader/assetLoaderContext.d.ts"
+    },
+    "./resources/Resources": {
+      "import": "./dist/resources/Resources.js",
+      "types": "./dist/resources/Resources.d.ts"
+    },
+    "./resources/IResourceLoader": {
+      "import": "./dist/resources/IResourceLoader.js",
+      "types": "./dist/resources/IResourceLoader.d.ts"
+    },
+    "./testing/mutation.decorator": {
+      "import": "./dist/testing/mutation.decorator.js",
+      "types": "./dist/testing/mutation.decorator.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node scripts/fix-dts-aliases.js && node ../../scripts/fix-esm-imports.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint --cache src && tsc --noEmit",
+    "lint:eslint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.2.2",
+    "json5": "^2.2.3",
+    "@ocentra/boundary-domain": "file:../boundary-domain",
+    "@ocentra/behaviour-domain": "file:../behaviour-domain",
+    "@ocentra/eventing-domain": "file:../eventing-domain",
+    "@ocentra/logging-domain": "file:../logging-domain",
+    "@ocentra/network-domain": "file:../network-domain",
+    "@ocentra/storage-domain": "file:../storage-domain"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "glob": "^7.2.3",
+    "globals": "^15.12.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.15.0"
+  }
+}

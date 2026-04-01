@@ -1,0 +1,668 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "313-rummy.json",
+  "name": "Three-Thirteen Rummy",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "qualityReason": "",
+  "overview": {
+    "description": "Rummy variant with eleven rounds. In round 1 three cards are dealt to each player, in round 2 four cards, and so on up to thirteen in round 11. Each round has a different wild card: round 1 threes are wild, round 2 fours, up to kings wild in round 11. Players draw one card from the stock or top of the discard pile, then discard one. Object is to form all cards into sets of three or more of the same rank or runs of three or more in the same suit; aces rank low. Lowest total penalty after eleven rounds wins.",
+    "category": "Rummy",
+    "subCategory": "Rummy / Set-Collection",
+    "origin": "USA",
+    "originName": "Three thirteen",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "30-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Three-Thirteen Rummy variant from the USA where card count per hand increases from 3 to 13 across successive rounds.",
+    "originCountries": ["United States"],
+    "timeline": ["20th century: Rummy variant from the United States with round-based hand sizes and wild cards; documented in card-game literature."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game exists as a stable rummy variant.",
+      "cultural": "No specific cultural significance beyond standard rummy popularity."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "Standard 52-card deck",
+    "equipment": "Standard deck, scoring materials",
+    "dealing": "Eleven rounds. First dealer is chosen at random; the turn to deal passes to the left after each round. In round 1 three cards are dealt to each player, in round 2 four cards, and so on until round 11 when thirteen cards each are dealt. The remainder is placed face down as the stock; the top card is turned face up beside it to start the discard pile. One deck for two players, two decks for three or four.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Form all cards in hand into valid combinations: sets of three or more cards of the same rank, or runs of three or more cards in the same suit in sequence. Aces rank low. Unmatched cards at round end count as penalty points; the player with the lowest total score after eleven rounds wins.",
+    "gameplay": "The player to dealer's left begins; play is clockwise. Each turn consists of drawing one card (from the top of the stock or the top card of the discard pile; only the top of the discard may be taken) and then discarding one card face up onto the discard pile. A player may go out when, after drawing, they can arrange all but one card into sets and runs, discard that card, and announce they are out; each other player gets one more turn, then the round ends when the turn returns to the player who went out.",
+    "keyRules": [
+      "Eleven rounds with 3 to 13 cards dealt per round; dealer rotates left.",
+      "Wild card equals the number of cards dealt that round (round 1 threes wild, round 11 kings wild).",
+      "Valid combinations: sets of three or more same rank; runs of three or more same suit in sequence; aces low.",
+      "Draw one from stock or top of discard, then discard one. No laying off on other players' melds."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Minimize deadwood by forming sets and runs; use wild cards in combinations where they replace missing cards.",
+    "intermediate": "Track which cards have been discarded to infer what opponents need; take from the discard only when it completes or extends a combination.",
+    "advanced": "Plan round-by-round: in early rounds with few cards, prioritize flexibility; in later rounds with more cards, optimize for going out before opponents.",
+    "tips": [
+      "Wild cards can form a set by themselves or fill gaps in runs.",
+      "Aces are low only; Q-K-A is not a valid run."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "ace-high-low",
+        "name": "Ace high or low",
+        "description": "Aces may be used high or low so A-K-Q is a valid run; an ace left in hand at round end costs 15 points instead of 1.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation changes scoring and meld evaluation but no engine override fields have been wired yet."
+      },
+      {
+        "id": "face-card-scoring",
+        "name": "Face card scoring",
+        "description": "Some groups score 10 points for Jacks, Queens, and Kings instead of 11, 12, and 13 as in the base rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Face-card point tweaks are handled in scoring logic and have not been modeled as structured engine overrides."
+      },
+      {
+        "id": "jokers-wild",
+        "name": "Jokers as wilds",
+        "description": "Jokers are added as extra wild cards; a joker left in hand at round end scores 20 penalty points.",
+        "overrides": {},
+        "emptyOverridesReason": "Use of jokers as wild cards is described in rules text but not yet wired into engine override fields."
+      },
+      {
+        "id": "3-13-speed",
+        "name": "3-13 Speed",
+        "description": "Simultaneous drawing and discarding controlled by a caller; for large groups.",
+        "overrides": {},
+        "emptyOverridesReason": "Speed variant affects timing and UX only; no separate structured engine overrides are defined yet."
+      },
+      {
+        "id": "five-crowns",
+        "name": "Five Crowns",
+        "description": "Proprietary version using a five-suited pack.",
+        "overrides": {},
+        "emptyOverridesReason": "Five Crowns is treated as a related proprietary game, not a direct ruleset override for this engine."
+      },
+      {
+        "id": "deuces-arent-wild",
+        "name": "Deuces Aren't Wild",
+        "description": "Variant with an additional 14-card round and a bonus round in the event of a tie.",
+        "overrides": {},
+        "emptyOverridesReason": "Round-count and bonus-round tweaks are documented narratively and not yet captured as engine overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays melds randomly without optimizing hand composition.",
+      "medium": "Plans meld sequences to minimize unmatched cards.",
+      "hard": "Tracks discards, predicts opponent needs, optimizes meld order strategically."
+    },
+    "considerations": [
+      "Round-specific hand size and wild cards; draw from stock or top of discard; no laying off on others' melds."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_313_html",
+        "name": "Pagat - Three Thirteen",
+        "url": "https://www.pagat.com/rummy/3-13.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-rummy-3-13.html"
+      },
+      {
+        "id": "src:wikipedia_rummy",
+        "name": "Wikipedia - Rummy",
+        "url": "https://en.wikipedia.org/wiki/Rummy",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-rummy-4.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Three_thirteen",
+        "localHtml": "wiki-three-thirteen.html"
+      },
+      {
+        "url": "https://www.pagat.com/rummy/3-13.html",
+        "localHtml": "pagat-rummy-3-13.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "rummy",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": {
+      "high": "Unknown",
+      "low": "Unknown",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "313 RUMMY",
+      "subtitle": "Rummy",
+      "tagline": "Rummy variant with varying hand sizes and wild cards per round."
+    },
+    "shortDescription": "Rummy with eleven rounds (3 to 13 cards per round) and round-based wild cards; lowest penalty total wins.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Three-Thirteen Rummy: eleven rounds, 3 to 13 cards per round; draw one, discard one; form sets and runs; lowest score wins.",
+    "ai": "Game: 313 Rummy. Eleven rounds with increasing hand size; round-based wilds; draw from stock or discard, then discard; go out by melding all but one; penalty points for deadwood, lowest total wins."
+  },
+  "scoring": {
+    "description": "At round end each player arranges their hand into sets and runs. Unmatched cards score penalty: Ace 1, 2–10 face value, Jack 11, Queen 12, King 13. Totals accumulate across rounds; lowest total after round 11 wins.",
+    "winCondition": "Lowest total penalty score after eleven rounds wins.",
+    "cardValues": {
+      "A": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "J": "11",
+      "Q": "12",
+      "K": "13"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "3-13 Rummy"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

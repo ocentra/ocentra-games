@@ -1,0 +1,643 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "double-bergen.json",
+  "name": "Double Bergen",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Players score for making the ends of the cross-shaped layout equal; first to 100 wins.",
+    "category": "Domino",
+    "subCategory": "Cross",
+    "origin": "United States",
+    "originName": "Double Bergen",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Double-six set (standard); larger sets optional for variants.",
+    "difficulty": "Beginner",
+    "duration": "15-30 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["United States"],
+    "origins": "Double Bergen is documented in published rule references and long-running table play traditions.",
+    "timeline": ["20th century: Cross variant of Bergen documented in rule references and table play; single-spinner scoring variant."],
+    "evolution": "Rules evolved through local table variants while preserving the core structure of Double Bergen.",
+    "cultural": "Double Bergen remains part of social and recreational card play communities.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two to four players. Two players receive six tiles each; three players six each; four players five each. Remaining tiles form the boneyard.",
+    "deck": "Double-six domino set (or larger set for variants).",
+    "equipment": "Domino set",
+    "dealing": "2 players: 6 tiles each. 3 players: 6 each. 4 players: 5 each. Remaining tiles form the boneyard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by making the ends of the cross-shaped layout match; first player to reach 100 points wins the game.",
+    "gameplay": "One player leads a double as the spinner. Players must complete all four arms of the spinner before adding tiles to them. On your turn you may play a matching tile or draw from the boneyard until you can play or it is empty; if you can neither play nor draw, pass. Play until someone empties their hand (dominoes) or the game blocks.",
+    "keyRules": [
+      "First double led is the spinner; all arms must be started before adding to any arm.",
+      "Draw from boneyard when unable to play; pass when unable to play and unable to draw.",
+      "Score after each play: pair of ends 2, triplet 3, quadruplet 4, quintuplet 5.",
+      "At round end deduct 1 point per tile left in hand; player who dominoes deducts nothing.",
+      "Game is 100 points."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize legal, low-risk moves that preserve stronger options for later turns.",
+    "intermediate": "Track public information and update decisions as card distribution becomes clearer.",
+    "advanced": "Plan endgame timing early so your final sequence closes the game efficiently.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Double Bergen form; no regional or rule variations documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal moves with shallow tactical planning.",
+      "medium": "Uses basic counting and phase-aware move selection.",
+      "hard": "Optimizes expected value across hidden information and endgame states."
+    },
+    "considerations": [],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_www_pagat_com_domino_cross_bergen2_html",
+        "name": "Pagat",
+        "url": "https://www.pagat.com/domino/cross/bergen2.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-domino-bergen-2.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes_en_wikipedia_org_wiki_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional domino game; no documented IP holder or public domain claim.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal opening hand for the round."
+      },
+      {
+        "id": "main_play",
+        "label": "Main Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "draw",
+          "pass",
+          "go_out"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Play a tile, draw from boneyard when unable to play, or pass when unable to play and unable to draw. Go out by emptying hand."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; ante is not a core player action in its documented rules."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards or tiles for a new hand in Double Bergen.",
+        "cost": "0",
+        "constraints": "Dealer only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; reveal market is not a core player action in its documented rules."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; buy market is not a core player action in its documented rules."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; buy stock is not a core player action in its documented rules."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; fold is not a core player action in its documented rules."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; check is not a core player action in its documented rules."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; call is not a core player action in its documented rules."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; bet is not a core player action in its documented rules."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; raise is not a core player action in its documented rules."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; declare is not a core player action in its documented rules."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; reveal hand is not a core player action in its documented rules."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; award pot is not a core player action in its documented rules."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a tile matching an open end of the cross-shaped layout.",
+        "cost": "0",
+        "constraints": "Must match an open end; must complete all spinner arms before adding to them.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from the boneyard when unable to play; draw until you can play or boneyard is empty.",
+        "cost": "0",
+        "constraints": "Only when you cannot add a tile to the layout; draw one or more from stock until you can play or stock is empty.",
+        "isTerminating": false,
+        "effectType": "draw"
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen has no discard pile; players play tiles or draw from the boneyard."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass turn when unable to play and unable to draw from the boneyard.",
+        "cost": "0",
+        "constraints": "Only when you cannot play and either the boneyard is empty or you have drawn and still cannot play.",
+        "isTerminating": false,
+        "effectType": "pass"
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; bid is not a core player action in its documented rules."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Double Bergen is modeled as a Patience flow; meld is not a core player action in its documented rules."
+      },
+      "go_out": {
+        "supported": true,
+        "description": "End personal hand by legally emptying all remaining cards.",
+        "cost": "0",
+        "constraints": "Allowed only when hand-empty condition is satisfied.",
+        "isTerminating": false,
+        "effectType": "custom"
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": null,
+          "notes": "Draw when unable to play; draw until can play or boneyard empty."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "phase_specific",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "spinner_and_doubles",
+          "text": "First double led is the spinner; later doubles are placed crosswise but are not spinners.",
+          "appliesTo": "layout",
+          "affects": "scoring"
+        },
+        {
+          "id": "block_deduction",
+          "text": "Round blocks when no one can play and boneyard has at least two tiles; each player then deducts 1 point per tile remaining in hand; player who dominoes deducts nothing.",
+          "appliesTo": "round_end",
+          "affects": "scoring"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "main_play"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Scoring by matching layout ends: pair 2, triplet 3, quadruplet 4, quintuplet 5. First to 100 wins.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A double-six domino set consisting of 28 tiles with all combinations of pips from 0 to 6, where each tile has two sides with 0 to 6 pips arranged in various combinations for domino gameplay.",
+    "suitDescription": "Domino tiles organized by pip combinations ranging from (0,0) blank to (6,6), where each combination represents a distinct tile value and contributes to the domino chain during gameplay.",
+    "rankDescription": "Domino tiles ranked by total pip count and combination type, where doubles (matching both sides) have special significance, and strategic placement along the chain determines game progression and scoring opportunities.",
+    "dealPattern": "2 players: 6 each; 3 players: 6 each; 4 players: 5 each. Remainder is boneyard.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Double Bergen",
+      "subtitle": "Cross domino; score matching ends.",
+      "tagline": "Cross domino; first double spinner."
+    },
+    "shortDescription": "Cross domino; first double spinner. Distinct from line Bergen.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "After each play, score for matching ends on the layout: pair 2, triplet 3, quadruplet 4, quintuplet 5. At round end deduct 1 per tile left in hand; dominoer deducts nothing. Game is 100 points.",
+    "winCondition": "First to reach 100 points wins the game.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": 100,
+    "scoringDirection": "high_wins",
+    "nullReasons": { "cardValues": "Scoring is by matching layout ends (pair 2, triplet 3, etc.), not by individual card point values." }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

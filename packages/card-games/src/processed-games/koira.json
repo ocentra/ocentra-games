@@ -1,0 +1,707 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "koira.json",
+  "name": "Koira",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Koira (Finnish for 'Dog') is a traditional Finnish card game for three to eight players. It is an avoidance game belonging to the 'beating' family (like Skitgubbe). The game is famous for its social element: the loser is called the 'Dog' and may be jokingly required to bark. It is played in two distinct phases: a collection phase where card count is expanded, and an avoidance phase where players try to empty their hands.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Finland",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 3,
+      "display": "3-8 (Best for 3)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-25 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Koira"
+  },
+  "history": {
+    "originCountries": ["Finland"],
+    "origins": "Originates from 19th-century Finnish folk traditions, closely related to the Swedish game Skitgubbe and the Norwegian Mattis. It was historically a common game among forestry workers and farming families.",
+    "timeline": [
+      "1800s: Emerges as a folk variation of Northern European beating games.",
+      "1950s: Standardized rules appear in Finnish game books.",
+      "Present: Remains a popular 'last person loses' social game in Finland."
+    ],
+    "evolution": "The game's unique 'Barking' penalty evolved as a way to add humor and stakes to what is otherwise a simple math/memory game.",
+    "cultural": "In Finnish culture, being the 'Koira' is a humorous mark of bad luck in cards.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 players is the classic competitive format.",
+    "deck": "Standard 52-card deck. Ace is high, 2 is low.",
+    "equipment": "",
+    "dealing": "Each player receives 3 cards. The rest form a stock pile.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Avoid being the last player left with cards in your hand at the end of Phase Two.",
+    "gameplay": "Phase 1: All players play one card to each trick; highest rank wins the trick. If there is a tie for highest, the tied players play again until the tie is broken. After each play, players draw from the stock to keep three cards until the stock is empty. The last card of the stock sets the trump suit for Phase 2. When the stock is exhausted, play continues without drawing until the player whose turn it is has no card to play; then Phase 2 begins. Phase 2: The holder of the trump card leads. You must either beat the previous card or sequence (higher same suit or any trump) or pick up the lowest card or sequence from the trick. The last player left with cards loses and is the Dog.",
+    "keyRules": [
+      "Phase 1: All play one card per trick; no follow suit; highest rank wins; ties broken by replay.",
+      "Phase 2: Trump from last card of stock; beat by higher same suit or any trump, or pick up lowest card or sequence from trick.",
+      "Last player left with cards loses and is called the Dog."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "In Phase 1, try to win tricks with high cards of the same suit. This gives you 'runs' in Phase 2, which are very hard for opponents to beat (they must beat the whole run).",
+    "intermediate": "Hand Balancing: Don't win every trick in Phase 1. If you have too many cards in Phase 2, you are more likely to get stuck picking up even more.",
+    "advanced": "The Sequence Trap: In Phase 2, if you have a sequence like 8-9-10 of Spades, wait until your opponent plays a low Spade. Then dump the entire sequence on them. They will likely have to pick it up, adding 3 cards to their hand.",
+    "tips": [
+      "Keep track of the Aces during Phase 1. Knowing who has the 'Exit cards' for Phase 2 is vital.",
+      "If you are leading in Phase 2, lead your middle-range cards first. Save your Aces for when you need to capture a trick to lead again."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "tie-take-back-deal",
+        "name": "Tie: take back and deal",
+        "description": "When there is a tie for highest card in phase 1, the tied players take their cards back; the other cards in the trick are arranged in ascending order and dealt one at a time to the tied players as evenly as possible, counterclockwise from the last player who played a tied card.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule-only variation; no engine overrides documented."
+      },
+      {
+        "id": "trump-ends-trick",
+        "name": "Trump ends trick",
+        "description": "In phase 2, a trump played on a non-trump immediately ends the trick; the player of the trump sets the cards aside and leads to a new trick.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule-only variation; no engine overrides documented."
+      },
+      {
+        "id": "pick-lowest-card-only",
+        "name": "Pick lowest card only",
+        "description": "When picking up from a trick, only the lowest card is taken; if the lowest play is a sequence, only the bottom card of that sequence is taken. A sequence counts as in play until all its cards have been removed.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule-only variation; no engine overrides documented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to form sequences in Phase 1; leads high cards too early in Phase 2.",
+      "medium": "Understands sequence play; counts Aces in Phase 1.",
+      "hard": "Expert at hand-size management; perfectly calculates sequence-lead timings to force opponents into picking up large piles."
+    },
+    "considerations": [
+      "Two-phase state transition logic.",
+      "Sequence-building algorithm (Phase 1).",
+      "Avoidance-tree search (Phase 2)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_koira",
+        "name": "Pagat.com - Koira",
+        "url": "https://www.pagat.com/beating/skitgubbe.html#koira",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-skitgubbe.html"
+      },
+      {
+        "id": "src:wikipedia_durak_en_wikipedia_org_wiki_durak",
+        "name": "Wikipedia - Durak",
+        "url": "https://en.wikipedia.org/wiki/Durak",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-durak-3.html"
+      }
+    ],
+    "additional": [
+      "Nordic Card Games - Koira Section",
+      "Wikipedia - Koira (peli)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional folk game; no known IP holder or trademark."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "phase1",
+        "label": "Collection",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "phase2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All play one card per trick; highest rank wins; draw from stock after play until stock empty. Last card of stock sets trump."
+      },
+      {
+        "id": "phase2",
+        "label": "Avoidance",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "pick_up"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Beat by higher same suit or any trump, or pick up lowest card or sequence from trick. Last player with cards loses."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from hand to capture or add to the table.",
+        "cost": "0",
+        "constraints": "Phase 1: Play to capture tricks. Phase 2: Must beat the led card or pick up.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": null,
+          "notes": "Phase 1 only; replenish to three cards after playing."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "phase_specific",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "last_card_dealt",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "phase1-no-suit",
+          "appliesTo": "phase1",
+          "text": "Suits have no significance; highest rank wins the trick. Ties broken by tied players playing again until one wins."
+        },
+        {
+          "id": "phase2-beat-or-pick",
+          "appliesTo": "phase2",
+          "text": "Must beat by higher card of same suit or any trump; cannot duck. Pick up is the lowest card or sequence in the trick."
+        },
+        {
+          "id": "trump-last-card",
+          "text": "Last card of stock determines trump and is not added to hand until phase 1 ends."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["phase1", "phase2"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "pick_up",
+        "supported": true,
+        "description": "Pick up the lowest card or sequence from the trick when unable or unwilling to beat the previous play.",
+        "cost": "0",
+        "constraints": "Only legal when you cannot or do not wish to beat the current top card or sequence.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "3 cards each; remainder forms face-down stock.",
+    "notApplicableReasons": {
+      "discardConfig": "No discard pile; cards remain in hand, in tricks, or in won piles.",
+      "meldConfig": "Koira has no melding; it is a two-phase trick-taking and beating game.",
+      "shedding": "Phase 2 shedding is implemented via beat-or-pick-up, not a separate shed action.",
+      "fishingConfig": "No fishing or capture-from-tableau mechanic.",
+      "patienceConfig": "Not a solitaire or patience game.",
+      "bankingConfig": "No banker or bank; multiplayer avoidance game.",
+      "declarationMechanism": "No declaration or bidding phase."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "KOIRA",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Koira (Finnish for 'Dog') is a traditional Finnish card game for three to eight players. It is an avoidance game belonging to the 'beating' family (like Skitgubbe). The game is famous for its social e",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Last player with cards loses.",
+    "winCondition": "The last player left with cards in hand loses and is called the Dog; all other players win.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "No point values; winner is who empties hand last."
+    }
+  },
+  "alsoKnownAs": [
+    "Dog"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

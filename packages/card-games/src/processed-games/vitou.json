@@ -1,0 +1,642 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "vitou.json",
+  "name": "Vitou",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Vitou is a traditional NiÃ§ois (Nice, France) trick-taking/bluffing game related to Truc. 4 players in 2 teams. 32-card deck. 3 cards each. Ranking: 10-9-A-K-Q-J-8-7. NO suits, NO trumps. Best 2 of 3 tricks. Signals between partners ALLOWED. Raising stakes. First to 21 points wins.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "France (Nice / Provence)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "4 (2 teams) or 2"
+    },
+    "deck": "32-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Vitou (Niçois; same in French and Niçois)"
+  },
+  "history": {
+    "origins": "Vitou is a traditional card game from Nice, France (Ni\u00e7ois/Proven\u00e7al heritage). It is also played in Piedmont, the Provence Alps, and under various guises in Lombardy, Friuli, and Suisse Romande. It is closely related to the Catalan game Truc but was adapted to the French 32-card Belote deck; the 10s and 9s substitute for the missing low cards, giving the game its distinctive ranking (10, 9, Ace high). The rules documented for this game derive from information provided by Nicolas Morlino.",
+    "originCountries": ["France"],
+    "timeline": ["Traditional: Niçois game from Nice, France; closely related to Catalan Truc, adapted to the French 32-card deck (Belote style)."],
+    "evolution": "Related to Catalan Truc; adapted from Truc to the French 32-card deck used for Belote, with 10s and 9s taking the role of the highest cards.",
+    "cultural": "Proven\u00e7al and Ni\u00e7ois gaming heritage; also played in Piedmont, Lombardy, Friuli, and Suisse Romande.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 (2 teams) or 2",
+    "deck": "32 cards. Rank: 10-9-A-K-Q-J-8-7. Suits irrelevant.",
+    "equipment": "Cards",
+    "dealing": "3 cards each, clockwise. First dealer: lowest card from draw.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win rounds by taking best two of three tricks; first team to 21 points wins the game.",
+    "gameplay": "3 tricks per round. No suits/trumps matter. Equal cards = 'en-pÃ¢te' (resolved by next trick). Partner signals ALLOWED (wink=10/9, pout=A, cheek rub=K). Raising stakes possible. Decline raise = lose 1pt.",
+    "keyRules": [
+      "No suits/trumps",
+      "Signals allowed",
+      "En-pÃ¢te ties",
+      "Raising mechanic",
+      "Napolitaine (10-9-A)"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Signal to partner. Play 10s/9s.",
+    "intermediate": "Bluff raises.",
+    "advanced": "Read opponents' signals.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard (4 players)",
+        "description": "Four players in two partnerships; 3 cards each; best two of three tricks per round; first team to 21 points wins. Can also be played with 2 players.",
+        "overrides": {},
+        "emptyOverridesReason": "Standard variant has no engine overrides; single canonical rule set."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Easy AI plays high cards and follows basic trick order; no signaling.",
+      "medium": "Medium AI uses basic partner signaling and raises when holding strong cards.",
+      "hard": "Hard AI uses full partner signaling, reads opponents, and optimizes bid and refuse decisions."
+    },
+    "considerations": [
+      "Partner signaling AI"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-vitou",
+        "name": "Pagat.com - Vitou",
+        "url": "https://www.pagat.com/put/vitou.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-vitou.html"
+      },
+      {
+        "id": "src:wikipedia_jass",
+        "name": "Wikipedia - Jass",
+        "url": "https://en.wikipedia.org/wiki/Jass",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-jass-3.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Distribute cards to each player."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played",
+            "nextPhase": "game_end"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Players play tricks; suits ignored; highest card wins. Best two of three tricks wins the round."
+      },
+      {
+        "id": "game_end",
+        "label": "Game End",
+        "actor": "system",
+        "legalActions": ["end_round"],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Game complete."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Distribute cards to each player.",
+        "cost": "0",
+        "constraints": "Dealer deals face-down.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 3,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "fixed_contract",
+        "minBid": 3,
+        "maxBid": 12,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {"id": "tied_trick","text": "Tied trick (en-pâte): same rank highest; same leader leads again; first team to win a trick wins the round; if all three tricks tied no one scores."},
+        {"id": "refuse_bid","text": "Refuse bid: the player who would play after a raise may forfeit the round; winning team scores the points at stake before that raise."},
+        {"id": "at_20","text": "At 20 points: no bidding or raising; team with 20 may show each other their cards and choose to play or not; if they refuse play opponents score 1 and new round; if they play and win they score 1 and win game; if they play and lose opponents score 3."},
+        {"id": "twenty_twenty","text": "20-20 tie: no bidding, no gestures; dealer gives 3 cards to player to left who says pass or play; if pass, next player gets 3 cards; if any player plays, full deal and play; if all four pass, next dealer deals again until someone plays."}
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play", "game_end"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "end_round",
+        "supported": true,
+        "description": "End the round and complete the game.",
+        "cost": "0",
+        "constraints": "System action when all tricks are played.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Trick rank order: 10, 9, Ace, King, Queen, Jack, 8, 7 (high to low). Suits ignored.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "A 32-card French deck formed by removing ranks 2 through 6 from a standard pack, leaving 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "3 cards each, clockwise",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "VITOU",
+      "subtitle": "Card Game",
+      "tagline": "Vitou is a traditional Ni\u00e7ois (Nice, France) trick-taking and bluffing game related to Truc; first to 21 points wins."
+    },
+    "shortDescription": "Vitou is a traditional NiÃ§ois (Nice, France) trick-taking/bluffing game related to Truc. 4 players in 2 teams. 32-card deck. 3 cards each. Ranking: 10",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "hand",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Vitou is a traditional NiÃ§ois (Nice, France) trick-taking/bluffing game related to Truc. 4 players in 2 teams. 32-card deck. 3 cards each. Ranking: 10-9-A-K-Q-J-8-7. NO suits, NO trumps. Best 2 of 3 tricks. Signals between partners ALLOWED. Raising stakes. First to 21 points wins.",
+    "ai": "Game: Vitou. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Win round = 1pt. Raise refused = 1pt for raiser. Raised and won = 1pt. Raised and lost = 3pts to opponent. First to 21.",
+    "winCondition": "First team to 21 points.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 21,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Points are awarded per round won (1, 3, 6 or 12), not per card; no card point values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

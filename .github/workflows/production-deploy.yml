@@ -1,0 +1,126 @@
+# See infra/cloudflare/docs/WORKFLOW-UPDATE-GUIDE.md for alignment with Cloudflare setup.
+name: Production Deploy
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: prod-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-web:
+    name: Build Web App
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
+          VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
+          VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
+          VITE_LOGS_API_KEY: ${{ secrets.LOGS_API_KEY }}
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  deploy-pages:
+    name: Deploy to Pages
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build-web
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+          
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=ocentra-games
+
+  sync-r2-production:
+    name: Sync assets to production R2
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install workspace dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build domain packages
+        run: |
+          npm run build --workspace=packages/boundary-domain
+          npm run build --workspace=packages/logging-domain
+          npm run build --workspace=packages/endpoint-domain
+          npm run build --workspace=packages/api-domain
+
+      - name: Sync assets to production R2
+        env:
+          SYNC_ENV: production
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLAIM_STORAGE_ASSETS_URL_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_URL_PROD }}
+          CLAIM_STORAGE_ASSETS_TOKEN_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_PROD }}
+          ASSETS_WORKER_URL_PROD: ${{ secrets.ASSETS_WORKER_URL_PROD }}
+          ASSETS_WORKER_TOKEN_PROD: ${{ secrets.ASSETS_WORKER_TOKEN_PROD }}
+        run: npm run sync:assets:prod -- --apply --prune
+
+  deploy-worker:
+    name: Deploy Worker
+    if: github.event_name == 'workflow_dispatch'
+    needs: sync-r2-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install workspace dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build domain packages
+        run: |
+          npm run build --workspace=packages/boundary-domain
+          npm run build --workspace=packages/logging-domain
+          npm run build --workspace=packages/endpoint-domain
+          npm run build --workspace=packages/api-domain
+
+      - name: Deploy Worker
+        working-directory: infra/cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm ci && npm run deploy

@@ -1,0 +1,1455 @@
+---
+alwaysApply: true
+---
+
+# Ocentra Games – Security Rules & Guarantees (MANDATORY)
+
+> This document defines **security guarantees, threats, and invariants** for any system that:
+
+> - Handles money
+> - Interacts with Solana
+> - Exposes HTTP / Web / RPC endpoints
+>
+> **Security failures are correctness failures.**
+>
+> No Solana basics, no hand-holding — this is written as if the adversary understands Web3 + infra.
+
+---
+
+## Document Purpose & Scope
+
+This document defines **WHAT must never break** (security guarantees) and **WHAT threats exist** (threat model).
+
+**This document does NOT define:**
+
+- How to write tests (see `ocentra-test-rules.mdc`)
+- Test tooling or CI mechanics (see `ocentra-security-guidelines.mdc`)
+- Test quality standards (see `ocentra-test-rules.mdc` §0.2)
+
+**Key Principle:**
+> Security guarantees exist independently of tests; tests are only evidence of enforcement.
+
+### Related Documents
+
+- **Test writing standards**: `ocentra-test-rules.mdc` - How to write tests, test quality, proof standards
+- **Test tooling & CI setup**: `ocentra-security-guidelines.mdc` - Required tools, CI pipeline, test categories overview
+- **Security guarantees & rules** (this document): `ocentra-security-rules.mdc` - What must never break, numbered rules
+
+### Document Structure
+
+- **§0.1**: Security Guarantees (G1-G6) - Non-negotiable guarantees
+- **§0.2**: Security Meta-Invariants - Things that must NEVER be true
+- **§1-12**: Specific security test requirements (numbered rules)
+- **§13**: Security Test Acceptance Checklist
+- **§14**: Security Coverage Gate (mandatory test categories)
+- **§15**: Advanced Security Testing Requirements (system-level)
+
+All rules are numbered for violation reporting (e.g., "Violation 1.1.5", "Violation 15.4.1.3").
+
+---
+
+## 0. Core Security Principle
+
+- Every external input is **hostile**
+- Every client is **lying**
+- Every request can be **replayed, mutated, or automated**
+- Security behavior is **observable and testable**
+
+> Security guarantees exist independently of tests; tests are only evidence of enforcement.
+
+---
+
+## 0.1. Security Guarantees (Non-Negotiable)
+
+The system MUST guarantee the following under all conditions:
+
+### Rule 0.1.1 (G1): Economic Safety
+
+- No sequence of actions can increase user value illegitimately
+- Attacker cost ≥ system cost
+- Partial failure cannot create profit
+- Replay must never produce profit
+- Compensation paths must be idempotent and replay-safe
+
+### Rule 0.1.2 (G2): Temporal Safety
+
+- Time-based logic fails closed
+- Clock manipulation does not grant advantage
+- Client time is never trusted
+- All time checks use server time
+
+### Rule 0.1.3 (G3): Cryptographic Safety
+
+- Backend never signs unverifiable messages
+- Backend never signs what it cannot independently re-derive and verify
+- Signing cannot be abused via encoding or serialization
+- All signed messages must be canonically serialized
+
+### Rule 0.1.4 (G4): State Safety
+
+- Illegal state transitions are impossible
+- Rollbacks are atomic and idempotent
+- No partial failure can be profitable
+- No retry can change economic outcome
+- **Abort is not a rollback primitive** (see Rule 15.4.5.1)
+- **Partial state must be resumable, not reversible** (see Rule 15.4.5.2)
+- **There must be exactly one economic commit point** (see Rule 15.4.5.3)
+
+### Rule 0.1.5 (G5): Boundary Safety
+
+- Internal APIs are hostile
+- Network position grants no privilege
+- Administrative actions are not inherently safe
+- No security decision depends on client clock, randomness, or ordering
+
+### Rule 0.1.6 (G6): Authorization Safety
+
+- No client input can increase authority
+- No unauthenticated request mutates state
+- No authenticated request mutates another principal's state
+- No single request can mint, destroy, or finalize value
+
+Violation of any guarantee constitutes a security failure.
+
+---
+
+## 0.2. Security Meta-Invariants (Things That Must NEVER Be True)
+
+Before individual tests, define **things that must NEVER be true**.
+
+### MUST HAVE INVARIANT TESTS FOR
+
+- No client input can **increase** authority
+- No unauthenticated request mutates state
+- No authenticated request mutates **another principal's** state
+- No single request can:
+  - Mint value
+  - Destroy value
+  - Finalize value
+- No security decision depends on:
+  - Client clock
+  - Client randomness
+  - Client ordering
+- No partial failure can be profitable
+- No retry can change economic outcome
+- No "optional" validation for money paths
+
+**PASS CONDITION**
+
+- If a test violates an invariant → **automatic SEV-0**
+- Invariants are enforced at system level, not just endpoint level
+- Invariant violations cause immediate rejection, not warnings
+
+---
+
+## 1. CORS & Origin Security
+
+### Rule 1.1: MUST HAVE TESTS FOR
+
+- **Rule 1.1.1:** Missing `Origin` header
+- **Rule 1.1.2:** Empty `Origin` header
+- **Rule 1.1.3:** `null` origin
+- **Rule 1.1.4:** Untrusted origin (explicit deny)
+- **Rule 1.1.5:** Subdomain takeover origin
+- **Rule 1.1.6:** Scheme mismatch (`http` vs `https`)
+- **Rule 1.1.7:** Port mismatch
+- **Rule 1.1.8:** Mixed-case origin (`ExAmPlE.com`)
+- **Rule 1.1.9:** Trailing dot origin (`example.com.`)
+- **Rule 1.1.10:** IDN / punycode origin confusion
+- **Rule 1.1.11:** IP-based origin (`http://127.0.0.1`)
+- **Rule 1.1.12:** IPv6 origin
+- **Rule 1.1.13:** Wildcard origin (`*`) with credentials
+- **Rule 1.1.14:** Reflected origin without allowlist
+- **Rule 1.1.15:** Cached preflight reused across origins
+- **Rule 1.1.16:** Multiple `Origin` headers
+- **Rule 1.1.17:** Origin vs `Host` mismatch
+- **Rule 1.1.18:** Origin allowed but method disallowed
+- **Rule 1.1.19:** Origin allowed but headers disallowed
+- **Rule 1.1.20:** Origin allowlist tied to **environment**
+- **Rule 1.1.21:** Mobile app WebView origins
+- **Rule 1.1.22:** Deep-link origin spoofing
+- **Rule 1.1.23:** Wallet-embedded browser quirks
+- **Rule 1.1.24:** Preflight cache poisoning under concurrency
+
+### Rule 1.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 1.2.1:** Origin string mutations
+- **Rule 1.2.2:** Unicode homoglyphs
+- **Rule 1.2.3:** Overlong origin strings
+- **Rule 1.2.4:** Null byte injection
+- **Rule 1.2.5:** Embedded credentials (`https://user@host`)
+- **Rule 1.2.6:** Header folding / CRLF injection
+
+**PASS CONDITION**
+
+- Exact origin handling
+- No `*` in credentialed responses
+- CORS misconfiguration = security bug, not config detail
+
+> Web3 wallets are hostile browsers.
+
+---
+
+## 2. Authentication & Session Boundaries
+
+### Rule 2.1: MUST HAVE TESTS FOR
+
+- **Rule 2.1.1:** Missing auth token
+- **Rule 2.1.2:** Expired token
+- **Rule 2.1.3:** Token replay
+- **Rule 2.1.4:** Token audience mismatch
+- **Rule 2.1.5:** Token signed with wrong key
+- **Rule 2.1.6:** Token signed with old/rotated key
+- **Rule 2.1.7:** Token algorithm confusion (`none`, HS vs RS)
+- **Rule 2.1.8:** Cross-service token reuse
+- **Rule 2.1.9:** Token bound to wrong chain/network
+- **Rule 2.1.10:** Wallet disconnect mid-session
+- **Rule 2.1.11:** Wallet address case sensitivity
+- **Rule 2.1.12:** Session fixation
+- **Rule 2.1.13:** Parallel session abuse
+- **Rule 2.1.14:** Logout invalidation failure
+
+### Rule 2.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 2.2.1:** JWT claims
+- **Rule 2.2.2:** Signature bytes
+- **Rule 2.2.3:** Token length
+- **Rule 2.2.4:** Token encoding (base64 padding, urlsafe)
+- **Rule 2.2.5:** Mixed valid/invalid claims
+
+**PASS CONDITION**
+
+- Explicit 401 / 403
+- No partial success
+- No side effects
+- Sessions invalidated on logout
+
+---
+
+## 3. Wallet & Signature Verification (Solana-Specific)
+
+### Rule 3.1: MUST HAVE TESTS FOR
+
+- **Rule 3.1.1:** Missing signature
+- **Rule 3.1.2:** Signature over altered payload
+- **Rule 3.1.3:** Signature over different domain
+- **Rule 3.1.4:** Signature replay
+- **Rule 3.1.5:** Signature from different wallet
+- **Rule 3.1.6:** Wrong message prefix
+- **Rule 3.1.7:** Wrong nonce
+- **Rule 3.1.8:** Expired nonce
+- **Rule 3.1.9:** Nonce reuse
+- **Rule 3.1.10:** Nonce collision across users
+- **Rule 3.1.11:** Cross-environment replay (dev → prod)
+- **Rule 3.1.12:** Phantom / Backpack / Ledger differences
+- **Rule 3.1.13:** Mobile wallet deep-link tampering
+- **Rule 3.1.14:** Signature replay across programs
+- **Rule 3.1.15:** CPI (Cross-Program Invocation) trust boundary violations
+- **Rule 3.1.16:** Slot-based race abuse
+- **Rule 3.1.17:** Finality assumption violations
+- **Rule 3.1.18:** Simulation ≠ execution mismatch
+- **Rule 3.1.19:** Fee manipulation
+- **Rule 3.1.20:** Compute budget abuse
+- **Rule 3.1.21:** Transaction size edge cases
+- **Rule 3.1.22:** Memo field abuse
+- **Rule 3.1.23:** PDA (Program Derived Address) collision attempts
+- **Rule 3.1.24:** Account rent edge cases
+- **Rule 3.1.25:** Slot drift exploitation
+- **Rule 3.1.26:** Clock sysvar manipulation assumptions
+- **Rule 3.1.27:** Rent exemption boundary abuse
+- **Rule 3.1.28:** Account resizing edge cases
+- **Rule 3.1.29:** CPI reentrancy assumptions
+
+### Rule 3.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 3.2.1:** Signed message content
+- **Rule 3.2.2:** Nonce values
+- **Rule 3.2.3:** Signature bytes
+- **Rule 3.2.4:** Encoding (UTF-8 vs UTF-16)
+- **Rule 3.2.5:** Slot number variations
+- **Rule 3.2.6:** Transaction metadata mutations
+- **Rule 3.2.7:** PDA seed combinations
+
+**PASS CONDITION**
+- Strict rejection
+- No trust in client-supplied chain data
+- Nonce replay protection enforced
+
+---
+
+## 4. Rate Limiting & Abuse Controls
+
+### Rule 4.1: MUST HAVE TESTS FOR
+
+- **Rule 4.1.1:** Per-IP limit
+- **Rule 4.1.2:** Per-wallet limit
+- **Rule 4.1.3:** Per-session limit
+- **Rule 4.1.4:** Burst abuse
+- **Rule 4.1.5:** Slow-drip abuse
+- **Rule 4.1.6:** Distributed IP abuse
+- **Rule 4.1.7:** NAT/shared IP false positives
+- **Rule 4.1.8:** Rate limit bypass via headers
+- **Rule 4.1.9:** Rate limit bypass via HTTP/2 streams
+- **Rule 4.1.10:** Rate limit bypass via method change
+- **Rule 4.1.11:** Rate limit bypass via path variants
+- **Rule 4.1.12:** Cloudflare edge vs origin mismatch
+- **Rule 4.1.13:** Fail-open behavior
+- **Rule 4.1.14:** CPU-bound payloads
+- **Rule 4.1.15:** Memory-bound payloads
+- **Rule 4.1.16:** Disk amplification
+- **Rule 4.1.17:** Log amplification
+- **Rule 4.1.18:** Cache-busting abuse
+- **Rule 4.1.19:** Regex DoS
+- **Rule 4.1.20:** JSON parser bombs
+- **Rule 4.1.21:** Compression bombs
+- **Rule 4.1.22:** Slow-loris variants
+- **Rule 4.1.23:** WebSocket connection pinning
+
+### Rule 4.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 4.2.1:** Request timing
+- **Rule 4.2.2:** Header permutations
+- **Rule 4.2.3:** Parallel connections
+- **Rule 4.2.4:** HTTP/2 multiplexing
+
+### Rule 4.3: MUST HAVE FAIL MODES
+
+- **Rule 4.3.1:** Graceful degradation
+- **Rule 4.3.2:** Economic neutrality under load
+- **Rule 4.3.3:** No auth bypass under pressure
+
+**PASS CONDITION**
+- Deterministic rejection under load
+- No service degradation for legitimate users
+- Resource limits enforced
+- Graceful degradation, not crash
+
+---
+
+## 5. Input Validation (Game & API)
+
+### Rule 5.1: MUST HAVE TESTS FOR
+
+- **Rule 5.1.1:** Missing required fields
+- **Rule 5.1.2:** Extra unexpected fields
+- **Rule 5.1.3:** Type mismatches
+- **Rule 5.1.4:** Boundary values
+- **Rule 5.1.5:** Negative values
+- **Rule 5.1.6:** Floating point precision abuse
+- **Rule 5.1.7:** Integer overflow
+- **Rule 5.1.8:** Underflow
+- **Rule 5.1.9:** NaN / Infinity
+- **Rule 5.1.10:** Empty arrays / objects
+- **Rule 5.1.11:** Deeply nested JSON
+- **Rule 5.1.12:** Duplicate keys
+- **Rule 5.1.13:** Order-dependent parsing
+- **Rule 5.1.14:** Canonicalization mismatches
+- **Rule 5.1.15:** Schema drift between:
+  - Client ↔ API
+  - API ↔ worker
+  - Worker ↔ blockchain
+- **Rule 5.1.16:** Silent coercion (`"1"` → `1`)
+- **Rule 5.1.17:** Float ↔ integer truncation
+- **Rule 5.1.18:** Precision loss on serialization
+- **Rule 5.1.19:** Default value abuse
+- **Rule 5.1.20:** Nullable vs missing confusion
+- **Rule 5.1.21:** Partial object updates
+- **Rule 5.1.22:** Unknown enum values
+- **Rule 5.1.23:** Case-sensitive enum mismatch
+- **Rule 5.1.24:** Schema evolution rollback attacks
+- **Rule 5.1.25:** Backward-compatible abuse
+- **Rule 5.1.26:** Forward-compatible abuse
+
+### Rule 5.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 5.2.1:** User input
+- **Rule 5.2.2:** URLs
+- **Rule 5.2.3:** Query parameters
+- **Rule 5.2.4:** JSON payloads
+- **Rule 5.2.5:** Headers
+- **Rule 5.2.6:** Binary payloads
+- **Rule 5.2.7:** Compression bombs
+- **Rule 5.2.8:** Recursive structures
+- **Rule 5.2.9:** Cross-field dependency violations
+- **Rule 5.2.10:** Deep nesting (10–10,000 levels)
+- **Rule 5.2.11:** Duplicate keys with different casing
+- **Rule 5.2.12:** Conflicting numeric representations
+- **Rule 5.2.13:** Sparse arrays
+- **Rule 5.2.14:** Hybrid array/object payloads
+
+**PASS CONDITION**
+- Rejected at boundary
+- Business logic never reached
+- Validation happens at the boundary
+
+---
+
+## 6. Game Logic & Economy Abuse
+
+### Rule 6.1: MUST HAVE TESTS FOR
+
+- **Rule 6.1.1:** Double spend attempts
+- **Rule 6.1.2:** Replay of game actions
+- **Rule 6.1.3:** Out-of-order actions
+- **Rule 6.1.0:** Idempotency keys must be client-provided (server auto-generation defeats retry safety — client needs key to retry)
+- **Rule 6.1.4:** Time manipulation
+- **Rule 6.1.5:** Tick desync
+- **Rule 6.1.6:** Client-authoritative decisions
+- **Rule 6.1.7:** Server trust of client state
+- **Rule 6.1.8:** Reward duplication
+- **Rule 6.1.9:** Refund abuse
+- **Rule 6.1.10:** Partial failure exploitation
+- **Rule 6.1.11:** Race conditions
+- **Rule 6.1.12:** Concurrent action abuse
+- **Rule 6.1.13:** Idempotency violations
+- **Rule 6.1.14:** Impossible state transitions
+- **Rule 6.1.15:** Skipping required steps
+- **Rule 6.1.16:** Reordering steps
+- **Rule 6.1.17:** Reusing intermediate states
+- **Rule 6.1.18:** Concurrent state mutation
+- **Rule 6.1.19:** Stale state writeback
+- **Rule 6.1.20:** Client-predicted state acceptance
+- **Rule 6.1.21:** Server-side race amplification
+- **Rule 6.1.22:** Rollback exploitation
+- **Rule 6.1.23:** Split-brain state resolution
+
+### Rule 6.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 6.2.1:** Action ordering
+- **Rule 6.2.2:** State transitions
+- **Rule 6.2.3:** Concurrent requests
+- **Rule 6.2.4:** Timing jitter
+- **Rule 6.2.5:** Partial payload corruption
+- **Rule 6.2.6:** State machine fuzzing
+- **Rule 6.2.7:** Retry boundaries
+- **Rule 6.2.8:** Partial execution points
+- **Rule 6.2.9:** Cache-hit vs cache-miss paths
+- **Rule 6.2.10:** Cross-service serialization boundaries
+
+**PASS CONDITION**
+- Explicit rejection
+- No partial progression
+- Idempotent OR rejected
+- No double execution
+
+---
+
+## 7. Blockchain Interaction & RPC Safety
+
+### Rule 7.1: MUST HAVE TESTS FOR
+
+- **Rule 7.1.1:** RPC node failure
+- **Rule 7.1.2:** RPC latency spikes
+- **Rule 7.1.3:** Fork / reorg handling
+- **Rule 7.1.4:** Finality assumptions
+- **Rule 7.1.5:** Incorrect slot assumptions
+- **Rule 7.1.6:** Fee manipulation
+- **Rule 7.1.7:** Transaction simulation trust
+- **Rule 7.1.8:** Signature confirmation spoofing
+- **Rule 7.1.9:** RPC response tampering
+- **Rule 7.1.10:** Multiple RPC disagreement
+- **Rule 7.1.11:** Slot-based race abuse
+- **Rule 7.1.12:** Finality assumption violations
+- **Rule 7.1.13:** Simulation ≠ execution mismatch
+- **Rule 7.1.14:** Transaction size edge cases
+- **Rule 7.1.15:** Account rent edge cases
+
+### Rule 7.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 7.2.1:** RPC responses
+- **Rule 7.2.2:** Slot numbers
+- **Rule 7.2.3:** Transaction metadata
+- **Rule 7.2.4:** Error codes
+
+**PASS CONDITION**
+- No trust in client-provided blockchain data
+- Handles RPC failures gracefully
+- Validates RPC responses
+
+---
+
+## 8. Cloudflare / Edge Dependency Assumptions
+
+### Rule 8.1: MUST HAVE TESTS FOR
+
+- **Rule 8.1.1:** Origin exposed directly
+- **Rule 8.1.2:** IP allowlist bypass
+- **Rule 8.1.3:** CF header spoofing
+- **Rule 8.1.4:** Trusting `CF-Connecting-IP`
+- **Rule 8.1.5:** Trusting `X-Forwarded-For`
+- **Rule 8.1.6:** Cache poisoning
+- **Rule 8.1.7:** Cache key confusion
+- **Rule 8.1.8:** Cache authenticated responses
+- **Rule 8.1.9:** WAF bypass via encoding
+- **Rule 8.1.10:** Bot fight false negatives
+- **Rule 8.1.11:** Edge vs origin auth mismatch
+
+### Rule 8.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 8.2.1:** Forwarded headers
+- **Rule 8.2.2:** Cache keys
+- **Rule 8.2.3:** URL normalization
+- **Rule 8.2.4:** Header case variations
+
+**PASS CONDITION**
+- Headers validated against trusted sources
+- Cache key isolation
+- No cache poisoning possible
+
+---
+
+## 9. Transport & Protocol Security
+
+### Rule 9.1: MUST HAVE TESTS FOR
+
+- **Rule 9.1.1:** TLS downgrade
+- **Rule 9.1.2:** Weak cipher acceptance
+- **Rule 9.1.3:** HTTP/1.1 smuggling
+- **Rule 9.1.4:** HTTP/2 smuggling
+- **Rule 9.1.5:** CL.TE / TE.CL
+- **Rule 9.1.6:** Header size limits
+- **Rule 9.1.7:** Body size limits
+- **Rule 9.1.8:** Chunked encoding abuse
+- **Rule 9.1.9:** Request splitting
+- **Rule 9.1.10:** Response splitting
+
+### Rule 9.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 9.2.1:** Transfer encodings
+- **Rule 9.2.2:** Content lengths
+- **Rule 9.2.3:** Header order
+- **Rule 9.2.4:** Whitespace variations
+
+**PASS CONDITION**
+- Request parsing is strict and consistent
+- Protocol downgrades handled safely
+- No request smuggling possible
+
+---
+
+## 10. Error Handling & Observability
+
+### Rule 10.1: MUST HAVE TESTS FOR
+
+- **Rule 10.1.1:** Stack trace leakage
+- **Rule 10.1.2:** Internal error codes exposed
+- **Rule 10.1.3:** Timing side channels
+- **Rule 10.1.4:** Different errors for auth vs existence
+- **Rule 10.1.5:** Log injection
+- **Rule 10.1.6:** Sensitive data in logs
+- **Rule 10.1.7:** Metrics cardinality explosion
+- **Rule 10.1.8:** Alert fatigue conditions
+- **Rule 10.1.9:** Differential errors (auth vs existence)
+- **Rule 10.1.10:** Timing leaks
+- **Rule 10.1.11:** Stack traces under load
+- **Rule 10.1.12:** Partial error responses
+- **Rule 10.1.13:** Panic paths
+- **Rule 10.1.14:** Logging sensitive material
+- **Rule 10.1.15:** Correlation ID guessing
+- **Rule 10.1.16:** Debug flag exposure
+
+### Rule 10.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 10.2.1:** Error paths
+- **Rule 10.2.2:** Logging fields
+- **Rule 10.2.3:** Metric labels
+
+**PASS CONDITION**
+- Same failure → same error
+- No internal data leaked
+- No stack traces to clients
+- Logs sanitized
+
+---
+
+## 11. CI/CD & Supply Chain (Often Missed)
+
+### Rule 11.1: MUST HAVE TESTS FOR
+
+- **Rule 11.1.1:** Dependency pinning
+- **Rule 11.1.2:** Malicious dependency update
+- **Rule 11.1.3:** Build artifact integrity
+- **Rule 11.1.4:** Environment variable leaks
+- **Rule 11.1.5:** Secret rotation failure
+- **Rule 11.1.6:** Staging → prod bleed
+- **Rule 11.1.7:** Feature flag abuse
+
+### Rule 11.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 11.2.1:** Config values
+- **Rule 11.2.2:** Feature flags
+- **Rule 11.2.3:** Env injection
+
+**PASS CONDITION**
+- Dependencies pinned
+- Secrets not in code/logs
+- Staging/prod isolation
+- Feature flags validated
+
+---
+
+## 12. Decay & Evolution Tests (Long-Term Security)
+
+### Rule 12.1: MUST HAVE TESTS FOR
+
+- **Rule 12.1.1:** Old client compatibility abuse
+- **Rule 12.1.2:** Deprecated endpoint access
+- **Rule 12.1.3:** Backward compatibility bypass
+- **Rule 12.1.4:** Soft-deleted resources access
+- **Rule 12.1.5:** Zombie sessions
+- **Rule 12.1.6:** Partial migrations
+
+**PASS CONDITION**
+- Deprecated endpoints reject or migrate correctly
+- Soft-deleted resources inaccessible
+- Migration state validated
+
+---
+
+## 12.1. Partial Failure & Split-Brain Exploits
+
+### Rule 12.1.1: MUST HAVE TESTS FOR
+
+- **Rule 12.1.1.1:** Success response, state not persisted
+- **Rule 12.1.1.2:** State persisted, error returned
+- **Rule 12.1.1.3:** Chain tx succeeds, backend fails
+- **Rule 12.1.1.4:** Backend succeeds, chain tx dropped
+- **Rule 12.1.1.5:** Cache write succeeds, DB write fails
+- **Rule 12.1.1.6:** WebSocket event delivered, REST write fails
+- **Rule 12.1.1.7:** Worker crash between validation and commit
+- **Rule 12.1.1.8:** Retry after partial execution
+- **Rule 12.1.1.9:** Duplicate execution after timeout
+- **Rule 12.1.1.10:** Rollback after client receives success
+
+### Rule 12.1.2: MUST HAVE INVARIANTS
+
+- **Rule 12.1.2.1:** Partial failure must be economically neutral
+- **Rule 12.1.2.2:** No partial failure can be profitable
+- **Rule 12.1.2.3:** No retry can change economic outcome
+
+**PASS CONDITION**
+- Partial failures do not advantage attacker
+- Economic state remains consistent
+- Client cannot profit from failures
+
+> Partial failure exploitation is where most real exploits live.
+
+---
+
+## 12.2. Control Plane & Internal API Security
+
+### Rule 12.2.1: MUST HAVE TESTS FOR
+
+- **Rule 12.2.1.1:** Admin endpoints reachable from prod
+- **Rule 12.2.1.2:** Feature flags abused for profit
+- **Rule 12.2.1.3:** Kill-switch abuse
+- **Rule 12.2.1.4:** Observability endpoints leaking state
+- **Rule 12.2.1.5:** Debug modes accidentally enabled
+- **Rule 12.2.1.6:** Cron / worker endpoints exposed
+- **Rule 12.2.1.7:** Webhook replays
+- **Rule 12.2.1.8:** CI/CD token misuse
+- **Rule 12.2.1.9:** Secrets reused across environments
+- **Rule 12.2.1.10:** Internal endpoints without auth
+- **Rule 12.2.1.11:** Admin operations logged incorrectly
+- **Rule 12.2.1.12:** Control plane rate limits
+
+### Rule 12.2.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 12.2.2.1:** Admin endpoint discovery
+- **Rule 12.2.2.2:** Feature flag combinations
+- **Rule 12.2.2.3:** Webhook payload mutations
+
+**PASS CONDITION**
+- Admin endpoints require explicit auth
+- Feature flags validated against abuse
+- Debug modes never enabled in prod
+- Internal APIs treated as hostile
+
+> Attackers don't respect "internal" boundaries.
+
+---
+
+## 12.3. Cross-Layer Trust Violations
+
+### Rule 12.3.1: MUST HAVE TESTS FOR
+
+- **Rule 12.3.1.1:** CDN allows, origin denies
+- **Rule 12.3.1.2:** Origin allows, worker denies
+- **Rule 12.3.1.3:** Worker allows, chain denies
+- **Rule 12.3.1.4:** Chain allows, backend rejects
+- **Rule 12.3.1.5:** Cache vs origin auth mismatch
+- **Rule 12.3.1.6:** Preflight cached across users
+- **Rule 12.3.1.7:** Signature verified in one service only
+- **Rule 12.3.1.8:** Validation only enforced "at edge"
+- **Rule 12.3.1.9:** Layer-specific bypass attempts
+- **Rule 12.3.1.10:** Cache poisoning via layer disagreement
+
+### Rule 12.3.2: MUST HAVE FUZZ TESTS FOR
+
+- **Rule 12.3.2.1:** Cross-layer request mutations
+- **Rule 12.3.2.2:** Layer-specific header abuse
+- **Rule 12.3.2.3:** Cache key collisions across layers
+
+**PASS CONDITION**
+- Security checks duplicated, not centralized
+- No single point of trust failure
+- Layer disagreements reject requests
+
+**RULE**
+> Security checks must be duplicated, not centralized
+
+---
+
+## 13. Security Test Acceptance Checklist
+
+A security test is valid only if:
+
+- **Rule 13.1:** It fails when protection is removed
+- **Rule 13.2:** It asserts exact rejection behavior
+- **Rule 13.3:** It does NOT rely on "no crash"
+- **Rule 13.4:** It tests behavior, not configuration
+- **Rule 13.5:** It assumes a hostile client
+
+If any rule is violated → **test rejected**.
+
+---
+
+## 14. Security Coverage Gate (Hard Rule)
+
+### Global Rule (Non-Negotiable)
+
+For every new endpoint, route, handler, worker, or feature:
+
+If it accepts external input, it MUST be covered by at least one test in each applicable category below.
+
+No category → feature is incomplete.
+
+### Mandatory Security Test Categories
+
+#### Rule 14.1: Authentication & Authorization
+
+**MUST EXIST**
+
+- **Rule 14.1.1:** Missing auth
+- **Rule 14.1.2:** Invalid / malformed auth
+- **Rule 14.1.3:** Cross-user access attempt
+- **Rule 14.1.4:** Privilege escalation attempt
+
+**PASS CONDITION**
+
+- Explicit 401 / 403
+- No partial success
+- No side effects
+
+#### Rule 14.2: CORS / Origin Enforcement
+
+**MUST EXIST**
+
+- **Rule 14.2.1:** Untrusted origin
+- **Rule 14.2.2:** Mismatched origin
+- **Rule 14.2.3:** Wildcard rejection in prod
+- **Rule 14.2.4:** Explicit allowed origin acceptance
+
+**PASS CONDITION**
+
+- Exact origin handling
+- No `*` in credentialed responses
+
+#### Rule 14.3: Input Validation & Schema
+
+**MUST EXIST**
+
+- **Rule 14.3.1:** Missing fields
+- **Rule 14.3.2:** Extra fields
+- **Rule 14.3.3:** Wrong types
+- **Rule 14.3.4:** Boundary values
+- **Rule 14.3.5:** Empty / whitespace-only values
+
+**PASS CONDITION**
+
+- Rejected at boundary
+- Business logic never reached
+
+#### Rule 14.4: URL / Path Manipulation
+
+**MUST EXIST**
+
+- **Rule 14.4.1:** `../` traversal
+- **Rule 14.4.2:** Encoded traversal
+- **Rule 14.4.3:** Double-encoded traversal
+- **Rule 14.4.4:** Mixed slash / case variants
+
+**PASS CONDITION**
+
+- Rejection before file / resource resolution
+
+#### Rule 14.5: Header Injection
+
+**MUST EXIST**
+
+- **Rule 14.5.1:** CRLF injection
+- **Rule 14.5.2:** URL-encoded CRLF
+- **Rule 14.5.3:** Null byte injection
+- **Rule 14.5.4:** Platform-level negative reachability test
+
+**PASS CONDITION**
+
+- Request rejected OR never reaches worker
+
+#### Rule 14.6: SSRF / Internal Network Access
+
+**MUST EXIST**
+
+- **Rule 14.6.1:** localhost / 127.0.0.1
+- **Rule 14.6.2:** metadata services
+- **Rule 14.6.3:** IPv6 loopback
+- **Rule 14.6.4:** file://
+- **Rule 14.6.5:** gopher://
+
+**PASS CONDITION**
+
+- Rejected before network access
+- No outbound request performed
+
+#### Rule 14.7: Fuzzing / Randomized Abuse
+
+**MUST EXIST**
+
+- **Rule 14.7.1:** Random payload fuzzing
+- **Rule 14.7.2:** Header fuzzing
+- **Rule 14.7.3:** URL fuzzing
+
+**PASS CONDITION**
+
+- No crashes
+- No hangs
+- Clean rejection
+
+#### Rule 14.8: Replay / Duplication (Money-Critical)
+
+**MUST EXIST**
+
+- **Rule 14.8.1:** Same request replay
+- **Rule 14.8.2:** Same payload duplicate
+- **Rule 14.8.3:** Concurrent execution attempt
+
+**PASS CONDITION**
+
+- Idempotent OR rejected
+- No double execution
+
+**Rule 14.8.4: Idempotent HTTP Status Codes**
+
+For idempotent operations (create-or-update, duplicate detection):
+
+- **MUST return HTTP 200 OK** (or 201 Created for first creation) when resource already exists
+- **MUST NOT return HTTP 409 Conflict** for idempotent "already exists" scenarios
+- HTTP 409 Conflict is **only** for resolvable conflicts, not idempotent replays
+- Response body should indicate idempotent behavior (e.g., `already_unlocked: true`)
+
+**Rationale:**
+- Idempotent operations that produce no economic change must not look like failures
+- Sequential retries and concurrent duplicates after creation are indistinguishable and should both return 200 OK
+- Economic correctness is enforced at storage/optimistic lock layer, not via HTTP status codes
+
+**Concurrency Testing (Rule 14.8.5):**
+
+Concurrency tests **MUST**:
+- Assert **final state safety** (e.g., exactly one resource created, no duplicate economic effects)
+- Assert **economic invariants** (e.g., total balance unchanged, no double rewards)
+
+Concurrency tests **MUST NOT**:
+- Assert exact HTTP status code counts (e.g., "exactly 1 HTTP 200")
+- Assert request ordering or timing-dependent outcomes
+- Count successful responses as a security property
+
+**Rule:**
+> Concurrency tests verify **state safety**, not HTTP semantics. The security property is "no double execution", proven by final state, not by status code distribution.
+
+#### Rule 14.9: State / Logic Abuse
+
+**MUST EXIST**
+
+- **Rule 14.9.1:** Invalid state transition
+- **Rule 14.9.2:** Skipped steps
+- **Rule 14.9.3:** Out-of-order execution
+
+**PASS CONDITION**
+
+- Explicit rejection
+- No partial progression
+
+#### Rule 14.10: DDoS & Resource Exhaustion
+
+**MUST EXIST**
+
+- **Rule 14.10.1:** Volume-based DDoS (flooding)
+- **Rule 14.10.2:** Protocol-based DDoS (SYN floods)
+- **Rule 14.10.3:** Application-layer DDoS (HTTP floods, Slowloris)
+- **Rule 14.10.4:** Resource exhaustion (CPU, memory, connections)
+- **Rule 14.10.5:** Burst requests
+- **Rule 14.10.6:** Parallel abuse
+- **Rule 14.10.7:** Slow request attacks
+
+**PASS CONDITION**
+
+- Deterministic rejection under load
+- No service degradation for legitimate users
+- Resource limits enforced
+- Graceful degradation, not crash
+
+#### Rule 14.11: Error & Information Leakage
+
+**MUST EXIST**
+
+- **Rule 14.11.1:** Error sanitization test
+- **Rule 14.11.2:** No stack traces
+- **Rule 14.11.3:** No secrets
+- **Rule 14.11.4:** Stable error shape
+
+**PASS CONDITION**
+
+- Same failure → same error
+- No internal data leaked
+
+#### Rule 14.12: Blockchain / Wallet Integrity (Solana)
+
+**MUST EXIST**
+
+- **Rule 14.12.1:** Invalid signature
+- **Rule 14.12.2:** Wrong signer
+- **Rule 14.12.3:** Wrong account ownership
+- **Rule 14.12.4:** Replay of signed payload
+- **Rule 14.12.5:** Wrong network / cluster
+
+**PASS CONDITION**
+
+- Strict rejection
+- No trust in client-supplied chain data
+
+#### Rule 14.13: Brute Force & Credential Attacks
+
+**MUST EXIST**
+
+- **Rule 14.13.1:** Brute force password attempts
+- **Rule 14.13.2:** Credential stuffing
+- **Rule 14.13.3:** Account enumeration prevention
+- **Rule 14.13.4:** Account lockout mechanisms
+- **Rule 14.13.5:** Progressive delays on failures
+
+**PASS CONDITION**
+
+- Account-level rate limits enforced
+- No enumeration via timing or errors
+- Lockout mechanisms work correctly
+
+#### Rule 14.14: Session & CSRF Security
+
+**MUST EXIST**
+
+- **Rule 14.14.1:** Session fixation prevention
+- **Rule 14.14.2:** CSRF token validation
+- **Rule 14.14.3:** Secure cookie flags
+- **Rule 14.14.4:** Session timeout enforcement
+- **Rule 14.14.5:** Token replay prevention
+
+**PASS CONDITION**
+
+- CSRF tokens required and validated
+- Secure cookie flags enforced (HttpOnly, Secure, SameSite)
+- Session replay prevented
+
+#### Rule 14.15: Request Smuggling & Protocol Attacks
+
+**MUST EXIST**
+
+- **Rule 14.15.1:** HTTP request smuggling prevention
+- **Rule 14.15.2:** Host header validation
+- **Rule 14.15.3:** HTTP/2 downgrade protection
+- **Rule 14.15.4:** Cache poisoning prevention
+
+**PASS CONDITION**
+
+- Request parsing is strict and consistent
+- Host header validated against allowlist
+- Protocol downgrades handled safely
+
+### Rule 14.16: Security Coverage Gate (Hard Rule)
+
+A feature is NOT DONE unless:
+
+- **Rule 14.16.1:** All applicable categories above have at least one test
+- **Rule 14.16.2:** Tests fail when protection is removed
+- **Rule 14.16.3:** Tests assert rejection, not "no crash"
+- **Rule 14.16.4:** Tests are behavior-based, not config-based
+
+Missing category = security defect.
+
+---
+
+## 15. Advanced Security Testing Requirements (System-Level)
+
+### Rule 15.1: Security Invariants (Formalized Rules)
+
+Define and test **non-negotiable invariants** that apply across multiple endpoints.
+
+**MUST TEST**
+
+- **Rule 15.1.1:** Cross-cutting business rules (e.g., "Balance can never go negative")
+- **Rule 15.1.2:** Economic invariants (e.g., "Total payout ≤ total escrow")
+- **Rule 15.1.3:** State invariants (e.g., "One wallet = one active session")
+- **Rule 15.1.4:** Idempotency invariants (e.g., "Reward can be claimed at most once per game instance")
+
+**TEST METHOD**
+
+- Property-based tests across multiple endpoints
+- Verify violations of invariants are rejected
+- Test impossible states are unrepresentable
+
+### Rule 15.1.1: Property-Based Fuzzing (State, Not Just Input)
+
+**MUST HAVE PROPERTIES**
+
+- **Rule 15.1.1.1:** Same input ≠ different outcome (unless randomness is explicit)
+- **Rule 15.1.1.2:** Same action twice ≠ more value
+- **Rule 15.1.1.3:** Order of independent actions ≠ advantage
+- **Rule 15.1.1.4:** Failure ≠ reward
+- **Rule 15.1.1.5:** Timeout ≠ success
+- **Rule 15.1.1.6:** Retry ≠ mutation
+
+**MUST HAVE FUZZ TARGETS**
+
+- **Rule 15.1.1.7:** State machines
+- **Rule 15.1.1.8:** Action ordering
+- **Rule 15.1.1.9:** Retry boundaries
+- **Rule 15.1.1.10:** Partial execution points
+- **Rule 15.1.1.11:** Cache-hit vs cache-miss paths
+- **Rule 15.1.1.12:** Cross-service serialization boundaries
+
+### Rule 15.1.1.1: Fuzzing Intent (Profit, Not Crashes)
+
+**MUST HAVE FUZZ TESTS FOR**
+
+- **Rule 15.1.1.1.1:** Fuzzing for *profit*, not crashes
+- **Rule 15.1.1.1.2:** Fuzzing state transitions
+- **Rule 15.1.1.1.3:** Fuzzing retries + delays
+- **Rule 15.1.1.1.4:** Fuzzing concurrency
+- **Rule 15.1.1.1.5:** Fuzzing rollback windows
+
+**RULE**
+
+> If fuzzing only crashes things, it's not security fuzzing.
+
+> **Key**: fuzz *state*, not just input
+
+> These are **system-level correctness** rules, not just endpoint security.
+
+---
+
+### Rule 15.2: Cross-Request / Multi-Step Attack Scenarios
+
+Test **attack sequences**, not just single requests.
+
+**MUST TEST**
+
+- **Rule 15.2.1:** Partial success → skip step → complete action
+- **Rule 15.2.2:** Start workflow → never finish → claim reward
+- **Rule 15.2.3:** Create intent → cancel → replay old signed payload
+- **Rule 15.2.4:** Auth → revoke → reuse token concurrently
+
+**TEST METHOD**
+
+- Multi-step workflow tests
+- Test skipped steps in workflows
+- Verify state transitions are enforced
+
+> Attackers script flows, not single requests.
+
+---
+
+### Rule 15.3: Time-Based Attacks (Clock Abuse)
+
+Attack time itself as a shared mutable dependency.
+
+**MUST TEST**
+
+- **Rule 15.3.1:** Expired-but-accepted signatures
+- **Rule 15.3.2:** Future timestamps
+- **Rule 15.3.3:** Clock skew abuse
+- **Rule 15.3.4:** Replay just before expiry window
+- **Rule 15.3.5:** Race at boundary (T = expiry − 1ms)
+
+**TEST METHOD**
+
+- Controlled clocks / time mocking
+- Parallel execution at time boundaries
+- Boundary fuzzing for time windows
+
+> Time is a shared mutable dependency that must be tested.
+
+---
+
+### Rule 15.4: Economic / Incentive Attacks (Money-Critical)
+
+Test economic invariants, not just code bugs.
+
+**MUST TEST**
+
+- **Rule 15.4.1:** "Can I profit by failing?"
+- **Rule 15.4.2:** "Can I profit by timing out?"
+- **Rule 15.4.3:** "Can I profit by spamming cheap actions?"
+- **Rule 15.4.4:** "Is griefing cheaper than playing?"
+- **Rule 15.4.5:** Repeated aborts don't leak value
+- **Rule 15.4.6:** Partial failures don't advantage attacker
+- **Rule 15.4.7:** Fees are always charged exactly once
+
+**TEST METHOD**
+
+- Economic property tests
+- Cost-benefit analysis tests
+- Griefing cost calculations
+
+### Rule 15.4.5: Abort Handling & Economic Commit Semantics (Critical)
+
+**Core Principle:**
+
+> **Abort is not a rollback primitive. Abort only means: "client stopped waiting."**
+
+Once the server crosses an **economic commit point**, abort is **irrelevant**.
+
+**Rule 15.4.5.1: Abort Semantics (Universal)**
+
+**Abort is:**
+- Client-side signal (best-effort, non-authoritative)
+- Advisory, not transactional
+- Meaningless after economic commit
+
+**Abort is NOT:**
+- A rollback permission
+- A failure signal
+- A consensus signal
+- A transactional primitive
+
+**Rule 15.4.5.2: Single Economic Commit Point (Mandatory)**
+
+For **any** operation that has economic value:
+
+- **MUST** define exactly **one authoritative commit point**
+- Everything before commit is **preparatory** (can be aborted safely)
+- Everything after commit is **idempotent observation** (abort is ignored)
+- Partial progress before commit **must be resumable**, not reversible
+
+**Example (CORRECT):**
+```typescript
+// Preparatory phase (can abort)
+const badge = createBadge(...);
+await saveBadge(badge);  // Non-economic, preparatory
+
+// Economic commit point (irreversible)
+const result = await creditStorage.earnGP(...);  // ← ONLY ECONOMIC COMMIT
+if (result.success) {
+  await markBadgeRewarded(badge.id);  // Idempotent observation
+}
+```
+
+**Example (WRONG):**
+```typescript
+// ❌ WRONG: Two economic commits
+await saveBadge(badge);  // Commit 1 (wrong!)
+await creditStorage.earnGP(...);  // Commit 2 (wrong!)
+```
+
+**Rule 15.4.5.3: Partial State Must Be Explicit and Resumable**
+
+**Requirements:**
+- Partial state before commit **must be trackable** (e.g., `rewards_claimed: false`)
+- Partial state is **explicit**, not hidden
+- Retry after abort **must complete safely** (idempotent)
+- Partial state **must not imply economic value**
+
+**Prohibited Patterns:**
+- Hiding partial state
+- Making partial state irreversible
+- Requiring rollback for partial state
+- Treating partial state as error
+
+**Rule 15.4.5.4: Rollback on Abort Is Forbidden**
+
+**Forbidden:**
+- Rolling back state on client abort
+- Undoing committed operations due to abort
+- Treating abort as failure signal
+- Making abort transactional
+
+**Allowed:**
+- Rolling back **within a transaction** if transaction itself fails
+- Rolling back **before commit** if explicit server-side cancellation
+- Compensating transactions for **business failures** (not abort)
+
+**Rationale:**
+- Abort can arrive after commit (network delay, race conditions)
+- Rollback introduces new failure modes (rollback itself can fail)
+- Distributed systems cannot guarantee "abort before commit" timing
+- Real systems (Stripe, Solana, AWS) do not rollback on abort
+
+**Rule 15.4.5.5: Abort vs Cancel vs Failure Distinction**
+
+**Client-Side Concepts (Non-Authoritative):**
+- `aborted` - Client stopped waiting (AbortController.abort())
+- `canceled` - User intent to stop (requires server acknowledgment)
+- `timeout` - Client didn't get response
+- `disconnect` - Transport ended
+
+**Server-Side Concepts (Authoritative):**
+- `rejected` - Server refused to commit (validation error, business rule)
+- `committed` - Irreversible effect applied (economic commit)
+- `pending` - Not yet committed (can be abandoned or resumed)
+- `completed` - Commit + bookkeeping done (final state)
+
+**Golden Rule:**
+> **Only the server can cancel an operation. Clients can only abandon it.**
+
+**Rule 15.4.5.6: Abort Test Semantics (Critical for Test Rules)**
+
+**WRONG Test Pattern:**
+```typescript
+// ❌ WRONG: Tests timing, not economic safety
+const controller = new AbortController();
+setTimeout(() => controller.abort(), 10);
+await requestWithAbort(controller);
+expect(economicValue).toBe(0);  // "No request completed"
+```
+
+**Why This Is Wrong:**
+- Server may complete before abort fires (network timing)
+- Tests race condition, not security property
+- Invalid distributed-systems guarantee
+
+**CORRECT Test Pattern:**
+```typescript
+// ✅ CORRECT: Tests economic invariant, not timing
+const requests = Array.from({ length: 10 }, () => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 10);
+  return requestWithAbort(controller);
+});
+await Promise.all(requests);
+
+// Assert economic invariant: at most one reward
+const finalState = await getEconomicState();
+expect(finalState.rewardCount).toBeLessThanOrEqual(1);
+expect(finalState.totalValue).toBeLessThanOrEqual(singleRewardAmount);
+
+// Assert partial state is resumable
+if (finalState.pendingWorkExists) {
+  const retryResult = await retryPendingWork();
+  expect(retryResult.rewards_claimed).toBe(true);
+}
+```
+
+**Rule:**
+> Abort tests verify **economic invariants**, not timing. The security property is "no extra economic value", proven by final state, not by completion timing.
+
+**PASS CONDITION**
+- Repeated aborts cannot create extra economic value
+- Partial state is explicit and resumable
+- Exactly one economic commit point per operation
+- Abort does not trigger rollback
+
+### Rule 15.4.1: Economic Invariants (Formalized)
+
+**DEFINE**
+
+- **Rule 15.4.1.1:** Conservation of value
+- **Rule 15.4.1.2:** No free optionality
+- **Rule 15.4.1.3:** No asymmetric retries
+- **Rule 15.4.1.4:** No user-chosen execution timing advantage
+- **Rule 15.4.1.5:** No user-chosen fee advantage
+- **Rule 15.4.1.6:** No rounding benefit
+- **Rule 15.4.1.7:** No partial payout
+
+**TEST**
+
+- **Rule 15.4.1.8:** Best-case attacker profit per request
+- **Rule 15.4.1.9:** Profit under latency
+- **Rule 15.4.1.10:** Profit under outage
+- **Rule 15.4.1.11:** Profit under race
+- **Rule 15.4.1.12:** Profit under replay
+- **Rule 15.4.1.13:** Profit under rollback
+
+**PASS CONDITION**
+
+- Economic invariants never violated
+- No profit possible from attacks
+- System remains economically sound under all conditions
+
+> System can be "secure" but economically exploitable.
+
+---
+
+### Rule 15.5: Concurrency as First-Class Threat
+
+Assume "If it can race, it will race."
+
+**MUST TEST**
+
+- **Rule 15.5.1:** Same user, same wallet, same request, N threads
+- **Rule 15.5.2:** Distributed concurrency (simulated)
+- **Rule 15.5.3:** Lock contention failure modes
+- **Rule 15.5.4:** "Eventually consistent" abuse
+- **Rule 15.5.5:** Concurrent state transitions
+
+**TEST METHOD**
+
+- High-concurrency stress tests
+- Parallel execution tests
+- Lock timeout scenarios
+
+> Rare bugs = most expensive bugs.
+
+---
+
+### Rule 15.6: Negative Authorization Matrix (Explicit)
+
+Build role × action matrices and test everything forbidden.
+
+**MUST TEST**
+
+- **Rule 15.6.1:** All combinations of (role, action) that must fail
+- **Rule 15.6.2:** Permission creep prevention
+- **Rule 15.6.3:** Accidental exposure prevention
+- **Rule 15.6.4:** Banned user access attempts
+- **Rule 15.6.5:** Cross-user resource access
+- **Rule 15.6.6:** For **every endpoint × role × state**:
+  - **Rule 15.6.6.1:** Authenticated but wrong role
+  - **Rule 15.6.6.2:** Authenticated but wrong state
+  - **Rule 15.6.6.3:** Authenticated but stale state
+  - **Rule 15.6.6.4:** Authenticated but revoked
+  - **Rule 15.6.6.5:** Authenticated but downgraded
+  - **Rule 15.6.6.6:** Authenticated but partial permissions
+
+**TEST METHOD**
+
+- Authorization matrix tests
+- Role-based access control tests
+- Permission regression tests
+
+> Authorization regressions slip in silently.
+
+---
+
+### Rule 15.7: Kill-Switch / Emergency Mode Testing
+
+Test system behavior under emergency conditions.
+
+**MUST TEST**
+
+- **Rule 15.7.1:** System halts safely when kill-switch activated
+- **Rule 15.7.2:** No partial payouts during emergency
+- **Rule 15.7.3:** No inconsistent state during shutdown
+- **Rule 15.7.4:** Chain instability handling
+- **Rule 15.7.5:** Oracle compromise scenarios
+- **Rule 15.7.6:** Immediate economic halt
+- **Rule 15.7.7:** Partial feature disable
+- **Rule 15.7.8:** Read-only enforcement
+- **Rule 15.7.9:** Kill-switch auth protection
+- **Rule 15.7.10:** Kill-switch rollback
+- **Rule 15.7.11:** Kill-switch abuse prevention
+- **Rule 15.7.12:** Kill-switch observability
+
+**TEST METHOD**
+
+- Emergency mode activation tests
+- Graceful degradation tests
+- Fail-safe verification
+
+> You're secure until production chaos.
+
+---
+
+### Rule 15.8: Observability as Security Requirement
+
+Test what gets logged, not just behavior.
+
+**MUST TEST**
+
+- **Rule 15.8.1:** Security events are emitted
+- **Rule 15.8.2:** Sensitive data is NOT logged
+- **Rule 15.8.3:** Logs are structured and complete
+- **Rule 15.8.4:** Alerts fire on abuse patterns
+- **Rule 15.8.5:** Audit trail completeness
+- **Rule 15.8.6:** Alerts trigger **before** loss occurs
+- **Rule 15.8.7:** Logs sufficient for forensics
+- **Rule 15.8.8:** No PII in telemetry
+- **Rule 15.8.9:** Metrics cardinality limits
+- **Rule 15.8.10:** Anomaly detection blind spots
+- **Rule 15.8.11:** Security events are immutable
+- **Rule 15.8.12:** Alert fatigue scenarios
+- **Rule 15.8.13:** Deterministic correlation IDs
+- **Rule 15.8.14:** Chain tx ↔ backend event linking
+- **Rule 15.8.15:** Replayable audit logs
+- **Rule 15.8.16:** Immutable security logs
+- **Rule 15.8.17:** No sampling on money paths
+
+### Rule 15.8.1: Security Event Reconstructability (Hard Requirement)
+
+**REQUIREMENT**
+
+> **Security events must be reconstructable post-incident**
+
+**MUST TEST**
+
+- **Rule 15.8.1.1:** All security events have deterministic correlation IDs
+- **Rule 15.8.1.2:** Chain transactions linked to backend events
+- **Rule 15.8.1.3:** Audit logs can be replayed for forensic analysis
+- **Rule 15.8.1.4:** Security logs are immutable
+- **Rule 15.8.1.5:** Money-path events are never sampled
+
+**PASS CONDITION**
+
+- Complete forensic reconstruction possible
+- No event loss on money paths
+- Correlation IDs enable cross-system tracing
+
+**TEST METHOD**
+
+- Log content verification
+- Sensitive data leakage tests
+- Alert triggering tests
+- Forensic replay tests
+
+> Attacks succeed silently without observability.
+
+---
+
+### Rule 15.9: Threat Model → Test Mapping
+
+Maintain explicit mapping between threats and tests.
+
+**REQUIREMENT**
+
+- **Rule 15.9.1:** Maintain threat list
+- **Rule 15.9.2:** Map each threat to specific tests
+- **Rule 15.9.3:** CI enforcement of threat coverage
+- **Rule 15.9.4:** Answer: "Which test proves this threat is impossible?"
+
+> Knowledge must be in the system, not just in heads.
+
+---
+
+## Final Security Statement
+
+> **In a money game, every unchecked assumption is a vulnerability.**
+>
+> **You are not testing "security features".**
+> **You are proving absence of entire attack classes.**
+
+Your existing suite already does this — this document just makes it impossible to forget or regress it.
+
+Security tests are allowed to be:
+
+- Paranoid
+- Redundant
+- Inconvenient
+
+They are **not** allowed to be optimistic.

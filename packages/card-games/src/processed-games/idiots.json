@@ -1,0 +1,713 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "idiots.json",
+  "name": "Idiots",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Idiots (better known as Shithead, Palace, or Karma) is a widespread shedding-type card game. The goal is to avoid being the last player with cards, as that person is declared the 'Idiot' (Shithead). It features a unique three-layered hand structure and several 'magic' cards that can reset, skip, or burn the discard pile.",
+    "category": "Shedding",
+    "subCategory": "Two-Phase",
+    "origin": "Scandinavia / Global",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Likely originated in Scandinavia in the mid-20th century spread by backpackers and students. It gained popularity globally in the 1970s and 80s.",
+    "originCountries": ["Norway", "Sweden", "Denmark"],
+    "timeline": [
+      "1970s: Becomes a staple in youth hostels and university dorms.",
+      "1990s: Rules reach North America as 'Palace'.",
+      "Present: One of the most common social card games played with a standard deck."
+    ],
+    "evolution": "The game evolved from simpler 'beat-the-card' games, adding the face-down 'blind' cards to create a high-tension endgame.",
+    "cultural": "Known for having many names, most of which are pejorative towards the loser.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 6 players.",
+    "deck": "One deck for up to 4 players, two decks for 5+.",
+    "equipment": "",
+    "dealing": "1. Deal 3 cards face-down to each player (Blind cards).\n2. Deal 3 cards face-up on top of them (Table cards).\n3. Deal 3 cards to each player's hand.\n4. Players can swap hand cards with their face-up Table cards before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to get rid of all cards (Hand -> Table -> Blind).",
+    "gameplay": "1. Starting: Player with the lowest card (usually 3) begins.\n2. Play: You must play a card equal to or HIGHER than the top card of the discard pile.\n3. **Picking Up**: If you cannot play, you must pick up the ENTIRE discard pile into your hand.\n4. **Magic Cards**: - **2s**: Reset the pile (can be played on any card). - **7s**: Next player must play a card equal to or LOWER than 7. - **8s**: Skip the next player. - **10s**: Burn the pile (it is removed from the game, and you play again). - **Four-of-a-kind**: Playing 4 of the same rank also burns the pile.",
+    "keyRules": [
+      "Follow the legal action constraints defined for Idiots.",
+      "Round outcome is resolved by the scoring method: Scoring summary: First player to shed all cards wins.",
+      "Winning condition: Be the first to get rid of all cards (Hand -> Table -> Blind)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Swap high-value cards (Aces, 2s, 10s) to your face-up Table cards. They are your lifeline for the endgame. Avoid picking up a large pile early on.",
+    "intermediate": "If you are forced to pick up a pile, try to do it when it contains many cards of the same rank, allowing you to play them all at once later.",
+    "advanced": "Card Counting: Keep track of the 2s and 10s. If your opponent is on their blind cards and you know all the 10s are gone, you can block them with a high King or Ace safely.",
+    "tips": [
+      "Save a 10 or 2 for your very last card if possible.",
+      "Don't waste a 2 on a low card; use it to get out of a tight spot against an Ace or King."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "jokers",
+        "name": "Jokers",
+        "description": "Two Jokers are added as special cards that reverse the direction of play and allow up to six players. In some variants a Joker may be played at any time; when played, the waste pile is given to another player (opponent in two-player; chooser in multiplayer).",
+        "overrides": {},
+        "emptyOverridesReason": "Deck and player-count overrides would require new deck type and engine constants; not yet modeled."
+      },
+      {
+        "id": "stacking",
+        "name": "Stacking",
+        "description": "When rearranging before play, players may stack cards of the same rank on top of each other on the upcard piles and replenish the hand from stock; this may be done more than once if more cards can be stacked.",
+        "overrides": {},
+        "emptyOverridesReason": "Swap phase and draw rules differ; would need custom phase and drawConfig overrides."
+      },
+      {
+        "id": "tens_restricted",
+        "name": "Tens Restricted",
+        "description": "Tens may not be played on face cards; a player who plays a 10 may take another turn immediately.",
+        "overrides": {},
+        "emptyOverridesReason": "Shedding validPlays and turn logic would need variant-specific rules."
+      },
+      {
+        "id": "transparency",
+        "name": "Transparency",
+        "description": "In one variant 8s are transparent and play is based on the card below; in others the 3 has this role instead.",
+        "overrides": {},
+        "emptyOverridesReason": "Special card behaviour differs; would need shedding validPlays and action-card overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays lowest legal card; doesn't swap cards effectively during setup.",
+      "medium": "Conserves magic cards; swaps high cards to table.",
+      "hard": "Expert probability math; counts magic cards and predicts when to pick up small piles to build better sets."
+    },
+    "considerations": [
+      "Three-layer card visibility (Hand, Table-Up, Table-Down).",
+      "Magic card priority (Save vs Use).",
+      "Endgame blind-card risk assessment."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat",
+        "name": "Wikipedia - Shithead",
+        "url": "https://en.wikipedia.org/wiki/Shithead_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-shithead-2.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "BoardGameGeek - Palace / Shithead"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "social",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 70,
+    "complexity": 2,
+    "luck": 7,
+    "skill": 3
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "progression": ["deal", "card_swap", "trick_play", "game_end"],
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "card_swap",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 3 blind face-down, 3 table face-up, 3 hand. Players swap hand/table cards."
+      },
+      {
+        "id": "card_swap",
+        "label": "Card Swap",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "swap_cards"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players may swap hand cards with face-up table cards."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "pick_up"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": 1,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Play card equal/higher than discard top. Magic cards: 2=reset, 7=reverse, 8=skip, 10=burn."
+      },
+      {
+        "id": "game_end",
+        "label": "Game End",
+        "actor": "system",
+        "legalActions": ["finish_game"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Last player holding cards loses."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards to players",
+        "cost": "0",
+        "constraints": "At start of round",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the discard pile",
+        "cost": "0",
+        "constraints": "Must follow rank or suit rules",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw a card from stock",
+        "cost": "0",
+        "constraints": "When unable to play",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "When unable to play and choose not to draw",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "higher_single",
+          "notes": "Play a card equal to or higher than the discard pile top; 2s reset, 7s force lower, 8s skip, 10s burn pile."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "If unable to play, pick up entire discard pile into hand."
+    },
+    "fishingConfig": "NA",
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "roles": [],
+    "customActions": [
+      {
+        "id": "swap_cards",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "pick_up",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "finish_game",
+        "supported": true,
+        "description": "End the game when one player has shed all cards.",
+        "cost": "0",
+        "constraints": "System phase; no player action.",
+        "isTerminating": true,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "fishingConfig": "Idiots is a shedding game with a single discard pile; there is no play-to-capture or fishing tableau."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "IDIOTS",
+      "subtitle": "The Multi-Layer Shedding Game",
+      "tagline": "Shed your cards fast or become the Idiot. Magic cards change everything."
+    },
+    "shortDescription": "A fast-paced shedding game with three card layers (hand, face-up, face-down) and magic cards that control the discard pile flow.",
+    "uiThemes": [
+      "classic",
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "stock",
+        "stock",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Idiots (Shithead/Palace). You have three layers: hand cards, face-up table cards, and face-down blind cards. Play cards higher than the discard top. Can't play Pick up the pile. Magic cards shake it up: 2s reset, 7s reverse the direction, 8s skip, 10s burn. Last person with cards is the Idiot!",
+    "ai": "Game: Idiots (Shithead/Palace). 2-6 players, 52-card deck (2 decks for 5+). Setup: 3 blind face-down, 3 table face-up, 3 hand. Swap: Players swap hand/table cards. Play: Must play equal/higher than discard top. Pick up pile if can't play. Magic: 2(reset) 7(reverse) 8(skip) 10(burn) 4-of-a-kind(burn). Win: First to shed all layers."
+  },
+  "scoring": {
+    "description": "First player to shed all cards wins. Last player holding cards loses and is declared the Idiot/Shithead.",
+    "winCondition": "First player to empty hand, table cards, and blind cards.",
+    "cardValues": {
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "J": "11",
+      "Q": "12",
+      "K": "13",
+      "A": "14"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": 1,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Idiots",
+    "Shithead",
+    "Palace",
+    "Karma",
+    "Scum"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0",
+    "overviewNaReasons": {
+      "originName": "Game has no single documented native name; known as Shithead, Palace, Karma in English."
+    }
+  },
+  "fieldStatus": {}
+}

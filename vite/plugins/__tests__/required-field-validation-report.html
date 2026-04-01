@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Required Field Validation Test Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #cccccc;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #4ec9b0;
+      margin-bottom: 10px;
+      font-size: 2em;
+    }
+    
+    h2 {
+      color: #569cd6;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    
+    h3 {
+      color: #9cdcfe;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1.2em;
+    }
+    
+    .header-info {
+      background-color: #252526;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #3e3e42;
+    }
+    
+    .header-info strong {
+      color: #4ec9b0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    table thead {
+      background-color: #2a2d2e;
+    }
+    
+    table th {
+      padding: 12px 15px;
+      text-align: left;
+      color: #cccccc;
+      font-weight: 600;
+      border-bottom: 2px solid #3e3e42;
+    }
+    
+    table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #3e3e42;
+    }
+    
+    table tbody tr:hover {
+      background-color: #2a2d2e;
+    }
+    
+    table a {
+      color: #4ec9b0;
+      text-decoration: none;
+    }
+    
+    table a:hover {
+      text-decoration: underline;
+    }
+    
+    details {
+      margin: 10px 0;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 0;
+      background-color: #1e1e1e;
+    }
+    
+    details summary {
+      padding: 12px 15px;
+      cursor: pointer;
+      background-color: #252526;
+      border-radius: 4px;
+      -webkit-user-select: none;
+      user-select: none;
+      font-weight: 600;
+      color: #cccccc;
+      transition: background-color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    details summary:hover {
+      background-color: #2a2d2e;
+    }
+    
+    details[open] summary {
+      border-bottom: 1px solid #3e3e42;
+      border-radius: 4px 4px 0 0;
+      background-color: #2a2d2e;
+    }
+    
+    details > div {
+      padding: 15px;
+      background-color: #1e1e1e;
+      color: #cccccc;
+    }
+    
+    details > div code {
+      background-color: #252526;
+      color: #d4d4d4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+    
+    details > div pre {
+      background-color: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 15px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    
+    details > div pre code {
+      background-color: transparent;
+      padding: 0;
+      display: block;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid #3e3e42;
+      margin: 20px 0;
+    }
+    
+    p {
+      margin: 10px 0;
+    }
+    
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #3e3e42;
+      color: #808080;
+      text-align: center;
+      font-size: 0.9em;
+    }
+    
+    .copy-button {
+      background-color: #0e639c;
+      color: #ffffff;
+      border: none;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font-size: 0.85em;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.2s ease;
+    }
+    
+    .copy-button:hover {
+      background-color: #1177bb;
+    }
+    
+    .copy-button:active {
+      background-color: #0a4d73;
+    }
+    
+    details.expects-failure-pass {
+      border-left: 4px solid #ffa500;
+    }
+    
+    details.expects-failure-pass summary {
+      background-color: #2a2317;
+      border-left: 4px solid #ffa500;
+    }
+    
+    details.expects-failure-pass[open] summary {
+      background-color: #3a2d1f;
+      border-left: 4px solid #ffa500;
+    }
+    
+    details.expects-failure-pass .expects-failure-note {
+      background-color: #2a2317;
+      border: 1px solid #ffa500;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px 0;
+      color: #ffb84d;
+    }
+    
+    table tbody tr.expects-failure-pass {
+      border-left: 4px solid #ffa500;
+      background-color: #2a2317;
+    }
+    
+    table tbody tr.expects-failure-pass:hover {
+      background-color: #3a2d1f;
+    }
+    
+    table tbody tr.pass {
+      border-left: 4px solid #4ec9b0;
+    }
+    
+    table tbody tr.fail {
+      border-left: 4px solid #f48771;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Required Field Validation Test Report</h1>
+    
+    <div class="header-info">
+      <p><strong>Generated:</strong> 2026-03-14 16:33:18</p>
+      <p><strong>Status:</strong> ✅ ALL TESTS PASSED</p>
+      <p><strong>Total Tests:</strong> 43 | <strong>Passed:</strong> 43 ✅ | <strong>Failed:</strong> 0 ❌ | <strong>Pass Rate:</strong> 100%</p>
+      <p><strong>Test Suite:</strong> Required Field Validation Plugin Tests</p>
+    </div>
+    
+    <h2>📊 Test Summary Table</h2>
+    <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Test</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="pass">
+      <td>1</td>
+      <td><a href="#test-0-validatefieldtype---should-validate-string-fields">validateFieldType &gt; should validate string fields</a></td>
+      <td>should validate string fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>2</td>
+      <td><a href="#test-1-validatefieldtype---should-validate-string-edge-cases">validateFieldType &gt; should validate string edge cases</a></td>
+      <td>should validate string edge cases</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>3</td>
+      <td><a href="#test-2-validatefieldtype---should-validate-number-fields">validateFieldType &gt; should validate number fields</a></td>
+      <td>should validate number fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>4</td>
+      <td><a href="#test-3-validatefieldtype---should-validate-number-edge-cases">validateFieldType &gt; should validate number edge cases</a></td>
+      <td>should validate number edge cases</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>5</td>
+      <td><a href="#test-4-validatefieldtype---should-validate-boolean-fields">validateFieldType &gt; should validate boolean fields</a></td>
+      <td>should validate boolean fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>6</td>
+      <td><a href="#test-5-validatefieldtype---should-validate-boolean-edge-cases">validateFieldType &gt; should validate boolean edge cases</a></td>
+      <td>should validate boolean edge cases</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>7</td>
+      <td><a href="#test-6-validatefieldtype---should-validate-array-fields">validateFieldType &gt; should validate array fields</a></td>
+      <td>should validate array fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>8</td>
+      <td><a href="#test-7-validatefieldtype---should-validate-array-edge-cases">validateFieldType &gt; should validate array edge cases</a></td>
+      <td>should validate array edge cases</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>9</td>
+      <td><a href="#test-8-validatefieldtype---should-validate-assetref-as-field-type">validateFieldType &gt; should validate AssetRef as field type</a></td>
+      <td>should validate AssetRef as field type</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>10</td>
+      <td><a href="#test-9-validatefieldtype---should-validate-custom-object-types">validateFieldType &gt; should validate custom object types</a></td>
+      <td>should validate custom object types</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>11</td>
+      <td><a href="#test-10-validatefieldtype---should-handle-undefined-designtype">validateFieldType &gt; should handle undefined designType</a></td>
+      <td>should handle undefined designType</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>12</td>
+      <td><a href="#test-11-validateassetref---real-files---should-validate-assetref-guid-format">validateAssetRef - Real Files &gt; should validate AssetRef GUID format</a></td>
+      <td>should validate AssetRef GUID format</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>13</td>
+      <td><a href="#test-12-validateassetref---real-files---should-validate-assetref-requires-guid-property">validateAssetRef - Real Files &gt; should validate AssetRef requires guid property</a></td>
+      <td>should validate AssetRef requires guid property</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>14</td>
+      <td><a href="#test-13-validateassetref---real-files---should-validate-referenced-asset-exists">validateAssetRef - Real Files &gt; should validate referenced asset exists</a></td>
+      <td>should validate referenced asset exists</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>15</td>
+      <td><a href="#test-14-validateassetref---real-files---should-validate-asset-type-matches-when-type-is-specified">validateAssetRef - Real Files &gt; should validate asset type matches when type is specified</a></td>
+      <td>should validate asset type matches when type is specified</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>16</td>
+      <td><a href="#test-15-validateassetref---real-files---should-warn-when-asset-type-inferred-from-field-name-does-not-match">validateAssetRef - Real Files &gt; should warn when asset type inferred from field name does not match</a></td>
+      <td>should warn when asset type inferred from field name does not match</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>17</td>
+      <td><a href="#test-16-validateassetref---real-files---should-pass-when-asset-type-matches">validateAssetRef - Real Files &gt; should pass when asset type matches</a></td>
+      <td>should pass when asset type matches</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>18</td>
+      <td><a href="#test-17-validateassetref---real-files---should-pass-when-asset-type-matches-inferred-type">validateAssetRef - Real Files &gt; should pass when asset type matches inferred type</a></td>
+      <td>should pass when asset type matches inferred type</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>19</td>
+      <td><a href="#test-18-validateassetfile---real-files---should-validate-required-fields-are-present">validateAssetFile - Real Files &gt; should validate required fields are present</a></td>
+      <td>should validate required fields are present</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>20</td>
+      <td><a href="#test-19-validateassetfile---real-files---should-validate-field-types">validateAssetFile - Real Files &gt; should validate field types</a></td>
+      <td>should validate field types</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>21</td>
+      <td><a href="#test-20-validateassetfile---real-files---should-validate-assetref-with-wrong-asset-type">validateAssetFile - Real Files &gt; should validate AssetRef with wrong asset type</a></td>
+      <td>should validate AssetRef with wrong asset type</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>22</td>
+      <td><a href="#test-21-validateassetfile---real-files---should-pass-validation-for-valid-asset">validateAssetFile - Real Files &gt; should pass validation for valid asset</a></td>
+      <td>should pass validation for valid asset</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>23</td>
+      <td><a href="#test-22-validateassetfile---real-files---should-detect-multiple-validation-errors-in-one-asset">validateAssetFile - Real Files &gt; should detect multiple validation errors in one asset</a></td>
+      <td>should detect multiple validation errors in one asset</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>24</td>
+      <td><a href="#test-23-validateassetfile---real-files---should-handle-missing-system-assettype">validateAssetFile - Real Files &gt; should handle missing system.assetType</a></td>
+      <td>should handle missing system.assetType</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>25</td>
+      <td><a href="#test-24-validateassetfile---real-files---should-handle-missing-data-section">validateAssetFile - Real Files &gt; should handle missing data section</a></td>
+      <td>should handle missing data section</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>26</td>
+      <td><a href="#test-25-validateassetfile---real-files---should-handle-empty-array-fields">validateAssetFile - Real Files &gt; should handle empty array fields</a></td>
+      <td>should handle empty array fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>27</td>
+      <td><a href="#test-26-inferexpectedassettype---should-infer-asset-type-from-field-name">inferExpectedAssetType &gt; should infer asset type from field name</a></td>
+      <td>should infer asset type from field name</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>28</td>
+      <td><a href="#test-27-inferexpectedassettype---should-return-null-for-fields-that-cannot-be-inferred">inferExpectedAssetType &gt; should return null for fields that cannot be inferred</a></td>
+      <td>should return null for fields that cannot be inferred</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>29</td>
+      <td><a href="#test-28-inferexpectedassettype---should-handle-edge-cases-in-field-name-inference">inferExpectedAssetType &gt; should handle edge cases in field name inference</a></td>
+      <td>should handle edge cases in field name inference</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>30</td>
+      <td><a href="#test-29-integration--serialization---validation---should-validate-before-serializing---prevents-bad-data-from-being-serialized">Integration: Serialization + Validation &gt; should validate before serializing - prevents bad data from being serialized</a></td>
+      <td>should validate before serializing - prevents bad data from being serialized</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>31</td>
+      <td><a href="#test-30-integration--serialization---validation---should-serialize-and-validate-valid-asset-correctly">Integration: Serialization + Validation &gt; should serialize and validate valid asset correctly</a></td>
+      <td>should serialize and validate valid asset correctly</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>32</td>
+      <td><a href="#test-31-integration--serialization---validation---should-catch-validation-errors-that-would-break-deserialization">Integration: Serialization + Validation &gt; should catch validation errors that would break deserialization</a></td>
+      <td>should catch validation errors that would break deserialization</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>33</td>
+      <td><a href="#test-32-integration--serialization---validation---should-validate-assetref-before-deserialization-prevents-broken-references">Integration: Serialization + Validation &gt; should validate AssetRef before deserialization prevents broken references</a></td>
+      <td>should validate AssetRef before deserialization prevents broken references</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>34</td>
+      <td><a href="#test-33-integration--serialization---validation---should-complete-full-round-trip--serialize---validate---deserialize">Integration: Serialization + Validation &gt; should complete full round-trip: serialize → validate → deserialize</a></td>
+      <td>should complete full round-trip: serialize → validate → deserialize</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>35</td>
+      <td><a href="#test-34-integration--serialization---validation---should-prevent-serializing-asset-with-missing-required-fields">Integration: Serialization + Validation &gt; should prevent serializing asset with missing required fields</a></td>
+      <td>should prevent serializing asset with missing required fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>36</td>
+      <td><a href="#test-35-validaterequiredfieldsinsource---source-code-validation---should-pass-when--required-field-is-initialized-in-constructor">validateRequiredFieldsInSource - Source Code Validation &gt; should pass when @required field is initialized in constructor</a></td>
+      <td>should pass when @required field is initialized in constructor</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="expects-failure-pass">
+      <td>37</td>
+      <td><a href="#test-36-validaterequiredfieldsinsource---source-code-validation---should-fail-when--required-field-is-not-initialized-in-constructor">validateRequiredFieldsInSource - Source Code Validation &gt; should fail when @required field is not initialized in constructor</a></td>
+      <td>should fail when @required field is not initialized in constructor</td>
+      <td>✅ 🎯</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>38</td>
+      <td><a href="#test-37-validaterequiredfieldsinsource---source-code-validation---should-pass-when-class-has-no--required-fields">validateRequiredFieldsInSource - Source Code Validation &gt; should pass when class has no @required fields</a></td>
+      <td>should pass when class has no @required fields</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="expects-failure-pass">
+      <td>39</td>
+      <td><a href="#test-38-validaterequiredfieldsinsource---source-code-validation---should-detect-multiple--required-fields-not-initialized">validateRequiredFieldsInSource - Source Code Validation &gt; should detect multiple @required fields not initialized</a></td>
+      <td>should detect multiple @required fields not initialized</td>
+      <td>✅ 🎯</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>40</td>
+      <td><a href="#test-39-plugin-integration---should-create-plugin-with-default-options">plugin integration &gt; should create plugin with default options</a></td>
+      <td>should create plugin with default options</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>41</td>
+      <td><a href="#test-40-plugin-integration---should-create-plugin-with-custom-options">plugin integration &gt; should create plugin with custom options</a></td>
+      <td>should create plugin with custom options</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>42</td>
+      <td><a href="#test-41-real-production-asset-validation---should-validate-real-deck-class-and-catch-missing-cardrankingasset-field--mimics-normaldeck-asset-structure-">Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure)</a></td>
+      <td>should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure)</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+<tr class="pass">
+      <td>43</td>
+      <td><a href="#test-42-real-production-asset-validation---should-validate-real-deck-class-and-catch-missing-cardrankingasset-in-test-asset-file">Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset in test asset file</a></td>
+      <td>should validate real Deck class and catch missing cardRankingAsset in test asset file</td>
+      <td>✅</td>
+      <td>-</td>
+    </tr>
+    </tbody>
+  </table>
+    
+    <h2>📋 Individual Test Reports</h2>
+    <a id="test-0-validatefieldtype---should-validate-string-fields"></a>
+<details class="pass">
+<summary><strong>Test 1: validateFieldType &gt; should validate string fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(0)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-0">
+<p><strong>Description:</strong> should validate string fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate string fields] should validate string fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-1-validatefieldtype---should-validate-string-edge-cases"></a>
+<details class="pass">
+<summary><strong>Test 2: validateFieldType &gt; should validate string edge cases - ✅ PASS <button class="copy-button" onclick="copyTestResult(1)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-1">
+<p><strong>Description:</strong> should validate string edge cases</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate string edge cases] should validate string edge cases
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-2-validatefieldtype---should-validate-number-fields"></a>
+<details class="pass">
+<summary><strong>Test 3: validateFieldType &gt; should validate number fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(2)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-2">
+<p><strong>Description:</strong> should validate number fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate number fields] should validate number fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-3-validatefieldtype---should-validate-number-edge-cases"></a>
+<details class="pass">
+<summary><strong>Test 4: validateFieldType &gt; should validate number edge cases - ✅ PASS <button class="copy-button" onclick="copyTestResult(3)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-3">
+<p><strong>Description:</strong> should validate number edge cases</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate number edge cases] should validate number edge cases
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-4-validatefieldtype---should-validate-boolean-fields"></a>
+<details class="pass">
+<summary><strong>Test 5: validateFieldType &gt; should validate boolean fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(4)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-4">
+<p><strong>Description:</strong> should validate boolean fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate boolean fields] should validate boolean fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-5-validatefieldtype---should-validate-boolean-edge-cases"></a>
+<details class="pass">
+<summary><strong>Test 6: validateFieldType &gt; should validate boolean edge cases - ✅ PASS <button class="copy-button" onclick="copyTestResult(5)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-5">
+<p><strong>Description:</strong> should validate boolean edge cases</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate boolean edge cases] should validate boolean edge cases
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-6-validatefieldtype---should-validate-array-fields"></a>
+<details class="pass">
+<summary><strong>Test 7: validateFieldType &gt; should validate array fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(6)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-6">
+<p><strong>Description:</strong> should validate array fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate array fields] should validate array fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-7-validatefieldtype---should-validate-array-edge-cases"></a>
+<details class="pass">
+<summary><strong>Test 8: validateFieldType &gt; should validate array edge cases - ✅ PASS <button class="copy-button" onclick="copyTestResult(7)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-7">
+<p><strong>Description:</strong> should validate array edge cases</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate array edge cases] should validate array edge cases
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-8-validatefieldtype---should-validate-assetref-as-field-type"></a>
+<details class="pass">
+<summary><strong>Test 9: validateFieldType &gt; should validate AssetRef as field type - ✅ PASS <button class="copy-button" onclick="copyTestResult(8)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-8">
+<p><strong>Description:</strong> should validate AssetRef as field type</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate AssetRef as field type] should validate AssetRef as field type
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-9-validatefieldtype---should-validate-custom-object-types"></a>
+<details class="pass">
+<summary><strong>Test 10: validateFieldType &gt; should validate custom object types - ✅ PASS <button class="copy-button" onclick="copyTestResult(9)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-9">
+<p><strong>Description:</strong> should validate custom object types</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should validate custom object types] should validate custom object types
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-10-validatefieldtype---should-handle-undefined-designtype"></a>
+<details class="pass">
+<summary><strong>Test 11: validateFieldType &gt; should handle undefined designType - ✅ PASS <button class="copy-button" onclick="copyTestResult(10)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-10">
+<p><strong>Description:</strong> should handle undefined designType</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateFieldType &gt; should handle undefined designType] should handle undefined designType
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-11-validateassetref---real-files---should-validate-assetref-guid-format"></a>
+<details class="pass">
+<summary><strong>Test 12: validateAssetRef - Real Files &gt; should validate AssetRef GUID format - ✅ PASS <button class="copy-button" onclick="copyTestResult(11)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-11">
+<p><strong>Description:</strong> should validate AssetRef GUID format</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should validate AssetRef GUID format] should validate AssetRef GUID format
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-12-validateassetref---real-files---should-validate-assetref-requires-guid-property"></a>
+<details class="pass">
+<summary><strong>Test 13: validateAssetRef - Real Files &gt; should validate AssetRef requires guid property - ✅ PASS <button class="copy-button" onclick="copyTestResult(12)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-12">
+<p><strong>Description:</strong> should validate AssetRef requires guid property</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should validate AssetRef requires guid property] should validate AssetRef requires guid property
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-13-validateassetref---real-files---should-validate-referenced-asset-exists"></a>
+<details class="pass">
+<summary><strong>Test 14: validateAssetRef - Real Files &gt; should validate referenced asset exists - ✅ PASS <button class="copy-button" onclick="copyTestResult(13)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-13">
+<p><strong>Description:</strong> should validate referenced asset exists</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should validate referenced asset exists] should validate referenced asset exists
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-14-validateassetref---real-files---should-validate-asset-type-matches-when-type-is-specified"></a>
+<details class="pass">
+<summary><strong>Test 15: validateAssetRef - Real Files &gt; should validate asset type matches when type is specified - ✅ PASS <button class="copy-button" onclick="copyTestResult(14)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-14">
+<p><strong>Description:</strong> should validate asset type matches when type is specified</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should validate asset type matches when type is specified] should validate asset type matches when type is specified
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-15-validateassetref---real-files---should-warn-when-asset-type-inferred-from-field-name-does-not-match"></a>
+<details class="pass">
+<summary><strong>Test 16: validateAssetRef - Real Files &gt; should warn when asset type inferred from field name does not match - ✅ PASS <button class="copy-button" onclick="copyTestResult(15)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-15">
+<p><strong>Description:</strong> should warn when asset type inferred from field name does not match</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should warn when asset type inferred from field name does not match] should warn when asset type inferred from field name does not match
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-16-validateassetref---real-files---should-pass-when-asset-type-matches"></a>
+<details class="pass">
+<summary><strong>Test 17: validateAssetRef - Real Files &gt; should pass when asset type matches - ✅ PASS <button class="copy-button" onclick="copyTestResult(16)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-16">
+<p><strong>Description:</strong> should pass when asset type matches</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should pass when asset type matches] should pass when asset type matches
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-17-validateassetref---real-files---should-pass-when-asset-type-matches-inferred-type"></a>
+<details class="pass">
+<summary><strong>Test 18: validateAssetRef - Real Files &gt; should pass when asset type matches inferred type - ✅ PASS <button class="copy-button" onclick="copyTestResult(17)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-17">
+<p><strong>Description:</strong> should pass when asset type matches inferred type</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetRef - Real Files &gt; should pass when asset type matches inferred type] should pass when asset type matches inferred type
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-18-validateassetfile---real-files---should-validate-required-fields-are-present"></a>
+<details class="pass">
+<summary><strong>Test 19: validateAssetFile - Real Files &gt; should validate required fields are present - ✅ PASS <button class="copy-button" onclick="copyTestResult(18)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-18">
+<p><strong>Description:</strong> should validate required fields are present</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should validate required fields are present] should validate required fields are present
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-19-validateassetfile---real-files---should-validate-field-types"></a>
+<details class="pass">
+<summary><strong>Test 20: validateAssetFile - Real Files &gt; should validate field types - ✅ PASS <button class="copy-button" onclick="copyTestResult(19)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-19">
+<p><strong>Description:</strong> should validate field types</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should validate field types] should validate field types
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-20-validateassetfile---real-files---should-validate-assetref-with-wrong-asset-type"></a>
+<details class="pass">
+<summary><strong>Test 21: validateAssetFile - Real Files &gt; should validate AssetRef with wrong asset type - ✅ PASS <button class="copy-button" onclick="copyTestResult(20)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-20">
+<p><strong>Description:</strong> should validate AssetRef with wrong asset type</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should validate AssetRef with wrong asset type] should validate AssetRef with wrong asset type
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-21-validateassetfile---real-files---should-pass-validation-for-valid-asset"></a>
+<details class="pass">
+<summary><strong>Test 22: validateAssetFile - Real Files &gt; should pass validation for valid asset - ✅ PASS <button class="copy-button" onclick="copyTestResult(21)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-21">
+<p><strong>Description:</strong> should pass validation for valid asset</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should pass validation for valid asset] should pass validation for valid asset
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-22-validateassetfile---real-files---should-detect-multiple-validation-errors-in-one-asset"></a>
+<details class="pass">
+<summary><strong>Test 23: validateAssetFile - Real Files &gt; should detect multiple validation errors in one asset - ✅ PASS <button class="copy-button" onclick="copyTestResult(22)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-22">
+<p><strong>Description:</strong> should detect multiple validation errors in one asset</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should detect multiple validation errors in one asset] should detect multiple validation errors in one asset
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-23-validateassetfile---real-files---should-handle-missing-system-assettype"></a>
+<details class="pass">
+<summary><strong>Test 24: validateAssetFile - Real Files &gt; should handle missing system.assetType - ✅ PASS <button class="copy-button" onclick="copyTestResult(23)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-23">
+<p><strong>Description:</strong> should handle missing system.assetType</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should handle missing system.assetType] should handle missing system.assetType
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-24-validateassetfile---real-files---should-handle-missing-data-section"></a>
+<details class="pass">
+<summary><strong>Test 25: validateAssetFile - Real Files &gt; should handle missing data section - ✅ PASS <button class="copy-button" onclick="copyTestResult(24)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-24">
+<p><strong>Description:</strong> should handle missing data section</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should handle missing data section] should handle missing data section
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-25-validateassetfile---real-files---should-handle-empty-array-fields"></a>
+<details class="pass">
+<summary><strong>Test 26: validateAssetFile - Real Files &gt; should handle empty array fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(25)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-25">
+<p><strong>Description:</strong> should handle empty array fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateAssetFile - Real Files &gt; should handle empty array fields] should handle empty array fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-26-inferexpectedassettype---should-infer-asset-type-from-field-name"></a>
+<details class="pass">
+<summary><strong>Test 27: inferExpectedAssetType &gt; should infer asset type from field name - ✅ PASS <button class="copy-button" onclick="copyTestResult(26)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-26">
+<p><strong>Description:</strong> should infer asset type from field name</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST inferExpectedAssetType &gt; should infer asset type from field name] should infer asset type from field name
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-27-inferexpectedassettype---should-return-null-for-fields-that-cannot-be-inferred"></a>
+<details class="pass">
+<summary><strong>Test 28: inferExpectedAssetType &gt; should return null for fields that cannot be inferred - ✅ PASS <button class="copy-button" onclick="copyTestResult(27)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-27">
+<p><strong>Description:</strong> should return null for fields that cannot be inferred</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST inferExpectedAssetType &gt; should return null for fields that cannot be inferred] should return null for fields that cannot be inferred
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-28-inferexpectedassettype---should-handle-edge-cases-in-field-name-inference"></a>
+<details class="pass">
+<summary><strong>Test 29: inferExpectedAssetType &gt; should handle edge cases in field name inference - ✅ PASS <button class="copy-button" onclick="copyTestResult(28)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-28">
+<p><strong>Description:</strong> should handle edge cases in field name inference</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST inferExpectedAssetType &gt; should handle edge cases in field name inference] should handle edge cases in field name inference
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-29-integration--serialization---validation---should-validate-before-serializing---prevents-bad-data-from-being-serialized"></a>
+<details class="pass">
+<summary><strong>Test 30: Integration: Serialization + Validation &gt; should validate before serializing - prevents bad data from being serialized - ✅ PASS <button class="copy-button" onclick="copyTestResult(29)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-29">
+<p><strong>Description:</strong> should validate before serializing - prevents bad data from being serialized</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should validate before serializing - prevents bad data from being serialized] should validate before serializing - prevents bad data from being serialized
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-30-integration--serialization---validation---should-serialize-and-validate-valid-asset-correctly"></a>
+<details class="pass">
+<summary><strong>Test 31: Integration: Serialization + Validation &gt; should serialize and validate valid asset correctly - ✅ PASS <button class="copy-button" onclick="copyTestResult(30)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-30">
+<p><strong>Description:</strong> should serialize and validate valid asset correctly</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should serialize and validate valid asset correctly] should serialize and validate valid asset correctly
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-31-integration--serialization---validation---should-catch-validation-errors-that-would-break-deserialization"></a>
+<details class="pass">
+<summary><strong>Test 32: Integration: Serialization + Validation &gt; should catch validation errors that would break deserialization - ✅ PASS <button class="copy-button" onclick="copyTestResult(31)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-31">
+<p><strong>Description:</strong> should catch validation errors that would break deserialization</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should catch validation errors that would break deserialization] should catch validation errors that would break deserialization
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-32-integration--serialization---validation---should-validate-assetref-before-deserialization-prevents-broken-references"></a>
+<details class="pass">
+<summary><strong>Test 33: Integration: Serialization + Validation &gt; should validate AssetRef before deserialization prevents broken references - ✅ PASS <button class="copy-button" onclick="copyTestResult(32)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-32">
+<p><strong>Description:</strong> should validate AssetRef before deserialization prevents broken references</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should validate AssetRef before deserialization prevents broken references] should validate AssetRef before deserialization prevents broken references
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-33-integration--serialization---validation---should-complete-full-round-trip--serialize---validate---deserialize"></a>
+<details class="pass">
+<summary><strong>Test 34: Integration: Serialization + Validation &gt; should complete full round-trip: serialize → validate → deserialize - ✅ PASS <button class="copy-button" onclick="copyTestResult(33)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-33">
+<p><strong>Description:</strong> should complete full round-trip: serialize → validate → deserialize</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should complete full round-trip: serialize → validate → deserialize] should complete full round-trip: serialize → validate → deserialize
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-34-integration--serialization---validation---should-prevent-serializing-asset-with-missing-required-fields"></a>
+<details class="pass">
+<summary><strong>Test 35: Integration: Serialization + Validation &gt; should prevent serializing asset with missing required fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(34)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-34">
+<p><strong>Description:</strong> should prevent serializing asset with missing required fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Integration: Serialization + Validation &gt; should prevent serializing asset with missing required fields] should prevent serializing asset with missing required fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-35-validaterequiredfieldsinsource---source-code-validation---should-pass-when--required-field-is-initialized-in-constructor"></a>
+<details class="pass">
+<summary><strong>Test 36: validateRequiredFieldsInSource - Source Code Validation &gt; should pass when @required field is initialized in constructor - ✅ PASS <button class="copy-button" onclick="copyTestResult(35)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-35">
+<p><strong>Description:</strong> should pass when @required field is initialized in constructor</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateRequiredFieldsInSource - Source Code Validation &gt; should pass when @required field is initialized in constructor] should pass when @required field is initialized in constructor
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-36-validaterequiredfieldsinsource---source-code-validation---should-fail-when--required-field-is-not-initialized-in-constructor"></a>
+<details class="expects-failure-pass">
+<summary><strong>Test 37: validateRequiredFieldsInSource - Source Code Validation &gt; should fail when @required field is not initialized in constructor - ✅ 🎯 PASS (Expected Failure) <button class="copy-button" onclick="copyTestResult(36)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-36">
+<p><strong>Description:</strong> should fail when @required field is not initialized in constructor</p>
+<p class="expects-failure-note"><strong>✅ 🎯 Note:</strong> This test expects validation to fail. Validation correctly detected errors, so the test passes.</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateRequiredFieldsInSource - Source Code Validation &gt; should fail when @required field is not initialized in constructor] should fail when @required field is not initialized in constructor
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ 🎯 PASS (Expected Failure)</strong> - Test passed because validation correctly detected the expected error.</p>
+<p>✅ 🎯 <strong>Note:</strong> This test expects validation to fail and print errors. The validation correctly found errors, so the test passes.</p>
+</div>
+</details>
+
+<a id="test-37-validaterequiredfieldsinsource---source-code-validation---should-pass-when-class-has-no--required-fields"></a>
+<details class="pass">
+<summary><strong>Test 38: validateRequiredFieldsInSource - Source Code Validation &gt; should pass when class has no @required fields - ✅ PASS <button class="copy-button" onclick="copyTestResult(37)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-37">
+<p><strong>Description:</strong> should pass when class has no @required fields</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateRequiredFieldsInSource - Source Code Validation &gt; should pass when class has no @required fields] should pass when class has no @required fields
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-38-validaterequiredfieldsinsource---source-code-validation---should-detect-multiple--required-fields-not-initialized"></a>
+<details class="expects-failure-pass">
+<summary><strong>Test 39: validateRequiredFieldsInSource - Source Code Validation &gt; should detect multiple @required fields not initialized - ✅ 🎯 PASS (Expected Failure) <button class="copy-button" onclick="copyTestResult(38)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-38">
+<p><strong>Description:</strong> should detect multiple @required fields not initialized</p>
+<p class="expects-failure-note"><strong>✅ 🎯 Note:</strong> This test expects validation to fail. Validation correctly detected errors, so the test passes.</p>
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST validateRequiredFieldsInSource - Source Code Validation &gt; should detect multiple @required fields not initialized] should detect multiple @required fields not initialized
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ 🎯 PASS (Expected Failure)</strong> - Test passed because validation correctly detected the expected error.</p>
+<p>✅ 🎯 <strong>Note:</strong> This test expects validation to fail and print errors. The validation correctly found errors, so the test passes.</p>
+</div>
+</details>
+
+<a id="test-39-plugin-integration---should-create-plugin-with-default-options"></a>
+<details class="pass">
+<summary><strong>Test 40: plugin integration &gt; should create plugin with default options - ✅ PASS <button class="copy-button" onclick="copyTestResult(39)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-39">
+<p><strong>Description:</strong> should create plugin with default options</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST plugin integration &gt; should create plugin with default options] should create plugin with default options
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-40-plugin-integration---should-create-plugin-with-custom-options"></a>
+<details class="pass">
+<summary><strong>Test 41: plugin integration &gt; should create plugin with custom options - ✅ PASS <button class="copy-button" onclick="copyTestResult(40)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-40">
+<p><strong>Description:</strong> should create plugin with custom options</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST plugin integration &gt; should create plugin with custom options] should create plugin with custom options
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-41-real-production-asset-validation---should-validate-real-deck-class-and-catch-missing-cardrankingasset-field--mimics-normaldeck-asset-structure-"></a>
+<details class="pass">
+<summary><strong>Test 42: Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure) - ✅ PASS <button class="copy-button" onclick="copyTestResult(41)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-41">
+<p><strong>Description:</strong> should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure)</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure)] should validate real Deck class and catch missing cardRankingAsset field (mimics NormalDeck.asset structure)
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+<a id="test-42-real-production-asset-validation---should-validate-real-deck-class-and-catch-missing-cardrankingasset-in-test-asset-file"></a>
+<details class="pass">
+<summary><strong>Test 43: Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset in test asset file - ✅ PASS <button class="copy-button" onclick="copyTestResult(42)" title="Copy test result to clipboard">📋 Copy</button></strong></summary>
+<div class="test-content" id="test-content-42">
+<p><strong>Description:</strong> should validate real Deck class and catch missing cardRankingAsset in test asset file</p>
+
+<hr>
+<h3>From Test Output:</h3>
+<pre><code>[TEST Real Production Asset Validation &gt; should validate real Deck class and catch missing cardRankingAsset in test asset file] should validate real Deck class and catch missing cardRankingAsset in test asset file
+[✓ PASS]
+</code></pre>
+<h3>Verdict:</h3>
+<p><strong>✅ PASS</strong> - Test passed successfully.</p>
+<p>✅ <strong>Solution:</strong> This validation works correctly.</p>
+</div>
+</details>
+
+    
+    <div class="footer">
+      <p>Report generated by Required Field Validation Test Suite</p>
+      <p>Validates @required fields in source code and asset files, field types, and AssetRef references</p>
+    </div>
+  </div>
+  
+  <script>
+    function copyTestResult(index) {
+      const testContent = document.getElementById('test-content-' + index);
+      if (!testContent) return;
+      
+      const text = testContent.innerText || testContent.textContent || '';
+      navigator.clipboard.writeText(text).then(function() {
+        const buttons = document.querySelectorAll('.copy-button');
+        const button = buttons[index];
+        if (button) {
+          const originalText = button.textContent;
+          button.textContent = '✓ Copied!';
+          button.style.backgroundColor = '#0e7a0e';
+          setTimeout(function() {
+            button.textContent = originalText;
+            button.style.backgroundColor = '#0e639c';
+          }, 2000);
+        }
+      }).catch(function(err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+      });
+    }
+    
+    (function() {
+      const details = document.querySelectorAll('details');
+      
+      function closeAllExcept(except) {
+        details.forEach(function(detail) {
+          if (detail !== except && detail.open) {
+            detail.open = false;
+          }
+        });
+      }
+      
+      details.forEach(function(detail) {
+        detail.addEventListener('toggle', function() {
+          if (this.open) {
+            closeAllExcept(this);
+          }
+        });
+      });
+      
+      function findDetailsForAnchor(anchor) {
+        let element = anchor.nextElementSibling;
+        while (element) {
+          if (element.tagName === 'DETAILS') {
+            return element;
+          }
+          element = element.nextElementSibling;
+        }
+        return null;
+      }
+      
+      function openDetailsForHash(hash) {
+        if (!hash) return;
+        const target = document.querySelector(hash);
+        if (target) {
+          const detailsElement = findDetailsForAnchor(target);
+          if (detailsElement) {
+            closeAllExcept(detailsElement);
+            detailsElement.open = true;
+            setTimeout(function() {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+          }
+        }
+      }
+      
+      window.addEventListener('hashchange', function() {
+        openDetailsForHash(window.location.hash);
+      });
+      
+      if (window.location.hash) {
+        setTimeout(function() {
+          openDetailsForHash(window.location.hash);
+        }, 100);
+      }
+      
+      const summaryLinks = document.querySelectorAll('a[href^="#test-"]');
+      summaryLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          const href = this.getAttribute('href');
+          if (href) {
+            const target = document.querySelector(hash);
+            if (target) {
+              const detailsElement = findDetailsForAnchor(target);
+              if (detailsElement) {
+                e.preventDefault();
+                closeAllExcept(detailsElement);
+                detailsElement.open = true;
+                setTimeout(function() {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  window.history.pushState(null, '', href);
+                }, 50);
+              }
+            }
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

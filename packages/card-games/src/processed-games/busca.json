@@ -1,0 +1,669 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "busca.json",
+  "name": "Busca",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Busca is an Italian variation of CiapanÃ² (reverse trick-taking game) for four players. The goal is to take at least one point but avoid taking the most points. Uses a 40-card Italian or Milanese pack with unique scoring where the Ace of Coins (Pita) is worth 8 points.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Italy (Lombardy/Romagna region)",
+    "originName": "Busca",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "40 cards (Italian or Milanese suits)",
+    "difficulty": "Intermediate",
+    "duration": "30-60 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Busca is a variation of CiapanÃ² (also known as Rovescino, Traversone, or Tressette a non Prendere), a reverse trick-taking game from Lombardy, Italy. CiapanÃ² was very popular in Lombardy until the 1980s and is still played there.",
+    "originCountries": [
+      "Italy"
+    ],
+    "timeline": [
+      "Traditional origins: CiapanÃ² played for generations in Lombardy",
+      "1980s: Peak popularity of CiapanÃ² in Lombardy",
+      "Modern era: Busca variation documented by Davide Gullo",
+      "Contemporary: Still played in Italian regions"
+    ],
+    "evolution": "Busca modifies CiapanÃ² scoring by multiplying all points by three and introducing the special Pita card (Ace of Coins worth 8 points). The objective shifts from simply avoiding points to taking at least one but not the most.",
+    "cultural": "Busca and related games like CiapanÃ² are part of Italian regional card game traditions. The Milanese dialect name 'CiapanÃ²' translates roughly to 'Don't catch it!' reflecting the reverse nature of the game.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players, each playing for themselves",
+    "deck": "40-card pack: Italian suits (swords, batons, cups, coins) or Milanese/French suits (spades, clubs, hearts, diamonds). Cards rank: 3 (high), 2, Ace, King, Horse/Queen, Jack/Fante, 7, 6, 5, 4 (low).",
+    "equipment": "40-card Italian or Milanese pack, score sheet for tracking busche",
+    "dealing": "Deal 10 cards to each player (anticlockwise). Turn to deal passes to the right after each hand.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Take at least one point but avoid taking the most points. Players who take no points or the most points score penalty points called busche.",
+    "gameplay": "No trumps. Player to dealer's right leads first. Any card may be led; others must follow suit if possible. Highest card of led suit wins trick; winner leads to next. It is illegal to lead coins in the first trick. The Pita (Ace of Coins) cannot be discarded in the first trick if unable to follow suit.",
+    "keyRules": [
+      "40-card Italian or Milanese pack",
+      "Card rank: 3-2-A-K-Horse-Jack-7-6-5-4",
+      "No trumps; must follow suit",
+      "Cannot lead coins on first trick",
+      "Pita (Ace of Coins) cannot be discarded first trick if void",
+      "Goal: take â‰¥1 point but not most points",
+      "Penalties called 'busche' for taking 0 or most points"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Try to win exactly one low-value trick to avoid zero points. Avoid winning high-value cards (Pita, Aces, last trick). If you have the Pita, plan carefully as it's worth 8 points.",
+    "intermediate": "Track which suits opponents are void in. Use the restriction on leading coins early to your advantage. Count points taken by each player to predict who is at risk of most/least points.",
+    "advanced": "Manipulate trick distribution to ensure you take some but not most points. Force opponents to take the Pita or last trick. Coordinate indirectly with other players to 'cover' (coprire) and prevent someone from getting zero points.",
+    "tips": [
+      "Taking exactly one low-point trick is ideal",
+      "Avoid the Pita (Ace of Coins) - it's worth 8 points",
+      "The last trick is worth 3 points - factor this into calculations",
+      "If you have no points late in the hand, try to win any trick to avoid 1 busca penalty",
+      "If leading and have many points, consider giving tricks to players who already have points",
+      "Watch for opportunities to force the Pita on specific opponents"
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "ciapano-target-variation",
+        "name": "CiapanÃ² target score variants",
+        "description": "Some groups play CiapanÃ² with a target score of 21 or 41 instead of 31, changing when players are eliminated or the match ends.",
+        "overrides": {},
+        "emptyOverridesReason": "These target score tweaks are described in the text but are not yet modeled as separate engine constants or match-end conditions."
+      },
+      {
+        "id": "ciapano-lowest-score-wins",
+        "name": "Lowest-score-wins ending",
+        "description": "Some play that when a player reaches or exceeds the target score, the player with the lowest cumulative penalty score immediately wins.",
+        "overrides": {},
+        "emptyOverridesReason": "This alternate ending rule is documented in the sources but would be clearer as its own engine profile; no structured overrides are wired here yet."
+      },
+      {
+        "id": "ace-of-clubs-21-points",
+        "name": "Ace-of-clubs 21-point variant",
+        "description": "A Traversone variant in which the Ace of clubs is worth 11 points and there are 21 total points in each deal, with cappotto allowing a large score swing.",
+        "overrides": {},
+        "emptyOverridesReason": "This high-value Ace of clubs game is noted as a related variant; its detailed scoring and deal structure should be modeled in its own entry rather than as lightweight overrides here."
+      },
+      {
+        "id": "kifameno-slovenia",
+        "name": "Kifameno (Who Wins Least)",
+        "description": "Kifameno is a Slovenian losing Tressette variant where 2\u20134 players are dealt 10 cards each and undealt cards form a draw stack that is used between tricks.",
+        "overrides": {},
+        "emptyOverridesReason": "This Slovenian variant changes player counts and introduces drawing from a stock; it is recorded here as a related game but its engine changes are not yet encoded as overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Random valid plays; no strategic point avoidance",
+      "medium": "Basic point tracking; attempts to win at least one trick; avoids obvious high-point cards",
+      "hard": "Complete point counting; optimal trick-taking decisions; manipulates distribution to achieve 1+ points without most"
+    },
+    "considerations": [
+      "40-card deck with non-standard ranking (3 high)",
+      "Reverse objective - want some but not most points",
+      "Pita card is critical (8 points)",
+      "Last trick worth 3 points",
+      "Must track all players' accumulated points",
+      "First trick restrictions affect opening strategy"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_busca_www_pagat_com_tressette_ciapano_html_busca",
+        "name": "Pagat.com - Busca",
+        "url": "https://www.pagat.com/tressette/ciapano.html#busca",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-ciapano.html"
+      },
+      {
+        "id": "src:wikipedia_tressette_en_wikipedia_org_wiki_tressette",
+        "name": "Wikipedia - Tressette",
+        "url": "https://en.wikipedia.org/wiki/Tressette",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tressette-2.html"
+      }
+    ],
+    "additional": [
+      "Davide Gullo's Busca rules (Italian)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional regional Italian card game with no documented registered trademarks or commercial licensing information in the consulted sources."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 40",
+    "suitSet": "Italian",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 10,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "One 40-card Italian or Milanese deck used for reverse trick-taking: four suits with ten ranks each, all cards dealt out to four players. No jokers are used; the deck supports Ciapanò-style scoring where card points in tricks become penalties.",
+    "suitDescription": "Four suits, either traditional Italian (swords, batons, cups, coins) or the French suits used in the Milanese pattern (spades, clubs, hearts, diamonds). There is no trump suit; players must follow the led suit when able, and coins have extra restrictions in the first trick.",
+    "rankDescription": "Ten ranks per suit in Ciapanò order: 3 (highest), 2, Ace, King, Horse or Queen, Jack, 7, 6, 5, 4 (lowest). In the Busca scoring variant, threes, twos and picture cards are worth 1 point, aces are worth 3 points, and the Ace of Coins (Pita) is worth 8 points.",
+    "dealPattern": "10 each, all cards.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BUSCA",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Busca is an Italian variation of CiapanÃ² (reverse trick-taking game) for four players. The goal is to take at least one point but avoid taking the most points. Uses a 40-card Italian or Milanese pack",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Penalty points called busche accumulate from deal to deal. Card points in tricks are converted into busche based on how many points each player has and whether anyone took no points or the most points.",
+    "winCondition": "Over several deals, the player with the lowest total busche wins the match; players taking no points or the most card points in a deal gain busche according to the Busca schedule.",
+    "cardValues": {
+      "Threes, twos and picture cards": "1 point each",
+      "Aces (except Ace of Coins)": "3 points each",
+      "Ace of Coins (Pita)": "8 points",
+      "Sevens, sixes, fives and fours": "0 points"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Players aim to minimise cumulative busche; lower scores are better rather than racing to a high total."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

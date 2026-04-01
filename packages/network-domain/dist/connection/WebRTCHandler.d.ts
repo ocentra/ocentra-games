@@ -1,0 +1,38 @@
+import { ConnectionStatus } from '../types';
+import type { PeerMessage } from '../types';
+export declare class WebRTCHandler {
+    private peers;
+    private localId;
+    private localStream;
+    private onMessageCallback?;
+    private onConnectionChangeCallback?;
+    private onRemoteStreamCallback?;
+    private onIceCandidateCallback?;
+    private configuration;
+    constructor(localId: string, config?: RTCConfiguration);
+    setLocalStream(stream: MediaStream): void;
+    clearLocalStream(): void;
+    createPeerConnection(peerId: string): Promise<RTCPeerConnection>;
+    createDataChannel(peerId: string, channelName?: string): RTCDataChannel | null;
+    createOffer(peerId: string): Promise<RTCSessionDescriptionInit>;
+    createAnswer(peerId: string): Promise<RTCSessionDescriptionInit>;
+    setRemoteDescription(peerId: string, description: RTCSessionDescriptionInit): Promise<void>;
+    addIceCandidate(peerId: string, candidate: RTCIceCandidateInit): Promise<void>;
+    sendMessage(peerId: string, message: PeerMessage): boolean;
+    broadcastMessage(message: PeerMessage): void;
+    closePeerConnection(peerId: string): void;
+    closeAllConnections(): void;
+    getConnectionStatus(peerId: string): ConnectionStatus | null;
+    getConnectedPeers(): string[];
+    getRemoteStream(peerId: string): MediaStream | null;
+    onMessage(callback: (peerId: string, message: PeerMessage) => void): void;
+    onConnectionChange(callback: (peerId: string, status: ConnectionStatus) => void): void;
+    onRemoteStream(callback: (peerId: string, stream: MediaStream) => void): void;
+    onIceCandidate(callback: (peerId: string, candidate: RTCIceCandidate) => void): void;
+    private attachLocalMedia;
+    private setupConnectionHandlers;
+    private handleIncomingDataChannel;
+    private setupDataChannelHandlers;
+    private handleConnectionStateChange;
+    private handleIncomingMessage;
+}

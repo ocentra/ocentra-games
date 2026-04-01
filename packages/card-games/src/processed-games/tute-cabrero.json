@@ -1,0 +1,645 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tute-cabrero.json",
+  "name": "Tute cabrero",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tute cabrero is a point-trick elimination game for 3 to 6 players, popular in Argentina and Uruguay. Each deal you aim either to take no tricks or to finish with the highest or lowest point total; middle totals lose. Four losses eliminate a player; the last one or two remaining win. Uses the standard 40-card Spanish deck with follow-suit and optional singing (declaring king-horse for 20 or 40 points after winning a trick).",
+    "category": "Trick-taking",
+    "subCategory": "Point-trick",
+    "origin": "Spain",
+    "originName": "Tute cabrero",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "3-6"
+    },
+    "deck": "40-card Spanish",
+    "difficulty": "Intermediate",
+    "duration": "20-30 min",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Spain", "Argentina", "Uruguay"],
+    "origins": "Tute originated in Italy as tutti and spread to Spain in the 19th century, becoming one of the most popular card games there. Tute cabrero is an individual-play variant for 3 to 6 players, popular in Argentina and Uruguay. It uses the same 40-card Spanish deck and marriage-style point-trick structure as partnership Tute but with elimination (four losses) and a first-hand rule that coins are trumps and the holder of the two of coins leads. The variant is described in Spanish card-game literature and on dedicated Tute Cabrero pages.",
+    "timeline": ["20th century: Tute cabrero variant documented as popular in Argentina and Uruguay."],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "Three to six players, each playing for themselves.",
+    "deck": "40-card Spanish pack.",
+    "equipment": "Cards",
+    "dealing": "Counter-clockwise; 8 each (5–6p), 10 each (4p), or 13 each plus one to centre (3p). First hand coins are trumps; later hands last card to mano turned for trump.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Avoid being a loser each deal: either take no tricks, or have the highest or lowest point total among those who took tricks. Losers are the middle point totals. A player who loses four times is eliminated; the last one or two players win.",
+    "gameplay": "Deal and play are counter-clockwise. Deal size varies: 6 players dealer gives 8 each to the other five (dealer sits out); 5 players 8 each; 4 players 10 each; 3 players 13 each plus one to centre. First hand coins are trumps and the holder of the two of coins leads (mano). Later hands the last card dealt to mano is turned for trump (or with 3 players a centre card). Follow suit, beat if possible, trump if unable to follow. After winning a trick you may declare one king-horse combination (40 in trumps, 20 in another suit) before leading. At end of play, count points; losers are determined by point-order rules (e.g. with 5 taking tricks the 2nd, 3rd and 4th highest lose).",
+    "keyRules": [
+      "Cabrero",
+      "Elimination after 4 losses",
+      "Singing (cantes) optional after winning a trick"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Tute.",
+    "intermediate": null,
+    "advanced": null,
+    "tips": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "intermediate": "No distinct intermediate tier; strategy scales with Tute experience.",
+      "advanced": "Advanced play is full Tute cabrero; no separate tier."
+    }
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Tute cabrero form; optional house rules (e.g. rotating trumps, tie-break by seating) are noted but not documented as distinct named regional variants.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal",
+      "medium": "As Tute",
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "hard": "Hard AI plays full Tute cabrero with Cantes and optimal discards."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-tute",
+        "name": "Pagat Tute",
+        "url": "https://www.pagat.com/marriage/tute.html#cabrero",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-tute.html"
+      },
+      {
+        "id": "src:wikipedia_tute",
+        "name": "Wikipedia - Tute",
+        "url": "https://en.wikipedia.org/wiki/Tute",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-tute-2.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_tute_cabrero"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play tricks",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "declare_cantes"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Follow suit, beat if possible, trump if cannot follow. After winning a trick may optionally declare one 40 or 20 (king-horse)."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+"playerConfig": {
+    "minPlayers": 3,
+    "maxPlayers": 6,
+    "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 40",
+    "suitSet": "Spanish",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 8,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A,3,K,Horse,Jack,7,6,5,4,2",
+      "canCallNoTrump": false,
+      "overtakingRule": "Follow suit; if possible beat highest of led suit; if cannot follow must trump and beat highest trump if possible. Otherwise may play any card."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "six-dealer-sit-out", "text": "Six players: dealer has no cards and cannot lose that deal.", "appliesTo": "deal" },
+        { "id": "first-hand-coins", "text": "First hand: coins are trumps; holder of two of coins is mano (leads).", "appliesTo": "deal" },
+        { "id": "three-first-hand", "text": "Three players: first hand centre card face down; holder of two of coins exchanges for it; if two of coins is centre, four of coins holder is mano.", "appliesTo": "deal" },
+        { "id": "three-later-trump", "text": "Three players later hands: centre card face up for trump; seven of trumps may exchange if centre higher than 7; two of trumps may exchange if centre is 5, 6 or 7.", "appliesTo": "deal" },
+        { "id": "all-tricks-no-sing", "text": "One player takes all tricks without singing: all other players lose (except dealer in six-player).", "appliesTo": "scoring" },
+        { "id": "sing-all-tricks", "text": "One player sings and takes all tricks: that player is sole loser.", "appliesTo": "scoring" },
+        { "id": "ties", "text": "Ties: if at least three different point totals, losers are those neither highest nor lowest; if only one or two point totals, all who took tricks lose.", "appliesTo": "scoring" },
+        { "id": "four-losses", "text": "Four losses: player is eliminated; game continues until fewer than three players.", "appliesTo": "scoring" }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_tute_cabrero",
+        "supported": true,
+        "description": "Deal cards according to player count: 6p dealer gives 8 each to other five (dealer sits out); 5p eight each; 4p ten each; 3p thirteen each plus one to centre. First hand coins are trumps; later hands turn last card to mano for trump (or centre card for 3p).",
+        "cost": "0",
+        "constraints": "Dealer acts during deal phase. Deal and play counter-clockwise.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "declare_cantes",
+        "supported": true,
+        "description": "After winning a trick, optionally declare one king-horse combination: 40 points if in trumps, 20 in another suit. Must declare 40 before 20 if both held. Show the two cards.",
+        "cost": "0",
+        "constraints": "Only immediately after winning a trick, before leading to the next. At most one declaration per trick. Not obligatory.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "Standard Spanish 40-card pack used for Tute and related games. Four suits (Swords, Batons, Cups, Coins), with ranks Ace, 3, King, Horse, Jack, 7, 6, 5, 4, 2. Total 120 card points plus 10 for last trick; king-horse of same suit score 20 or 40 when declared.",
+    "suitDescription": "Four Spanish suits: Swords (espadas), Batons (bastos), Cups (copas), and Coins (oros). Each suit has ten cards with the same point values and ranking used across Tute variants.",
+    "rankDescription": "Ten ranks per suit in point order: Ace 11, Three 10, King 4, Horse 3, Jack 2, Seven through Two 0. Trick order: Ace highest, then 3, King, Horse, Jack, 7, 6, 5, 4, 2.",
+    "dealPattern": "one_at_a_time_anticlockwise",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "TUTE CABRERO",
+      "subtitle": "Card Game",
+      "tagline": "Tute cabrero variant. 40-card Spanish deck."
+    },
+    "shortDescription": "Tute cabrero variant. 40-card Spanish deck.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Tute cabrero variant. 40-card Spanish deck.",
+    "ai": "Game: Tute cabrero. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Variant",
+    "winCondition": "Elimination: avoid being a loser each deal (middle point totals lose). Four losses eliminate a player; last one or two players win. Taking no tricks avoids loss unless one player takes all tricks without singing, in which case all others lose.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Point values (Ace 11, Three 10, King 4, Horse 3, Jack 2, others 0) are defined in engine; scoring uses deal totals.",
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Tute Cabrero",
+    "Cabrero"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

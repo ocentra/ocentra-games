@@ -1,0 +1,711 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "video-poker.json",
+  "name": "Video Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Video Poker is a casino card game played on machines (or digitally). Based on Five-Card Draw poker. Player gets 5 cards, chooses which to hold/discard, draws replacements. Payout based on final hand strength. Jacks or Better is most common variant. Perfect strategy yields near 99.5% return.",
+    "category": "Banking",
+    "subCategory": "Banking",
+    "origin": "USA",
+    "originName": "Video Poker",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "recommendedPlayers": 1,
+      "display": "1"
+    },
+    "deck": "Standard 52-card deck (+ jokers in some variants)",
+    "difficulty": "Intermediate",
+    "duration": "1-2 minutes per hand",
+    "hasPlaceholders": false,
+    "playerMode": "singleplayer"
+  },
+  "history": {
+    "origins": "Video poker first became commercially viable in the mid-1970s when it became economical to combine a television-like monitor with a solid-state CPU; the earliest models appeared alongside the first personal computers. SIRCOMA (Si Redd's Coin Machines, later International Game Technology) introduced Draw Poker in 1979. Throughout the 1980s video poker became increasingly popular in US casinos as players found the machines less intimidating than table games. The game has its roots in five-card draw but is played against a machine with a fixed paytable rather than against other hands.",
+    "originCountries": ["USA"],
+    "timeline": ["1970s: First video poker machines in USA.", "1979: SIRCOMA (Si Redd) introduced Draw Poker.", "1980s: Video poker spread widely in US casinos."],
+    "evolution": "Became staple of casino gaming; multi-hand and online variants followed.",
+    "cultural": "Worldwide casino game; especially popular with Las Vegas locals and in regulated online markets.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "52 cards (or 53 with joker).",
+    "equipment": "Video poker machine or software",
+    "dealing": "5 cards dealt automatically.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Achieve best poker hand. Higher hand = higher payout.",
+    "gameplay": "Bet coins. Receive 5 cards. Hold desired cards, discard rest. Draw replacements. Final hand evaluated against pay table. Jacks or Better: minimum pair of Jacks to win.",
+    "keyRules": [
+      "Hold/discard decision",
+      "Single draw",
+      "Pay table determines payout",
+      "Perfect strategy exists"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Hold pairs. Keep high cards (J+). Never break a winning hand.",
+    "intermediate": "Learn optimal hold/discard charts.",
+    "advanced": "Perfect strategy for 99.5%+ return.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Variant pay tables and rules vary by implementation; overrides not specified here."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Variant pay tables and rules vary by implementation; overrides not specified here."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Variant pay tables and rules vary by implementation; overrides not specified here."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Variant pay tables and rules vary by implementation; overrides not specified here."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Variant pay tables and rules vary by implementation; overrides not specified here."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI uses basic hold/discard (hold pairs, high cards).",
+      "medium": "Medium AI uses simplified strategy charts.",
+      "hard": "Hard AI uses optimal strategy for pay table (near 99.5% return)."
+    },
+    "considerations": [
+      "Optimal strategy solver"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-video-poker",
+        "name": "Pagat.com - Video Poker",
+        "url": "https://www.pagat.com/banking/video_poker.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-video-poker.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "hold_select",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Machine deals 5 cards face-up."
+      },
+      {
+        "id": "hold_select",
+        "label": "Hold/Discard",
+        "actor": "current_player",
+        "legalActions": [
+          "discard"
+        ],
+        "nextPhase": "draw_replacement",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Player selects which cards to hold (1-5). Others discarded."
+      },
+      {
+        "id": "draw_replacement",
+        "label": "Draw Replacements",
+        "actor": "system",
+        "legalActions": [
+          "draw"
+        ],
+        "nextPhase": "payout",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Discarded cards replaced with new cards from deck."
+      },
+      {
+        "id": "payout",
+        "label": "Payout",
+        "actor": "system",
+        "legalActions": ["evaluate_payout"],
+        "nextPhase": "game_end",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Final hand evaluated against pay table. Payout calculated."
+      },
+      {
+        "id": "game_end",
+        "label": "Game End",
+        "actor": "system",
+        "legalActions": ["end_round"],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Round complete."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Machine deals 5 cards face-up.",
+        "cost": "0",
+        "constraints": "Automatic at game start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 5
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw replacement cards for discarded cards.",
+        "cost": "0",
+        "constraints": "Automatic after hold selection. Number of cards drawn equals number not held.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        }
+      },
+      "discard": {
+        "supported": true,
+        "description": "Select which cards to discard for replacement. Unselected cards are held.",
+        "cost": "0",
+        "constraints": "Available during hold/discard phase. Can select 0-5 cards to discard.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {
+          "from": "hand",
+          "to": "discard",
+          "count": 0
+        }
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "singleplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "hold_select", "draw_replacement", "payout", "game_end"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "evaluate_payout",
+        "supported": true,
+        "description": "Evaluate final hand against pay table and award payout.",
+        "cost": "0",
+        "constraints": "System action after draw phase.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "end_round",
+        "supported": true,
+        "description": "End the round and prepare for next hand.",
+        "cost": "0",
+        "constraints": "System action after payout.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "VIDEO POKER",
+      "subtitle": "Card Game",
+      "tagline": "Video Poker is a casino card game played on machines (or digitally). Based on Fi..."
+    },
+    "shortDescription": "Video Poker is a casino card game played on machines (or digitally). Based on Five-Card Draw poker. Player gets 5 cards, chooses which to hold/discard",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "Unknown",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Video Poker is a casino card game played on machines (or digitally). Based on Five-Card Draw poker. Player gets 5 cards, chooses which to hold/discard, draws replacements. Payout based on final hand strength. Jacks or Better is most common variant. Perfect strategy yields near 99.5% return.",
+    "ai": "Game: Video Poker. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Pay table: Royal Flush(800x), Straight Flush(50x), Four-of-Kind(25x), Full House(9x), Flush(6x), Straight(4x), Three-of-Kind(3x), Two Pair(2x), Jacks+(1x).",
+    "winCondition": "Achieve best poker hand. Higher hand = higher payout.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "cardValues": "Poker uses hand rankings, not point values per card.",
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

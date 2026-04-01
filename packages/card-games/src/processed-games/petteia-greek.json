@@ -1,0 +1,641 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "petteia-greek.json",
+  "name": "Petteia",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Petteia (also known as Poleis or 'Cities') is an ancient Greek board game of pure strategy and military logic. Featured in the writings of Plato and Aristotle, it is one of the world's first 'Pure Reason' games, containing no elements of chance. Players command 'Stones' on a grid, attempting to capture the opponent's forces by surrounding them from two sides (Custodian Capture). It is the direct ancestor of the Roman 'Ludus Latrunculorum' and is celebrated as a training tool for soldiers and philosophers alike.",
+    "category": "Abstract strategy",
+    "subCategory": "Open Information",
+    "origin": "Ancient Greece",
+    "originName": "Petteia (πεττεία)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "Board (8x8 or 12x8 Grid) and 16-32 Stones",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Greece"],
+    "origins": "Believed to have been invented around the 5th century BCE in Athens. It was so integral to Greek life that Homer mentions it being played by suitors in 'The Odyssey'.",
+    "timeline": [
+      "400 BCE: Plato uses Petteia as a metaphor for the 'Cornered' logic of a weak debater in 'The Republic'.",
+      "350 BCE: Aristotle describes it as a battle game demanding reason and logic in 'Politics'.",
+      "100 CE: Romans adapt it into 'Ludus Latrunculorum' (The Game of Mercenaries).",
+      "Present: Reconstructed by historians to preserve ancient military thought patterns."
+    ],
+    "evolution": "Over centuries, pieces gained the ability to 'Slide' (like rooks) rather than moving one square, which increased the complexity of surrounding maneuvers.",
+    "cultural": "Used in Greek gymnasiums to teach teenagers the concepts of pattern recognition and tactical sacrifice.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "8x8 grid (Standard) or 12x8 (Grand). One player uses White stones, the other Black.",
+    "equipment": "",
+    "dealing": "No cards; place stones on the board according to the chosen variant (standard or grand).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture all opponent stones or block the opponent so they have no legal moves.",
+    "gameplay": "Two players take turns moving their stones on a square grid. Pieces move in all directions (orthogonally, one square or sliding like a rook). Capture is by custodian capture: when an opponent stone is flanked on two opposite sides by your stones, it is captured and removed. Win by capturing all opponent stones or blocking the opponent so they have no legal moves. No random elements; pure strategy.",
+    "keyRules": [
+      "Pieces move orthogonally on the board, one square or sliding along a row or column.",
+      "Capture by surrounding an opponent piece on two opposite sides (custodian capture).",
+      "Win by capturing all opponent pieces or blocking all legal moves.",
+      "Keep stones in formation; isolated pieces are vulnerable to pincer capture."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep your stones together! A line of 3 stones is impossible to capture from the front. If you leave a lone stone in the middle of the board, your opponent will easily slide two pieces around it to 'Pincer' it into oblivion.",
+    "intermediate": "The 'Sacrificial Bait': Move a stone into a position where it can be captured. When the opponent moves their piece to complete the capture, use your next turn to capture BOTH the opponent's pieces that were closing in. This 'Counter-Pincer' is the core of Petteia combat.",
+    "advanced": "Positional Strangle: Don't focus only on capturing pieces. Focus on 'Territory Control'. If you can block your opponent's access to the center of the board, their pieces will be stuck on the edges where they have fewer liberties. Use your stones to create 'Walls' that force the opponent into a corner where they can be captured more effectively.",
+    "tips": [
+      "The 'Greek Slide': Because pieces can move any distance, look for long-range captures from across the board.",
+      "If you are playing the 12x8 board, prioritize the flanks; captures on the edges are harder to avoid but easier to execute."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard_8x8",
+        "name": "Standard (8x8)",
+        "description": "Played on an 8x8 grid; each player has a set of stones (typically 16). Initial placement and move rules as in main description.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs only in board size and stone count; no engine constant overrides documented in sources."
+      },
+      {
+        "id": "grand_12x8",
+        "name": "Grand (12x8)",
+        "description": "Played on a 12x8 grid; larger board with more stones (e.g. 32 total). Same custodian capture and movement rules; prioritise flanks.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs only in board size and stone count; no engine constant overrides documented in sources."
+      },
+      {
+        "id": "reconstructed",
+        "name": "Reconstructed (modern)",
+        "description": "Historians have partially reconstructed rules from ancient texts; exact board size and initial setup vary among reconstructions.",
+        "overrides": {},
+        "emptyOverridesReason": "Reconstructions vary; no single engine overrides until a canonical variant is chosen."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Moves stones randomly; falls for 1-turn capture traps; never blocks the opponent.",
+      "medium": "Excellent at Rook-style movement; basic pincer detection; manages a cohesive defensive line.",
+      "hard": "Expert at 'Long-Range Custodian' setups; calculates multi-turn paralysis traps; perfectly uses corner captures."
+    },
+    "considerations": [
+      "Custodian-capture (Geometric) detection.",
+      "Paralysis (Mobility) scoring.",
+      "Geometric-pincer (MCTS) search."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:historical_reconstructions_of_petteia_and_latrunculi_bead_game_games_ancient_petteia",
+        "name": "Historical Reconstructions of Petteia and Latrunculi",
+        "url": "https://en.wikipedia.org/wiki/Petteia",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-petteia.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Plato's 'The Republic' - Book VI (Philosophical References)",
+      "Aristotle's 'Politics' - Book I (Strategic References)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "move_stone"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players alternate moving a stone; custodian capture removes opponent pieces."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Petteia is a board game; players move stones on a grid, not play cards."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Tiddlywink",
+    "suitSet": "Tiddlywink_colors",
+    "rankSet": "Tiddlywink_pieces",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "fixed_player",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "move_stone",
+        "supported": true,
+        "description": "Move one of your stones to an adjacent empty square, or slide it along a row or column (rook-style) to an empty square.",
+        "cost": "0",
+        "constraints": "Only to empty squares; cannot jump pieces. Must move at least one square.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": null,
+    "rankingSystem": null,
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Petteia uses no playing cards; it is played on a board with stones. The schema requires a deck triple: Tiddlywink is used here for compatibility. Play uses an 8x8 or 12x8 grid and two sets of pieces (e.g. white and black) that move and capture by custodian capture.",
+    "suitDescription": "There are no card suits; the two sides are distinguished by piece colour (e.g. white and black). The Tiddlywink_colors suit set is used in the schema only for compatibility with this board game.",
+    "rankDescription": "There are no card ranks; all pieces of one colour are equal. Movement is orthogonal (one square or rook-style slide). Capture is by surrounding an opponent piece on two opposite sides. Tiddlywink_pieces is used in the schema only for compatibility.",
+    "dealPattern": "Stones placed on board at setup according to variant; no cards dealt.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PETTEIA",
+      "subtitle": "Board Game",
+      "tagline": "Petteia (also known as Poleis or 'Cities') is an ancient Greek board game of pur..."
+    },
+    "shortDescription": "Petteia (also known as Poleis or 'Cities') is an ancient Greek board game of pure strategy and military logic. Featured in the writings of Plato and A",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Petteia (also known as Poleis or 'Cities') is an ancient Greek board game of pure strategy and military logic. Featured in the writings of Plato and Aristotle, it is one of the world's first 'Pure Reason' games, containing no elements of chance. Players command 'Stones' on a grid, attempting to capture the opponent's forces by surrounding them from two sides (Custodian Capture). It is the direct ancestor of the Roman 'Ludus Latrunculorum' and is celebrated as a training tool for soldiers and philosophers alike.",
+    "ai": "Game: Petteia. Two players move stones on a grid; custodian capture (flank on two sides). Win by capturing all opponent stones or blocking all moves. Pure strategy, no chance."
+  },
+  "scoring": {
+    "description": "Capture all opponent stones or block the opponent so they have no legal moves.",
+    "winCondition": "Capture all opponent stones or block the opponent so they have no legal moves.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Petteia is a board game with stones; there are no cards or card point values."
+    }
+  },
+  "alsoKnownAs": ["Polis", "Poleis", "Cities"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "",
+    "overviewNaReasons": {}
+  },
+  "fieldStatus": {}
+}

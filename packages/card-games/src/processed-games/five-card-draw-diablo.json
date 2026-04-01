@@ -1,0 +1,795 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "five-card-draw-diablo.json",
+  "name": "Diablo",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Diablo is a high-action Five Card Draw poker variant characterized by three primary mechanics: Deuces are wild, players are restricted to drawing a maximum of two cards, and most importantly, if the player who opens the betting fails to win the pot, they must 'match the pot' to create a new one for the next deal.",
+    "category": "Poker",
+    "subCategory": "Draw Poker",
+    "origin": "USA (Home Game variant)",
+    "originName": "Diablo",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 6,
+      "display": "2-6 (Optimal: 5-6)"
+    },
+    "deck": "52-card standard deck",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes (per hand)",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "A staple of 'Dealer's Choice' home games in the United States. Its exact origin is undocumented, but it belongs to the mid-20th century tradition of 'action-inducing' poker variants.",
+    "timeline": [
+      "Mid-20th Century: Diablo emerges in social poker circles.",
+      "2010: First documented in English-language card-game references as a Draw Poker variant."
+    ],
+    "evolution": "Derived from Standard Five Card Draw, the 'Diablo' element was added to ensure pots grow exponentially and to penalize marginal openers.",
+    "cultural": "Known as a 'pot-builder' or 'destroyer of bankrolls' in casual settings.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-6 players (Best with 5-6 to ensure enough competition for the opener).",
+    "deck": "Standard 52-card deck. All four 2s are wild.",
+    "equipment": "Poker chips, dealer button.",
+    "dealing": "Each player is dealt 5 cards face down. In some variants, the first replacement card drawn later is dealt face up, though standard Diablo keeps all cards face down (verify with house rules).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Make the best five-card poker hand using Deuces as wild cards. In Diablo mode, the opener must win the pot or match it to fund the next hand.",
+    "gameplay": "1. Ante: Standard ante from all players.\n2. Deal: 5 cards to each player.\n3. First Betting Round: Standard poker betting begun by player to dealer's left.\n4. The Draw: Active players may discard and draw a MAXIMUM of two cards.\n5. Second Betting Round: Standard betting begun by the player who opened the first round.\n6. Showdown: Best hand wins the pot.\n7. Diablo rule: If the opener does not win, the opener contributes an amount equal to the just-won pot to seed the next hand. Deal passes left and the next hand is played with no new antes. The cycle continues until a hand in which the opener wins.",
+    "keyRules": [
+      "Deuces (2s) are wild.",
+      "Max draw of 2 cards.",
+      "Openers must win or match the pot.",
+      "Standard poker hand rankings with Five of a Kind as highest hand."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Be extremely cautious about opening the pot. If your hand is marginal, checking is safer to avoid the 'Match the Pot' penalty.",
+    "intermediate": "Since everyone knows Deuces are wild, 'Trips' are the new 'Pair.' Don't bother staying in the hand without at least a natural pair or a wild card.",
+    "advanced": "Positional opening: If you are the dealer and it's checked to you, opening is less risky because you have seen everyone else's lack of interest. However, if you open and lose, you pay. Use the threat of the 'Match' to force folds if you have a strong hand.",
+    "tips": [
+      "Don't open on a bluff unless you have the chips to cover a pot-match.",
+      "If you hold two deuces, you have a powerhouse - opening is usually correct.",
+      "Track the 'Diablo' pot size; it can grow very fast."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "diablo-cap",
+        "name": "Capped Diablo",
+        "description": "To prevent bankrupting players, the amount the opener must match is capped at a fixed limit (e.g., 20 big blinds).",
+        "overrides": {},
+        "emptyOverridesReason": "Override would set a cap constant; not yet mapped in engine.constants."
+      },
+      {
+        "id": "face-up-diablo",
+        "name": "Exposed Diablo",
+        "description": "The first card drawn by each player is dealt face up, providing more information to the table.",
+        "overrides": {},
+        "emptyOverridesReason": "Override would change card visibility in draw phase; not yet mapped."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Opens too often on weak hands; ignores the match-pot penalty.",
+      "medium": "Evaluates wild card hand strength correctly; only opens on strong natural hands (Pair of Aces+).",
+      "hard": "Calculates the risk/reward of opening based on stack size relative to the pot and expected carryover liabilities."
+    },
+    "considerations": [
+      "Must handle 'Wild Card' evaluations.",
+      "Requires opener identity tracking for the match-the-pot rule.",
+      "Needs specific logic for the 2-card draw limit.",
+      "Must support carryover hands with no new antes after opener loss."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_diablo_poker_www_pagat_com_poker_variants_5draw_html_diablo",
+        "name": "Pagat - Diablo Poker",
+        "url": "https://www.pagat.com/poker/variants/5draw.html#diablo",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-five-card-draw.html"
+      },
+      {
+        "id": "src:wikipedia_poker_en_wikipedia_org_wiki_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 45,
+    "complexity": 3,
+    "luck": 6,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "ante"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players post ante before cards are dealt."
+      },
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "betting1",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals five face-down cards to each active player."
+      },
+      {
+        "id": "betting1",
+        "label": "First Betting Round",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "draw",
+        "isMandatory": false,
+        "loopIndex": 1,
+        "totalLoops": 2,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Opening wagering round."
+      },
+      {
+        "id": "draw",
+        "label": "Draw (max 2)",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "discard",
+          "draw"
+        ],
+        "nextPhase": "betting2",
+        "isMandatory": true,
+        "loopIndex": 1,
+        "totalLoops": 1,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each active player may replace up to two cards."
+      },
+      {
+        "id": "betting2",
+        "label": "Second Betting Round",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": 2,
+        "totalLoops": 2,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Final wagering before showdown."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_hand",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_hand": "face_up"
+        },
+        "notes": "Evaluate hands and apply opener-match penalty if opener loses."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diablo has no market row to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not buy cards from a market in this draw poker variant."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are received by deal and draw replacement, not stock purchase."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diablo has no declaration step."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diablo does not use trick-taking card-play actions."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Check is used for passing in betting rounds."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This variant has wagering rounds but no contract bidding."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diablo does not include meld declarations."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The hand ends at showdown, not by a go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 6,
+      "startingStack": 100,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 2,
+          "notes": "Replacement draw during draw phase."
+        }
+      ],
+      "drawCount": 2,
+      "drawTiming": "phase_specific",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 2,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [
+        {
+          "card": "2C",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Wild in all hands; five of a kind is allowed and ranks above straight flush.",
+          "naturalPreferred": false
+        },
+        {
+          "card": "2D",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Wild in all hands; five of a kind is allowed and ranks above straight flush.",
+          "naturalPreferred": false
+        },
+        {
+          "card": "2H",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Wild in all hands; five of a kind is allowed and ranks above straight flush.",
+          "naturalPreferred": false
+        },
+        {
+          "card": "2S",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Wild in all hands; five of a kind is allowed and ranks above straight flush.",
+          "naturalPreferred": false
+        }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 6,
+      "final_hand_size": 5
+    },
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "opener_wins_by_folds",
+          "appliesTo": "showdown_resolution",
+          "text": "If all other players fold to the opener, the opener wins immediately and no match-the-pot carryover is created.",
+          "affects": "pot_settlement"
+        },
+        {
+          "id": "late_opener_assignment",
+          "appliesTo": "betting_flow",
+          "text": "If no player opens in the first betting round but someone opens in the second round, that first bettor is treated as the opener for Diablo carryover.",
+          "affects": "opener_tracking"
+        },
+        {
+          "id": "carryover_no_new_antes",
+          "appliesTo": "hand_transition",
+          "text": "Carryover hands after an opener loss are dealt with no new antes until a hand where the opener wins.",
+          "affects": "ante_collection"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Track opener seat for each hand and resolve match-the-pot obligation on opener loss.",
+        "Persist carryover pot amount and suppress ante collection for follow-up hands in a Diablo cycle.",
+        "Enforce max two-card draw per active player in draw phase."
+      ]
+    },
+    "progression": ["ante","deal","betting1","draw","betting2","showdown"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker high ranking with deuces wild and five-of-a-kind allowed.",
+    "rankingSystem": "Highest final hand wins with wild-card substitution from all twos.",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One full deck of 52 cards using French suits (hearts, diamonds, clubs, spades) and standard ranks from ace through king, with no jokers.",
+    "suitDescription": "French suits: hearts (cœurs), diamonds (carreaux), clubs (trèfles), and spades (piques). Each suit has thirteen cards from ace through king.",
+    "rankDescription": "Standard ranking for a 52-card deck: ace (high or low by context), king, queen, jack, 10, 9, 8, 7, 6, 5, 4, 3, 2. Deuces are wild.",
+    "dealPattern": "Ante, deal five, first bet, draw up to two, second bet, showdown.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "DIABLO",
+      "subtitle": "The Pot-Escalating Draw Poker",
+      "tagline": "Deuces wild. Maximum 2-card draw. Openers must win or match the pot."
+    },
+    "shortDescription": "A volatile Five Card Draw variant where wild deuces, restricted draws, and the Diablo penalty (openers must match the pot if they lose) create exponentially growing pots and high-action betting.",
+    "uiThemes": [
+      "classic",
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "discard",
+        "pot"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Diablo! Deuces are wild. You can draw a maximum of 2 cards. Here's the twist: If you open the betting and lose the hand, you must match the potâ€”doubling it for the next deal. This creates escalating pots and high-stakes tension. Only open if you have the chips and the hand!",
+    "ai": "Game: Diablo (Five Card Draw Poker). Deuces (2s) are wild. Setup: 5-card deal to each player, standard antes. Gameplay: First betting round (standard poker), then draw phase (max 2 cards), then second betting round. Showdown: Best hand wins pot. Diablo rule: If the player who opened (bet first in round 1) loses the hand, they pay the pot amount into a new pot for next deal. No new antes; deal passes left. Cycle repeats until opener wins. Hand rankings include Five-of-a-Kind as highest (due to wild cards)."
+  },
+  "scoring": {
+    "description": "Pot-based cash game. Winner of each hand takes the pot. Diablo mechanism creates escalating pots.",
+    "winCondition": "Player with highest 5-card poker hand at showdown wins the current pot. If the opener loses, the opener matches the just-won pot to create the next hand's carryover pot.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "No pot splitting. Single winner takes entire pot.",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Diablo is resolved hand-by-hand through pot settlement, not by cumulative target score.",
+      "cardValues": "Poker uses hand rankings, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [
+    "Diablo Poker",
+    "Must-Win Opener Poker"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

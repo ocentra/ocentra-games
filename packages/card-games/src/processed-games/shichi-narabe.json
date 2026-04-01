@@ -1,0 +1,662 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "shichi-narabe.json",
+  "name": "Shichi Narabe",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Shichi Narabe is a Japanese layout shedding game related to Fan Tan/Sevens. Players lay out all sevens first, then extend each suit outward toward Ace and King while managing a limited number of passes.",
+    "category": "Shedding",
+    "subCategory": "Shedding",
+    "origin": "Japan",
+    "originName": "Shichi Narabe (七並べ)",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 4,
+      "display": "3+ (best around 3-5)"
+    },
+    "deck": "Standard 52-card deck (53 with Joker variant)",
+    "difficulty": "Intermediate",
+    "duration": "15-35 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Japan"],
+    "origins": "Shichi Narabe is the Japanese form of Sevens/Fan Tan, adapted with explicit passing limits and several local tactical variants.",
+    "timeline": [
+      "Traditional period: Sevens-style layout play circulates in Japan under the name Shichi Narabe.",
+      "Modern era: Variant families (Joker, Tunnel, Ghost, Killing) become widely documented.",
+      "Current era: Online implementations spread standardized and house-rule versions."
+    ],
+    "evolution": "Japanese rules introduced pass-economy pressure and special variants that punish blocking more strongly than many Western Sevens forms.",
+    "cultural": "Common as a social table game and often taught as an accessible strategic card game.",
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "setup": {
+    "players": "3 or more players; 3-5 is commonly preferred.",
+    "deck": "Use a standard 52-card deck; add one Joker for the Joker variant.",
+    "equipment": "Cards and table space for a 13x4 suit layout.",
+    "dealing": "Deal all cards one-by-one clockwise. All players who hold sevens place them face up to start the layout.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Empty your hand as early as possible while avoiding bankruptcy from overusing passes.",
+    "gameplay": "The player associated with the seven of diamonds starts, then play continues clockwise. On a turn, play one legal adjacent rank in a suit row or pass. Legal plays extend each suit outward from 7 toward K and A. Each player may pass at most three times; a player who must pass again while still holding cards goes bankrupt and is ranked behind active finishers.",
+    "keyRules": [
+      "All sevens are laid out before normal turns begin.",
+      "Each player has a strict pass limit (typically three).",
+      "Finishing order determines ranking; bankrupt players are last."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Avoid spending passes too early unless doing so meaningfully blocks opponents' key exits.",
+    "intermediate": "Control choke cards near 7s to force opponents into pass pressure.",
+    "advanced": "Time releases of blocked suit branches to avoid becoming the final trapped holder.",
+    "tips": [
+      "Track each player's remaining passes as a primary tempo resource.",
+      "Do not over-block if it leaves you with isolated high/low cards at endgame."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "joker_variant",
+        "name": "Joker Variant",
+        "description": "Adds a Joker with exchange mechanics that can skip blocked cards in a row.",
+        "overrides": {},
+        "emptyOverridesReason": "Joker exchange and skip-block rules are not yet mapped to engine constants."
+      },
+      {
+        "id": "tunnelling",
+        "name": "Tunnelling",
+        "description": "Suit row ends connect so completion can force reverse-order continuation.",
+        "overrides": {},
+        "emptyOverridesReason": "Tunnel wrap and reverse-order rules need engine support before overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal cards and passes reactively without long pass-economy planning.",
+      "medium": "Balances blocking and self-unblocking while tracking rough pass counts.",
+      "hard": "Optimizes pass-pressure lines and branch release timing across all suit rows."
+    },
+    "considerations": [
+      "Pass-economy modeling is central to move quality.",
+      "Variant toggles (Joker/Tunnel/Killing) significantly change legal successor states."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-shichi-narabe",
+        "name": "Pagat.com",
+        "url": "https://www.pagat.com/layout/shichinarabe.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-shichinarabe.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/layout/shichinarabe.html",
+        "localHtml": "pagat-shichinarabe.html"
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "localHtml": "wiki-list-of-card-games.html"
+      },
+      "https://boardgamegeek.com/",
+      "https://www.bicyclecards.com/"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal and Lay Sevens",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 1,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal all cards and reveal initial sevens in the layout."
+      },
+      {
+        "id": "play_loop",
+        "label": "Play or Pass",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "pass"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players either place one legal adjacent card or consume a pass."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes all cards and initializes the layout with sevens.",
+        "cost": "0",
+        "constraints": "Dealer action at hand start only.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand"
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Skip play and consume one available pass token.",
+        "cost": "0",
+        "constraints": "Usually maximum three passes per player before bankruptcy risk.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Play next missing rank in a suit row adjacent to existing layout."
+        }
+      ],
+      "passAllowed": true,
+      "burnRules": null
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {
+      "min_players": 3,
+      "max_players": 8,
+      "optimal_players": 4,
+      "deck_count": 1,
+      "buy_limit": 3
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "custom:layout_grid",
+        "type": "grid",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play_loop"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "No poker ranking; legal adjacency in suit rows defines playability.",
+    "rankingSystem": "Players are ranked by order of emptying hands; bankrupt players rank at the bottom.",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Deal all cards one at a time to players clockwise.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SHICHI NARABE",
+      "subtitle": "Layout Shedding Game",
+      "tagline": "Build out from sevens, manage your three passes, and empty your hand first."
+    },
+    "shortDescription": "Shichi Narabe is Japan's strategic Sevens variant where pass limits and layout blocking create tactical pressure in a simple play-one-card-or-pass loop.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "custom:layout_grid"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "In Shichi Narabe, lay your cards into suit rows starting from the sevens. Use passes carefully, since exceeding your pass limit can force bankruptcy and last place.",
+    "ai": "Game: Shichi Narabe. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "No fixed point values in the base game; results are by finishing order, with bankrupt players ranked behind finishers.",
+    "winCondition": "Finish your hand before opponents; avoid bankruptcy from a fourth forced pass.",
+    "cardValues": {
+      "Ace": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "Jack": "11",
+      "Queen": "12",
+      "King": "13"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "closest_to_target",
+    "nullReasons": {
+      "targetScore": "First to empty hand wins; 1 denotes ordinal goal."
+    }
+  },
+  "alsoKnownAs": [
+    "Sevens (Japanese variant)",
+    "Shichi Narabe Sevens"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

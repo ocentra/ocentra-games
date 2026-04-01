@@ -1,0 +1,237 @@
+---
+description: Build flags, conditional code, and logging control for Ocentra (Vite main app, Cloudflare, @ocentra/logging-domain)
+globs: vite.config.*, **/build-flags*.ts, **/stubs/**/*.ts, src/lib/logging/**, infra/cloudflare/src/logging/**, **/log-config*.ts, **/domain-logger-init*, **/vitest*.ts, **/test-setup*.ts
+alwaysApply: false
+---
+
+# Ocentra Build Flags and Logging Control Guide
+
+This guide defines how to implement **conditional compilation, environment-specific code, and logging control** in the Ocentra codebase. It is tailored to:
+
+- **Main app** (Vite, `src/`) — uses `MainAppLogger` from `@ocentra/logging-domain`
+- **Cloudflare** (`infra/cloudflare/`) — uses `CloudflareLogger` from `@ocentra/logging-domain` via `@/logging/domain-logger-init`
+- **Single source of truth**: `@ocentra/logging-domain` — see `packages/logging-domain/README.md`
+
+**Related rules:** `ocentra-games-rules.mdc` (no `console.log`, use `@/lib/logging`), `ocentra-cloudflare-logging.mdc` (Logger pattern in handlers, DOs, tests).
+
+---
+
+## Ocentra Logging Architecture (Quick Reference)
+
+| Runtime              | Logger             | Init / Entry Point                        | Storage / Pipeline                                |
+|----------------------|--------------------|-------------------------------------------|--------------------------------------------------|
+| Main app (browser)   | MainAppLogger      | `src/lib/logging/init.ts` → `initLogging()` | IndexedDB → (test) bridge → NDJSON → DuckDB      |
+| Cloudflare (worker)  | CloudflareLogger   | `infra/cloudflare/src/logging/domain-logger-init.ts` | Analytics Engine, R2, SQLite (test)              |
+
+- **Main app** imports: `log` from `@/lib/logging` (or equivalent), `getStackTrace` from `@ocentra/logging-domain/core/stackTrace`
+- **Cloudflare** imports: `Logger`, `getStackTrace`, `flushAllBatchesAndTestLogs` from `@/logging/domain-logger-init`
+
+---
+
+## Goals (Logging-Focused)
+
+- Dev-only logging in main app; strip or noop in production
+- CI log suppression for Vitest (Cloudflare tests) and main app tests
+- Control per-module verbosity (e.g. `LOG_DECK`, `LOG_TEST_OPERATIONS`) via build flags or runtime flags
+- Reduce bundle size by stripping or stubbing `@ocentra/logging-domain` in prod (optional)
+- Single codebase, multiple builds (dev / CI / prod)
+
+**Redaction:** Build flags control *when* we log. For *what* gets through (secret scrubbing), see `ocentra-log-redaction-guide.mdc`.
+
+---
+
+## Core Principle: Build-Time Removal
+
+Code must be removed or noop'd at **build time** where possible, not only at runtime.
+
+**Correct (build-time):**
+
+```ts
+declare const __LOGGING_ENABLED__: boolean;
+
+if (__LOGGING_ENABLED__) {
+  log.logInfo(message, getStackTrace(), data);
+}
+```
+
+**Incorrect (runtime only, still bundled):**
+
+```ts
+if (process.env.NODE_ENV === "development") {
+  log.logInfo(message, getStackTrace(), data);
+}
+```
+
+---
+
+## Main App (Vite) — Build Flags
+
+### Step 1 — Define flags in `vite.config.ts`
+
+```ts
+export default defineConfig(({ mode }) => {
+  const PROD = mode === "production";
+  const CI = process.env.CI === "true" || process.env.CI === "1";
+
+  return {
+    define: {
+      global: 'globalThis',
+      __DEV__: JSON.stringify(!PROD),
+      __PROD__: JSON.stringify(PROD),
+      __CI__: JSON.stringify(CI),
+      __LOGGING_ENABLED__: JSON.stringify(!PROD && !CI),
+    },
+    // ...
+  };
+});
+```
+
+### Step 2 — Declare globals in `src/types/build-flags.d.ts`
+
+```ts
+declare const __DEV__: boolean;
+declare const __PROD__: boolean;
+declare const __CI__: boolean;
+declare const __LOGGING_ENABLED__: boolean;
+```
+
+### Step 3 — Use in main app code
+
+```ts
+if (__LOGGING_ENABLED__) {
+  log.logInfo(message, getStackTrace(), data);
+}
+```
+
+Production/CI builds: dead code is tree-shaken.
+
+---
+
+## Main App — Logging Entry Points and Rules
+
+- **Never use `console.log`** — use `@/lib/logging` and `MainAppLogger` (see `ocentra-games-rules.mdc`).
+- **Always pass `getStackTrace()`** when calling `log.logInfo`, `log.logWarn`, `log.logError`, `log.logDebug`.
+- **Module-level verbosity flags** (e.g. `LOG_DECK`, `LOG_CACHE`, `LOG_NAVIGATION`) — these are runtime booleans; consider moving to build-time `__LOG_*__` flags if they should be stripped in prod.
+
+---
+
+## Cloudflare — Logging Control
+
+Cloudflare uses **Wrangler**, not Vite. Logging behavior is controlled by:
+
+1. **`infra/cloudflare/src/logging/log-config.ts`** — `initLogConfig({ LOG_LEVEL, ENVIRONMENT, TEST_MODE })` drives `shouldLog`, `shouldLogToConsole`, `shouldStoreLog`.
+2. **`infra/cloudflare/src/logging/domain-logger-init.ts`** — wires `CloudflareLogger` with adapters (path resolver, request context, storage).
+3. **Per-test flags** — e.g. `LOG_TEST_OPERATIONS`, `LOG_TEST_RESPONSE_DETAILS` in test files.
+
+**CI / test log suppression:** Use Vitest setup (e.g. `infra/cloudflare/tests/test-setup-core.ts` or `vitest.config.ts`) to suppress `console.log` / `console.info` when `process.env.CI === 'true'` if needed. Do **not** disable the domain logger — tests still need `logInfo`, `logWarn`, `logError` for bridge/NDJSON/DuckDB. Suppress only raw `console.*` if present.
+
+---
+
+## Cloudflare — Required Logger Pattern
+
+See `ocentra-cloudflare-logging.mdc`. Every handler, DO, and test under `infra/cloudflare/` must:
+
+- Import `Logger`, `getStackTrace`, `flushAllBatchesAndTestLogs` from `@/logging/domain-logger-init`
+- Call `log.register(import.meta.url)` and define helpers `logInfo`, `logWarn`, `logError`, `logDebug`
+- Pass `getStackTrace()` as second argument to every log call
+
+---
+
+## Optional: Strip `@ocentra/logging-domain` in Prod (Main App)
+
+If you want to **completely remove** logging-domain from the production bundle:
+
+1. Create stub `src/stubs/logging-domain-stub.ts` that exports noop implementations matching the main app’s usage (e.g. `MainAppLogger`, `getStackTrace` as noop).
+2. In `vite.config.ts`, add an alias when `__LOGGING_ENABLED__` is false:
+
+```ts
+resolve: {
+  alias: {
+    '@': path.resolve(__dirname, './src'),
+    // When building for prod without logging:
+    ...(PROD && !process.env.KEEP_LOGGING
+      ? { '@ocentra/logging-domain': path.resolve(__dirname, 'src/stubs/logging-domain-stub.ts') }
+      : {}),
+  },
+},
+```
+
+**Warning:** Stubbing the whole package requires the stub to implement all consumed exports. Prefer **build-time flag guards** (`if (__LOGGING_ENABLED__)`) around log calls over full domain stripping unless bundle size is critical.
+
+---
+
+## CI Log Suppression (Vitest)
+
+For Vitest (main app or Cloudflare tests), add to setup:
+
+```ts
+// vitest.setup.ts or test-setup-core.ts
+if (process.env.CI === 'true' || process.env.CI === '1') {
+  const noop = () => {};
+  console.log = noop;
+  console.info = noop;
+  console.debug = noop;
+}
+```
+
+This suppresses **raw console output** only. Domain logger (`logInfo`, etc.) continues to run for bridge/NDJSON/DuckDB and MCP queryability.
+
+---
+
+## AI Fix Checklist — Logging
+
+**Invocation:** When the user says **"fix logging"**, **"fix logger"**, **"logging compliance"**, or **"apply logging rules"**, use this checklist to audit and fix code.
+
+### Main app (`src/`)
+
+- [ ] No `console.log`, `console.error`, `console.warn`, `console.info`, `console.debug` — use `const log = MainAppLogger.instance` (from `@ocentra/logging-domain/core/mainAppLogger`) or equivalent.
+- [ ] All log calls use `getStackTrace()` as second argument (from `@ocentra/logging-domain/core/stackTrace`).
+- [ ] Imports from `@ocentra/logging-domain` (not ad-hoc loggers). Init via `initLogging()` from `@/lib/logging/init` at app bootstrap.
+- [ ] Module-level flags (`LOG_DECK`, etc.) are used correctly (last arg `enabled` for conditional logs).
+- [ ] If adding build-time stripping: use `__LOGGING_ENABLED__` or `__DEV__` around verbose log blocks.
+
+### Cloudflare (`infra/cloudflare/`)
+
+- [ ] Handler/DO/test uses `Logger`, `getStackTrace`, `flushAllBatchesAndTestLogs` from `@/logging/domain-logger-init`.
+- [ ] `log.register(import.meta.url)` and helpers `logInfo`, `logWarn`, `logError`, `logDebug` present.
+- [ ] Every `logInfo`/`logWarn`/`logError`/`logDebug` call passes `getStackTrace()` as second argument.
+- [ ] `afterEach` / `afterAll` calls `flushAllBatchesAndTestLogs()` where required by test setup.
+- [ ] No raw `console.*` for application logging — use domain logger.
+
+### General
+
+- [ ] No mock or fake logger that bypasses `@ocentra/logging-domain` for money-critical or security paths.
+- [ ] See `ocentra-cloudflare-logging.mdc` for exact pattern in new handlers/DOs/tests.
+
+---
+
+## Recommended Build Flags (Main App)
+
+| Flag                  | Purpose                                          |
+|-----------------------|--------------------------------------------------|
+| `__DEV__`             | Development mode (not production)                |
+| `__PROD__`            | Production build                                 |
+| `__CI__`              | CI environment (e.g. GitHub Actions)             |
+| `__LOGGING_ENABLED__` | Enable verbose logging (dev, not CI/prod)        |
+
+---
+
+## Summary
+
+| Mechanism      | Purpose                                      |
+|----------------|----------------------------------------------|
+| `define`       | Build-time flags (`__DEV__`, `__CI__`, etc.) |
+| `log-config`   | Cloudflare runtime: `ENVIRONMENT`, `TEST_MODE`|
+| Module flags   | Per-module verbosity (`LOG_DECK`, etc.)      |
+| Alias + stub   | Optional: replace logging-domain in prod     |
+| Vitest setup   | CI: suppress `console.*`                     |
+
+---
+
+## Cross-References
+
+- `ocentra-games-rules.mdc` — Rule 11: no `console.log`, use `@/lib/logging`
+- `ocentra-cloudflare-logging.mdc` — Logger pattern for `infra/cloudflare/`
+- `ocentra-log-redaction-guide.mdc` — Mandatory redaction layer (scrub secrets before output)
+- `packages/logging-domain/README.md` — Domain API and scripts
+- `packages/logging-domain/ARCHITECTURE.md` — MainAppLogger vs CloudflareLogger, pipelines

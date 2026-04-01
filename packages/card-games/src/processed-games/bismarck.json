@@ -1,0 +1,841 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "bismarck.json",
+  "name": "Bismarck",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Bismarck is a Swedish three-player trick-taking game where players score based on the number of tricks they win compared to a 'quota.' Over 12 deals, each player must play each of four different contracts exactly once as forehand: Sang (no trumps, win tricks), Pass (no trumps, avoid tricks), Spader (spades trump), and Valfri (choose your trump suit). Similar to the Polish game Mizerka.",
+    "category": "Trick-taking",
+    "subCategory": "Quota Whist",
+    "origin": "Sweden",
+    "originName": "Bismarck",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "3"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes (12-deal game)",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "The first known description of Bismarck appeared in 1944 in Sweden. According to Sten Helmfrid (Kartofilen, July 2024), the game was likely named after the famous German battleship Bismarck, which was sunk in 1941 â€” making this a WW2-era card game.",
+    "originCountries": ["Sweden"],
+    "timeline": [
+      "1941: Battleship Bismarck sunk â€” likely inspiration for the game's name.",
+      "1944: First known published rules of the card game appear in Sweden.",
+      "Late 20th century: Spreads to Britain, Finland, Portugal, and Estonia.",
+      "Present: Played in multiple variants across Northern and Western Europe."
+    ],
+    "evolution": "Bismarck belongs to the 'quota whist' family where players score based on deviation from a target number of tricks. It shares DNA with Mizerka (Poland) and other European three-player trick-taking games. The compulsory contract rotation system ensures variety across a full game.",
+    "cultural": "A distinctively Scandinavian card game that reflects the Northern European love of structured trick-taking games with strategic depth.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 3 players.",
+    "deck": "Standard 52-card deck, no Jokers. Cards rank A-K-Q-J-10-9-8-7-6-5-4-3-2.",
+    "equipment": "52-card deck. Score sheet with grid (rows: players, columns: contracts).",
+    "dealing": "Dealer shuffles; player to dealer's right cuts. Dealer deals the top 4 cards face-up on the table, then deals the remaining 48 cards face-down to the three players (16 each). Forehand (left of dealer) picks up the 4 face-up cards (total 20 cards) and discards any 4 face-down.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Over 12 deals (each player is forehand 4 times), score the highest cumulative total by managing your tricks relative to your quota.",
+    "gameplay": "Forehand leads to the first trick. Any card may be led. Players must follow suit if possible; if void, may play any card. With trumps the trick is won by the highest trump; with no trumps, by the highest card of the led suit. There is no obligation to beat or to overtrump. The winner of each trick leads to the next. After 16 tricks, players are scored against their quota for the chosen contract.",
+    "keyRules": [
+      "Forehand sees 4 face-up cards BEFORE choosing their contract â€” critical information for decision-making.",
+      "Forehand picks up the 4 face-up cards and discards 4, keeping 16 for play.",
+      "Each contract must be used exactly once per player over 12 deals.",
+      "16 tricks per deal (3 players Ã— 16 cards Ã· 3? No â€” 48 cards Ã· 3 = 16 each, so 16 tricks).",
+      "Zero-sum scoring: all three scores always add to zero."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As forehand, evaluate the 4 face-up cards carefully before choosing your contract. With many high cards and a strong suit, choose Sang or a trump contract. With weak cards, choose Pass.",
+    "intermediate": "Contract sequencing: save your most flexible contract (Valfri) for last so you can adapt to your hand. Spader should be chosen when you naturally have good spades. Don't waste Valfri on spades if you haven't played Spader yet.",
+    "advanced": "In Sang (no-trump, win tricks), count the cards: with 16 tricks, forehand needs 8 â€” exactly half. Lead your strong suits first to establish winners. In Pass (avoid tricks), avoid leading and duck with low cards. Discard strategy: when picking up the 4 face-up cards, discard to strengthen your chosen contract â€” void a suit for trump contracts, or shed high cards for Pass.",
+    "tips": [
+      "The 4 face-up cards give forehand a 20-card hand â€” use the discard to tailor your hand perfectly.",
+      "Track the 4 discarded cards â€” they're out of play and affect trick counting.",
+      "In Pass, the quota is only 4 for forehand â€” try to take exactly 4 or fewer.",
+      "Contract sequencing over 12 deals is a meta-strategy: plan which contracts to play early vs. late."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "british-bismarck",
+        "name": "British Bismarck",
+        "description": "The British version with minor rule differences in contract choice and scoring, as the game spread from Sweden to the UK.",
+        "overrides": {},
+        "emptyOverridesReason": "British Bismarck adjusts contract ordering and dealing; those structural changes are noted but not yet encoded as engine overrides."
+      },
+      {
+        "id": "finnish-bismarck",
+        "name": "Four-Player Finnish Bismarck",
+        "description": "A 4-player adaptation of the game, adjusting hand sizes and quotas for an additional player.",
+        "overrides": {},
+        "emptyOverridesReason": "Finnish four-player Bismarck uses partnerships and card-exchange procedures that are documented but not implemented as overrides yet."
+      },
+      {
+        "id": "portuguese-bismarck",
+        "name": "Bismarck in Portugal",
+        "description": "Portuguese adaptation with local rule variations.",
+        "overrides": {},
+        "emptyOverridesReason": "Portuguese Bismarck changes contract names, trump selection, and exchange rules; these remain to be modelled as engine overrides."
+      },
+      {
+        "id": "estonian-bismarck",
+        "name": "Bismarck in Estonia",
+        "description": "Estonian version with regional variations in contracts and scoring.",
+        "overrides": {},
+        "emptyOverridesReason": "Estonian Bismarck uses a 36-card pack and multiple extra contracts; these structural differences are documented but not yet parameterised."
+      },
+      {
+        "id": "mizerka",
+        "name": "Mizerka (Related â€” Poland)",
+        "description": "A similar Polish three-player quota trick-taking game that may share common ancestry with Bismarck.",
+        "overrides": {},
+        "emptyOverridesReason": "Mizerka is included as a related quota whist game; it is referenced for comparison but not implemented via overrides in this file."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Chooses contracts randomly. Plays highest legal card. No discard strategy.",
+      "medium": "Evaluates hand strength before choosing contract. Basic discard strategy (void suits for trump, shed high cards for Pass). Standard trick-play heuristics.",
+      "hard": "Optimal contract selection based on full hand evaluation plus face-up cards. Perfect discard strategy. Card counting for all 52 cards. Plans contract sequencing across 12-deal game for maximum cumulative score."
+    },
+    "considerations": [
+      "Contract choice is the critical decision â€” must evaluate 20-card hand against all 4 contract types.",
+      "Discard optimisation: choosing which 4 of 20 cards to discard has huge combinatorial space.",
+      "Quota tracking: AI must calculate precise trick target and play accordingly.",
+      "12-deal meta-game: contract sequencing across the full game adds strategic planning.",
+      "Zero-sum: hurting opponents is equivalent to helping yourself."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_bismarck_www_pagat_com_quotawhist_bismarck_html",
+        "name": "Pagat - Bismarck",
+        "url": "https://www.pagat.com/quotawhist/bismarck.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-bismarck.html"
+      },
+      {
+        "id": "src:wikipedia_bismarck",
+        "name": "Wikipedia - Bismarck",
+        "url": "https://en.wikipedia.org/wiki/Bid_whist",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-bid-whist-2.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/quotawhist/",
+        "localHtml": "pagat-quotawhist.html"
+      },
+      "Sten Helmfrid, 'Bismarck', Kartofilen Vol. 33, Issue 2/24, pp. 9-21, July 2024"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 30,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal 4 Face-Up + 16 Each",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_4_faceup",
+          "deal_16_each"
+        ],
+        "nextPhase": "choose_contract",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "choose_contract",
+        "label": "Forehand Chooses Contract",
+        "actor": "current_player",
+        "legalActions": [
+          "choose_sang",
+          "choose_pass",
+          "choose_spader",
+          "choose_valfri"
+        ],
+        "nextPhase": "pickup_discard",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "pickup_discard",
+        "label": "Forehand Picks Up 4, Discards 4",
+        "actor": "current_player",
+        "legalActions": [
+          "pickup_table_cards",
+          "discard_4"
+        ],
+        "nextPhase": "play_tricks",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_tricks",
+        "label": "Play 16 Tricks",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "score_deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "score_deal",
+        "label": "Score vs Quota",
+        "actor": "system",
+        "legalActions": [
+          "calculate_quota_score"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the current trick. Must follow suit if possible; if void, may play any card. No obligation to beat or to play a trump.",
+        "cost": "0",
+        "constraints": "Legal when it is your turn in play_tricks; must follow suit if holding the led suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 16,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "called_by_contract",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": true,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 16,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 12,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "fixed_rounds_complete"
+    },
+    "constants": {},
+    "finalHandSize": 16,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "custom:table_4",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "choose_contract",
+      "pickup_discard",
+      "play_tricks",
+      "score_deal"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_4_faceup",
+        "supported": true,
+        "description": "Dealer places the top four cards of the deck face up on the table for forehand to see before choosing contract.",
+        "cost": "0",
+        "constraints": "Dealer only; performed at start of deal phase before dealing to players.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      {
+        "id": "deal_16_each",
+        "supported": true,
+        "description": "Dealer deals the remainder of the pack face down to the three players, one card at a time, so everyone has 16 cards.",
+        "cost": "0",
+        "constraints": "Dealer only; after the 4 face-up cards are on the table; 48 cards dealt 16 each.",
+        "isTerminating": false,
+        "effectType": "deal"
+      },
+      {
+        "id": "choose_sang",
+        "supported": true,
+        "description": "Forehand declares Sang (Spel): no trumps, aim is to win as many tricks as possible. Quota 8 for forehand, 4 each for others.",
+        "cost": "0",
+        "constraints": "Forehand only; must not have used this contract yet in the 12-deal game; chosen after seeing the 4 face-up cards.",
+        "isTerminating": false,
+        "effectType": "declare"
+      },
+      {
+        "id": "choose_pass",
+        "supported": true,
+        "description": "Forehand declares Pass: no trumps, aim is to win as few tricks as possible. Quota 4 for forehand, 6 each for others.",
+        "cost": "0",
+        "constraints": "Forehand only; must not have used this contract yet in the 12-deal game; chosen after seeing the 4 face-up cards.",
+        "isTerminating": false,
+        "effectType": "declare"
+      },
+      {
+        "id": "choose_spader",
+        "supported": true,
+        "description": "Forehand declares Spader: spades are trumps, aim is to win tricks. Quota 8 for forehand, 4 each for others.",
+        "cost": "0",
+        "constraints": "Forehand only; must not have used this contract yet in the 12-deal game; chosen after seeing the 4 face-up cards.",
+        "isTerminating": false,
+        "effectType": "declare"
+      },
+      {
+        "id": "choose_valfri",
+        "supported": true,
+        "description": "Forehand declares Valfri (Trumf): forehand chooses any suit as trumps, aim is to win tricks. Quota 8 for forehand, 4 each for others.",
+        "cost": "0",
+        "constraints": "Forehand only; must not have used this contract yet; must also announce chosen trump suit; chosen after seeing the 4 face-up cards.",
+        "isTerminating": false,
+        "effectType": "declare"
+      },
+      {
+        "id": "pickup_table_cards",
+        "supported": true,
+        "description": "Forehand picks up the four face-up table cards, adding them to their 16 dealt cards for a total of 20 cards.",
+        "cost": "0",
+        "constraints": "Forehand only; after contract is announced; must be done before discarding 4.",
+        "isTerminating": false,
+        "effectType": "draw"
+      },
+      {
+        "id": "discard_4",
+        "supported": true,
+        "description": "Forehand discards any four cards from their 20-card hand face down, keeping 16 for play.",
+        "cost": "0",
+        "constraints": "Forehand only; after picking up the 4 table cards; must discard exactly 4 cards face down.",
+        "isTerminating": false,
+        "effectType": "discard"
+      },
+      {
+        "id": "calculate_quota_score",
+        "supported": true,
+        "description": "Score each player: +1 per trick over quota, -1 per trick under (positive contracts); Pass reversed. Three scores sum to zero.",
+        "cost": "0",
+        "constraints": "System only; after all 16 tricks are played; applies quota for chosen contract (Sang/Spader/Valfri: 8,4,4 or Pass: 4,6,6).",
+        "isTerminating": false,
+        "effectType": "award"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Trick rank: highest card of led suit wins; if trumps played, highest trump wins. No obligation to beat or to overtrump.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "One standard international 52-card deck without jokers, used in a three-player Swedish quota whist game where contracts and trick quotas, not bidding, drive scoring and play.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). In Spader and Valfri contracts one suit is trump; in Sang and Pass there is no trump suit, but players must follow the led suit.",
+    "rankDescription": "Thirteen ranks per suit, ace high down to two, as in standard whist. Trick winners are determined by highest trump when trumps apply, otherwise by highest card of the led suit.",
+    "dealPattern": "4_face_up_on_table_then_48_dealt_16_each_forehand_picks_4_discards_4",
+    "notApplicableReasons": {
+      "drawConfig": "Players do not draw from a stock during play; cards are dealt at start of each deal.",
+      "shedding": "Game is trick-taking, not a shedding game.",
+      "fishingConfig": "No fishing or capture mechanic.",
+      "patienceConfig": "Not a solitaire or patience game.",
+      "bankingConfig": "No banker or banking mechanic."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BISMARCK",
+      "subtitle": "The Swedish Quota Whist",
+      "tagline": "Choose your contract. Meet your quota. Outscore the other two."
+    },
+    "shortDescription": "A Swedish three-player trick-taking game named after the famous battleship. Over 12 deals, each player must play four different contracts â€” no trumps (win or avoid), spades trump, or choose your trump. Score by beating your trick quota. The face-up cards give forehand crucial information before committing.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "custom:table_4",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "You're forehand. The 4 face-up cards are: Aâ™  Kâ™  7â™¥ 3â™¦. Your 16 dealt cards include Qâ™  Jâ™  10â™  and scattered mid-range cards. You haven't played Spader yet. Do you take the spade powerhouse and declare Spader, or save it and go for Sang with your strong high cards?",
+    "ai": "Game: Bismarck. 3 players. 52 cards. 16 tricks per deal. 12 deals total. 4 contracts (Sang, Pass, Spader, Valfri) â€” each used once per player. Forehand picks up 4 face-up cards, discards 4, chooses contract. Quotas: forehand 8 (or 4 in Pass), others 4 (or 6 in Pass). Score: +1/-1 per trick over/under quota. Zero-sum."
+  },
+  "scoring": {
+    "description": "Quota-based: +1 per trick over quota, -1 per trick under. Zero-sum across 3 players. Tracked on a grid with cumulative totals.",
+    "winCondition": "Highest cumulative score after all 12 deals.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Bismarck scoring is purely based on tricks versus quota; individual card ranks have no point values or bonuses."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

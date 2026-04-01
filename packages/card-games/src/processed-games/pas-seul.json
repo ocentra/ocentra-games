@@ -1,0 +1,650 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pas-seul.json",
+  "name": "Pas Seul",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pas Seul is a Klondike-variant patience game for one player. Only one pass through the deck is allowed. Build from Aces to Kings in suit on four foundations; six tableau piles build down in alternating colors. Turn cards from stock to waste; only the top card of the waste is playable. The name refers to a dance sequence for one person.",
+    "category": "Patience",
+    "subCategory": "One-Deck",
+    "origin": "Europe",
+    "players": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "recommendedPlayers": 1,
+      "display": "1"
+    },
+    "deck": "52 cards",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "singleplayer",
+    "originName": "Pas Seul"
+  },
+  "history": {
+    "originCountries": ["Europe"],
+    "origins": "Country/Region of Origin: Europe. Pas Seul is a Klondike-style patience game; the name is French for \"solo step\" or a dance for one person. One pass through the deck distinguishes it from standard Klondike.",
+    "timeline": [
+      "Origins: Klondike variant with single-pass rule",
+      "Modern: Played as solitaire in print and digital implementations"
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "One player. Pas Seul is a single-player patience (solitaire) game.",
+    "deck": "Type: Standard 52-card deck. One deck. No jokers.",
+    "equipment": "Standard 52-card deck and table space for stock, waste, six tableau piles, and four foundations.",
+    "dealing": "Layout: Place four foundation spaces (upper right). Six tableau piles (main stacks) below. Stock (closed deck) upper left; waste pile next to it. Deal one card face-up to each of the six tableau piles to start (or per variant). Remaining cards form the stock. Only one pass through the stock is allowed.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Build all four foundations from Ace to King in suit. The game is won when all 52 cards are on the foundations.",
+    "gameplay": "1. Turn a card from the stock onto the waste; only the topmost card of the waste may be played. 2. The top waste card may be moved to a foundation (build up in suit from Ace to King) or to a tableau pile. 3. On the tableau, build down in alternating colors; any card may be placed on an empty tableau pile. 4. You may move one or more cards from one tableau pile to another when the build rule holds. 5. Only one pass through the stock is allowed; there is no redeal.",
+    "keyRules": [
+      "Foundations: build ascending in the same suit from Ace to King.",
+      "Tableau: build descending in alternating colors; only the top card of a pile is movable.",
+      "Only the top card of the waste pile may be played to foundation or tableau.",
+      "One pass through the deck only; no redeal."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Expose high cards and Aces early; build foundations as soon as possible; avoid blocking tableau piles with low cards.",
+    "intermediate": "Prefer moving from waste to foundation when legal; move tableau cards to free spaces and unblock lower cards; plan the single pass through the stock.",
+    "advanced": "Order of turning stock cards is critical; look ahead to which tableau columns will accept which ranks; minimize deadlock in the single pass.",
+    "tips": [
+      "Only one pass through the deck; plan before turning from stock.",
+      "Empty tableau piles accept any card; use them to reorder sequences.",
+      "Build foundations steadily; delayed Aces can block the game."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard Pas Seul (one pass, six tableau, four foundations); no regional or rule variations documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Greedy: turn from stock when no play; move waste to foundation or tableau when legal; prefer foundation builds.",
+      "medium": "Plans one or two moves ahead; avoids blocking tableau; orders stock turns to maximize options.",
+      "hard": "Searches move sequences over the single pass; optimizes foundation fill and tableau flexibility; may use lookahead over remaining stock."
+    },
+    "considerations": [
+      "Single pass through stock makes move order critical; no undo of stock turns.",
+      "Tableau build is alternating colors; foundation is same suit; only top of waste is playable.",
+      "Win condition: all four foundations Ace to King in suit."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-pas-seul",
+        "name": "AceCardGames - Pas Seul",
+        "url": "https://www.acecardgames.com/pas-seul/",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "acecardgames-pas-seul.html"
+      },
+      {
+        "id": "src:wikipedia-list-of-card-games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "https://www.pagat.com/patience/pas_seul.html"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "isCommercial": false,
+    "trademarkNote": "",
+    "reasonForNA": "Traditional patience game; no documented IP or legal status researched."
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "turn_stock_to_waste",
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Turn a card from stock to waste, or move the top waste card or tableau cards to foundation or tableau per build rules. One pass through the stock only."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Move the top waste card to a foundation (build up in suit) or to a tableau pile (build down alternating colors), or move one or more cards from one tableau pile to another. Any card may be placed on an empty tableau pile.",
+        "cost": "0",
+        "constraints": "Only the top card of the waste is playable; tableau builds down in alternating colors; foundations build up in suit from Ace to King.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "optimalPlayers": 1,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "singleplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": true,
+      "tableauColumns": 6,
+      "foundationCount": 4,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "fixed_rounds_complete"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "foundation",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "turn_stock_to_waste",
+        "supported": true,
+        "description": "Turn one card from the stock onto the discard (waste) pile. Only the topmost card of the discard may then be played.",
+        "cost": "0",
+        "constraints": "Allowed only when the stock has cards. Only one pass through the deck is allowed; no redeal.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": { "target": "discard", "count": 1 }
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck with four suits and thirteen ranks per suit; no jokers. Pas Seul is a patience (solitaire) game using tableau, foundations, and stock; the full deck is used for building and sequencing.",
+    "suitDescription": "The four French suits (hearts, diamonds, clubs, spades) each contain thirteen cards. In this patience game, suit and rank determine valid moves for building on tableau and foundations according to the game rules.",
+    "rankDescription": "Standard ranks Ace through King in each suit; Ace may count high or low depending on the build rule. Cards are moved between stock, tableau, and foundations following the specific Pas Seul layout and sequence rules.",
+    "dealPattern": "",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PAS SEUL",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Pas Seul is a one-deck Klondike-style solitaire. One pass through the deck; build foundations in suit and tableau in alternating colors.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "discard",
+        "tableau",
+        "foundation"
+      ],
+      "marketPosition": null,
+      "stockPosition": "top_left",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Win when all four foundations are built from Ace to King in suit (all 52 cards on foundations).",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Patience game; win by completing layout, no card point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Pas Seul"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

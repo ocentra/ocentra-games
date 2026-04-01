@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-02-11T23:31:58.748Z",
+  "targets": [
+    {
+      "file": "src\\logic\\credits.ts",
+      "symbolName": "earnGPLogic",
+      "kind": "function",
+      "reason": "Economic calculation that must verify balance never decreases incorrectly and credits are conserved",
+      "invariants": [
+        "GP balance increases by exactly gpAmount",
+        "total_gp_earned increases by exactly gpAmount",
+        "GP amount must be greater than 0"
+      ]
+    },
+    {
+      "file": "src\\logic\\badges.ts",
+      "symbolName": "checkBadgeProgressLogic",
+      "kind": "function",
+      "reason": "Threshold comparison and game type validation are critical decisions that must be correctly implemented",
+      "invariants": [
+        "Unlocked only when progress >= threshold",
+        "Progress value never exceeds threshold",
+        "Game type mismatch must prevent unlock"
+      ]
+    },
+    {
+      "file": "src\\logic\\badges.ts",
+      "symbolName": "unlockBadgeLogic",
+      "kind": "function",
+      "reason": "Duplicate prevention and reward claiming are money-critical operations",
+      "invariants": [
+        "Badge cannot be unlocked twice (no duplicates)",
+        "Rewards claimed exactly once per badge unlock",
+        "Badge count increases by exactly 1 when unlocked",
+        "Total badge count equals badges array length"
+      ]
+    },
+    {
+      "file": "src\\logic\\badges.ts",
+      "symbolName": "updateBadgeProgressLogic",
+      "kind": "function",
+      "reason": "Cumulative progress logic is critical for badge correctness - progress must be non-decreasing and capped at threshold",
+      "invariants": [
+        "Progress is non-decreasing (Math.max ensures cumulative)",
+        "Progress never exceeds threshold",
+        "Unlocked when progress >= threshold",
+        "Progress update is idempotent (same input = same output)"
+      ]
+    },
+    {
+      "file": "src\\logic\\badges.ts",
+      "symbolName": "setActiveBadgesLogic",
+      "kind": "function",
+      "reason": "Active badge validation prevents invalid state and enforces business rules",
+      "invariants": [
+        "Active badges count never exceeds MaxActiveBadges",
+        "Only unlocked badges can be set as active",
+        "Invalid badge IDs must be rejected"
+      ]
+    },
+    {
+      "file": "src\\logic\\payment-state-machine.ts",
+      "symbolName": "getValidNextStates",
+      "kind": "function",
+      "reason": "State machine lookup: valid next states must match PAYMENT_VALID_TRANSITIONS exactly; unknown state must return empty array",
+      "invariants": [
+        "Return is exactly PAYMENT_VALID_TRANSITIONS[fromState] or [] when fromState not in table"
+      ]
+    },
+    {
+      "file": "src\\logic\\payment-state-machine.ts",
+      "symbolName": "isTransitionAllowed",
+      "kind": "function",
+      "reason": "Payment transition guard is money-critical; only allowed transitions must return true; INITIATED->PAYMENT_SUCCEEDED only with ReconcileRepair",
+      "invariants": [
+        "true only when toState is in getValidNextStates(fromState)",
+        "false when INITIATED->PAYMENT_SUCCEEDED and trigger is not ReconcileRepair",
+        "false for any transition not in PAYMENT_VALID_TRANSITIONS"
+      ]
+    }
+  ]
+}

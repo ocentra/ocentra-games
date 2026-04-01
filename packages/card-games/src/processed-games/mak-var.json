@@ -1,0 +1,690 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "mak-var.json",
+  "name": "MakaÃ³ (Hungarian Shedding)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "MakaÃ³ (often referred to as 'Mak-Var' in regional contexts) is the most popular shedding card game in Hungary and much of Central Europe. It is the tactical ancestor of games like Uno and Crazy Eights. Using a standard 32-card or 52-card deck, players attempt to discard all their cards while using powerful action cards to penalize opponents. The game's name comes from the requirement to shout 'MakaÃ³!' when one card remains.",
+    "category": "Shedding",
+    "subCategory": "Matching / Eights Family",
+    "origin": "Hungary",
+    "originName": "Makaó",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "recommendedPlayers": 2,
+      "display": "2-10"
+    },
+    "deck": "Standard 52-card or 32-card Hungarian (Tell) deck",
+    "difficulty": "Beginner",
+    "duration": "10-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Hungary"],
+    "origins": "Derived from the European 'Mau-Mau' family of games. It gained its distinct 'MakaÃ³' rules in the early 20th century as a more aggressive variant.",
+    "timeline": [
+      "1920s: Mau-Mau variants become popular in Budapest cafes.",
+      "1960s: Standardized rules for 'King-Double' and 'Seven-Chain' are adopted.",
+      "Present: The quintessential childhood and family game in Hungary, often exported to neighboring regions under similar names like 'Makao' (Poland)."
+    ],
+    "evolution": "While modern 'Uno' simplified the deck, MakaÃ³ maintains the use of standard cards where ranks (2, 3, 4, 7, Ace, King) have specific, non-intuitive rules.",
+    "cultural": "Commonly played in schools, on trains, and at pub tables across Hungary.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-10 players. Best with 4-5.",
+    "deck": "Standard 52 cards (for many players) or 32 cards (for few).",
+    "equipment": "",
+    "dealing": "Each player receives 5 cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to discard all cards from your hand.",
+    "gameplay": "1. Play a card that matches either the **suit** or the **rank** of the top card on the pile.\n2. If you cannot play, draw one card from the deck.",
+    "keyRules": [
+      "Play a card matching the top card's suit or rank; Ace and Joker are wild.",
+      "If you cannot play, draw one card from the deck.",
+      "When down to one card you must call 'Maka\u00f3'; if an opponent calls first you draw 5.",
+      "Action cards: 2 (next draws 2, stackable), 3 (next draws 3, stackable), 4 (next misses a turn, stackable), Jack (call a value), King Spades/Hearts (draw 5 or stack), Joker (reverse direction), Ace (call new suit)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Save your Aces. An Ace is your 'get out of jail free' card when you don't have the current suit. Don't play it too early unless you can switch the suit to one where you have a long sequence.",
+    "intermediate": "Stacking Mastery: If you have two 2s and a 3, wait until someone plays a 2 on YOU. Stack your 2s back at them to force them (or the next person) to draw 7 cards. This is the primary way to win a 'losing' game.",
+    "advanced": "The 'Seven-Stop' Defense: If you suspect the player before you is about to play a 'Draw 5' King, hold your 7 of any suit. It is the only way to nullify a high-draw penalty and seize the lead.",
+    "tips": [
+      "Count the 2s and 3s. If all four 2s are played, the 'Draw' danger is significantly reduced.",
+      "If you holding a 5, check if your house rules allow 'Multi-5' discarding (playing multiple 5s in one turn)."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "romanian-macao",
+        "name": "Romanian Macao",
+        "description": "2s and 3s remain draw cards; Jokers wild (black draw 5, red draw 10); 4s block 2s/3s; 7s block; Aces skip a turn; 7s change suit. Regional rules vary (more or less restricted stacking).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant rules described; engine overrides not yet mapped from source."
+      },
+      {
+        "id": "tel-aviv-london",
+        "name": "Tel-Aviv / London Variation",
+        "description": "2–3 players get 7 cards, 4+ get 5; Aces and Queens wild (no Jokers); 2 and 3 stack; King of Hearts next draws 5; 5 allows playing another card same turn; point play to 500 (points are bad).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses different hand sizes and point play; overrides need source to map."
+      },
+      {
+        "id": "52-card",
+        "name": "52-Card Deck",
+        "description": "Use full 52-card deck instead of 32; same rules, more players or longer games.",
+        "overrides": {},
+        "emptyOverridesReason": "Deck size change only; engine deckCount override can be added when needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't stack draw-cards; forgets to call MakaÃ³; wastes Aces early.",
+      "medium": "Reasonable stacking logic; understands suit-switching strategy.",
+      "hard": "Expert at 'Stack Prediction'; calculates the probability of draw-cards remaining in deck; master of defensive 'Lower' demands."
+    },
+    "considerations": [
+      "Stacking/Penalty propagation engine.",
+      "Suit-balance probability.",
+      "Dynamic rule-set configuration."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:hungarian_gaming_portal_maka_rules_www_kartyak_hu_makao",
+        "name": "Hungarian Gaming Portal - MakaÃ³ Rules",
+        "url": "https://en.wikipedia.org/wiki/Macau_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-macau.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Pagat - Shedding Games (Mau-Mau/Makao)",
+      "Wikipedia - Makao (card game)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": ["deal"],
+        "nextPhase": "starter_card",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 5 cards to each player."
+      },
+      {
+        "id": "starter_card",
+        "label": "Starter Card",
+        "actor": "dealer",
+        "legalActions": ["reveal_starter"],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Turn one card from stock to start the discard pile."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": ["play_card", "draw"],
+        "nextPhase": "play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Match suit or rank of top card, or draw one from stock; say Maka\u00f3 when one card left."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 5 cards to each player from the stock.",
+        "cost": "0",
+        "constraints": "Dealer only; once at start of game.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the discard pile matching the top card in suit or rank, or play an Ace or Joker as wild; action cards (2, 3, 4, J, K) have special effects. Consecutive same-suit runs may be played in one turn.",
+        "cost": "0",
+        "constraints": "Card must match the top discard suit or rank, or be Ace/Joker (wild), or continue a run.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw one card from the stock when you cannot or choose not to play a card.",
+        "cost": "0",
+        "constraints": "Legal when player has no card matching the top discard suit or rank, or opts to draw; may play the drawn card immediately if playable.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": 1,
+          "notes": "When unable to play, draw one card; may play it immediately if playable."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "any_time",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "after_play",
+      "discardVisibility": "face_up",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": null
+    },
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Card must match top card's suit or rank; Ace and Joker wild; 2, 3, 4, J, K have action effects; runs of consecutive same-suit cards may be played."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": null
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        { "id": "makaó-call", "text": "Player with one card must call 'Maka\u00f3' before next player acts; if an opponent calls first, the player draws 5." },
+        { "id": "stack-2-3-4", "text": "2s and 3s stack: multiple 2s or 3s played in sequence add (next player draws 2 or 3 per card); 4s stack to skip multiple turns." },
+        { "id": "king-targets", "text": "King of Spades targets the previous player (draw 5); King of Hearts targets the next player; Queen of Hearts can deflect." },
+        { "id": "seven-nullify", "text": "7 can nullify a King draw-5 penalty in some house rules." },
+        { "id": "runs", "text": "Runs: consecutive same-suit cards may be played in one turn; may switch suit at same rank." }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "starter_card", "play"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "reveal_starter",
+        "supported": true,
+        "description": "Turn one card from the stock face up to start the discard pile; that card is the first top card to match.",
+        "cost": "0",
+        "constraints": "Dealer only; after deal phase.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; first to empty hand wins.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 32-card French deck formed by removing ranks 2 through 6 from a standard pack, leaving 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "5 cards each, one at a time clockwise.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MAKAÃ“ (HUNGARIAN SHEDDING)",
+      "subtitle": "Card Game",
+      "tagline": "MakaÃ³ (often referred to as 'Mak-Var' in regional contexts) is the most popular ..."
+    },
+    "shortDescription": "MakaÃ³ (often referred to as 'Mak-Var' in regional contexts) is the most popular shedding card game in Hungary and much of Central Europe. It is the ta",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "discard"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "MakaÃ³ (often referred to as 'Mak-Var' in regional contexts) is the most popular shedding card game in Hungary and much of Central Europe. It is the tactical ancestor of games like Uno and Crazy Eights. Using a standard 32-card or 52-card deck, players attempt to discard all their cards while using powerful action cards to penalize opponents. The game's name comes from the requirement to shout 'MakaÃ³!' when one card remains.",
+    "ai": "Game: MakaÃ³ (Hungarian Shedding). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Be the first player to discard all cards from your hand.",
+    "winCondition": "Be the first player to discard all cards from your hand.",
+    "cardValues": {"7": "5", "8": "5", "9": "5", "10": "10", "J": "10", "Q": "10", "K": "10", "A": "50", "King_of_Hearts": "150"},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 500,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,709 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "haitian-dominoes.json",
+  "name": "Haitian Dominoes",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Haitian Dominoes is a 4-player partnership domino game using a double-six set. Teams race to build a 4-point streak where losing a round resets the loser score to zero.",
+    "category": "Domino",
+    "subCategory": "Partnership Line Game",
+    "origin": "Haiti",
+    "originName": "Dekabès domino",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (2v2)"
+    },
+    "deck": "Double-six dominoes (28 tiles)",
+    "difficulty": "Intermediate",
+    "duration": "15-35 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Haiti"],
+    "origins": "Haitian Dominoes is part of Caribbean partnership domino traditions and is documented as a mainstream social game in Haiti.",
+    "timeline": [
+      "Traditional era: Partnership dominoes become a staple social game in Haiti.",
+      "Modern era: Standardized scoring terms such as Dekabes become widely documented.",
+      "Current play: Home, street, and tournament variants continue with regional scoring differences."
+    ],
+    "evolution": "The core structure stayed stable: anti-clockwise partnership play, blocked-round tie handling, and streak-based victory instead of long additive totals.",
+    "cultural": "Table gestures between partners are commonly used in casual play, though some organized formats ban gestures.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 4 players in fixed partnerships; partners sit opposite.",
+    "deck": "One double-six domino set (28 tiles), shuffled face down.",
+    "equipment": "Domino set and score tracker.",
+    "dealing": "Each player draws 7 tiles. Any player with 5 or more doubles may demand a full reshuffle and redeal. In first round, holder of the double-six tile starts by playing it. In later rounds, a member of the team that won the previous round starts.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first team to reach 4 or more points while keeping the opposing team at zero through consecutive round wins.",
+    "gameplay": "Play proceeds anti-clockwise. On each turn a player must play one tile matching either open end of the layout if possible; otherwise they pass. A round ends when a player empties their hand or when the game is blocked and no one can play. Partners may communicate strength via pre-agreed gestures in casual play.",
+    "keyRules": [
+      "No drawing from stock after deal in the standard 4-player Haiti partnership game.",
+      "Normal round win scores 1 point for the winning team.",
+      "Dekabes: if final winning tile is non-double and can legally fit both open ends, score 2 instead of 1.",
+      "Blocked round is won by team of player with fewest pips in hand; that team scores 1.",
+      "If blocked round tie occurs between opponents on lowest pip count, the round is scoreless and next round winner gets 2 (or 4 if Dekabes)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Protect key numbers shared with partner and avoid exposing both ends to opponent-dominant numbers.",
+    "intermediate": "Track exhausted counts for each pip number to detect near-hard ends and force productive passes from opponents.",
+    "advanced": "In streak scoring, risk profile changes by score state: when ahead, prioritize safe 1-point conversion; when behind, optimize for Dekabes opportunities that swing the match instantly.",
+    "tips": [
+      "Remember there are eight occurrences of each pip value in a double-six set.",
+      "Blocked-round tiebreak is by lowest individual pip hand, not team pip total.",
+      "When round was tied on block, next-round value increases; play more aggressively for control of opener lane."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "no-gestures",
+        "name": "No Gestures",
+        "description": "Championship or strict tables disallow partner gestures during play.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only affects table rules (no gestures); engine does not model gesture channel as an overridable constant."
+      },
+      {
+        "id": "dekabes-after-tie-3",
+        "name": "Three-Point Dekabes After Tie",
+        "description": "Some tables score 3 (not 4) for Dekabes immediately after a tied blocked round.",
+        "overrides": {},
+        "emptyOverridesReason": "Scoring override for post-tied-block Dekabes value not yet mapped to engine.constants; add when supported."
+      },
+      {
+        "id": "different-reshuffle-threshold",
+        "name": "Redeal Threshold Variant",
+        "description": "Some groups use a different minimum number of doubles needed to force reshuffle.",
+        "overrides": {},
+        "emptyOverridesReason": "Reshuffle threshold is not yet an engine constant; add when deal rules are parameterized."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays first legal tile and passes when blocked.",
+      "medium": "Tracks pip exhaustion and partner signal state for safer endpoint choices.",
+      "hard": "Optimizes streak-value scoring, blocked-round tiebreak math, and Dekabes conversion lines under score pressure."
+    },
+    "considerations": [
+      "Round-value escalation after tied blocked round changes expected-value calculations.",
+      "Dekabes requires final tile to be non-double and playable on either end of layout.",
+      "Blocked winner is determined by lowest individual pip hand, not combined team hand.",
+      "Optional partner gesture channel should be toggleable by variant rules."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_caribbean_haiti_www_pagat_com_domino_line_caribbean_html_haiti",
+        "name": "Pagat - Caribbean Dominoes (Haiti section)",
+        "url": "https://www.pagat.com/domino/line/caribbean.html#haiti",
+        "retrievedAt": "2026-02-22",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Haiti > Deal",
+            "paragraph": 1
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Haiti > Play",
+            "paragraph": 1
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "Haiti > Scoring",
+            "paragraph": 1
+          },
+          {
+            "section": "scoring.winCondition",
+            "sourcePath": "Haiti > Winning",
+            "paragraph": 1
+          }
+        ],
+        "localHtml": "pagat-domino-caribbean.html"
+      },
+      {
+        "id": "src:wikipedia_dominoes_en_wikipedia_org_wiki_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "traditional",
+    "partnership",
+    "strategy",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 58,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal_round",
+        "label": "Deal 7 Tiles",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Distribute 7 tiles each; handle five-or-more-doubles reshuffle; opener follows [6:6]/previous-winner rules."
+      },
+      {
+        "id": "play_loop",
+        "label": "Play or Pass",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card",
+          "pass",
+          "declare"
+        ],
+        "nextPhase": "round_check",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Current player must play matching tile if possible, otherwise pass. Optional declare encodes partner signal in gesture-enabled tables."
+      },
+      {
+        "id": "round_check",
+        "label": "Check End",
+        "actor": "system",
+        "legalActions": ["evaluate_round_end"],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "player_hand_empty",
+            "nextPhase": "settlement"
+          },
+          {
+            "condition": "line_blocked_all_pass",
+            "nextPhase": "settlement"
+          },
+          {
+            "condition": "otherwise",
+            "nextPhase": "play_loop"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Round ends by empty hand or blocked line."
+      },
+      {
+        "id": "settlement",
+        "label": "Score Round",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": "deal_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "team_score_ge_4",
+            "nextPhase": null
+          },
+          {
+            "condition": "otherwise",
+            "nextPhase": "deal_round"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Apply normal, Dekabes, blocked, and post-tied-block bonuses; losing team resets to 0."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Haitian Dominoes has no ante or betting; it is a partnership line game."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal seven tiles to each player from shuffled double-six set.",
+        "cost": "0",
+        "constraints": "Start of each round; if reshuffle condition triggers, redeal before play.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 7
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market reveal; tiles are dealt to players only, no face-up market."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase; all tiles are dealt to players at start of round."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock to buy; all tiles are dealt, no draw pile in standard Haiti rules."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No folding; players must play or pass each turn until round ends."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No checking; Haitian Dominoes has no betting rounds."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No calling; this is a partnership domino game with no betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; scoring is by round wins and Dekabes, not chips."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No raising; no betting in this partnership domino game."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Optional partner signal declaration (gesture-mode tables).",
+        "cost": "0",
+        "constraints": "Allowed only in gesture-enabled variants; declaration cannot include explicit tile identity.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed during play; tiles are played to the line."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Score round and update streak totals under Haiti rules.",
+        "cost": "0",
+        "constraints": "Executed when round ends by empty hand or block.",
+        "isTerminating": true,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one domino matching one open end of the line.",
+        "cost": "0",
+        "constraints": "Tile must match one current open end. If at least one legal play exists, pass is not allowed.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No drawing after deal; each player has exactly 7 tiles per round."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles are played to the line, not discarded; no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass turn when no legal tile can be played.",
+        "cost": "0",
+        "constraints": "Allowed only when hand contains no tile matching either open end.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; play order and opener are determined by deal or prior round."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No melding; dominoes are played to the line by matching ends."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Round ends when a player empties hand or line is blocked; no explicit go-out."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "teams_2v2",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "specific_beats",
+          "notes": "A tile is legal if one end matches either open end of the layout."
+        }
+      ],
+      "passAllowed": true,
+      "burnRules": null
+    },
+    "fishingConfig": "NA",
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "fixed_player",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 4,
+      "hand_size": 7,
+      "deck_count": 1,
+      "min_players": 4,
+      "max_players": 4
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:score_track",
+        "type": "track",
+        "visibility": "public",
+        "owner": "team",
+        "capacity": null
+      }
+    ],
+    "notApplicableReasons": {
+      "drawConfig": "No drawing after deal; each player has exactly 7 tiles and never draws.",
+      "discardConfig": "Tiles are played to the line, not discarded; no discard pile.",
+      "specialCards": "Double-six domino set has no special or bonus tiles; all tiles match by pip ends.",
+      "fishingConfig": "Haitian Dominoes is a line game with matching ends, not a play-to-capture fishing game."
+    },
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "five-doubles-reshuffle",
+          "appliesTo": "deal_round",
+          "text": "Any player with five or more doubles may demand full reshuffle and redeal.",
+          "affects": "deal"
+        },
+        {
+          "id": "blocked-lowest-individual-wins",
+          "appliesTo": "settlement",
+          "text": "Blocked round winner is team of player with lowest individual pip total, not lowest combined team total.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "blocked-opponent-tie-no-score",
+          "appliesTo": "settlement",
+          "text": "If two opposing players tie for lowest pip total in blocked round, no one scores that round.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "post-tied-block-double-value",
+          "appliesTo": "settlement",
+          "text": "After tied blocked round, next round winner scores 2 points (or 4 with Dekabes), and tied streaks do not keep increasing further.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "loser-reset",
+          "appliesTo": "settlement",
+          "text": "Winning team adds points; losing team score resets to zero each round.",
+          "affects": "award_pot"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "dekabes_detection_non_double_and_double_end_fit",
+        "blocked_round_lowest_individual_tiebreak",
+        "post_tied_block_round_value_escalation",
+        "streak_scoring_with_loser_reset"
+      ]
+    },
+    "progression": [
+      "deal_round",
+      "play_loop",
+      "round_check",
+      "settlement"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "evaluate_round_end",
+        "supported": true,
+        "description": "System evaluates whether the round ended by empty hand or blocked line and advances to settlement or next turn.",
+        "cost": "0",
+        "constraints": "Automatically invoked after each play or pass; no player choice.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "No hand ranks; blocked rounds use lowest pip total rule.",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A double-six domino set consisting of 28 tiles in total, from double blank [0-0] through double six [6-6]. Each tile has two ends; each end shows zero to six pips. There are no jokers or wild tiles.",
+    "suitDescription": "Dominoes use a single structural type: each tile has two pip ends, each showing a value from 0 (blank) to 6. The set contains every unique combination of two ends, giving 28 tiles. Matching is by endpoint value.",
+    "rankDescription": "Each tile end has a rank from 0 (blank) to 6 pips. Legal play requires matching one of the open ends of the layout; pip totals and endpoint matching determine valid plays and blocked-round comparisons.",
+    "dealPattern": "Draw 7 tiles each from shuffled set of 28."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HAITIAN DOMINOES",
+      "subtitle": "Dekabes Partnership Rules",
+      "tagline": "Build a scoring streak to 4 while resets keep every round dangerous."
+    },
+    "shortDescription": "4-player Haitian partnership dominoes with Dekabes bonus scoring and streak-to-4 victory.",
+    "uiThemes": [
+      "traditional",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "tableau",
+        "custom:score_track"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": "NA",
+      "playerHandLayout": "row",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Play anti-clockwise with your partner opposite. Match either open end of the line or pass if blocked. Score by winning rounds, especially Dekabes finishes, and reach 4 points before your opponents while keeping their score reset.",
+    "ai": "Game: Haitian Dominoes partnership 2v2. Deck: Double-6, 7 tiles each, no draw. Turn rule: play matching endpoint or pass. Round ends by empty hand or full block. Scoring: normal win=1, Dekabes=2, blocked-lowest-individual=1, tied blocked gives no score and next-round winner scores 2 (or 4 with Dekabes). Losing side resets to 0. First side at >=4 wins."
+  },
+  "scoring": {
+    "description": "Streak scoring by team. Normal win gives 1 point; Dekabes gives 2. After a tied blocked round, next winner gets 2 (or 4 with Dekabes). Losing team resets to 0 each round.",
+    "winCondition": "First team to reach 4 or more points wins the game.",
+    "cardValues": {
+      "normal_round_win": "1 point",
+      "dekabes_win": "2 points",
+      "post_tied_block_round_win": "2 points",
+      "post_tied_block_round_dekabes_win": "4 points"
+    },
+    "penalties": {
+      "losing_team_reset": "At end of each scored round, losing team score returns to 0."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "Tied blocked round scores no points and carries a doubled value to the next scored round.",
+    "targetScore": 4,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Dominoes Haitian"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Base profile models the common 4-player partnership Haiti game; 2/3-player sections are treated as variants outside this file."
+    ],
+    "openQuestions": [
+      "Regional tables vary on reshuffle threshold and some post-tied-block Dekabes values (3 vs 4)."
+    ],
+    "validatorVersion": "validate-game.mjs@2026-02-22"
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,1310 @@
+---
+alwaysApply: true
+---
+
+# Ocentra Games – Testing Constitution (MANDATORY)
+
+> This document defines **non-negotiable testing rules** for all React, Node.js, and TypeScript codebases at Ocentra Games.  
+>  
+> **Goal:** correctness, safety, and long-term maintainability — **not green checkmarks**.
+
+If tests pass while the system is broken, **the tests are wrong**.
+
+Any piece of code that dont have test are suspicious code: make test where applicable to get 100% coverage : if a piece of code can be tested it should be tested . follow industry standard and be resonable.
+
+---
+
+## AI OVERRIDE CLAUSE (CRITICAL)
+
+This document overrides convenience, refactoring heuristics,
+style guidelines, and AI defaults.
+
+If an AI agent is uncertain whether a change violates these rules,
+it MUST STOP and ASK.
+
+Silent assumptions are considered violations.
+
+---
+
+## AI Must Reason Step-by-Step Before Writing Tests
+
+Before writing any test, AI must:
+
+1. **Identify the behavior** being tested (what should happen, not how)
+2. **Determine the observable contract** (public API, HTTP response, component output)
+3. **List failure modes** (what errors should occur, what inputs should be rejected)
+4. **Verify test can fail** (what code change would break this test?)
+5. **Check for weak assertions** (would this pass even if behavior is wrong?)
+6. **Confirm prerequisites** (what setup is needed? Is there a shared helper?)
+
+Only after completing this reasoning should test code be written.
+
+---
+
+## 0. Core Philosophy (Read Before Writing Code)
+
+- Tests are the **specification**
+- Code exists to satisfy correct tests
+- Green tests mean **correct behavior** (when tests are correct)
+- Red tests mean **either code is wrong OR test expectations are wrong** (see §1)
+- Comfort, speed, and convenience are irrelevant
+
+> **We fix code to satisfy correct tests — but we also fix tests when they have incorrect expectations.**
+
+**Critical:** Always verify test expectations are correct before assuming code is wrong. See §1 for the correct process.
+
+---
+
+## 0.1. Test Classification
+
+All tests MUST belong to exactly one class:
+
+1. **Correctness Tests**
+2. **Security Tests**
+3. **Regression Tests**
+
+Mixing classes in a single test is forbidden.
+
+### Correctness Tests
+
+**Purpose:** Verify intended behavior under valid conditions
+
+- Happy paths
+- Boundary conditions
+- Expected errors
+- Non-adversarial scenarios
+
+**Important:** Passing correctness tests does NOT imply security.
+
+Correctness tests do NOT provide security guarantees.
+
+### Security Tests
+
+**Purpose:** Prove resistance under adversarial conditions
+
+- Assume hostile input
+- Assert rejection, not success
+- Verify invariants
+- Map to explicit threats and security guarantees
+
+**Requirement:** Every security test MUST reference at least one security guarantee from `ocentra-security-rules.mdc`.
+
+Security tests are mandatory for money-critical code.
+
+### Regression Tests
+
+**Purpose:** Prevent reintroduction of known bugs
+
+- Must reference an incident, CVE, or bug ID
+- Do not replace security tests
+- Verify specific failure modes that occurred in production
+
+---
+
+## 0.2. Proof Standards
+
+A test is considered valid evidence ONLY if:
+
+- [ ] It fails when protection is removed
+- [ ] It asserts exact behavior (not weak matchers)
+- [ ] It is deterministic (reproducible with logged seeds)
+- [ ] It is isolated (no shared mutable state)
+- [ ] It documents what failure means (which threat/invariant it protects)
+
+Tests that do not meet proof standards are ignored for enforcement.
+
+**Rule**
+> Security guarantees define what must be true. Proof standards define how we prove it.
+
+---
+
+## 0.3. Test Layout & Naming Style (Flat, Readable Tests)
+
+**Overall goal:** Prefer **flat, simple, readable, non-nested tests** that are easy to scan and maintain. Avoid clever or deeply nested structures unless they are absolutely required.
+
+### 0.3.1. Describe / It Structure
+
+- **Top-level only**
+  - Use **one top-level `describe` per file** for the module under test.
+  - Inside that, **prefer flat `it(...)` blocks**, not nested `describe` trees.
+
+- **Avoid unnecessary nesting**
+  - **DO NOT** introduce extra `describe` nesting just for grouping when a simple name prefix will do.
+  - Prefer:
+    - `describe('path-parser', () => { it('extractIdFromPath: returns id when path matches endpoint', () => { ... }); })`
+    - Over:
+    - `describe('path-parser', () => { describe('extractIdFromPath', () => { ... }); });`
+
+### 0.3.2. Test Naming Conventions
+
+- **Prefix test names with the function / behavior instead of nesting:**
+  - `it('extractIdFromPath: returns id from path after endpoint', ...)`
+  - `it('extractIdFromPath: returns null when path does not start with endpoint', ...)`
+  - `it('computeLeaderboardLogic: skips .txt files and only uses .json', ...)`
+
+- **Naming requirements**
+  - Names MUST be **explicit about the behavior** (what, not how).
+  - Names MUST be short enough to scan quickly, but complete enough that behavior is understandable without reading the body.
+
+### 0.3.3. When Nesting Is Allowed
+
+- Nested `describe` blocks are allowed only when:
+  - They model **truly different modes** or **major scenarios** that would otherwise make names unbearably long, **and**
+  - The nesting **genuinely increases clarity**, not just organization.
+
+- Even then:
+  - Keep nesting **shallow** (at most one level under the top-level `describe`).
+  - Prefer renaming tests with prefixes over adding new nesting.
+
+### 0.3.4. No Clever Test Layouts
+
+- **DO NOT**
+  - Build deep hierarchies like `describe > describe > describe > it`.
+  - Hide important behavior in shared `beforeEach` that makes individual tests hard to reason about.
+
+- **DO**
+  - Make each `it` mostly self-contained and obvious.
+  - Prefer **duplicated simple setup** over “smart” shared helpers that hurt readability.
+
+### 0.3.5. Reporter / Tooling Assumptions
+
+- The test reporters and SQLite tooling are already designed to correctly handle:
+  - Multiple tests with the same title.
+  - Nested structures.
+
+- Therefore:
+  - **DO NOT** change test structure just to “appease” tooling.
+  - **DO** change structure only for **human readability** and **scannability**.
+
+### 0.3.6. AI Instructions (Enforcement for AI-Generated Tests)
+
+When AI writes or refactors tests in this repository, it MUST:
+
+- **Default to flat tests**
+  - One top-level `describe('ModuleName', ...)` per file.
+  - Many `it('FunctionName: behavior', ...)` blocks inside.
+
+- **Flatten instead of nesting**
+  - When encountering nested `describe` trees, AI should prefer **flattening** with prefixed names unless clear, documented reasons require nesting under §0.3.3.
+
+- **Optimize for human scanning**
+  - The set of `it(...)` lines in a file MUST be readable as a list of behaviors without reconstructing a hierarchy.
+
+- **Avoid new nesting without justification**
+  - If additional `describe` nesting is introduced, AI MUST be able to justify why flat naming is insufficient under these rules.
+
+---
+
+## 1. Tests Define Correct Behavior - Fix Code, Not Tests (Unless Test Is Wrong)
+
+Tests specify WHAT should happen (the specification/requirement). The correct process when a test fails:
+
+### The Correct Process
+
+**First:** Verify the test has correct expectations (is the test testing what it claims to test? Are the assertions mathematically/logically correct?)
+
+**If test expectations are wrong:** Fix the test - this is NOT "changing tests to make them pass", it's fixing incorrect specifications
+
+**If test expectations are correct:** Fix the code - the code has a bug
+
+### When to Fix Tests vs Code
+
+**Fix the TEST when:**
+- Test has incorrect expectations (specification bug)
+- Test name doesn't match what it's actually testing
+- Test setup is wrong (e.g., testing `aiOnly=true` with single-player match when `isAIMatch` requires 2+ players)
+- Assertions are mathematically/logically incorrect (e.g., expecting 1 entry when 2 players = 2 entries)
+- Test is checking the wrong thing entirely
+
+**Fix the CODE when:**
+- Test expectations are correct but code behavior is wrong
+- Test says "when a match has 2 players, leaderboard should have 2 entries" and code produces 1 entry
+- Code violates the correct specification defined by the test
+
+### Examples
+
+**Example 1 - Fix Test (Wrong Expectation):**
+```typescript
+// ❌ WRONG TEST: Test named "skip .txt files" but checking result.toHaveLength(1)
+// when match has 2 players = 2 leaderboard entries (mathematically incorrect)
+it('should skip .txt files', () => {
+  const result = getLeaderboard(matchWith2Players);
+  expect(result).toHaveLength(1); // WRONG - 2 players = 2 entries
+});
+// ✅ FIX: Update test expectation to match correct behavior
+expect(result).toHaveLength(2);
+```
+
+**Example 2 - Fix Code (Correct Expectation, Wrong Behavior):**
+```typescript
+// ✅ CORRECT TEST: Test correctly expects 2 entries for 2 players
+it('should return 2 entries for match with 2 players', () => {
+  const result = getLeaderboard(matchWith2Players);
+  expect(result).toHaveLength(2); // Correct expectation
+});
+// If code returns 1 entry → Fix the CODE, not the test
+```
+
+**Example 3 - Fix Code (Correct Specification):**
+```typescript
+// Test says "CORS should return request origin in dev mode"
+// If code returns '*' → Fix the CORS code to return request origin
+// Don't change test to accept '*' (that would be wrong expectation)
+```
+
+### Key Principle
+
+The key question is always: **"What SHOULD happen?"** not "What does the test say?"
+
+- If the test says something impossible or contradictory → Test is the bug (fix test)
+- If the test correctly specifies what should happen but code doesn't match → Code is the bug (fix code)
+
+**Rule:**
+> Wrong test expectation → Fix test (correcting the specification)  
+> Correct test expectation, wrong code behavior → Fix code
+
+---
+
+## 2. Test Prerequisites & Setup
+
+Use centralized helpers for test prerequisites/setup (e.g., "turn on the oven").
+
+- All tests needing the same prerequisite should use the same centralized helper
+- Prerequisites themselves should be tested separately in their own tests (which must pass)
+- Don't duplicate setup code across tests - use shared helper functions
+- Don't mix prerequisite setup logic with the actual test logic
+- Example: If testing "chicken cooks at 350°C", use a helper like `setupOven()` to turn on the oven, and have a separate test "oven turns on" that passes independently
+
+### 2.1. CRITICAL: Test Behavior, Not Prerequisites (DO NOT MIX UP)
+
+**NEVER test prerequisites in behavior tests. Test the ACTUAL behavior, not the "gas being on".**
+
+**WRONG - Testing Prerequisites Instead of Behavior:**
+
+```typescript
+// ❌ WRONG: Testing CORS blocking in a credit handler test
+it('should reject requests with missing Origin header', async () => {
+  const token = createTestToken('test-user');
+  const response = await worker.fetch('/api/credits/user/balance', {
+    headers: { [HttpHeader.Authorization]: `Bearer ${token}` }
+  });
+  expect([401, 403, 400]).toContain(response.status); // WRONG - testing CORS, not credits!
+});
+
+// ❌ WRONG: Testing auth in a credit operation test
+it('should reject purchase without auth', async () => {
+  const response = await worker.fetch('/api/credits/user/purchase', {
+    method: 'POST',
+    body: JSON.stringify({ ac_amount: 100 })
+  });
+  expect(response.status).toBe(401); // WRONG - testing auth, not purchase behavior!
+});
+```
+
+**RIGHT - Testing Actual Behavior:**
+
+```typescript
+// ✅ CORRECT: Testing credit balance retrieval (the actual behavior)
+it('should return user credit balance', async () => {
+  const token = createTestToken('test-user');
+  const response = await worker.fetch('/api/credits/test-user/balance', {
+    headers: {
+      [HttpHeader.Authorization]: `Bearer ${token}`,
+      [HttpHeader.Origin]: TestConfig.LocalhostOrigin // Prerequisite handled via helper
+    }
+  });
+  expect(response.status).toBe(200);
+  const data = await response.json();
+  expect(data.gp_balance).toBe(0); // Testing ACTUAL behavior
+  expect(data.ac_balance).toBe(0);
+});
+
+// ✅ CORRECT: Testing purchase operation (the actual behavior)
+it('should allow user to purchase AC credits', async () => {
+  const token = createTestToken('test-user');
+  const response = await worker.fetch('/api/credits/test-user/purchase', {
+    method: 'POST',
+    headers: {
+      [HttpHeader.Authorization]: `Bearer ${token}`, // Prerequisite
+      [HttpHeader.Origin]: TestConfig.LocalhostOrigin // Prerequisite
+    },
+    body: JSON.stringify({ ac_amount: 100, amount: 1, currency: 'USD' })
+  });
+  expect(response.status).toBe(200);
+  const data = await response.json();
+  expect(data.new_balance).toBe(100); // Testing ACTUAL behavior - balance updated
+  expect(data.ac_added).toBe(100);
+});
+```
+
+**Where to Test Prerequisites:**
+
+- **CORS**: Test in `cors.test.ts` or `security.test.ts` - test CORS HEADERS, not request blocking
+- **Auth**: Test in `auth.test.ts` or `security.test.ts` - test auth middleware behavior
+- **Rate Limiting**: Test in `rate-limit.test.ts` - test rate limit enforcement
+
+**Rule of Thumb:**
+
+- If you're testing a **credit handler**, test **credit operations** (balance, purchase, consume)
+- If you're testing a **CORS handler**, test **CORS headers**
+- If you're testing an **auth middleware**, test **auth rejection/acceptance**
+
+**The "Chicken at 350°F" Rule:**
+
+- ❌ WRONG: "Test rejects if gas is off" (testing prerequisite)
+- ✅ RIGHT: "Test chicken cooks at 350°F" (testing actual behavior)
+- Prerequisites (gas, oven, ingredients) are handled via setup helpers
+- Behavior (temperature, cooking time) is what you test
+
+**Common Mistakes:**
+
+1. **CORS in handler tests**: Don't test CORS blocking in credit/player/match handler tests. CORS is handled via headers, not request blocking. Test CORS in CORS-specific tests.
+
+2. **Auth in operation tests**: Don't test auth rejection in credit purchase tests. Auth is a prerequisite handled by middleware. Test auth in auth-specific tests.
+
+3. **Rate limiting in business logic tests**: Don't test rate limit rejection in credit operation tests. Rate limiting is a prerequisite. Test rate limits in rate-limit-specific tests.
+
+**Example Structure:**
+
+```typescript
+// ✅ CORRECT: Credits handler test - tests credit operations
+describe('Credits Integration Tests', () => {
+  it('should return balance', async () => {
+    // Uses auth helper (prerequisite)
+    const token = createTestToken('user');
+    const response = await worker.fetch('/api/credits/user/balance', {
+      headers: getAuthHeaders(token) // Prerequisite handled via helper
+    });
+    // Tests ACTUAL behavior: balance retrieval
+    expect(response.status).toBe(200);
+    expect(data.gp_balance).toBe(0);
+  });
+});
+
+// ✅ CORRECT: CORS test - tests CORS headers
+describe('CORS Security Tests', () => {
+  it('should return correct CORS headers for allowed origin', async () => {
+    const response = await worker.fetch('/api/test', {
+      headers: { [HttpHeader.Origin]: 'https://allowed.com' }
+    });
+    // Tests ACTUAL behavior: CORS headers
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('https://allowed.com');
+  });
+});
+
+// ✅ CORRECT: Auth test - tests auth rejection
+describe('Authentication Security Tests', () => {
+  it('should reject requests without auth token', async () => {
+    const response = await worker.fetch('/api/credits/user/balance', {});
+    // Tests ACTUAL behavior: auth rejection
+    expect(response.status).toBe(401);
+  });
+});
+```
+
+---
+
+## 3. TypeScript Strictness Is Part of Testing
+
+**STRICT MODE IS NOT OPTIONAL**
+
+**DO**
+- Enable `strict: true`
+- Treat TypeScript errors as test failures
+- Use exact types, never `any`
+- Model invalid states as **unrepresentable**
+
+**DO NOT**
+- Use `any`, `unknown`, or type assertions to silence errors
+- Bypass the type system to make tests pass
+- Treat runtime tests as a replacement for static guarantees
+
+> Type errors are **compile-time test failures**.
+
+---
+
+## 4. TDD Rules (Test-Driven Development)
+
+### The Only Allowed TDD Loop
+
+1. Write a failing test (**RED**)
+2. Implement minimal correct code
+3. All tests pass (**GREEN**)
+4. Refactor **without changing tests**
+
+**DO**
+- Write tests **before** implementation
+- Let tests define public APIs
+- Encode edge cases explicitly
+
+**DO NOT**
+- Write implementation first
+- Retroactively justify existing code with weak tests
+- Skip RED phase
+
+> If you didn't see the test fail first, **it doesn't count as TDD**.
+
+---
+
+## 5. BDD Rules (Behavior-Driven Development)
+
+### Tests Describe Behavior, Not Code
+
+**DO**
+- Write tests in **business language**
+- Use full sentences:
+  - `returns 401 when token is missing`
+  - `rejects payloads with invalid schema`
+
+**DO NOT**
+- Name tests after functions or methods
+- Test internal implementation details
+- Encode assumptions not visible to users
+
+> Tests describe **what the system does**, not how it does it.
+
+---
+
+## 6. Tests Must Fail When Code Is Broken (MANDATORY)
+
+A test is invalid unless it has been verified to fail when the implementation is incorrect.
+
+**DO**
+- Temporarily break the implementation to confirm the test fails
+- Ensure assertions are strong and specific
+- Verify the test detects regressions
+
+**DO NOT**
+- Assume a passing test is correct
+- Accept tests that cannot detect regressions
+- Write tests without verifying they fail when code is broken
+
+> A test that cannot fail is a lie.
+
+---
+
+## 7. No Fake Tests (Zero Tolerance)
+
+**A TEST MUST BE ABLE TO FAIL**
+
+**BANNED**
+```ts
+expect(result).toBeDefined()
+expect(true).toBe(true)
+expect(() => fn()).not.toThrow()
+```
+
+### Banned Weak Assertions
+
+The following are prohibited unless strictly justified:
+
+- `toBeTruthy()`
+- `toBeFalsy()`
+- `toBeDefined()`
+- `not.toThrow()`
+- Broad matchers without exact checks (e.g., `toMatchObject` without strict equality checks)
+- `expect.arrayContaining([])` without additional assertions
+
+Assertions must be **precise and falsifiable**.
+
+**DO**
+- Assert exact values
+- Assert error types, messages, and codes
+- Verify side effects
+
+If breaking the code does not fail the test → **delete the test**.
+
+---
+
+## 8. Happy Path Is Not Enough
+
+Every feature MUST include:
+
+1. ✅ Happy path (valid usage)
+2. ❌ Error path (invalid input)
+3. ☠ Abuse path (malicious usage)
+
+**DO**
+- Explicitly test rejection cases
+- Assert specific failure reasons
+
+**DO NOT**
+- Return `200 OK` for invalid input
+- Treat "no crash" as success
+
+---
+
+## 9. Mutation Testing Rules (CRITICAL)
+
+Mutation testing defines **test quality**, not coverage.
+
+**DO**
+- Expect mutations to be killed
+- Write tests that fail when logic is altered
+- Treat surviving mutations as defects
+
+**DO NOT**
+- Ignore mutation test results
+- Write tests that only assert happy paths
+- Assume coverage means correctness
+
+> If a mutation survives, **your test is lying**.
+
+### 9.1 Mutation Scope Is Opt-In (Authoritative)
+
+Mutation testing is **opt-in** and MUST only run on explicitly marked code via `@mutation(...)`.
+
+The authoritative rules live in: `.cursor/rules/ocentra-mutation-rules.mdc`.
+
+---
+
+## 10. MOCKING & EMULATION RULES (NON-NEGOTIABLE)
+
+This repository makes a **strict distinction** between:
+- EMULATION
+- SUBSTITUTION
+- MOCKING
+
+Misuse of these terms results in **invalid tests and false coverage**.
+
+This section is authoritative and overrides defaults, conventions, and AI assumptions.
+
+---
+
+### 10.1. DEFINITIONS (CRYSTAL CLEAR)
+
+#### 10.1.1. EMULATION (ALLOWED, PREFERRED)
+
+**Definition:**
+An execution environment that reproduces real platform semantics,
+using the same APIs and behavior, backed by local resources.
+
+**Examples (ALLOWED):**
+- Cloudflare Workers via `wrangler dev`
+- `unstable_dev`
+- `.test-storage/` (R2/KV local backing)
+- Miniflare / workerd
+
+**Properties:**
+- Same API surface
+- Same behavior guarantees
+- Different persistence location
+- Different performance characteristics
+
+**Rule:**
+> EMULATION IS NOT MOCKING.
+
+---
+
+#### 10.1.2. SUBSTITUTION (ALLOWED IN UNIT TESTS ONLY)
+
+**Definition:**
+Replacing external systems with **deterministic, contract-bound implementations**
+in order to test business logic in isolation.
+
+**Examples (ALLOWED):**
+- In-memory storage implementing the same interface as R2
+- Deterministic clock instead of real time
+- Deterministic ID generator instead of randomness
+
+**Hard Requirements:**
+- Must implement a **strict interface**
+- Must obey documented invariants
+- Must NOT shortcut logic
+- Must NOT bypass validation
+- Must NOT return hardcoded "success"
+
+**Rule:**
+> SUBSTITUTION IS NOT MOCKING.
+
+---
+
+#### 10.1.3. MOCKING (RESTRICTED, MOSTLY FORBIDDEN)
+
+**Definition:**
+Test-controlled fakes whose behavior is dictated by the test
+rather than by real system contracts.
+
+**Examples (DISALLOWED FOR LOGIC TESTS):**
+- `vi.fn().mockResolvedValue(true)`
+- Mocking return values to force success
+- Mocking internal logic functions
+- Snapshot-only tests
+- Stubbing economic outcomes
+
+**Allowed Use (VERY LIMITED):**
+- Asserting that a dependency was *called*
+- Verifying side effects (logging, metrics)
+- Never to fabricate correctness
+
+**Rule:**
+> MOCKS MUST NEVER DETERMINE BUSINESS OUTCOMES.
+
+---
+
+### 10.2. WHERE EACH IS ALLOWED
+
+#### Integration Tests (Worker Runtime)
+- MUST use emulation (`unstable_dev`, `.test-storage/`)
+- MUST NOT mock storage, auth, routing, or handlers
+- MUST test real HTTP behavior
+- MUST validate real platform semantics
+
+#### Unit Tests (Node.js Runtime)
+- MUST NOT use Worker runtime or Wrangler storage
+- MUST use substitution for external systems
+- MUST test real business logic
+- MUST achieve real coverage
+
+---
+
+### 10.3. ABSOLUTE PROHIBITIONS
+
+The following are **explicitly forbidden**:
+
+- Mocking business logic functions
+- Mocking economic outcomes
+- Mocking authorization decisions
+- Mocking validation logic
+- Tests that pass if logic is deleted
+- Tests that only assert "success"
+- Snapshot-only security tests
+
+Violations invalidate the test.
+
+---
+
+### 10.4. REQUIRED PATTERN (ENFORCED)
+
+#### Business Logic
+- Pure functions
+- Deterministic inputs
+- Explicit dependencies
+- No direct Env access
+- **Stateless** (no caching, no memoization, no global state)
+- **No-Cache-In-Logic Rule**: Logic modules MUST be stateless. No caching, no memoization, no global state. Caching can break idempotency and isolation.
+
+#### Handlers
+- Thin adapters only
+- No business logic
+- No coverage requirements
+- Verified via integration tests
+
+---
+
+### 10.5. COVERAGE INTEGRITY RULE
+
+Coverage is considered **valid** only if:
+
+- Logic modules are exercised directly
+- Branches are explicitly tested
+- Error paths are covered
+- Invariants are asserted
+
+Coverage obtained by mocking logic is **invalid**.
+
+**Coverage Inflation Prevention:**
+- Coverage increase without new assertions is **INVALID**
+- Tests must assert:
+  - State change
+  - Invariants
+  - Failure conditions
+- Tests that only assert "success" are **forbidden**
+- Trivial tests that increase coverage without increasing assurance are **forbidden**
+
+---
+
+### 10.6. AI-SPECIFIC INSTRUCTIONS (IMPORTANT)
+
+Any AI agent modifying this repository MUST:
+
+- Treat EMULATION and SUBSTITUTION as distinct
+- NEVER introduce logic mocks
+- NEVER fake success paths
+- NEVER reduce invariant coverage
+- ASK before introducing new test doubles
+
+If uncertain, default to **no mock** and escalate.
+
+---
+
+### 10.7. ONE-SENTENCE RULE (MEMORIZE THIS)
+
+> **We never mock correctness.  
+> We only replace the world around it.**
+
+---
+
+## 11. Centralized Setup & Determinism
+
+**DO**
+- Use shared setup helpers
+- Reset state between tests
+- Control time, randomness, and environment
+
+**DO NOT**
+- Duplicate setup logic
+- Hide critical behavior in `beforeEach`
+- Depend on test execution order
+
+Tests must be **repeatable and deterministic**.
+
+### 11.1. RANDOMNESS & ID RULE
+
+**Requirements:**
+- Randomness must be injectable (dependency injection, not global)
+- Production randomness must **NEVER** be stubbed in logic tests
+- Tests must cover:
+  - Collisions
+  - Reuse
+  - Replay
+- Fake determinism that hides replay/collision bugs is **forbidden**
+
+**Rule:**
+> Randomness is a dependency, not a global. Stubbing randomness to make tests "stable" can hide replay and collision bugs.
+
+---
+
+## 12. React-Specific Rules
+
+**DO**
+- Test behavior, not implementation
+- Assert rendered output and user interactions
+- Test accessibility and error states
+
+**DO NOT**
+- Test hooks or private state directly
+- Assert component internals
+- Snapshot blindly without meaning
+
+### Snapshot Testing Restrictions
+
+**DO**
+- Use snapshots only for stable, intentional output (e.g., static HTML)
+- Keep snapshots minimal and human-readable
+
+**DO NOT**
+- Use snapshots as a replacement for assertions
+- Accept large or auto-generated snapshots
+- Update snapshots without understanding failures
+
+**SNAPSHOT PROHIBITION:**
+- Snapshot tests are **FORBIDDEN** for:
+  - Logic
+  - Security
+  - Economics
+- Snapshots **MAY** be used only for static HTML/structure
+- Snapshot-only security tests are **forbidden**
+- Snapshots hide logic regressions
+
+> If a snapshot changes and you don't know why, the test has failed.
+
+Snapshots must **fail when behavior breaks**.
+
+---
+
+## 13. Public Boundaries Are Contracts (C#/C++ Mindset)
+
+**MUST TEST**
+- Public APIs
+- Exported functions
+- HTTP endpoints
+- Component props and events
+
+**DO NOT**
+- Directly test private functions
+- Test internal helpers in isolation
+- Expose internals for test convenience
+
+Private logic is tested **through public behavior only**.
+
+---
+
+## 13.1. INTERFACE IMMUTABILITY RULE
+
+Interfaces between handlers and logic are **SECURITY BOUNDARIES**.
+
+**Requirements:**
+- Logic-facing interfaces **MUST be total** (no optional returns)
+- `null` / `undefined` returns are **FORBIDDEN** unless explicitly documented
+- Adding defaults or fallback behavior is **FORBIDDEN**
+- Interface changes require:
+  - Updated invariants
+  - Updated unit tests
+  - Updated contract tests (see `ocentra-security-guidelines.mdc` §2.9.12)
+  - Explicit documentation
+
+**Prohibited Patterns:**
+- Adding optional fields to logic interfaces
+- Changing return types to include `null` without explicit handling
+- Adding "helpful" fallbacks that change behavior
+- Relaxing error handling silently
+- Interface drift that changes semantics
+
+**Example (FORBIDDEN):**
+```ts
+interface CreditStorage {
+  getBalance(userId: string): Promise<CreditBalance | null> // ← drift
+}
+```
+
+Then logic starts doing:
+
+```ts
+if (!balance) return { success: false }
+```
+
+That's a **semantic downgrade** and an exploit vector.
+
+**Rule:**
+> Interface changes are security boundary changes. Optional fields and silent defaults cause behavior drift that breaks invariants.
+
+---
+
+## 14. Node / API Testing Rules
+
+**DO**
+- Test full request/response lifecycle
+- Assert headers, status codes, and payloads
+- Validate schema at boundaries
+
+**DO NOT**
+- Skip validation tests
+- Accept malformed input silently
+- Trust upstream validation
+
+Every API boundary is **hostile by default**.
+
+---
+
+## 15. Security Testing Is Mandatory
+
+Security testing is **mandatory** for all features that accept external input.
+
+> **IMPORTANT:** For all security-related requirements, threats, guarantees, and numbered rules, refer to `ocentra-security-rules.mdc`.  
+> This section only defines how security tests must be written, not what must be tested.
+
+**MUST TEST** (see `ocentra-security-rules.mdc` for detailed, numbered requirements):
+- Missing auth (see Rule 2.1.1)
+- Invalid auth (see Rule 2.1.2-2.1.14)
+- Privilege escalation (see Rule 0.1.6, 14.1.4)
+- Injection attempts (see Rule 5.1, 5.2)
+- Schema violations (see Rule 5.1, 5.2)
+- Rate limits (see Rule 4.1, 4.2, 4.3)
+
+**DO NOT**
+- Assume "internal" means safe (see `ocentra-security-rules.mdc` Rule 0.1.5)
+- Rely on middleware without tests
+- Skip abuse cases
+
+Security behavior is **part of the contract**.
+
+**CRITICAL:** Every security test MUST:
+- Map to at least one security guarantee from `ocentra-security-rules.mdc` (Rule 0.1.1-0.1.6)
+- Map to at least one explicit threat from the threat model (see `ocentra-security-rules.mdc` sections 1-15)
+- Reference specific numbered rules from `ocentra-security-rules.mdc`
+- Assert an invariant (if applicable) - see `ocentra-security-rules.mdc` Rule 0.1.1-0.1.6
+- Meet all proof standards (see §0.2)
+
+> **Note:** 
+> - Security guarantees and numbered rules: `ocentra-security-rules.mdc`
+> - Test tooling and CI setup: `ocentra-security-guidelines.mdc`
+> - How to write tests (this file): `ocentra-test-rules.mdc`
+
+### 15.1. NO-TEMPORARY-SECURITY RULE
+
+**Requirements:**
+- TODOs that bypass security are **forbidden**
+- Commented-out checks are **forbidden**
+- Temporary flags affecting security are **forbidden**
+- Security checks may NOT be disabled "temporarily"
+
+**Prohibited Patterns:**
+- `// TODO: add security check`
+- `// TEMP: bypass auth`
+- `if (DEV_MODE) skipSecurityCheck()`
+- Commented-out validation code
+
+**Rule:**
+> There is no such thing as temporary security. Security checks disabled "temporarily" stay disabled.
+
+### 15.2. NO-SECURITY-DRY RULE
+
+**Requirements:**
+- Security checks **may be duplicated**
+- Duplication is preferred to abstraction
+- Removing a security check requires justification
+- Extracting security validation into shared helpers requires explicit review
+
+**Prohibited Patterns:**
+- Extracting validation into shared helper that accidentally skips a check
+- Creating single point of failure for security
+- "Cleaning up" duplicated validation that removes a check
+
+**Rule:**
+> Security checks may be duplicated. Over-DRYing security creates single points of failure. Duplication is preferred to abstraction for security boundaries.
+
+---
+
+## 16. Error Handling Is a Contract
+
+**DO**
+- Assert exact error codes
+- Assert stable error messages or IDs
+- Document failures via tests
+
+**DO NOT**
+- Throw generic errors
+- Change error behavior silently
+- Mask failures
+
+Errors are **observable behavior**.
+
+### 16.1. ERROR PRESERVATION RULE
+
+AI loves to do "helpful error normalization" that hides failure modes and breaks exploit detection.
+
+**Requirements:**
+- Logic MUST NOT swallow or normalize errors
+- Different failure causes MUST remain distinguishable
+- Logic returns data OR throws — **not both**
+- Only handlers may translate errors into HTTP responses
+
+**Prohibited Patterns:**
+- Catching errors and returning `{ success: false }`
+- Converting exceptions into generic status codes
+- "Improving UX" by hiding failure causes
+- Error normalization that destroys exploit detection
+- Swallowing exceptions in logic modules
+
+**Example (FORBIDDEN):**
+
+```ts
+try {
+  ...
+} catch {
+  return { success: false } // ← hides failure mode
+}
+```
+
+That:
+- Hides failure modes
+- Breaks exploit detection
+- Collapses invariants
+
+**Rule:**
+> Error normalization in logic destroys exploit detection and economic guarantees. Different failures must remain distinguishable.
+
+---
+
+### 16.2. ASYNC ORDERING & CONCURRENCY RULE
+
+This is the #1 way AI reintroduces race bugs **without mocking anything**.
+
+**Requirements:**
+- Order of async operations in logic is **SECURITY-CRITICAL**
+- AI MUST NOT:
+  - Introduce `Promise.all`
+  - Reorder awaits
+  - Parallelize storage operations
+- Any concurrency change requires explicit human approval
+
+**Prohibited Patterns:**
+- Replacing sequential `await` with `Promise.all`
+- Parallelizing reads/writes in logic
+- Reordering async operations "for performance"
+- Async convenience that reintroduces race conditions
+
+**Example (FORBIDDEN):**
+
+AI will "optimize" this:
+
+```ts
+await saveBalance()
+await saveTransaction()
+```
+
+Into this:
+
+```ts
+await Promise.all([saveBalance(), saveTransaction()])
+```
+
+That is **catastrophic** for money logic.
+
+**Rule:**
+> Async ordering is security-critical. Reordering or parallelizing operations can reintroduce race conditions. Any concurrency change requires explicit human approval.
+
+### 16.2.1. CONCURRENCY TESTING RULE
+
+**Requirements:**
+- Concurrency tests **MUST** assert **final state safety** (e.g., exactly one resource created, no duplicate economic effects)
+- Concurrency tests **MUST** assert **economic invariants** (e.g., total balance unchanged, no double rewards)
+- Concurrency tests **MUST NOT** assert exact HTTP status code counts (e.g., "exactly 1 HTTP 200")
+- Concurrency tests **MUST NOT** assert request ordering or timing-dependent outcomes
+- Concurrency tests **MUST NOT** count successful responses as a security property
+
+**Rationale:**
+- In idempotent APIs, all "already exists" responses may return 200 OK (idempotent behavior)
+- The security property is "no double execution", proven by final state, not by status code distribution
+- Economic correctness is enforced at storage/optimistic lock layer, not via HTTP status codes
+
+**Example (CORRECT):**
+```typescript
+// ✅ CORRECT: Asserts state safety (the real security property)
+it('should prevent duplicate unlocks under concurrency', async () => {
+  const responses = await Promise.all(concurrentRequests);
+  const finalState = await getBadgeProfile(userId);
+  
+  expect(finalState.badges.length).toBe(1); // State check
+  expect(finalState.badge_counts.total).toBe(1); // State check
+  // Optional: verify at least one succeeded
+  const successful = responses.filter(r => r.status === 200);
+  expect(successful.length).toBeGreaterThanOrEqual(1);
+});
+```
+
+**Example (INCORRECT):**
+```typescript
+// ❌ WRONG: Asserts HTTP status count (not a security property)
+it('should prevent duplicate unlocks under concurrency', async () => {
+  const responses = await Promise.all(concurrentRequests);
+  const successful = responses.filter(r => r.status === 200);
+  
+  expect(successful.length).toBe(1); // WRONG - counts HTTP statuses, not state
+});
+```
+
+**Rule:**
+> Concurrency tests verify **state safety**, not HTTP semantics. The security property is "no double execution", proven by final state, not by status code distribution.
+
+---
+
+### 16.2.2. ABORT HANDLING TESTING RULE (Critical)
+
+**Core Principle:**
+
+> **Abort is not a rollback primitive. Tests must verify economic invariants, not timing.**
+
+**Requirements:**
+- Abort tests **MUST** assert **economic invariants** (e.g., at most one reward, no extra economic value)
+- Abort tests **MUST** verify **partial state is resumable** (e.g., pending work can be completed safely)
+- Abort tests **MUST NOT** assert timing (e.g., "request must not complete after abort")
+- Abort tests **MUST NOT** test race conditions between abort and completion
+- Abort tests **MUST NOT** require rollback on abort (see Rule 15.4.5.4 in `ocentra-security-rules.mdc`)
+
+**Rationale:**
+- Abort signals are best-effort and timing-dependent
+- Server may complete before abort fires (network timing, race conditions)
+- The security property is "no extra economic value", not "no completion after abort"
+- Distributed systems cannot guarantee "abort before commit" timing
+
+**Example (CORRECT):**
+```typescript
+// ✅ CORRECT: Tests economic invariant, not timing
+it('should prevent repeated aborts from leaking value (Rule 15.4.5)', async () => {
+  const initialBalance = await getBalance(userId);
+  
+  const abortRequests = Array.from({ length: 10 }, () => {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 10);
+    return requestWithAbort(controller);
+  });
+  
+  await Promise.all(abortRequests);
+  await waitForCompletion(); // Allow in-flight requests to complete
+  
+  const finalBalance = await getBalance(userId);
+  const gpIncrease = finalBalance.gp_balance - initialBalance.gp_balance;
+  
+  // ✅ Assert economic invariant: at most one reward
+  expect(gpIncrease).toBeGreaterThanOrEqual(0);
+  expect(gpIncrease).toBeLessThanOrEqual(singleRewardAmount); // At most one
+  
+  // ✅ Verify partial state is resumable
+  const profile = await getProfile(userId);
+  const pending = profile.items.filter(i => !i.rewards_claimed);
+  
+  if (pending.length > 0) {
+    // Retry should complete safely
+    const retryResult = await retryPending(pending[0].id);
+    expect(retryResult.rewards_claimed).toBe(true);
+    expect(retryResult.success).toBe(true);
+  }
+});
+```
+
+**Example (INCORRECT):**
+```typescript
+// ❌ WRONG: Tests timing, not economic safety
+it('should prevent repeated aborts from leaking value', async () => {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 10); // Abort after 10ms
+  
+  await requestWithAbort(controller);
+  
+  // ❌ WRONG: Asserts timing, not security property
+  expect(gpIncrease).toBe(0); // "No request completed"
+});
+```
+
+**Why This Is Wrong:**
+- Server may complete before abort fires (normal in distributed systems)
+- Tests race condition, not security property
+- Invalid distributed-systems guarantee
+- Violates real-world behavior (Stripe, Solana, AWS don't guarantee this)
+
+**Abort Test Checklist:**
+
+- [ ] Tests economic invariant (at most one reward, no extra value)
+- [ ] Verifies partial state is resumable (can retry safely)
+- [ ] Does NOT assert timing (completion before/after abort)
+- [ ] Does NOT require rollback on abort
+- [ ] Allows in-flight requests to complete
+- [ ] Checks final state, not request outcomes
+
+**Rule:**
+> Abort tests verify **economic invariants**, not timing. The security property is "no extra economic value", proven by final state, not by completion timing. Abort is a UX event, not a transactional primitive.
+
+---
+
+### 16.2.3. ABORT VS CANCEL VS FAILURE SEMANTICS
+
+**Client-Side Concepts (Non-Authoritative for Server State):**
+- `aborted` - Client stopped waiting (AbortController.abort())
+- `canceled` - User intent to stop (requires server acknowledgment if used)
+- `timeout` - Client didn't get response
+- `disconnect` - Transport ended
+
+**Server-Side Concepts (Authoritative for Economic State):**
+- `rejected` - Server refused to commit (validation error, business rule)
+- `committed` - Irreversible effect applied (economic commit point)
+- `pending` - Not yet committed (can be abandoned or resumed)
+- `completed` - Commit + bookkeeping done (final state)
+
+**Golden Rule:**
+> **Only the server can cancel an operation. Clients can only abandon it.**
+
+**Test Implications:**
+- Tests **MUST** distinguish client-side abort from server-side state
+- Tests **MUST** assert server-side outcomes, not client-side signals
+- Tests **MUST NOT** assume abort prevents commit (timing-dependent)
+- Tests **MUST** verify economic invariants regardless of abort timing
+
+---
+
+### 16.3. SEMANTIC PRESERVATION RULE
+
+**Requirements:**
+- Refactors MUST NOT change observable behavior
+- Any refactor requires:
+  - Invariant tests
+  - Before/after equivalence
+- Simplifying logic must preserve semantics
+- Replacing conditionals must preserve behavior
+
+**Prohibited Patterns:**
+- Refactoring "correctly" but altering behavior
+- Replacing conditionals with equivalent that changes semantics
+- Merging branches that have different behaviors
+- Simplifying logic that changes outcomes
+
+**Rule:**
+> Refactors that change semantics are bugs, not improvements. Observable behavior must be preserved. Invariant tests verify equivalence.
+
+---
+
+## 17. Coverage Rules
+
+Coverage is a **signal**, not a goal.
+
+**DO**
+- Use coverage to find untested behavior
+- Increase coverage via real scenarios
+
+**DO NOT**
+- Write garbage tests to raise %
+- Treat 100% coverage as success
+
+> 50% honest coverage beats 95% fake coverage.
+
+---
+
+## 18. CI Is Law
+
+**DO**
+- Treat failing tests as blockers
+- Fix or revert immediately
+
+**DO NOT**
+- Skip, mute, or disable tests
+- Merge with red CI
+
+Broken tests mean **broken trust**.
+
+---
+
+## 18.1. TEST LAYER SEPARATION RULE
+
+**Requirements:**
+- Integration tests do **NOT** replace logic tests
+- Logic tests do **NOT** replace integration tests
+- Both are **mandatory**
+- Test layers serve different purposes
+
+**Forbidden Arguments:**
+- "Integration tests cover this, so unit tests not needed"
+- "Unit tests cover this, so integration tests not needed"
+- Skipping one layer because the other exists
+
+**Rule:**
+> Integration tests verify system behavior. Logic tests verify correctness. Both are mandatory. One does not replace the other.
+
+---
+
+## 19. AI-Specific Enforcement Rule (Non-Negotiable)
+
+When AI writes tests:
+
+**AI MUST**
+- Prefer failing over passing if unsure
+- Write strict assertions
+- Assume tests are audited by hostile reviewers
+
+**AI MUST NOT**
+- Write tests to make builds green
+- Downgrade assertions for convenience
+- Invent meaningless tests
+
+> Green tests are earned, not negotiated.
+
+---
+
+## 20. Test Acceptance Checklist (MANDATORY)
+
+A test may be accepted only if ALL are true:
+
+- [ ] Test fails when implementation is broken
+- [ ] Test asserts observable behavior
+- [ ] Test includes error or rejection cases
+- [ ] Assertions are precise (no weak matchers)
+- [ ] No unnecessary mocks
+- [ ] Behavior is understandable from the test name alone
+- [ ] Test belongs to exactly one class (Correctness, Security, or Regression)
+- [ ] If Security test: maps to security guarantee(s) and threat(s)
+- [ ] If Security test: meets all proof standards (§0.2)
+
+If any box is unchecked, the test is rejected.
+
+**IMPORTANT:** Don't automatically assume tests are written correctly. First check if tests have valid expectations and assertions. If tests have wrong expectations, we end up with incorrect code.
+
+**CRITICAL:** When a test fails, follow the process in §1:
+1. **First verify** the test expectations are correct (mathematically/logically sound)
+2. **If test expectations are wrong** → Fix the test (specification bug)
+3. **If test expectations are correct** → Fix the code (implementation bug)
+
+See §1 for detailed examples of when to fix tests vs code.
+
+---
+
+**This document overrides convenience, speed, and AI "helpfulness".**

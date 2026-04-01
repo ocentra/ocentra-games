@@ -1,0 +1,732 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kalookie-british.json",
+  "name": "Kalookie (British-European)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kalookie (British/European version) is a sophisticated Rummy variant played with 106 cards. Unlike the Caribbean 'contract' version, British Kalookie typically emphasizes a points-based initial meld requirement (most commonly 51 points). It is known for its fast 'tacking' gameplay and the high value placed on Jokers, which can be 'stolen' from existing melds on the table.",
+    "category": "Rummy",
+    "subCategory": "Melding",
+    "origin": "UK / Europe",
+    "originName": "Kalooki",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2-6"
+    },
+    "deck": "106 cards (2x52 + 2 Jokers)",
+    "difficulty": "Intermediate",
+    "duration": "30-45 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Believed to have roots in the Jewish communities of London and New York in the mid-20th century. It shares ancestry with games like Vatikan and Rummy 51.",
+    "originCountries": ["UK", "USA"],
+    "timeline": [
+      "1920s: Rummy becomes globally popular; 2-deck variants emerge.",
+      "1950s: Kalooki 40 and Kalooki 51 become standardized in UK bridge and card clubs.",
+      "1990s: Online Kalooki sites popularize the British ruleset.",
+      "Present: A staple tournament game in the UK and European Rummy circles."
+    ],
+    "evolution": "The major innovation in the British version is the 'Joker Swap'â€”the ability to replace a Joker in a meld with the natural card, a feature less common in other Rummy styles.",
+    "cultural": "Often played in competitive bridge clubs as a less formal but equally strategic alternative.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players is optimal.",
+    "deck": "106 cards (2 standard decks + 2 Jokers).",
+    "equipment": "106 cards, score sheet, chips for stakes (optional)",
+    "dealing": "Deal 13 cards to each player. One card is turned up to start the discard pile.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to meld all cards in hand ('Going Kalooki').",
+    "gameplay": "1. **Opening Requirement**: The first meld(s) played to the table must total **40 or 51 points** (depending on house rules). Once 'open', you can meld any value.\n2. **Melds**: Sets (Groups) of 3-4 cards of same rank, or Runs (Sequences) of 3+ consecutive cards of same suit.\n3. **Joker Rules**: Wild cards can replace any card. Can be 'stolen' by replacing with the natural card.\n4. **Scoring**: Numbered cards (2-10) = Face value. Face cards (J, Q, K) = 10. Ace = 11. Joker = 15 points (or 25 as penalty).",
+    "keyRules": [
+      "First meld must total 40 or 51 points",
+      "Sets: 3-4 cards of same rank (duplicates allowed from different decks)",
+      "Runs: 3+ consecutive cards of same suit",
+      "Jokers are wild and can be stolen by replacing with natural card",
+      "After opening, can 'tack' (add) cards to any existing meld",
+      "Winner scores 0; losers score points for cards remaining in hand"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Reach the 51-point opening as soon as possible. Use Aces (11 pts) and Face cards (10 pts) to hit the threshold quickly.",
+    "intermediate": "Joker Fishing: Keep a card in your hand that could swap a Joker on the table. Even if it doesn't help your meld immediately, having a Joker in hand is a powerful defensive tool.",
+    "advanced": "Discard Suppression: Watch your opponents. If an opponent has melded once, they can 'tack' onto your cards. Avoid playing cards that extend existing runs if you think an opponent is close to going out.",
+    "tips": [
+      "Aces are worth 11 pointsâ€”if you have three Aces, you hit 33 points immediately toward your 51-point goal.",
+      "Don't discard a Joker! It's worth 25 penalty points and is too valuable to give away."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "kalooki-40",
+        "name": "Kalooki 40",
+        "description": "Smaller opening requirement (40 pts).",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs only in initial meld threshold (40 vs 51); engine constants could be added when implementing."
+      },
+      {
+        "id": "kalooki-51",
+        "name": "Kalooki 51",
+        "description": "Standard British/European tournament rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Base game; overrides not needed for main ruleset."
+      },
+      {
+        "id": "vatikan",
+        "name": "Vatikan",
+        "description": "A related European game with more complex melding rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Separate game entry would be needed for full Vatikan engine overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to prioritize the 51-point opening; never swaps Jokers.",
+      "medium": "Reasonable meld calculation; basic 'tacking' logic.",
+      "hard": "Expert Joker management; perfectly calculates sequences to minimize hand value; tracks every discarded card."
+    },
+    "considerations": [
+      "Initial 51-pt threshold logic.",
+      "Joker exchange mechanics.",
+      "Opponent hand-size tracking."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_kalookie-british_0",
+        "name": "Pagat - North American / European Kalooki",
+        "url": "https://www.pagat.com/rummy/kalooki.html#british",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:pagat_kalookie-british_1",
+        "name": "Wikipedia - Rummy",
+        "url": "https://en.wikipedia.org/wiki/Rummy",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-rummy-4.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "rummy",
+    "melding",
+    "social",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 4,
+    "luck": 5,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "progression": ["deal", "turn_play", "scoring"],
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_cards"
+        ],
+        "nextPhase": "turn_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 13 cards to each player"
+      },
+      {
+        "id": "turn_play",
+        "label": "Player Turn",
+        "actor": "current_player",
+        "legalActions": [
+          "draw",
+          "meld",
+          "tack",
+          "discard"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Draw, optionally meld/tack, then discard"
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "system",
+        "legalActions": [
+          "calculate_penalties"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winner scores 0; others score penalty points"
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards to players",
+        "cost": "0",
+        "constraints": "Dealer only",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from hand",
+        "cost": "0",
+        "constraints": "Follow game rules",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from stock or take top discard",
+        "cost": "0",
+        "constraints": "Allowed only when draw timing and source rules permit.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Place one card face-up on discard pile",
+        "cost": "0",
+        "constraints": "Mandatory end of turn unless hand is empty",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": true,
+        "description": "Lay down valid sets or runs from hand",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Double 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 13,
+      "min_players": 2,
+      "max_players": 6
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_cards",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "tack",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "calculate_penalties",
+        "supported": true,
+        "description": "Game-specific action; see rules.",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Two complete standard 52-card French decks combined, totaling 104 cards with four suits: Hearts, Diamonds, Clubs, and Spades. Each suit appears twice with thirteen ranks per suit per deck, providing extended play for games requiring more cards.",
+    "suitDescription": "Four traditional French suits appearing twice: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification of suit and deck.",
+    "rankDescription": "Twenty-six ranks total per suit (two of each from Ace through King), where each rank determines card value and combining two complete rank sequences allows for extended melds and sequences in rummy-style games.",
+    "dealPattern": "",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "KALOOKIE",
+      "subtitle": "British Rummy Excellence",
+      "tagline": "Master the 51-point opening, steal the Jokers, and claim victory."
+    },
+    "shortDescription": "A British rummy variant with a 51-point opening requirement and the unique Joker-swap mechanic. Popular in UK card clubs.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "stock",
+        "stock"
+      ],
+      "marketPosition": null,
+      "stockPosition": "top_left",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Kalookie, the British rummy classic! You need 51 points to openâ€”can you get there with Aces and Face cards? Watch for Jokers on the tableâ€”you can steal them by replacing with the natural card!",
+    "ai": "Game: Kalookie (British). Type: Rummy. Deck: 106 cards (2x52+2 Jokers). Hand: 13 cards. Opening: 40/51 point minimum. Melds: Sets (3-4 same rank) and Runs (3+ consecutive). Jokers wild (stealable). Goal: Empty hand first, minimize penalty points."
+  },
+  "scoring": {
+    "description": "Winner scores 0. Losers score the total points of cards left in their hand.",
+    "winCondition": "First player to meld all cards in hand wins the hand. Game typically played to elimination at 150+ penalty points.",
+    "cardValues": {
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "Jack": "10",
+      "Queen": "10",
+      "King": "10",
+      "Ace": "11",
+      "Joker": "15"
+    },
+    "penalties": {
+      "Elimination": "Players exceeding 150 penalty points are eliminated unless they buy back in by paying a new stake"
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": "NA",
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Kalooki 40",
+    "Kalooki 51",
+    "British Rummy"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

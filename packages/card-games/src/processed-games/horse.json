@@ -1,0 +1,696 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "horse.json",
+  "name": "HORSE",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "HORSE is a mixed poker game format that rotates through five different poker variants in a fixed sequence. The acronym stands for Hold'em, Omaha Hi/Lo, Razz, Seven Card Stud, and Eight-or-Better (Stud Hi/Lo). Popular in major tournaments like the World Series of Poker, HORSE tests a player's versatility across multiple poker disciplines. All games are played in Fixed-Limit format.",
+    "category": "Poker",
+    "subCategory": "Poker Family",
+    "origin": "USA",
+    "originName": "HORSE",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 6,
+      "display": "2-8 (typically 6-8)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Expert",
+    "duration": "Variable (rotates games every round or time period)",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Developed in the United States as a way to test poker players' skills across multiple variants. Became prominent in high-stakes cash games and tournament play.",
+    "timeline": [
+      "1970s-1980s: Mixed poker games gain popularity in high-stakes cash games.",
+      "2002: HORSE event added to the World Series of Poker.",
+      "2006: $50,000 HORSE Championship becomes a prestigious WSOP event.",
+      "Present: HORSE remains a staple in major poker tournaments and online poker rooms."
+    ],
+    "evolution": "HORSE evolved from the tradition of dealer's choice poker, where players would rotate through different variants. The fixed rotation ensures all players must be proficient in multiple poker styles.",
+    "cultural": "Represents the pinnacle of poker skill testing, as players must master five distinct games rather than specializing in one.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-8 players (typically 6-8 for optimal play).",
+    "deck": "Standard 52-card deck.",
+    "equipment": "Standard deck, poker chips, dealer button.",
+    "dealing": "Deal according to current game in rotation (Hold'em, Omaha, etc.).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win chips/money by winning pots in each of the five poker variants.",
+    "gameplay": "HORSE = rotation of Hold'em, Omaha, Razz, Stud, Stud Eight-or-better. Each variant 1 orbit; switch after each. Same betting structure. Lowest chip count at end loses.",
+    "keyRules": [
+      "All five games are played as fixed-limit. Hold'em and Omaha use blinds; Razz, Stud, and Stud 8 use antes and a compulsory bring-in.",
+      "Rotation is fixed: H then O then R then S then E. A complete round of each game is played (every player has one deal or button) before switching.",
+      "Hand rankings and showdown rules follow the current variant: standard high for Hold'em and Stud; Omaha 8 and Stud 8 split high and low (eight or better for low).",
+      "With more than seven players, the last in order sit out for stud games so the deck does not run out."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Learn the fundamentals of each individual game before attempting HORSE. Focus on starting hand selection for each variant.",
+    "intermediate": "Adjust your strategy as the game rotates. For example, tight-aggressive play works in Hold'em, but Razz requires different hand values.",
+    "advanced": "Exploit opponents' weaknesses in specific games. If an opponent is weak in Razz, apply pressure when that game is in rotation.",
+    "tips": [
+      "Razz and Stud Hi/Lo are often the weakest games for Hold'em specialists. Study these carefully.",
+      "In Omaha Hi/Lo, always aim to 'scoop' (win both high and low) rather than just half the pot.",
+      "Track which game is currently being playedâ€”it's easy to forget during long sessions."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "chorse",
+        "name": "C.H.O.R.S.E.",
+        "description": "Adds Crazy Pineapple (C) before Hold'em; six variants in rotation. Community and stud games are evenly split.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant adds one more game to rotation; engine overrides for variant-specific constants can be added when documented."
+      },
+      {
+        "id": "chorsel",
+        "name": "C.H.O.R.S.E.L.",
+        "description": "Adds Crazy Pineapple (C) and Lowball (L); seven variants. California or Ace-to-Five Lowball.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant adds two more games to rotation; overrides for lowball and deal structure can be added when documented."
+      },
+      {
+        "id": "hose",
+        "name": "H.O.S.E.",
+        "description": "Drops Razz; four variants: Hold'em, Omaha Hi/Lo, Seven-Card Stud, Stud Eight-or-Better. Shorter rotation.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant drops one game from rotation; same engine structure applies with four phases per orbit."
+      },
+      {
+        "id": "eight-game-mix",
+        "name": "Eight Game Mix",
+        "description": "Eight variants: 2-7 Triple Draw, Limit Hold'em, Limit Omaha Hi-Lo, Razz, Seven-Card Stud, Stud Hi-Lo 8, No-Limit Hold'em, Pot-Limit Omaha High. Also known as T.H.O.R.S.E.H.A.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses eight games in rotation; overrides for each game's limits and deal can be added when documented."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Basic legal play in each variant; no strategic adjustments.",
+      "medium": "Competent play in each game; understands starting hand requirements for each variant.",
+      "hard": "Expert-level play in all five games; exploits opponent weaknesses; optimal strategy for each variant; adapts to table dynamics."
+    },
+    "considerations": [
+      "Requires five separate AI strategies (one for each game).",
+      "Must track game rotation and adjust strategy accordingly.",
+      "Opponent modeling across multiple game types.",
+      "Bankroll management across varying pot sizes."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      },
+      {
+        "id": "src:poker_stars_horse_poker_www_pagat_com_poker_variants_horse_html_chorse",
+        "name": "PokerStars - HORSE Poker",
+        "url": "https://www.pagat.com/poker/variants/horse.html#chorse",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-horse-poker.html"
+      },
+      {
+        "id": "src:poker_news_horse_rules_www_pokernews_com_poker_rules_horse_htm",
+        "name": "PokerNews - HORSE Rules",
+        "url": "https://www.pokernews.com/poker-rules/horse.htm",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_poker_en_wikipedia_org_wiki_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [
+      "Natural8 - HORSE Poker Guide",
+      "Poker Professor - HORSE Strategy",
+      {
+        "url": "https://en.wikipedia.org/wiki/HORSE_(poker)",
+        "localHtml": "wiki-horse-poker-2.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "vying",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": ["ante"],
+        "nextPhase": "betting_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players post ante (stud games) or blinds apply (Hold'em/Omaha); structure depends on current variant in rotation."
+      },
+      {
+        "id": "betting_round",
+        "label": "Betting round",
+        "actor": "active_players_clockwise",
+        "legalActions": ["fold", "check", "call", "raise", "bet"],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Fixed-limit betting; number of rounds and bring-in vary by variant (Hold'em, Omaha, Razz, Stud, Stud 8)."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": ["reveal_hand", "award_pot"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {"reveal_hand": "face_up"},
+        "notes": "Active players reveal hands; pot awarded per variant rules (high, low, or split). Then rotation advances to next game."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Post the mandatory ante (stud games) or post blinds (Hold'em/Omaha) before cards are dealt.",
+        "cost": "0",
+        "constraints": "Required at start of each hand; amount depends on current variant in rotation.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Discard hand and forfeit all claim to the pot for the current hand.",
+        "cost": "0",
+        "constraints": "Available during any betting round. Eliminates player from current hand.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action to next player without betting.",
+        "cost": "0",
+        "constraints": "Only legal when no bet has been opened in the current betting round.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current highest open bet to stay in the hand.",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Only legal when a bet or raise exists. Must match exactly (fixed limit).",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting in a round where no bet exists yet.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Only legal when no bet opened yet. Amount is fixed by variant (small bet in limit).",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase current bet above existing open bet.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Only legal when a bet or raise exists. Subject to fixed-limit raise caps per round.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Flip all hole cards face-up for showdown so the best hand(s) can be determined.",
+        "cost": "0",
+        "constraints": "Triggered at showdown for all active players; order may vary by variant.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Dealer evaluates hands per variant rules and distributes the pot to winner(s); split for high-low variants.",
+        "cost": "0",
+        "constraints": "Dealer-only after showdown. Pot may be split in Omaha 8 and Stud 8.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "HORSE is vying poker; players bet and reveal at showdown. Card exposure is governed by each variant's deal structure, not a play-to-table action."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 2,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "ace_to_five_8_or_better",
+      "lowQualifier": {
+        "maxHighCard": 8,
+        "acePlaysLow": true,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "sit-out-stud",
+          "text": "If more than seven players, the last player(s) in order (dealer and if needed the player to dealer's right) sit out for the seven-card stud games so the deck does not run out. Everyone sits out the same number of hands per rotation.",
+          "appliesTo": "Seven-Card Stud and Stud 8",
+          "affects": "player count per hand"
+        },
+        {
+          "id": "orbit-per-variant",
+          "text": "Complete orbit of each game is played before switching: every player has one deal or dealer button per variant before moving to the next.",
+          "appliesTo": "rotation",
+          "affects": "when game switches"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["ante", "betting_round", "showdown"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Varies by variant: Hold'em 2 hole cards; Omaha 4 hole cards; Razz and Stud 2 down 1 up initially then upcards per round; Stud 8 same as Stud with high-low split.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HORSE",
+      "subtitle": "Card Game",
+      "tagline": "HORSE is a mixed poker game format that rotates through five different poker var..."
+    },
+    "shortDescription": "HORSE is a mixed poker game format that rotates through five different poker variants in a fixed sequence. The acronym stands for Hold'em, Omaha Hi/Lo",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "HORSE is a mixed poker game format that rotates through five different poker variants in a fixed sequence. The acronym stands for Hold'em, Omaha Hi/Lo, Razz, Seven Card Stud, and Eight-or-Better (Stud Hi/Lo). Popular in major tournaments like the World Series of Poker, HORSE tests a player's versatility across multiple poker disciplines. All games are played in Fixed-Limit format.",
+    "ai": "Game: HORSE. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Win chips/money by winning pots in each of the five poker variants.",
+    "winCondition": "Win chips/money by winning pots in each of the five poker variants.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings at showdown; no point values per card."
+    }
+  },
+  "alsoKnownAs": [
+    "CHORSE Poker",
+    "CHORSEL Poker",
+    "Eight Game Mix Poker",
+    "HOE Poker",
+    "HORSE Poker",
+    "HOSE Poker",
+    "ROE Poker",
+    "SHOE Poker"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

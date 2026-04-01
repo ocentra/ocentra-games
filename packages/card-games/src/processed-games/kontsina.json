@@ -1,0 +1,666 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kontsina.json",
+  "name": "Kontsina (Koltsina)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kontsina (also spelled Koltsina or Kolitsina) is the primary Greek fishing card game. Played by two to four players, it is a game of capture where players aim to take cards from a central layout by matching ranks or summing values. It is deeply ingrained in Greek social life, particularly in kafenio (coffee house) culture, and is valued for its balance of luck and tactical calculation.",
+    "category": "Fishing",
+    "subCategory": "Casino / Capture",
+    "origin": "Greece",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Κοντσίνα (Koltsina)"
+  },
+  "history": {
+    "origins": "Dates to the early 20th century in Greece. It is a descendant of the international Casino family of games, localized with specific scoring points for Clubs and the Diamond 10.",
+    "originCountries": ["Greece"],
+    "timeline": [
+      "1920s: Kontsina becomes common in cafes across Athens and the islands.",
+      "1960s: Standard gambling variants emerge with specific coin stakes.",
+      "Present: A very common family and holiday game in Greece and the Greek diaspora."
+    ],
+    "evolution": "The game evolved to have a 'Last Trick' collection rule, which discourages defensive stalling at the end of the round.",
+    "cultural": "In Greece, 'Koltsina' is often the first card game children learn from their grandparents.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Best with 2 players or 4 in partnerships.",
+    "deck": "Standard 52-card deck. Ace = 1. Jacks/Queens/Kings have no numerical sum value (rank-only).",
+    "equipment": "",
+    "dealing": "Each player receives 4 cards. 4 cards are placed face-up in the center field. The rest form a stock pile.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score the most points by capturing specific 'score cards' and the largest volume of cards.",
+    "gameplay": "1. Play a card from hand to capture from the field.\n2. **Rank Match**: Match a Jack, Queen, King, or numeral rank to take it (e.g., King takes King).\n3. **Sum Match**: Use a numeral card (e.g., a 9) to take multiple cards whose values sum to it (e.g., 9 takes a 4, a 2, and an Ace (1)).\n4. **Discard**: If you cannot capture, leave your card on the table.\n5. When hands are empty, deal 4 more cards each from stock until the stock is gone.",
+    "keyRules": [
+      "Capture by matching rank (e.g. 7 takes 7, Queen takes Queen) or by sum (numeral card takes cards summing to it; Ace = 1; face cards only match rank).",
+      "If you cannot or do not wish to capture, play a card face up to the tableau (laying).",
+      "When hands are empty, dealer deals 4 more cards each from the talon; no new cards to the tableau. Non-dealer plays first after each deal.",
+      "Round ends when the last hand is played; remaining tableau cards go to the player who last made a capture."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize capturing the **Ten of Diamonds** and the **Two of Clubs**. These cards count for points themselves and contribute to both the 'Most Cards' and 'Most Clubs' categories.",
+    "intermediate": "The 'Seven' Rule: Hold your middle-rank cards (5s, 6s, 7s). These are the most flexible for capturing combinations of low cards (Aces, 2s, 3s).",
+    "advanced": "Last-Round Denial: If you know the stock is empty, try to be the last person to capture ANY card. The person who makes the last capture gets all the remaining cards on the table for free.",
+    "tips": [
+      "Face cards (J, Q, K) are the easiest to track. If you see three Kings on the table, save your King for as long as possible to capture all four in one 'bomb'.",
+      "Pay attention to the Clubs! Winning by just one Club can be the deciding factor in a close match."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "points-variant",
+        "name": "Points to target",
+        "description": "Record points each round; first to an agreed total (e.g. 21) wins. Tie on same round: higher score wins; exact tie plays another round.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes win condition; no engine constant overrides needed."
+      },
+      {
+        "id": "three-four-players",
+        "name": "Three or four players",
+        "description": "Play anticlockwise; first to play is to dealer's right. Three players: 4 deals per round; four players: 3 deals per round.",
+        "overrides": {},
+        "emptyOverridesReason": "Player count and deal count differ; overrides can be added when engine supports them."
+      },
+      {
+        "id": "four-player-partnerships",
+        "name": "Four players in partnerships",
+        "description": "Two against two; partners sit opposite; combine captured cards into a single pile per team.",
+        "overrides": {},
+        "emptyOverridesReason": "Partnership play; overrides for team scoring can be added when supported."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to see sum combinations; misses out on the 10 of Diamonds; captures face cards poorly.",
+      "medium": "Reasonable sum-matching; prioritizes 10D and 2C.",
+      "hard": "Expert at table-capture optimization; perfectly calculates the 'Last Capture' sweep to take the remaining pile."
+    },
+    "considerations": [
+      "Sum-match partitioning algorithm.",
+      "Priority-card weighted search.",
+      "Last-round 'sweep' management."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_kontsina",
+        "name": "Pagat.com - Kontsina",
+        "url": "https://www.pagat.com/fishing/kontsina.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-kontsina.html"
+      },
+      {
+        "id": "src:wikipedia_scopa_en_wikipedia_org_wiki_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [
+      "Greek Card Game Rules Archive - Kontsina Section",
+      "Wikipedia - Kontsina"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional folk card game; no documented IP holder or trademark.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to capture from the table by rank match or sum.",
+        "cost": "0",
+        "constraints": "Match rank to capture single card, or use sum to capture multiple cards. Ace = 1.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 1,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "tableau",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "last-capture-sweep",
+          "text": "Last player to capture any cards from the table receives all remaining tableau cards at end of round."
+        },
+        {
+          "id": "cards-split",
+          "text": "If each player captures 26 cards, no one scores the 2 points for most cards."
+        },
+        {
+          "id": "non-dealer-first",
+          "text": "Non-dealer acts first after each deal; turn to deal alternates each round."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Kontsina does not use poker hand rankings; scoring is by capture points (most cards, most clubs, 2 of clubs, 10 of diamonds).",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "4 each, 4 to tableau.",
+"notApplicableReasons": {
+      "drawConfig": "Cards are dealt in batches of 4 from the talon when hands are empty; there is no draw-from-pile action."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "KONTSINA (KOLTSINA)",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Kontsina (also spelled Koltsina or Kolitsina) is the primary Greek fishing card game. Played by two to four players, it is a game of capture where players aim to take cards from a central layout by ma",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "tableau"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "2 points for most cards (tie at 26 each = no points), 1 for most clubs, 1 for capturing the 2 of clubs (good 2), 1 for the 10 of diamonds (good 10). Majority of round points wins the round; overall winner is whoever wins more rounds. Variant: first to an agreed total (e.g. 21) wins.",
+    "winCondition": "Win the majority of rounds (most round wins). Variant: first to reach an agreed point total (e.g. 21) wins.",
+    "cardValues": {
+      "2C": "1 point (good 2 / lucky 2); also counts toward most clubs.",
+      "10D": "1 point (good 10 / lucky 10)."
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If each player captures 26 cards, no one scores the 2 points for most cards.",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Rounds variant uses round wins; points variant uses an agreed total (e.g. 21)."
+    }
+  },
+  "alsoKnownAs": [
+    "Koltsina",
+    "Kolitsina",
+    "Κοντσίνα"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

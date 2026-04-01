@@ -1,0 +1,663 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "u-g-o.json",
+  "name": "U-G-O",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "U-G-O is a combat card game for two or more players where each player uses their own 52-card deck (different backs). Cards are played vertically (attack) or horizontally (defense). Players attack opponents' cards by playing higher-valued cards. Defense cards may be played face-up or face-down. Goal: exhaust your opponent's deck before yours runs out. Special abilities on Aces, Kings, Queens, Jacks, 8s, 9s, and 10s; Equip cards (Diamonds) and suit abilities (Spades, Hearts, Clubs).",
+    "category": "Shedding",
+    "subCategory": "Capture / Elimination",
+    "origin": "USA",
+    "originName": "United States",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 3,
+      "display": "2-8"
+    },
+    "deck": "One 52-card deck per player (different backs)",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "U-G-O was invented in 2003 by Michael Daniel as an affordable home alternative to trading-card games like Yu-Gi-Oh. Daniel created it because his children wanted collectible card games but he could not afford them; he designed U-G-O so that each player uses a standard 52-card deck with different backs. The game proved popular with his children and their school friends, in part because many schools allow standard playing cards but prohibit trading cards. It has no earlier folk or commercial lineage.",
+    "originCountries": ["USA"],
+    "timeline": ["2003: Invented by Michael Daniel as a home alternative to trading-card games; first published online that year."],
+    "evolution": null,
+    "cultural": "Casual/invented game.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "1 deck per player (different backs). Shuffle, pass to left. Draw 5.",
+    "equipment": "Multiple 52-card decks",
+    "dealing": "Each player shuffles their deck, passes it to the left, and draws five cards from the deck they received.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "To make your opponent(s) run out of cards in their deck before you run out of cards in your deck.",
+    "gameplay": "Draw 1/turn. Play cards vertically (attack) or horizontally (defense). Attack opponent's cards with higher values. Destroyed cards go to discard. Special: 2s, 3s, 7s, 10s have abilities. Lose when unable to draw.",
+    "keyRules": [
+      "Attack = vertical, Defense = horizontal",
+      "Higher value destroys lower",
+      "Special card abilities",
+      "Lose when deck runs out"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Play defense early, attack when strong.",
+    "intermediate": "Use special cards strategically.",
+    "advanced": "Track opponent's deck depletion rate.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard",
+        "description": "Default rules as described: one Attack/Defense card per turn, special cards, equip cards, attack/defense positions.",
+        "overrides": {},
+        "emptyOverridesReason": "Standard is the base game; no engine overrides needed."
+      },
+      {
+        "id": "ace-variants",
+        "name": "Ace variants (optional)",
+        "description": "Aces can be given suit-specific targets: Spades on all attack-position cards, Hearts on all defense-position, Clubs on all A/D cards, Diamonds on all Equip cards.",
+        "overrides": {},
+        "emptyOverridesReason": "Optional rule variant; engine uses base Ace behavior until overrides are defined."
+      },
+      {
+        "id": "nine-counter",
+        "name": "Nine counter (optional)",
+        "description": "When a Special card is used on you, you may take their card and use it on them instead. Especially good for two-player.",
+        "overrides": {},
+        "emptyOverridesReason": "Optional counter rule; engine would need custom logic to add this variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "easy": "Easy AI plays legal moves with minimal strategy.",
+      "medium": "No distinct medium tier; AI uses basic shedding strategy.",
+      "hard": "Hard AI optimizes play order and opponent tracking."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-ugo",
+        "name": "Pagat.com - U-G-O",
+        "url": "https://www.pagat.com/invented/u-g-o.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-u-g-o.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "draw",
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each turn: draw one from deck, then play attack/defense or special cards. Last player with cards wins."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one Attack/Defense card (vertical = attack, horizontal = defense) or play Special cards from hand. Attack position must be face up; defense may be face up or face down. Maximum five Attack/Defense cards on table. Special cards (Ace, King, Queen, Jack, 8, 9, 10) and Equip cards (Diamonds) have specific effects.",
+        "cost": "0",
+        "constraints": "One Attack/Defense card per turn; multiple Special cards allowed. Legal when the selected card satisfies position and table limits.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw one card from your deck at the start of your turn (required before other actions).",
+        "cost": "0",
+        "constraints": "Once per turn, at turn start, when your deck has at least one card.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Discard is not a voluntary action; cards go to the owner's discard pile when destroyed or as part of special card effects."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": "face_up",
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 1,
+          "notes": "Draw one card from your deck at the start of your turn."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": true,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "after_play",
+      "discardVisibility": "face_up",
+      "discardCount": null,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": null
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 20
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {"id": "first_round_attack", "appliesTo": "play", "text": "In the first round, only the last player to go may attack.", "affects": "legalActions"},
+        {"id": "max_five_table_cards", "appliesTo": "play", "text": "A player may have at most five Attack/Defense cards on the table.", "affects": "play_card"},
+        {"id": "attack_face_up", "appliesTo": "play", "text": "Cards in attack position must be played face up; defense may be face up or face down.", "affects": "cardVisibility"},
+        {"id": "no_ad_cards_penalty", "appliesTo": "play", "text": "When a player is attacked and has no Attack/Defense cards on the table, they send a number of cards equal to the attacking card's value from their deck to their discard pile.", "affects": "play_card"},
+        {"id": "attack_destroy_deck_penalty", "appliesTo": "play", "text": "When an attack-position card is destroyed, the owner discards that card and equip cards, and transfers a number of cards equal to the difference in rank from the top of their deck to discard.", "affects": "play_card"},
+        {"id": "defense_destroy_no_deck", "appliesTo": "play", "text": "When a defense-position card is destroyed, the owner discards only that card and equip cards; no cards from deck.", "affects": "play_card"},
+        {"id": "attacker_lower_penalty", "appliesTo": "play", "text": "If the attacking card is lower than the defending card, the attacker sends the difference in cards from their deck to their discard; their Attack/Defense card remains.", "affects": "play_card"}
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Higher rank defeats lower for Attack/Defense cards; special cards (Ace, King, Queen, Jack, 8, 9, 10) and Equip cards have unique effects.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Each player shuffles their deck, passes it to the left, and draws five cards from the deck they received.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "U-G-O",
+      "subtitle": "Card Game",
+      "tagline": "U-G-O is a card battle game for 2-8 players where each player uses their own deck. Attack and defend with higher-valued cards; exhaust opponents' decks to win."
+    },
+    "shortDescription": "U-G-O is a card battle game for 2-8 players where each player uses their own deck. Cards are played vertically (attack) or horizontally (defense). Players attack with higher-valued cards; special and Equip cards have unique effects.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "discard",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "U-G-O is a card battle game for 2-8 players where each player uses their own deck. Cards are played vertically (attack) or horizontally (defense). Defense may be face-up or face-down. Goal: exhaust your opponent's deck before yours runs out. Special abilities on Aces, Kings, Queens, Jacks, 8s, 9s, and 10s; Equip cards (Diamonds).",
+    "ai": "Game: U-G-O. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Last player standing wins.",
+    "winCondition": "Exhaust opponent's deck before yours.",
+    "cardValues": {
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "J": "11",
+      "Q": "12",
+      "K": "13",
+      "A": "14"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,658 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "casino-hungarian.json",
+  "name": "Casino Hungarian",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "playerMode": "multiplayer",
+    "description": "Hungarian Casino is a Royal Casino variant played in Hungary. Features numerical values for picture cards (J=11, Q=12, K=13, A=1/14) with unique building and capturing rules. Differs from Anglo-American Casino in several key ways.",
+    "category": "Fishing",
+    "subCategory": "Casino / Capture",
+    "origin": "Hungary",
+    "originName": "Kaszinó",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "52 cards",
+    "difficulty": "Intermediate",
+    "duration": "30-45 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["Hungary"],
+    "origins": "Hungarian Casino is a variant of Royal Casino played in Hungary. It represents the Central European tradition of Casino games where picture cards have numerical values, differing from the Anglo-American version where picture cards can only capture matching pictures.",
+    "timeline": [
+      "Traditional: Played for generations in Hungary",
+      "Modern: Documented as distinct variant",
+      "Current: Popular Hungarian card game"
+    ],
+    "evolution": "Hungarian Casino evolved from the broader European Royal Casino tradition. The key development was assigning numerical values to all cards, enabling more complex building and capturing combinations.",
+    "cultural": "Popular in Hungary and potentially neighboring regions. The game is part of Hungary's card game heritage, alongside games like Ulti and Preferansz.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-4 players, typically playing individually.",
+    "deck": "Standard 52-card pack. Card values: 2-10=face value, J=11, Q=12, K=13, A=1 or 14.",
+    "equipment": "Standard deck, score sheet",
+    "dealing": "Standard Casino dealing: cards to players and to table layout.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Capture cards from the layout. Score points by capturing specific cards and achieving majority of cards/spades.",
+    "gameplay": "Hungarian Casino follows Royal Casino rules: All cards have numerical values. Players capture by matching card values or sums. Building allowed: single builds (sum=value) and potentially multiple builds. Picture cards participate in numerical captures and builds. Ace flexible at 1 or 14.",
+    "keyRules": [
+      "2-4 players",
+      "All cards have numerical values",
+      "J=11, Q=12, K=13, A=1/14",
+      "Capture by matching or summing to played card value",
+      "Building allowed",
+      "Standard Casino scoring"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Capture when possible. Build when holding the capture card. Collect scoring cards (10â™¦, 2â™ , aces).",
+    "intermediate": "Track which scoring cards remain. Use building to secure future captures. Balance capturing vs building.",
+    "advanced": "Complex build strategies. Timing of captures to maximize scoring. Endgame play to secure majorities.",
+    "tips": [
+      "Prioritize capturing 10â™¦ and 2â™ ",
+      "Aces are valuable (1 point each)",
+      "Building can secure multiple future captures",
+      "Watch card counts for majority bonuses"
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Source describes main variant; specific variants not yet extracted."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Source describes main variant; specific variants not yet extracted."
+      },
+      {
+        "id": "",
+        "name": "",
+        "description": "",
+        "overrides": {},
+        "emptyOverridesReason": "Source describes main variant; specific variants not yet extracted."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Basic capture and building",
+      "medium": "Strategic building and capture timing",
+      "hard": "Optimal play with card counting and endgame analysis"
+    },
+    "considerations": [
+      "Track scoring cards",
+      "Build valuation",
+      "Capture timing",
+      "Majority tracking"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_royal_casino_hungarian_www_pagat_com_fishing_royal_casino_html_hungarian",
+        "name": "Pagat.com - Royal Casino (Hungarian)",
+        "url": "https://www.pagat.com/fishing/royal_casino.html#hungarian",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-royal-casino.html"
+      },
+      {
+        "id": "src:wikipedia_scopa_en_wikipedia_org_wiki_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain card game; no known IP claim.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Capture, build, or trail."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards to each player and tableau per round.",
+        "cost": "0",
+        "constraints": "Dealer deals according to Hungarian Casino pattern.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Capture, build, or trail a card to the tableau.",
+        "cost": "0",
+        "constraints": "Capture by match or sum, build, or trail one card.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "reason": "This action does not apply to this game.",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {}
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "playerMode": "multiplayer",
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "player"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      },
+      {
+        "id": "tableau",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table"
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "play"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Casino Hungarian",
+      "subtitle": "Royal Casino",
+      "tagline": "Capture, build, sweep; Hungarian scoring to target."
+    },
+    "shortDescription": "Hungarian Royal Casino: J=11 Q=12 K=13 A=1/14; capture, build, sweep; first to target wins.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "tableau"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points for cards and sweeps; first to target (e.g. 21) wins.",
+    "winCondition": "Reach agreed point target first to win.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Target often 21 or 11; house rule may vary.",
+      "cardValues": "Points for most cards, spades, 10 of diamonds, 2 of spades, aces and sweeps; no per-rank point map."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

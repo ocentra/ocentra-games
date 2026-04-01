@@ -1,0 +1,744 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "hungarian-domin-block-game.json",
+  "name": "Hungarian DominÃ³ (Block)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Hungarian DominÃ³ (Block Game) is a strategic domino variant played with a Double-Six set. It is a 'block' game, meaning there is no drawing from a boneyard once play begins. Players must use the tiles in their hand to build a single linear chain, emphasizing hand management and blocking strategies to force opponents into passing their turns.",
+    "category": "Domino",
+    "subCategory": "Block / Line Game",
+    "origin": "Hungary",
+    "originName": "Magyar dominó (Blokk)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Double-Six (28 tiles) or Double-Eight (variant)",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Hungary"],
+    "origins": "Dominoes arrived in Hungary in the 18th century. The 'Block' variant developed as a common social game in cafes, where fast play and simple scoring were preferred.",
+    "timeline": [
+      "1800s: Traditional 'Block' rules solidify in Central Europe.",
+      "Early 20th Century: Becomes a staple in Hungarian family households.",
+      "Present: Played both as a casual game and as a foundation for more complex variants like Draw DominÃ³."
+    ],
+    "evolution": "The game focuses on a single linear chain (no branching at doubles), distinguish it from variants like All Fives or Mexican Train.",
+    "cultural": "An accessible game for all ages, often used to teach arithmetic to children.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players.",
+    "deck": "Standard Double-Six (28 tiles).",
+    "equipment": "",
+    "dealing": "- 2 players: 12 tiles each (4 tiles remain out).\n- 3 players: 8 tiles each (4 tiles remain out).\n- 4 players: 6 tiles each (4 tiles remain out).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked.",
+    "gameplay": "1. The player with the highest double leads (or highest tile if no doubles).\n2. Players must match the pips of an open end of the linear layout.\n3. **Blocking**: If you cannot match an end, you pass your turn.\n4. The layout is restricted to two ends; doubles are placed crosswise but do not create new lines.",
+    "keyRules": [
+      "Follow the legal action constraints defined for Hungarian DominÃ³ (Block).",
+      "Round outcome is resolved by the scoring method: The winner scores the total sum of pips remaining in all opponents' hands.",
+      "Winning condition: Win the round by playing all tiles in your hand, or by having the lowest total pips when the game is blocked."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep a variety of numbers in your hand to ensure you can play on either end of the layout. Don't play your last card of a specific number too early.",
+    "intermediate": "Blocking strategy: If you have many 4s, try to make both ends of the layout 4. This 'blocks' the board for everyone except you.",
+    "advanced": "Card Counting (Tile Tracking): Since you know which tiles are out of the game (the 4 set aside), you can eventually deduce exactly what your opponent holds.",
+    "tips": [
+      "Play your high-value tiles early to minimize your score if you get blocked.",
+      "Watch which numbers your opponents pass on; those are their weaknesses."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "double-eight",
+        "name": "Double-Eight (Hungarian traditional)",
+        "description": "Play with a Double-8 set of 45 tiles. Deal: 2 players 21 each, 3 players 14 each, 4 players 10 each; three or five tiles remain out. Play is anticlockwise. Otherwise same block and scoring rules.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses same engine; only deck size and deal counts differ; overrides can be added later for dealPattern and deckCount."
+      },
+      {
+        "id": "thirty-six-tile",
+        "name": "36-tile set",
+        "description": "Remove the nine doubles from the Double-8 set; 36 tiles remain. Four players draw 8 tiles each, four tiles out of play. Otherwise same as Hungarian Block.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses reduced tile set and different deal; overrides for dealPattern and deck structure can be added when needed."
+      },
+      {
+        "id": "buy-in",
+        "name": "Buy-in (besz\u00e1ll\u00e1s)",
+        "description": "When a player's penalty points reach 100 or more they may buy in to stay: their score is set to the highest score below 100 among others, and all players below 100 score one bonus tally mark. Game ends when a player reaches an agreed tally target (e.g. 10 marks) or is last survivor.",
+        "overrides": {},
+        "emptyOverridesReason": "Buy-in adds meta scoring and tally rules; engine overrides for target score and buy-in logic to be added when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays highest possible tile; ignores blocking opportunities.",
+      "medium": "Reasonable pip management; attempts basic blocks.",
+      "hard": "Expert deduction; calculates opponents' hands by process of elimination; optimizes for minimal pip count in blocked games."
+    },
+    "considerations": [
+      "Tile-to-End matching.",
+      "Hand value minimization.",
+      "Opponent hand deduction (Hidden information modeling)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_www_pagat_com_domino_line_hungarian_block_html",
+        "name": "Pagat.com",
+        "url": "https://www.pagat.com/domino/line/hungarian_block.html",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_dominoes_en_wikipedia_org_wiki_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/domino/line/hungarian.html",
+        "localHtml": "pagat-hungarian.html"
+      },
+      "Pagat - Domino Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "social",
+    "social",
+    "traditional",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 40,
+    "complexity": 2,
+    "luck": 5,
+    "skill": 4
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "first_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Distribute tiles: 2p=12 each, 3p=8 each, 4p=6 each. Highest double leads."
+      },
+      {
+        "id": "first_play",
+        "label": "First Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_tile"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_tile": "face_up"
+        },
+        "notes": "Highest double player leads with that tile."
+      },
+      {
+        "id": "main_play",
+        "label": "Main Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_tile",
+          "pass"
+        ],
+        "nextPhase": "main_play",
+        "isMandatory": false,
+        "loopIndex": 1,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_tile": "face_up"
+        },
+        "notes": "Players match pips at either end of chain. Pass if unable. Game ends when someone plays all tiles or all pass consecutively."
+      },
+      {
+        "id": "round_end",
+        "label": "Round End",
+        "actor": "system",
+        "legalActions": ["score_round"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winner scores opponent pips. If blocked, lowest pip total wins."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without playing a tile; you miss your turn.",
+        "cost": "0",
+        "constraints": "Allowed only when you have no tile that matches either open end of the layout.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "first_lead",
+          "appliesTo": "first_play",
+          "text": "First hand: the player with the highest double leads and must play that double; if no double in hand, highest tile leads."
+        },
+        {
+          "id": "blocked_tie",
+          "appliesTo": "round_end",
+          "text": "When the game is blocked (all players pass in succession), the player with the fewest pips on unplayed tiles wins the round; tie for lowest means no one scores that round."
+        },
+        {
+          "id": "doubles_crosswise",
+          "text": "Doubles are placed crosswise on the layout and do not create new lines or branches."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "first_play", "main_play", "round_end"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "play_tile",
+        "supported": true,
+        "description": "Play one tile from hand onto either open end of the layout so that one end of the tile matches the pip value at that layout end. Doubles are placed crosswise and do not create new branches.",
+        "cost": "0",
+        "constraints": "You must have at least one tile that matches one of the two open ends of the linear layout.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "score_round",
+        "supported": true,
+        "description": "System resolves round: winner scores opponent pip totals; if blocked, lowest pip total wins.",
+        "cost": "0",
+        "constraints": "System-only; used when entering round_end phase.",
+        "isTerminating": false,
+        "effectType": "award"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Not applicable; block domino uses pip-count scoring, not hand comparison.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A Double-6 domino set of 28 tiles: each combination of values 0 through 6 appears once, including doubles 0-0 through 6-6. In the Block variant there is no boneyard draw; players only play from their hand to extend the line.",
+    "suitDescription": "Domino tiles have two ends, each showing a value from 0 (blank) to 6; there are no card suits. Matching is by end value when building the single linear chain; no drawing once play begins.",
+    "rankDescription": "Each tile has two values (0-6); the 28 tiles include all pairs (0-0 through 6-6) and all distinct combinations. Players must match one end to an open end on the table; the first to run out or the last with options may win depending on scoring.",
+    "dealPattern": "2 players: 12 tiles each; 3 players: 8 each; 4 players: 6 each. Four tiles remain out of play.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "HUNGARIAN DOMINÃ“ (BLOCK)",
+      "subtitle": "The Strategic Block Game",
+      "tagline": "Match pips. Block opponents. Empty your hand."
+    },
+    "shortDescription": "A block domino variant where players build a single linear chain and score based on opponent pip totals.",
+    "uiThemes": [
+      "traditional",
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Hungarian DominÃ³. You're playing the Block variantâ€”no boneyard, just pure hand management. Build a linear chain of matching dominoes. Try to force your opponents to pass while you empty your hand. In traditional play, lowest score winsâ€”it's an avoidance game. Watch what your opponents pass on; that tells you their weaknesses.",
+    "ai": "Game: Hungarian DominÃ³ (Block). 2-4 players, 28-tile Double-Six dominoes. Deal: 2p=12 tiles, 3p=8 tiles, 4p=6 tiles each. Highest double leads. Play: Match pips at chain ends. Pass if no legal move. Block: Both chain ends same number = board block. Scoring: Winner takes opponent pip totals. Avoidance: Lowest score wins."
+  },
+  "scoring": {
+    "description": "Players score based on pips remaining in opponents' hands. In avoidance variants, lowest score wins.",
+    "winCondition": "First player to empty hand, or lowest pip total if game blocks.",
+    "cardValues": {
+      "Per pip": "1"
+    },
+    "penalties": {
+      "Blocked with High Pips": "Accumulate pip total from remaining hand"
+    },
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Hungarian DominÃ³",
+    "Block DominÃ³",
+    "Hungarian Block",
+    "European DominÃ³ Block"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

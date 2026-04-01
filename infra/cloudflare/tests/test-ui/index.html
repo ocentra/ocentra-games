@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cloudflare API Test UI</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 1rem; max-width: 900px; }
+    section { margin: 1.5rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+    h1 { font-size: 1.25rem; margin-top: 0; }
+    h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+    label { display: block; margin: 0.25rem 0; }
+    input, button, select, textarea { margin: 0.25rem 0.25rem 0.25rem 0; padding: 0.35rem 0.6rem; }
+    button { cursor: pointer; }
+    pre, .log { background: #f5f5f5; padding: 0.75rem; border-radius: 4px; font-size: 0.85rem; overflow: auto; max-height: 200px; white-space: pre-wrap; word-break: break-all; }
+    .log { max-height: 120px; font-size: 0.8rem; }
+    .ok { color: green; }
+    .err { color: #c00; }
+    .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1rem; }
+    textarea { width: 100%; min-height: 80px; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Cloudflare API Test UI</h1>
+  <p>Minimal UI to drive lobby, matchmaking, presence, audit, transparency (and auth). Point at local worker; use for manual or Playwright E2E.</p>
+
+  <section id="config" data-testid="section-config">
+    <h2>Config</h2>
+    <label>API base <input id="apiBase" type="text" value="http://localhost:8787" data-testid="input-api-base" style="width: 280px;" /></label>
+    <label>User ID (for auth) <input id="userId" type="text" value="test-user" data-testid="input-user-id" /></label>
+    <label>Origin (for CORS) <input id="origin" type="text" value="http://localhost:3999" data-testid="input-origin" style="width: 280px;" /></label>
+  </section>
+
+  <div class="section-grid">
+    <section id="auth" data-testid="section-auth">
+      <h2>Auth</h2>
+      <button id="btnAuth" data-testid="btn-auth">Test auth (GET profile)</button>
+      <pre id="authResult" data-testid="auth-result"></pre>
+    </section>
+
+    <section id="lobby" data-testid="section-lobby">
+      <h2>Lobby</h2>
+      <button id="btnRoomsList" data-testid="btn-rooms-list">List rooms</button>
+      <button id="btnRoomCreate" data-testid="btn-room-create">Create room (host)</button>
+      <label>Room ID (for join/leave) <input id="roomId" type="text" placeholder="paste from create" data-testid="input-room-id" style="width: 280px;" /></label>
+      <button id="btnRoomJoin" data-testid="btn-room-join">Join room</button>
+      <button id="btnRoomLeave" data-testid="btn-room-leave">Leave room</button>
+      <pre id="lobbyResult" data-testid="lobby-result"></pre>
+    </section>
+
+    <section id="matchmaking" data-testid="section-matchmaking">
+      <h2>Matchmaking</h2>
+      <button id="btnQueueJoin" data-testid="btn-queue-join">Join queue</button>
+      <button id="btnQueueLeave" data-testid="btn-queue-leave">Leave queue</button>
+      <button id="btnQueueStatus" data-testid="btn-queue-status">Status</button>
+      <pre id="matchmakingResult" data-testid="matchmaking-result"></pre>
+    </section>
+
+    <section id="presence" data-testid="section-presence">
+      <h2>Presence</h2>
+      <button id="btnPresenceGet" data-testid="btn-presence-get">Get status</button>
+      <label>Status <select id="presenceStatus" data-testid="select-presence-status">
+        <option value="offline">offline</option>
+        <option value="online">online</option>
+        <option value="away">away</option>
+        <option value="in-lobby">in-lobby</option>
+        <option value="in-game">in-game</option>
+      </select></label>
+      <button id="btnPresenceUpdate" data-testid="btn-presence-update">Update status</button>
+      <pre id="presenceResult" data-testid="presence-result"></pre>
+    </section>
+
+    <section id="audit" data-testid="section-audit">
+      <h2>Audit</h2>
+      <button id="btnAuditLog" data-testid="btn-audit-log">Log Test Event</button>
+      <button id="btnAuditQuery" data-testid="btn-audit-query">Query Events</button>
+      <button id="btnAuditVerify" data-testid="btn-audit-verify">Verify Chain</button>
+      <button id="btnAuditExport" data-testid="btn-audit-export">Export My Data</button>
+      <pre id="auditResult" data-testid="audit-result"></pre>
+    </section>
+
+    <section id="transparency" data-testid="section-transparency">
+      <h2>Transparency</h2>
+      <label>Match ID <input id="transparencyMatchId" type="text" placeholder="enter match id" data-testid="input-transparency-match-id" style="width: 280px;" /></label>
+      <button id="btnTransparencyGet" data-testid="btn-transparency-get">Get Transparency</button>
+      <button id="btnTransparencyVerify" data-testid="btn-transparency-verify">Verify Match</button>
+      <button id="btnTransparencyReplay" data-testid="btn-transparency-replay">Get Replay</button>
+      <button id="btnTransparencyAIDecisions" data-testid="btn-transparency-ai-decisions">Get AI Decisions</button>
+      <pre id="transparencyResult" data-testid="transparency-result"></pre>
+    </section>
+
+    <section id="compliance" data-testid="section-compliance">
+      <h2>Compliance (Admin)</h2>
+      <label>Report Type <select id="complianceReportType" data-testid="select-compliance-report-type">
+        <option value="pci">PCI DSS</option>
+        <option value="gdpr">GDPR</option>
+        <option value="soc2">SOC 2</option>
+      </select></label>
+      <label>Start Date <input id="complianceStartDate" type="date" data-testid="input-compliance-start-date" /></label>
+      <label>End Date <input id="complianceEndDate" type="date" data-testid="input-compliance-end-date" /></label>
+      <button id="btnComplianceReport" data-testid="btn-compliance-report">Generate Report</button>
+      <pre id="complianceResult" data-testid="compliance-result"></pre>
+    </section>
+
+    <section id="data-gdpr" data-testid="section-data-gdpr">
+      <h2>Data (GDPR)</h2>
+      <button id="btnDataExport" data-testid="btn-data-export">Export User Data</button>
+      <button id="btnDataDelete" data-testid="btn-data-delete">Delete User Data</button>
+      <pre id="dataResult" data-testid="data-result"></pre>
+    </section>
+
+    <section id="shop" data-testid="section-shop">
+      <h2>Shop</h2>
+      <button id="btnShopList" data-testid="btn-shop-list">List products</button>
+      <label>Product ID <input id="shopProductId" type="text" placeholder="product id" data-testid="input-shop-product-id" style="width: 200px;" /></label>
+      <button id="btnShopGet" data-testid="btn-shop-get">Get product</button>
+      <pre id="shopResult" data-testid="shop-result"></pre>
+    </section>
+
+    <section id="admin-products" data-testid="section-admin-products">
+      <h2>Admin Products (Plan A)</h2>
+      <button id="btnAdminProductsList" data-testid="btn-admin-products-list">List products</button>
+      <label>Product ID <input id="adminProductId" type="text" placeholder="product id" data-testid="input-admin-product-id" style="width: 200px;" /></label>
+      <button id="btnAdminProductsGet" data-testid="btn-admin-products-get">Get product</button>
+      <pre id="adminProductsResult" data-testid="admin-products-result"></pre>
+    </section>
+
+    <section id="social" data-testid="section-social">
+      <h2>Social (Plan G)</h2>
+      <label>Conversation ID <input id="socialConvId" type="text" placeholder="user1:user2" data-testid="input-social-conv-id" style="width: 200px;" /></label>
+      <button id="btnMessageList" data-testid="btn-message-list">Message list</button>
+      <button id="btnFeedList" data-testid="btn-feed-list">Feed list</button>
+      <button id="btnPartyCreate" data-testid="btn-party-create">Party create</button>
+      <label>Party ID <input id="socialPartyId" type="text" placeholder="party id" data-testid="input-social-party-id" style="width: 240px;" /></label>
+      <button id="btnPartyState" data-testid="btn-party-state">Party state</button>
+      <button id="btnNotificationList" data-testid="btn-notification-list">Notification list</button>
+      <pre id="socialResult" data-testid="social-result"></pre>
+    </section>
+
+    <section id="marketplace-tournament" data-testid="section-marketplace-tournament">
+      <h2>Marketplace &amp; Tournament (Plan H)</h2>
+      <button id="btnMarketplaceList" data-testid="btn-marketplace-list">Marketplace list</button>
+      <label>Tournament ID <input id="tournamentId" type="text" placeholder="tournament id" data-testid="input-tournament-id" style="width: 200px;" /></label>
+      <button id="btnTournamentBracket" data-testid="btn-tournament-bracket">Get bracket</button>
+      <pre id="marketplaceTournamentResult" data-testid="marketplace-tournament-result"></pre>
+    </section>
+
+    <section id="sync-replay" data-testid="section-sync-replay">
+      <h2>Sync &amp; Replay (Plan B)</h2>
+      <button id="btnSyncHealth" data-testid="btn-sync-health">Sync health</button>
+      <label>Match ID (replay) <input id="replayMatchId" type="text" placeholder="match id" data-testid="input-replay-match-id" style="width: 240px;" /></label>
+      <button id="btnReplayGet" data-testid="btn-replay-get">Get replay</button>
+      <pre id="syncReplayResult" data-testid="sync-replay-result"></pre>
+    </section>
+
+    <section id="progression-rewards" data-testid="section-progression-rewards">
+      <h2>Progression &amp; Rewards (Plan E)</h2>
+      <button id="btnProgressionXp" data-testid="btn-progression-xp">Get XP</button>
+      <button id="btnRewardsDaily" data-testid="btn-rewards-daily">Daily status</button>
+      <button id="btnRewardsDailyClaim" data-testid="btn-rewards-daily-claim">Claim daily</button>
+      <pre id="progressionRewardsResult" data-testid="progression-rewards-result"></pre>
+    </section>
+
+    <section id="guardian-shield" data-testid="section-guardian-shield">
+      <h2>Guardian Shield (Plan F)</h2>
+      <button id="btnFraudCheck" data-testid="btn-fraud-check">Fraud check</button>
+      <button id="btnAnticheatReport" data-testid="btn-anticheat-report">Anticheat report</button>
+      <button id="btnSecurityEvent" data-testid="btn-security-event">Security event</button>
+      <pre id="guardianShieldResult" data-testid="guardian-shield-result"></pre>
+    </section>
+  </div>
+
+  <section id="log" data-testid="section-log">
+    <h2>Log (approx behaviour)</h2>
+    <div id="logOut" class="log" data-testid="log-output"></div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

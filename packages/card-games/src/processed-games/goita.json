@@ -1,0 +1,618 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "goita.json",
+  "name": "Goita",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Goita is a four-player Japanese partnership shedding game from Noto in which players answer an attack tile with a matching tile (or king wildcard) and then issue a new attack.",
+    "category": "Climbing",
+    "subCategory": "Climbing",
+    "origin": "Japan (Noto, Ishikawa)",
+    "originName": "Goita (碁板)",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "32-tile Goita set based on shogi piece types (two kings, two rooks, two bishops, four golds, four silvers, four knights, four lances, ten pawns)",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Japan"],
+    "origins": "Goita is a four-player partnership game from Ushitsu, Noto, Ishikawa prefecture, Japan, where fishermen are said to have played it at least since the early 20th century. Its immediate ancestor is the game Uke-Shogi, popular in Japan in the late 19th and early 20th century.",
+    "timeline": [
+      "Late 19th to early 20th century: Uke-Shogi and related matching games recorded in Japan.",
+      "Early 20th century: Goita played by fishermen in Ushitsu, Noto.",
+      "Modern era: Published editions with cards/tiles spread play beyond Ishikawa."
+    ],
+    "evolution": "Play shifted from local wooden tiles to commercially printed card versions while preserving partnership and scoring structure.",
+    "cultural": "Goita is treated as a regional heritage game in Ishikawa and is often taught as a local traditional pastime.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 4 players in fixed opposite partnerships (2v2).",
+    "deck": "32 tiles/cards: 2 kings, 2 rooks, 2 bishops, 4 golds, 4 silvers, 4 knights, 4 lances, 10 pawns.",
+    "equipment": "Score sheet or chips for cumulative team score.",
+    "dealing": "All 32 tiles are distributed so each player has 8. Play and deal proceed counterclockwise.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Empty your hand first so your team scores the value of your final attack tile and reaches game target before opponents.",
+    "gameplay": "Dealer leads by placing one covered tile and one face-up attack tile. On each subsequent turn, a player may pass or respond by playing a matching tile (or a king except against lance/pawn), then immediately plays a new attack tile. If three consecutive players pass, the last successful attacker leads again with a covered tile and any new attack. Players always act by either playing two tiles or passing. The deal ends when a player plays their final pair.",
+    "keyRules": [
+      "Kings can substitute only against non-lance and non-pawn attacks.",
+      "Passing is always allowed, even when a legal response exists.",
+      "A king cannot be used as an attack unless the other king is already face up or both kings are in your hand.",
+      "Special pre-play pawn holdings (five or more) can trigger immediate win/redeal outcomes."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Preserve kings for difficult defenses and key tempo swings after pass chains.",
+    "intermediate": "Use passes to keep partnership tempo and avoid feeding opponents favorable attack values.",
+    "advanced": "Track exposed piece counts and concealed lead cards to infer hidden hand structure and endgame outs.",
+    "tips": [
+      "Because action is pass or two-tile play, parity of hand size and expected response windows matters.",
+      "Coordinate implicitly with partner through attack choice; you cannot communicate explicitly."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "pawn_opening_checks",
+        "name": "Pawn Check Procedure",
+        "description": "Tables differ on exact handling of five-to-eight pawn opening reveals, including redeal versus immediate scoring options.",
+        "overrides": {},
+        "emptyOverridesReason": "Pawn-check rules vary by table; overrides can be added when implementing specific house rules."
+      },
+      {
+        "id": "dealer_selection_method",
+        "name": "Initial Dealer Method",
+        "description": "First dealer and partnerships may be determined by drawing designated high tiles or by agreed random method.",
+        "overrides": {},
+        "emptyOverridesReason": "Dealer selection is procedural only; no engine constant overrides apply for this variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal moves randomly; wastes Kings.",
+      "medium": "Tracks played tiles; uses Kings strategically; counts Pawns.",
+      "hard": "Perfect tile counting (knows exactly what each player holds after a few rounds); calculates optimal King usage; signals partner through Attack selection."
+    },
+    "considerations": [
+      "AI must reason about hidden covered lead tiles and pass incentives, not just open attacks.",
+      "Partnership optimization requires estimating partner support without direct communication."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_goita",
+        "name": "Pagat - Goita",
+        "url": "https://www.pagat.com/climbing/goita.html",
+        "retrievedAt": "2026-02-24",
+        "sections": [
+          {
+            "section": "rules",
+            "sourcePath": "Players and Equipment, Play, Scoring",
+            "paragraph": 1
+          }
+        ],
+        "localHtml": "pagat-goita.html"
+      }
+    ],
+    "additional": [
+      "Nobuaki Takerube and Kuromiya Kimihiko notes (as cited on Pagat)."
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "climbing",
+    "partnership",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 24,
+    "complexity": 4,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal Tiles",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "turn_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Distribute 8 tiles to each player from 32-tile set."
+      },
+      {
+        "id": "turn_loop",
+        "label": "Respond or Pass",
+        "actor": "each_player_counterclockwise",
+        "legalActions": [
+          "play_card",
+          "pass"
+        ],
+        "nextPhase": "turn_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "a_player_empties_hand",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up",
+          "pass": "face_up"
+        },
+        "notes": "Active player passes or plays response tile plus attack tile."
+      },
+      {
+        "id": "resolution",
+        "label": "Score Deal",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Winning team scores value of final attack tile, with doubling case after triple pass finish."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 8 hidden tiles to each of 4 players.",
+        "cost": "0",
+        "constraints": "Dealer action at start of each deal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 8
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply team score based on winner's final attack tile value.",
+        "cost": "0",
+        "constraints": "Resolution phase only.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a response tile and an attack tile according to match rules.",
+        "cost": "0",
+        "constraints": "Turn action when not passing.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline to respond to the current attack tile.",
+        "cost": "0",
+        "constraints": "Turn action; allowed even with legal response.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 0,
+      "seatLayout": "teams_2v2",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": null,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "deckType": "Goita 32",
+    "suitSet": "Goita",
+    "rankSet": "Goita_pieces",
+    "initialHandSize": 8,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "specific_beats",
+          "notes": "Response tile must match current attack tile class, except king wildcard restriction cases."
+        }
+      ],
+      "passAllowed": true,
+      "burnRules": null
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "target_score": 150,
+      "hand_size": 8,
+      "deck_count": 1,
+      "min_players": 4,
+      "max_players": 4,
+      "final_hand_size": 0
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 8
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "team",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "three_pass_reset",
+          "appliesTo": "turn_loop",
+          "text": "After three consecutive passes, last successful attacker leads any covered tile and a new open attack.",
+          "affects": "turn_flow"
+        },
+        {
+          "id": "opening_pawn_reveals",
+          "appliesTo": "deal",
+          "text": "Five-plus pawn opening hands can produce immediate scoring or redeal according to table option.",
+          "affects": "opening"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Covered lead tile handling with partial information",
+        "King wildcard restriction against lance and pawn attacks",
+        "Team scoring by last attack value plus special doubling case"
+      ]
+    },
+    "progression": [
+      "deal",
+      "turn_loop",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": null,
+    "rankingSystem": "Partnership accumulation to 150 points via deal wins.",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "Custom 32-tile Goita set based on shogi piece classes: two kings, two rooks, two bishops, four golds, four silvers, four knights, four lances, ten pawns.",
+    "suitDescription": "No suits; tiles are grouped by piece type only for matching and attack response in partnership play.",
+    "rankDescription": "Tile classes and scoring values: king 50, rook or bishop 40, gold or silver 30, knight or lance 20, pawn 10.",
+    "dealPattern": "All 32 tiles are distributed equally: 8 per player.",
+    "notApplicableReasons": {
+      "discardConfig": "Goita has no discard pile; played tiles remain in visible columns as attack history.",
+      "specialCards": "No separate wild bonus card family exists beyond built-in king matching rule.",
+      "fishingConfig": "Goita is not a fishing capture game; it is a pass-or-match shedding game.",
+      "trickConfig": "No trick-taking mechanic exists; turns are response-and-attack sequences."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "GOITA",
+      "subtitle": "Noto Partnership Shedding",
+      "tagline": "Match the attack, manage passes, and score your team to 150."
+    },
+    "shortDescription": "A four-player Japanese team game where players alternate pass or two-tile response plays, racing to empty hand while maximizing final attack value scoring.",
+    "uiThemes": [
+      "traditional",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "tableau",
+        "pot"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "top_center"
+    }
+  },
+  "prompts": {
+    "human": "Coordinate with your partner through attack choices, time passes carefully, and empty hand on a high-value finishing attack.",
+    "ai": "Run Goita with strict two-tile turns, legal king substitution limits, three-pass reset behavior, and team scoring to 150."
+  },
+  "scoring": {
+    "description": "Winning team scores the point value of the winner's final attack tile; some finishes after triple-pass allow doubled value when final pair is equal.",
+    "winCondition": "First partnership to reach 150 cumulative points wins.",
+    "cardValues": {
+      "king": "50",
+      "rook_or_bishop": "40",
+      "gold_or_silver": "30",
+      "knight_or_lance": "20",
+      "pawn": "10"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "No split deal score; one team scores each completed deal.",
+    "targetScore": 150,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Goita game"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

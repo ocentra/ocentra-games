@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard Explorer - Claim Storage</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-pink-600 via-red-500 to-pink-600 rounded-2xl shadow-2xl mb-6 p-8 text-center">
+      <h1 class="text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-pink-200">
+        🏆 Leaderboard Explorer
+      </h1>
+      <p class="text-pink-100 text-lg">Per Game Type + Per Season Leaderboards</p>
+    </header>
+    
+    <!-- Navigation -->
+    <nav class="flex gap-3 mb-6 flex-wrap">
+      <a href="{{baseUrl}}/explore" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        Matches
+      </a>
+      <a href="{{baseUrl}}/explore/leaderboard" class="px-6 py-3 bg-gradient-to-r from-pink-600 to-red-500 text-white rounded-lg font-semibold hover:from-pink-700 hover:to-red-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+        Leaderboard
+      </a>
+      <a href="{{baseUrl}}/explore/benchmark" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        Benchmarks
+      </a>
+      <a href="{{baseUrl}}/" class="px-6 py-3 bg-gray-700 text-gray-200 rounded-lg font-semibold hover:bg-gray-600 transition-all">
+        ← API
+      </a>
+    </nav>
+    
+    <!-- Content -->
+    <div class="bg-gray-800 rounded-xl p-8 shadow-xl border border-gray-700">
+      <!-- Info Box -->
+      <div class="bg-yellow-900 border border-yellow-700 rounded-lg p-6 mb-8">
+        <h3 class="text-yellow-200 font-bold text-lg mb-3">⚠️ Implementation Status</h3>
+        <p class="text-yellow-100 leading-relaxed">
+          <strong>Leaderboard endpoints are currently placeholder (501 Not Implemented).</strong><br>
+          Per spec Section 20.1.6, leaderboards require either:<br>
+          • Off-chain indexer (PostgreSQL + Redis) for full rankings<br>
+          • Solana RPC queries to GameLeaderboard PDAs for top 100<br><br>
+          <strong>Structure:</strong> One leaderboard per game type per season (top 100 on-chain, full rankings off-chain)<br>
+          <strong>Tiers:</strong> Computed off-chain from lifetime_gp_earned (Bronze: 0-999, Silver: 1000-4999, Gold: 5000-19999, Platinum: 20000-49999, Diamond: 50000-99999, Master: 100000+)<br>
+          <strong>Score Formula:</strong> score = (wins * 1,000,000) + (wins * 10,000 / games_played.max(1))
+        </p>
+      </div>
+      
+      <!-- Leaderboard Table -->
+      <h2 class="text-2xl font-bold text-white mb-4">Leaderboard Structure (Per Spec)</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-900 border-b border-gray-700">
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Rank</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">User ID</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Score</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Wins</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Games</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Win Rate</th>
+              <th class="px-6 py-4 text-left text-gray-300 font-semibold">Tier</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-700 hover:bg-gray-900 transition-colors">
+              <td class="px-6 py-4"><span class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-yellow-600 text-gray-900 rounded-full flex items-center justify-center font-bold">1</span></td>
+              <td class="px-6 py-4 text-gray-300 font-mono text-sm">user_abc123...</td>
+              <td class="px-6 py-4 text-gray-200 font-semibold">15,250,000</td>
+              <td class="px-6 py-4 text-gray-300">15</td>
+              <td class="px-6 py-4 text-gray-300">20</td>
+              <td class="px-6 py-4 text-green-400 font-semibold">75%</td>
+              <td class="px-6 py-4"><span class="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Master</span></td>
+            </tr>
+            <tr class="border-b border-gray-700 hover:bg-gray-900 transition-colors">
+              <td class="px-6 py-4"><span class="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-500 text-gray-900 rounded-full flex items-center justify-center font-bold">2</span></td>
+              <td class="px-6 py-4 text-gray-300 font-mono text-sm">user_def456...</td>
+              <td class="px-6 py-4 text-gray-200 font-semibold">12,100,000</td>
+              <td class="px-6 py-4 text-gray-300">12</td>
+              <td class="px-6 py-4 text-gray-300">15</td>
+              <td class="px-6 py-4 text-green-400 font-semibold">80%</td>
+              <td class="px-6 py-4"><span class="bg-cyan-500 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">Diamond</span></td>
+            </tr>
+            <tr class="border-b border-gray-700 hover:bg-gray-900 transition-colors">
+              <td class="px-6 py-4"><span class="w-8 h-8 bg-gradient-to-br from-orange-600 to-orange-800 text-white rounded-full flex items-center justify-center font-bold">3</span></td>
+              <td class="px-6 py-4 text-gray-300 font-mono text-sm">user_ghi789...</td>
+              <td class="px-6 py-4 text-gray-200 font-semibold">10,050,000</td>
+              <td class="px-6 py-4 text-gray-300">10</td>
+              <td class="px-6 py-4 text-gray-300">12</td>
+              <td class="px-6 py-4 text-green-400 font-semibold">83%</td>
+              <td class="px-6 py-4"><span class="bg-gray-400 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">Platinum</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- API Endpoints -->
+      <h2 class="text-2xl font-bold text-white mt-8 mb-4">API Endpoints (When Implemented)</h2>
+      <ul class="space-y-2 text-gray-300">
+        <li class="flex items-center gap-2"><code class="bg-gray-900 px-3 py-1 rounded text-sm text-purple-300">GET /api/leaderboard/:game_type</code><span class="text-gray-500">- Top N for game type</span></li>
+        <li class="flex items-center gap-2"><code class="bg-gray-900 px-3 py-1 rounded text-sm text-purple-300">GET /api/leaderboard/:game_type/user/:user_id</code><span class="text-gray-500">- User rank and stats</span></li>
+        <li class="flex items-center gap-2"><code class="bg-gray-900 px-3 py-1 rounded text-sm text-purple-300">GET /api/leaderboard/:game_type/tier?tier=X</code><span class="text-gray-500">- Filter by tier</span></li>
+        <li class="flex items-center gap-2"><code class="bg-gray-900 px-3 py-1 rounded text-sm text-purple-300">GET /api/leaderboard/:game_type/nearby/:user_id?range=5</code><span class="text-gray-500">- Players above/below</span></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

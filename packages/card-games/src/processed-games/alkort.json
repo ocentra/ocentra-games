@@ -1,0 +1,745 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "alkort.json",
+  "name": "Alkort",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Alkort is a legendary Icelandic partnership game belonging to the ancient Karnöffel family. It is famous for its archaic, bizarre card rankings where Sevens are invincible when led, and the King of Diamonds reigns supreme—unless a Seven is turned against him.",
+    "category": "Trick-taking",
+    "subCategory": "Karnöffel-style",
+    "origin": "Iceland",
+    "originName": "Alkort",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "4 (Partnerships) or 2"
+    },
+    "deck": "44-card stripped deck (Remove 10s and 5s)",
+    "difficulty": "Intermediate",
+    "duration": "30-60 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Part of the oldest surviving family of European card games, Alkort was preserved in the isolation of Iceland for centuries. It shares DNA with the German Karnöffel and Swiss Kaiserspiel.",
+    "timeline": [
+      "1726-1768: Referenced by Eggert Ólafsson as a native Icelandic pastime.",
+      "1880s: Detailed rules published by Ólafur Davíðsson.",
+      "1989: Modern Icelandic standard finalized in 'Spilabók AB'."
+    ],
+    "evolution": "Has changed little since the 18th century, maintaining its complex 'Stock Exchange' rule and the 'Stroke' scoring system.",
+    "cultural": "Regarded as a test of memory and partnership intuition. The term 'Bísefarnir' (Sevens) is a unique Icelandic card-game jargon.",
+    "originCountries": ["Iceland"],
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two fixed partnerships (North-South vs East-West).",
+    "deck": "44 cards (52 minus the 10s and 5s). Ace is high, but rankings are non-linear.",
+    "equipment": "44-card deck, scoreboard.",
+    "dealing": "Dealer gives 9 cards to each player in batches of 3. The remaining 8 cards form a face-down stock (hidden).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win at least 5 tricks (out of 9) to score. Bonus points for 'Múk' (first 5 tricks) or a 'Stroke' (uninterrupted run of tricks).",
+    "gameplay": "1. **Showing**: Partners show each other their highest-ranking card before play starts. 2. **Friðufær Check**: If a player has no cards high enough to beat an 8, they can show their hand and swap it for the 8-card stock. 3. **The Trick**: Play is clockwise. There is NO requirement to follow suit. 4. **Ties**: If two cards of equal rank are played (e.g., two Jacks), the first one played wins the trick. 5. **Leading Sevens**: You cannot lead a Seven until you have won at least one trick previously.",
+    "keyRules": [
+      "Hierarchy: K♦ is top. Then 'The Honors' (2♥, 4♣, 8♠, 9♥, 9♦). Then Aces, then Jacks, then Sixes (Póstarnir), then Eights (Friðurnar).",
+      "Rubbish: Kings (except K♦), Queens, and low numbers (2, 3, 4, 9 except honors) are 'rubbish'. They only win if everyone plays rubbish.",
+      "The Seven: If led, it cannot be beaten. If following, it beats nothing.",
+      "Múk: Taking the first 5 tricks scores 5 points.",
+      "Stroke: Taking 6-9 tricks in a row from the start scores points equal to the number of tricks."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Save your 'Honors' (2♥, 4♣, etc.) to capture opponent High Cards. Don't waste your Sevens; they are your absolute weapons for leading when you are sure to win.",
+    "intermediate": "If you have a terrible hand, use the 'Friðufær' rule to swap with the stock—it's often better than playing dead cards.",
+    "advanced": "Coordinate with your partner's high card (shown at start). If your partner has the K♦, play defensively to let them win the lead, then protect their leads with rubbish.",
+    "tips": [
+      "A Jack is often stronger than an Ace in this game because of the specific Karnöffel ordering.",
+      "Count the Eights. If they are gone, your Sixes (Póstarnir) become the masters of the board."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "alkort-2p",
+        "name": "Two-Player Alkort",
+        "description": "Identical rules but played as a duel. The stock exchange remains a vital element.",
+        "overrides": {},
+        "emptyOverridesReason": "Two-player Alkort uses the same rules; no engine parameter overrides are required."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't understand the 'Rubbish' vs 'Honor' distinction. Leads Sevens illegally.",
+      "medium": "Respects the Seven-lead rule. Uses the stock swap when hand score is below a threshold.",
+      "hard": "Simulates the 8 cards in the stock to calculate the risk of the swap. Tracks ties and plays 'first' to win Jack-battles."
+    },
+    "considerations": [
+      "AI must handle a highly non-standard ranking table.",
+      "The tie-break rule (temporal priority) must be baked into the trick-evaluation logic."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_alkort_www_pagat_com_karnoeffel_alkort_html",
+        "name": "Pagat - Alkort",
+        "url": "https://www.pagat.com/karnoeffel/alkort.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "The Deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "The Course of the Game"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "The Ranking of the Cards"
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "Settlement"
+          }
+        ],
+        "localHtml": "pagat-alkort.html"
+      },
+      {
+        "id": "src:wikipedia_alkort",
+        "name": "Wikipedia - Alkort",
+        "url": "https://en.wikipedia.org/wiki/Karn%C3%B6ffel",
+        "retrievedAt": "2026-02-20",
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-karnffel.html"
+      }
+    ],
+    "additional": [
+      "Icelandic Cultural Heritage card game database",
+      "Karnöffel: The oldest card game in the world - Monograph"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 25,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "show_partner",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal 9 cards to each player in batches of 3; remaining 8 cards form a hidden stock."
+      },
+      {
+        "id": "show_partner",
+        "label": "Show Highest Card",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "reveal_hand"
+        ],
+        "nextPhase": "stock_swap",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each partner privately shows highest card to partner before first trick."
+      },
+      {
+        "id": "stock_swap",
+        "label": "Fridufaer Stock Swap",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "buy_stock",
+          "pass"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "A not-8-capable player may replace hand (keeping one card) with the hidden stock."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "trick_count == 9",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "No follow-suit requirement. Earliest-played card wins ties among equal ranks."
+      },
+      {
+        "id": "resolution",
+        "label": "Settlement",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Score simple win, muk, or stroke by trick sequence."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Alkort is point-trick; no ante or betting. Scoring is by Múk and Stroke."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer gives each player 9 cards in batches of 3 and leaves 8-card stock face down.",
+        "cost": "0",
+        "constraints": "Dealer-only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 9
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; stock is face-down and used only for Fridufaer swap."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase; optional action is buy_stock (Fridufaer hand-for-stock swap)."
+      },
+      "buy_stock": {
+        "supported": true,
+        "description": "Execute Fridufaer stock swap for a not-8-capable hand.",
+        "cost": "0",
+        "constraints": "Allowed only for eligible player during stock swap phase.",
+        "isTerminating": false,
+        "effectType": "buy",
+        "effectHints": {}
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "You must play to each trick; no fold. Karnöffel-style trick play only."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; scoring is by tricks (Múk, Stroke)."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking only; no call or betting rounds."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; victory is by trick count and Stroke scoring."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting in Alkort."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase; hand ends after 9 tricks, then points awarded."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Privately reveal highest card to partner before play starts.",
+        "cost": "0",
+        "constraints": "One-time pre-play information exchange between partners.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award points based on simple win, muk, or stroke.",
+        "cost": "0",
+        "constraints": "System action after all 9 tricks.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card into the trick.",
+        "cost": "0",
+        "constraints": "Cannot lead 7 without a previous trick win.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No draw-to-hand; you get 9 cards and optional Fridufaer swap only."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played to the trick and captured; there is no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline optional Fridufaer stock swap.",
+        "cost": "0",
+        "constraints": "Only during stock swap phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; partners show one card (reveal_hand), then trick play."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Karnöffel-style trick-taking; no melds. Cards won in tricks."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends after 9 tricks; scoring is Múk/Stroke, not go-out."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "No draw-to-hand; fixed 9-card deal and optional Fridufaer stock swap only.",
+      "discardConfig": "Cards are played to the trick and captured; there is no discard pile."
+    },
+    "deckType": "Standard 40",
+    "suitSet": "French",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 9,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "NA",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 9,
+      "mustFollowSuit": false,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "points",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "hand_size": 9,
+      "trick_count": 9,
+      "target_score": 21,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 8
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 9
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "seven_unbeatable_on_lead",
+          "text": "A led Seven is unbeatable, but Sevens are weak when not led."
+        },
+        {
+          "id": "no_seven_lead_before_win",
+          "text": "A player may not lead a Seven until that player has already taken a trick."
+        },
+        {
+          "id": "ties_resolve_to_earliest_played",
+          "text": "When equal-ranked cards are played, the earliest played card wins the trick."
+        },
+        {
+          "id": "fridufaer_stock_swap",
+          "text": "A not-8-capable player may exchange hand with stock while keeping one chosen card."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "alkort_rank_hierarchy",
+        "fridufaer_eligibility_check",
+        "muk_and_stroke_scoring"
+      ]
+    },
+    "progression": ["deal", "show_partner", "stock_swap", "trick_play", "resolution"],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Karnöffel Asymmetric",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "Alkort uses a 44-card stripped deck made by removing the tens and fives from a standard 52-card pack. Four French suits remain, each with eleven ranks; the game is classified under the Standard 40 schema for compatibility.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs) are used. There is no follow-suit obligation; card power depends on context and the unique Karnöffel-style ranking rather than suit.",
+    "rankDescription": "Context-dependent ranking: the King of Diamonds is highest except when a Seven is led (then Sevens are invincible). Order otherwise: K♦ then other Kings, then Aces, Queens, Jacks, other honors, then Sevens when following, then low cards.",
+    "dealPattern": "Blocks of 3."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALKORT",
+      "subtitle": "Ice and Iron Tricks",
+      "tagline": "An ancient guardian of the Icelandic card table."
+    },
+    "shortDescription": "Discover the strangest ranking in card game history. In Alkort, a Seven is a god when led but a peasant when following. Master the 'Honor' cards and climb the 'Stroke' to victory.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:captured_tricks"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Alkort. You have 9 cards and a very strange ranking to learn. K♦ is king, but the 2♥ and 4♣ are his guards. You don't have to follow suit here—just play better cards. If you lead a Seven, no one can beat you. Try to win the first 5 tricks for a 'Múk' bonus!",
+    "ai": "Game: Alkort. Type: Karnöffel Trick-taking. Deck: 44 cards. Rankings: Non-linear (K♦ > Honors > A > J > 6 > 8 > Rubbish). Rule: First card wins ties. No follow-suit. Goal: 5+ tricks. 'Stroke' bonus for early runs."
+  },
+  "scoring": {
+    "description": "Points awarded at the end of each deal.",
+    "winCondition": "First partnership to reach a target point total (traditionally measured in stakes or 20-50 points).",
+    "cardValues": {},
+    "penalties": {
+      "Illegal Seven Lead": "Forfeiture of the hand if a Seven is led before a trick is won."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "No suit logic; ties go to the first player in order.",
+    "targetScore": 21,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Alkort scoring is based on tricks won and bonuses like Múk and Stroke; individual cards do not have separate point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Icelandic Karnöffel",
+    "Akarda",
+    "The Old King's Game"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

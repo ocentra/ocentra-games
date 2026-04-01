@@ -1,0 +1,676 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pai-gow-poker.json",
+  "name": "Pai Gow Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pai Gow Poker is a popular casino game that combines elements of the traditional Chinese game Pai Gow with American poker. Players are dealt seven cards and must divide them into a five-card high hand and a two-card low hand. The goal is to beat both of the dealer's corresponding hands, requiring strategic balancing of card strength between the two partitions.",
+    "category": "Poker",
+    "subCategory": "Casino Poker",
+    "origin": "USA (California, 1985)",
+    "originName": "Pai Gow Poker",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "recommendedPlayers": 6,
+      "display": "2-7 players"
+    },
+    "deck": "Standard 52-card deck plus one Joker (53 total)",
+    "difficulty": "Intermediate",
+    "duration": "10-15 minutes per session",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": ["USA"],
+    "origins": "Conceptualized in 1985 by Sam Torosian at the Bell Card Club in Los Angeles, California.",
+    "timeline": [
+      "1985: Sam Torosian invents the game based on Pusoy.",
+      "Late 1980s: Rapid adoption by Las Vegas casinos.",
+      "2010s: Introduction of 'Face-Up' variants without commission.",
+      "Present: A staple game in casinos worldwide known for its low volatility."
+    ],
+    "evolution": "The game was designed to be faster than 13-card games while maintaining the strategic depth of multi-hand partition.",
+    "cultural": "Highly social casino game where the frequency of pushes allows for longer play sessions.",
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "setup": {
+    "players": "Typically played with six players and a dealer who acts as the banker.",
+    "deck": "Standard pack including one Joker. The Joker is semi-wild, completing straights and flushes or acting as an Ace.",
+    "equipment": "Standard poker cards, casino chips, and sometimes dice to determine starting positions.",
+    "dealing": "Seven face-down piles of seven cards are dealt; four cards remain unused.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Arrange seven cards into two separate poker hands that both outrank the dealer's corresponding hands.",
+    "gameplay": "1. Deal: Each player and the dealer receives seven cards. 2. Split: Players divide cards into a 5-card back hand and a 2-card front hand. 3. Constraint: The 5-card hand must always outrank the 2-card hand. 4. Reveal: Hands are compared against the banker's hands. 5. Scoring: Win both to win; lose both to lose; split one each for a push. Ties favor the banker.",
+    "keyRules": [
+      "The 5-card hand rank must exceed the 2-card hand rank or the hand is fouled.",
+      "Winner must beat both of the banker's hands; losing one results in a push.",
+      "Ties on individual hand comparisons (copies) are won by the banker.",
+      "Joker completes straights or flushes in the high hand; otherwise it is an Ace.",
+      "Wheel straight (A-2-3-4-5) is typically ranked as the second-highest straight."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize making the strongest possible two-card front hand while ensuring the five-card back hand remains stronger to avoid fouling.",
+    "intermediate": "Use the Joker to complete a flush in the back while using high cards to bolster the front hand.",
+    "advanced": "When acting as banker, set hands more aggressively to capitalize on the advantage of winning copy hands.",
+    "tips": [
+      "Always follow the 'House Way' if unsure of how to split a complex hand.",
+      "Focus on salvaging a push when dealt a weak overall seven-card hand.",
+      "Check the specific ranking of the 'Wheel' straight at your local casino table."
+    ],
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "face-up-pai-gow",
+        "name": "Face-Up Pai Gow",
+        "description": "Dealer reveals their hand first; commission is removed, but dealer Ace-high pushes all.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant changes reveal order and commission only; no engine constant overrides documented yet."
+      },
+      {
+        "id": "fortune-side-bet",
+        "name": "Fortune Side Bet",
+        "description": "Optional bet on the quality of the overall seven-card hand ranking.",
+        "overrides": {},
+        "emptyOverridesReason": "Side bet is additive; core engine unchanged. Overrides can be added when side-bet rules are formalized."
+      },
+      {
+        "id": "progressive-jackpot",
+        "name": "Progressive Pai Gow",
+        "description": "Jackpot side bet awarded for rare high-ranking hands like a seven-card straight flush.",
+        "overrides": {},
+        "emptyOverridesReason": "Progressive jackpot is a separate wager; main game engine is unchanged."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Makes basic hand splits but occasionally fouls hands or misses straight opportunities.",
+      "medium": "Consistently applies standard House Way logic to maximize push and win potential.",
+      "hard": "Optimizes splits based on banking status and remaining card probabilities for maximum advantage."
+    },
+    "considerations": [
+      "Hand validation to prevent fouled splits where the front outranks the back.",
+      "House Way rule-set implementation for standard dealer behavior.",
+      "Evaluation of Joker's semi-wild utility in different partitions."
+    ],
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia-pai-gow-poker",
+        "name": "Wikipedia - Pai Gow Poker",
+        "url": "https://en.wikipedia.org/wiki/Pai_gow_poker",
+        "retrievedAt": "2026-02-25",
+        "sections": [
+          {
+            "section": "Winning condition"
+          },
+          {
+            "section": "Deals"
+          },
+          {
+            "section": "Hand rankings"
+          }
+        ],
+        "localHtml": "wiki-pai-gow-poker.html"
+      }
+    ],
+    "additional": [
+      "Pagat.com - Pai Gow Poker"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "banking",
+    "gambling",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 75,
+    "complexity": 4,
+    "luck": 5,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "betting",
+        "label": "Betting",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bet"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players place initial wagers."
+      },
+      {
+        "id": "deal",
+        "label": "Dealing",
+        "actor": "dealer",
+        "legalActions": ["deal_seven_cards"],
+        "nextPhase": "splitting",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Seven cards dealt to each player and dealer."
+      },
+      {
+        "id": "splitting",
+        "label": "Hand Splitting",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "partition_into_two_hands"
+        ],
+        "nextPhase": "reveal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Divide 7 cards into 5-card back and 2-card front."
+      },
+      {
+        "id": "reveal",
+        "label": "Reveal and Settle",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_hands",
+          "settle_bets"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Banker compares hands and settles wagers."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pai Gow Poker uses standard casino wagers rather than a traditional poker ante system."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The initial dealing of seven-card hands is performed automatically by the game engine."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This casino game does not utilize a market zone for additional card acquisition."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no mechanic for purchasing cards from a market in Pai Gow Poker."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not buy cards from the stock; all seven cards are dealt initially."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Folding is not an option; players must set their hands once the cards are dealt."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Checking is not applicable as betting occurs before the deal in this game."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Calling bets mid-hand is not part of the standard Pai Gow Poker ruleset."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place an initial wager on the outcome of the hand partition.",
+        "cost": "0",
+        "constraints": "Must be within the table minimum and maximum betting limits.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This action initiates the player's financial stake in the outcome of the hand."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Raising wagers after the deal is not allowed in traditional Pai Gow Poker."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand strength is determined by reveal and comparison rather than verbal declaration."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand reveal is handled by the engine after all players have completed their splits."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning wagers are paid out by the banker rather than awarded from a central pot."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pai Gow Poker is a partition game and does not use trick-taking or card-by-card play."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No drawing of additional cards occurs after the initial deal of seven cards."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game does not involve discarding cards; all seven cards must be used or accounted for."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must actively split their hands and cannot pass their turn to act."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bidding mechanics are not present in this casino-style banking card game."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Standard rummy-style melding is not used; cards are partitioned into two separate poker hands."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game deal ends when all players have compared their hands with the banker."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 7,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52 + Joker(s)",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": {
+      "high": "standard_poker",
+      "low": null,
+      "lowQualifier": null
+    },
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [
+        {
+          "card": "Joker",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Acts as semi-wild: completes straights and flushes in the back hand, otherwise acts as an Ace.",
+          "naturalPreferred": false
+        }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": null,
+      "bustRule": "NA",
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 7,
+      "deck_count": 1
+    },
+    "finalHandSize": 7,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 7
+      },
+      {
+        "id": "custom:back_hand",
+        "type": "hand",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": 5
+      },
+      {
+        "id": "custom:front_hand",
+        "type": "hand",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": 2
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "fouled-hand",
+          "text": "If the player sets their front hand to outrank their back hand, the entire wager is forfeited."
+        },
+        {
+          "id": "copy-hands",
+          "text": "In the event of an exact tie between hand rankings, the banker wins the comparison."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "random_select"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "house_way_logic",
+        "hand_partition_validation",
+        "semi_wild_joker_evaluation"
+      ]
+    },
+    "progression": ["betting", "deal", "splitting", "reveal"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_seven_cards",
+        "supported": true,
+        "description": "Deal seven cards to each player and the banker from the shuffled deck.",
+        "cost": "0",
+        "constraints": "Dealer-only action; performed once at the start of each round.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This is the dealer action that distributes the initial seven-card hands."
+      },
+      {
+        "id": "partition_into_two_hands",
+        "supported": true,
+        "description": "Divide the seven cards into a five-card back hand and a two-card front hand.",
+        "cost": "0",
+        "constraints": "The back hand must have a higher poker ranking than the front hand.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This is the core strategic action where players decide how to balance their hand strength."
+      },
+      {
+        "id": "reveal_hands",
+        "supported": true,
+        "description": "Turn both partitioned hands face-up for comparison against the banker's hands.",
+        "cost": "0",
+        "constraints": "Only available after all players have completed their hand partitions.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This action moves the game into the comparison and settlement phase."
+      },
+      {
+        "id": "settle_bets",
+        "supported": true,
+        "description": "Determine hand outcomes and distribute winnings or collect losses.",
+        "cost": "0",
+        "constraints": "Automatic engine action after all hand comparisons are finalized.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This action concludes the deal by reconciling all player wagers with the banker."
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings with semi-wild Joker and Wheel straight adjustments.",
+    "rankingSystem": "Dual-hand partition comparison with House Way implementation.",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "Standard fifty-two card pack with one additional Joker, creating a fifty-three card deck for the game.",
+    "suitDescription": "The four standard French suits: Hearts, Diamonds, Clubs, and Spades are used for poker combinations.",
+    "rankDescription": "Cards rank from Ace (high) down to Two (low), with the Joker acting as semi-wild.",
+    "dealPattern": "Seven cards are dealt to each player and the dealer in a single clockwise pass.",
+    "notApplicableReasons": {
+      "drawConfig": "All cards are dealt at the beginning of the round; no further drawing occurs.",
+      "discardConfig": "Pai Gow Poker does not involve a discard pile; players use all seven cards dealt.",
+      "meldConfig": "The game uses poker hand partitions rather than standard rummy-style melding combinations.",
+      "buyCosts": "Cards are not purchased from a market or stock in traditional Pai Gow Poker.",
+      "marketConfig": "This game does not utilize an open market of cards for players to choose from.",
+      "shedding": "The objective is to win a dual hand comparison rather than emptying one's hand.",
+      "fishingConfig": "Pai Gow Poker is a partition game and does not use capture or fishing mechanics.",
+      "patienceConfig": "This is a competitive casino banking game and is not designed for solitaire play."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Pai Gow Poker",
+      "subtitle": "Casino Double-Hand",
+      "tagline": "Master the art of the split and beat the banker's House Way."
+    },
+    "shortDescription": "A strategic casino game where seven cards are split into two hands. Beat both dealer hands to win.",
+    "uiThemes": [
+      "classic",
+      "luxury"
+    ],
+    "uiLayout": {
+      "zones": [
+        "custom:back_hand",
+        "custom:front_hand"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "How do I split my hand in Pai Gow Poker?",
+    "ai": "In Pai Gow Poker, split your seven cards into a 5-card back hand and a 2-card front hand. Your back hand MUST be stronger than your front hand. Beat both of the dealer's hands to win your bet!"
+  },
+  "scoring": {
+    "description": "Win both hands to win (minus commission); lose both to lose; split one each for a push.",
+    "winCondition": "Both the 5-card and 2-card hands must outrank the banker's corresponding hands.",
+    "cardValues": {},
+    "penalties": {
+      "fouled_hand": "Automatic loss of wager if the front hand outranks the back hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "Ties on individual hands favor the banker; a split outcome results in a push.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Victory is determined by hand comparisons and wagers rather than a cumulative point score.",
+      "cardValues": "Poker uses hand rankings, not point accumulation."
+    }
+  },
+  "alsoKnownAs": [
+    "Pai Gow Cards",
+    "Double-Hand Poker"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,709 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "baseball-poker.json",
+  "name": "Baseball Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Baseball Poker is a raucous, high-action variant of 7-Card Stud that incorporates the rules and terminology of America's pastime. By designating 3s and 9s as wild cards and allowing 4s to trigger 'extra bases' (additional cards), the game dramatically increases the typical poker hand power. It is a quintessential 'Kitchen Table' poker game, favored for its massive pots and the chaos of players holding 8 or 9 cards in a showdown.",
+    "category": "Poker",
+    "subCategory": "Stud / Wild Cards",
+    "origin": "USA",
+    "originName": "United States",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6"
+    },
+    "deck": "52-card standard deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Emerging in the mid-20th century in the United States, Baseball Poker was one of the first popular thematic poker variants. It was designed to maximize 'action' and excitement in home games, where players grew bored of the math-heavy constraints of standard Stud.",
+    "originCountries": [
+      "United States"
+    ],
+    "timeline": [
+      "1940s: 7-Card Stud becomes the dominant parlor poker format.",
+      "1950s: The 'Baseball' theme is added, using 3, 4, and 9 based on baseball stats.",
+      "1970s: Becomes a staple of 'Dealer's Choice' nights.",
+      "Present: Frequently featured in 'Dealer's Choice' mixed games in both home and legal card rooms (with special house rules)."
+    ],
+    "evolution": "The game evolved into 'Night Baseball' or 'Blind Baseball', where all cards are dealt face down and players flip them one by one to resolve betting.",
+    "cultural": "Reflects the mid-century American obsession with baseball, turning the game's statistics into mathematical wild cards.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-6 players (any more and the deck will run out due to extra cards).",
+    "deck": "Standard 52 cards.",
+    "equipment": "Standard pack, betting chips.",
+    "dealing": "Standard 7-Card Stud pattern: Two cards down (hole), one up (the door card). Then three more upcards, and a final downcard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by having the highest 5-card poker hand at the showdown, or by forcing all other players to fold.",
+    "gameplay": "Baseball Poker proceeds through deal, legal play actions, and end-of-round resolution. Play proceeds through legal actions until round resolution.",
+    "keyRules": [
+      "3s and 9s are wild.",
+      "4 face up = 1 extra card.",
+      "3 face up = Match the pot or fold.",
+      "Best 5-card hand from the player's pool wins."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Don't get attached to a pair of Aces. In Baseball, 'Three of a Kind' is a weak hand. You should be aiming for a Full House or better as a starting goal.",
+    "intermediate": "The Four Advantage: If you get an extra card from a 4, you have a massive statistical advantage. You have many more ways to connect with the 3s and 9s in the deck.",
+    "advanced": "Pot Match Bluffing: If someone matches the pot on a face-up 3, they are signaling 'I have a great hand' or 'I am pot-committed'. Use this to gauge whether to continue against them.",
+    "tips": [
+      "Track the 3s and 9s showing on the board. If four of them are visible, the value of 'fishing' for a wild card drops significantly.",
+      "In a 6-player game, be aware of the deck size. If multiple players have 4s, the dealer may draw from the 'muck' or use a community card for the final downcard."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "night-baseball",
+        "name": "Night Baseball",
+        "description": "All cards are dealt face down. Players turn cards over one at a time and bet. If you flip a 3, you're out (or match pot).",
+        "overrides": {},
+        "emptyOverridesReason": "Variation differences are described in rules text; engine overrides are not modeled separately."
+      },
+      {
+        "id": "baseball-lowball",
+        "name": "Baseball Lowball",
+        "description": "The LOWEST hand wins. 3s and 9s are wild but used to create the lowest possible total.",
+        "overrides": {},
+        "emptyOverridesReason": "Lowball scoring uses the same engine structure; only the ranking evaluation differs conceptually."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to realize that Five of a Kind is possible. Bets heavily on 'Natural' Straights which are easily beaten by wild-card hands.",
+      "medium": "Understands the probability of wild cards. Will match the pot on a 3 if it holds at least one other wild card or an Ace.",
+      "hard": "Perfectly calculates the 'Equity' of having 8 or 9 cards vs the standard 7. Adjusts betting aggression based on the number of 'Live' wild cards remaining in the deck."
+    },
+    "considerations": [
+      "AI hand evaluator must handle hand sizes > 7.",
+      "Must implement 'Matching the Pot' logic as a distinct betting choice."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_baseball_poker_www_pagat_com_poker_variants_baseball_html_baseball",
+        "name": "Pagat - Baseball Poker",
+        "url": "https://www.pagat.com/poker/variants/baseball.html#baseball",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-baseball-poker.html"
+      },
+      {
+        "id": "src:wikipedia_baseball_poker",
+        "name": "Wikipedia - Baseball Poker",
+        "url": "https://en.wikipedia.org/wiki/List_of_poker_variants",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-list-of-poker-variants.html"
+      }
+    ],
+    "additional": [
+      "Hoyle's Rules of Poker: Wild Card Variants",
+      "The Home Poker Handbook"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "stud",
+    "social",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 80,
+    "complexity": 5,
+    "luck": 8,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "initial_deal",
+        "label": "Play Ball",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_2_down_1_up"
+        ],
+        "nextPhase": "special_checks",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "special_checks",
+        "label": "Umpire's Call",
+        "actor": "current_player",
+        "legalActions": [
+          "match_pot_on_3",
+          "take_extra_card_on_4"
+        ],
+        "nextPhase": "betting_round_loop",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_round_loop",
+        "label": "Rounds 2-6",
+        "actor": "current_player",
+        "legalActions": [
+          "check",
+          "bet",
+          "call",
+          "raise",
+          "fold"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "The World Series",
+        "actor": "system",
+        "legalActions": [
+          "evaluate_best_5",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Baseball Poker uses optional antes; not all variants use them."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by engine; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud variant; no market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market purchase in stud poker."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards dealt only; no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during betting when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current wager.",
+        "cost": "0",
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place a wager.",
+        "cost": "0",
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current wager.",
+        "cost": "0",
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No separate declaration; showdown reveals hands."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Showdown is system-triggered; not a discrete action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the winning player(s).",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud uses dealt cards only; no play to table."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Extra cards from 4s only; no general draw."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard; best five from seven at showdown."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Use check to stay in; no pass in stud."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; fixed betting rounds only."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Poker hand ranking only; no melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game ends at showdown; no go-out."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "mixed",
+      "initialDeal": "face_up",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Stud poker; no discard pile. Best five from seven at showdown."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": { "high": "standard_poker", "low": null, "lowQualifier": null },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [
+        { "card": "3", "canSubstituteFor": "any_card", "restrictions": null, "naturalPreferred": false },
+        { "card": "9", "canSubstituteFor": "any_card", "restrictions": null, "naturalPreferred": false }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 7,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "pot",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "initial_deal",
+      "special_checks",
+      "betting_round_loop",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_2_down_1_up",
+        "supported": true,
+        "description": "Deal stud pattern: 2 down, 1 up.",
+        "cost": "0",
+        "constraints": "Dealer.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "match_pot_on_3",
+        "supported": true,
+        "description": "Match pot when 3 is dealt face up or fold.",
+        "cost": {
+          "type": "match_current_bet"
+        },
+        "constraints": "When 3 up.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      {
+        "id": "take_extra_card_on_4",
+        "supported": true,
+        "description": "Receive extra card when 4 is dealt face up.",
+        "cost": "0",
+        "constraints": "When 4 up.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      {
+        "id": "evaluate_best_5",
+        "supported": true,
+        "description": "Determine best five-card hand at showdown.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker (high)",
+    "rankingSystem": "Poker with Wilds",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for Baseball poker where nines and threes are wild and four cards are dealt down.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Suits do not affect hand rank; standard poker rankings apply. All nines and threes are wild in this variant.",
+    "rankDescription": "Thirteen ranks per suit; nines and threes are wild. Standard poker hand order (high card to royal flush) applies. Aces high; a four dealt down may allow a draw to the hole card.",
+    "dealPattern": "2 down, 4 up, 1 down."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BASEBALL POKER",
+      "subtitle": "America's Card Pastime",
+      "tagline": "3 Strikes, 9 Innings, and a Walk to First. The craziest poker game in the dugout."
+    },
+    "shortDescription": "Step up to the plate with the ultimate wild-card poker variant. Baseball Poker turns every hand into a high-scoring inning where 3s and 9s can be anything you need. Navigate the risk of the 'Matching Pot' and use your 'Extra Base' fours to build an unbeatable Five of a Kind.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "The dealer tosses you a 4 of Heartsâ€”that's a walk! Take your extra card. Now, you hold two nines and a three. That's three wild cards in one hand. Will you bet high, or wait for the seventh inning stretch",
+    "ai": "Game: Baseball Poker. Type: 7-Card Stud variant. Rules: 3s and 9s are Wild. 4 (up) deals an extra card. 3 (up) match pot or fold. Max 6 players."
+  },
+  "scoring": {
+    "description": "Standard Poker pot-based resolution.",
+    "winCondition": "Best 5-card hand at showdown.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "Total pot split among identical best hands.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target; play until session ends or one player has all chips.",
+      "cardValues": "Poker hands are evaluated by overall hand ranking; there is no per-card point scale to enumerate."
+    }
+  },
+  "alsoKnownAs": [
+    "Baseball",
+    "Three-Nine-Four",
+    "Night Baseball"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,42 @@
+name: "Cloudflare Worker CodeQL Configuration"
+
+paths-ignore:
+  # Wrangler build artifacts (temporary worker builds)
+  - '.wrangler/**'
+  - '**/.wrangler/**'
+
+  # Stryker mutation testing artifacts (can be HUGE - thousands of sandbox copies)
+  - '.stryker-tmp/**'
+  - '**/.stryker-tmp/**'
+  - '**/stryker-tmp/**'
+
+  # Test runner outputs - these are NOT source code
+  - 'test-runner/**'
+
+  # Node modules
+  - 'node_modules/**'
+  - '**/node_modules/**'
+
+  # Build outputs
+  - 'dist/**'
+  - 'build/**'
+  - '**/dist/**'
+
+  # CodeQL database itself
+  - '.codeql-database/**'
+  - '**/codeql-database/**'
+  - '**/databases/**'
+
+  # Coverage outputs
+  - 'coverage/**'
+  - '**/coverage/**'
+
+  # Logs and temp files
+  - '*.log'
+  - '**/*.log'
+  - '.test-run.log'
+
+  # Lock files (not source)
+  - 'package-lock.json'
+  - 'yarn.lock'
+  - 'pnpm-lock.yaml'

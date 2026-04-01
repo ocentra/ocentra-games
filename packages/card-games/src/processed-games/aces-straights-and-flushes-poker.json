@@ -1,0 +1,773 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "aces-straights-and-flushes-poker.json",
+  "name": "Aces, Straights and Flushes Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "A seven-card stud variant where each player gets six personal cards and everyone shares a central joker as the seventh card. The joker is a bug: it can act as an ace or complete a straight or flush, but not build non-ace sets.",
+    "category": "Poker",
+    "subCategory": "Stud Poker",
+    "origin": "United States",
+    "originName": "Aces, Straights and Flushes",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 6,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck plus one shared joker",
+    "difficulty": "Expert",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Documented in dealer's choice circles as a stud variant with a shared bug joker.",
+    "originCountries": ["United States"],
+    "timeline": [
+      "Mid-late 20th century: Spread through home poker stud rotations.",
+      "Modern: Preserved as a niche mixed-game variant."
+    ],
+    "evolution": "Keeps stud betting flow but adds a universal community bug card that reshapes equity across all players.",
+    "cultural": "Represents creative home-game design where a single shared mechanic changes classic stud texture.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "From two to eight players may take part, as in standard seven-card stud; the game plays best with five to seven. Each player receives six personal cards and shares one center joker as the seventh card.",
+    "deck": "Standard 52-card deck and one joker placed face-up in center.",
+    "equipment": "Deck, chips, dealer button.",
+    "dealing": "Deal starts as stud: two down and one up to each player, with later streets as defined by house flow.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Make the best high poker hand using six personal cards plus the shared bug joker.",
+    "gameplay": "Post ante, place shared joker in center, deal and bet through stud streets, then showdown. The bug joker can represent an ace or complete straight/flush draws, but cannot create non-ace sets.",
+    "keyRules": [
+      "Shared center joker is available to every active player at showdown.",
+      "Joker acts as a bug, not fully wild.",
+      "Bug may stand for an ace or straight/flush completion card.",
+      "Bug may not complete non-ace pairs/trips/quads.",
+      "Highest valid high hand wins."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Track visible upcards and evaluate how often shared bug helps your line versus the table.",
+    "intermediate": "Value ace-based structures more because bug can promote ace combinations.",
+    "advanced": "Model shared-bug board effects; if many players show straight/flush shells, tighten marginal calls.",
+    "tips": [
+      "Do not overvalue non-ace pair draws that bug cannot improve.",
+      "Shared-joker rounds increase tie frequency on straight/flush classes."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "asaf_lowball",
+        "name": "ASAF Lowball",
+        "description": "Low-hand winner variant using table-agreed low ranking.",
+        "overrides": {},
+        "emptyOverridesReason": "Lowball changes only hand evaluation and payouts; core stud engine and phases stay the same."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Uses basic stud hand strength and simple bug substitutions.",
+      "medium": "Accounts for visible upcards and legal bug constraints.",
+      "hard": "Simulates bug-improved ranges for all exposed board states before major betting decisions."
+    },
+    "considerations": [
+      "Evaluator must enforce bug legality: ace or straight/flush completion only.",
+      "Shared card requires multi-player equity modeling each street."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_aces_straights_flushes",
+        "name": "Pagat - Aces, Straights and Flushes",
+        "url": "https://www.pagat.com/poker/variants/7stud.html#ace_straight_flush",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Aces, Straights and Flushes"
+          },
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Aces, Straights and Flushes"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "Aces, Straights and Flushes"
+          }
+        ],
+        "localHtml": "pagat-seven-card-stud.html"
+      },
+      {
+        "id": "src:wikipedia_seven_card_stud",
+        "name": "Wikipedia - Seven-card stud",
+        "url": "https://en.wikipedia.org/wiki/Seven-card_stud",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-seven-card-stud.html"
+      }
+    ],
+    "additional": [
+      "Dealer's choice mixed-game rule collections"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "poker-variant",
+    "stud",
+    "betting",
+    "strategy",
+    "gambling"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 25,
+    "complexity": 4,
+    "luck": 6,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "ante"
+        ],
+        "nextPhase": "joker_setup",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players post ante."
+      },
+      {
+        "id": "joker_setup",
+        "label": "Shared Joker Setup",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_market"
+        ],
+        "nextPhase": "third_street",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_market": "face_up"
+        },
+        "notes": "Place shared joker face-up in center."
+      },
+      {
+        "id": "third_street",
+        "label": "Third Street Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "betting_1",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal two down and one up to each player."
+      },
+      {
+        "id": "betting_1",
+        "label": "Betting Round 1",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "fourth_street",
+        "isMandatory": false,
+        "loopIndex": 1,
+        "totalLoops": 4,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "First stud betting round."
+      },
+      {
+        "id": "fourth_street",
+        "label": "Fourth Street Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "betting_2",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_up"
+        },
+        "notes": "Deal one up card to each active player."
+      },
+      {
+        "id": "betting_2",
+        "label": "Betting Round 2",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "fifth_street",
+        "isMandatory": false,
+        "loopIndex": 2,
+        "totalLoops": 4,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Second stud betting round."
+      },
+      {
+        "id": "fifth_street",
+        "label": "Fifth Street Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "betting_3",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_up"
+        },
+        "notes": "Deal one up card to each active player."
+      },
+      {
+        "id": "betting_3",
+        "label": "Betting Round 3",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "sixth_street",
+        "isMandatory": false,
+        "loopIndex": 3,
+        "totalLoops": 4,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Third stud betting round."
+      },
+      {
+        "id": "sixth_street",
+        "label": "Sixth Street Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "betting_4",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal final private card to each active player (sixth personal card)."
+      },
+      {
+        "id": "betting_4",
+        "label": "Final Betting Round",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": 4,
+        "totalLoops": 4,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Final betting before showdown."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_hand",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_hand": "face_up"
+        },
+        "notes": "Evaluate high hands with shared bug joker and award pot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Post mandatory ante before deal.",
+        "cost": "0",
+        "constraints": "Required for each player before first cards are dealt.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes street cards according to stud sequence.",
+        "cost": "0",
+        "constraints": "Dealer-only; card count and up/down visibility depend on street.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 1
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal and place shared joker in center as common bug card.",
+        "cost": "0",
+        "constraints": "Dealer-only during setup.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {
+          "to": "market"
+        }
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud poker; cards are dealt, not bought from a market."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud; no draw phase, cards come by deal only."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit claim to current pot.",
+        "cost": "0",
+        "constraints": "Available in betting rounds.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Pass action without wagering.",
+        "cost": "0",
+        "constraints": "Only if no bet is open.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match current open bet.",
+        "cost": { "type": "match_current_bet" },
+        "constraints": "Only if bet or raise is open.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Open betting in current round.",
+        "cost": { "type": "min_bet" },
+        "constraints": "Only if no bet is open.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current bet.",
+        "cost": { "type": "min_raise" },
+        "constraints": "Only if bet is already open.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud poker; no high-low declaration, showdown decides winner."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Reveal personal cards for final high-hand comparison.",
+        "cost": "0",
+        "constraints": "End-of-hand showdown action.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award pot to the best valid high hand under bug-joker rules.",
+        "cost": "0",
+        "constraints": "Dealer/system action after hand evaluation.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud poker; players do not play cards to a trick, hands go to showdown."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Seven-card stud has no draw phase; cards are dealt by street."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud; no discard phase, players keep all seven cards."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Betting uses check/call/bet/raise; pass is trick-taking, not used here."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Poker uses bet/call/raise; bid refers to contract bidding in trick games."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stud poker is not rummy; there is no melding of sets or runs."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game ends at showdown when all betting is complete; no go-out action."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "mixed",
+      "initialDeal": "mixed",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Stud game; no draw-from-pile phase; cards dealt by street only.",
+      "discardConfig": "No discard pile; all cards stay in hand or on board until showdown.",
+      "shedding": "Poker hand game; goal is best hand at showdown, not emptying hand.",
+      "fishingConfig": "Not a play-to-capture fishing game."
+    },
+    "deckType": "Standard 52 + Joker(s)",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": {
+      "high": "standard_poker",
+      "low": null,
+      "lowQualifier": null
+    },
+    "buyCosts": null,
+    "marketConfig": {
+      "enabled": true,
+      "size": 1,
+      "refillFrom": "none",
+      "refillTiming": "start_of_round",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [
+        {
+          "card": "Joker",
+          "canSubstituteFor": "specific_cards",
+          "restrictions": "May represent an ace or a card needed to complete a straight or flush; cannot form non-ace sets.",
+          "naturalPreferred": false
+        }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {
+      "ante": 1,
+      "min_players": 2,
+      "max_players": 8,
+      "final_hand_size": 6,
+      "joker_count": 1
+    },
+    "finalHandSize": 6,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "market",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "bug_non_ace_set_restriction",
+          "text": "Shared bug joker cannot create non-ace sets."
+        },
+        {
+          "id": "showdown_tie_split",
+          "text": "If best five-card hands are equal after bug-joker evaluation, split pot evenly."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "shared_bug_joker_evaluator",
+        "stud_street_visibility"
+      ]
+    },
+    "progression": [
+      "ante",
+      "joker_setup",
+      "third_street",
+      "betting_1",
+      "fourth_street",
+      "betting_2",
+      "fifth_street",
+      "betting_3",
+      "sixth_street",
+      "betting_4",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Aces, straights and flushes (stud with shared bug)",
+    "rankingSystem": "Standard high poker with shared bug joker (ace/straight/flush completion only)",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers are used in this poker variant.",
+    "suitDescription": "Four suits in the French tradition: spades (piques), hearts (cœurs), diamonds (carreaux), and clubs (trèfles). Each suit contains thirteen cards; suit matters for flushes.",
+    "rankDescription": "Thirteen ranks in each suit: ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three, and two. Standard poker ranking; aces, straights, and flushes have special value in this game.",
+    "dealPattern": "Two down and one up, then one up, one up, and one down; shared center joker is common seventh card."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ACES, STRAIGHTS & FLUSHES",
+      "subtitle": "Shared Bug Stud",
+      "tagline": "One joker for all players."
+    },
+    "shortDescription": "Stud poker with a shared center joker that behaves as a bug for every player.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "market",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center_right",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Seven-card stud variant with a shared bug joker: it can help aces and straight/flush completion, but not non-ace sets.",
+    "ai": "Game: Aces, Straights and Flushes Poker. Flow: ante, shared-joker setup, stud streets with betting, showdown. Evaluate with bug-joker restrictions."
+  },
+  "scoring": {
+    "description": "Pot game. Best high hand under bug-joker rule wins.",
+    "winCondition": "Highest valid five-card poker hand at showdown wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "Tied high hands split the pot evenly.",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Pot game; no fixed target score; play ends at showdown.",
+      "cardValues": "Standard poker evaluates full five-card hands; no separate per-rank card value table is needed."
+    }
+  },
+  "alsoKnownAs": [
+    "ASAF Poker",
+    "Joker Stud"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

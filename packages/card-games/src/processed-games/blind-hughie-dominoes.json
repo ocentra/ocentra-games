@@ -1,0 +1,598 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "blind-hughie-dominoes.json",
+  "name": "Blind Hughie",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Blind Hughie is a lighthearted domino variant where players must match tiles without knowing what they hold. Each participant keeps their tiles in a face-down row and can only flip the rightmost tile on their turn. If it matches the central line, it is played; otherwise, it is returned face-down to the left end of the row. It is a game of high luck and social energy, where a sharp memory provides the only strategic edge as tiles cycle back through the player's row.",
+    "category": "Domino",
+    "subCategory": "Block / Line Game",
+    "origin": "Western (Traditional)",
+    "originName": "Blind Hughie",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 3,
+      "display": "2-4 (Best 3-4)"
+    },
+    "deck": "28 dominoes (Double-6 Set)",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Originating as a casual variation of the standard Block domino game, Blind Hughie was developed to simplify the strategy and increase the element of surprise. It is a traditional Western folk game with long-standing popularity in English-speaking card rooms and Dutch cafes (where it is known as Billitonnen).",
+    "originCountries": [
+      "Netherlands"
+    ],
+    "timeline": [
+      "19th Century: Variations of 'Blind' dominoes appear in European gaming records.",
+      "1950s: Standardized as Blind Hughie in popular American and British domino books.",
+      "Present: Remains a favorite introductory game for children and a casual 'wind-down' game for experienced players."
+    ],
+    "evolution": "The game essentially removes hand-management from the Block domino engine, replacing it with a sequential memory mechanic.",
+    "cultural": "Valued for its ability to level the playing field between experienced players and novices, emphasizing fun and memory over complex calculation.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players playing individually.",
+    "deck": "Standard double-six domino set (28 tiles).",
+    "equipment": "Standard pack, score sheet.",
+    "dealing": "Players draw tiles based on player count (2p=7, 3p=5, 4p=5). Tiles are placed in a face-down row in front of each player. No one may look at their cards.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to play all tiles from your face-down row.",
+    "gameplay": "1. **Start**: A tile is turned from the boneyard to start the central line. 2. **Turn**: Flip over the RIGHTMOST face-down tile in your row. 3. **Match**: If the tile matches either open end of the line, you must play it. 4. **Cycle**: If the tile does not match, return it face-down to the LEFT end of your row. 5. **Boneyard**: Tiles in the boneyard are not used after the start.",
+    "keyRules": [
+      "You must always flip the rightmost tile first.",
+      "Returned tiles must be placed at the opposite end of the row to preserve their cycle order.",
+      "The game ends when a player goes domino or the line is blocked."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Concentrate on remembering the tiles you've returned to the row. When those tiles cycle back to the right, you will know exactly what you hold.",
+    "intermediate": "Opponent Memory: Watch what tiles your opponents flip and return. If you know an opponent has a 6-4 at the end of their row, try to keep the line ends away from 6 or 4 to block them.",
+    "advanced": "End-Line Control: If you know your upcoming tile is a double, try to play your current tile on an end that makes the other end match your double, maximizing your chance of a double-play next turn.",
+    "tips": [
+      "Memory is the only skill—don't lose focus when tiles are being returned face-down.",
+      "Speed up the game by handling your row cycles efficiently."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "billitonnen",
+        "name": "Billitonnen",
+        "description": "The Dutch variant where the leftmost tile is flipped instead of the rightmost.",
+        "overrides": {},
+        "emptyOverridesReason": "Sources describe Billitonnen as using the same basic rules as Blind Hughie, with only the flip position changed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "No memory of returned tiles. Purely luck-based performance.",
+      "medium": "Remembers its own returned tiles. Knows when its next tile will match.",
+      "hard": "Remembers all tiles flipped and returned by all players. Calculates the probability of a block."
+    },
+    "considerations": [
+      "Must implement a 'Sequential Row' data structure.",
+      "Memory decay should be factored into easier difficulty levels."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_blind_hughie",
+        "name": "Pagat - Blind Hughie",
+        "url": "https://www.pagat.com/domino/line/blind_hughie.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-blind-hughie.html"
+      }
+    ],
+    "additional": [
+      "Chambers Book of Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "traditional",
+    "matching",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 40,
+    "complexity": 2,
+    "luck": 9,
+    "skill": 2
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Row Formation",
+        "actor": "system",
+        "legalActions": [
+          "deal_tiles_facedown"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "The Turn",
+        "actor": "current_player",
+        "legalActions": [
+          "flip_rightmost_tile"
+        ],
+        "nextPhase": "resolution",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "resolution",
+        "label": "Play or Cycle",
+        "actor": "current_player",
+        "legalActions": [
+          "place_on_line",
+          "cycle_to_left"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Blind Hughie is a casual social game and does not utilize a monetary or chip-based ante system."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The initial distribution of tiles into face-down rows is handled automatically by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-tile memory game where all tiles are face-down; no public market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap tiles from any external area; they must play from their face-down row."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The boneyard is not used during play in this variant; every tile must come from the initial hand."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Participation is mandatory for every turn until a player goes domino or the game becomes blocked."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a matching structure rather than a vying structure where checking would be appropriate."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot or bet to match in Blind Hughie; competition is based on tile matching and memory."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Progress is measured by emptying the player's row rather than through the wagering of chips or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the hand cannot be increased via raises."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Results are determined by immediate physical tile matches; no separate declaration phase is required."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles remain face down even from their owner until they are flipped for the turn's play attempt."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winner is determined by emptying their row rather than by awarding a physical or virtual pot."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Blind Hughie is a domino game where tiles are placed on a line; card playing engine logic does not apply."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All tiles are distributed at the start; no drawing phase exists once the play loop begins."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Tiles must be matched to the line to be removed from the player row; no separate discard pile is used."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must flip a tile every turn until they have no tiles left or the game is blocked."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game does not use a bidding system to determine the dealer or game objectives."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a line-matching game based on single tiles rather than creating sets or sequences."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The round concludes automatically when a player flips and plays their final face-down tile."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 3,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All tiles are distributed to the player rows at the start; no draw pile exists during the game.",
+      "discardConfig": "Tiles are played to the line or returned face-down; no waste or discard pile is utilized.",
+      "specialCards": "Domino tiles contribute only their pip values; no individual tile has a secondary action effect.",
+      "declarationMechanism": "Results are determined by immediate physical tile matches; no hidden declaration tokens are required.",
+      "fishingConfig": "Blind Hughie is a line-matching game and does not use a capture-from-tableau fishing mechanic.",
+      "trickConfig": "The game is a line-building shedding race rather than a competitive trick-taking game."
+    },
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 7,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Must flip the rightmost face-down tile in the row."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "Central line remains until the round concludes or is blocked."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 7
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "hidden",
+        "owner": "player",
+        "capacity": 7
+      },
+      {
+        "id": "custom:line",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 28
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Sequential row cycling logic.",
+        "End-of-round pip counting for blocked games."
+      ]
+    },
+    "progression": [
+      "dealing",
+      "play_loop",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_tiles_facedown",
+        "supported": true,
+        "description": "Distribute tiles to each player's row face-down without being looked at.",
+        "cost": "0",
+        "constraints": "Setup phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "flip_rightmost_tile",
+        "supported": true,
+        "description": "Reveal the rightmost face-down tile in the player's row.",
+        "cost": "0",
+        "constraints": "Start of turn.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      {
+        "id": "place_on_line",
+        "supported": true,
+        "description": "Connect the flipped tile to a matching end of the central line.",
+        "cost": "0",
+        "constraints": "Must match a line end.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "cycle_to_left",
+        "supported": true,
+        "description": "Place the flipped tile back at the far left end of the row face-down.",
+        "cost": "0",
+        "constraints": "Only if tile cannot be played.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; victory is determined by being the first to empty the face-down row.",
+    "rankingSystem": "Shedding / Blind Memory",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 28-tile double-six domino set. Each tile has two ends showing zero to six pips; every combination from 0-0 through 6-6 appears exactly once. No playing cards or jokers; used for Blind Hughie where one hand is hidden and tiles are drawn to extend the layout.",
+    "suitDescription": "Tiles are matched by pip value at the open ends of the layout. There are no traditional suits; each end value zero through six can connect to any tile sharing that value on one of its two ends.",
+    "rankDescription": "There is no rank hierarchy between tiles; play legality is determined by matching the pip value at an open end. Doubles may be played crosswise. In Blind Hughie the closed hand is played when the player cannot match from the open hand.",
+    "dealPattern": "Tiles are drawn clockwise and placed in a hidden row."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BLIND HUGHIE",
+      "subtitle": "The Sequential Domino Duel",
+      "tagline": "Flip. Match. Or cycle back. Memory is your only weapon."
+    },
+    "shortDescription": "A luck-heavy domino variant where your tiles sit face-down in a row. Flip the rightmost tile — play it if you can, cycle it to the left if you can't. Memory gives a surprising edge in this deceptively simple game.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "custom:line"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Your row has 3 tiles left. You remember that the tile now on the right was a 3-5 that failed two turns ago. The train ends are 3 and 6. The 3 end matches! Will it come up?",
+    "ai": "Game: Blind Hughie. Domino block variant. Tiles face-down in row. Flip rightmost each turn. Play if matches train end, else return face-down to left. Double-six set. 2-4 players. Score by pip count. Memory-based advantage. Game to 61 or 100."
+  },
+  "scoring": {
+    "description": "Winner scores sum of losers' pip totals minus their own remaining pips. Game to 100 (2-player) or 61 (3-4 player).",
+    "winCondition": "Emptying the player's row or having the fewest pips at a block.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If tied for lowest pips in a blocked game, no one scores.",
+    "targetScore": 100,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Victory is determined by reaching a cumulative point threshold over multiple rounds.",
+      "cardValues": "Individual tiles contribute to the shedding objective rather than having point values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Blind Hughie Dominoes"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

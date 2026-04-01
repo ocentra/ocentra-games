@@ -1,0 +1,630 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "zung-jung.json",
+  "name": "Zung Jung",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Zung Jung is a modern Mahjong ruleset designed around transparent balanced scoring while preserving traditional draw-discard meld play. It is widely used when players want a structured alternative to many divergent house systems.",
+    "category": "Rummy",
+    "subCategory": "Rummy / Set-Collection",
+    "origin": "Hong Kong",
+    "originName": "眾將",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "144 tiles/cards (3 suits, honors, flowers, seasons)",
+    "difficulty": "Expert",
+    "duration": "60-120 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Zung Jung was designed as a coherent modern scoring framework for Mahjong with explicit pattern values and clear hand evaluation logic.",
+    "originCountries": ["Hong Kong"],
+    "timeline": [
+      "Modern era: scoring system published and circulated in organized communities.",
+      "Current: adopted in many clubs and online rule discussions as a structured variant."
+    ],
+    "evolution": "The ruleset emphasizes clarity, consistency, and reduced scoring ambiguity compared with mixed house-rule environments.",
+    "cultural": "It is used by players who prefer clear competition-style pattern valuation.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players seated by wind.",
+    "deck": "Standard Mahjong set with suited tiles, honors, and optional bonus tiles.",
+    "equipment": "",
+    "dealing": "Each player receives 13 tiles; dealer receives 14 and opens with a discard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Complete a legal winning hand and score according to the Zung Jung scoring table.",
+    "gameplay": "Players draw and discard in turn, with legal claims for Chow, Pung, and Kong according to normal claim restrictions. A hand wins when structural completion and scoring validity are achieved under this ruleset.",
+    "keyRules": [
+      "Normal turn rhythm is draw then discard.",
+      "Claim legality and priority govern interruption windows.",
+      "Winning requires valid structure and recognized scoring pattern composition."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Build efficient waits before chasing expensive pattern branches.",
+    "intermediate": "Track exposed tiles to estimate both completion probability and danger.",
+    "advanced": "Use scoring-table awareness to decide when to pivot between speed and value lines.",
+    "tips": [
+      "Avoid overextending into low-probability high-value routes.",
+      "Defensive discipline matters when opponents signal near-completion."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "This file represents the core Zung Jung framework and excludes unrelated house-rule modifications.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal play with weak scoring-route awareness.",
+      "medium": "Balances efficient shape growth with basic scoring knowledge.",
+      "hard": "Optimizes expected value using scoring-table and risk-adjusted discard policy."
+    },
+    "considerations": [
+      "AI should evaluate route value directly from ruleset scoring patterns.",
+      "Policy should adapt to opponent threat and tile-availability uncertainty."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wikipedia_mahjong_en_wikipedia_org_wiki_mahjong",
+        "name": "Wikipedia - Mahjong",
+        "url": "https://en.wikipedia.org/wiki/Mahjong",
+        "retrievedAt": "2026-03-25",
+        "sections": [],
+        "localHtml": "wiki-mahjong.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/rummy/mahjong.html",
+        "localHtml": "pagat-rummy-mahjong.html",
+        "name": "Pagat - Mah Jong"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": ["traditional"],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": { "popularity": 1, "complexity": 1, "luck": 1, "skill": 1 },
+  "media": { "videoTutorial": "" },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": ["draw", "discard", "meld", "go_out"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Mahjong uses draw and discard from a wall; players do not play cards to a trick."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw one tile from the wall.",
+        "cost": "0",
+        "constraints": "Legal at start of turn.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard one tile from hand face up.",
+        "cost": "0",
+        "constraints": "Required after each draw unless winning.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": true,
+        "description": "Reveal Chow, Pung, or Kong according to claim rules.",
+        "cost": "0",
+        "constraints": "Claim restrictions apply by type and seat.",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": true,
+        "description": "Declare Mahjong when hand is complete.",
+        "cost": "0",
+        "constraints": "Hand must satisfy structure and scoring rules.",
+        "isTerminating": true,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": null,
+          "maxPerTurn": 1,
+          "notes": "Draw one tile from the wall."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": true,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": true,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 1,
+      "opponentCanPickFromDiscard": true,
+      "discardPickRules": {
+        "canPickTop": true,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": true,
+        "pickCost": "",
+        "frozenPileRules": "Claim priority and claim-type restrictions apply."
+      }
+    },
+    "deckType": "Mahjong 144",
+    "suitSet": "Mahjong",
+    "rankSet": "Mahjong",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {
+          "type": "run",
+          "minSize": 3,
+          "maxSize": 3,
+          "acesHigh": null,
+          "wildcardAllowed": false
+        },
+        {
+          "type": "triplet",
+          "minSize": 3,
+          "maxSize": 3,
+          "acesHigh": null,
+          "wildcardAllowed": false
+        },
+        {
+          "type": "quartet",
+          "minSize": 4,
+          "maxSize": 4,
+          "acesHigh": null,
+          "wildcardAllowed": false
+        }
+      ],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "four melds and one pair (14 tiles)",
+        "mustAnnounce": true,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": { "byRank": {}, "flat": 0 },
+        "stock": { "flat": 0 },
+        "discard": { "flat": 0 }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 14,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": { "edgeCases": [] },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Pattern-valued Mahjong scoring under the Zung Jung framework.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 144-tile Mahjong set containing three numbered suits, honor tiles, and optional bonus tiles used in four-player structured Mahjong gameplay.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Each player starts with 13 tiles; dealer starts with 14.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ZUNG JUNG",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Zung Jung is a modern balanced Mahjong framework with explicit pattern values and classic draw-discard meld flow.",
+    "uiThemes": ["classic"],
+    "uiLayout": {
+      "zones": ["hand", "stock", "trick"],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": { "human": "", "ai": "" },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Win by game rules.",
+    "cardValues": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "wind": "0",
+      "dragon": "0",
+      "flower": "0",
+      "season": "0"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No single fixed target score applies to all Zung Jung match formats."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

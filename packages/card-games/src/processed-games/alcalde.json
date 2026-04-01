@@ -1,0 +1,806 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "alcalde.json",
+  "name": "Alcalde",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Alcalde is a unique three-player trick-taking game from Puerto Rico. It is an asymmetrical variant of Brisca where one player, the 'Alcalde' (Mayor), defends their position against two cooperating opponents. The Alcalde wields twice the cards and twice the play-power in every trick.",
+    "category": "Trick-taking",
+    "subCategory": "Asymmetrical Point-trick",
+    "origin": "Puerto Rico",
+    "originName": "Alcalde",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "3"
+    },
+    "deck": "40-card Spanish pack (A, 2-7, J, Q, K)",
+    "difficulty": "Intermediate",
+    "duration": "15-25 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Rooted in the Spanish Brisca tradition, Alcalde evolved in Puerto Rico as a social game where the leader is challenged by a temporary alliance. Its name, 'Alcalde', reflects the local governance structure where the 'Mayor' must satisfy the points to retain their office.",
+    "timeline": [
+      "1800s: Brisca becomes the dominant trick-taking game in Puerto Rico.",
+      "Early 1900s: Asymmetrical variants for odd player counts (3 or 5) emerge.",
+      "1990s: Formal rules documented by José M. Carrillo-Muniz."
+    ],
+    "evolution": "Transitioned from a 4-player partnership game to a '1 vs 2' format where the single player is compensated with larger hand size and draw priority.",
+    "cultural": "Commonly played in plazas and community centers in Puerto Rico. The 'Alcalde' role is often rotated, symbolizing the fleeting nature of political power.",
+    "originCountries": [
+      "Puerto Rico",
+      "Spain"
+    ],
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Exactly 3 players.",
+    "deck": "40-card Spanish pack. Rank: Ace-3-King-Queen-Jack-7-6-5-4-2 (in order of power/value).",
+    "equipment": "Spanish deck (Naipes), scorepad.",
+    "dealing": "Alcalde deals 3 cards to each opponent and 6 cards to themselves. The next card is the 'Life' card (Trump indicator).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "As Alcalde: Score 60+ points to retain the title. As Opponents: Prevent the Alcalde from reaching 60 points to depose them.",
+    "gameplay": "1. **Trump Exchange**: Any player with the 7 or 2 of trumps can swap it for the face-up 'Life' card if the Life card is a point card (A, 3, K, Q, J). 2. **Cooperation**: The two opponents may peek at each other's hands throughout the game but are forbidden from verbal signaling. 3. **The Trick**: Play is counter-clockwise. Each opponent plays ONE card. The Alcalde then plays TWO cards. 4. **No Follow Suit**: Players can play any card; they are not required to follow the suit of the lead. 5. **Winning Tricks**: The highest trump wins. If no trumps, the highest card of the led suit wins. 6. **Drawing**: After a trick, the winner draws (2 cards for Alcalde, 1 for opponents) followed by others in order.",
+    "keyRules": [
+      "Alcalde plays twice per trick, meaning they control the final 'slap' of the round.",
+      "Point Values: Ace=11, 3=10, King=4, Queen=3, Jack=2. Total in deck = 120 points.",
+      "The 'Life' card is drawn as the very last card of the deck.",
+      "If the Alcalde fails to reach 60, the player to their right becomes the new Alcalde for the next hand."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "As Alcalde, you have a 6-card hand. Use your first card of the trick to 'tease' and your second card to 'win' the point cards played by opponents.",
+    "intermediate": "Opponents must coordinate their discards. If one opponent 'feeds' a point card to the trick, the other should play a trump if they suspect the Alcalde will scoop it.",
+    "advanced": "Exchange management: If you have the 7 of trumps, wait until the Life card (e.g., an Ace) is about to be drawn or until you need it to win a critical 60-point trick.",
+    "tips": [
+      "The 3 (worth 10 points) is often more dangerous than the Ace because it is harder to see coming.",
+      "As Alcalde, try to drain the opponents of trumps early so your point cards become safe 'good' leads."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "alcalde-fixed",
+        "name": "Fixed Alcalde",
+        "description": "The same player remains Alcalde for a set number of hands regardless of score.",
+        "overrides": {},
+        "emptyOverridesReason": "Fixed Alcalde is documented as a scoring and role-rotation variant; engine overrides are not modeled yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Alcalde plays two lowest cards first. Doesn't coordinate with partner as an opponent.",
+      "medium": "Alcalde uses the second card to capture 11 or 10 point cards. Opponents check each other's suits.",
+      "hard": "Optimal 'Life' card swapping. Opponents simulate the Alcalde's remaining 6-card hand to force sub-optimal plays."
+    },
+    "considerations": [
+      "AI needs to handle the asymmetric turn structure (1 card vs 2 cards).",
+      "Opponent AIs must share hand-state data internally to simulate the 'peek' rule."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_alcalde_www_pagat_com_aceten_alcalde_html",
+        "name": "Pagat - Alcalde",
+        "url": "https://www.pagat.com/aceten/alcalde.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "overview.description",
+            "sourcePath": "Main page summary"
+          }
+        ],
+        "localHtml": "pagat-alcalde.html"
+      },
+      {
+        "id": "src:jose_carrillo_spanish_pack",
+        "name": "Jose Carrillo - Games with the Spanish Pack (Alcalde)",
+        "url": "https://members.tripod.com/~j_carrillo_vii/Briscas1.htm",
+        "retrievedAt": "2026-02-22",
+        "sections": [
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Alcalde > The Deal"
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Alcalde > The Play"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "Alcalde > The Draw / The Win"
+          }
+        ]
+      }
+    ],
+    "additional": [
+      "José M. Carrillo-Muniz - Games with the Spanish Pack",
+      "Puerto Rico Cultural Card Game Archives"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "strategy",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 30,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "reveal_trump",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Alcalde receives six cards; each opponent receives three cards."
+      },
+      {
+        "id": "reveal_trump",
+        "label": "Reveal Life Card",
+        "actor": "dealer",
+        "legalActions": [
+          "reveal_market"
+        ],
+        "nextPhase": "exchange",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "reveal_market": "face_up"
+        },
+        "notes": "The face-up Life card indicates trump suit."
+      },
+      {
+        "id": "exchange",
+        "label": "Trump Exchange",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "buy_market",
+          "pass"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Eligible players may exchange the allowed trump card for the Life card using Brisca-style rule."
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "draw_replenish",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Opponents each play one card and Alcalde plays two cards; no follow-suit requirement."
+      },
+      {
+        "id": "draw_replenish",
+        "label": "Draw Replenish",
+        "actor": "active_players_counterclockwise",
+        "legalActions": [
+          "draw"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "stock_empty == true",
+            "nextPhase": "trick_play"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "After each trick while stock remains, winner draws first (Alcalde draws two, opponents one)."
+      },
+      {
+        "id": "resolution",
+        "label": "Score Hand",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count captured card points and determine whether Alcalde retains title."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Alcalde has no ante; it is a point-trick game with Life card trump."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes asymmetric hands: six to Alcalde, three to each opponent.",
+        "cost": "0",
+        "constraints": "Dealer-only at hand start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 3
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal Life card from stock to establish trump suit.",
+        "cost": "0",
+        "constraints": "Dealer-only after deal.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "buy_market": {
+        "supported": true,
+        "description": "Exchange eligible trump card for exposed Life card under Brisca-style exchange rule.",
+        "cost": "0",
+        "constraints": "Only eligible player may exchange during exchange phase.",
+        "isTerminating": false,
+        "effectType": "buy",
+        "effectHints": {}
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "You draw from stock after each trick; there is no separate stock purchase."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Alcalde is point-trick; you must play to each trick. No fold."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; victory is by card points. Alcalde needs 60 to retain."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Brisca-style point-trick; no call or betting rounds."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is by captured point cards (A,3,K,Q,J); no betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting; trump is set by Life card, not by raise."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trump comes from the turned Life card; optional exchange only, no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Opponents may peek at each other's hands; no formal reveal action."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award hand result based on whether Alcalde reaches required points threshold.",
+        "cost": "0",
+        "constraints": "System action at hand end.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the trick.",
+        "cost": "0",
+        "constraints": "Opponents play one card each; Alcalde plays two cards during the same trick.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw from stock after trick capture.",
+        "cost": "0",
+        "constraints": "Trick winner draws first; Alcalde draws two cards, opponents draw one.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        }
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played to the trick and captured; there is no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline optional trump exchange.",
+        "cost": "0",
+        "constraints": "Available only during exchange phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding; trump is the Life card. Only optional 7/2-for-Life exchange."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Brisca-style point-trick; no melds. Cards are won in tricks."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand ends when stock and hands are empty; Alcalde wins or loses by point total."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "variable"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 2,
+          "notes": "Asymmetric draw: Alcalde replenishes two cards; opponents one."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "discardConfig": "Cards are played to the trick and captured; there is no discard pile."
+    },
+    "deckType": "Standard 40",
+    "suitSet": "Spanish",
+    "rankSet": "Stripped_40",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "standard",
+      "canCallNoTrump": false,
+      "overtakingRule": "none"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 10,
+      "mustFollowSuit": false,
+      "mustOvertrump": null,
+      "leadRestrictions": null,
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "points",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 3,
+      "max_players": 3,
+      "hand_size": 6,
+      "trick_count": 10,
+      "target_score": 7,
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:life_card",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 1
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "trick",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      },
+      {
+        "id": "custom:captured_tricks",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "alcalde_two_cards_per_trick",
+          "text": "In each trick the two opponents each play one card and Alcalde plays two cards."
+        },
+        {
+          "id": "asymmetric_draw_replenish",
+          "text": "After a trick, Alcalde replenishes two cards while each opponent replenishes one card while stock remains."
+        },
+        {
+          "id": "alcalde_retains_on_tie",
+          "text": "In common Puerto Rico rules Alcalde retains role on a tied points result."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal",
+        "draw"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "asymmetric_turn_sequence",
+        "asymmetric_draw_counts",
+        "life_card_exchange_rule",
+        "alcalde_role_rotation"
+      ]
+    },
+    "progression": [
+      "deal",
+      "reveal_trump",
+      "exchange",
+      "trick_play",
+      "draw_replenish",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Brisca (Ace-3-King-Queen-Jack)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 40-card Spanish deck containing ace through seven and jack, queen, king in each of four suits (no eights, nines, or tens). This stripped pack is used for Alcalde and many other Spanish trick-taking games.",
+    "suitDescription": "Four Spanish suits (swords, batons, cups, coins) are used. There is no requirement to follow suit in trick play; winning is determined by the fixed rank order and point values of the cards.",
+    "rankDescription": "Ten ranks per suit in power order: ace highest, then three, king, queen, jack, seven, six, five, four, two lowest. Point cards are ace, three, king, queen, and jack; the rest count zero.",
+    "dealPattern": "3-3-6 deal structure."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ALCALDE",
+      "subtitle": "The Mayor's Gambit",
+      "tagline": "Two hands against one. Do you have the votes to stay in power?"
+    },
+    "shortDescription": "Step into the plazas of Puerto Rico. In this high-tension 1-vs-2 challenge, the Alcalde holds the cards, but the people hold the points. Can you reach 60?",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick",
+        "custom:life_card",
+        "custom:captured_tricks"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Alcalde. You are either the Mayor (Alcalde) or one of the two opponents trying to take them down. As Alcalde, you'll play TWO cards to every trick, giving you a massive advantage in points—but you need 60 total to win. Opponents, peek at each other's cards and cooperate to keep the Mayor under 60!",
+    "ai": "Game: Alcalde. Type: Asymmetrical Trick-taking. Rules: Alcalde (6 cards, 2 plays/trick) vs 2 Opponents (3 cards each, 1 play/trick). No follow-suit. Goal: Alcalde needs 60 points from Brisca values (A=11, 3=10, K=4, Q=3, J=2)."
+  },
+  "scoring": {
+    "description": "Scoring is determined by the total 120 card points captured in tricks.",
+    "winCondition": "Alcalde needs 60 points to 'win'. If they hit 60+, they score 1 game point and stay in office. If <60, opponents each score 1 game point.",
+    "cardValues": {
+      "2": "0",
+      "3": "10",
+      "4": "0",
+      "5": "0",
+      "6": "0",
+      "7": "0",
+      "A": "11",
+      "K": "4",
+      "Q": "3",
+      "J": "2"
+    },
+    "penalties": {
+      "Verbal Coaching": "Opponents speaking about their cards usually results in a 10-point penalty or forfeiture of the hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "A 60-60 tie is usually considered a 'tie', or house rules may favor the Alcalde.",
+    "targetScore": 7,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Akalda",
+    "Mayor (English Translation)",
+    "Puerto Rican Brisca",
+    "Brisca a Tres"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "validate-game.mjs"
+  },
+  "fieldStatus": {}
+}

@@ -1,0 +1,705 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "klaberjass.json",
+  "name": "Klaberjass",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Klaberjass (also known as Clob, Bella, or Bela) is a quintessential two-player trick-taking game that has enjoyed immense popularity for over a century. Known for its complex ranking of trumps (where the Jack and Nine are the most powerful) and the 'Bella' bonus (King and Queen of trumps), it is a game of skill, nerve, and precise point-counting. It belongs to the Jass family of games.",
+    "category": "Trick-taking",
+    "subCategory": "Ace-Ten / Jass",
+    "origin": "Central / Eastern Europe (Jewish communities)",
+    "originName": "Klaverjas",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "32 cards (7-Ace)",
+    "difficulty": "Expert",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": ["Netherlands", "Belgium", "Hungary"],
+    "origins": "Rooted in the Low Countries (Netherlands/Belgium) and popularized by Jewish communities in Central Europe. The name likely stems from 'Klaverjas' (Dutch for Jack of Clubs).",
+    "timeline": [
+      "1800s: Standardizes in Western Europe.",
+      "1920s-1940s: Becomes the most popular two-player game in social clubs across Europe and North America.",
+      "Present: Retains a cult following, particularly in Hungary, South Africa, and the United States (as Clob)."
+    ],
+    "evolution": "The game's unique trump ranking (Jack=20, Nine=14) evolved to create a dynamic where the 'Jass' (Jack) and 'Nell' (Nine) are the only truly reliable cards.",
+    "cultural": "Famously played in the tea shops of Budapest and the delis of New York, it is often seen as a 'scholar's game' due to its depth.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two players. The game is played head-to-head; each player receives six cards initially, then after trump is determined each receives three more for a total of nine cards per hand.",
+    "deck": "32 cards (7, 8, 9, 10, J, Q, K, A).",
+    "equipment": "",
+    "dealing": "Each player is dealt 6 cards (3 then 3). One card is turned up to start trump determination. After trump is set, another 3 cards are dealt to each player (total 9 per hand).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score 500 points by winning tricks containing point cards and declaring melds.",
+    "gameplay": "1. Must follow suit. If unable, must trump if possible.\n2. **Bella**: Playing the King and Queen of trumps scores 20 points (must be announced).\n3. **Meld**: Sequences of 3 (20 pts) or 4 (50 pts) in the same suit score. Only the highest meld on either side scores for the team.\n4. **Last Trick**: 10 points.",
+    "keyRules": [
+      "Trump ranking: Jack (20), Nine (14), Ace (11), Ten (10), King (4), Queen (3), Eight (0), Seven (0)",
+      "Plain suit ranking: Ace (11), Ten (10), King (4), Queen (3), Jack (2), Nine (0), Eight (0), Seven (0)",
+      "Must follow suit, must trump if cannot follow",
+      "Bella bonus for King-Queen of trumps"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "If you hold the Jass (Jack) of trumps, you should almost always 'Take' the bid. 20 points is a massive head start in a 100+ point round.",
+    "intermediate": "The 'Ten' Lead: In plain suits, the 10 is very vulnerable to being captured by an Ace. Only lead a 10 if you have several of that suit or want to draw out the Ace early.",
+    "advanced": "Bidding with the Nell: If you hold the Nine of trumps and several other high plain cards, you can bid even without the Jack, provided you can force the Jack to be played on a trick you don't care about.",
+    "tips": [
+      "Always announce 'Bella' when playing your King or Queen of trumps! Forgetting the call loses the 20-point bonus.",
+      "The 7 of Trumps (The 'Seven of Diamonds' in many traditions) can be swapped for the face-up card if it was the trump-setter."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "clob",
+        "name": "Clob",
+        "description": "Popular American English name for the game.",
+        "overrides": {},
+        "emptyOverridesReason": "Same rules as base game; name only differs by region."
+      },
+      {
+        "id": "klaber",
+        "name": "Klaber",
+        "description": "Hungarian variant for 4 players.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs in player count; engine overrides for 4-player layout not yet specified."
+      },
+      {
+        "id": "kalooki-klab",
+        "name": "Kalooki-style Klab",
+        "description": "A variant with Joker wildcards.",
+        "overrides": {},
+        "emptyOverridesReason": "Joker and wildcard rules need to be added to engine overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to swap the 7 for the trump card; forgets to announce Bella; plays randomly in plain suits.",
+      "medium": "Excellent meld detection; prioritize Jack/Nine trumps; basic 'Ten' defense.",
+      "hard": "Expert at 'Taking' or 'Passing' based on card-distribution probability; perfectly manages the Bella bonus; calculates exact point requirements mid-hand."
+    },
+    "considerations": [
+      "Complex trump/plain ranking transition.",
+      "Meld hierarchy (3-run vs 4-run).",
+      "Announcement logic (Bella/Meld)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_klaberjass",
+        "name": "Pagat.com - Klaberjass",
+        "url": "https://www.pagat.com/jass/clabber.html",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "pagat-clabber.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/jass/",
+        "localHtml": "pagat-jass-index.html"
+      },
+      {
+        "url": "https://www.pagat.com/jass/klabberjass.html",
+        "localHtml": "pagat-klabberjass.html"
+      },
+      "Bicycle Cards - How to Play Clob",
+      "Wikipedia - Klaberjass"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 4,
+    "luck": 4,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "bid",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Deal 6 cards, reveal trump card, deal 3 more"
+      },
+      {
+        "id": "bid",
+        "label": "Bid",
+        "actor": "current_player",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Take trump or pass"
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 9,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "9 tricks, follow suit, meld before first trick"
+      },
+      {
+        "id": "scoring",
+        "label": "Scoring",
+        "actor": "system",
+        "legalActions": ["score_round"],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Score tricks and melds"
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal 6 cards, then 3 more after trump set",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Declare Bella or meld",
+        "cost": "0",
+        "constraints": "Must have valid combination",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play card to trick",
+        "cost": "0",
+        "constraints": "Must follow suit, must trump if cannot follow",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass on trump selection",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Take the turned card suit as trump",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": true,
+        "description": "Declare meld (sequence)",
+        "cost": "0",
+        "constraints": "3+ cards in sequence, same suit",
+        "isTerminating": false,
+        "effectType": "meld",
+        "effectHints": {}
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "teams_2v2",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 9,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "jass",
+      "canCallNoTrump": false,
+      "overtakingRule": "must_overtrump"
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {
+          "type": "run",
+          "minSize": 3,
+          "maxSize": 4,
+          "acesHigh": false,
+          "wildcardAllowed": false
+        }
+      ],
+      "meldTiming": "at_any_time",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 9,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "pass_or_bid",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "clockwise",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [
+        {
+          "card": "Jack of trump",
+          "bonusPoints": 20,
+          "condition": "Jass - highest trump"
+        },
+        {
+          "card": "Nine of trump",
+          "bonusPoints": 14,
+          "condition": "Nell - second highest trump"
+        }
+      ],
+      "penaltyCards": []
+    },
+    "shedding": "NA",
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": ["deal", "bid", "play", "scoring"],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "score_round",
+        "supported": true,
+        "description": "Tally trick and meld points for the round.",
+        "cost": "0",
+        "constraints": "System only; runs after all tricks are played.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "jass",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "A stripped French deck containing 32 cards with four suits (Hearts, Diamonds, Clubs, Spades) and eight ranks per suit (7 through Ace), created by removing all 2s through 6s from a standard 52-card deck.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy recognition during gameplay.",
+    "rankDescription": "Eight ranks per suit in ascending order: 7, 8, 9, 10, Jack (Valet), Queen (Dame), King (Roi), and Ace as the highest card, where each rank determines card strength and eligibility for building sequences.",
+    "dealPattern": "6 cards, then 3 more",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "shedding": "Klaberjass is a trick-taking game; the goal is to win tricks and score points, not to empty the hand."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "Klaberjass",
+      "subtitle": "Card Game",
+      "tagline": "The classic two-player Jass game - master the unique trump ranking and Bella bonus."
+    },
+    "shortDescription": "Klaberjass is a two-player trick-taking game from the Jass family with unique trump ranking and meld scoring.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Klaberjass (also known as Clob, Bella, or Bela) is a quintessential two-player trick-taking game. Known for its complex trump ranking (Jack and Nine are most powerful) and the 'Bella' bonus.",
+    "ai": "Game: Klaberjass. Logic: Two-player Jass game with unique trump ranking and meld scoring."
+  },
+  "scoring": {
+    "description": "Points from card values, Bella (20), melds (20-50), and last trick (10). First to 500 wins.",
+    "winCondition": "First player to reach 500 points",
+    "cardValues": {
+      "trump_jack": "20",
+      "trump_nine": "14",
+      "ace": "11",
+      "ten": "10",
+      "king": "4",
+      "queen": "3",
+      "jack": "2",
+      "other": "0"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 500,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Clob",
+    "Bella",
+    "Bela",
+    "Klabberjass",
+    "Klaber",
+    "Klob"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

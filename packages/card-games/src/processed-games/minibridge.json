@@ -1,0 +1,639 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "minibridge.json",
+  "name": "Minibridge",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Minibridge is a simplified version of Contract Bridge, developed specifically to introduce beginners to the logic of trick-taking and card play without the daunting complexity of bridge bidding. It replaces the auction phase with a straightforward High Card Point (HCP) count. It is widely used by bridge federations globally (like the EBU and ABF) as an educational tool, focusing on the tactical interaction between declarer and the dummy.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "France / UK",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Two partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "10-15 minutes per hand",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Mini-bridge"
+  },
+  "history": {
+    "origins": "Developed in France (as 'Mini-Bridge') in the 1980s by the French Bridge Federation to lower the entry barrier for students.",
+    "originCountries": ["France", "UK"],
+    "timeline": [
+      "1980s: First introduced in French schools.",
+      "1990s: Adopted by the English Bridge Union (EBU) and expanded internationally.",
+      "2010s: Becomes the standard first-step for bridge education in clubs worldwide.",
+      "Present: Extensively played in online formats for bridge learners."
+    ],
+    "evolution": "The game moved from a teaching aid to a recognized competitive format for junior players.",
+    "cultural": "Symbolizes the 'Democratization of Bridge', making it accessible to those who find traditional bidding too math-heavy.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players (N+S vs E+W).",
+    "deck": "Standard 52 cards.",
+    "equipment": "",
+    "dealing": "Standard bridge deal (13 cards each). Players count their High Card Points (HCP): A=4, K=3, Q=2, J=1.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the number of tricks specified in your contract (Part-score or Game).",
+    "gameplay": "Standard bridge rules apply (opening lead, following suit, dummy's hand played by declarer).",
+    "keyRules": [
+      "Players announce HCP in turn (A=4, K=3, Q=2, J=1); partnership with higher total plays the contract.",
+      "Declarer is the player with more points in the declaring partnership; dummy's hand is spread and played by declarer.",
+      "Opening lead by player to declarer's left; must follow suit if possible; highest card of led suit wins unless trumped; highest trump wins.",
+      "Part-score: 7+ tricks; game: e.g. 10+ tricks in majors or 9+ in no trumps. Trick points: 20 (minors), 30 (majors), 40/30 (no trumps)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Find the 8-Card Fit. If you and your partner have 8 or more cards combined in Spades or Hearts (the Major suits), that should almost always be your trump suit. If no 8-card fit exists, 'No Trumps' is often the best choice if you have balanced strength.",
+    "intermediate": "Counting Losers: Before playing the first card from the dummy, count how many tricks you are likely to lose in each suit. If you have 3 losers in Hearts, you must find a way to 'Trump' those losers in the dummy or discard them on long side-suits.",
+    "advanced": "Defensive Lead: As the defender (opponent of the declarer), try to lead a suit where the declarer/dummy looks weakest. If the dummy has no high Diamonds, lead a Diamond into the declarer's potential weakness.",
+    "tips": [
+      "If your combined HCP is 20-25, aim for a 'Part-score' (7 tricks). If you have 26+, aim for 'Game' for a bigger bonus.",
+      "Always draw the opponents' trumps as early as possible so they can't 'ruff' (trump) your high side-suit cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "simple-hcp",
+        "name": "Simple (HCP announcement)",
+        "description": "Players in turn announce their High Card Point count. Partnership with higher total plays; declarer is the one with more points in that partnership. Declarer chooses part-score or game and trump or no trumps.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation describes procedure only; engine constants unchanged."
+      },
+      {
+        "id": "written-slip-european",
+        "name": "Written slip (European)",
+        "description": "Each player writes point count and suit lengths on a slip. In turn players say pass or I open. Opener sees partner's slip and chooses contract; opponent may overcall. Bidding continues until one passes.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation describes procedure only; engine constants unchanged."
+      },
+      {
+        "id": "part-score-vs-game",
+        "name": "Part-score vs Game",
+        "description": "Declarer announces whether contract is part-score (7+ tricks) or game (e.g. 10+ in majors, 9+ in no trumps). Part-score bonus 50; game bonus 300; undertricks 50 each.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation describes procedure only; engine constants unchanged."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't draw trumps; fails to count HCP; leads randomly.",
+      "medium": "Reasonable suit selection; understands the 8-card fit rule.",
+      "hard": "Expert at 'Double-Dummy Analysis'; perfectly manages the entry/exit points between declarer and dummy; master of the finesse."
+    },
+    "considerations": [
+      "GIB (Goren/Bridge) play engine.",
+      "HCP-threshold evaluation.",
+      "Finesse/Probability calculation."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+"id": "src:pagat_minibridge_www_pagat_com_auctionwhist_minibridge_html",
+      "name": "Pagat - Minibridge",
+      "url": "https://www.pagat.com/auctionwhist/bridge.html#minibridge",
+      "retrievedAt": "2026-02-26",
+      "sections": [],
+      "localHtml": "pagat-bridge.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Minibridge",
+      "ABF - Minibridge Teaching Manual",
+      "EBU Minibridge pages"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional card game; no proprietary or trademark restrictions known.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the current trick. Must follow suit if possible; otherwise may play any card. Highest card of the led suit wins unless trumped; highest trump wins if any trump is played.",
+        "cost": "0",
+        "constraints": "Must follow suit when holding a card of the led suit; otherwise may discard or trump.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": ["2v2"],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "A,K,Q,J,10,9,8,7,6,5,4,3,2",
+      "canCallNoTrump": true,
+      "overtakingRule": "Must follow suit if possible. Highest card of led suit wins trick unless trumped; highest trump wins if any trump is played."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 13,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Opening lead by player to declarer's left; then winner of each trick leads next.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "13 cards each; standard bridge deal.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MINIBRIDGE",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Minibridge is a simplified version of Contract Bridge, developed specifically to introduce beginners to the logic of trick-taking and card play without the daunting complexity of bridge bidding. It re",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Win by game rules.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Scoring uses trick points and bonuses per contract, not per-card values."
+    }
+  },
+  "alsoKnownAs": ["Mini-Bridge"],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

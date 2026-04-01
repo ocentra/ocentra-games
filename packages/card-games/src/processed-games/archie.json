@@ -1,0 +1,813 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "archie.json",
+  "name": "Archie (Poker)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Archie is a sophisticated Triple Draw poker variant that splits the pot between a qualifying high hand and a qualifying low hand. It is widely considered one of the 'swingiest' games in mixed-game rotations due to the strict qualifiers (usually Jacks or Better for high and 8 or Better for low).",
+    "category": "Poker",
+    "subCategory": "Triple Draw / High-Low Split",
+    "origin": "USA (West Coast)",
+    "originName": "Archie",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 2,
+      "display": "2-6"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Archie originated in Phoenix, Arizona, and gained legendary status in the high-stakes mixed games of Las Vegas and Los Angeles. It was named after a regular player nicknamed 'Archie' who frequented these games.",
+    "originCountries": ["United States"],
+    "timeline": [
+      "1990s: Developed in regional Arizona poker rooms.",
+      "2010s: Becomes a staple in 'High Stakes Mix' games globally, including the WSOP mixed events.",
+      "Present: Highly popular in professional 'Mix' rotations for its complex multi-way equity."
+    ],
+    "evolution": "The game essentially combines the mechanics of 2-7 Triple Draw with the High-Low split of Omaha 8, but applies them to a 5-card draw format with strict qualifiers.",
+    "cultural": "Known for the 'Scoop' - where a player wins the entire pot by either having both qualifying hands or being the only one to qualify on either side.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-6 players (max 6 to prevent deck depletion during triple draws).",
+    "deck": "Standard 52 cards. Ace is high for high hands, low for low hands.",
+    "equipment": "Standard deck, poker chips, dealer button.",
+    "dealing": "Each player is dealt 5 cards face down. Standard blinds (Small/Big) are used.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the high half of the pot with a hand of Jacks set or better, and/or the low half with an 8-or-better low hand.",
+    "gameplay": "1. **Initial Betting**: Small blind/Big blind. 1st betting round. 2. **First Draw**: Players discard 0-5 cards and receive replacements. 2nd betting round. 3. **Second Draw**: Players discard 0-5 cards. 3rd betting round (usually double the initial limit). 4. **Third Draw**: Final draw phase. Final betting round. 5. **Showdown**: Players reveal hands. The pot is divided 50/50 between the best high and best low.",
+    "keyRules": [
+      "High Qualifier: To win the high half, you must have at least a Pair of Jacks (or better). Some games use Pair of 9s.",
+      "Low Qualifier: To win the low half, you must have an 8-Low or better (A-2-3-4-5 is the best low).",
+      "The Scoop: If no one qualifies for High, the Low qualifier takes the whole pot. If no one qualifies for Low, the High qualifier takes it all. If nobody qualifies for either, the highest hand wins (house rule dependent).",
+      "Ace Multi-Role: Aces are the highest card for high hands and the lowest card for low hands."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize drawing to a low hand early. A strong low (7-low or 6-low) is often safer equity than a high hand which might get 'out-drawn' by a flush or full house.",
+    "intermediate": "The 'Scoop' Mindset: The most profitable hands are those that can realistically win both ways, such as A-2-3-J-J. This hand has a pair of Jacks (High qualifier) and 3/5ths of a perfect low.",
+    "advanced": "Range Reading: If an opponent stands pat (takes 0 cards) on the second draw, they almost certainly already have a qualified hand on one side. You must decide if chasing the other half of the pot is worth the price.",
+    "tips": [
+      "If you only have a pair of 10s on the final draw, you CANNOT win the high half (if the qualifier is Jacks). You must choose to discard and try to hit a Jack or better, or a low.",
+      "Counting Outs: There are 4 of every rank. If you see two Jacks on the board in a previous reveal/discard, your chances of hitting a High qualify pair are halved."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "archie-9-8",
+        "name": "9-or-Better High",
+        "description": "A popular variation where the High qualifier is lowered to a Pair of 9s.",
+        "overrides": {},
+        "emptyOverridesReason": "Sources describe this variation only by changing the high-hand qualifier; engine-level overrides have not yet been modeled."
+      },
+      {
+        "id": "archie-6-8",
+        "name": "6-or-Better High",
+        "description": "Used in more aggressive games to ensure the High pot is contested more often.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation also only adjusts the high-hand qualifier; all other engine settings remain as in the base Archie configuration."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Draws for high hands regardless of qualifiers. Never attempts a scoop.",
+      "medium": "Understands the 8-low qualifier. Folds hands that don't have a path to either qualifier by the second draw.",
+      "hard": "Expertly balances equity between High and Low. Bluffs 'Pat' hands to force opponents off the half of the pot they are drawing toward."
+    },
+    "considerations": [
+      "AI must run equity simulations for both High and Low rankings simultaneously.",
+      "The 'Limit' betting structure requires the AI to understand 'Pot Odds' vs 'Drawing Odds'."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_archie_5_card_draw_www_pagat_com_poker_variants_5draw_html_archie",
+        "name": "Pagat - Archie (5-Card Draw)",
+        "url": "https://www.pagat.com/poker/variants/5draw.html#archie",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-five-card-draw.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "CountingOuts - The Ultimate Archie Strategy Guide",
+      "Steve Badger - Triple Draw Evolution"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "social",
+    "high-low",
+    "social",
+    "social"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 70,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Dealing",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_five_face_down"
+        ],
+        "nextPhase": "betting_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_1",
+        "label": "Betting Round 1",
+        "actor": "current_player",
+        "legalActions": [
+          "bet",
+          "check",
+          "fold",
+          "call",
+          "raise"
+        ],
+        "nextPhase": "draw_1",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_1",
+        "label": "First Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "betting_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_2",
+        "label": "Small-Bet Round",
+        "actor": "current_player",
+        "legalActions": [
+          "bet",
+          "check",
+          "fold",
+          "call",
+          "raise"
+        ],
+        "nextPhase": "draw_2",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_2",
+        "label": "Second Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "betting_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_3",
+        "label": "Big-Bet Round",
+        "actor": "current_player",
+        "legalActions": [
+          "bet",
+          "check",
+          "fold",
+          "call",
+          "raise"
+        ],
+        "nextPhase": "draw_3",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "draw_3",
+        "label": "Final Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard_and_draw"
+        ],
+        "nextPhase": "betting_4",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "betting_4",
+        "label": "Final Betting",
+        "actor": "current_player",
+        "legalActions": [
+          "bet",
+          "check",
+          "fold",
+          "call",
+          "raise"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "showdown",
+        "label": "Pot Resolution",
+        "actor": "system",
+        "legalActions": [
+          "split_pot_high_low"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie uses blinds only; there is no ante in this game."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealing is performed by the system via custom action deal_five_face_down."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie has no market or tableau to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no market or card purchase in Archie; players only draw replacements."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players do not buy cards from stock; they only draw replacements during draw rounds."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during betting when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check when no wager is required.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Match the current wager.",
+        "cost": {
+          "type": "match_current_bet"
+        },
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Standard Poker Betting.",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "Table rules.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Increase the current wager.",
+        "cost": {
+          "type": "min_raise"
+        },
+        "constraints": "Allowed only during betting phases within table limits.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie has no declaration phase; showdown resolves high and low automatically."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Reveal is handled at showdown by the system, not as a separate player action."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pot award is performed by the system at showdown via split_pot_high_low."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie is draw poker; players do not play cards to a trick, only discard and draw."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Drawing is done via the discard_and_draw custom action between betting rounds."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Discarding is part of the discard_and_draw custom action, not a separate action."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Pass is not used in Archie; players check or fold during betting rounds."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie has no bidding; it uses fixed-limit betting with small and big blinds."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Archie is poker; there is no melding or laying down sets."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Going out is not a mechanic in Archie; the hand ends at showdown."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 6,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 0,
+          "notes": ""
+        }
+      ],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": null,
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 3,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 5
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "betting_1",
+      "draw_1",
+      "betting_2",
+      "draw_2",
+      "betting_3",
+      "draw_3",
+      "betting_4",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_five_face_down",
+        "supported": true,
+        "description": "Deal 5 cards face-down to each player.",
+        "cost": "0",
+        "constraints": "During deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "discard_and_draw",
+        "supported": true,
+        "description": "Discard up to 5 and draw replacements.",
+        "cost": "0",
+        "constraints": "Between betting rounds.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      {
+        "id": "split_pot_high_low",
+        "supported": true,
+        "description": "Split pot between best high and best low (8 or better).",
+        "cost": "0",
+        "constraints": "At showdown.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard high (Jacks or better) with 8-or-better low (ace-to-five).",
+    "rankingSystem": "High-Low Split (8 or better low)",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for Archie where high and low hands are both scored.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Suits do not affect hand rank; standard poker hand rankings apply. Ace may count high for the high hand and low for the low hand in Archie.",
+    "rankDescription": "Thirteen ranks per suit: ace (high or low as in lowball), king, queen, jack, ten, nine, eight, seven, six, five, four, three, two. Ace is high for high hand and low for low hand when both are scored.",
+    "dealPattern": "5 cards face down.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ARCHIE",
+      "subtitle": "The Phoenix Triple-Draw",
+      "tagline": "Qualify for High. Qualify for Low. Scoop the Pot."
+    },
+    "shortDescription": "One of the most intense Triple Draw variants in mixed-game history. Battle for half the pot or risk it all for a total scoop in this Jacks-or-better High / 8-or-better Low challenge.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "pot"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Archie. You have 5 cards. You get THREE draws to build a hand. To win high, you need a Pair of Jacks or better. To win low, you need an 8-high hand or better. If you hit both, you take the whole pot! Let's see that first draw.",
+    "ai": "Game: Archie (Poker). Type: Triple Draw High-Low Split. Rules: 5 cards dealt. 3 draw rounds. High Qualifier: Jacks or Better. Low Qualifier: 8 or Better. Scoop logic: If only one side qualifies, they take 100% of the pot."
+  },
+  "scoring": {
+    "description": "Pot split logic based on the 5-card final hand.",
+    "winCondition": "Highest qualifying poker hand and/or lowest qualifying 8-low hand wins.",
+    "cardValues": {},
+    "penalties": {
+      "Drawing out of Turn": "Standard poker floor penalties apply."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "If multiple players tie for High or Low, that half of the pot is split among them.",
+    "targetScore": null,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; each hand is a complete pot and the game continues for a session.",
+      "cardValues": "Archie uses standard poker hand rankings and 8-or-better lowball to split the pot, so there is no separate per-card point value table."
+    }
+  },
+  "alsoKnownAs": [
+    "Archie Poker",
+    "Triple Draw High-Low",
+    "Jacks or Better and Eight or Better Triple Draw"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}
