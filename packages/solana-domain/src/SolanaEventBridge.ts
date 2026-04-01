@@ -54,7 +54,7 @@ export class SolanaEventBridge {
   }
 
   private setupEventListeners(): void {
-    EventBus.instance.subscribe(CreateLobbyEvent, async (event) => {
+    EventBus.instance.subscribe(CreateLobbyEvent, async (event: CreateLobbyEvent) => {
       if (!this.gameClient || !this.wallet) {
         logWarn('SolanaEventBridge not initialized');
         return;
@@ -102,7 +102,7 @@ export class SolanaEventBridge {
       }
     });
 
-    EventBus.instance.subscribe(StartLobbyAsHostEvent, async (event) => {
+    EventBus.instance.subscribe(StartLobbyAsHostEvent, async (event: StartLobbyAsHostEvent) => {
       if (!this.gameClient || !this.wallet) {
         logWarn('SolanaEventBridge not initialized');
         return;
@@ -121,7 +121,7 @@ export class SolanaEventBridge {
       }
     });
 
-    EventBus.instance.subscribe(DecisionTakenEvent, async (event) => {
+    EventBus.instance.subscribe(DecisionTakenEvent, async (event: DecisionTakenEvent) => {
       if (!this.gameClient || !this.wallet) {
         logWarn('SolanaEventBridge not initialized');
         return;
