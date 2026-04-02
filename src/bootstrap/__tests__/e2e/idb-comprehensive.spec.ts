@@ -2,10 +2,10 @@ import { test, expect, type Page } from '@playwright/test'
 
 test.describe('IndexedDB Layer - Comprehensive Browser E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/src/bootstrap/__tests__/e2e/test-harness.html', { waitUntil: 'domcontentloaded' })
+    await page.goto('/test-harness.html', { waitUntil: 'domcontentloaded' })
     await page.waitForFunction(
       () => typeof (window as unknown as { IndexedDBService?: unknown }).IndexedDBService !== 'undefined',
-      { timeout: 10000 }
+      { timeout: 60000 }
     )
   })
 

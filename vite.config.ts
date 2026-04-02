@@ -122,6 +122,10 @@ export default defineConfig(async ({ command, mode }) => {
       esbuild: { drop: ['console', 'debugger'] },
     }),
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        'test-harness': path.resolve(__dirname, 'test-harness.html'),
+      },
       plugins: process.env.VITE_ANALYZE === '1'
         ? [visualizer({ filename: 'dist/stats.html', open: true, gzipSize: true, brotliSize: true })]
         : [],

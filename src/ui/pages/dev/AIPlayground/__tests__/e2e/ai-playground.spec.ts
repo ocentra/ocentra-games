@@ -9,7 +9,7 @@ const AI_MODELS_DB_NAME = 'AIModels';
 const SHOULD_RUN = Boolean(!IS_CI && MODEL_ID.length > 0);
 
 async function clearModelCache(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/src/bootstrap/__tests__/e2e/test-harness.html', { timeout: 180000 });
+  await page.goto('/test-harness.html', { timeout: 180000 });
   await expect(page.getByText('Modules loaded - ready for testing')).toBeVisible({ timeout: 180000 });
   await page.evaluate(async (dbName: string) => {
     await new Promise<void>((resolve) => {

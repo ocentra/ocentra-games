@@ -2,91 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="0; url=/test-harness.html">
   <title>IndexedDB Comprehensive Test Harness</title>
 </head>
 <body>
-  <div id="status">Loading modules...</div>
-  <script type="module">
-    import {
-      getFromIndexedDB,
-      saveToIndexedDB,
-      deleteFromIndexedDB,
-      getManifestEntry,
-      addManifestEntry,
-      getAllManifestEntries,
-      saveInferenceSettings,
-      getInferenceSettings,
-      getModelQuantSettings,
-      saveModelQuantSettings,
-      clearModelQuantSettings,
-      addQuantToManifest,
-      getAllCachedModels,
-      deleteCachedModel,
-      saveChunkedFileSafe,
-      getChunkInfo,
-      assembleChunks,
-      createStreamingResponseFromChunks,
-    } from '@ocentra/ai-domain/storage/model-storage-api'
-    import { CHUNK_SIZE } from '@ocentra/ai-domain/constants/model-storage'
-    import { bootstrapModelStorage } from '@ocentra/storage-domain/bootstrap/bootstrapModelStorage'
-    import { IndexedDBService } from '@ocentra/storage-domain/core/IndexedDBService'
-    import { BaseCache } from '@ocentra/storage-domain/core/BaseCache'
-    import { BaseCRUD } from '@ocentra/storage-domain/idb/idbBase'
-    import { DB_NAMES, STORE_NAMES, KEY_PATHS, DB_VERSIONS } from '@ocentra/storage-domain/idb/idbConstants'
-    import { DBNames, modelCacheSchema } from '@ocentra/storage-domain/idb/idbSchema'
-
-    const dbName = DBNames.DB_MODELS
-    const dbConfig = modelCacheSchema[dbName]
-    const metadataStoreConfig = dbConfig?.stores?.[STORE_NAMES.METADATA]
-    const stores = {
-      [STORE_NAMES.FILES]: { keyPath: 'url', indexes: [] },
-      [STORE_NAMES.MANIFEST]: { keyPath: 'repo', indexes: [] },
-      [STORE_NAMES.INFERENCE_SETTINGS]: { keyPath: 'id', indexes: [] },
-    }
-    if (metadataStoreConfig) {
-      stores[STORE_NAMES.METADATA] = {
-        keyPath: metadataStoreConfig.keyPath,
-        indexes: metadataStoreConfig.indexes ?? [],
-      }
-    }
-    await bootstrapModelStorage({
-      config: {
-        dbName: 'TestModelStorageDB',
-        version: DB_VERSIONS.V1,
-        stores,
-      },
-    })
-
-    window.getFromIndexedDB = getFromIndexedDB
-    window.saveToIndexedDB = saveToIndexedDB
-    window.deleteFromIndexedDB = deleteFromIndexedDB
-    window.getManifestEntry = getManifestEntry
-    window.addManifestEntry = addManifestEntry
-    window.getAllManifestEntries = getAllManifestEntries
-    window.saveInferenceSettings = saveInferenceSettings
-    window.getInferenceSettings = getInferenceSettings
-    window.getModelQuantSettings = getModelQuantSettings
-    window.saveModelQuantSettings = saveModelQuantSettings
-    window.clearModelQuantSettings = clearModelQuantSettings
-    window.addQuantToManifest = addQuantToManifest
-    window.getAllCachedModels = getAllCachedModels
-    window.deleteCachedModel = deleteCachedModel
-    window.saveChunkedFileSafe = saveChunkedFileSafe
-    window.getChunkInfo = getChunkInfo
-    window.assembleChunks = assembleChunks
-    window.createStreamingResponseFromChunks = createStreamingResponseFromChunks
-    window.CHUNK_SIZE = CHUNK_SIZE
-    window.IndexedDBService = IndexedDBService
-    window.BaseCache = BaseCache
-    window.BaseCRUD = BaseCRUD
-    window.DB_NAMES = DB_NAMES
-    window.DBNames = DBNames
-    window.STORE_NAMES = STORE_NAMES
-    window.KEY_PATHS = KEY_PATHS
-    window.DB_VERSIONS = DB_VERSIONS
-
-    document.getElementById('status').textContent = 'Modules loaded - ready for testing'
-  </script>
+  <p>Redirecting to <a href="/test-harness.html">the test harness</a>.</p>
 </body>
 </html>
