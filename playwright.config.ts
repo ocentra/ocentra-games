@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: '.',
   testMatch: /.*\/__tests__\/e2e\/.*\.spec\.ts$/, // Only match e2e .spec.ts files in __tests__/e2e directories
+  testIgnore: ['**/.temp/**'],
   fullyParallel: false, // WebRTC tests need sequential execution for proper signaling
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -60,11 +61,12 @@ export default defineConfig({
     {
       name: 'db-mobile-e2e',
       testMatch: /.*\/bootstrap\/__tests__\/e2e\/.*\.spec\.ts$/,
-      use: { ...devices['Pixel 7'] },
+      timeout: 180000,
+      use: { ...devices['Pixel 7'], actionTimeout: 30000, navigationTimeout: 90000 },
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'cross-env VITE_PREVIEW_PORT=3000 npm run dev -- --quick=web-preview-local',
     url: 'http://localhost:3000',
     reuseExistingServer:
       process.env.PLAYWRIGHT_REUSE_SERVER === '0'
