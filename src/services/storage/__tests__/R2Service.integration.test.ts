@@ -1,6 +1,7 @@
 // Using globals from vitest.config.ts (globals: true)
 import { vi } from 'vitest' // vi is NOT a global, must be imported
 import { R2Service } from '@/adapters/storage/R2Service';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { loadMatchRecord } from '@test-data';
 
 /**
@@ -49,7 +50,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
 
       expect(uploadResult).toBe(`matches/${matchId}.json`);
       expect(global.fetch).toHaveBeenCalledWith(
-        `${mockConfig.workerUrl}/api/matches/${matchId}`,
+        `${mockConfig.workerUrl}${ApiEndpoint.Matches.ById(matchId)}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -67,7 +68,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
 
       expect(retrievedRecord).toBe(matchRecordJSON);
       expect(global.fetch).toHaveBeenCalledWith(
-        `${mockConfig.workerUrl}/api/matches/${matchId}`,
+        `${mockConfig.workerUrl}${ApiEndpoint.Matches.ById(matchId)}`,
         { method: 'GET' }
       );
 
@@ -255,7 +256,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
   describe('Signed URL Generation', () => {
     it('should generate signed URL for match record access', async () => {
       const matchId = 'test-match-signed';
-      const signedUrl = `${mockConfig.workerUrl}/api/matches/${matchId}?token=abc123&expires=3600`;
+      const signedUrl = `${mockConfig.workerUrl}${ApiEndpoint.SignedUrl.ByMatchId(matchId)}?token=abc123&expires=3600`;
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -266,7 +267,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
 
       expect(result).toBe(signedUrl);
       expect(global.fetch).toHaveBeenCalledWith(
-        `${mockConfig.workerUrl}/api/signed-url/${matchId}?expires=3600`,
+        `${mockConfig.workerUrl}${ApiEndpoint.SignedUrl.ByMatchId(matchId)}?expires=3600`,
         { method: 'GET' }
       );
     });
@@ -282,7 +283,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
       await r2Service.generateSignedUrl(matchId);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `${mockConfig.workerUrl}/api/signed-url/${matchId}?expires=3600`,
+        `${mockConfig.workerUrl}${ApiEndpoint.SignedUrl.ByMatchId(matchId)}?expires=3600`,
         { method: 'GET' }
       );
     });
@@ -299,7 +300,7 @@ describe('R2Service Integration Tests with Real Test Data', () => {
       await r2Service.deleteMatchRecord(matchId);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `${mockConfig.workerUrl}/api/matches/${matchId}`,
+        `${mockConfig.workerUrl}${ApiEndpoint.Matches.ById(matchId)}`,
         { method: 'DELETE' }
       );
     });
@@ -453,4 +454,3 @@ describe('R2Service Integration Tests with Real Test Data', () => {
     });
   });
 });
-
