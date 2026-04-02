@@ -27,6 +27,7 @@ import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { validateProduct, calculateAmount } from '@/config/products';
 import { runReconciliation } from '@/logic/reconciliation';
+import { StripeApiVersion } from '@/constants/stripe';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -179,7 +180,7 @@ export async function handlePaymentRequest(
     if (!stripe) return json({ error: 'Stripe not configured' }, HttpStatus.ServiceUnavailable);
     const Stripe = (await import('stripe')).default;
     const stripeClient = new Stripe(stripe, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: StripeApiVersion,
       httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
     });
     const lineItems = product.unitPriceCents != null
@@ -299,7 +300,7 @@ export async function handlePaymentRequest(
     try {
       const Stripe = (await import('stripe')).default;
       const stripe = new Stripe(secret, {
-        apiVersion: '2026-01-28.clover',
+        apiVersion: StripeApiVersion,
         httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
       });
       const pi = await stripe.paymentIntents.retrieve(stripePaymentIntentId);

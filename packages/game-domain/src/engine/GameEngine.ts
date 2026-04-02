@@ -35,6 +35,19 @@ const logInfo = (
 
 log.register(import.meta.url);
 
+const createRuntimeUuid = (): string => {
+  const cryptoObject = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
+  if (typeof cryptoObject?.randomUUID === 'function') {
+    return cryptoObject.randomUUID();
+  }
+
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+    const randomNibble = (Math.random() * 16) | 0;
+    const value = character === 'x' ? randomNibble : (randomNibble & 0x3) | 0x8;
+    return value.toString(16);
+  });
+};
+
 export interface GameConfig {
   maxPlayers: number;
   aiDifficulty?: 'easy' | 'medium' | 'hard';
@@ -99,7 +112,7 @@ export class GameEngine {
     const shuffledDeck = this.deckProvider.shuffleDeck(deck);
 
     this.gameState = {
-      id: crypto.randomUUID(),
+      id: createRuntimeUuid(),
       players: [],
       currentPlayer: 0,
       phase: GamePhase.DEALING,

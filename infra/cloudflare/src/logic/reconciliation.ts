@@ -6,6 +6,7 @@ import {
 import { HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { PaymentTrigger } from '@ocentra/endpoint-domain/constants/stripe';
 import { StripePaymentIntentLikeSchema, PaymentDOListResponseSchema } from '@ocentra/endpoint-domain/schemas/payments';
+import { StripeApiVersion } from '@/constants/stripe';
 
 const RECONCILE_WINDOW_MS = 86400000;
 const RECONCILE_PAYMENT_ID_PREFIX = 'reconcile-';
@@ -69,7 +70,7 @@ export async function runReconciliation(
   try {
     const Stripe = (await import('stripe')).default;
     const stripe = new Stripe(secret, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: StripeApiVersion,
       httpClient: Stripe.createFetchHttpClient?.(),
     });
     const charges = await stripe.charges.list({

@@ -50,7 +50,7 @@ export class ComingSoonCarousel extends Component<ComingSoonCarouselProps, Comin
   private behaviour: ReactBehaviour<ComingSoonCarouselProps>;
   private trackRef = React.createRef<HTMLDivElement>();
   private slideRef = React.createRef<HTMLDivElement>();
-  private autoPlayInterval: NodeJS.Timeout | null = null;
+  private autoPlayInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(props: ComingSoonCarouselProps) {
     super(props);

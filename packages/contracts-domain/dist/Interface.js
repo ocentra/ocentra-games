@@ -1,5 +1,6 @@
 const isProductionEnvironment = () => {
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    const processObject = globalThis.process;
+    if (processObject?.env?.NODE_ENV === 'production') {
         return true;
     }
     try {

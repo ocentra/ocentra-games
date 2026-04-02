@@ -24,7 +24,8 @@ export interface AssertOptions {
 }
 
 const isProductionEnvironment = (): boolean => {
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+  const processObject = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
+  if (processObject?.env?.NODE_ENV === 'production') {
     return true;
   }
 

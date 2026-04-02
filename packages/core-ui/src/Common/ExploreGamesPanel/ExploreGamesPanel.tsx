@@ -26,7 +26,7 @@ export function ExploreGamesPanel({ games, onExploreClick }: ExploreGamesPanelPr
   const [subcategory, setSubcategory] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [sequenceIndex, setSequenceIndex] = useState(0);
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const slideRef = useRef<HTMLDivElement>(null);
 
   const gamesByPlayerMode = useMemo(() => {

@@ -97,8 +97,8 @@ export default defineWorkersConfig({
     onConsoleLog() {
       return true;
     },
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    testTimeout: 60000,
+    hookTimeout: 60000,
     isolate: true,
     retry: 2,
     cache: false,

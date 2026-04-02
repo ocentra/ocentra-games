@@ -14,6 +14,7 @@
  */
 
 import type { Product } from '../src/config/products';
+import { StripeApiVersion } from '../src/constants/stripe';
 
 // ─── AC Credit Packages ───────────────────────────────────────────────────────
 // 1 AC = $0.01. Pricing gives ~15–25% margin over Haiku API cost.
@@ -170,7 +171,7 @@ async function createStripeProduct(
 
   const Stripe = (await import('stripe')).default;
   const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-    apiVersion: '2026-01-28.clover',
+    apiVersion: StripeApiVersion,
   });
 
   const stripeProduct = await stripe.products.create({

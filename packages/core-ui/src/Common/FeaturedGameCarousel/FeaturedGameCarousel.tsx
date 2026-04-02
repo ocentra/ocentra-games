@@ -33,7 +33,7 @@ interface FeaturedGameCarouselState {
 
 export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, FeaturedGameCarouselState> {
   private behaviour: ReactBehaviour<FeaturedGameCarouselProps>;
-  private imageInterval: NodeJS.Timeout | null = null;
+  private imageInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(props: FeaturedGameCarouselProps) {
     super(props);

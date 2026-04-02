@@ -215,7 +215,7 @@ async function clearDebugLogsFromR2(): Promise<void> {
 
   try {
     const key = `${BucketPath.DebugLogs}${DEBUG_LOG_FILE_NAME}`;
-    await r2Bucket.delete(key).catch(() => {});
+    await r2Bucket.delete(key).catch(() => { });
   } catch (error) {
     loggerBackendFailureFallback('[Logger] Failed to clear debug logs', error);
   }
@@ -226,7 +226,7 @@ function getLogsArray(): InternalLogEntry[] {
   return [];
 }
 
-export function resetRequestCount(): void {}
+export function resetRequestCount(): void { }
 
 export function initLogger(
   analytics?: AnalyticsEngineDataset,

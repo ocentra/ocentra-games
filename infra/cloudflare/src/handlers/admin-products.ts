@@ -18,6 +18,7 @@ import {
   getActiveProductIds,
   setActiveProductIds,
 } from '@/config/products';
+import { StripeApiVersion } from '@/constants/stripe';
 
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -53,7 +54,7 @@ async function createStripeProduct(env: Env, product: Product): Promise<StripePr
 
   const Stripe = (await import('stripe')).default;
   const stripe = new Stripe(secret, {
-    apiVersion: '2026-01-28.clover',
+    apiVersion: StripeApiVersion,
     httpClient: Stripe.createFetchHttpClient?.(),
   });
 
@@ -86,7 +87,7 @@ async function updateStripeProduct(env: Env, stripeProductId: string, updates: P
 
   const Stripe = (await import('stripe')).default;
   const stripe = new Stripe(secret, {
-    apiVersion: '2026-01-28.clover',
+    apiVersion: StripeApiVersion,
     httpClient: Stripe.createFetchHttpClient?.(),
   });
 

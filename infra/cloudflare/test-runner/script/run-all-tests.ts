@@ -128,7 +128,7 @@ function log(message: string, color?: keyof typeof colors) {
     const ansiEscape = '\u001b';
     const plainMessage = message.replace(new RegExp(`${ansiEscape}\\[[0-9;]*m`, 'g'), '');
     mainLogStream.write(`${plainMessage}\n`);
-    
+
     if (color && colors[color]) {
         console.log(`${colors[color]}${message}${colors.reset}`);
     } else {
@@ -189,7 +189,7 @@ function displayTestMenu(options: TestOptions, lastMessage?: string): void {
         log('  → Press ENTER again to proceed with your selection', 'cyan');
     }
     console.log('');
-    
+
     const tests = [
         { key: '1', name: 'Vitest Tests', desc: 'Unit + Integration + E2E + Security', value: 'runVitest' },
         { key: '2', name: 'Coverage Analysis', desc: 'Code coverage report (90% line, 80% branch)', value: 'runCoverage' },
@@ -199,14 +199,14 @@ function displayTestMenu(options: TestOptions, lastMessage?: string): void {
         { key: '6', name: 'Static Analysis', desc: 'Semgrep, CodeQL, Trivy', value: 'runStaticAnalysis' },
         { key: '7', name: 'Observability', desc: 'Observability hooks verification', value: 'runObservability' },
     ];
-    
+
     tests.forEach(test => {
         const isEnabled = options[test.value as keyof TestOptions] as boolean;
         const status = isEnabled ? '✅ ENABLED' : '❌ DISABLED';
         const statusColor = isEnabled ? 'green' : 'gray';
         log(`  [${test.key}] ${status.padEnd(12)} ${test.name.padEnd(25)} ${test.desc}`, statusColor);
     });
-    
+
     console.log('');
     log('  [A] Select All', 'cyan');
     log('  [N] Select None', 'cyan');
@@ -251,18 +251,18 @@ async function promptForTests(skipAll: boolean): Promise<TestOptions> {
         let done = false;
         let lastMessage: string | undefined;
         let skipConfirmation = false;
-        
+
         while (!done) {
             displayTestMenu(options, lastMessage);
             lastMessage = undefined;
-            
+
             try {
                 const answer = await question(rl, '  Your choice: ');
                 const rawAnswer = answer;
                 const choice = answer.trim().toLowerCase();
-                
+
                 mainLogStream.write(`[DEBUG] Raw input: "${rawAnswer}" (bytes: ${Buffer.from(rawAnswer).toString('hex')}), trimmed: "${choice}"\n`);
-                
+
                 if (!rawAnswer || rawAnswer.trim() === '' || choice === '' || choice === 'enter') {
                     mainLogStream.write('[DEBUG] Empty input detected - proceeding\n');
                     done = true;
@@ -306,7 +306,7 @@ async function promptForTests(skipAll: boolean): Promise<TestOptions> {
                         '6': 'runStaticAnalysis',
                         '7': 'runObservability',
                     };
-                    
+
                     const testKey = testMap[choice];
                     if (testKey) {
                         options[testKey] = !options[testKey];
@@ -347,7 +347,7 @@ async function promptForTests(skipAll: boolean): Promise<TestOptions> {
         log(`  ✅ Static Analysis: ${options.runStaticAnalysis ? 'YES' : 'NO'}`, options.runStaticAnalysis ? 'green' : 'gray');
         log(`  ✅ Observability: ${options.runObservability ? 'YES' : 'NO'}`, options.runObservability ? 'green' : 'gray');
         console.log('');
-        
+
         if (!skipConfirmation) {
             const confirmAnswer = await question(rl, 'Proceed with these tests? [Y/n]: ');
             if (confirmAnswer.toLowerCase() === 'n') {
@@ -369,7 +369,7 @@ function runCommand(command: string, args: string[], options: RunCommandOptions 
     return new Promise((resolve) => {
         const quotedCommand = command.includes(' ') && process.platform === 'win32' ? `"${command}"` : command;
         const toolLogStream = options.toolLogStream;
-        
+
         if (toolLogStream) {
             const stream = toolLogStream;
             let stdoutBackpressure = false;
@@ -383,7 +383,7 @@ function runCommand(command: string, args: string[], options: RunCommandOptions 
                     const text = stdoutBuffer.shift()!;
                     stdoutBackpressure = !stream.write(text);
                 }
-                
+
                 while (stderrBuffer.length > 0 && !stderrBackpressure) {
                     const text = stderrBuffer.shift()!;
                     stderrBackpressure = !stream.write(text);
@@ -413,7 +413,7 @@ function runCommand(command: string, args: string[], options: RunCommandOptions 
             child.stdout?.on('data', (data) => {
                 const text = data.toString();
                 process.stdout.write(text);
-                
+
                 if (stdoutBackpressure) {
                     stdoutBuffer.push(text);
                 } else {
@@ -427,7 +427,7 @@ function runCommand(command: string, args: string[], options: RunCommandOptions 
             child.stderr?.on('data', (data) => {
                 const text = data.toString();
                 process.stderr.write(text);
-                
+
                 if (stderrBackpressure) {
                     stderrBuffer.push(text);
                 } else {
@@ -479,7 +479,7 @@ function runCommandWithOutput(command: string, args: string[], options: RunComma
         let lastDataTime = Date.now();
         const timeout = options.timeout || 300000;
         const quotedCommand = command.includes(' ') && process.platform === 'win32' ? `"${command}"` : command;
-        
+
         mainLogStream.write(`[DEBUG] Spawning command: ${quotedCommand} ${args.join(' ')}\n`);
         const child = spawn(quotedCommand, args, {
             stdio: ['inherit', 'pipe', 'pipe'],
@@ -626,7 +626,7 @@ async function killProcess(proc: ReturnType<typeof spawn> | null, signal: NodeJS
                 }
                 resolve();
             }, timeout);
-            
+
             if (proc) {
                 proc.on('exit', () => {
                     clearTimeout(timeoutId);
@@ -721,7 +721,7 @@ async function exportFailedTests(jsonOutputPath: string): Promise<void> {
                     const suiteName = (assertion.ancestorTitles && assertion.ancestorTitles.length > 0)
                         ? assertion.ancestorTitles.join(' > ')
                         : 'Root';
-                    
+
                     failedTests.push({
                         name: assertion.title,
                         suite: suiteName,
@@ -791,16 +791,16 @@ async function runVitestTests(jsonOutputPath: string, testOptions: TestOptions):
 
     const includeCoverage = testOptions.runCoverage;
     const stepLabel = includeCoverage ? 'STEP 2/8: Running ALL Vitest tests with Coverage' : 'STEP 2/8: Running ALL Vitest tests (Unit + Integration + E2E + Security)';
-    
+
     log(stepLabel, 'yellow');
-        log(`  Mode: ${testMode}`, isRealMode ? 'red' : 'green');
+    log(`  Mode: ${testMode}`, isRealMode ? 'red' : 'green');
     log('  Test Categories:', 'gray');
     log('    - Unit Tests: auth, cors, admin-check, security-monitoring', 'gray');
     log('    - Integration Tests: resources-api, assets-api, kv, durable-objects, etc.', 'gray');
     log('    - E2E Tests: real-worker, security, upload-download, auth-order', 'gray');
     log('    - Security Tests: path-traversal, ssrf, dos, header-injection, fuzzing', 'gray');
     log('    - WebSocket Tests: websocket-security, websocket-isolated-storage', 'gray');
-        console.log('');
+    console.log('');
 
     const mainJsonPath = path.join(testRunnerReportJsonDir, 'vitest-main.json');
     const websocketJsonPath = path.join(testRunnerReportJsonDir, 'vitest-websocket.json');
@@ -818,12 +818,12 @@ async function runVitestTests(jsonOutputPath: string, testOptions: TestOptions):
         `--outputFile=${mainJsonPath}`,
         ...unstableExclude.flatMap((f) => ['--exclude', f]),
     ];
-    
+
     if (includeCoverage) {
         mainCommandArgs.push('--coverage');
     }
 
-    await runCommand('npx', mainCommandArgs, { 
+    await runCommand('npx', mainCommandArgs, {
         toolLogStream: vitestLogStream,
         env: { TEST_RUN_TYPE: 'full' }
     });
@@ -839,12 +839,12 @@ async function runVitestTests(jsonOutputPath: string, testOptions: TestOptions):
         '--reporter=json',
         `--outputFile=${websocketJsonPath}`,
     ];
-    
+
     if (includeCoverage) {
         websocketCommandArgs.push('--coverage');
     }
 
-    await runCommand('npx', websocketCommandArgs, { 
+    await runCommand('npx', websocketCommandArgs, {
         toolLogStream: vitestLogStream,
         env: { TEST_RUN_TYPE: 'full' }
     });
@@ -877,7 +877,7 @@ async function runVitestTests(jsonOutputPath: string, testOptions: TestOptions):
 
     if ((mergedResults.numTotalTests ?? 0) > 0) {
         log(`  Summary: ${mergedResults.numTotalTests ?? 0} tests, ${mergedResults.numPassedTests ?? 0} passed, ${mergedResults.numFailedTests ?? 0} failed`, 'cyan');
-        
+
         if ((mergedResults.numFailedTests ?? 0) > 0) {
             await exportFailedTests(jsonOutputPath);
         }
@@ -891,7 +891,7 @@ async function runCoverageAnalysis(testOptions: TestOptions): Promise<void> {
     }
 
     const coverageAlreadyRun = testOptions.runVitest;
-    
+
     if (coverageAlreadyRun) {
         log('STEP 2.5/9: Processing coverage results (already collected with tests)', 'yellow');
         log('  Coverage was collected during test execution - processing results...', 'gray');
@@ -929,27 +929,27 @@ async function runCoverageAnalysis(testOptions: TestOptions): Promise<void> {
     }
 
     const coverageSummaryPath = path.join(testRunnerCoverageDir, 'coverage-summary.json');
-        if (fs.existsSync(coverageSummaryPath)) {
-            try {
-                const coverageData = JSON.parse(fs.readFileSync(coverageSummaryPath, 'utf-8'));
-                const { lines, branches, functions, statements } = coverageData.total;
+    if (fs.existsSync(coverageSummaryPath)) {
+        try {
+            const coverageData = JSON.parse(fs.readFileSync(coverageSummaryPath, 'utf-8'));
+            const { lines, branches, functions, statements } = coverageData.total;
 
-                console.log('');
-                log('  Coverage Summary:', 'cyan');
-                log(`    Lines:      ${lines.pct.toFixed(1)}% (threshold: 95%)`, lines.pct >= 95 ? 'green' : 'red');
-                log(`    Branches:   ${branches.pct.toFixed(1)}% (threshold: 90%)`, branches.pct >= 90 ? 'green' : 'red');
-                log(`    Functions:  ${functions.pct.toFixed(1)}% (threshold: 95%)`, functions.pct >= 95 ? 'green' : 'red');
-                log(`    Statements: ${statements.pct.toFixed(1)}% (threshold: 95%)`, statements.pct >= 95 ? 'green' : 'red');
+            console.log('');
+            log('  Coverage Summary:', 'cyan');
+            log(`    Lines:      ${lines.pct.toFixed(1)}% (threshold: 95%)`, lines.pct >= 95 ? 'green' : 'red');
+            log(`    Branches:   ${branches.pct.toFixed(1)}% (threshold: 90%)`, branches.pct >= 90 ? 'green' : 'red');
+            log(`    Functions:  ${functions.pct.toFixed(1)}% (threshold: 95%)`, functions.pct >= 95 ? 'green' : 'red');
+            log(`    Statements: ${statements.pct.toFixed(1)}% (threshold: 95%)`, statements.pct >= 95 ? 'green' : 'red');
 
-                const allMet = lines.pct >= 95 && branches.pct >= 90 && functions.pct >= 95 && statements.pct >= 95;
-                console.log('');
-                if (allMet) {
-                    log('  [PASS] All coverage thresholds met!', 'green');
-                } else {
-                    log('  [WARN] Some coverage thresholds not met', 'yellow');
-                }
-            } catch (error) {
-                log(`  [WARN] Could not parse coverage summary: ${error}`, 'yellow');
+            const allMet = lines.pct >= 95 && branches.pct >= 90 && functions.pct >= 95 && statements.pct >= 95;
+            console.log('');
+            if (allMet) {
+                log('  [PASS] All coverage thresholds met!', 'green');
+            } else {
+                log('  [WARN] Some coverage thresholds not met', 'yellow');
+            }
+        } catch (error) {
+            log(`  [WARN] Could not parse coverage summary: ${error}`, 'yellow');
         }
     }
 }
@@ -990,7 +990,7 @@ async function startWorkerForSecurityTests(): Promise<{ workerJob: ReturnType<ty
 
         const isWindows = process.platform === 'win32';
         const npmCommand = isWindows ? 'npm.cmd' : 'npm';
-        
+
         workerJob = spawn(npmCommand, ['run', 'worker:start'], {
             cwd: cloudflareDir,  // package.json is in infra/cloudflare
             env: { ...process.env, WORKER_HTTP_PORT: '8787' },
@@ -1037,14 +1037,14 @@ interface K6Metrics {
         max?: number;
         avg?: number;
     };
-    
+
     thresholds?: Array<{ name: string; passed: boolean; value?: string; actualValue?: string; thresholdValue?: string }>;
     checkFailures?: Array<{ name: string; passes: number; fails: number; failureRate: number }>;
 }
 
-function parseSchemathesisOutput(output: string): { 
-    testCases?: number; 
-    failures?: number; 
+function parseSchemathesisOutput(output: string): {
+    testCases?: number;
+    failures?: number;
     errors?: number;
     errorCategories?: Record<string, number>;
     errorMessages?: string[];
@@ -1053,9 +1053,9 @@ function parseSchemathesisOutput(output: string): {
         const testCasesMatch = output.match(/(\d+)\s+generated/i) || output.match(/(\d+)\s+test cases?/i);
         const failuresMatch = output.match(/(\d+)\s+failures?/i);
         const errorsMatch = output.match(/(\d+)\s+error/i);
-        
+
         const errorCategories: Record<string, number> = {};
-        
+
         const categoryPatterns = [
             { pattern: /❌\s+API accepts requests without authentication:\s+(\d+)/i, key: 'missing_auth' },
             { pattern: /❌\s+Server error:\s+(\d+)/i, key: 'server_error' },
@@ -1067,14 +1067,14 @@ function parseSchemathesisOutput(output: string): {
             { pattern: /❌\s+Undocumented HTTP status code:\s+(\d+)/i, key: 'undocumented_status' },
             { pattern: /❌\s+Unsupported methods:\s+(\d+)/i, key: 'unsupported_method' },
         ];
-        
+
         categoryPatterns.forEach(({ pattern, key }) => {
             const match = output.match(pattern);
             if (match && match[1]) {
                 errorCategories[key] = parseInt(match[1], 10);
             }
         });
-        
+
         const errors: string[] = [];
         const errorPatterns = [
             /Error:\s*([^\n]+)/gi,
@@ -1082,7 +1082,7 @@ function parseSchemathesisOutput(output: string): {
             /Exception:\s*([^\n]+)/gi,
             /Network Error[\s\S]*?Reproduce with:[\s\S]*?curl[^\n]+/gi,
         ];
-        
+
         errorPatterns.forEach(pattern => {
             const matches = output.matchAll(pattern);
             for (const match of matches) {
@@ -1094,7 +1094,7 @@ function parseSchemathesisOutput(output: string): {
                 }
             }
         });
-        
+
         return {
             testCases: testCasesMatch ? parseInt(testCasesMatch[1], 10) : undefined,
             failures: failuresMatch ? parseInt(failuresMatch[1], 10) : undefined,
@@ -1257,25 +1257,25 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
             },
             toolLogStream: schemathesisLogStream,
         });
-        
-        const isNotInstalled = output.includes('is not recognized') || 
-                               output.includes('command not found') || 
-                               (output.length < 50 && !output.includes('Schemathesis'));
+
+        const isNotInstalled = output.includes('is not recognized') ||
+            output.includes('command not found') ||
+            (output.length < 50 && !output.includes('Schemathesis'));
         const isEncodingError = output.includes('UnicodeEncodeError') || output.includes('charmap codec');
         const isInstalled = output.includes('Schemathesis v') || output.includes('Loaded specification');
-        
+
         if (isNotInstalled && !isInstalled) {
             log('  [FAIL] Schemathesis not installed', 'red');
             log('    REQUIRED: Install with: pip install schemathesis', 'yellow');
             log('    Or: pipx install schemathesis', 'yellow');
             securityTestsRun.schemathesis = false;
-            
+
             const schemathesisJsonPath = path.join(testRunnerReportJsonDir, 'schemathesis-results.json');
-            const errorMessage = output.includes('is not recognized') 
+            const errorMessage = output.includes('is not recognized')
                 ? 'Command not found in PATH'
                 : output.includes('command not found')
-                ? 'Command not found'
-                : 'Installation check failed';
+                    ? 'Command not found'
+                    : 'Installation check failed';
             const schemathesisResult = {
                 name: 'Schemathesis API Fuzzing',
                 status: 'failed',
@@ -1294,10 +1294,10 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
             log('    Workaround: Set PYTHONIOENCODING=utf-8 or run in UTF-8 terminal', 'gray');
             log('    Marking as run (encoding issue, not test failure)', 'gray');
             securityTestsRun.schemathesis = true;
-            
+
             const schemathesisJsonPath = path.join(testRunnerReportJsonDir, 'schemathesis-results.json');
             const errorMatch = output.match(/UnicodeEncodeError: '([^']+)' codec can't encode characters/);
-            const errorMessage = errorMatch 
+            const errorMessage = errorMatch
                 ? `Encoding error: ${errorMatch[1]} codec cannot encode Unicode characters`
                 : 'Windows console encoding error';
             const schemathesisResult = {
@@ -1315,7 +1315,7 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
         } else {
             const schemathesisStatus = code === 0 ? 'passed' : 'failed';
             const schemathesisDuration = ((Date.now() - schemathesisStartTime) / 1000).toFixed(1);
-            
+
             if (code === 0) {
                 log(`  [PASS] Schemathesis fuzzing completed in ${schemathesisDuration} s`, 'green');
                 securityTestsRun.schemathesis = true;
@@ -1340,7 +1340,7 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         const isEncodingError = errorMessage.includes('UnicodeEncodeError') || errorMessage.includes('charmap codec');
-        
+
         if (isEncodingError) {
             log('  [WARN] Schemathesis encoding error (Windows console issue)', 'yellow');
             log('    Schemathesis is installed but failed due to Windows console encoding', 'gray');
@@ -1353,7 +1353,7 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
             log('    Or: pipx install schemathesis', 'yellow');
             securityTestsRun.schemathesis = false;
         }
-        
+
         const schemathesisJsonPath = path.join(testRunnerReportJsonDir, 'schemathesis-results.json');
         const schemathesisResult = {
             name: 'Schemathesis API Fuzzing',
@@ -1363,7 +1363,7 @@ async function runSchemathesisTest(securityTestsRun: SecurityTestResults): Promi
             duration: 0,
             output: errorMessage,
             errorMessage: errorMessage,
-            summary: isEncodingError 
+            summary: isEncodingError
                 ? 'Schemathesis encoding error (Windows console) - test may have run but output encoding failed'
                 : `Schemathesis failed: ${errorMessage}`,
             ...(isEncodingError ? { workaround: 'Set PYTHONIOENCODING=utf-8 or run in UTF-8 terminal' } : {}),
@@ -1381,15 +1381,15 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
     log('  [2/2] Starting k6 concurrency/load tests (parallel)...', 'cyan');
     const k6StartTime = Date.now();
     try {
-        const k6Command = process.platform === 'win32' && !process.env.PATH?.includes('k6') 
-            ? 'C:\\Program Files\\k6\\k6.exe' 
+        const k6Command = process.platform === 'win32' && !process.env.PATH?.includes('k6')
+            ? 'C:\\Program Files\\k6\\k6.exe'
             : 'k6';
         const k6ScriptPath = path.join(testsDir, 'k6', 'concurrency.test.js');
         log(`  [DEBUG] k6 command: ${k6Command}`, 'gray');
         log(`  [DEBUG] k6 script: ${k6ScriptPath}`, 'gray');
         log(`  [DEBUG] Script exists: ${fs.existsSync(k6ScriptPath)}`, 'gray');
         log('  [DEBUG] Executing k6 command...', 'gray');
-        
+
         const commandStartTime = Date.now();
         const { code, output } = await runCommandWithOutput(k6Command, [
             'run',
@@ -1398,13 +1398,13 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             timeout: 120000,
             toolLogStream: k6LogStream,
         });
-        
+
         const commandDuration = ((Date.now() - commandStartTime) / 1000).toFixed(1);
         log(`  [DEBUG] k6 command completed in ${commandDuration}s, exit code: ${code}`, 'gray');
         log(`  [DEBUG] Output length: ${output.length} characters`, 'gray');
-        
+
         const isNotInstalled = output.includes('is not recognized') || output.includes('command not found') || code === 1 && output.includes('k6');
-        
+
         if (isNotInstalled) {
             log('  [FAIL] k6 not installed', 'red');
             log('    REQUIRED: Install with:', 'yellow');
@@ -1412,7 +1412,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             log('      macOS: brew install k6', 'yellow');
             log('      Linux: See https://k6.io/docs/getting-started/installation/', 'yellow');
             securityTestsRun.k6 = false;
-            
+
             const k6JsonPath = path.join(testRunnerReportJsonDir, 'k6-results.json');
             const k6Result = {
                 name: 'k6 Concurrency/Load Tests',
@@ -1426,7 +1426,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             log('  [DEBUG] Processing k6 results...', 'gray');
             const k6Status = code === 0 ? 'passed' : (code === 99 ? 'threshold_failed' : 'failed');
             const k6Duration = ((Date.now() - k6StartTime) / 1000).toFixed(1);
-            
+
             log('  [DEBUG] Parsing k6 metrics from output...', 'gray');
             const parseStartTime = Date.now();
             const k6Metrics = parseK6Metrics(output);
@@ -1436,7 +1436,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             if (k6Metrics) {
                 log(`  [DEBUG] Requests: ${k6Metrics.requests || 'N/A'}, Error Rate: ${k6Metrics.errorRate ? (k6Metrics.errorRate * 100).toFixed(2) + '%' : 'N/A'}`, 'gray');
             }
-            
+
             log('  [DEBUG] Determining status...', 'gray');
             if (code === 0) {
                 log(`  [PASS] k6 concurrency tests completed in ${k6Duration} s`, 'green');
@@ -1454,7 +1454,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             log('  [DEBUG] Calculating threshold failures...', 'gray');
             const thresholdFailures = k6Metrics?.thresholds?.filter(t => !t.passed).map(t => t.name) || [];
             log(`  [DEBUG] Threshold failures: ${thresholdFailures.length}`, 'gray');
-            
+
             log('  [DEBUG] Building result object...', 'gray');
             const k6JsonPath = path.join(testRunnerReportJsonDir, 'k6-results.json');
             const k6Result = {
@@ -1464,12 +1464,12 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
                 errorType: code === 99 ? 'threshold_violation' : code !== 0 ? 'execution_error' : undefined,
                 duration: parseFloat(k6Duration),
                 output: output,
-                errorMessage: code === 99 
+                errorMessage: code === 99
                     ? `Threshold violations: ${thresholdFailures.join(', ')}`
-                    : code !== 0 
+                    : code !== 0
                         ? `k6 exited with code ${code}`
                         : undefined,
-                summary: code === 0 
+                summary: code === 0
                     ? (k6Metrics ? `${k6Metrics.requests?.toLocaleString() || 0} requests, ${((k6Metrics.errorRate || 0) * 100).toFixed(2)}% errors, ${k6Metrics.avgResponseTime?.toFixed(2) || 0}ms avg response time` : 'k6 concurrency/load test completed')
                     : code === 99
                         ? `k6 completed but ${thresholdFailures.length} threshold(s) violated: ${thresholdFailures.join(', ')}`
@@ -1477,7 +1477,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
                 metrics: k6Metrics,
                 thresholdFailures: thresholdFailures.length > 0 ? thresholdFailures : undefined,
             };
-            
+
             log('  [DEBUG] Writing k6 results to JSON file...', 'gray');
             const writeStartTime = Date.now();
             fs.writeFileSync(k6JsonPath, JSON.stringify(k6Result, null, 2), 'utf-8');
@@ -1493,7 +1493,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
         log('      macOS: brew install k6', 'yellow');
         log('      Linux: See https://k6.io/docs/getting-started/installation/', 'yellow');
         securityTestsRun.k6 = false;
-        
+
         const k6JsonPath = path.join(testRunnerReportJsonDir, 'k6-results.json');
         const isNotInstalled = errorMessage.includes('is not recognized') || errorMessage.includes('command not found');
         const k6Result = {
@@ -1506,7 +1506,7 @@ async function runK6Test(securityTestsRun: SecurityTestResults, testOptions: Tes
             errorMessage: errorMessage,
             summary: `k6 failed: ${errorMessage}`,
             ...(isNotInstalled ? {
-                installCommand: process.platform === 'win32' 
+                installCommand: process.platform === 'win32'
                     ? 'choco install k6'
                     : process.platform === 'darwin'
                         ? 'brew install k6'
@@ -1550,7 +1550,7 @@ async function runSecurityFuzzingTests(workerRunning: boolean, testOptions: Test
 
 async function runMutationTests(testOptions: TestOptions, securityTestsRun: SecurityTestResults): Promise<void> {
     const mutationJsonPath = path.join(testRunnerReportJsonDir, 'mutation-results.json');
-    
+
     let mutationResult: {
         name: string;
         status: string;
@@ -1564,11 +1564,11 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
             reason?: string;
         }>;
     };
-    
+
     if (!testOptions.runMutation) {
         log('STEP 4.6/9: Skipping Mutation tests (disabled by user)', 'gray');
         securityTestsRun.mutationAttempted = false;
-        
+
         mutationResult = {
             name: 'Stryker Mutation Testing',
             status: 'skipped',
@@ -1585,7 +1585,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
     log('  Invoking test:runner:mutation (run-mutation-only.ts: collect + Stryker)', 'cyan');
     const mutationStartTime = Date.now();
     securityTestsRun.mutationAttempted = true;
-    
+
     const mutationPlanPath = path.join(testRunnerReportJsonDir, 'mutation-plan.json');
     let mutationTargetCount = 0;
     let mutationTargets: Array<{ file: string; symbolName: string; kind: string; reason?: string }> = [];
@@ -1598,7 +1598,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
             void 0;
         }
     }
-    
+
     try {
         const { code, output } = await runCommandWithOutput('npm', ['run', 'test:runner:mutation'], {
             toolLogStream: mutationLogStream,
@@ -1622,7 +1622,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
             log(`    Targets tested: ${mutationTargetCount}`, 'green');
             log(`    Duration: ${mutationDuration} s`, 'gray');
             log('    All mutants were killed (tests detected all mutations)', 'green');
-            
+
             mutationResult = {
                 name: 'Stryker Mutation Testing',
                 status: 'passed',
@@ -1643,7 +1643,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
             log(`    Duration: ${mutationDuration} s`, 'gray');
             log('    Some mutants survived (check Stryker report for details)', 'yellow');
             log('    Review surviving mutants and strengthen test assertions', 'gray');
-            
+
             mutationResult = {
                 name: 'Stryker Mutation Testing',
                 status: 'failed',
@@ -1663,7 +1663,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
         log(`  [FAIL] Mutation tests encountered an error: ${errorMessage}`, 'red');
         const mutationDuration = parseFloat(((Date.now() - mutationStartTime) / 1000).toFixed(1));
         log(`  Duration: ${mutationDuration} s`, 'gray');
-        
+
         mutationResult = {
             name: 'Stryker Mutation Testing',
             status: 'failed',
@@ -1678,7 +1678,7 @@ async function runMutationTests(testOptions: TestOptions, securityTestsRun: Secu
             })),
         };
     }
-    
+
     fs.writeFileSync(mutationJsonPath, JSON.stringify(mutationResult, null, 2), 'utf-8');
 }
 
@@ -1702,7 +1702,7 @@ async function runObservabilityVerification(testOptions: TestOptions, securityTe
             '--reporter=verbose',
         ]);
         const observabilityExitCode = code;
-        
+
         if (observabilityExitCode === 0) {
             const observabilityDuration = ((Date.now() - observabilityStartTime) / 1000).toFixed(1);
             log(`  [PASS] Observability verification completed in ${observabilityDuration} s`, 'green');
@@ -1808,7 +1808,7 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
     log('    Creating CodeQL database (multi-threaded)...', 'gray');
     log('    Note: This may take several minutes. Extracting source files...', 'gray');
     log('    Only scanning src/ and tests/ directories (excluding all dev/build artifacts)', 'gray');
-    
+
     const codeqlCreateStartTime = Date.now();
     let lastProgressLog = Date.now();
     let lastHeartbeatLog = Date.now();
@@ -1816,7 +1816,7 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
     const heartbeatInterval = 30000;
     let extractedFiles = 0;
     let currentPhase = 'Initializing';
-    
+
     const codeqlConfigPath = path.join(cloudflareDir, 'codeql-config.yml');
 
     const codeqlArgs = [
@@ -1829,9 +1829,9 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
         `--source-root=${cloudflareDir}`,
         `--codescanning-config=${codeqlConfigPath}`,  // Use config with paths-ignore for exclusions
     ];
-    
+
     log(`    Executing: ${codeqlCommand} ${codeqlArgs.join(' ')}`, 'gray');
-    
+
     const heartbeatIntervalId = setInterval(() => {
         const now = Date.now();
         if (now - lastHeartbeatLog >= heartbeatInterval) {
@@ -1840,24 +1840,24 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
             lastHeartbeatLog = now;
         }
     }, heartbeatInterval);
-    
+
     try {
         const { code: createCode, output: createOutput } = await runCommandWithOutput(codeqlCommand, codeqlArgs, {
             timeout: 900000,
             onProgress: (text: string) => {
                 const now = Date.now();
                 const lines = text.split('\n').filter(line => line.trim());
-                
+
                 for (const line of lines) {
                     const trimmed = line.trim();
-                    
+
                     if (trimmed.includes('Extracting') || trimmed.includes('extracting')) {
                         currentPhase = 'Extracting';
                         const fileMatch = trimmed.match(/(\d+)\s+file/i);
                         if (fileMatch) {
                             extractedFiles = parseInt(fileMatch[1], 10);
                         }
-                        
+
                         if (now - lastProgressLog >= progressInterval) {
                             const elapsed = ((now - codeqlCreateStartTime) / 1000).toFixed(1);
                             if (extractedFiles > 0) {
@@ -1906,9 +1906,9 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
             },
             toolLogStream: codeqlLogStream,
         });
-        
+
         clearInterval(heartbeatIntervalId);
-        
+
         if (createCode !== 0) {
             const errorDetails = createOutput.trim() || 'No output captured';
             const errorPreview = errorDetails.length > 500 ? errorDetails.substring(0, 500) + '...' : errorDetails;
@@ -1916,7 +1916,7 @@ async function createCodeQLDatabase(codeqlCommand: string, codeqlDatabasePath: s
             log(`    Error output (first 500 chars): ${errorPreview}`, 'gray');
             throw new Error(`CodeQL database creation failed with exit code ${createCode}: ${errorPreview}`);
         }
-        
+
         const createDuration = ((Date.now() - codeqlCreateStartTime) / 1000).toFixed(1);
         log(`    Database creation completed in ${createDuration} s`, 'green');
 
@@ -1944,7 +1944,7 @@ async function runCodeQLAnalysis(codeqlCommand: string, codeqlDatabasePath: stri
         log('    Note: Query pack download had issues (may already be installed)', 'gray');
         log('    Attempting analysis with existing query packs...', 'gray');
     }
-    
+
     log('    Running CodeQL analysis (multi-threaded)...', 'gray');
     let codeqlExitCode: number;
     try {
@@ -1968,7 +1968,7 @@ async function runCodeQLAnalysis(codeqlCommand: string, codeqlDatabasePath: stri
             '--threads=0',
         ]);
     }
-    
+
     if (codeqlExitCode === 0) {
         const codeqlResultsPath = path.join(testRunnerReportJsonDir, 'codeql-results.sarif');
         let findings = 0;
@@ -1980,7 +1980,7 @@ async function runCodeQLAnalysis(codeqlCommand: string, codeqlDatabasePath: stri
                 findings = 0;
             }
         }
-        
+
         const codeqlJsonPath = path.join(testRunnerReportJsonDir, 'codeql-results.json');
         const codeqlResult = {
             name: 'CodeQL Static Analysis',
@@ -1991,7 +1991,7 @@ async function runCodeQLAnalysis(codeqlCommand: string, codeqlDatabasePath: stri
             sarifPath: codeqlResultsPath,
         };
         fs.writeFileSync(codeqlJsonPath, JSON.stringify(codeqlResult, null, 2), 'utf-8');
-        
+
         securityTestsRun.staticAnalysis.codeql = true;
         const codeqlDuration = ((Date.now() - codeqlStartTime) / 1000).toFixed(1);
         log(`  [PASS] CodeQL completed in ${codeqlDuration} s`, 'green');
@@ -2001,7 +2001,7 @@ async function runCodeQLAnalysis(codeqlCommand: string, codeqlDatabasePath: stri
     } else {
         log(`  [WARN] CodeQL analysis failed with exit code ${codeqlExitCode}`, 'yellow');
         securityTestsRun.staticAnalysis.codeql = true;
-        
+
         const codeqlJsonPath = path.join(testRunnerReportJsonDir, 'codeql-results.json');
         const codeqlResult = {
             name: 'CodeQL Static Analysis',
@@ -2038,10 +2038,10 @@ async function runCodeQLTest(securityTestsRun: SecurityTestResults): Promise<voi
     } catch (error: unknown) {
         const codeqlJsonPath = path.join(testRunnerReportJsonDir, 'codeql-results.json');
         const errorMessage = error instanceof Error ? error.message : String(error);
-        
+
         const isNotInstalled = error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT';
         const isCommandSyntaxError = errorMessage.includes('Unmatched arguments') || errorMessage.includes('database creation failed');
-        
+
         if (isNotInstalled) {
             log('  [FAIL] CodeQL not installed', 'red');
             log('    REQUIRED: Download from https://github.com/github/codeql-cli-binaries/releases', 'yellow');
@@ -2053,7 +2053,7 @@ async function runCodeQLTest(securityTestsRun: SecurityTestResults): Promise<voi
             }
             securityTestsRun.staticAnalysis.codeql = true;
         }
-        
+
         let errorOutput = errorMessage;
         if (error instanceof Error && error.message.includes('CodeQL database creation failed')) {
             const outputMatch = error.message.match(/CodeQL database creation failed with exit code \d+: (.+)/);
@@ -2061,7 +2061,7 @@ async function runCodeQLTest(securityTestsRun: SecurityTestResults): Promise<voi
                 errorOutput = outputMatch[1];
             }
         }
-        
+
         const codeqlResult = {
             name: 'CodeQL Static Analysis',
             status: isNotInstalled ? 'failed' : 'warning',
@@ -2069,7 +2069,7 @@ async function runCodeQLTest(securityTestsRun: SecurityTestResults): Promise<voi
             errorType: isNotInstalled ? 'not_installed' : 'execution_error',
             duration: parseFloat(((Date.now() - codeqlStartTime) / 1000).toFixed(1)),
             findings: 0,
-            summary: isNotInstalled 
+            summary: isNotInstalled
                 ? 'CodeQL not installed - download from https://github.com/github/codeql-cli-binaries/releases'
                 : `CodeQL execution failed: ${errorMessage}`,
             errorMessage: errorOutput,
@@ -2103,8 +2103,8 @@ async function runSemgrepTest(securityTestsRun: SecurityTestResults): Promise<vo
         });
 
         const isNotInstalled = output.includes('is not recognized') ||
-                               output.includes('command not found') ||
-                               (code !== 0 && code !== 1 && code !== 2 && !fs.existsSync(semgrepRawOutputPath));
+            output.includes('command not found') ||
+            (code !== 0 && code !== 1 && code !== 2 && !fs.existsSync(semgrepRawOutputPath));
 
         if (isNotInstalled) {
             log('  [FAIL] Semgrep not installed', 'red');
@@ -2234,7 +2234,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
         const { code, output } = await runCommandWithOutput(trivyCommand, trivyArgs, {
             toolLogStream: trivyLogStream,
         });
-        
+
         if (code === 0 || code === 1) {
             const trivyResultsPath = path.join(testRunnerReportJsonDir, 'trivy-results.json');
             let vulns = 0;
@@ -2248,7 +2248,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                         NextUpdate?: string;
                         Version?: number;
                     };
-                    Results?: Array<{ 
+                    Results?: Array<{
                         Target?: string;
                         Type?: string;
                         Class?: string;
@@ -2256,13 +2256,13 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                         Packages?: Array<{ Name?: string; Version?: string }>;
                     }>;
                 };
-                
+
                 if (fs.existsSync(trivyResultsPath)) {
                     trivyJson = JSON.parse(fs.readFileSync(trivyResultsPath, 'utf-8'));
                 } else {
                     trivyJson = JSON.parse(output);
                 }
-                
+
                 if (trivyJson.Metadata) {
                     dbMetadata = {
                         updatedAt: trivyJson.Metadata.UpdatedAt,
@@ -2270,7 +2270,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                         version: trivyJson.Metadata.Version
                     };
                 }
-                
+
                 if (trivyJson.Results) {
                     vulns = trivyJson.Results.flatMap((r) => r.Vulnerabilities || []).length;
                     targets = trivyJson.Results.map((r) => {
@@ -2294,7 +2294,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
             } catch {
                 log('    Trivy scan completed', 'green');
             }
-            
+
             let dbDownloadFailed = false;
             let dbDownloadError: string | undefined;
             if (output.includes('FATAL') && (output.includes('failed to download vulnerability DB') || output.includes('DB error'))) {
@@ -2307,11 +2307,11 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                     dbDownloadError = 'Failed to download vulnerability database from all configured public registries - using cached database';
                 }
             }
-            
+
             const trivyJsonPath = path.join(testRunnerReportJsonDir, 'trivy-results.json');
             let status: 'passed' | 'failed' | 'warning' = vulns === 0 ? 'passed' : 'failed';
             let summary = vulns === 0 ? 'No CRITICAL or HIGH vulnerabilities found' : `Found ${vulns} CRITICAL or HIGH vulnerabilities`;
-            
+
             if (dbDownloadFailed) {
                 status = 'warning';
                 summary = `${summary} (WARNING: Vulnerability database may be outdated - ${dbDownloadError})`;
@@ -2319,7 +2319,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                 log(`    [WARN] ${dbDownloadError}`, 'yellow');
                 log('    [WARN] Scan completed but results may be incomplete due to outdated database', 'yellow');
             }
-            
+
             const trivyResult = {
                 name: 'Trivy Vulnerability Scanner',
                 status: status,
@@ -2333,7 +2333,7 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
                 dbMetadata: dbMetadata,
             };
             fs.writeFileSync(trivyJsonPath, JSON.stringify(trivyResult, null, 2), 'utf-8');
-            
+
             securityTestsRun.staticAnalysis.trivy = true;
             const trivyDuration = ((Date.now() - trivyStartTime) / 1000).toFixed(1);
             if (dbDownloadFailed) {
@@ -2357,14 +2357,14 @@ async function runTrivyTest(securityTestsRun: SecurityTestResults): Promise<void
     } catch (error: unknown) {
         const trivyJsonPath = path.join(testRunnerReportJsonDir, 'trivy-results.json');
         const errorMessage = error instanceof Error ? error.message : String(error);
-        
+
         if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
             log('  [FAIL] Trivy not installed', 'red');
             log('    REQUIRED: Download from https://aquasecurity.github.io/trivy/latest/getting-started/installation/', 'yellow');
         } else {
             log(`  [WARN] Trivy had issues: ${errorMessage}`, 'yellow');
         }
-        
+
         const trivyResult = {
             name: 'Trivy Vulnerability Scanner',
             status: 'failed',
@@ -2396,9 +2396,9 @@ async function runStaticAnalysis(testOptions: TestOptions, securityTestsRun: Sec
 
     log('  All static analysis tools completed', 'green');
 
-    const staticAnalysisRun = securityTestsRun.staticAnalysis.semgrep && 
-                              securityTestsRun.staticAnalysis.codeql && 
-                              securityTestsRun.staticAnalysis.trivy;
+    const staticAnalysisRun = securityTestsRun.staticAnalysis.semgrep &&
+        securityTestsRun.staticAnalysis.codeql &&
+        securityTestsRun.staticAnalysis.trivy;
     if (!staticAnalysisRun) {
         log('  [WARN] Some static analysis tools failed or were not installed', 'yellow');
     }
@@ -2407,19 +2407,19 @@ async function runStaticAnalysis(testOptions: TestOptions, securityTestsRun: Sec
 function printSecuritySummary(securityTestsRun: SecurityTestResults): void {
     console.log('');
     log('  Security Test Summary (per SECURITY_TESTING.md):', 'cyan');
-    log(`    Schemathesis (API Fuzzing):     ${securityTestsRun.schemathesis ? '[PASS] Run' : '[SKIP] Skipped'}`, 
+    log(`    Schemathesis (API Fuzzing):     ${securityTestsRun.schemathesis ? '[PASS] Run' : '[SKIP] Skipped'}`,
         securityTestsRun.schemathesis ? 'green' : 'yellow');
-    log(`    k6 (Concurrency/Load):         ${securityTestsRun.k6 ? '[PASS] Run' : '[SKIP] Skipped'}`, 
+    log(`    k6 (Concurrency/Load):         ${securityTestsRun.k6 ? '[PASS] Run' : '[SKIP] Skipped'}`,
         securityTestsRun.k6 ? 'green' : 'yellow');
-    
-    const mutationStatus = securityTestsRun.mutation 
-        ? '[PASS] All mutants killed' 
-        : securityTestsRun.mutationAttempted 
-            ? '[FAIL] Some mutants survived' 
+
+    const mutationStatus = securityTestsRun.mutation
+        ? '[PASS] All mutants killed'
+        : securityTestsRun.mutationAttempted
+            ? '[FAIL] Some mutants survived'
             : '[SKIP] No @mutation JSDoc tags detected';
-    log(`    Stryker (Mutation):             ${mutationStatus}`, 
+    log(`    Stryker (Mutation):             ${mutationStatus}`,
         securityTestsRun.mutation ? 'green' : securityTestsRun.mutationAttempted ? 'red' : 'yellow');
-    
+
     if (securityTestsRun.mutationAttempted || securityTestsRun.mutation) {
         const mutationJsonPath = path.join(testRunnerReportJsonDir, 'mutation-results.json');
         if (fs.existsSync(mutationJsonPath)) {
@@ -2439,20 +2439,20 @@ function printSecuritySummary(securityTestsRun: SecurityTestResults): void {
             }
         }
     }
-    
-    const observabilityStatus = securityTestsRun.observability 
-        ? '[PASS] Run' 
-        : securityTestsRun.observabilityAttempted 
-            ? '[FAIL] Attempted' 
+
+    const observabilityStatus = securityTestsRun.observability
+        ? '[PASS] Run'
+        : securityTestsRun.observabilityAttempted
+            ? '[FAIL] Attempted'
             : '[SKIP] Skipped';
-    log(`    Observability Verification:     ${observabilityStatus}`, 
+    log(`    Observability Verification:     ${observabilityStatus}`,
         securityTestsRun.observability ? 'green' : securityTestsRun.observabilityAttempted ? 'red' : 'yellow');
-    
+
     log('    Static Analysis:', 'cyan');
     const semgrepStatus = securityTestsRun.staticAnalysis.semgrep ? '[PASS] Run' : '[FAIL] Not installed';
-    log(`      - Semgrep:                    ${semgrepStatus}`, 
+    log(`      - Semgrep:                    ${semgrepStatus}`,
         securityTestsRun.staticAnalysis.semgrep ? 'green' : 'red');
-    
+
     const codeqlStatusFile = path.join(testRunnerReportJsonDir, 'codeql-results.json');
     let codeqlStatus = securityTestsRun.staticAnalysis.codeql ? '[PASS] Run' : '[FAIL] Not installed';
     let codeqlStatusColor: 'green' | 'yellow' | 'red' = securityTestsRun.staticAnalysis.codeql ? 'green' : 'red';
@@ -2471,9 +2471,9 @@ function printSecuritySummary(securityTestsRun: SecurityTestResults): void {
         }
     }
     log(`      - CodeQL:                     ${codeqlStatus}`, codeqlStatusColor);
-    
+
     const trivyStatus = securityTestsRun.staticAnalysis.trivy ? '[PASS] Run' : '[FAIL] Not installed';
-    log(`      - Trivy:                      ${trivyStatus}`, 
+    log(`      - Trivy:                      ${trivyStatus}`,
         securityTestsRun.staticAnalysis.trivy ? 'green' : 'red');
 }
 
@@ -2493,23 +2493,23 @@ async function generateTestReport(jsonOutputPath: string): Promise<void> {
     console.log('');
     log('STEP 6/9: Generating HTML test report...', 'yellow');
 
-        if (fs.existsSync(jsonOutputPath)) {
-            log(`  Found test results JSON: ${jsonOutputPath}`, 'green');
-            log('  Generating HTML report...', 'cyan');
+    if (fs.existsSync(jsonOutputPath)) {
+        log(`  Found test results JSON: ${jsonOutputPath}`, 'green');
+        log('  Generating HTML report...', 'cyan');
 
-            const reportExitCode = await runCommand('npx', [
-                '--yes',
-                'tsx',
-                path.join(testRunnerScriptsDir, 'report', 'generate-test-report.ts'),
-            ]);
+        const reportExitCode = await runCommand('npx', [
+            '--yes',
+            'tsx',
+            path.join(testRunnerScriptsDir, 'report', 'generate-test-report.ts'),
+        ]);
 
-            if (reportExitCode === 0) {
-                log('  [OK] HTML report generated successfully', 'green');
-            } else {
-                log(`  [WARN] Report generation had issues (exit code: ${reportExitCode})`, 'yellow');
-            }
+        if (reportExitCode === 0) {
+            log('  [OK] HTML report generated successfully', 'green');
         } else {
-            log(`  [WARN] Test results JSON not found: ${jsonOutputPath}`, 'yellow');
+            log(`  [WARN] Report generation had issues (exit code: ${reportExitCode})`, 'yellow');
+        }
+    } else {
+        log(`  [WARN] Test results JSON not found: ${jsonOutputPath}`, 'yellow');
         log('     Report generation skipped', 'gray');
     }
 }
@@ -2544,23 +2544,23 @@ async function openTestReport(reportPath: string): Promise<void> {
 }
 
 function printSummary(jsonOutputPath: string, reportPath: string, coverageHtmlPath: string, startTime: number): void {
-        console.log('');
-        log('================================================================', 'green');
-        log('         Cloudflare Worker Tests Complete!', 'green');
-        log('================================================================', 'green');
-        console.log('');
+    console.log('');
+    log('================================================================', 'green');
+    log('         Cloudflare Worker Tests Complete!', 'green');
+    log('================================================================', 'green');
+    console.log('');
 
     let totalTests = 0;
     let totalPassed = 0;
     let totalFailed = 0;
 
-        if (fs.existsSync(jsonOutputPath)) {
-            try {
-                const vitestResults = JSON.parse(fs.readFileSync(jsonOutputPath, 'utf-8'));
+    if (fs.existsSync(jsonOutputPath)) {
+        try {
+            const vitestResults = JSON.parse(fs.readFileSync(jsonOutputPath, 'utf-8'));
             totalTests += vitestResults.numTotalTests;
             totalPassed += vitestResults.numPassedTests;
             totalFailed += vitestResults.numFailedTests;
-            } catch {
+        } catch {
             totalTests += 0;
         }
     }
@@ -2577,13 +2577,13 @@ function printSummary(jsonOutputPath: string, reportPath: string, coverageHtmlPa
     if (fs.existsSync(reportPath)) {
         log(`[REPORT] Test Report: ${reportPath}`, 'cyan');
     }
-        if (fs.existsSync(coverageHtmlPath)) {
-            log(`[REPORT] Coverage Report: ${coverageHtmlPath}`, 'cyan');
-        }
-        console.log('');
+    if (fs.existsSync(coverageHtmlPath)) {
+        log(`[REPORT] Coverage Report: ${coverageHtmlPath}`, 'cyan');
+    }
+    console.log('');
 
-        const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-        log(`Total execution time: ${totalDuration} s`, 'cyan');
+    const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
+    log(`Total execution time: ${totalDuration} s`, 'cyan');
 }
 
 async function cleanup(workerStartedByScript: boolean, workerJob: ReturnType<typeof spawn> | null, workerRunning: boolean): Promise<void> {
@@ -2616,7 +2616,7 @@ async function main() {
     let workerJob: ReturnType<typeof spawn> | null = null;
     let workerStartedByScript = false;
     let workerRunning = false;
-    
+
     const jsonOutputPath = path.join(testRunnerReportJsonDir, 'test-results.json');
     const coverageHtmlPath = path.join(testRunnerCoverageDir, 'index.html');
     const reportPath = path.join(testRunnerReportsDir, 'test-report.html');

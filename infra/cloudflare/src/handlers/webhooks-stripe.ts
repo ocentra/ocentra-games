@@ -25,6 +25,7 @@ import {
 import type { PaymentEvent } from '@ocentra/endpoint-domain/schemas/payments';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { verifyStripeSignatureHeader } from '@/utils/stripe-webhook-signature';
+import { StripeApiVersion } from '@/constants/stripe';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -58,7 +59,7 @@ async function resolveDisputeUserIdAndPaymentId(
   try {
     const Stripe = (await import('stripe')).default;
     const stripe = new Stripe(secret, {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: StripeApiVersion,
       httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
     });
     const charge = await stripe.charges.retrieve(chargeId, { expand: ['payment_intent'] });
