@@ -19,7 +19,7 @@ async function initializeAdmin() {
       const serviceAccount = JSON.parse(serviceAccountJson) as admin.ServiceAccount;
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        projectId: projectId || serviceAccount.project_id,
+        projectId: projectId || serviceAccount.projectId,
       });
     } else if (projectId) {
       admin.initializeApp({
@@ -139,4 +139,3 @@ async function checkAdminStatus(email?: string) {
 
 const email = process.argv[2];
 checkAdminStatus(email);
-

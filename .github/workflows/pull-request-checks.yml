@@ -59,7 +59,11 @@ jobs:
 
       - name: Build Solana contract
         working-directory: Rust/ocentra-games
-        run: anchor build
+        run: |
+          if ! anchor build; then
+            anchor keys sync
+            anchor build
+          fi
 
       - name: Upload IDL artifact
         uses: actions/upload-artifact@v4
