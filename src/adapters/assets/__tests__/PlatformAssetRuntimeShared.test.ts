@@ -58,6 +58,21 @@ describe('PlatformAssetRuntimeShared', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
+  it('resolveAssetDownloadUrl: uses assetsPublicUrl when set even if worker URL is missing', async () => {
+    const fetchMock = vi.fn();
+    global.fetch = fetchMock as typeof fetch;
+
+    const out = await resolveAssetDownloadUrl(
+      { guid: 'card-guid' },
+      {
+        assetsPublicUrl: 'https://assets.example.com/api/v1/assets',
+        r2Assets: undefined,
+      }
+    );
+    expect(out).toBe('https://assets.example.com/api/v1/assets/card-guid');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('resolveAssetDownloadUrl: throws when worker URL is missing', async () => {
     await expect(resolveAssetDownloadUrl({ guid: 'x' }, { assetsPublicUrl: '' })).rejects.toThrow(
       /worker URL is empty/

@@ -83,6 +83,7 @@
     "upload-assets": "npx tsx --tsconfig tsconfig.node.json scripts/build/upload-assets.ts",
     "sync:assets:prod": "npx tsx scripts/sync-assets-to-prod.ts",
     "sync:assets:dev": "cross-env SYNC_ENV=development npx tsx scripts/sync-assets-to-prod.ts",
+    "wipe:r2:remote-assets": "npx tsx infra/cloudflare/scripts/wipe-remote-r2-asset-buckets.ts",
     "validate:meta-system": "npx tsx --tsconfig tsconfig.node.json src/services/assets/__tests__/integration/validate-meta-system.ts",
     "validate:required-assets": "npx tsx --tsconfig tsconfig.node.json scripts/required-assets-report.ts",
     "test:meta-tdd": "npx tsx --tsconfig tsconfig.node.json src/services/assets/__tests__/integration/test-meta-system-comprehensive.ts",
@@ -175,6 +176,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.1022.0",
     "@babel/plugin-proposal-decorators": "^7.28.0",
     "@babel/plugin-transform-class-properties": "^7.27.1",
     "@babel/plugin-transform-class-static-block": "^7.28.3",

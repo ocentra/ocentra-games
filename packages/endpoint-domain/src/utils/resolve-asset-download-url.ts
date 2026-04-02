@@ -40,6 +40,16 @@ export async function resolveAssetDownloadUrl(
     return assetDownloadUrlResolveCache.get(cacheKey)!;
   }
 
+  const publicBase = storageConfig.assetsPublicUrl?.trim().replace(/\/$/, '') ?? '';
+  const idKey = request.guid ?? request.hash ?? request.checksum;
+  if (publicBase && idKey) {
+    const directUrl = `${publicBase}/${encodeURIComponent(idKey)}`;
+    if (cacheKey && assetDownloadUrlResolveCache.size < ASSET_DOWNLOAD_URL_RESOLVE_CACHE_MAX) {
+      assetDownloadUrlResolveCache.set(cacheKey, directUrl);
+    }
+    return directUrl;
+  }
+
   const workerBase = getWorkerBaseUrl(storageConfig);
   if (!workerBase) {
     throw new Error(

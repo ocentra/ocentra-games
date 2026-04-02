@@ -22,6 +22,15 @@
 #
 # If any of the above are missing, `download-url` returns 503 (presign not configured)
 # unless you set ASSETS_PUBLIC_URL to a public CDN base (then delivery is `public`).
+#
+# --- Optional: wipe script only (`npm run wipe:r2:remote-assets` from repo root) ---
+# Do not put these in Worker secrets unless you add a Worker wipe route. Prefer a
+# second R2 API token (Object Read & Write) used only locally. The wipe script reads
+# R2_WIPE_ACCESS_KEY_ID / R2_WIPE_SECRET_ACCESS_KEY first; if unset, it falls back
+# to R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY. Keep presign keys read-only and use
+# R2_WIPE_* for deletes.
+# R2_WIPE_ACCESS_KEY_ID=
+# R2_WIPE_SECRET_ACCESS_KEY=
 
 CLOUDFLARE_ACCOUNT_ID=d01281f9b13a2a8c46dfa2c516094de6
 R2_ASSETS_BUCKET_NAME=ocentra-assets-test

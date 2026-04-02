@@ -1,8 +1,8 @@
 name: Pull Request Checks
 
 on:
-  pull_request:
-    branches: [ main, develop, production ]
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      
+
       - name: Run linter
         run: npm run lint
-        
+
       - name: Run type check
         run: npm run type-check
 
@@ -34,30 +34,30 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-          
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: Rust/ocentra-games
-          
+
       - name: Install Solana CLI
         run: |
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
           echo "/home/runner/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
-          
+
       - name: Install Anchor
         run: |
           cargo install --git https://github.com/coral-xyz/anchor avm --locked --force
           avm install latest
           avm use latest
-          
+
       - name: Build Solana contract
         working-directory: Rust/ocentra-games
         run: anchor build
-        
+
       - name: Upload IDL artifact
         uses: actions/upload-artifact@v4
         with:
@@ -73,13 +73,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      
+
       - name: Download IDL artifact
         uses: actions/download-artifact@v4
         with:
           name: solana-idl
           path: Rust/ocentra-games/target/idl/
-          
+
       - name: Run Integration Tests
         run: npm run test:integration
         env:
@@ -94,7 +94,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      
+
       - name: Build project
         run: npm run build
 

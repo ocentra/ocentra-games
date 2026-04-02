@@ -1,16 +1,8 @@
-# Dev bucket: ocentra-assets-test. Worker: claim-storage-dev.
-# Add GitHub secret CLAIM_STORAGE_ASSETS_URL_DEV = https://<claim-storage-dev-host> (no trailing path).
-# Optional: CLAIM_STORAGE_ASSETS_TOKEN_DEV, ASSETS_WORKER_URL_DEV, ASSETS_WORKER_TOKEN_DEV (sync script fallbacks).
+# Superseded by ci-gate.yml (push to main → R2 wipe/sync → deploy:dev → Pages).
+# Kept for manual-only asset/worker runs without a full CI Gate.
 name: Development R2 sync and dev Worker
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'packages/asset-editor/Resources/**'
-      - 'scripts/sync-assets-to-prod.ts'
-      - 'scripts/assets/**'
-      - 'infra/cloudflare/**'
   workflow_dispatch:
 
 concurrency:

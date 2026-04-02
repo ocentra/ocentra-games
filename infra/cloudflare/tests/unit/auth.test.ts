@@ -3,11 +3,11 @@ import { testName } from '@tests/helpers/test-name';
 import { beforeAll, afterAll } from 'vitest';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
-import { createExpiredToken, createForgedToken, createTokenWithInvalidIssuer, createTokenWithInvalidAudience, buildTestApiUrlForEndpoint, buildTestApiUrlWithQuery, getValidOriginHeaders } from '@tests/helpers/test-helpers';
+import { createExpiredToken, createForgedToken, createTokenWithInvalidIssuer, createTokenWithInvalidAudience, buildTestApiUrlForEndpoint, getValidOriginHeaders } from '@tests/helpers/test-helpers';
+import { AUTH_PROBE_URL, authProbeRequestInit } from '@tests/helpers/auth-probe-request';
 import { formatBearerToken } from '@/utils/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { HttpMethod, HttpStatus, HttpHeader,  HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
+import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestTokenValue } from '@ocentra/endpoint-domain/constants/auth';
 import { TestConfig } from '@tests/constants/test-constants';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -67,10 +67,7 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects requests without Authorization header'), async () => {
       const token = await createToken();
       logInfo('[TEST] Testing auth rejection for missing Authorization header', getStackTrace(), LOG_TEST_OPERATIONS);
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: getValidOriginHeaders(TestConfig.TestCorsOrigin)
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit(getValidOriginHeaders(TestConfig.TestCorsOrigin)), token);
 
       logInfo('[TEST] Auth rejection response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -87,13 +84,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
 
   it(testName('auth: rejects requests with invalid token format'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: TestConfig.InvalidTokenFormat
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: TestConfig.InvalidTokenFormat
+      }), token);
 
       logInfo('[TEST] Invalid token format response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -104,13 +98,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
 
   it(testName('auth: rejects requests with malformed JWT'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(TestTokenValue.NotValidJwt)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(TestTokenValue.NotValidJwt)
+      }), token);
 
       logInfo('[TEST] Malformed JWT response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -122,13 +113,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects algorithm-confusion token with alg=none'), async () => {
       const token = await createToken();
       const algNoneToken = createJwtWithAlgorithm('none');
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(algNoneToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(algNoneToken)
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);
@@ -137,13 +125,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects algorithm-confusion token with HS256 header'), async () => {
       const token = await createToken();
       const hs256Token = createJwtWithAlgorithm('HS256');
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(hs256Token)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(hs256Token),
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);
@@ -151,13 +136,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
 
   it(testName('auth: rejects requests with invalid token structure'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(TestTokenValue.InvalidToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(TestTokenValue.InvalidToken)
+      }), token);
 
       logInfo('[TEST] Invalid token structure response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -167,13 +149,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects requests with expired token'), async () => {
       const token = await createToken();
       const expiredToken = createExpiredToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestOriginExample),
-          [HttpHeader.Authorization]: formatBearerToken(expiredToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestOriginExample),
+        [HttpHeader.Authorization]: formatBearerToken(expiredToken)
+      }), token);
 
       logInfo('[TEST] Expired token response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -183,13 +162,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects requests with invalid issuer'), async () => {
       const token = await createToken();
       const invalidIssuerToken = createTokenWithInvalidIssuer();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestOriginExample),
-          [HttpHeader.Authorization]: formatBearerToken(invalidIssuerToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestOriginExample),
+        [HttpHeader.Authorization]: formatBearerToken(invalidIssuerToken),
+      }), token);
 
       logInfo('[TEST] Invalid issuer response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -199,13 +175,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects requests with invalid audience'), async () => {
       const token = await createToken();
       const invalidAudToken = createTokenWithInvalidAudience();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestOriginExample),
-          [HttpHeader.Authorization]: formatBearerToken(invalidAudToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestOriginExample),
+        [HttpHeader.Authorization]: formatBearerToken(invalidAudToken)
+      }), token);
 
       logInfo('[TEST] Invalid audience response', getStackTrace(), { status: response.status }, LOG_TEST_RESPONSE_DETAILS);
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -215,13 +188,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('auth: rejects requests with forged signature'), async () => {
       const token = await createToken();
       const forgedToken = createForgedToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestOriginExample),
-          [HttpHeader.Authorization]: formatBearerToken(forgedToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestOriginExample),
+        [HttpHeader.Authorization]: formatBearerToken(forgedToken)
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);

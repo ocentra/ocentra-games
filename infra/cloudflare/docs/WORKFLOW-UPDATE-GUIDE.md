@@ -1,27 +1,57 @@
 # Workflow Update Guide — Align GitHub Actions with Cloudflare
 
-**Purpose:** Single reference for updating `.github/workflows/` (production-deploy, production-r2-worker, **development-r2-worker**, cloudflare-security-tests, pull-request, sync-assets) after Cloudflare and test runner changes.
+**Purpose:** Single reference for updating `.github/workflows/` (ci-gate, production-deploy, production-r2-worker, **development-r2-worker**, cloudflare-security-tests, pull-request-checks, sync-assets) after Cloudflare and test runner changes.
 
-**Last updated:** 2026-03-31
+**Last updated:** 2026-04-01
 
 ---
 
-## CI Shape
+## CI Shape (ordered gate)
+
+**`.github/workflows/ci-gate.yml`** is the single entry for PRs and pushes to `main`, `develop`, and `production`. It runs **in order**:
+
+1. **Secret Scan** (`secret-scan.yml`)
+2. **Cloudflare Preflight** (`cloudflare-preflight.yml`) — needs secret-scan
+3. **Pull Request Checks** (`pull-request-checks.yml`) — lint, typecheck, unit, Rust, Solana integration, web build, mobile smoke — needs preflight
+4. **Cloudflare Security Tests** (`cloudflare-security-tests.yml`) — needs pull-request-checks
+5. **Deploy (push only):** after Cloudflare Security Tests pass — **`deploy-preview-main`** on push to `main`, **`deploy-production-pages`** on push to `production` (`wrangler pages deploy` from GitHub Actions)
+
+The former standalone triggers on `secret-scan`, `cloudflare-preflight`, `pull-request`, and `cloudflare-security-tests` were removed so work is not duplicated in parallel; those workflows are now **`workflow_call`** + optional **`workflow_dispatch`** for manual reruns.
 
 ```mermaid
-flowchart LR
-  PR[Pull request] --> PRWF[pull-request workflow]
-  Main[Push main] --> Sec[cloudflare-security-tests]
-  Main -->|paths| DevR2[development-r2-worker dev R2 + claim-storage-dev]
-  Dispatch[workflow_dispatch] --> Deploy[production-deploy]
-  Deploy --> Worker[wrangler deploy production]
-  ProdPush[Push production] --> Pages[Cloudflare Pages build]
-  ProdPush --> R2W[production-r2-worker prod R2 + claim-storage]
+flowchart TD
+  PR[PR or push] --> CG[ci-gate.yml]
+  CG --> S[secret-scan]
+  S --> P[cloudflare-preflight]
+  P --> Q[pull-request-checks]
+  Q --> CF[cloudflare-security-tests]
+  CF --> R2M[sync-r2-main wipe or prod R2]
+  R2M --> WD[deploy worker dev or prod]
+  WD --> PG[Pages deploy preview or production]
+  Manual[workflow_dispatch] --> R2Manual[development-r2-worker or production-r2-worker]
+  Manual --> PD[production-deploy.yml full manual deploy]
 ```
 
-**Push to `main` (filtered paths):** **`development-r2-worker.yml`** runs `sync:assets:dev --apply --prune` to **`ocentra-assets-test`**, then **`npm run deploy:dev`** (`claim-storage-dev`). Requires GitHub secret **`CLAIM_STORAGE_ASSETS_URL_DEV`**.
+**Push to `main`:** **`ci-gate.yml`** runs (after tests): **`sync-r2-main`** → `npm run sync:assets:dev -- --apply --prune` → **`ocentra-assets-test`**, then **`deploy-worker-dev`**, then **`deploy-preview-main`** (Pages). Sync is **incremental**: local files are hashed with an **mtime+size cache** (`infra/cloudflare/.wrangler/asset-hash-cache.json`, restored via **actions/cache** in CI); remote listing uses worker **MD5/etag** diff so **unchanged objects are not re-uploaded**. **`--prune`** removes remote keys with no local file. Optional one-time **full bucket reset**: run `npm run sync:assets:dev -- --apply --prune --wipe` locally or add `--wipe` temporarily. Requires **`CLAIM_STORAGE_ASSETS_URL_DEV`**. **`development-r2-worker.yml`** is **manual-only** (`workflow_dispatch`) for break-glass sync/worker without the full gate.
 
-**Push to `production`:** Cloudflare Pages builds the web app from Git. **`production-r2-worker.yml`** runs `sync:assets:prod --apply --prune` and **`wrangler deploy`** (prod Worker) so R2 assets and the Worker match the branch (Pages alone does not upload game assets to R2).
+**Push to `production`:** Same pattern for **`sync-r2-production`** → **`ocentra-assets`**. **`production-r2-worker.yml`** is **manual-only** (`workflow_dispatch`).
+
+---
+
+## Cloudflare dashboard checklist (CI Gate + Pages)
+
+To avoid **two** production or preview builds (GitHub Actions + Cloudflare automatic Git builds), align the dashboard with this repo:
+
+1. **Workers & Pages → ocentra-games → Settings → Builds → Branch control**
+   - **Production branch:** `production` (unchanged if that is your branch).
+   - **Disable** “Enable automatic production branch deployments” so production Pages updates only after **CI Gate** succeeds and **`deploy-production-pages`** runs.
+2. **Preview deployments:** Set **automatic preview deployments** to **None** (or disable “All non-Production branches”) if you want **only** `deploy-preview-main` from GitHub after CI passes on `main`. If you leave previews automatic, every push to `main` may still trigger a Cloudflare preview **in addition to** the gated deploy (duplicate builds).
+3. **Deploy hooks:** Optional. Not required if you deploy only via **`wrangler pages deploy`** in **`ci-gate.yml`** (same as manual **`production-deploy.yml`** pattern).
+4. **Build watch paths:** If you keep any automatic Git builds enabled, narrow **Include paths** instead of `*` to reduce noise.
+
+After disabling automatic deployments, **first production deploy** after merge to `production` is performed by the green **CI Gate** run (job **Deploy Pages production**).
+
+**Branch protection:** On `main` and `production`, require the jobs that always run on PRs: **`secret-scan`**, **`cloudflare-preflight`**, **`pull-request-checks`**, **`cloudflare-security`** (names appear after the first **CI Gate** run). Do **not** require deploy or R2 jobs (**`deploy-preview-main`**, **`deploy-production-pages`**, **`sync-r2-main`**, **`sync-r2-production`**, **`deploy-worker-dev`**, **`deploy-worker-prod`**): they are **skipped** on pull requests (push-only) and can block merges incorrectly.
 
 ---
 
@@ -112,9 +142,9 @@ flowchart LR
 
 **File:** `.github/workflows/production-deploy.yml`
 
-**Triggers:**
-- **Automatic:** When **Cloudflare Security Tests** completes successfully on `main` (`workflow_run`). Only the **worker** is deployed (job `deploy-on-green`), using the commit that passed CI.
-- **Manual:** `workflow_dispatch` from the Actions tab. Runs full deploy: build web app → deploy to Cloudflare Pages → deploy worker.
+**Triggers:** **`workflow_dispatch` only** — manual full deploy from the Actions tab: build web app → deploy to Cloudflare Pages → sync production R2 → deploy Worker.
+
+**Default path for Pages:** Push to `main` / `production` goes through **`ci-gate.yml`**, which deploys Pages after **CI Gate** passes (`deploy-preview-main` / `deploy-production-pages`). Use **`production-deploy.yml`** when you need a **manual** full stack deploy without a branch push, or as a break-glass path.
 
 When updating:
 
@@ -131,7 +161,7 @@ When updating:
 
 **File:** `.github/workflows/cloudflare-security-tests.yml`
 
-**Triggers:** Push to `main` only runs the full suite (no path filter). Push to other branches does not run this workflow. Pull requests to main/develop use path filters. Manual: `workflow_dispatch`.
+**Triggers:** **`workflow_call`** from **`ci-gate.yml`** (after secret scan → preflight → pull-request-checks). Manual: **`workflow_dispatch`** for reruns without running the full gate.
 
 **Log bridge and CI tunnel:** Both **cloudflare-tests** and **cloudflare-dynamic-security** use the same pattern: start the log bridge on the runner, then start the **CI tunnel** (separate hostname, see [TUNNEL-CI.md](TUNNEL-CI.md)) so the worker can reach the bridge. Each job sets `LOG_BRIDGE_URL` to the CI hostname (e.g. `https://ocentra-log-bridge-ci.ocentra.ca`). Secret `CLOUDFLARE_TUNNEL_CI_TOKEN` is required for both jobs.
 
@@ -147,12 +177,13 @@ When updating:
 
 ---
 
-## 5. Pull-request workflow (future)
+## 5. Pull-request checks workflow
 
-**File:** `.github/workflows/pull-request.yml`
+**File:** `.github/workflows/pull-request-checks.yml`
 
-- Runs at repo root: lint, type-check, unit (SKIP_SOLANA_TESTS), Rust build, Solana integration, web build.
-- When updating: ensure Node version and scripts match root package.json; Cloudflare-specific checks are in cloudflare-security-tests, not here.
+- Invoked only by **`ci-gate.yml`** (`workflow_call`) or **`workflow_dispatch`**.
+- Runs at repo root: lint, type-check, unit (SKIP_SOLANA_TESTS), Rust build, Solana integration, web build, mobile smoke E2E.
+- When updating: ensure Node version and scripts match root `package.json`; Cloudflare-specific checks stay in **`cloudflare-security-tests.yml`** (runs after these checks).
 
 ---
 

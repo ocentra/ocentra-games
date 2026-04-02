@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
 import { resolveAssetSourceRoot } from './assets/assetSourceRoot';
 import { buildAppAssetSlices } from './assets/buildAppAssetSlices';
@@ -18,8 +18,17 @@ interface SyncConfig {
   workerToken: string;
   dryRun: boolean;
   prune: boolean;
+  wipe: boolean;
+  useHashCache: boolean;
   concurrency: number;
   resourcesDir: string;
+}
+
+interface FileHashCacheEntry {
+  mtimeMs: number;
+  size: number;
+  md5: string;
+  sha256: string;
 }
 
 interface LocalFile {
@@ -48,6 +57,9 @@ function getSyncConfig(args: string[]): SyncConfig {
   const apply = args.includes('--apply');
   const dryRun = !apply || args.includes('--dry-run');
   const prune = args.includes('--prune');
+  const wipe = args.includes('--wipe');
+  const useHashCache =
+    !args.includes('--no-hash-cache') && process.env.SYNC_SKIP_HASH_CACHE !== '1';
   const concurrency = Math.max(1, Number(process.env.SYNC_CONCURRENCY || 4));
   const resourcesArg = args.find((arg) => arg.startsWith('--resources-dir='));
   const resourcesDir = resourcesArg
@@ -84,7 +96,18 @@ function getSyncConfig(args: string[]): SyncConfig {
       process.env.ASSETS_WORKER_TOKEN ||
       ''
     );
-  return { env, bucketName, workerUrl, workerToken, dryRun, prune, concurrency, resourcesDir };
+  return {
+    env,
+    bucketName,
+    workerUrl,
+    workerToken,
+    dryRun,
+    prune,
+    wipe,
+    useHashCache,
+    concurrency,
+    resourcesDir,
+  };
 }
 
 function normalizeEtag(input: string | null | undefined): string {
@@ -116,8 +139,52 @@ function remoteContentDigestMatchesLocalMd5(remote: RemoteObject, localMd5: stri
   return false;
 }
 
-async function listLocalFiles(root: string): Promise<LocalFile[]> {
+function hashCachePath(): string {
+  return join(process.cwd(), 'infra', 'cloudflare', '.wrangler', 'asset-hash-cache.json');
+}
+
+async function loadHashCache(enabled: boolean): Promise<Map<string, FileHashCacheEntry>> {
+  if (!enabled) {
+    return new Map();
+  }
+  try {
+    const raw = await readFile(hashCachePath(), 'utf8');
+    const parsed = JSON.parse(raw) as Record<string, FileHashCacheEntry>;
+    const map = new Map<string, FileHashCacheEntry>();
+    for (const [k, v] of Object.entries(parsed)) {
+      if (
+        v &&
+        typeof v.mtimeMs === 'number' &&
+        typeof v.size === 'number' &&
+        typeof v.md5 === 'string' &&
+        typeof v.sha256 === 'string'
+      ) {
+        map.set(k, v);
+      }
+    }
+    return map;
+  } catch {
+    return new Map();
+  }
+}
+
+async function saveHashCache(enabled: boolean, map: Map<string, FileHashCacheEntry>): Promise<void> {
+  if (!enabled) {
+    return;
+  }
+  const path = hashCachePath();
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, JSON.stringify(Object.fromEntries(map), null, 0), 'utf8');
+}
+
+async function listLocalFiles(
+  root: string,
+  hashCache: Map<string, FileHashCacheEntry>,
+  useHashCache: boolean,
+  stats: { hits: number; misses: number }
+): Promise<LocalFile[]> {
   const files: LocalFile[] = [];
+  const cacheKey = (fullPath: string) => fullPath.replace(/\\/g, '/');
 
   async function walk(dir: string): Promise<void> {
     const entries = await readdir(dir, { withFileTypes: true });
@@ -134,9 +201,35 @@ async function listLocalFiles(root: string): Promise<LocalFile[]> {
       }
 
       const key = relative(root, fullPath).replace(/\\/g, '/');
-      const bytes = await readFile(fullPath);
-      const md5 = createHash('md5').update(bytes).digest('hex');
-      const sha256 = createHash('sha256').update(bytes).digest('hex');
+      const ck = cacheKey(fullPath);
+      let md5: string;
+      let sha256: string;
+
+      if (useHashCache) {
+        const hit = hashCache.get(ck);
+        const mtimeMs = typeof fileStat.mtimeMs === 'number' ? fileStat.mtimeMs : fileStat.mtime.getTime();
+        if (hit && hit.mtimeMs === mtimeMs && hit.size === fileStat.size) {
+          md5 = hit.md5;
+          sha256 = hit.sha256;
+          stats.hits += 1;
+        } else {
+          const bytes = await readFile(fullPath);
+          md5 = createHash('md5').update(bytes).digest('hex');
+          sha256 = createHash('sha256').update(bytes).digest('hex');
+          hashCache.set(ck, {
+            mtimeMs,
+            size: fileStat.size,
+            md5,
+            sha256,
+          });
+          stats.misses += 1;
+        }
+      } else {
+        const bytes = await readFile(fullPath);
+        md5 = createHash('md5').update(bytes).digest('hex');
+        sha256 = createHash('sha256').update(bytes).digest('hex');
+        stats.misses += 1;
+      }
 
       files.push({
         key,
@@ -258,7 +351,13 @@ async function runInBatches<T>(items: T[], concurrency: number, runner: (item: T
   await Promise.all(workers);
 }
 
-async function writeReport(config: SyncConfig, localFiles: LocalFile[], remoteObjects: RemoteObject[], diff: DiffResult): Promise<void> {
+async function writeReport(
+  config: SyncConfig,
+  localFiles: LocalFile[],
+  remoteObjects: RemoteObject[],
+  diff: DiffResult,
+  hashStats: { hits: number; misses: number }
+): Promise<void> {
   const reportDir = join(process.cwd(), 'infra', 'cloudflare', '.wrangler');
   const reportPath = join(reportDir, `sync-assets-report-${config.env}.json`);
   await mkdir(reportDir, { recursive: true });
@@ -272,6 +371,10 @@ async function writeReport(config: SyncConfig, localFiles: LocalFile[], remoteOb
         workerUrl: config.workerUrl,
         dryRun: config.dryRun,
         prune: config.prune,
+        wipe: config.wipe,
+        useHashCache: config.useHashCache,
+        hashCacheHits: hashStats.hits,
+        hashCacheMisses: hashStats.misses,
         localFiles: localFiles.length,
         remoteObjects: remoteObjects.length,
         upload: diff.upload.map((file) => ({ key: file.key, size: file.size, md5: file.md5, sha256: file.sha256 })),
@@ -307,28 +410,60 @@ async function main(): Promise<void> {
     outDir: generatedSlicesDir,
   });
 
+  const hashCache = await loadHashCache(config.useHashCache);
+  const hashStats = { hits: 0, misses: 0 };
   const localFiles = [
-    ...await listLocalFiles(resourcesDir),
-    ...await listLocalFiles(generatedSlicesDir),
+    ...await listLocalFiles(resourcesDir, hashCache, config.useHashCache, hashStats),
+    ...await listLocalFiles(generatedSlicesDir, hashCache, config.useHashCache, hashStats),
   ];
+  await saveHashCache(config.useHashCache, hashCache);
+  if (config.useHashCache) {
+    console.log(
+      `[sync-assets] local hash cache: hits=${hashStats.hits} misses=${hashStats.misses} (mtime+size; --no-hash-cache or SYNC_SKIP_HASH_CACHE=1 to disable)`
+    );
+  }
   if (localFiles.length === 0) {
     console.log('[sync-assets] no local files found, nothing to sync.');
     return;
   }
 
-  const remoteObjects = await listRemoteObjects(config.workerUrl);
+  const remoteListed = await listRemoteObjects(config.workerUrl);
+  let remoteObjects = remoteListed;
+
+  if (config.wipe) {
+    if (config.dryRun) {
+      console.log(
+        `[sync-assets] --wipe (dry-run): would delete ${remoteListed.length} remote object(s), then upload ${localFiles.length} file(s).`
+      );
+      remoteObjects = [];
+    } else {
+      console.log(`[sync-assets] --wipe: deleting ${remoteListed.length} remote object(s) before upload.`);
+      let removed = 0;
+      await runInBatches(remoteListed, config.concurrency, async (object) => {
+        runWranglerDelete(config.bucketName, object.key, config.env);
+        removed += 1;
+        if (removed % 25 === 0 || removed === remoteListed.length) {
+          console.log(`[sync-assets] wiped ${removed}/${remoteListed.length}`);
+        }
+      });
+      remoteObjects = [];
+    }
+  }
+
   const diff = buildDiff(localFiles, remoteObjects, config.prune);
 
   console.log(`[sync-assets] env=${config.env} bucket=${config.bucketName}`);
-  console.log(`[sync-assets] local=${localFiles.length} remote=${remoteObjects.length}`);
+  console.log(`[sync-assets] local=${localFiles.length} remote=${remoteListed.length} (listed)`);
   console.log(`[sync-assets] upload=${diff.upload.length} unchanged=${diff.unchanged.length} delete=${diff.delete.length}`);
   if (!config.dryRun) {
-    console.log(`[sync-assets] apply mode enabled (concurrency=${config.concurrency}, prune=${config.prune})`);
+    console.log(
+      `[sync-assets] apply mode enabled (concurrency=${config.concurrency}, prune=${config.prune}, wipe=${config.wipe})`
+    );
   } else {
     console.log('[sync-assets] dry-run mode (use --apply to execute changes).');
   }
 
-  await writeReport(config, localFiles, remoteObjects, diff);
+  await writeReport(config, localFiles, remoteListed, diff, hashStats);
 
   if (config.dryRun) {
     return;

@@ -9,6 +9,7 @@
     "pretest": "cd ../.. && npm run dev:prep:worker",
     "dev": "npx tsx scripts/seed-assets-local.ts && wrangler dev --env development",
     "seed:assets:local": "npx tsx scripts/seed-assets-local.ts",
+    "wipe:r2:remote-assets": "npx tsx scripts/wipe-remote-r2-asset-buckets.ts",
     "seed:products:local": "npx tsx scripts/seed-products-local.ts",
     "deploy:dev": "npx tsx scripts/deploy-with-version.ts --env development",
     "deploy": "npx tsx scripts/deploy-with-version.ts --config wrangler.production.toml --env production",
@@ -124,6 +125,7 @@
     "test:ui:e2e": "playwright test --config=playwright.test-ui.config.ts"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "^3.787.0",
     "@cloudflare/vitest-pool-workers": "^0.12.5",
     "@cloudflare/workers-types": "^4.20260115.0",
     "@eslint/js": "^9.0.0",

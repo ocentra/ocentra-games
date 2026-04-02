@@ -291,7 +291,7 @@ Configure these in the repo **Settings → Secrets and variables → Actions** s
 | `ASSETS_WORKER_URL_PROD` | `sync:assets:prod` step |
 | `ASSETS_WORKER_TOKEN_PROD` | `sync:assets:prod` step |
 
-**`development-r2-worker.yml`** (push to **`main`**, path filter): syncs to **`ocentra-assets-test`** and deploys **`claim-storage-dev`**. Required: **`CLAIM_STORAGE_ASSETS_URL_DEV`** (base URL of the dev Worker, e.g. `https://claim-storage-dev.<account>.workers.dev`). Optional: `CLAIM_STORAGE_ASSETS_TOKEN_DEV`, `ASSETS_WORKER_URL_DEV`, `ASSETS_WORKER_TOKEN_DEV`.
+**`ci-gate.yml`** (push to **`main`** after CI): **`sync-r2-main`** runs `sync:assets:dev --apply --prune` to **`ocentra-assets-test`** (incremental: hash cache + remote MD5 diff; only changed/new objects upload). **`development-r2-worker.yml`** is manual-only (`workflow_dispatch`) for the same steps without the full gate. Optional **`--wipe`** on the sync command clears the remote bucket then re-uploads (use sparingly). Required: **`CLAIM_STORAGE_ASSETS_URL_DEV`** (base URL of the dev Worker). Optional: `CLAIM_STORAGE_ASSETS_TOKEN_DEV`, `ASSETS_WORKER_URL_DEV`, `ASSETS_WORKER_TOKEN_DEV`.
 
 #### 6. Suggested order
 

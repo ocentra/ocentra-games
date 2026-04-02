@@ -5,7 +5,9 @@ const hookDir = join(process.cwd(), '.git', 'hooks');
 const hookPath = join(hookDir, 'pre-commit');
 
 const hookScript = `#!/bin/sh
-npm run -s security:scan-staged
+# GitHub Desktop / Windows space-in-path fix
+# Direct script execution to avoid npm shell wrapper issues on some Windows setups
+node scripts/security/scan-staged-secrets.mjs
 status=$?
 if [ $status -ne 0 ]; then
   echo ""

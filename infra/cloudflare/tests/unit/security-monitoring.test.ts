@@ -4,12 +4,13 @@ import { beforeAll, afterAll } from 'vitest';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { createForgedToken, createExpiredToken, getValidRequestHeaders, buildTestApiUrlWithQuery, buildTestApiUrlForEndpointWithPath, buildTestApiUrlForEndpoint, getValidOriginHeaders } from '@tests/helpers/test-helpers';
+import { AUTH_PROBE_URL, authProbeRequestInit } from '@tests/helpers/auth-probe-request';
 import { formatBearerToken } from '@/utils/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
+import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
-import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
 import { SecurityHeaderValue } from '@/constants/security-headers';
+import { AIEventType } from '@/constants/ai';
 import { TestConfig, TestEnvVar, TestEnvValue } from '@tests/constants/test-constants';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -74,13 +75,21 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
       const walletId = `${TestConfig.TestWalletId}-${Date.now()}`;
       const responses: number[] = [];
 
+      const aiEventUrl = buildTestApiUrlForEndpoint(ApiEndpoint.AI.OnEvent);
+      const aiEventBody = JSON.stringify({
+        matchId: TestConfig.TestMatchId,
+        playerId: TestConfig.TestUserId,
+        eventType: AIEventType.MatchStart,
+      });
       for (let i = 0; i < 105; i++) {
-        const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash, [QueryParam.Type]: ResourceType.Image });
-        const response = await worker.fetch(resourceUrl, {
+        const response = await worker.fetch(aiEventUrl, {
+          method: HttpMethod.Post,
           headers: {
             ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
-            [HttpHeader.XWalletId]: walletId
-          }
+            [HttpHeader.XWalletId]: walletId,
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          },
+          body: aiEventBody,
         }, token);
         responses.push(response.status);
       }
@@ -91,13 +100,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
 
   it(testName('security event logging: logs authentication failures'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(TestConfig.InvalidToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(TestConfig.InvalidTokenFormat),
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);
@@ -106,13 +112,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('security event logging: logs invalid signature attempts'), async () => {
       const token = await createToken();
       const forgedToken = createForgedToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(forgedToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(forgedToken),
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);
@@ -121,13 +124,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
   it(testName('security event logging: logs expired token attempts'), async () => {
       const token = await createToken();
       const expiredToken = createExpiredToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
-      const response = await worker.fetch(resourceUrl, {
-        headers: {
-          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
-          [HttpHeader.Authorization]: formatBearerToken(expiredToken)
-        }
-      }, token);
+      const response = await worker.fetch(AUTH_PROBE_URL, authProbeRequestInit({
+        ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        [HttpHeader.Authorization]: formatBearerToken(expiredToken),
+      }), token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
       await response.text().catch(() => undefined);

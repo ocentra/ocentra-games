@@ -1,18 +1,9 @@
 # See infra/cloudflare/docs/WORKFLOW-UPDATE-GUIDE.md for test runner and trigger details.
+# Invoked by ci-gate.yml after secret scan → preflight → pull-request-checks.
 name: Cloudflare Security Tests
 
 on:
-  pull_request:
-    branches: [main, develop, production]
-    paths:
-      - 'infra/cloudflare/**'
-      - 'packages/endpoint-domain/**'
-      - 'packages/boundary-domain/**'
-      - 'packages/logging-domain/**'
-      - '.github/workflows/cloudflare-security-tests.yml'
-      - '.github/actions/setup-node/action.yml'
-  push:
-    branches: [main, production]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
