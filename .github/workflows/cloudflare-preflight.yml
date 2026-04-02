@@ -29,21 +29,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, eventing, solana)
-        working-directory: .
-        run: |
-          cd packages/boundary-domain && npm install
-          cd ../endpoint-domain && npm install
-          cd ../logging-domain && npm install
-          cd ../behaviour-domain && npm install
-          cd ../asset-domain && npm install
-          cd ../app-core && npm install
-          cd ../credentials-domain && npm install
-          cd ../ai-domain && npm install
-          cd ../crypto-domain && npm install
-          cd ../verification-domain && npm install
-          cd ../eventing-domain && npm install
-          cd ../solana-domain && npm install
+      - name: Install all workspace dependencies
+        run: npm install --ignore-scripts
 
       - name: Install Cloudflare dependencies
         run: npm ci
