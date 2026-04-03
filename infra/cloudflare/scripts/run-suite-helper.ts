@@ -1189,7 +1189,7 @@ async function runForType(
   };
 }
 
-main().then((code) => process.exit(code)).catch((err) => {
+main().then((result) => process.exit(result.exitCode)).catch((err) => {
   console.error(err);
   process.exit(1);
 });
