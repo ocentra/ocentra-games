@@ -82,7 +82,7 @@ async function main(): Promise<void> {
   const dbPath = getDefaultDbPath(domain);
   const manifestPath = getManifestPath(domain);
   const isCi = Boolean(process.env.CI && process.env.CI !== 'false');
-  const duckDbAvailable = !isCi && (() => {
+  const duckDbAvailable = (() => {
     try {
       loadDuckDb();
       return true;
@@ -101,18 +101,9 @@ async function main(): Promise<void> {
   }
   process.stdout.write(`\n`);
 
-  if (isCi) {
-    process.stdout.write(`  CI detected; skipping optional DuckDB ingest and manifest rebuild.\n`);
-    process.stdout.write(`  This helper only exists to keep local log-query tooling in sync.\n`);
-    process.stdout.write(`\nDone.\n`);
-    process.stdout.write(`  DB: ${dbPath}\n`);
-    process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
-    process.stdout.write(`\n`);
-    return;
-  }
-
   if (!duckDbAvailable) {
-    process.stdout.write(`  DuckDB is not available in this environment; skipping ingest and manifest rebuild.\n`);
+    const suffix = isCi ? ' in CI' : '';
+    process.stdout.write(`  DuckDB is not available${suffix}; skipping ingest and manifest rebuild.\n`);
     process.stdout.write(`  This helper is optional and only used for local log queries.\n`);
     process.stdout.write(`\nDone.\n`);
     process.stdout.write(`  DB: ${dbPath}\n`);
@@ -122,49 +113,50 @@ async function main(): Promise<void> {
   }
 
   const scopedUpdate = scope.runType != null;
-
-  if (scopedUpdate) {
-    if (!fs.existsSync(dbPath)) {
-      process.stdout.write(`  DB does not exist; will create and ingest scope only.\n`);
-    }
-  } else if (!noDelete && fs.existsSync(dbPath)) {
-    fs.unlinkSync(dbPath);
-    process.stdout.write(`  (previous DB removed)\n`);
-  }
-  process.stdout.write(`\n`);
-
-  process.stdout.write(`[2/4] Discover run types\n`);
-  const discovered = discoverRunTypes(NDJSON_BASE);
-  const runTypes = scopedUpdate
-    ? [scope.runType!]
-    : discovered.filter((r) => VALID_RUN_TYPES.includes(r));
-  if (runTypes.length === 0) {
-    process.stdout.write(`  No run-type dirs under NDJSON base. Nothing to ingest.\n`);
-    process.exit(0);
-  }
-  if (!scopedUpdate) {
-    const skipped = discovered.filter((r) => !VALID_RUN_TYPES.includes(r));
-    if (skipped.length > 0) {
-      process.stdout.write(`  Skipped (invalid run_type for DB): ${skipped.join(', ')}\n`);
-    }
-  }
-  process.stdout.write(`  Found: ${runTypes.join(', ')}\n`);
-  if (scopedUpdate) {
-    process.stdout.write(`  Mode: scoped replace (remove old scope, ingest scope)\n`);
-  } else if (noDelete) {
-    process.stdout.write(`  Mode: incremental (--no-delete)\n`);
-  } else {
-    process.stdout.write(`  Mode: full rebuild\n`);
-  }
-  process.stdout.write(`\n`);
-
-  process.stdout.write(`[3/4] Ingest NDJSON -> DuckDB\n`);
-  const db = await TestLogDuckDb.create({ dbPath });
-  let totalRuns = 0;
-  let totalLogs = 0;
-  let scopedIngestExecuted = true;
+  let db: TestLogDuckDb | null = null;
 
   try {
+    if (scopedUpdate) {
+      if (!fs.existsSync(dbPath)) {
+        process.stdout.write(`  DB does not exist; will create and ingest scope only.\n`);
+      }
+    } else if (!noDelete && fs.existsSync(dbPath)) {
+      fs.unlinkSync(dbPath);
+      process.stdout.write(`  (previous DB removed)\n`);
+    }
+    process.stdout.write(`\n`);
+
+    process.stdout.write(`[2/4] Discover run types\n`);
+    const discovered = discoverRunTypes(NDJSON_BASE);
+    const runTypes = scopedUpdate
+      ? [scope.runType!]
+      : discovered.filter((r) => VALID_RUN_TYPES.includes(r));
+    if (runTypes.length === 0) {
+      process.stdout.write(`  No run-type dirs under NDJSON base. Nothing to ingest.\n`);
+      process.exit(0);
+    }
+    if (!scopedUpdate) {
+      const skipped = discovered.filter((r) => !VALID_RUN_TYPES.includes(r));
+      if (skipped.length > 0) {
+        process.stdout.write(`  Skipped (invalid run_type for DB): ${skipped.join(', ')}\n`);
+      }
+    }
+    process.stdout.write(`  Found: ${runTypes.join(', ')}\n`);
+    if (scopedUpdate) {
+      process.stdout.write(`  Mode: scoped replace (remove old scope, ingest scope)\n`);
+    } else if (noDelete) {
+      process.stdout.write(`  Mode: incremental (--no-delete)\n`);
+    } else {
+      process.stdout.write(`  Mode: full rebuild\n`);
+    }
+    process.stdout.write(`\n`);
+
+    process.stdout.write(`[3/4] Ingest NDJSON -> DuckDB\n`);
+    db = await TestLogDuckDb.create({ dbPath });
+    let totalRuns = 0;
+    let totalLogs = 0;
+    let scopedIngestExecuted = true;
+
     if (scopedUpdate) {
       const pathsByRunType = new Map<string, string[]>();
       let totalScopedPaths = 0;
@@ -237,31 +229,45 @@ async function main(): Promise<void> {
         process.stdout.write(`  ${runType}: -> ${result.runsInserted} runs, ${result.logsInserted} logs\n`);
       }
     }
-  } finally {
-    await db.close();
-  }
-  process.stdout.write(`\n`);
+    process.stdout.write(`\n`);
 
-  process.stdout.write(`[4/4] Update manifest\n`);
-  if (!noDelete || (scopedUpdate && scopedIngestExecuted)) {
-    for (const runType of runTypes) {
-      const manifestDir = scope.suiteType
-        ? path.join(NDJSON_BASE, runType, scope.suiteType)
-        : path.join(NDJSON_BASE, runType);
-      updateManifest(manifestDir, domain);
+    process.stdout.write(`[4/4] Update manifest\n`);
+    if (!noDelete || (scopedUpdate && scopedIngestExecuted)) {
+      for (const runType of runTypes) {
+        const manifestDir = scope.suiteType
+          ? path.join(NDJSON_BASE, runType, scope.suiteType)
+          : path.join(NDJSON_BASE, runType);
+        updateManifest(manifestDir, domain);
+      }
+    } else if (scopedUpdate && !scopedIngestExecuted) {
+      process.stdout.write(`  Skipped manifest update (no scoped ndjson files ingested)\n`);
     }
-  } else if (scopedUpdate && !scopedIngestExecuted) {
-    process.stdout.write(`  Skipped manifest update (no scoped ndjson files ingested)\n`);
-  }
-  process.stdout.write(`  Written: ${manifestPath}\n`);
-  process.stdout.write(`  (query tool uses this to detect stale DB; no ingest on query until NDJSON changes)\n`);
-  process.stdout.write(`\n`);
+    process.stdout.write(`  Written: ${manifestPath}\n`);
+    process.stdout.write(`  (query tool uses this to detect stale DB; no ingest on query until NDJSON changes)\n`);
+    process.stdout.write(`\n`);
 
-  process.stdout.write(`Done.\n`);
-  process.stdout.write(`  Total: ${totalRuns} runs, ${totalLogs} logs\n`);
-  process.stdout.write(`  DB: ${dbPath}\n`);
-  process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
-  process.stdout.write(`  Next: npm run test:query -- failed --run-type=single-pool (or test:query:failed:pool from infra/cloudflare)\n\n`);
+    process.stdout.write(`Done.\n`);
+    process.stdout.write(`  Total: ${totalRuns} runs, ${totalLogs} logs\n`);
+    process.stdout.write(`  DB: ${dbPath}\n`);
+    process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
+    process.stdout.write(`  Next: npm run test:query -- failed --run-type=single-pool (or test:query:failed:pool from infra/cloudflare)\n\n`);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (isCi) {
+      process.stdout.write(`\n⚠ DuckDB ingest failed in CI; continuing without query DB.\n`);
+      process.stdout.write(`  ${msg}\n`);
+      process.stdout.write(`\nDone.\n`);
+      process.stdout.write(`  DB: ${dbPath}\n`);
+      process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
+      process.stdout.write(`\n`);
+      return;
+    }
+    throw err;
+  } finally {
+    if (db != null) {
+      await db.close();
+    }
+  }
 }
 
 main().catch((err) => {
