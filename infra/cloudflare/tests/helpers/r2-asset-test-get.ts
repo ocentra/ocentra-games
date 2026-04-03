@@ -1,12 +1,16 @@
 import type { R2Bucket } from '@cloudflare/workers-types';
-import { env } from 'cloudflare:test';
 
-function assetsBucket(): R2Bucket | undefined {
-  return env.ASSETS_BUCKET as R2Bucket | undefined;
+async function assetsBucket(): Promise<R2Bucket | undefined> {
+  try {
+    const { env } = await import('cloudflare:test');
+    return env.ASSETS_BUCKET as R2Bucket | undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function getTestAssetsBucketArrayBuffer(storageKey: string): Promise<ArrayBuffer | null> {
-  const bucket = assetsBucket();
+  const bucket = await assetsBucket();
   if (!bucket) {
     return null;
   }
@@ -18,7 +22,7 @@ export async function getTestAssetsBucketArrayBuffer(storageKey: string): Promis
 }
 
 export async function getTestAssetsBucketText(storageKey: string): Promise<string | null> {
-  const bucket = assetsBucket();
+  const bucket = await assetsBucket();
   if (!bucket) {
     return null;
   }

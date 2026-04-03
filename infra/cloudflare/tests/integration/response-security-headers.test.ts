@@ -6,12 +6,10 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import {
   buildTestApiUrlForEndpoint,
   buildTestApiUrlForEndpointWithPath,
-  buildTestApiUrlWithQuery,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { TestConfig } from '@tests/constants/test-constants';
 import { SecurityHeaderValue } from '@/constants/security-headers';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -51,13 +49,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('response security headers: auth rejection response still includes anti-sniff and frame-deny headers'), async () => {
     const token = await createToken();
-    const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-      [QueryParam.Hash]: TestConfig.TestHash,
-    });
+    const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
     const response = await worker.fetch(
       resourceUrl,
       {
-        method: HttpMethod.Get,
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
         },

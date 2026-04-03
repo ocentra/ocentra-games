@@ -52,7 +52,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
   beforeAll(async () => {
     logInfo('[TEST] Initializing test worker for data integration tests', getStackTrace(), {}, LOG_TEST_OPERATIONS);
     try {
-      worker = await getTestWorker();
+      worker = await getTestWorker({ DISABLE_AUTH: 'false' });
       logInfo('[TEST] Test worker initialized', getStackTrace(), {}, LOG_TEST_OPERATIONS);
     } catch (error) {
       logError('[TEST] Failed to initialize test worker', getStackTrace(), { error });

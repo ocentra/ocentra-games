@@ -205,8 +205,19 @@ export async function handleAssetsRequest(
     if (authError instanceof Response) return authError;
 
     const body = (await request.json()) as { hash: string; content: string; contentType?: string };
-    const uploaded = await uploadImageContent(env, body);
-    return jsonResponse(env, { hash: uploaded.hash, url: uploaded.key }, HttpStatus.Ok);
+    try {
+      const uploaded = await uploadImageContent(env, body);
+      return jsonResponse(env, { hash: uploaded.hash, url: uploaded.key }, HttpStatus.Ok);
+    } catch (error) {
+      if (error instanceof Error && error.message.toLowerCase().includes('hash mismatch')) {
+        return jsonResponse(
+          env,
+          { error: ErrorMessage.BadRequest, message: 'Hash mismatch' },
+          HttpStatus.BadRequest
+        );
+      }
+      throw error;
+    }
   }
 
   if (

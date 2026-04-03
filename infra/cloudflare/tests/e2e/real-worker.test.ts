@@ -4,14 +4,17 @@ import { beforeAll, afterAll } from 'vitest';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import {
+  buildCreditsApiUrl,
   buildTestApiUrlForEndpoint,
   buildTestApiUrlWithQuery,
   buildTestApiUrlForEndpointWithPath,
+  generateTestUserId,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
+import { CreditAction, Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { formatBearerToken } from '@/utils/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { HttpMethod, HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
+import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { SecurityHeaderValue } from '@/constants/security-headers';
 import { TestConfig, TestEnvVar, TestEnvValue } from '@tests/constants/test-constants';
@@ -76,8 +79,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   it(testName('Authentication in Real Worker: should reject requests without Authorization header'), async () => {
       const token = await createToken();
       logInfo('[TEST] Testing auth rejection for missing Authorization header', getStackTrace(), {}, LOG_TEST_OPERATIONS);
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
         }
@@ -98,8 +102,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Authentication in Real Worker: should reject requests with invalid token format'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: TestConfig.InvalidToken,
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
@@ -112,8 +117,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Authentication in Real Worker: should reject requests with malformed JWT'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: formatBearerToken('not.valid.jwt'),
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
@@ -160,17 +166,25 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const token = await createToken();
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
+      const userId = generateTestUserId('real-worker-rate');
 
       const walletId = `${TestConfig.TestWalletId}-${Date.now()}`;
 
       const responses: number[] = [];
       for (let i = 0; i < 5; i++) {
-        const resourceUrl2 = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash2 });
+        const resourceUrl2 = buildCreditsApiUrl(userId, CreditAction.Purchase);
         const response = await worker.fetch(resourceUrl2, {
+          method: HttpMethod.Post,
           headers: {
-            ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
+            ...getValidRequestHeaders(userId, false, TestConfig.TestCorsOrigin),
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
             [HttpHeader.XWalletId]: walletId
-          }
+          },
+          body: JSON.stringify({
+            ac_amount: 100,
+            amount: 1,
+            currency: Currency.USD,
+          })
         }, token);
         responses.push(response.status);
         await consumeResponseBody(response);
@@ -188,7 +202,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Asset Endpoints in Real Worker: should return 404 for non-existent assets'), async () => {
       const token = await createToken();
-      const resourceUrlNonexistent = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHashNonexistent });
+      const resourceUrlNonexistent = buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Guid]: TestConfig.TestHashNonexistent });
       const response = await worker.fetch(resourceUrlNonexistent, {
         headers: {
           ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
@@ -249,8 +263,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Error Handling in Real Worker: should not leak sensitive information in errors'), async () => {
       const token = await createToken();
-      const resourceUrlTest = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: 'test' });
+      const resourceUrlTest = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrlTest, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: formatBearerToken(TestConfig.InvalidToken),
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin

@@ -8,6 +8,7 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
+import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { OpenApiParameterName } from '@/constants/openapi';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
@@ -44,7 +45,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(data.status).toBe('ok');
   });
 
-  it(testName('backward compatibility: v1 resources invalid hash contract remains bad-request'), async () => {
+  it(testName('backward compatibility: legacy v1 resources route remains disabled'), async () => {
     const token = await createToken();
     const response = await worker.fetch(
       buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
@@ -58,12 +59,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       token
     );
 
-    expect(response.status).toBe(HttpStatus.BadRequest);
+    expect(response.status).toBe(HttpStatus.NotFound);
     const contentType = response.headers.get(HttpHeader.ContentType) || '';
     expect(contentType.includes('application/json')).toBe(true);
     const data = (await response.json()) as { error?: string; message?: string };
-    expect(typeof data.error).toBe('string');
-    expect(typeof data.message).toBe('string');
+    expect(data.error).toBe(ErrorMessage.LegacyResourcesDisabled);
   });
 
   it(testName('backward compatibility: OpenAPI contract preserves critical v1 path templates'), async () => {

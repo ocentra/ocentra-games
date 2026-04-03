@@ -1,3 +1,35 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+function readDevVarsFile(): Record<string, string> {
+  const cwd = process.cwd();
+  const candidates = [join(cwd, '.dev.vars.development'), join(cwd, '.dev.vars')];
+  const result: Record<string, string> = {};
+
+  for (const file of candidates) {
+    if (!existsSync(file)) continue;
+    const content = readFileSync(file, 'utf8');
+    for (const rawLine of content.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq <= 0) continue;
+      const key = line.slice(0, eq).trim();
+      const value = line.slice(eq + 1).trim();
+      if (!key || !value) continue;
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+const devVars = readDevVarsFile();
+
+function pickVar(key: string, fallback: string): string {
+  return (process.env[key] || devVars[key] || fallback).trim();
+}
+
 /**
  * Worker binding values for pool and unstable_dev.
  *
@@ -22,8 +54,8 @@ export const TestWorkerBindings: Record<string, string> = {
   RATE_LIMIT_MATCHES_PER_HOUR: '1000',
   STRIPE_WEBHOOK_SECRET: 'whsec_test_integration_secret_32chars_!!',
   TURNSTILE_SECRET_KEY: 'test-turnstile-secret-key',
-  CLOUDFLARE_ACCOUNT_ID: '00000000000000000000000000000000',
-  R2_ACCESS_KEY_ID: 'test-r2-access-key-id',
-  R2_SECRET_ACCESS_KEY: 'test-r2-secret-access-key-min-32-chars-xx',
-  R2_ASSETS_BUCKET_NAME: 'ocentra-assets-test',
+  CLOUDFLARE_ACCOUNT_ID: pickVar('CLOUDFLARE_ACCOUNT_ID', 'd01281f9b13a2a8c46dfa2c516094de6'),
+  R2_ACCESS_KEY_ID: pickVar('R2_ACCESS_KEY_ID', 'test-r2-access-key-id'),
+  R2_SECRET_ACCESS_KEY: pickVar('R2_SECRET_ACCESS_KEY', 'test-r2-secret-access-key-min-32-chars-xx'),
+  R2_ASSETS_BUCKET_NAME: pickVar('R2_ASSETS_BUCKET_NAME', 'ocentra-assets-test'),
 };

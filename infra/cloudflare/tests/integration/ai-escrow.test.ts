@@ -326,12 +326,15 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidAdminRequestHeaders(),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({ userId, tier: 'basic' }),
+        body: JSON.stringify({ userId, tier: 'pro' }),
       }, token);
+      if (res.status !== HttpStatus.Ok) {
+        throw new Error('Failed test response: ' + await res.clone().text() + ' status: ' + res.status);
+      }
       expect(res.status).toBe(HttpStatus.Ok);
       const data = (await res.json()) as { success?: boolean; tier?: string };
       expect(data.success).toBe(true);
-      expect(data.tier).toBe('basic');
+      expect(data.tier).toBe('pro');
     });
 
     it(testName('Reserve uses allowance when user has plan and tokens within limit'), async (testCtx) => {
@@ -347,7 +350,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidAdminRequestHeaders(),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({ userId, tier: 'basic' }),
+        body: JSON.stringify({ userId, tier: 'pro' }),
       }, token);
       await planRes.text().catch(() => undefined);
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -384,7 +387,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidAdminRequestHeaders(),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({ userId, tier: 'basic' }),
+        body: JSON.stringify({ userId, tier: 'pro' }),
       }, token);
       await planRes.text().catch(() => undefined);
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });
@@ -434,7 +437,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidAdminRequestHeaders(),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({ userId, tier: 'basic' }),
+        body: JSON.stringify({ userId, tier: 'free' }),
       }, token);
       await planRes.text().catch(() => undefined);
       const reserveUrl = buildApiUrl(ApiEndpoint.AI.EscrowReserve, { baseUrl: TestConfig.TestApiUrlPlaceholder });

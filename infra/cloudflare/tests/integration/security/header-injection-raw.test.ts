@@ -28,7 +28,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
 
   beforeAll(async () => {
     logInfo('[TEST] Initializing worker for header-injection-raw tests', getStackTrace(), {}, false);
-    worker = await getTestWorker();
+    worker = await getTestWorker({ DISABLE_AUTH: 'false' });
     const status = worker.getStatus();
     if (!status.httpServer || status.port == null) {
       throw new Error(
@@ -93,6 +93,19 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
       const msg = err instanceof Error ? err.message : String(err);
       expect(msg).toMatch(/timed out|timeout/i);
     }
+  });
+
+  it(testName('Null byte in Origin (raw TCP): should reject null byte in Origin header'), async () => {
+    const token = await createToken();
+    const maliciousOrigin = Buffer.from(`${TestConfig.LocalhostOrigin}\0evil.com`, 'utf8');
+    const request = buildRawHttpGet(MATCH_PATH, [
+      [HttpHeader.Host, `${host}:${port}`],
+      [HttpHeader.Origin, maliciousOrigin],
+      [HttpHeader.XWalletId, walletId],
+      [HttpHeader.Authorization, `${HttpAuthScheme.Bearer} ${token}`],
+    ]);
+    const { statusCode } = await sendRawHttpRequest(host, port, request);
+    expect(EXPECTED_REJECT_STATUSES).toContain(statusCode);
   });
 
   it(testName('Null byte in Authorization (raw TCP): should reject null byte in Authorization header'), async () => {

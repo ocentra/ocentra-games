@@ -53,13 +53,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('error leakage: malformed JWT rejection does not include stack traces or internal paths'), async () => {
     const token = await createToken();
-    const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-      [QueryParam.Hash]: TestConfig.TestHash,
-    });
+    const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
     const response = await worker.fetch(
       resourceUrl,
       {
-        method: HttpMethod.Get,
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: formatBearerToken('not.valid.jwt'),
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
@@ -112,11 +110,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('error leakage: 401 response does not contain submitted token (Rule 10.1.2, 14.11.3); Rule 15.8.2: error response does not contain sensitive data'), async () => {
     const secretToken = 'secret-leak-test-token-12345';
-    const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-      [QueryParam.Hash]: TestConfig.TestHash,
-    });
+    const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
     const response = await worker.fetch(resourceUrl, {
-      method: HttpMethod.Get,
+      method: HttpMethod.Post,
       headers: {
         [HttpHeader.Authorization]: formatBearerToken(secretToken),
         [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
@@ -240,12 +236,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('error leakage: 401 and 404 responses are JSON objects with no stack/sensitive keys (Rule 10.1.4)'), async () => {
-    const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-      [QueryParam.Hash]: TestConfig.TestHash,
-    });
+    const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
     const notFoundUrl = buildTestApiUrlForEndpointWithPath(ApiEndpoint.Logs.Base, 'nonexistent-path-404');
     const res401 = await worker.fetch(resourceUrl, {
-      method: HttpMethod.Get,
+      method: HttpMethod.Post,
       headers: {
         [HttpHeader.Authorization]: formatBearerToken('invalid'),
         [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
@@ -426,11 +420,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('error leakage: 401 and 400 json error payloads exclude stack/trace keys'), async () => {
     const token = await createToken();
-    const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-      [QueryParam.Hash]: TestConfig.TestHash,
-    });
+    const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
     const unauthorizedResponse = await worker.fetch(resourceUrl, {
-      method: HttpMethod.Get,
+      method: HttpMethod.Post,
       headers: {
         [HttpHeader.Authorization]: formatBearerToken('bad.token.value'),
         [HttpHeader.Origin]: TestConfig.TestCorsOrigin,

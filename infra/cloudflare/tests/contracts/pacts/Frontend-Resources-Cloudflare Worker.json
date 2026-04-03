@@ -4,6 +4,52 @@
   },
   "interactions": [
     {
+      "description": "a request for legacy resources",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "legacy resources are disabled"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "GET",
+        "path": "/api/v1/resources"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Legacy /api/v1/resources is disabled"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for resources",
       "pending": false,
       "providerStates": [

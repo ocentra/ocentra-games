@@ -35,7 +35,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
   };
 
   beforeAll(async () => {
-    worker = await getTestWorker();
+    worker = await getTestWorker({ DISABLE_AUTH: 'false' });
     const status = worker.getStatus();
     if (!status.httpServer || status.port == null) {
       throw new Error('http2-downgrade tests require unstable_dev HTTP worker (runIn=unstable).');

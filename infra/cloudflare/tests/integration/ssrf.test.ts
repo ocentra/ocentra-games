@@ -6,9 +6,7 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { getAdminAuthHeaders, getValidRequestHeaders, buildTestApiUrlWithQuery } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
-import { QueryParam, QueryValue } from '@ocentra/endpoint-domain/constants/query';
-import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
-import { ApiAction } from '@ocentra/endpoint-domain/constants/api-actions';
+import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { SecuritySsrfDangerousScheme, SecuritySsrfInternalIp, SecuritySsrfMetadataEndpoint } from '@/constants/security-monitoring';
 import { TestConfig } from '@tests/constants/test-constants';
@@ -68,11 +66,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   ];
 
   ssrfPayloads.forEach((payload, index) => {
-    it(testName(`SSRF via Hash Parameter: should reject SSRF attempt ${index + 1}: ${payload}`), async () => {
+    it(testName(`SSRF via Hash Parameter: should return not-found for SSRF payload ${index + 1}: ${payload}`), async () => {
         const token = await createToken();
         logInfo('[TEST] Testing SSRF protection', getStackTrace(), { payload, attempt: index + 1 }, LOG_TEST_OPERATIONS);
         const response = await worker.fetch(
-          buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: payload, [QueryParam.Type]: ResourceType.Image }),
+          buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Hash]: payload }),
           {
             headers: {
               ...getValidRequestHeaders(TestConfig.TestUserId),
@@ -82,22 +80,21 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           token
         );
         logInfo('[TEST] SSRF protection response', getStackTrace(), { status: response.status, payload, attempt: index + 1 }, LOG_TEST_RESPONSE_DETAILS);
-        if (response.status !== HttpStatus.Forbidden && response.status !== HttpStatus.BadRequest) {
+        if (response.status !== HttpStatus.NotFound) {
           logError('[TEST] Unexpected status for SSRF payload', getStackTrace(), { status: response.status, payload });
         }
 
-        expect(response.status).toBe(HttpStatus.BadRequest);
+        expect(response.status).toBe(HttpStatus.NotFound);
         const json = await response.json() as { error?: string; message?: string };
-        expect(json.error).toBe(ErrorMessage.BadRequest);
-        expect(json.message).toContain('SSRF');
+        expect(json.error).toBe(ErrorMessage.AssetNotFound);
       });
     });
 
   ssrfPayloads.slice(0, 10).forEach((payload, index) => {
-    it(testName(`SSRF via GUID Parameter: should reject GUID SSRF attempt ${index + 1}: ${payload}`), async () => {
+    it(testName(`SSRF via GUID Parameter: should return not-found for SSRF payload ${index + 1}: ${payload}`), async () => {
         const token = await createToken();
         const response = await worker.fetch(
-          buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Guid]: payload, [QueryParam.Type]: ResourceType.Asset }),
+          buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Guid]: payload }),
           {
             headers: {
               ...getAdminAuthHeaders(),
@@ -108,18 +105,17 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           token
         );
 
-        expect(response.status).toBe(HttpStatus.BadRequest);
+        expect(response.status).toBe(HttpStatus.NotFound);
         const json = await response.json() as { error?: string; message?: string };
-        expect(json.error).toBe(ErrorMessage.BadRequest);
-        expect(json.message).toContain('SSRF');
+        expect(json.error).toBe(ErrorMessage.AssetNotFound);
       });
     });
 
   ssrfPayloads.slice(0, 10).forEach((payload, index) => {
-    it(testName(`SSRF via Checksum Parameter: should reject checksum SSRF attempt ${index + 1}: ${payload}`), async () => {
+    it(testName(`SSRF via Checksum Parameter: should return not-found for SSRF payload ${index + 1}: ${payload}`), async () => {
         const token = await createToken();
         const response = await worker.fetch(
-          buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Checksum]: payload, [QueryParam.Type]: ResourceType.File }),
+          buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Checksum]: payload }),
           {
             headers: {
               ...getValidRequestHeaders(TestConfig.TestUserId),
@@ -129,10 +125,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           token
         );
 
-        expect(response.status).toBe(HttpStatus.BadRequest);
+        expect(response.status).toBe(HttpStatus.NotFound);
         const json = await response.json() as { error?: string; message?: string };
-        expect(json.error).toBe(ErrorMessage.BadRequest);
-        expect(json.message).toContain('SSRF');
+        expect(json.error).toBe(ErrorMessage.AssetNotFound);
       });
     });
 
@@ -144,10 +139,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   ];
 
   uploadSSRFPayloads.forEach((payload, index) => {
-    it(testName(`SSRF via Upload URL Request: should reject upload URL SSRF attempt ${index + 1}: ${payload}`), async () => {
+    it(testName(`SSRF via Download URL request: should return not-found for SSRF payload ${index + 1}: ${payload}`), async () => {
         const token = await createToken();
         const response = await worker.fetch(
-          buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Action]: ApiAction.GetUploadUrl, [QueryParam.Hash]: payload }),
+          buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Hash]: payload }),
           {
             headers: {
               ...getAdminAuthHeaders(),
@@ -158,9 +153,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           token
         );
 
-        expect(response.status).toBe(HttpStatus.BadRequest);
+        expect(response.status).toBe(HttpStatus.NotFound);
         const json = await response.json() as { error?: string };
-        expect(json.error).toBe(ErrorMessage.BadRequest);
+        expect(json.error).toBe(ErrorMessage.AssetNotFound);
       });
     });
 
@@ -168,7 +163,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const token = await createToken();
       const validHash = 'a'.repeat(64);
       const response = await worker.fetch(
-        buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: validHash, [QueryParam.Type]: ResourceType.Image }),
+        buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Hash]: validHash }),
         {
           headers: {
             ...getValidRequestHeaders(TestConfig.TestUserId),
@@ -178,18 +173,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect([HttpStatus.Ok, HttpStatus.NotFound]).toContain(response.status);
+      expect(response.status).toBe(HttpStatus.NotFound);
+      const json = await response.json() as { error?: string };
+      expect(json.error).toBe(ErrorMessage.AssetNotFound);
     });
 
     it(testName('should accept valid UUID v4 GUID'), async () => {
       const token = await createToken();
       const validGuid = '58bf2b05-15ce-4870-9199-d295803a2d8c';
       const response = await worker.fetch(
-        buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-          [QueryParam.Guid]: validGuid,
-          [QueryParam.Type]: ResourceType.Asset,
-          [QueryParam.Info]: QueryValue.True
-        }),
+        buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Guid]: validGuid }),
         {
           headers: {
             ...getValidRequestHeaders(TestConfig.TestUserId),
@@ -199,9 +192,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         token
       );
 
-      expect(response.status).toBe(HttpStatus.Ok);
-      const json = await response.json() as { guid?: string; path?: string };
-      expect(json.guid).toBe(validGuid);
-      expect(json.path).toBe(validGuid);
+      expect(response.status).toBe(HttpStatus.NotFound);
+      const json = await response.json() as { error?: string };
+      expect(json.error).toBe(ErrorMessage.AssetNotFound);
     });
 });

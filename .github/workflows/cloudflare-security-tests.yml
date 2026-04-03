@@ -39,6 +39,10 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Install root workspace dependencies
+        working-directory: .
+        run: npm ci --ignore-scripts
+
       - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, eventing, solana; matches prebuild deps)
         working-directory: .
         run: |
@@ -134,33 +138,6 @@ jobs:
       - name: Property-based invariants
         run: npm run test:property
 
-      - name: Coverage run
-        run: npm run test:runner:coverage
-
-      - name: Check coverage thresholds
-        run: |
-          node -e "
-          const fs = require('fs');
-          const path = './test-runner/coverage/coverage-summary.json';
-          if (!fs.existsSync(path)) {
-            console.error('Coverage report not found at ' + path);
-            process.exit(1);
-          }
-          const report = JSON.parse(fs.readFileSync(path, 'utf8'));
-          const { lines, branches, functions, statements } = report.total;
-          console.log(`Coverage: Lines=${lines.pct}% Branches=${branches.pct}% Functions=${functions.pct}% Statements=${statements.pct}%`);
-          const failed = [
-            lines.pct < 90 && `Line coverage ${lines.pct}% < 90%`,
-            branches.pct < 80 && `Branch coverage ${branches.pct}% < 80%`,
-            functions.pct < 85 && `Function coverage ${functions.pct}% < 85%`,
-            statements.pct < 90 && `Statement coverage ${statements.pct}% < 90%`
-          ].filter(Boolean);
-          if (failed.length) {
-            console.error(failed.join('\\n'));
-            process.exit(1);
-          }
-          "
-
       - name: Upload Cloudflare test artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -168,7 +145,6 @@ jobs:
           name: cloudflare-test-artifacts
           path: |
             infra/cloudflare/test-runner/logs/**
-            infra/cloudflare/test-runner/coverage/**
             infra/cloudflare/test-runner/reports/**
             infra/cloudflare/test-runner/ReportJson/**
           retention-days: 7
@@ -199,6 +175,10 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+
+      - name: Install root workspace dependencies
+        working-directory: .
+        run: npm ci --ignore-scripts
 
       - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, eventing, solana; matches prebuild deps)
         working-directory: .

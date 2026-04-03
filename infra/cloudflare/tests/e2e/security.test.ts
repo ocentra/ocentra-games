@@ -9,6 +9,8 @@ import {
   buildTestApiUrlForEndpoint,
   buildTestApiUrlWithQuery,
   buildTestApiUrlForEndpointWithPath,
+  buildCreditsApiUrl,
+  generateTestUserId,
   getValidRequestHeaders,
   getAdminAuthHeaders,
   getLogsApiAuthHeaders,
@@ -19,6 +21,7 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { SecurityHeaderValue } from '@/constants/security-headers';
+import { CreditAction, Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
 import { ApiAction } from '@ocentra/endpoint-domain/constants/api-actions';
 import { TestConfig, TestEnvVar, TestEnvValue, TestValues } from '@tests/constants/test-constants';
@@ -85,7 +88,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('CORS Security: should reject requests from disallowed origins'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Guid]: TestConfig.TestHashNonexistent });
       const response = await worker.fetch(resourceUrl, {
         headers: {
           [HttpHeader.Origin]: TestConfig.EvilOrigin
@@ -128,8 +131,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Authentication Security: should reject requests without Authorization header'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
         }
@@ -143,8 +147,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Authentication Security: should reject requests with invalid token format'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: TestConfig.InvalidToken,
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
@@ -157,8 +162,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Authentication Security: should reject requests with malformed JWT'), async () => {
       const token = await createToken();
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.ManifestRebuild);
       const response = await worker.fetch(resourceUrl, {
+        method: HttpMethod.Post,
         headers: {
           [HttpHeader.Authorization]: formatBearerToken('not.valid.jwt'),
           [HttpHeader.Origin]: TestConfig.TestCorsOrigin
@@ -283,17 +289,25 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const TEST_MODE = process.env[TestEnvVar.TestMode] || TestEnvValue.Local;
       const isRealMode = TEST_MODE === TestEnvValue.Real || TEST_MODE === TestEnvValue.Cloud;
 
+      const userId = generateTestUserId('security-rate');
       const walletId = `${TestConfig.TestWalletId}-rate-${Date.now()}`;
       const responses: number[] = [];
       const iterations = isRealMode ? 5 : 105;
 
       for (let i = 0; i < iterations; i++) {
-        const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Hash]: TestConfig.TestHash2 });
+        const resourceUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
         const response = await worker.fetch(resourceUrl, {
+          method: HttpMethod.Post,
           headers: {
-            ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
-            [HttpHeader.XWalletId]: walletId
-          }
+            ...getValidRequestHeaders(userId, false, TestConfig.TestCorsOrigin),
+            [HttpHeader.XWalletId]: walletId,
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+          },
+          body: JSON.stringify({
+            ac_amount: 100,
+            amount: 1,
+            currency: Currency.USD,
+          })
         }, token);
         responses.push(response.status);
         await consumeResponseBody(response);
@@ -636,19 +650,17 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const guid = TestValues.TestAssetGuid;
 
       const response = await worker.fetch(
-        buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Action]: ApiAction.GetUploadUrl, [QueryParam.Hash]: hash, [QueryParam.Guid]: guid, [QueryParam.Type]: ResourceType.Image }),
+        buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Hash]: hash, [QueryParam.Guid]: guid }),
         {
-          method: HttpMethod.Get,
           headers: {
-            ...getAdminAuthHeaders(),
-            [HttpHeader.XWalletId]: wallet,
-            [HttpHeader.Origin]: TestConfig.TestCorsOrigin
+            ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
+            [HttpHeader.XWalletId]: wallet
           }
         },
         token
       );
 
-      expect(response.status).toBeGreaterThanOrEqual(HttpStatus.BadRequest);
+      expect(response.status).toBe(HttpStatus.BadRequest);
       await consumeResponseBody(response);
     });
 
@@ -658,20 +670,17 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const invalidGuid = `${TestValues.TestAssetGuid}/evil`;
 
       const response = await worker.fetch(
-        buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, { [QueryParam.Action]: ApiAction.GetUploadUrl, [QueryParam.Guid]: invalidGuid, [QueryParam.Type]: ResourceType.Asset }),
+        buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { [QueryParam.Guid]: invalidGuid }),
         {
-          method: HttpMethod.Get,
           headers: {
-            ...getAdminAuthHeaders(),
-            [HttpHeader.XWalletId]: wallet,
-            [HttpHeader.Origin]: TestConfig.TestCorsOrigin
+            ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
+            [HttpHeader.XWalletId]: wallet
           }
         },
         token
       );
 
-      expect(response.status).toBeGreaterThanOrEqual(HttpStatus.BadRequest);
+      expect(response.status).toBe(HttpStatus.NotFound);
       await consumeResponseBody(response);
     });
 });
-

@@ -104,6 +104,9 @@ async function collectFiles(root: string, current = root, out: FileEntry[] = [])
       await collectFiles(root, fullPath, out);
       continue;
     }
+    if (entry.name.endsWith('.meta')) {
+      continue;
+    }
     const stat = await fs.stat(fullPath);
     out.push({
       relativePath: path.relative(root, fullPath).replace(/\\/g, '/'),

@@ -22,7 +22,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  it(testName('version skew: existing v1 endpoint resolves normally while v2 equivalent is rejected'), async () => {
+  it(testName('version skew: legacy v1 resources route stays disabled while v2 remains rejected'), async () => {
     const token = await createToken();
     const v1Url = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
       [QueryParam.Hash]: 'invalid-hash-format',
@@ -34,7 +34,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       { headers: getValidRequestHeaders() },
       token
     );
-    expect(v1Response.status).toBe(HttpStatus.BadRequest);
+    expect(v1Response.status).toBe(HttpStatus.NotFound);
     await v1Response.text().catch(() => undefined);
 
     const v2Url = buildTestApiUrl('/api/v2/resources?hash=invalid-hash-format&type=image');

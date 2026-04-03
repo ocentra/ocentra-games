@@ -18,24 +18,24 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
     logLevel: 'info',
   });
 
-  it('resources GET: returns 200 with body', async () => {
+  it('legacy resources GET: returns 404 disabled contract', async () => {
     const pathSegment = ApiEndpoint.Resources.Base;
     await provider
       .addInteraction()
-      .given('resources are available')
-      .uponReceiving('a request for resources')
+      .given('legacy resources are disabled')
+      .uponReceiving('a request for legacy resources')
       .withRequest(HttpMethod.Get, pathSegment, (builder) => {
         builder.headers({ [HttpHeader.Origin]: TestConfig.LocalhostOrigin });
       })
-      .willRespondWith(HttpStatus.Ok, (builder) => {
+      .willRespondWith(HttpStatus.NotFound, (builder) => {
         builder.headers({ [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson) });
-        builder.jsonBody(Matchers.like({}));
+        builder.jsonBody(Matchers.like({ error: 'Legacy /api/v1/resources is disabled' }));
       })
       .executeTest(async (mockServer) => {
         const baseUrl = typeof mockServer.url === 'string' ? mockServer.url : String(mockServer.url);
         const url = buildTestApiUrl(pathSegment, baseUrl);
         const response = await fetch(url, { method: HttpMethod.Get, headers: { [HttpHeader.Origin]: TestConfig.LocalhostOrigin } });
-        expect([HttpStatus.Ok, HttpStatus.BadRequest]).toContain(response.status);
+        expect(response.status).toBe(HttpStatus.NotFound);
       });
   });
 });

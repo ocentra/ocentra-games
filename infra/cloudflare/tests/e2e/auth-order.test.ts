@@ -4,15 +4,14 @@ import { beforeAll, afterAll } from 'vitest';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import {
-  buildTestApiUrlWithQuery,
+  buildTestApiUrlForEndpoint,
+  computeContentHash,
   getValidOriginHeaders,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
-import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
-import { ManifestErrorMessage } from '@/constants/manifest';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
+import { HttpContentType, HttpHeader, HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -56,14 +55,24 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Auth should run BEFORE hash validation (Security: Rule 2.1, auth before validation): should return 401 when no auth header (auth check runs first)'), async () => {
       const token = await createToken();
+      const payload = new TextEncoder().encode('auth-order-payload');
+      const expectedHash = await computeContentHash(payload);
+      const mismatchHash = `${expectedHash.slice(0, -1)}${expectedHash.endsWith('0') ? '1' : '0'}`;
       logInfo('[TEST] Sending request with valid hash but NO auth header', getStackTrace(), undefined, LOG_TEST_OPERATIONS);
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-        [QueryParam.Hash]: TestConfig.TestHash,
-      });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.UploadImage);
       logInfo(`[TEST] URL: ${resourceUrl}`, getStackTrace(), undefined, LOG_TEST_OPERATIONS);
 
       const response = await worker.fetch(resourceUrl, {
-        headers: getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          hash: mismatchHash,
+          content: Buffer.from(payload).toString('base64'),
+          contentType: HttpContentType.ImagePng,
+        }),
       }, token);
 
       logInfo(`[TEST] Response status: ${response.status}`, getStackTrace(), undefined, LOG_TEST_RESPONSE_DETAILS);
@@ -84,29 +93,48 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
   it(testName('Auth should run BEFORE hash validation (Security: Rule 2.1, auth before validation): should return 400 when hash is invalid format (validation runs after auth)'), async () => {
       const token = await createToken();
-      const invalidHash = 'abc123';
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-        [QueryParam.Hash]: invalidHash,
-      });
+      const payload = new TextEncoder().encode('auth-order-payload');
+      const expectedHash = await computeContentHash(payload);
+      const mismatchHash = `${expectedHash.slice(0, -1)}${expectedHash.endsWith('0') ? '1' : '0'}`;
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.UploadImage);
       const response = await worker.fetch(resourceUrl, {
-        headers: getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(TestConfig.TestUserId, false, TestConfig.TestCorsOrigin),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          hash: mismatchHash,
+          content: Buffer.from(payload).toString('base64'),
+          contentType: HttpContentType.ImagePng,
+        }),
       }, token);
 
       expect(response.status).toBe(HttpStatus.BadRequest);
       const body = (await response.json()) as { error?: string; message?: string };
-      expect(body.message).toContain(ManifestErrorMessage.InvalidHashFormatPrefix);
+      expect(body.error).toBe(ErrorMessage.BadRequest);
+      expect(body.message).toContain('Hash mismatch');
     });
 
   it(testName('Auth should run BEFORE hash validation (Security: Rule 2.1, auth before validation): should return 401 when no auth AND invalid hash (auth should win)'), async () => {
       const token = await createToken();
-      const invalidHash = 'abc123';
+      const payload = new TextEncoder().encode('auth-order-payload');
+      const expectedHash = await computeContentHash(payload);
+      const mismatchHash = `${expectedHash.slice(0, -1)}${expectedHash.endsWith('0') ? '1' : '0'}`;
       logInfo('[TEST] Sending request with INVALID hash and NO auth header', getStackTrace(), undefined, LOG_TEST_OPERATIONS);
-      const resourceUrl = buildTestApiUrlWithQuery(ApiEndpoint.Resources.Base, {
-        [QueryParam.Hash]: invalidHash,
-      });
+      const resourceUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Assets.UploadImage);
       logInfo(`[TEST] URL: ${resourceUrl}`, getStackTrace(), undefined, LOG_TEST_OPERATIONS);
       const response = await worker.fetch(resourceUrl, {
-        headers: getValidOriginHeaders(TestConfig.TestCorsOrigin),
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidOriginHeaders(TestConfig.TestCorsOrigin),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          hash: mismatchHash,
+          content: Buffer.from(payload).toString('base64'),
+          contentType: HttpContentType.ImagePng,
+        }),
       }, token);
 
       logInfo(`[TEST] Response status: ${response.status}`, getStackTrace(), undefined, LOG_TEST_RESPONSE_DETAILS);
