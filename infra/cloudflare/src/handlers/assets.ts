@@ -1,5 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
@@ -105,6 +106,10 @@ export async function handleAssetsRequest(
     if (!r2Key) {
       return jsonResponse(env, { error: ErrorMessage.AssetNotFound }, HttpStatus.NotFound);
     }
+
+    const isLocalDev = env.ENVIRONMENT === Environment.Development && env.TEST_MODE === 'true';
+    const hasPublicUrl = Boolean(env.ASSETS_PUBLIC_URL?.trim());
+
     if (shouldRedirectAssetReadToPublicUrl(env)) {
       const base = env.ASSETS_PUBLIC_URL!.trim().replace(/\/$/, '');
       return jsonResponse(
@@ -113,6 +118,20 @@ export async function handleAssetsRequest(
         HttpStatus.Ok
       );
     }
+
+    if (isLocalDev && !hasPublicUrl) {
+      // In local development mode, if no public URL is configured, return a URL that points back to the local worker
+      // This satisfies the architecture of always returning a URL, while keeping the data flow local.
+      const localUrl = new URL(request.url);
+      localUrl.pathname = ApiEndpoint.Assets.Base;
+      localUrl.search = '';
+      localUrl.searchParams.set('guid', guid || '');
+      if (hash) localUrl.searchParams.set('hash', hash);
+      if (checksum) localUrl.searchParams.set('checksum', checksum);
+      
+      return jsonResponse(env, { url: localUrl.toString(), delivery: 'local' as const }, HttpStatus.Ok);
+    }
+
     if (!canPresignR2AssetGet(env)) {
       return jsonResponse(
         env,
@@ -176,6 +195,24 @@ export async function handleAssetsRequest(
     if (shouldRedirectAssetReadToPublicUrl(env)) {
       return redirectResponseToPublicAsset(env, r2KeyRead);
     }
+
+    const isLocalDevRead = env.ENVIRONMENT === Environment.Development && env.TEST_MODE === 'true';
+    if (isLocalDevRead) {
+      // In local development mode, allow the worker to serve the bytes itself to avoid remote Cloudflare round-trip.
+      const object = await env.ASSETS_BUCKET.get(r2KeyRead);
+      if (!object) {
+        return jsonResponse(env, { error: ErrorMessage.AssetNotFound }, HttpStatus.NotFound);
+      }
+      const headers = new Headers();
+      object.writeHttpMetadata(headers);
+      headers.set('etag', object.httpEtag);
+      const cors = getCorsHeaders(env);
+      for (const [key, value] of Object.entries(cors)) {
+        headers.set(key, value);
+      }
+      return new Response(object.body, { headers });
+    }
+
     return jsonResponse(
       env,
       { error: ErrorMessage.AssetDirectFetchDisabled },
@@ -246,6 +283,23 @@ export async function handleAssetsRequest(
     if (shouldRedirectAssetReadToPublicUrl(env)) {
       return redirectResponseToPublicAsset(env, r2KeyPath);
     }
+
+    const isLocalDevPathParam = env.ENVIRONMENT === Environment.Development && env.TEST_MODE === 'true';
+    if (isLocalDevPathParam) {
+      const object = await env.ASSETS_BUCKET.get(r2KeyPath);
+      if (!object) {
+        return jsonResponse(env, { error: ErrorMessage.AssetNotFound }, HttpStatus.NotFound);
+      }
+      const headers = new Headers();
+      object.writeHttpMetadata(headers);
+      headers.set('etag', object.httpEtag);
+      const cors = getCorsHeaders(env);
+      for (const [key, value] of Object.entries(cors)) {
+        headers.set(key, value);
+      }
+      return new Response(object.body, { headers });
+    }
+
     return jsonResponse(
       env,
       { error: ErrorMessage.AssetDirectFetchDisabled },

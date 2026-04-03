@@ -11,6 +11,9 @@ import { visualizer } from 'rollup-plugin-visualizer'
 const ocentraExportSubpaths = JSON.parse(
   readFileSync(path.resolve(__dirname, 'exports-flattened.json'), 'utf-8')
 ) as string[]
+const aiDomainExportSubpaths = ocentraExportSubpaths.filter(
+  (specifier) => specifier === '@ocentra/ai-domain' || specifier.startsWith('@ocentra/ai-domain/')
+)
 import { generateRegistryMapsPlugin } from './vite/plugins/generate-inspector-map'
 import { logsPlugin } from './vite/plugins/logs'
 import { openInEditorPlugin } from './vite/plugins/open-in-editor'
@@ -76,6 +79,7 @@ export default defineConfig(async ({ command, mode }) => {
     dedupe: ['react', 'react-dom', 'react-router-dom'],
     alias: {
         buffer: 'buffer',
+'onnxruntime-web': path.resolve(__dirname, './node_modules/onnxruntime-web/dist/ort.wasm.min.js'),
 '@': path.resolve(__dirname, './src'),
       '@lib': path.resolve(__dirname, './src/lib'),
       '@components': path.resolve(__dirname, './src/components'),
@@ -96,12 +100,17 @@ export default defineConfig(async ({ command, mode }) => {
   optimizeDeps: {
     force: true,
     exclude: [
+      ...aiDomainExportSubpaths,
       '@ocentra/endpoint-domain/constants/cloudflare',
       '@ocentra/api-domain/httpClient',
       '@ocentra/api-domain/createApiClient',
+      '@huggingface/transformers',
+      'onnxruntime-web',
     ],
     include: [
-      ...ocentraExportSubpaths,
+      ...ocentraExportSubpaths.filter(
+        (specifier) => specifier === '@ocentra/ai-domain' || !specifier.startsWith('@ocentra/ai-domain/')
+      ),
       'three',
       'zustand',
       'three-stdlib',

@@ -19,7 +19,6 @@ import { getTestAssetsBucketArrayBuffer, getTestAssetsBucketText } from '@tests/
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { TestConfig, TestValues } from '@tests/constants/test-constants';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -137,6 +136,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, { storage: StorageType
 
     const text = await getTestAssetsBucketText(TestValues.ManifestGuid);
     expect(text).not.toBeNull();
+    if (text === null) {
+      throw new Error('Expected manifest text to exist in asset bucket');
+    }
     expect(text).toBe(TEST_MANIFEST_CONTENT);
     const manifest = JSON5.parse(text);
     expect(manifest.system.guid).toBe(TestValues.ManifestGuid);

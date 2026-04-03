@@ -14,7 +14,8 @@ For **arbitrary asset bytes** addressed by **guid**, **hash**, or **checksum**, 
 
 1. **Resolve** a concrete URL via the Cloudflare Worker: **`GET /api/v1/assets/download-url`** with query params (`guid` and/or `hash` and/or `checksum`).
 2. **Response** JSON includes **`{ "url": "<https?://...>" }`**. 
-   - **CRITICAL EXPECTATION**: The worker **MUST NEVER** be involved in downloading or serving the actual asset bytes. The returned URL must be a **Pre-signed R2 S3 URL** (using AWS signature v4) or a direct public CDN link (`ASSETS_PUBLIC_URL`). Returning a URL pointing back to the worker to proxy bytes is strictly forbidden.
+   - **CRITICAL EXPECTATION**: In **Production** (and all non-dev built apps), the worker **MUST NEVER** be involved in downloading or serving the actual asset bytes. The returned URL must be a **Pre-signed R2 S3 URL** (using AWS signature v4) or a direct public CDN link (`ASSETS_PUBLIC_URL`).
+   - **LOCAL DEV EXCEPTION**: In **Development Mode** (localhost/Wrangler local), the worker acts as a **Smart URL Resolver**. It returns a local URL pointing to itself (`http://127.0.0.1:8787/api/v1/assets?guid=...`) and is allowed to stream the bytes from the local R2 mock to simplify development without a public S3 endpoint. Returning a proxy URL in production is strictly forbidden.
 3. **Fetch/Stream** that URL with the host’s normal HTTP client (`fetch` in browser/WebView, or the desktop bridge where applicable). 
    - **Streaming Expectation**: The frontend should be able to stream assets (e.g. lists of assets or images) correctly and concurrently, rather than waiting synchronously for each bloated payload.
 4. **Cache** (optional layers): in-memory/session dedupe for resolve URLs; IndexedDB or native caches for slice JSON and images — implementation varies by runtime.
@@ -36,7 +37,7 @@ sequenceDiagram
 
 To fulfill the signed-URL expectation properly, you must follow these rules exactly:
 
-1. **Do not use native worker proxying**: The `download-url` endpoint in `assets.ts` must **not** return `delivery: 'worker'` with a URL pointing back to the worker's own `GET /api/v1/assets/:key` route. 
+1. **Do not use native worker proxying in Production**: The `download-url` endpoint in `assets.ts` must **not** return `delivery: 'worker'` for production or built app environments. The proxy behavior is **reserved exclusively for Local Dev** using the `ENVIRONMENT === 'development'` and `TEST_MODE === 'true'` flags. 
 2. **Generate S3 Pre-signed URLs**: Cloudflare R2 provides an S3-compatible API. You must use a standard library like `aws4fetch` (or `@aws-sdk/client-s3`) using the AWS Signature v4 algorithm to generate a signed URL for the R2 item.
 3. **Use Environment Variables (No Hardcoding)**: The required variables are already defined in `src/constants/env.ts`. You must use:
    - `env.CLOUDFLARE_ACCOUNT_ID`
@@ -46,6 +47,26 @@ To fulfill the signed-URL expectation properly, you must follow these rules exac
    Never hardcode these. They belong in `wrangler secrets` (production) or `.dev.vars` (local dev).
 4. **Endpoint Construction**: The base URL for the S3 API is always `https://${env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com/${env.R2_ASSETS_BUCKET_NAME}/${r2Key}`.
 5. **Update Integration Tests**: The `tests/integration/assets-api.test.ts` currently assert the wrong behavior (they expect the worker to serve the bytes). Update the tests so they expect a pre-signed URL. You must inject dummy/mock credentials into the test environment (e.g., in `vitest.config` or test setup) so the URL signer does not throw missing-credential errors during CI.
+
+---
+
+## Smart URL Resolver (Local Dev Exception)
+
+To support local R2 seeding without requiring a public S3 API endpoint for the local machine, the worker implements a **Context-Aware URL Resolver**:
+
+### Local Dev Mode Branching
+If `ENVIRONMENT === 'development'` and `TEST_MODE === 'true'`:
+- **Resolving**: The worker's `download-url` endpoint ignores remote signing and returns a URL pointing back to itself (e.g., `http://127.0.0.1:8787/api/v1/assets?guid=<GUID>`).
+- **Streaming**: The worker's base asset `GET` handler detects the dev mode and **streams the bytes directly** from the local `ASSETS_BUCKET` (Wrangler local state).
+- **Result**: The UI still follows the "Resolve then Fetch" pattern exactly, but the data flows from the local project files.
+
+### Production / Build Branching
+In any other environment (Staging, Production, or a Built Tauri/Mobile app):
+- **Resolving**: The worker uses `buildR2PresignedGetUrl` to generate an authoritative **AWS V4 Signed URL** pointing to the Cloudflare R2 cloud.
+- **Streaming**: Direct byte-serving on the worker remains **disabled (403 Forbidden)**.
+- **Result**: Assets are served via the high-performance global CDN/R2 network.
+
+This architecture ensures that the "One Source of Truth" remains the Worker's `download-url` endpoint, while providing a seamless local experience.
 
 **Single source of path constants:** `@ocentra/endpoint-domain` (`ApiEndpoint.Assets.DownloadUrl`, `buildApiUrl`, etc.). **Shared resolve helper:** `@ocentra/endpoint-domain/utils/resolve-asset-download-url` (`resolveAssetDownloadUrl`, `getWorkerBaseUrl`, `clearAssetDownloadUrlResolveCache`).
 

@@ -11,9 +11,6 @@ export function prefetchDeferredChunks(): void {
     void Promise.all([
       import('@/ui/components/Background/ThreeBaseContext'),
       import('@/ui/components/Background/DynamicBackground'),
-      import('@ocentra/ai-domain/adapters/transformers-js-runtime-adapter'),
-      import('@/ui/features/aiPlayground/AIPlaygroundScreen'),
-      import('@/adapters/ai/aiDomainAppBootstrap'),
       import('@/adapters/solana/wallet/WalletAdapter'),
     ]);
   });

@@ -6,12 +6,10 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import {
   buildTestApiUrlForEndpoint,
   buildTestApiUrlForEndpointWithPath,
-  buildTestApiUrlWithQuery,
   getValidRequestHeaders,
 } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { formatBearerToken } from '@/utils/auth';
 import { TestConfig } from '@tests/constants/test-constants';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
