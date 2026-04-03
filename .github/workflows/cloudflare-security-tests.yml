@@ -43,31 +43,8 @@ jobs:
         working-directory: .
         run: npm ci --ignore-scripts
 
-      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, eventing, solana; matches prebuild deps)
-        working-directory: .
-        run: |
-          cd packages/boundary-domain && npm install
-          cd ../endpoint-domain && npm install
-          cd ../logging-domain && npm install
-          cd ../behaviour-domain && npm install
-          cd ../asset-domain && npm install
-          cd ../app-core && npm install
-          cd ../credentials-domain && npm install
-          cd ../ai-domain && npm install
-          cd ../crypto-domain && npm install
-          cd ../verification-domain && npm install
-          cd ../eventing-domain && npm install
-          cd ../solana-domain && npm install
-
-      - name: Install Cloudflare dependencies
-        run: npm ci
-
       - name: Build domain packages and generate log modules
-        run: export PATH="./node_modules/.bin:$PATH" && npm run prebuild
-
-      - name: Install logging-domain deps (for bridge)
-        working-directory: packages/logging-domain
-        run: npm install
+        run: npm run prebuild
 
       - name: Start log bridge
         working-directory: .
@@ -180,31 +157,8 @@ jobs:
         working-directory: .
         run: npm ci --ignore-scripts
 
-      - name: Install domain package deps (boundary, endpoint, logging, behaviour, asset, app-core, credentials, ai, crypto, verification, eventing, solana; matches prebuild deps)
-        working-directory: .
-        run: |
-          cd packages/boundary-domain && npm install
-          cd ../endpoint-domain && npm install
-          cd ../logging-domain && npm install
-          cd ../behaviour-domain && npm install
-          cd ../asset-domain && npm install
-          cd ../app-core && npm install
-          cd ../credentials-domain && npm install
-          cd ../ai-domain && npm install
-          cd ../crypto-domain && npm install
-          cd ../verification-domain && npm install
-          cd ../eventing-domain && npm install
-          cd ../solana-domain && npm install
-
-      - name: Install Cloudflare dependencies
-        run: npm ci
-
       - name: Build domain packages and generate log modules
-        run: export PATH="./node_modules/.bin:$PATH" && npm run prebuild
-
-      - name: Install logging-domain deps (for bridge)
-        working-directory: packages/logging-domain
-        run: npm install
+        run: npm run prebuild
 
       - name: Start log bridge
         working-directory: .

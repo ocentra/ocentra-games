@@ -41,16 +41,20 @@ export async function resolveAssetDownloadUrl(
   }
 
   const publicBase = storageConfig.assetsPublicUrl?.trim().replace(/\/$/, '') ?? '';
+  const workerBase = getWorkerBaseUrl(storageConfig);
   const idKey = request.guid ?? request.hash ?? request.checksum;
+  
   if (publicBase && idKey) {
-    const directUrl = `${publicBase}/${encodeURIComponent(idKey)}`;
-    if (cacheKey && assetDownloadUrlResolveCache.size < ASSET_DOWNLOAD_URL_RESOLVE_CACHE_MAX) {
-      assetDownloadUrlResolveCache.set(cacheKey, directUrl);
+    const isWorkerProxyFallback = workerBase && publicBase === `${workerBase}/api/v1/assets`;
+    if (!isWorkerProxyFallback) {
+      const directUrl = `${publicBase}/${encodeURIComponent(idKey)}`;
+      if (cacheKey && assetDownloadUrlResolveCache.size < ASSET_DOWNLOAD_URL_RESOLVE_CACHE_MAX) {
+        assetDownloadUrlResolveCache.set(cacheKey, directUrl);
+      }
+      return directUrl;
     }
-    return directUrl;
   }
 
-  const workerBase = getWorkerBaseUrl(storageConfig);
   if (!workerBase) {
     throw new Error(
       'Cannot resolve asset download URL: worker URL is empty. For release builds set VITE_MAIN_REAL_CLAIM_STORAGE_URL (or VITE_CLAIM_STORAGE_URL) to your deployed worker.'
