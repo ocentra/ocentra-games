@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { getDefaultDbPath, TestLogDuckDb, DEFAULT_DOMAIN } from '../src/test-log/testLogDuckDb';
+import { loadDuckDb } from '../src/app-log/duckDbHelpers';
 import { getChangedFiles, updateManifest, getManifestPath } from '../src/test-log/ingestManifest';
 import { RunType } from '../src/test-log/types';
 
@@ -80,6 +81,15 @@ async function main(): Promise<void> {
   const scope = parseScope();
   const dbPath = getDefaultDbPath(domain);
   const manifestPath = getManifestPath(domain);
+  const isCi = Boolean(process.env.CI && process.env.CI !== 'false');
+  const duckDbAvailable = !isCi && (() => {
+    try {
+      loadDuckDb();
+      return true;
+    } catch {
+      return false;
+    }
+  })();
 
   process.stdout.write(`\n[1/4] Config\n`);
   process.stdout.write(`  Domain: ${domain}\n`);
@@ -90,6 +100,26 @@ async function main(): Promise<void> {
     process.stdout.write(`  Scope: run_type=${scope.runType}${scope.suiteType ? ` suite_type=${scope.suiteType}` : ''}\n`);
   }
   process.stdout.write(`\n`);
+
+  if (isCi) {
+    process.stdout.write(`  CI detected; skipping optional DuckDB ingest and manifest rebuild.\n`);
+    process.stdout.write(`  This helper only exists to keep local log-query tooling in sync.\n`);
+    process.stdout.write(`\nDone.\n`);
+    process.stdout.write(`  DB: ${dbPath}\n`);
+    process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
+    process.stdout.write(`\n`);
+    return;
+  }
+
+  if (!duckDbAvailable) {
+    process.stdout.write(`  DuckDB is not available in this environment; skipping ingest and manifest rebuild.\n`);
+    process.stdout.write(`  This helper is optional and only used for local log queries.\n`);
+    process.stdout.write(`\nDone.\n`);
+    process.stdout.write(`  DB: ${dbPath}\n`);
+    process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
+    process.stdout.write(`\n`);
+    return;
+  }
 
   const scopedUpdate = scope.runType != null;
 
