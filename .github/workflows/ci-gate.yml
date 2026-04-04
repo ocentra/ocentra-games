@@ -28,36 +28,36 @@ concurrency:
 
 jobs:
   secret-scan:
-    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     uses: ./.github/workflows/secret-scan.yml
     secrets: inherit
 
   cloudflare-preflight:
-    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     needs: [secret-scan]
     uses: ./.github/workflows/cloudflare-preflight.yml
     secrets: inherit
 
   pull-request-checks:
-    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     needs: [cloudflare-preflight]
     uses: ./.github/workflows/pull-request-checks.yml
     secrets: inherit
 
   cloudflare-security:
-    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     needs: [pull-request-checks]
     uses: ./.github/workflows/cloudflare-security-tests.yml
     secrets: inherit
 
   cloudflare-security-only:
-    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security'
+    if: (github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     uses: ./.github/workflows/cloudflare-security-quick.yml
     secrets: inherit
 
   sync-r2-main:
     name: R2 sync dev (ocentra-assets-test, incremental)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ false }}
     needs: [cloudflare-security]
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -96,7 +96,7 @@ jobs:
 
   deploy-worker-dev:
     name: Deploy claim-storage-dev Worker
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ false }}
     needs: [sync-r2-main]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -124,7 +124,7 @@ jobs:
 
   deploy-preview-main:
     name: Deploy Pages preview (main)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ false }}
     needs: [deploy-worker-dev]
     runs-on: ubuntu-latest
     timeout-minutes: 25
