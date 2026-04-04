@@ -5,6 +5,16 @@ on:
     branches: [main, develop, production]
   push:
     branches: [main, develop, production]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Pipeline mode
+        required: false
+        type: choice
+        options:
+          - full
+          - cloudflare-security
+        default: full
 
 permissions:
   contents: read
@@ -18,22 +28,31 @@ concurrency:
 
 jobs:
   secret-scan:
+    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
     uses: ./.github/workflows/secret-scan.yml
     secrets: inherit
 
   cloudflare-preflight:
+    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
     needs: [secret-scan]
     uses: ./.github/workflows/cloudflare-preflight.yml
     secrets: inherit
 
   pull-request-checks:
+    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
     needs: [cloudflare-preflight]
     uses: ./.github/workflows/pull-request-checks.yml
     secrets: inherit
 
   cloudflare-security:
+    if: github.event_name != 'workflow_dispatch' || inputs.mode == 'full'
     needs: [pull-request-checks]
     uses: ./.github/workflows/cloudflare-security-tests.yml
+    secrets: inherit
+
+  cloudflare-security-only:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security'
+    uses: ./.github/workflows/cloudflare-security-quick.yml
     secrets: inherit
 
   sync-r2-main:
