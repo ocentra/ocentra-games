@@ -1,0 +1,236 @@
+name: Cloudflare Security Quick Gates
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Run dynamic, static, or both gates
+        required: false
+        type: choice
+        options:
+          - both
+          - dynamic
+          - static
+        default: both
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cloudflare-dynamic-security:
+    name: Cloudflare Dynamic Security Gates
+    if: ${{ inputs.mode == 'both' || inputs.mode == 'dynamic' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      LOG_BRIDGE_URL: https://ocentra-log-bridge-ci.ocentra.ca
+      CF_TESTS_STRIPE_SECRET_KEY: ${{ secrets.CF_TESTS_STRIPE_SECRET_KEY }}
+      CF_TESTS_FIREBASE_PRIVATE_KEY_PEM: ${{ secrets.CF_TESTS_FIREBASE_PRIVATE_KEY_PEM }}
+      CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY: ${{ secrets.CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY }}
+      CF_TESTS_AI_LEAKAGE_FAKE_KEY: ${{ secrets.CF_TESTS_AI_LEAKAGE_FAKE_KEY }}
+      CF_TESTS_AI_API_KEY: ${{ secrets.CF_TESTS_AI_API_KEY }}
+    defaults:
+      run:
+        working-directory: infra/cloudflare
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install root workspace dependencies
+        working-directory: .
+        run: npm ci --ignore-scripts
+
+      - name: Build domain packages and generate log modules
+        run: npm run prebuild
+
+      - name: Start log bridge
+        working-directory: .
+        run: |
+          cd packages/logging-domain && npm run bridge &
+          sleep 3
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8765/__health__ > /dev/null 2>&1; then
+              echo "Log bridge ready"
+              break
+            fi
+            if [ "$i" -eq 20 ]; then
+              echo "Log bridge did not become ready"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Install cloudflared
+        run: |
+          curl -sL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
+          sudo dpkg -i /tmp/cloudflared.deb
+          cloudflared --version
+
+      - name: Start CI tunnel
+        env:
+          CLOUDFLARE_TUNNEL_CI_TOKEN: ${{ secrets.CLOUDFLARE_TUNNEL_CI_TOKEN }}
+        run: |
+          if [ -z "$CLOUDFLARE_TUNNEL_CI_TOKEN" ]; then
+            echo "CLOUDFLARE_TUNNEL_CI_TOKEN secret is not set. See infra/cloudflare/docs/TUNNEL-CI.md"
+            exit 1
+          fi
+          cloudflared tunnel run --token "$CLOUDFLARE_TUNNEL_CI_TOKEN" &
+          sleep 5
+          for i in $(seq 1 30); do
+            if curl -fsS "${LOG_BRIDGE_URL}/__health__" > /dev/null 2>&1; then
+              echo "CI tunnel ready at ${LOG_BRIDGE_URL}"
+              break
+            fi
+            if [ "$i" -eq 30 ]; then
+              echo "CI tunnel did not become reachable at ${LOG_BRIDGE_URL}"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Schemathesis
+        run: pip install schemathesis
+
+      - name: Install k6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ca-certificates gnupg2
+          sudo mkdir -p /usr/share/keyrings
+          curl -fsSL https://dl.k6.io/key.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/k6-archive-keyring.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Start Worker for dynamic tests
+        run: |
+          npx wrangler dev --env development --port 8787 --local &
+          echo "WRANGLER_PID=$!" >> $GITHUB_ENV
+          sleep 10
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8787/health > /dev/null; then
+              echo "Worker ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Worker did not become ready"
+          exit 1
+
+      - name: Generate k6 constants
+        run: npm run generate:k6-constants
+
+      - name: Schemathesis API fuzzing
+        run: npm run test:schemathesis
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+
+      - name: k6 load/concurrency
+        run: npm run test:k6
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+
+      - name: k6 soak (smoke profile)
+        run: npm run test:k6:soak
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          SOAK_WARMUP: 5s
+          SOAK_DURATION: 20s
+          SOAK_COOLDOWN: 5s
+          SOAK_TARGET_VUS: 10
+
+      - name: k6 memory pressure (smoke profile)
+        run: npm run test:k6:memory
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          MEMORY_STAGE_DURATION: 20s
+          MEMORY_TARGET_VUS: 10
+          MEMORY_PAYLOAD_KB: 64
+
+      - name: k6 FD/socket pressure (smoke profile)
+        run: npm run test:k6:fd
+        env:
+          WORKER_URL: http://127.0.0.1:8787
+          FD_STAGE_DURATION: 20s
+          FD_TARGET_VUS: 25
+          WS_HOLD_MS: 1000
+
+      - name: Stop Worker
+        if: always()
+        run: |
+          if [ -n "$WRANGLER_PID" ]; then
+            kill "$WRANGLER_PID" 2>/dev/null || true
+          fi
+          pkill -f "wrangler dev" || true
+
+      - name: Upload dynamic security artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-dynamic-security-artifacts
+          path: |
+            infra/cloudflare/test-runner/logs/**
+            infra/cloudflare/test-runner/ReportJson/**
+          retention-days: 7
+          if-no-files-found: ignore
+
+  cloudflare-static-security:
+    name: Cloudflare Static Security Gates
+    if: ${{ inputs.mode == 'both' || inputs.mode == 'static' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Semgrep
+        run: python3 -m pip install semgrep==1.147.0
+
+      - name: Semgrep scan
+        working-directory: infra/cloudflare
+        run: semgrep scan --config p/security-audit --config p/owasp-top-ten --config p/typescript src
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Analyze CodeQL
+        uses: github/codeql-action/analyze@v3
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.34.0
+        with:
+          scan-type: fs
+          scan-ref: infra/cloudflare
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
