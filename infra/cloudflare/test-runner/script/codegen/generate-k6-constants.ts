@@ -1,38 +1,24 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import {
+  ContentType as EndpointDomainContentType,
+  HttpAuthScheme as EndpointDomainHttpAuthScheme,
+  HttpHeader as EndpointDomainHttpHeader,
+  HttpStatus as EndpointDomainHttpStatus,
+} from '@ocentra/endpoint-domain/constants/http';
+import {
+  CreditAction as EndpointDomainCreditAction,
+  Currency as EndpointDomainCurrency,
+} from '@ocentra/endpoint-domain/constants/credits';
 import { ApiEndpoint as EndpointDomainApi } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..', '..', '..');
 
-const httpPath = join(rootDir, 'src/constants/http.ts');
-const creditsPath = join(rootDir, 'src/constants/credits.ts');
 const testConstantsPath = join(rootDir, 'tests/constants/test-constants.ts');
 const outputPath = join(rootDir, 'tests/k6/constants.js');
-
-function extractConstantObject(filePath: string, constantName: string): Record<string, string | number> | null {
-  const content = readFileSync(filePath, 'utf-8');
-  const regex = new RegExp(`export const ${constantName} = \\{([^}]+)\\}`, 's');
-  const match = content.match(regex);
-  if (!match) return null;
-
-  const props = match[1];
-  const obj: Record<string, string | number> = {};
-
-  const propRegex = /(\w+):\s*['"`]([^'"`]+)['"`]|(\w+):\s*(\d+)/g;
-  let propMatch;
-  while ((propMatch = propRegex.exec(props)) !== null) {
-    const key = propMatch[1] || propMatch[3];
-    const value = propMatch[2] || propMatch[4];
-    if (key && value) {
-      obj[key] = isNaN(Number(value)) ? value : Number(value);
-    }
-  }
-
-  return obj;
-}
 
 function flattenApiEndpointForK6(): Record<string, string> {
   const ep = EndpointDomainApi as Record<string, unknown>;
@@ -72,30 +58,6 @@ function flattenApiEndpointForK6(): Record<string, string> {
   return flat;
 }
 
-function extractHttpHeader(): Record<string, string> {
-  return extractConstantObject(httpPath, 'HttpHeader') as Record<string, string> || {};
-}
-
-function extractHttpStatus(): Record<string, number> {
-  return extractConstantObject(httpPath, 'HttpStatus') as Record<string, number> || {};
-}
-
-function extractCurrency(): Record<string, string> {
-  return extractConstantObject(creditsPath, 'Currency') as Record<string, string> || {};
-}
-
-function extractHttpContentType(): Record<string, string> {
-  return extractConstantObject(httpPath, 'HttpContentType') as Record<string, string> || {};
-}
-
-function extractHttpAuthScheme(): Record<string, string> {
-  return extractConstantObject(httpPath, 'HttpAuthScheme') as Record<string, string> || {};
-}
-
-function extractCreditAction(): Record<string, string> {
-  return extractConstantObject(creditsPath, 'CreditAction') as Record<string, string> || {};
-}
-
 function extractTestConfig(): Record<string, string> {
   const content = readFileSync(testConstantsPath, 'utf-8');
   const config: Record<string, string> = {};
@@ -118,12 +80,12 @@ function extractTestDefaults(): Record<string, string | number> {
 }
 
 const ApiEndpoint = flattenApiEndpointForK6();
-const HttpHeader = extractHttpHeader();
-const HttpStatus = extractHttpStatus();
-const Currency = extractCurrency();
-const HttpContentType = extractHttpContentType();
-const HttpAuthScheme = extractHttpAuthScheme();
-const CreditAction = extractCreditAction();
+const HttpHeader = EndpointDomainHttpHeader;
+const HttpStatus = EndpointDomainHttpStatus;
+const Currency = EndpointDomainCurrency;
+const HttpContentType = EndpointDomainContentType;
+const HttpAuthScheme = EndpointDomainHttpAuthScheme;
+const CreditAction = EndpointDomainCreditAction;
 const TestConfig = extractTestConfig();
 const TestDefaults = extractTestDefaults();
 
