@@ -21,6 +21,7 @@ jobs:
     timeout-minutes: 60
     env:
       LOG_BRIDGE_URL: https://ocentra-log-bridge-ci.ocentra.ca
+      TEST_RUN_MODE: test
       CF_TESTS_STRIPE_SECRET_KEY: ${{ secrets.CF_TESTS_STRIPE_SECRET_KEY }}
       CF_TESTS_FIREBASE_PRIVATE_KEY_PEM: ${{ secrets.CF_TESTS_FIREBASE_PRIVATE_KEY_PEM }}
       CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY: ${{ secrets.CF_TESTS_AI_SUBSTITUTE_DEFAULT_KEY }}
@@ -94,20 +95,20 @@ jobs:
       - name: Lint and type check
         run: npm run lint
 
-      - name: Unit tests (helper)
-        run: npm run test:unit:helper
+      - name: Unit tests (CI)
+        run: npm run test:unit:ci
 
       - name: Dependency kill simulation (fail-closed auth)
-        run: npm run test:unit:helper -- tests/unit/utils/auth-dependency-resilience.test.ts
+        run: npm run test:unit:ci -- tests/unit/utils/auth-dependency-resilience.test.ts
 
-      - name: Integration tests (helper)
-        run: npm run test:integration:helper
+      - name: Integration tests (CI)
+        run: npm run test:integration:ci
 
-      - name: E2E tests (helper)
-        run: npm run test:e2e:helper
+      - name: E2E tests (CI)
+        run: npm run test:e2e:ci
 
-      - name: Contract tests (helper)
-        run: npm run test:contract:helper
+      - name: Contract tests (CI)
+        run: npm run test:contract:ci
 
       - name: Flaky detection (repeat-run smoke gate)
         run: npm run test:flaky:detect

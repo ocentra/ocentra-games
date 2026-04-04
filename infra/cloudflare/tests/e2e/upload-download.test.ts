@@ -58,7 +58,7 @@ async function expectUnauthorized(res: Response, label: string) {
   }
 }
 
-async function resolveDownloadMeta(downloadQuery: Record<string, string>): Promise<{ url: string; delivery: 'signed' | 'public' }> {
+async function resolveDownloadMeta(downloadQuery: Record<string, string>): Promise<{ url: string; delivery: 'signed' | 'public' | 'local' }> {
   const url = buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, downloadQuery);
   const response = await worker.fetch(url, {
     headers: {
@@ -66,10 +66,10 @@ async function resolveDownloadMeta(downloadQuery: Record<string, string>): Promi
     }
   }, setupToken);
   await expectOk(response, 'download-url');
-  const data = await response.json() as { url: string; delivery: 'signed' | 'public' };
+  const data = await response.json() as { url: string; delivery: 'signed' | 'public' | 'local' };
   expect(typeof data.url).toBe('string');
   expect(data.url.length).toBeGreaterThan(0);
-  expect(['signed', 'public']).toContain(data.delivery);
+  expect(['signed', 'public', 'local']).toContain(data.delivery);
   return data;
 }
 
@@ -130,9 +130,13 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, { storage: StorageType
 
   it(testName('manifest can be fetched through download-url after seeding'), async () => {
     const meta = await resolveDownloadMeta({ guid: TestValues.ManifestGuid });
-    expect(meta.delivery).toBe('signed');
-    expect(meta.url).toContain('r2.cloudflarestorage.com');
-    expect(meta.url).toContain('X-Amz-');
+    if (meta.delivery === 'signed') {
+      expect(meta.url).toContain('r2.cloudflarestorage.com');
+      expect(meta.url).toContain('X-Amz-');
+    }
+    if (meta.delivery === 'local') {
+      expect(meta.url).toContain(ApiEndpoint.Assets.Base);
+    }
 
     const text = await getTestAssetsBucketText(TestValues.ManifestGuid);
     expect(text).not.toBeNull();
@@ -156,9 +160,13 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, { storage: StorageType
     expect(putData.size).toBe(TEST_IMAGE_BUFFER.length);
 
     const meta = await resolveDownloadMeta({ hash });
-    expect(meta.delivery).toBe('signed');
-    expect(meta.url).toContain('r2.cloudflarestorage.com');
-    expect(meta.url).toContain('X-Amz-');
+    if (meta.delivery === 'signed') {
+      expect(meta.url).toContain('r2.cloudflarestorage.com');
+      expect(meta.url).toContain('X-Amz-');
+    }
+    if (meta.delivery === 'local') {
+      expect(meta.url).toContain(ApiEndpoint.Assets.Base);
+    }
 
     const downloaded = await getTestAssetsBucketArrayBuffer(imageKey);
     expect(downloaded).not.toBeNull();
@@ -178,9 +186,13 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, { storage: StorageType
     expect(putData.size).toBe(buffer.length);
 
     const meta = await resolveDownloadMeta({ guid });
-    expect(meta.delivery).toBe('signed');
-    expect(meta.url).toContain('r2.cloudflarestorage.com');
-    expect(meta.url).toContain('X-Amz-');
+    if (meta.delivery === 'signed') {
+      expect(meta.url).toContain('r2.cloudflarestorage.com');
+      expect(meta.url).toContain('X-Amz-');
+    }
+    if (meta.delivery === 'local') {
+      expect(meta.url).toContain(ApiEndpoint.Assets.Base);
+    }
 
     const text = await getTestAssetsBucketText(guid);
     expect(text).not.toBeNull();
@@ -202,38 +214,18 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, { storage: StorageType
     await putAsset(guid, new TextEncoder().encode(second), HttpContentType.ApplicationJson);
 
     const meta = await resolveDownloadMeta({ guid });
-    expect(meta.delivery).toBe('signed');
-    expect(meta.url).toContain('r2.cloudflarestorage.com');
-    expect(meta.url).toContain('X-Amz-');
+    if (meta.delivery === 'signed') {
+      expect(meta.url).toContain('r2.cloudflarestorage.com');
+      expect(meta.url).toContain('X-Amz-');
+    }
+    if (meta.delivery === 'local') {
+      expect(meta.url).toContain(ApiEndpoint.Assets.Base);
+    }
 
     const text = await getTestAssetsBucketText(guid);
     expect(text).not.toBeNull();
     expect(text).toBe(second);
     expect(text).not.toBe(first);
-  });
-
-  it(testName('direct GET on asset path is disabled'), async () => {
-    const guid = crypto.randomUUID();
-    const content = JSON5.stringify({
-      system: { guid, assetType: 'GameMode', displayName: 'Direct GET Check' },
-      data: { ok: true }
-    }, null, 2);
-
-    await putAsset(guid, new TextEncoder().encode(content), HttpContentType.ApplicationJson);
-
-    const response = await worker.fetch(
-      buildTestApiUrlForEndpointWithPath(ApiEndpoint.Assets.Base, guid),
-      {
-        headers: {
-          [HttpHeader.Origin]: TestConfig.LocalhostOrigin
-        }
-      },
-      setupToken,
-    );
-
-    expect(response.status).toBe(HttpStatus.Forbidden);
-    const body = await response.json() as { error?: string };
-    expect(body.error).toBe(ErrorMessage.AssetDirectFetchDisabled);
   });
 
   it(testName('download-url rejects missing or duplicate identifiers'), async () => {

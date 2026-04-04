@@ -100,6 +100,7 @@ function runScopedWipe(type: Type, mode: Mode, testFile?: string): void {
 const ARG_TYPE = '--type=';
 const ARG_MODE = '--mode=';
 const ARG_FILE = '--file=';
+const ARG_CI = '--ci';
 const SUITE_TYPES = [
   TestSuiteType.Unit,
   TestSuiteType.Integration,
@@ -110,7 +111,7 @@ const HelperModeBoth = 'both' as const;
 const MODES = [TestRunMode.Pool, TestRunMode.Unstable, HelperModeBoth] as const;
 type Type = (typeof SUITE_TYPES)[number] | 'all';
 type Mode = (typeof MODES)[number];
-type ParsedArgs = { type: Type; mode: Mode; file?: string };
+type ParsedArgs = { type: Type; mode: Mode; file?: string; ci: boolean };
 
 function findTestFiles(dir: string): string[] {
   const files: string[] = [];
@@ -142,6 +143,7 @@ function parseArgs(): ParsedArgs {
   let type: Type = TestSuiteType.Unit;
   let mode: Mode = HelperModeBoth;
   let file: string | undefined;
+  let ci = false;
   for (const arg of process.argv.slice(2)) {
     if (arg.startsWith(ARG_TYPE)) {
       const v = arg.slice(ARG_TYPE.length).toLowerCase();
@@ -153,6 +155,8 @@ function parseArgs(): ParsedArgs {
     } else if (arg.startsWith(ARG_FILE)) {
       const v = arg.slice(ARG_FILE.length).trim();
       if (v) file = v.replace(/\\/g, '/');
+    } else if (arg === ARG_CI) {
+      ci = true;
     } else if (!arg.startsWith('--') && arg.endsWith('.test.ts')) {
       file = arg.replace(/\\/g, '/');
     }
@@ -161,7 +165,7 @@ function parseArgs(): ParsedArgs {
     const v = String(process.env.npm_config_file).trim().replace(/\\/g, '/');
     if (v && v.endsWith('.test.ts')) file = v;
   }
-  return { type, mode, file };
+  return { type, mode, file, ci };
 }
 
 function getFilesForType(t: Exclude<Type, 'all'>): string[] {
@@ -438,15 +442,19 @@ async function ensureBridgeAndWipe(type: Type, mode: Mode, testFile?: string): P
 async function main(): Promise<number> {
   const startMs = Date.now();
   await runPreflight();
-  const { type, mode, file: testFile } = parseArgs();
+  const { type, mode, file: testFile, ci: ciMode } = parseArgs();
   await ensureBridgeAndWipe(type, mode, testFile);
   if (type === 'all') {
     let code = 0;
     const results: RunForTypeResult[] = [];
     for (const t of SUITE_TYPES) {
-      const result = await runForType(t, mode);
+      const result = await runForType(t, mode, undefined, undefined, ciMode);
       results.push(result);
       if (result.exitCode !== 0) code = result.exitCode;
+      if (ciMode && result.exitCode !== 0) break;
+    }
+    if (ciMode) {
+      return code;
     }
     const allPoolFiles = results.reduce((a, r) => a + r.poolFiles, 0);
     const allPoolPassed = results.reduce((a, r) => a + r.poolPassed, 0);
@@ -535,7 +543,7 @@ async function main(): Promise<number> {
     return code;
   }
 
-  const result = await runForType(type, mode, startMs, testFile);
+  const result = await runForType(type, mode, startMs, testFile, ciMode);
   return result.exitCode;
 }
 
@@ -543,7 +551,8 @@ async function runForType(
   type: Exclude<Type, 'all'>,
   mode: Mode,
   runStartMs?: number,
-  singleFile?: string
+  singleFile?: string,
+  ciMode: boolean = false
 ): Promise<RunForTypeResult> {
   const data = runSuiteTypeCollector(CWD);
   const mapPath = path.join(CWD, 'test-runner', 'suite-type-map.json');
@@ -600,6 +609,7 @@ async function runForType(
   if (fs.existsSync(resultsFile)) fs.unlinkSync(resultsFile);
   fs.writeFileSync(resultsFile, '', 'utf-8');
   process.env[TEST_RESULTS_TXT_PATH_ENV] = resultsFile;
+  const ciSubcommandArgs = ciMode ? ' --bail=1' : '';
   if (singleFile) {
     writeLog('SINGLE FILE RUN: ' + singleFile.replace(/\\/g, '/'), resultsFile);
     writeLog('(results go here only; integration-test-helper-results.txt is not touched)', resultsFile);
@@ -708,23 +718,23 @@ async function runForType(
     const sections: PhaseSection[] = [];
     if (type === TestSuiteType.Unit) {
       const { parallelPool, sequentialPool, unstable } = getUnitPhaseFiles(CWD);
-      if (parallelPool.length > 0) sections.push({ name: 'pool', list: parallelPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (sequentialPool.length > 0) sections.push({ name: 'pool (sequential)', list: sequentialPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (parallelPool.length > 0) sections.push({ name: 'pool', list: parallelPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (sequentialPool.length > 0) sections.push({ name: 'pool (sequential)', list: sequentialPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
     } else if (type === TestSuiteType.Integration) {
       const { parallelPool, sequentialPool, unstable } = getIntegrationPhaseFiles(CWD);
       const websocketList = getWebsocketIncludeFiles(CWD);
-      if (parallelPool.length > 0) sections.push({ name: 'pool', list: parallelPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (sequentialPool.length > 0) sections.push({ name: 'pool (sequential)', list: sequentialPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (websocketList.length > 0) sections.push({ name: 'websocket', list: websocketList, runType: RunType.SinglePool, suiteTypeForAgg: 'websocket', runCmd: (fileRel) => execSync(`npx vitest run --config vitest.websocket.config.ts ${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (parallelPool.length > 0) sections.push({ name: 'pool', list: parallelPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (sequentialPool.length > 0) sections.push({ name: 'pool (sequential)', list: sequentialPool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (websocketList.length > 0) sections.push({ name: 'websocket', list: websocketList, runType: RunType.SinglePool, suiteTypeForAgg: 'websocket', runCmd: (fileRel) => execSync(`npx vitest run --config vitest.websocket.config.ts ${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
     } else if (type === TestSuiteType.E2E) {
       const { pool, unstable } = getE2EPhaseFiles(CWD);
-      if (pool.length > 0) sections.push({ name: 'pool', list: pool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
-      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (pool.length > 0) sections.push({ name: 'pool', list: pool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (unstable.length > 0) sections.push({ name: 'unstable', list: unstable, runType: RunType.SingleThreads, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=threads --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
     } else if (type === TestSuiteType.Contract) {
       const { pool } = getContractPhaseFiles(CWD);
-      if (pool.length > 0) sections.push({ name: 'pool', list: pool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
+      if (pool.length > 0) sections.push({ name: 'pool', list: pool, runType: RunType.SinglePool, suiteTypeForAgg: type, runCmd: (fileRel) => execSync(`tsx scripts/run-suite.ts --type=${type} --mode=pool --file=${fileRel}${ciSubcommandArgs}`, { cwd: CWD, stdio: 'inherit', env: { ...process.env, [TEST_RESULTS_TXT_PATH_ENV]: resultsFile } as NodeJS.ProcessEnv }) });
     }
     return sections;
   }
@@ -779,8 +789,8 @@ async function runForType(
           });
           const rerunCmd =
             suiteTypeForAgg === 'websocket'
-              ? 'npx vitest run --config vitest.websocket.config.ts ' + fileRel
-              : 'npm run test:' + suiteTypeForAgg + ':helper -- ' + fileRel;
+              ? 'npx vitest run --config vitest.websocket.config.ts ' + fileRel + ciSubcommandArgs
+              : 'npm run test:' + suiteTypeForAgg + ':helper -- ' + fileRel + ciSubcommandArgs;
           const heading = `Running all ${sectionName} (${i + 1} of ${list.length})`;
           console.log(heading);
           console.log(rerunCmd);
@@ -790,7 +800,13 @@ async function runForType(
             runCmd(fileRel);
           } catch (err: unknown) {
             const status = err && typeof err === 'object' && 'status' in err ? (err as { status: number }).status : 1;
-            if (status !== undefined) exitCode = status;
+            if (status !== undefined) {
+              if (ciMode) process.exit(status);
+              exitCode = status;
+            }
+          }
+          if (ciMode) {
+            continue;
           }
           const runId = readRunIdFromCurrentRun();
           const agg = runId
@@ -807,7 +823,7 @@ async function runForType(
         return { passed: p, failed: f, timeout: t, unstable: u };
       };
 
-      const runPoolAsSingleBatch = (type === TestSuiteType.Unit || type === TestSuiteType.Contract) && poolSections.length > 0;
+      const runPoolAsSingleBatch = !ciMode && (type === TestSuiteType.Unit || type === TestSuiteType.Contract) && poolSections.length > 0;
       if (runPoolAsSingleBatch) {
         const runIdGenerated = writeCurrentRunFile();
         await notifyBridgeRunStarted(getBridgeBaseUrl(), {
@@ -823,7 +839,10 @@ async function runForType(
           });
         } catch (err: unknown) {
           const status = err && typeof err === 'object' && 'status' in err ? (err as { status: number }).status : 1;
-          if (status !== undefined) exitCode = status;
+          if (status !== undefined) {
+            if (ciMode) process.exit(status);
+            exitCode = status;
+          }
         }
         const runId = readRunIdFromCurrentRun();
         const agg = runId ? aggregateFromNdjson(runId, RunType.SinglePool, type) : { passed: 0, failed: 0, timeout: 0, unstable: 0, runId: undefined, runType: RunType.SinglePool };
@@ -887,7 +906,10 @@ async function runForType(
         });
       } catch (err: unknown) {
         const status = err && typeof err === 'object' && 'status' in err ? (err as { status: number }).status : 1;
-        if (status !== undefined) exitCode = status;
+        if (status !== undefined) {
+          if (ciMode) process.exit(status);
+          exitCode = status;
+        }
       }
       const runId = readRunIdFromCurrentRun();
       const agg = runId ? aggregateFromNdjson(runId, RunType.SinglePool, type) : { passed: 0, failed: 0, timeout: 0, unstable: 0, runId: undefined, runType: RunType.SinglePool };
@@ -943,7 +965,10 @@ async function runForType(
       });
     } catch (err: unknown) {
       const status = err && typeof err === 'object' && 'status' in err ? (err as { status: number }).status : 1;
-      if (status !== undefined) exitCode = status;
+      if (status !== undefined) {
+        if (ciMode) process.exit(status);
+        exitCode = status;
+      }
     }
     const runId = readRunIdFromCurrentRun();
     const agg = runId ? aggregateFromNdjson(runId, RunType.SingleThreads, type) : { passed: 0, failed: 0, timeout: 0, unstable: 0, runId: undefined, runType: RunType.SingleThreads };
@@ -997,7 +1022,10 @@ async function runForType(
       });
     } catch (err: unknown) {
       const status = err && typeof err === 'object' && 'status' in err ? (err as { status: number }).status : 1;
-      if (status !== undefined) exitCode = status;
+      if (status !== undefined) {
+        if (ciMode) process.exit(status);
+        exitCode = status;
+      }
     }
     const runId = readRunIdFromCurrentRun();
     const agg = runId ? aggregateFromNdjson(runId, RunType.SinglePool, 'websocket') : { passed: 0, failed: 0, timeout: 0, unstable: 0, runId: undefined, runType: RunType.SinglePool };
@@ -1024,6 +1052,29 @@ async function runForType(
     ].join('\n');
     console.log(websocketRoundup);
     writeLog(websocketRoundup, resultsFile);
+  }
+
+  if (ciMode) {
+    return {
+      exitCode,
+      suiteType: type,
+      poolFiles,
+      poolPassed,
+      poolFailed,
+      poolTimeout,
+      poolUnstable,
+      unstableFiles,
+      unstablePassed,
+      unstableFailed,
+      unstableTimeout,
+      unstableUnstable,
+      websocketFiles,
+      websocketPassed,
+      websocketFailed,
+      websocketTimeout,
+      websocketUnstable,
+      lastRunId,
+    };
   }
 
   const totalFileRuns = poolFiles + unstableFiles + websocketFiles;

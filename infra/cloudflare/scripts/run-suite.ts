@@ -108,6 +108,7 @@ function main(): number {
   let type: SuiteType = TestSuiteType.Unit;
   let mode: Mode = 'pool';
   let singleFile: string | null = null;
+  const extraArgs: string[] = [];
   for (const arg of process.argv.slice(2)) {
     if (arg.startsWith(ARG_TYPE)) {
       const v = arg.slice(ARG_TYPE.length).toLowerCase();
@@ -128,6 +129,8 @@ function main(): number {
       if (v) singleFile = v;
     } else if (!arg.startsWith('--') && arg.endsWith('.test.ts')) {
       singleFile = arg.replace(/\\/g, '/');
+    } else {
+      extraArgs.push(arg);
     }
   }
 
@@ -136,7 +139,7 @@ function main(): number {
 
   if (singleFile) {
     const relativePath = path.isAbsolute(singleFile) ? path.relative(CWD, singleFile) : singleFile;
-    return runTestRunner(type, testRunMode, [relativePath]);
+    return runTestRunner(type, testRunMode, [relativePath], extraArgs);
   }
 
   if (type === TestSuiteType.Contract) {
@@ -146,7 +149,7 @@ function main(): number {
       console.error('[run-suite] No test files found for type: contract (tests/contracts)');
       return 1;
     }
-    return runTestRunner(type, testRunMode, relativePaths);
+    return runTestRunner(type, testRunMode, relativePaths, extraArgs);
   }
 
   if (type === TestSuiteType.Unit) {
@@ -155,11 +158,11 @@ function main(): number {
       let code = 0;
       if (parallelPool.length > 0) {
         const poolExtra = getPoolMaxWorkersExtraArgs();
-        const c = runTestRunner(type, TestRunMode.Pool, parallelPool, poolExtra);
+        const c = runTestRunner(type, TestRunMode.Pool, parallelPool, [...poolExtra, ...extraArgs]);
         if (c !== 0) code = c;
       }
       if (sequentialPool.length > 0) {
-        const c = runTestRunner(type, TestRunMode.Pool, sequentialPool, ['--maxWorkers=1']);
+        const c = runTestRunner(type, TestRunMode.Pool, sequentialPool, ['--maxWorkers=1', ...extraArgs]);
         if (c !== 0) code = c;
       }
       if (parallelPool.length === 0 && sequentialPool.length === 0) {
@@ -172,7 +175,7 @@ function main(): number {
       console.error('[run-suite] No unit tests declared for threads (runIn=unstable).');
       return 1;
     }
-    return runTestRunner(type, TestRunMode.Unstable, unstable);
+    return runTestRunner(type, TestRunMode.Unstable, unstable, extraArgs);
   }
 
   if (type === TestSuiteType.Integration) {
@@ -181,11 +184,11 @@ function main(): number {
       let code = 0;
       if (parallelPool.length > 0) {
         const poolExtra = getPoolMaxWorkersExtraArgs();
-        const c = runTestRunner(type, TestRunMode.Pool, parallelPool, poolExtra);
+        const c = runTestRunner(type, TestRunMode.Pool, parallelPool, [...poolExtra, ...extraArgs]);
         if (c !== 0) code = c;
       }
       if (sequentialPool.length > 0) {
-        const c = runTestRunner(type, TestRunMode.Pool, sequentialPool, ['--maxWorkers=1']);
+        const c = runTestRunner(type, TestRunMode.Pool, sequentialPool, ['--maxWorkers=1', ...extraArgs]);
         if (c !== 0) code = c;
       }
       if (parallelPool.length === 0 && sequentialPool.length === 0) {
@@ -198,7 +201,7 @@ function main(): number {
       console.error('[run-suite] No integration tests declared for threads.');
       return 1;
     }
-    return runTestRunner(type, TestRunMode.Unstable, unstable);
+    return runTestRunner(type, TestRunMode.Unstable, unstable, extraArgs);
   }
 
   if (type === TestSuiteType.E2E) {
@@ -208,13 +211,13 @@ function main(): number {
         console.error('[run-suite] No e2e tests declared for pool.');
         return 1;
       }
-      return runTestRunner(type, TestRunMode.Pool, pool);
+      return runTestRunner(type, TestRunMode.Pool, pool, extraArgs);
     }
     if (unstable.length === 0) {
       console.error('[run-suite] No e2e tests declared for threads.');
       return 1;
     }
-    return runTestRunner(type, TestRunMode.Unstable, unstable);
+    return runTestRunner(type, TestRunMode.Unstable, unstable, extraArgs);
   }
 
   return 1;

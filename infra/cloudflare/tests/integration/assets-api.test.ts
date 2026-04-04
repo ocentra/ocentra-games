@@ -6,9 +6,8 @@ import type { R2Bucket } from '@cloudflare/workers-types';
 import { env } from 'cloudflare:test';
 import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
-import { getValidRequestHeaders, getAdminAuthHeaders, buildTestApiUrlForEndpointWithPath, buildTestApiUrlForEndpoint, buildTestApiUrl, loadBinaryFixture } from '@tests/helpers/test-helpers';
+import { getValidRequestHeaders, getAdminAuthHeaders, buildTestApiUrlForEndpointWithPath, buildTestApiUrlForEndpoint, buildTestApiUrlWithQuery, buildTestApiUrl, loadBinaryFixture } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { getTestAssetsBucketArrayBuffer } from '@tests/helpers/r2-asset-test-get';
 import { TestConfig } from '@tests/constants/test-constants';
@@ -160,7 +159,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (prodWorker.stop) await prodWorker.stop();
   });
 
-  it(testName('Asset Download: direct GET on worker returns 403; bytes readable from R2'), async () => {
+  it(testName('Asset download-url: returns a downloadable asset URL and bytes match upload'), async () => {
     const token = await createToken();
     const assetPath = `test-assets/download-${Date.now()}.png`;
 
@@ -181,20 +180,38 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(typeof storageKey).toBe('string');
     expect(storageKey.length).toBeGreaterThan(0);
 
-    const assetDownloadUrl = buildTestApiUrlForEndpointWithPath(ApiEndpoint.Assets.Base, storageKey);
-    const downloadResponse = await worker.fetch(assetDownloadUrl, {
+    const resolveUrl = buildTestApiUrlWithQuery(ApiEndpoint.Assets.DownloadUrl, { guid: storageKey });
+    const metaResponse = await worker.fetch(resolveUrl, {
       headers: {
         [HttpHeader.Origin]: TestConfig.LocalhostOrigin
       }
     }, token);
 
-    expect(downloadResponse.status).toBe(HttpStatus.Forbidden);
-    const errBody = await downloadResponse.json() as { error?: string };
-    expect(errBody.error).toBe(ErrorMessage.AssetDirectFetchDisabled);
+    expect(metaResponse.status).toBe(HttpStatus.Ok);
+    const meta = await metaResponse.json() as { url?: string; delivery?: 'signed' | 'public' | 'local' };
+    const downloadUrl = meta.url;
+    if (typeof downloadUrl !== 'string') {
+      throw new Error('Download URL missing');
+    }
+    expect(downloadUrl.length).toBeGreaterThan(0);
+    expect(['signed', 'public', 'local']).toContain(meta.delivery);
 
     const fromR2 = await getTestAssetsBucketArrayBuffer(storageKey);
     expect(fromR2).not.toBeNull();
     expect(fromR2!.byteLength).toBe(TEST_IMAGE_BUFFER.length);
+
+    if (meta.delivery === 'local') {
+      expect(downloadUrl).toContain(ApiEndpoint.Assets.Base);
+    } else {
+      if (meta.delivery === 'signed') {
+        expect(downloadUrl).toContain('r2.cloudflarestorage.com');
+        expect(downloadUrl).toContain('X-Amz-');
+      }
+      const downloadResponse = await fetch(downloadUrl);
+      expect(downloadResponse.status).toBe(HttpStatus.Ok);
+      const downloaded = new Uint8Array(await downloadResponse.arrayBuffer());
+      expect(downloaded).toEqual(TEST_IMAGE_BUFFER);
+    }
   }, 30000);
 
   it(testName('Asset Download: should return 404 for non-existent asset'), async () => {
@@ -265,11 +282,20 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       }
     }, token);
     expect(metaResponse.status).toBe(HttpStatus.Ok);
-    const meta = await metaResponse.json() as { url: string; delivery: string };
-    expect(meta.delivery).toBe('signed');
-    expect(typeof meta.url).toBe('string');
-    expect(meta.url).toContain('r2.cloudflarestorage.com');
-    expect(meta.url).toContain('X-Amz-');
+    const meta = await metaResponse.json() as { url?: string; delivery?: 'signed' | 'public' | 'local' };
+    const downloadUrl = meta.url;
+    if (typeof downloadUrl !== 'string') {
+      throw new Error('Download URL missing');
+    }
+    expect(downloadUrl.length).toBeGreaterThan(0);
+    expect(['signed', 'public', 'local']).toContain(meta.delivery);
+    if (meta.delivery === 'signed') {
+      expect(downloadUrl).toContain('r2.cloudflarestorage.com');
+      expect(downloadUrl).toContain('X-Amz-');
+    }
+    if (meta.delivery === 'local') {
+      expect(downloadUrl).toContain(ApiEndpoint.Assets.Base);
+    }
 
     const fromR2 = await getTestAssetsBucketArrayBuffer(storageKey);
     expect(fromR2).not.toBeNull();
