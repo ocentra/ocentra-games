@@ -124,6 +124,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y k6
 
+      - name: Enable auth for dynamic security tests
+        run: |
+          if grep -q '^DISABLE_AUTH=' .dev.vars; then
+            sed -i 's/^DISABLE_AUTH=.*/DISABLE_AUTH=false/' .dev.vars
+          else
+            printf '\nDISABLE_AUTH=false\n' >> .dev.vars
+          fi
+
       - name: Start Worker for dynamic tests
         run: |
           npx wrangler dev --env development --port 8787 --local &
@@ -227,14 +235,14 @@ jobs:
       - name: Analyze CodeQL
         uses: github/codeql-action/analyze@v3
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.34.0
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.3
         with:
-          scan-type: fs
-          scan-ref: infra/cloudflare
-          format: sarif
-          output: trivy-results.sarif
-          severity: CRITICAL,HIGH
+          version: v0.68.1
+          cache: true
+
+      - name: Run Trivy vulnerability scanner
+        run: trivy fs --format sarif --output trivy-results.sarif --severity CRITICAL,HIGH --exit-code 1 infra/cloudflare
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v3
