@@ -56,6 +56,18 @@ function isPrintablePlayerId(value: string): boolean {
   return true;
 }
 
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isStringArrayWithValues(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
+function isPlainRecordArray(value: unknown): value is Record<string, unknown>[] {
+  return Array.isArray(value) && value.every(item => isPlainRecord(item));
+}
+
 export interface CommunicationOutput {
   text: string;
   intent?: string;
@@ -267,6 +279,13 @@ async function handleAIEvent(
       );
     }
 
+    if (!isPlainRecord(eventRequest)) {
+      return new Response(
+        JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Request body must be a JSON object' }),
+        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } }
+      );
+    }
+
     if (!eventRequest.matchId || !eventRequest.playerId || !eventRequest.eventType) {
       return new Response(
         JSON.stringify({ error: ErrorMessage.MissingRequiredFields }),
@@ -293,6 +312,84 @@ async function handleAIEvent(
         JSON.stringify({
           error: ErrorMessage.BadRequest,
           message: 'playerId must be a non-empty printable string',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if ('currentState' in eventRequest && eventRequest.currentState !== undefined && !isPlainRecord(eventRequest.currentState)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'currentState must be an object',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if ('eventData' in eventRequest && eventRequest.eventData !== undefined && !isPlainRecord(eventRequest.eventData)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'eventData must be an object',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if ('playerHand' in eventRequest && eventRequest.playerHand !== undefined && !Array.isArray(eventRequest.playerHand)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'playerHand must be an array',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if (Array.isArray(eventRequest.playerHand) && !isPlainRecordArray(eventRequest.playerHand)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'playerHand items must be objects',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if ('availableActions' in eventRequest && eventRequest.availableActions !== undefined && !Array.isArray(eventRequest.availableActions)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'availableActions must be an array',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if (Array.isArray(eventRequest.availableActions) && !isStringArrayWithValues(eventRequest.availableActions)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'availableActions items must be strings',
         }),
         {
           status: HttpStatus.BadRequest,

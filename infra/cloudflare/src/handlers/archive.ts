@@ -68,6 +68,34 @@ export async function handleArchiveRequest(
       return authResult;
     }
 
+    const bodyText = await request.clone().text();
+    if (bodyText.trim().length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Archive requests must not include a request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const requestUrl = new URL(request.url);
+    if (requestUrl.searchParams.size > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Archive requests must not include query parameters',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
     logDebug('[ARCHIVE-HANDLER] Extracting matchId from path', getStackTrace(), {
       path,
       endpoint: ApiEndpoint.Archive.Base,

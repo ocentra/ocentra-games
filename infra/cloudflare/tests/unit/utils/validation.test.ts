@@ -126,6 +126,10 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(validateMatchRecord({ match_id: 'match123', version: '10.20.30', events: [] }).valid).toBe(true);
   });
 
+  it(testName('validateMatchRecord: rejects unicode semantic version digits'), () => {
+    expect(validateMatchRecord({ match_id: 'match123', version: '\u0661.\u0662.\u0663', events: [] }).valid).toBe(false);
+  });
+
   it(testName('validateMatchRecord: rejects record without events array'), () => {
     const record = {
       match_id: 'match123',
@@ -173,5 +177,12 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     const result = validateMatchRecord(record);
     expect(result.valid).toBe(true);
     expect(result.error).toBeUndefined();
+  });
+
+  it(testName('validateMatchRecord: accepts integer game_type and rejects invalid variants'), () => {
+    expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: 0 }).valid).toBe(true);
+    expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], metadata: [] }).valid).toBe(false);
+    expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: '' }).valid).toBe(false);
+    expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: 1.5 }).valid).toBe(false);
   });
 });

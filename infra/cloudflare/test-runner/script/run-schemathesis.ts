@@ -223,9 +223,9 @@ async function main(): Promise<void> {
   const baseUrl = workerUrl ?? 'http://localhost:8787';
   const openapiUrl = `${baseUrl}/openapi.json`;
   const schemathesisAuthToken = process.env.SCHEMATHESIS_AUTH_TOKEN?.trim() || `${TestTokenPrefix.Test}schemathesis:admin`;
+  const schemathesisTimeoutMs = Number(process.env.SCHEMATHESIS_TIMEOUT_MS ?? '1200000');
   const schemathesisArgs = [
     'run',
-    openapiUrl,
     '--url',
     baseUrl,
     '--checks',
@@ -233,14 +233,15 @@ async function main(): Promise<void> {
     '--max-examples',
     '50',
     '--header',
-    `${HttpHeader.Authorization}: ${HttpAuthScheme.Bearer} ${schemathesisAuthToken}`,
+    `${HttpHeader.Authorization}:${HttpAuthScheme.Bearer} ${schemathesisAuthToken}`,
+    openapiUrl,
   ];
 
   const startTime = Date.now();
   try {
     const { code, output } = await runCommandWithOutput('schemathesis', schemathesisArgs, {
       toolLogStream: schemathesisLogStream,
-      timeout: 600000,
+      timeout: Number.isFinite(schemathesisTimeoutMs) && schemathesisTimeoutMs > 0 ? schemathesisTimeoutMs : 1200000,
     });
 
     schemathesisLogStream.end();

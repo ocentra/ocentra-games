@@ -198,6 +198,58 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     }
   });
 
+  it(testName('AI Event Handling: should reject non-string availableActions items'), async () => {
+    const token = await createToken();
+    const aiEventUrl = buildTestApiUrlForEndpoint(ApiEndpoint.AI.OnEvent);
+    const response = await worker.fetch(aiEventUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(TestConfig.TestUserId),
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+      },
+      body: JSON.stringify({
+        matchId: TestConfig.TestMatchId,
+        playerId: TestConfig.TestPlayerId,
+        eventType: AIEventType.MatchStart,
+        currentState: {},
+        eventData: {},
+        availableActions: [{}]
+      })
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    const data = await response.json() as { error?: string; message?: string };
+    expect(data.error).toBe('Bad Request');
+    expect(typeof data.message).toBe('string');
+    expect((data.message as string).toLowerCase()).toContain('availableactions');
+  });
+
+  it(testName('AI Event Handling: should reject non-object playerHand items'), async () => {
+    const token = await createToken();
+    const aiEventUrl = buildTestApiUrlForEndpoint(ApiEndpoint.AI.OnEvent);
+    const response = await worker.fetch(aiEventUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(TestConfig.TestUserId),
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+      },
+      body: JSON.stringify({
+        matchId: TestConfig.TestMatchId,
+        playerId: TestConfig.TestPlayerId,
+        eventType: AIEventType.MatchStart,
+        currentState: {},
+        eventData: {},
+        playerHand: [0]
+      })
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    const data = await response.json() as { error?: string; message?: string };
+    expect(data.error).toBe('Bad Request');
+    expect(typeof data.message).toBe('string');
+    expect((data.message as string).toLowerCase()).toContain('playerhand');
+  });
+
   it.skip(testName('AI Event Handling: should return 503 when AI service is unavailable'), async () => {
     logWarn('[TEST] SKIPPED: POOL-WORKERS LIMITATION - This test requires AI_SERVICE_URL override which is ignored in pool-workers mode. Cannot test AI service unavailability in current test environment.', getStackTrace(), {}, LOG_TEST_OPERATIONS);
   });

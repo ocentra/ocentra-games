@@ -152,6 +152,16 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     return malformed[Math.floor(Math.random() * malformed.length)];
   }
 
+  function generateValidRandomCodePoint(): string {
+    while (true) {
+      const codePoint = Math.floor(Math.random() * 0x10FFFF);
+      if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
+        continue;
+      }
+      return String.fromCodePoint(codePoint);
+    }
+  }
+
   function generateTypeConfusion(): string {
     const types = [
       'null',
@@ -180,7 +190,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     () => '\n'.repeat(Math.floor(Math.random() * 10) + 1),
     () => '\r\n'.repeat(Math.floor(Math.random() * 10) + 1),
     () => String.fromCharCode(Math.floor(Math.random() * 256)),
-    () => String.fromCodePoint(Math.floor(Math.random() * 0x10FFFF)),
+    () => generateValidRandomCodePoint(),
     () => Array(Math.floor(Math.random() * 50) + 1).fill('x').join(''),
     () => 'x'.repeat(Math.floor(Math.random() * 1000) + 1)
   ];

@@ -73,6 +73,38 @@ export async function handleSignedUrlRequest(
   }
 
   try {
+    const requestBody = await request.clone().text();
+    if (requestBody.trim().length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Signed URL requests must not include a request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.CacheControl]: CacheControl.PrivateShortTerm,
+          ...getCorsHeaders(env)
+        }
+      });
+    }
+
+    const requestUrl = new URL(request.url);
+    for (const key of requestUrl.searchParams.keys()) {
+      if (key !== 'expires') {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: `Unexpected query parameter: ${key}`,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            [HttpHeader.CacheControl]: CacheControl.PrivateShortTerm,
+            ...getCorsHeaders(env)
+          }
+        });
+      }
+    }
+
     const result = extractAndValidateMatchIdFromPath(path, ApiEndpoint.SignedUrl.Base, request.url);
     if (result.error || !result.matchId) {
       logDebug('Signed URL validation failed', getStackTrace(), {
@@ -94,7 +126,6 @@ export async function handleSignedUrlRequest(
     }
     const matchId = result.matchId;
 
-    const requestUrl = new URL(request.url);
     const rawExpiration = requestUrl.searchParams.get('expires');
     const parsedExpiration = rawExpiration ? Number.parseInt(rawExpiration, 10) : 3600;
     const expirationSeconds = Number.isFinite(parsedExpiration) && parsedExpiration > 0 ? parsedExpiration : 3600;

@@ -221,6 +221,35 @@ export async function handleDisputeRequest(
 
   const requestUrl = new URL(request.url);
   const urlPath = requestUrl.pathname;
+  if (requestUrl.searchParams.size > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Dispute requests must not include query parameters',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
+
+  if (request.method === HttpMethod.Get) {
+    const bodyText = await request.clone().text();
+    if (bodyText.trim().length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Dispute read requests must not include a request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+  }
+
   const isEvidenceUpload =
     request.method === HttpMethod.Post &&
     path.startsWith(ApiEndpoint.Disputes.Base) &&

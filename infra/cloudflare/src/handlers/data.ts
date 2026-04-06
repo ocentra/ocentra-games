@@ -75,6 +75,27 @@ export async function handleDataExportRequest(
     }), { status: HttpStatus.BadRequest, headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
   }
   const requestedUserId = pathResult.id;
+  const requestUrl = new URL(request.url);
+  if (requestUrl.searchParams.size > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Data export requests must not include query parameters',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson }
+    });
+  }
+
+  const requestBody = await request.clone().text();
+  if (requestBody.trim().length > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Data export requests must not include a request body',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson }
+    });
+  }
 
   const adminCheck = await checkAdminStatus(request, env);
   const isAdmin = adminCheck.isAdmin;
@@ -181,7 +202,7 @@ export async function handleDataDeletionRequest(
       authenticatedUserId,
     }, true);
 
-    if (userIdResult.error && userIdResult.id) {
+    if (userIdResult.error) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
         message: userIdResult.error

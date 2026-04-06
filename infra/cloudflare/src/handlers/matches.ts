@@ -318,6 +318,20 @@ export async function handleMatchRequest(
     return new Response(ErrorMessage.NotFound, { status: HttpStatus.NotFound });
   }
 
+  const requestUrl = new URL(request.url);
+  if (request.method !== HttpMethod.Get && requestUrl.searchParams.size > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Match write requests must not include query parameters',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env)
+      }
+    });
+  }
+
   if (request.method === HttpMethod.Put || request.method === HttpMethod.Post || request.method === HttpMethod.Delete) {
     const authResult = await requireAuth(request, env);
     if (authResult instanceof Response) {
@@ -579,6 +593,35 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 
     const url = new URL(request.url);
     const token = url.searchParams.get(QueryParam.Token);
+    const allowedQueryKeys = new Set<string>([QueryParam.Token]);
+    for (const key of url.searchParams.keys()) {
+      if (!allowedQueryKeys.has(key)) {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: `Unexpected query parameter: ${key}`,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
+    }
+
+    const requestBody = await request.clone().text();
+    if (requestBody.trim().length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Match read requests must not include a request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
 
     if (!token) {
       const requestOrigin = request.headers.get(HttpHeader.Origin) || undefined;
@@ -793,6 +836,34 @@ export async function handleAnonymizeRequest(
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required to anonymize matches');
   if (authResult instanceof Response) {
     return authResult;
+  }
+
+  const bodyText = await request.clone().text();
+  if (bodyText.trim().length > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Anonymize requests must not include a request body',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env)
+      }
+    });
+  }
+
+  const requestUrl = new URL(request.url);
+  if (requestUrl.searchParams.size > 0) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'Anonymize requests must not include query parameters',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env)
+      }
+    });
   }
 
   try {

@@ -1,26 +1,43 @@
 export function validateMatchRecord(data: unknown): { valid: boolean; error?: string } {
-  if (!data || typeof data !== 'object') {
-    return { valid: false, error: 'Match record must be an object' };
-  }
+    if (!data || typeof data !== 'object') {
+      return { valid: false, error: 'Match record must be an object' };
+    }
 
-  const record = data as Record<string, unknown>;
+    const record = data as Record<string, unknown>;
+    const semanticVersionPattern = /^[0-9]+\.[0-9]+\.[0-9]+$/;
+
+    const isPlainRecord = (value: unknown): value is Record<string, unknown> => (
+      typeof value === 'object' && value !== null && !Array.isArray(value)
+    );
 
   if (!record.match_id && !record.matchId) {
     return { valid: false, error: 'Match record must have match_id or matchId' };
   }
 
-  if (!record.version && !record.schema_version) {
-    return { valid: false, error: 'Match record must have version or schema_version' };
-  }
+    if (!record.version && !record.schema_version) {
+      return { valid: false, error: 'Match record must have version or schema_version' };
+    }
 
-  const version = (record.version || record.schema_version) as string;
-  if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version)) {
-    return { valid: false, error: 'Version must be semantic version (e.g., "1.0.0")' };
-  }
+    const version = (record.version || record.schema_version) as string;
+    if (typeof version !== 'string' || !semanticVersionPattern.test(version)) {
+      return { valid: false, error: 'Version must be semantic version (e.g., "1.0.0")' };
+    }
 
-  if (!Array.isArray(record.events)) {
-    return { valid: false, error: 'Match record must have events array' };
-  }
+    if ('game_type' in record && record.game_type !== undefined) {
+      if (typeof record.game_type !== 'number' || !Number.isInteger(record.game_type)) {
+        return { valid: false, error: 'game_type must be an integer if present' };
+      }
+    }
+
+    if ('metadata' in record && record.metadata !== undefined) {
+      if (!isPlainRecord(record.metadata)) {
+        return { valid: false, error: 'metadata must be an object if present' };
+      }
+    }
+
+    if (!Array.isArray(record.events)) {
+      return { valid: false, error: 'Match record must have events array' };
+    }
 
   if (record.events.length > 10000) {
     return { valid: false, error: 'Events array too large (max 10000 events)' };

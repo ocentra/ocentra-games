@@ -25,12 +25,17 @@ import {
   OpenApiHtmlTitle,
 } from '@/constants/openapi';
 
-function createPathParameter(name: string, description: string, options?: { pattern?: string; enum?: string[] }) {
+function createPathParameter(name: string, description: string, options?: { pattern?: string; enum?: string[]; example?: string }) {
   return {
     name,
     in: OpenApiParameterLocation.Path,
     required: true,
-    schema: { type: OpenApiSchemaType.String, ...(options?.pattern ? { pattern: options.pattern } : {}), ...(options?.enum ? { enum: options.enum } : {}) },
+    schema: {
+      type: OpenApiSchemaType.String,
+      ...(options?.pattern ? { pattern: options.pattern } : {}),
+      ...(options?.enum ? { enum: options.enum } : {}),
+      ...(options?.example ? { example: options.example } : {}),
+    },
     description,
   };
 }
@@ -89,7 +94,11 @@ const disputeIdPattern = '^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$';
 
 const matchIdParameter = createPathParameter(OpenApiParameterName.MatchId, OpenApiParameterDescription.UniqueMatchIdentifier, { pattern: matchIdPattern });
 const disputeIdParameter = createPathParameter(OpenApiParameterName.DisputeId, OpenApiParameterDescription.UniqueMatchIdentifier, { pattern: disputeIdPattern });
-const userIdParameter = createPathParameter(OpenApiParameterName.UserId, OpenApiParameterDescription.UniqueMatchIdentifier);
+const userIdParameter = createPathParameter(
+  OpenApiParameterName.UserId,
+  OpenApiParameterDescription.UniqueMatchIdentifier,
+  { pattern: IdempotencyKeyPattern.UuidV4.source, example: 'schemathesis' }
+);
 const gameTypeParameter = createPathParameter(OpenApiParameterName.GameType, OpenApiParameterDescription.GameTypeDescription, { enum: ['0', '1', '2'] });
 
 const tokenQueryParameter = createQueryParameter(OpenApiParameterName.Token, OpenApiParameterDescription.SignedUrlToken);
@@ -100,7 +109,7 @@ const seasonIdQueryParameter = createQueryParameter(OpenApiParameterName.SeasonI
   pattern: '^[^\\s\\x00-\\x1F\\x7F]+$',
 });
 const printableStringPattern = '^[^\\s\\x00-\\x1F\\x7F-\\x9F]+$';
-const semanticVersionPattern = '^\\d+\\.\\d+\\.\\d+$';
+const semanticVersionPattern = '^[0-9]+\\.[0-9]+\\.[0-9]+$';
 const limitQueryParameter = createQueryParameter(OpenApiParameterName.Limit, OpenApiParameterDescription.NumberOfEntries, false, { type: OpenApiSchemaType.Integer, default: 100, minimum: 0 });
 const tierQueryParameter = createQueryParameter(OpenApiParameterName.Tier, '', true, { type: OpenApiSchemaType.String, enum: Object.values(OpenApiTier) });
 const rangeQueryParameter = createQueryParameter(OpenApiParameterName.Range, OpenApiParameterDescription.NumberOfPlayersAboveBelow, false, { type: OpenApiSchemaType.Integer, default: 5, minimum: 0 });
@@ -215,7 +224,7 @@ export const openApiSpec = {
           properties: {
             [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
             version: { type: OpenApiSchemaType.String, minLength: 1, pattern: semanticVersionPattern },
-            game_type: { type: OpenApiSchemaType.String },
+            game_type: { type: OpenApiSchemaType.Integer },
             created_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             ended_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             players: {
@@ -264,7 +273,7 @@ export const openApiSpec = {
           properties: {
             [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
             version: { type: OpenApiSchemaType.String, minLength: 1, pattern: semanticVersionPattern },
-            game_type: { type: OpenApiSchemaType.String },
+            game_type: { type: OpenApiSchemaType.Integer },
             created_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             ended_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             players: {
@@ -543,6 +552,7 @@ export const openApiSpec = {
           ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.AIEventProcessed, { type: OpenApiSchemaType.Object }),
           ...badRequestResponse,
           ...unauthorizedResponse,
+          [String(HttpStatus.TooManyRequests)]: { description: OpenApiResponseDescription.RateLimitExceeded },
           [String(HttpStatus.ServiceUnavailable)]: { description: OpenApiResponseDescription.AIServiceNotAvailable },
         },
       },
