@@ -393,9 +393,12 @@ function createMatchStorage(env: Env): MatchStorage {
 async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promise<Response> {
   try {
     const identifier = await getRateLimitIdentifier(request);
-    const rateLimitPerHour = env.RATE_LIMIT_MATCHES_PER_HOUR
-      ? parseInt(env.RATE_LIMIT_MATCHES_PER_HOUR, 10)
-      : (env.ENVIRONMENT === Environment.Production ? 100 : 10);
+    const isTestMode = env.TEST_MODE === 'true';
+    const rateLimitPerHour = isTestMode
+      ? 1000
+      : env.RATE_LIMIT_MATCHES_PER_HOUR
+        ? parseInt(env.RATE_LIMIT_MATCHES_PER_HOUR, 10)
+        : (env.ENVIRONMENT === Environment.Production ? 100 : 10);
 
     let limiter: RateLimiter;
     try {
@@ -549,6 +552,7 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
 async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<Response> {
   try {
     const identifier = await getRateLimitIdentifier(request);
+    const isTestMode = env.TEST_MODE === 'true';
 
     let limiter: RateLimiter;
     try {
@@ -565,7 +569,7 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
     try {
       rateLimitResult = await limiter.check({
         key: `${RateLimitPrefix.RateLimit}${identifier}`,
-        limit: 100,
+        limit: isTestMode ? 1000 : 100,
         windowSeconds: TimeInMs.Minute / 1000,
       });
     } catch (error) {
@@ -731,6 +735,7 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promise<Response> {
   try {
     const identifier = await getRateLimitIdentifier(request);
+    const isTestMode = env.TEST_MODE === 'true';
 
     let limiter: RateLimiter;
     try {
@@ -747,7 +752,7 @@ async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promis
     try {
       rateLimitResult = await limiter.check({
         key: `${RateLimitPrefix.RateLimit}${identifier}`,
-        limit: 5,
+        limit: isTestMode ? 1000 : 5,
         windowSeconds: TimeInMs.Hour / 1000,
       });
     } catch (error) {

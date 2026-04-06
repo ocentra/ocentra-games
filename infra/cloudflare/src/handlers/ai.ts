@@ -236,23 +236,6 @@ async function handleAIEvent(
   }
 
   try {
-    const identifier = await getRateLimitIdentifier(request);
-    const rateLimit = await checkRateLimit(env, identifier, AIRateLimit.DefaultLimit, AIRateLimit.DefaultWindowMs);
-    
-    if (!rateLimit.allowed) {
-      return new Response(JSON.stringify({
-        error: ErrorMessage.RateLimitExceeded,
-        message: ErrorMessage.TooManyAIRequests
-      }), {
-        status: HttpStatus.TooManyRequests,
-        headers: {
-          [HttpHeader.XRateLimitRemaining]: '0',
-          [HttpHeader.XRateLimitReset]: String(Math.floor(rateLimit.resetAt / 1000)),
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-        }
-      });
-    }
-    
     const contentLength = request.headers.get(HttpHeader.ContentLength);
 
     if (contentLength && parseInt(contentLength) > AIRequestLimits.MaxSizeBytes) {
@@ -396,6 +379,24 @@ async function handleAIEvent(
           headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
         }
       );
+    }
+
+    const identifier = await getRateLimitIdentifier(request);
+    const rateLimitLimit = env.TEST_MODE === 'true' ? AIRateLimit.TestLimit : AIRateLimit.DefaultLimit;
+    const rateLimit = await checkRateLimit(env, identifier, rateLimitLimit, AIRateLimit.DefaultWindowMs);
+
+    if (!rateLimit.allowed) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.RateLimitExceeded,
+        message: ErrorMessage.TooManyAIRequests
+      }), {
+        status: HttpStatus.TooManyRequests,
+        headers: {
+          [HttpHeader.XRateLimitRemaining]: '0',
+          [HttpHeader.XRateLimitReset]: String(Math.floor(rateLimit.resetAt / 1000)),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+        }
+      });
     }
 
     let aiResponse: AIActionResponse | null = null;

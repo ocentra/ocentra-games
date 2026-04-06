@@ -37,6 +37,7 @@ export type AIAllowedDomains = typeof AIAllowedDomains[keyof typeof AIAllowedDom
 export const AIRateLimit = {
   DefaultLimit: 20,
   DefaultWindowMs: TimeInMs.Minute,
+  TestLimit: 10000,
 } as const;
 
 export type AIRateLimit = typeof AIRateLimit[keyof typeof AIRateLimit];

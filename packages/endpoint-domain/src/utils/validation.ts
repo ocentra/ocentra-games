@@ -35,21 +35,29 @@ export function validateMatchRecord(data: unknown): { valid: boolean; error?: st
       }
     }
 
-    if (!Array.isArray(record.events)) {
-      return { valid: false, error: 'Match record must have events array' };
+  if (!Array.isArray(record.events)) {
+    return { valid: false, error: 'Match record must have events array' };
+  }
+
+    if (record.events.length > 10000) {
+      return { valid: false, error: 'Events array too large (max 10000 events)' };
     }
 
-  if (record.events.length > 10000) {
-    return { valid: false, error: 'Events array too large (max 10000 events)' };
-  }
+    if (record.events.some((event) => !isPlainRecord(event))) {
+      return { valid: false, error: 'Events array items must be objects' };
+    }
 
-  if (record.players !== undefined && record.players !== null && !Array.isArray(record.players)) {
-    return { valid: false, error: 'Players field must be an array if present' };
-  }
+    if (record.players !== undefined && record.players !== null && !Array.isArray(record.players)) {
+      return { valid: false, error: 'Players field must be an array if present' };
+    }
 
-  if (record.players === null) {
-    return { valid: false, error: 'Players field cannot be null' };
-  }
+    if (record.players === null) {
+      return { valid: false, error: 'Players field cannot be null' };
+    }
+
+    if (Array.isArray(record.players) && record.players.some((player) => !isPlainRecord(player))) {
+      return { valid: false, error: 'Players array items must be objects' };
+    }
 
   return { valid: true };
 }
