@@ -82,10 +82,6 @@ function isValidDisputeId(value: unknown): value is string {
 }
 
 function validateEvidenceMetadataField(value: unknown, fieldName: string, requireMatchId: boolean = false): string | null {
-  if (value === null) {
-    return null;
-  }
-
   if (typeof value !== 'string') {
     return `${fieldName} must be a string`;
   }
@@ -506,55 +502,64 @@ async function handleDisputeEvidenceUpload(
     }
     const evidenceFiles: { name: string; key: string; size: number; hash?: string; type?: string }[] = [];
 
+    const hasMatchId = formData.has(FormField.MatchId);
+    const hasReason = formData.has(FormField.Reason);
+    const hasDescription = formData.has(FormField.Description);
     const matchIdValue = formData.get(FormField.MatchId);
     const reasonValue = formData.get(FormField.Reason);
     const descriptionValue = formData.get(FormField.Description);
 
-    const matchIdValidation = validateEvidenceMetadataField(matchIdValue, FormField.MatchId, true);
-    if (matchIdValidation) {
-      return new Response(JSON.stringify({
-        error: ErrorMessage.BadRequest,
-        message: matchIdValidation,
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env),
-        },
-      });
+    if (hasMatchId) {
+      const matchIdValidation = validateEvidenceMetadataField(matchIdValue, FormField.MatchId, true);
+      if (matchIdValidation) {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: matchIdValidation,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
     }
 
-    const reasonValidation = validateEvidenceMetadataField(reasonValue, FormField.Reason);
-    if (reasonValidation) {
-      return new Response(JSON.stringify({
-        error: ErrorMessage.BadRequest,
-        message: reasonValidation,
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env),
-        },
-      });
+    if (hasReason) {
+      const reasonValidation = validateEvidenceMetadataField(reasonValue, FormField.Reason);
+      if (reasonValidation) {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: reasonValidation,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
     }
 
-    const descriptionValidation = validateEvidenceMetadataField(descriptionValue, FormField.Description);
-    if (descriptionValidation) {
-      return new Response(JSON.stringify({
-        error: ErrorMessage.BadRequest,
-        message: descriptionValidation,
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env),
-        },
-      });
+    if (hasDescription) {
+      const descriptionValidation = validateEvidenceMetadataField(descriptionValue, FormField.Description);
+      if (descriptionValidation) {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: descriptionValidation,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
     }
 
-    const matchId = typeof matchIdValue === 'string' ? matchIdValue : null;
-    const reason = typeof reasonValue === 'string' ? reasonValue : null;
-    const description = typeof descriptionValue === 'string' ? descriptionValue : null;
+    const matchId = hasMatchId && typeof matchIdValue === 'string' ? matchIdValue : null;
+    const reason = hasReason && typeof reasonValue === 'string' ? reasonValue : null;
+    const description = hasDescription && typeof descriptionValue === 'string' ? descriptionValue : null;
 
     const MAX_FILE_SIZE = 100 * 1024 * 1024;
 

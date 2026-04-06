@@ -67,6 +67,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Setup Node.js for Swift package resolution
+      if: matrix.language == 'swift'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install root workspace dependencies for Swift
+      if: matrix.language == 'swift'
+      run: npm ci --ignore-scripts
+
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
     # or others). This is typically only required for manual builds.

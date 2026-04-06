@@ -100,6 +100,7 @@ const seasonIdQueryParameter = createQueryParameter(OpenApiParameterName.SeasonI
   pattern: '^[^\\s\\x00-\\x1F\\x7F]+$',
 });
 const printableStringPattern = '^[^\\s\\x00-\\x1F\\x7F-\\x9F]+$';
+const semanticVersionPattern = '^\\d+\\.\\d+\\.\\d+$';
 const limitQueryParameter = createQueryParameter(OpenApiParameterName.Limit, OpenApiParameterDescription.NumberOfEntries, false, { type: OpenApiSchemaType.Integer, default: 100, minimum: 0 });
 const tierQueryParameter = createQueryParameter(OpenApiParameterName.Tier, '', true, { type: OpenApiSchemaType.String, enum: Object.values(OpenApiTier) });
 const rangeQueryParameter = createQueryParameter(OpenApiParameterName.Range, OpenApiParameterDescription.NumberOfPlayersAboveBelow, false, { type: OpenApiSchemaType.Integer, default: 5, minimum: 0 });
@@ -200,6 +201,7 @@ export const openApiSpec = {
             },
           }),
           ...unauthorizedResponse,
+          [String(HttpStatus.TooManyRequests)]: { description: OpenApiResponseDescription.RateLimitExceeded },
         },
       },
       post: {
@@ -211,8 +213,8 @@ export const openApiSpec = {
           type: OpenApiSchemaType.Object,
           required: [FormField.MatchId, 'version', 'players', 'events'],
           properties: {
-            [FormField.MatchId]: { type: OpenApiSchemaType.String },
-            version: { type: OpenApiSchemaType.String },
+            [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
+            version: { type: OpenApiSchemaType.String, minLength: 1, pattern: semanticVersionPattern },
             game_type: { type: OpenApiSchemaType.String },
             created_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             ended_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
@@ -260,8 +262,8 @@ export const openApiSpec = {
           type: OpenApiSchemaType.Object,
           required: [FormField.MatchId, 'version', 'players', 'events'],
           properties: {
-            [FormField.MatchId]: { type: OpenApiSchemaType.String },
-            version: { type: OpenApiSchemaType.String },
+            [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
+            version: { type: OpenApiSchemaType.String, minLength: 1, pattern: semanticVersionPattern },
             game_type: { type: OpenApiSchemaType.String },
             created_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             ended_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
@@ -311,6 +313,7 @@ export const openApiSpec = {
           ...badRequestResponse,
           ...unauthorizedResponse,
           ...notFoundResponse,
+          [String(HttpStatus.TooManyRequests)]: { description: OpenApiResponseDescription.RateLimitExceeded },
         },
       },
     },
@@ -505,6 +508,7 @@ export const openApiSpec = {
               archivedUrl: { type: OpenApiSchemaType.String },
             },
           }),
+          ...badRequestResponse,
           ...unauthorizedResponse,
           ...notFoundResponse,
         },
@@ -532,15 +536,12 @@ export const openApiSpec = {
               items: { type: OpenApiSchemaType.String },
             },
             eventData: { type: OpenApiSchemaType.Object },
-            matchHistory: {
-              type: OpenApiSchemaType.Array,
-              items: { type: OpenApiSchemaType.Object },
-            },
           },
         }),
         security: bearerAuthSecurity,
         responses: {
           ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.AIEventProcessed, { type: OpenApiSchemaType.Object }),
+          ...badRequestResponse,
           ...unauthorizedResponse,
           [String(HttpStatus.ServiceUnavailable)]: { description: OpenApiResponseDescription.AIServiceNotAvailable },
         },
@@ -570,6 +571,7 @@ export const openApiSpec = {
           }),
           ...unauthorizedResponse,
           ...badRequestResponse,
+          [String(HttpStatus.Forbidden)]: { description: 'Forbidden' },
           [String(HttpStatus.NotFound)]: { description: OpenApiResponseDescription.UserNotFound },
         },
       },
@@ -585,6 +587,7 @@ export const openApiSpec = {
           [String(HttpStatus.NoContent)]: { description: OpenApiResponseDescription.UserDataDeletedNoContent },
           ...unauthorizedResponse,
           ...badRequestResponse,
+          [String(HttpStatus.Forbidden)]: { description: 'Forbidden' },
           [String(HttpStatus.NotFound)]: { description: OpenApiResponseDescription.UserNotFound },
         },
       },
