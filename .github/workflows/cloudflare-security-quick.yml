@@ -235,13 +235,27 @@ jobs:
       - name: Analyze CodeQL
         uses: github/codeql-action/analyze@v3
 
+      - name: Prepare prod-only Trivy scan tree
+        run: |
+          TRIVY_SCAN_DIR="${RUNNER_TEMP}/cloudflare-trivy-scan"
+          rm -rf "$TRIVY_SCAN_DIR"
+          mkdir -p "$TRIVY_SCAN_DIR/infra/cloudflare"
+          cp infra/cloudflare/package.json infra/cloudflare/package-lock.json "$TRIVY_SCAN_DIR/infra/cloudflare/"
+          ln -s "$GITHUB_WORKSPACE/packages" "$TRIVY_SCAN_DIR/packages"
+          cd "$TRIVY_SCAN_DIR/infra/cloudflare"
+          npm ci --ignore-scripts --omit=dev --omit=optional --no-audit
+          rm package-lock.json
+          rm -f "$TRIVY_SCAN_DIR/packages"
+          rm -rf node_modules/@ocentra
+          echo "TRIVY_SCAN_DIR=$TRIVY_SCAN_DIR" >> "$GITHUB_ENV"
+
       - name: Install Trivy
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin v0.69.3
           trivy --version
 
       - name: Run Trivy vulnerability scanner
-        run: trivy fs --format sarif --output trivy-results.sarif --severity CRITICAL,HIGH --exit-code 1 infra/cloudflare
+        run: trivy fs --format sarif --output trivy-results.sarif --severity CRITICAL,HIGH --exit-code 1 --skip-dirs node_modules/@ocentra "${TRIVY_SCAN_DIR}/infra/cloudflare"
 
       - name: Upload Trivy SARIF
         uses: github/codeql-action/upload-sarif@v3

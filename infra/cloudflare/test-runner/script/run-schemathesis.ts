@@ -40,7 +40,7 @@ function runCommandWithOutput(
 
     const child = spawn(quotedCommand, args, {
       stdio: ['inherit', 'pipe', 'pipe'],
-      shell: true,
+      shell: false,
       cwd,
       env: {
         ...process.env,
