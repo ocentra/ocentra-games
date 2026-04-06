@@ -734,6 +734,20 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 
 async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promise<Response> {
   try {
+    const bodyText = await request.clone().text();
+    if (bodyText.trim().length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Match delete requests must not include a request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
     const identifier = await getRateLimitIdentifier(request);
     const isTestMode = env.TEST_MODE === 'true';
 

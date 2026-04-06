@@ -303,6 +303,19 @@ async function handleAIEvent(
       );
     }
 
+    if (typeof eventRequest.eventType !== 'string' || eventRequest.eventType.trim().length === 0) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'eventType must be a non-empty string',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
     if ('currentState' in eventRequest && eventRequest.currentState !== undefined && !isPlainRecord(eventRequest.currentState)) {
       return new Response(
         JSON.stringify({

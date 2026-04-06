@@ -16,6 +16,7 @@ export interface CreateDisputeRequest {
   reason: 'cheating' | 'bug' | 'disconnection' | 'other';
   description: string;
   reported_player_id?: UserId;
+  dispute_id?: DisputeId;
 }
 
 /**

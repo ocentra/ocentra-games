@@ -185,4 +185,19 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: '' }).valid).toBe(false);
     expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: 1.5 }).valid).toBe(false);
   });
+
+  it(testName('validateMatchRecord: rejects invalid player score and type values'), () => {
+    expect(validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [],
+      players: [{ player_id: 'player-1', player_type: 'human', score: {} }],
+    }).valid).toBe(false);
+    expect(validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [],
+      players: [{ player_id: 'player-1', player_type: 'robot', score: 10 }],
+    }).valid).toBe(false);
+  });
 });

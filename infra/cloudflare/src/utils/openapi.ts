@@ -391,6 +391,7 @@ export const openApiSpec = {
             created_by: { type: OpenApiSchemaType.String },
             [FormField.Description]: { type: OpenApiSchemaType.String },
             timestamp: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime, minLength: 1 },
+            dispute_id: { type: OpenApiSchemaType.String, minLength: 1, pattern: disputeIdPattern },
           },
         }),
         security: bearerAuthSecurity,

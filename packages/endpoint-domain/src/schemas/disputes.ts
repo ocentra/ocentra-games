@@ -14,6 +14,7 @@ export const CreateDisputeRequestSchema = z.object({
   reason: z.enum(['cheating', 'bug', 'disconnection', 'other']),
   description: z.string().min(1),
   reported_player_id: UserIdSchema.optional(),
+  dispute_id: DisputeIdSchema.optional(),
 });
 
 export const SubmitEvidenceRequestSchema = z.object({

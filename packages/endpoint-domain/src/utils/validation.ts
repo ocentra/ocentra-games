@@ -1,3 +1,5 @@
+import { PlayerType } from '../constants/game';
+
 export function validateMatchRecord(data: unknown): { valid: boolean; error?: string } {
     if (!data || typeof data !== 'object') {
       return { valid: false, error: 'Match record must be an object' };
@@ -55,8 +57,32 @@ export function validateMatchRecord(data: unknown): { valid: boolean; error?: st
       return { valid: false, error: 'Players field cannot be null' };
     }
 
-    if (Array.isArray(record.players) && record.players.some((player) => !isPlainRecord(player))) {
-      return { valid: false, error: 'Players array items must be objects' };
+    if (Array.isArray(record.players)) {
+      for (const player of record.players) {
+        if (!isPlainRecord(player)) {
+          return { valid: false, error: 'Players array items must be objects' };
+        }
+
+        if ('player_id' in player && player.player_id !== undefined && typeof player.player_id !== 'string') {
+          return { valid: false, error: 'Player player_id must be a string if present' };
+        }
+
+        if ('wallet_address' in player && player.wallet_address !== undefined && typeof player.wallet_address !== 'string') {
+          return { valid: false, error: 'Player wallet_address must be a string if present' };
+        }
+
+        if ('player_type' in player && player.player_type !== undefined) {
+          if (typeof player.player_type !== 'string' || !Object.values(PlayerType).includes(player.player_type as typeof PlayerType[keyof typeof PlayerType])) {
+            return { valid: false, error: 'Player player_type must be human or ai if present' };
+          }
+        }
+
+        if ('score' in player && player.score !== undefined) {
+          if (typeof player.score !== 'number' || !Number.isFinite(player.score)) {
+            return { valid: false, error: 'Player score must be a finite number if present' };
+          }
+        }
+      }
     }
 
   return { valid: true };
