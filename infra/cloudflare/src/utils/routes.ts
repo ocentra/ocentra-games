@@ -1,5 +1,5 @@
 import type { Env } from '@/constants/env';
-import { HttpMethod, HttpHeader, HttpContentType, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
+import { HttpHeader, HttpContentType, HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import {
   CloudflareRouteManifest,
 } from '@ocentra/endpoint-domain/constants/cloudflare-route-manifest';
@@ -10,8 +10,10 @@ import {
 } from '@ocentra/endpoint-domain/constants/cloudflare-route-keys';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HealthStatus } from '@ocentra/endpoint-domain/constants/health';
 import { getCorsHeaders } from '@/utils/cors';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import { requireAuth } from '@/utils/auth-middleware';
 import { generateOpenApiJson, generateSwaggerHtml } from '@/utils/openapi';
 import { templates } from '@/templates/loader';
@@ -78,8 +80,6 @@ import {
   exactPath,
   includes,
   combineMatchers,
-  methodMatcher,
-  pathAndMethod,
   pathWithParam,
 } from '@/utils/router';
 import { emitMetrics, checkAlertThresholds } from '@/monitoring/system';
@@ -117,6 +117,26 @@ async function authMiddleware(request: Request, env: Env): Promise<Response | nu
 }
 
 async function devOnlyMiddleware(request: Request, env: Env): Promise<Response | null> {
+  const requestPath = new URL(request.url).pathname;
+  const devOnlyMethodMap: Record<string, readonly HttpMethod[] | undefined> = {
+    [ApiEndpoint.Test.SeedProducts]: [HttpMethod.Post],
+    [ApiEndpoint.Test.SeedAndRedeem]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/seed-and-redeem`]: [HttpMethod.Post],
+    [ApiEndpoint.Test.SeedPromo]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/seed-promo`]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/clear-debug-logs`]: [HttpMethod.Delete],
+    [`${ApiEndpoint.Test.Base}/flush-debug-logs`]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/get-debug-logs`]: [HttpMethod.Get],
+    [ApiEndpoint.Test.ClearAll]: [HttpMethod.Delete],
+  };
+  const allowedMethods = devOnlyMethodMap[requestPath];
+  if (allowedMethods) {
+    const methodError = rejectUnsupportedMethod(request, env, allowedMethods);
+    if (methodError) {
+      return methodError;
+    }
+  }
+
   if (env.ENVIRONMENT !== Environment.Development) {
     return new Response(JSON.stringify({
       error: ErrorMessage.Forbidden,
@@ -150,10 +170,6 @@ function createMatcherFromSpec(spec: (typeof CloudflareRouteManifest)[number]): 
     matcher = combineMatchers(pathWithParam(spec.path), includes(spec.includes));
   } else {
     matcher = exactPath(spec.path) as (path: string, method: string) => boolean;
-  }
-  if (spec.method) {
-    const baseMatcher = matcher;
-    matcher = pathAndMethod(baseMatcher, methodMatcher(spec.method as HttpMethod));
   }
   return matcher;
 }
@@ -276,6 +292,10 @@ export function createRouter(metricsCollector: MetricsCollector): Router {
   const router = new Router();
 
   const metricsHandler: (request: Request, env: Env) => Promise<Response> = (request, env) => {
+    const methodError = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+    if (methodError) {
+      return Promise.resolve(methodError);
+    }
     const metrics = metricsCollector.getMetrics();
     const alerts = checkAlertThresholds(metrics);
     emitMetrics(metrics, env).catch(err =>
@@ -287,6 +307,10 @@ export function createRouter(metricsCollector: MetricsCollector): Router {
   };
 
   const alertsHandler: (request: Request, env: Env) => Promise<Response> = (request, env) => {
+    const methodError = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+    if (methodError) {
+      return Promise.resolve(methodError);
+    }
     const metrics = metricsCollector.getMetrics();
     const alerts = checkAlertThresholds(metrics);
     if (alerts.length > 0 && env.ALERT_WEBHOOK_URL) {
@@ -323,6 +347,7 @@ export function createRouter(metricsCollector: MetricsCollector): Router {
       handler,
       middleware: middleware.length > 0 ? middleware : undefined,
       priority: spec.priority,
+      allowedMethods: spec.method ? [spec.method] : undefined,
     });
   }
 

@@ -5,6 +5,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
 import { fileURLToPath } from 'url';
+import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
+import { HttpAuthScheme, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const scriptDir = __dirname;
@@ -220,10 +222,23 @@ async function main(): Promise<void> {
 
   const baseUrl = workerUrl ?? 'http://localhost:8787';
   const openapiUrl = `${baseUrl}/openapi.json`;
+  const schemathesisAuthToken = process.env.SCHEMATHESIS_AUTH_TOKEN?.trim() || `${TestTokenPrefix.Test}schemathesis:admin`;
+  const schemathesisArgs = [
+    'run',
+    openapiUrl,
+    '--url',
+    baseUrl,
+    '--checks',
+    'all',
+    '--max-examples',
+    '50',
+    '--header',
+    `${HttpHeader.Authorization}: ${HttpAuthScheme.Bearer} ${schemathesisAuthToken}`,
+  ];
 
   const startTime = Date.now();
   try {
-    const { code, output } = await runCommandWithOutput('schemathesis', ['run', openapiUrl, '--url', baseUrl, '--checks', 'all', '--max-examples', '50'], {
+    const { code, output } = await runCommandWithOutput('schemathesis', schemathesisArgs, {
       toolLogStream: schemathesisLogStream,
       timeout: 600000,
     });

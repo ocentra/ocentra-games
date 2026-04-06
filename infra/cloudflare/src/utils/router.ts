@@ -1,5 +1,7 @@
 import type { Env } from '@/constants/env';
-import { HttpMethod } from '@ocentra/endpoint-domain/constants/http';
+import { HttpHeader, HttpMethod, HttpContentType, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
+import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
+import { getCorsHeaders } from '@/utils/cors';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -33,6 +35,7 @@ export interface Route {
   handler: RouteHandler;
   middleware?: RouteMiddleware[];
   priority?: number;
+  allowedMethods?: HttpMethod[];
 }
 
 export function exactPath(paths: string | string[]): RouteMatcher {
@@ -82,6 +85,9 @@ export class Router {
   async match(request: Request, env: Env, context?: RouteContext): Promise<Response | null> {
     const path = new URL(request.url).pathname;
     const method = request.method;
+    const requestOrigin = context?.requestOrigin;
+    let pathMatchedButMethodNotAllowed = false;
+    const allowedMethods = new Set<HttpMethod>();
 
     logDebug('[ROUTER-MATCH] Starting route matching', getStackTrace(), { path, method, url: request.url }, LOG_ROUTER_MATCH_LIFECYCLE);
 
@@ -97,6 +103,18 @@ export class Router {
       }, LOG_ROUTER_MATCH_STEPS, 'Router.match');
       
       if (matches) {
+        if (route.allowedMethods && !route.allowedMethods.includes(method as HttpMethod)) {
+          pathMatchedButMethodNotAllowed = true;
+          for (const allowedMethod of route.allowedMethods) {
+            allowedMethods.add(allowedMethod);
+          }
+          continue;
+        }
+
+        if (pathMatchedButMethodNotAllowed && !route.allowedMethods) {
+          continue;
+        }
+
         logDebug('[ROUTER-MATCH] Route matched!', getStackTrace(), { path, method }, LOG_ROUTER_MATCH_LIFECYCLE);
         
         if (route.middleware) {
@@ -127,6 +145,18 @@ export class Router {
           throw error;
         }
       }
+    }
+
+    if (pathMatchedButMethodNotAllowed) {
+      log.flushBatchContext('Router.match');
+      return new Response(ErrorMessage.MethodNotAllowed, {
+        status: HttpStatus.MethodNotAllowed,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.TextPlain,
+          [HttpHeader.Allow]: Array.from(allowedMethods).join(', '),
+          ...getCorsHeaders(env, requestOrigin || undefined),
+        },
+      });
     }
 
     log.flushBatchContext('Router.match');

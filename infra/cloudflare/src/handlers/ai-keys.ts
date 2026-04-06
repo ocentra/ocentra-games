@@ -11,6 +11,7 @@ import { testProviderKey } from '@/data/provider-test-endpoints';
 import { getCatalogFromEnv } from '@/data/ai-catalog';
 import { Logger } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -36,6 +37,11 @@ export async function handleAIKeysRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete]);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
   if (authResult instanceof Response) {

@@ -109,6 +109,7 @@ export async function handleStripeWebhookRequest(
       status: HttpStatus.MethodNotAllowed,
       headers: {
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        [HttpHeader.Allow]: HttpMethod.Post,
         ...getCorsHeaders(env),
       },
     });

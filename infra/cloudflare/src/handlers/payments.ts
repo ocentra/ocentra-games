@@ -28,6 +28,7 @@ import { checkAdminStatus } from '@/utils/admin-check';
 import { validateProduct, calculateAmount } from '@/config/products';
 import { runReconciliation } from '@/logic/reconciliation';
 import { StripeApiVersion } from '@/constants/stripe';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -61,6 +62,8 @@ export async function handlePaymentRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const cors = { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) };
   const json = (data: unknown, status: number) =>

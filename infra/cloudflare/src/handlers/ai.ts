@@ -1,5 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { BucketPath } from '@ocentra/boundary-domain/constants/bucket-paths';
@@ -7,11 +8,13 @@ import { AIEventType, AIActionType, AIModelProvider, AIModelId, AIAllowedDomains
 import { RateLimitPrefix } from '@/constants/rate-limit';
 import { buildSafeBucketKey, generateUniqueFilename } from '@/utils/path-sanitizer';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { validateMatchId } from '@ocentra/endpoint-domain/constants/match';
 import type { RateLimiter } from '@/utils/rate-limiter-interface';
 import { createRateLimiter } from '@/utils/rate-limiter-factory';
 import { getRateLimitIdentifier } from '@/utils/rate-limit';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import {
   processAIEventLogic,
   saveAIDecisionLogic,
@@ -37,6 +40,21 @@ const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
 const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logDebug(message, stackTrace, data, enabled);
 };
+
+function isPrintablePlayerId(value: string): boolean {
+  if (!value || value.trim().length === 0) {
+    return false;
+  }
+
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    if (code <= 32 || (code >= 127 && code <= 159)) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export interface CommunicationOutput {
   text: string;
@@ -146,30 +164,31 @@ export async function handleAIRequest(
   path: string
 ): Promise<Response> {
   const requestOrigin = request.headers.get(HttpHeader.Origin);
-  
-  const authHeader = request.headers.get(HttpHeader.Authorization);
-  if (!authHeader) {
-    return new Response(JSON.stringify({
-      error: ErrorMessage.Unauthorized,
-      message: ErrorMessage.AuthenticationRequired
-    }), {
-      status: HttpStatus.Unauthorized,
-      headers: {
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        ...getCorsHeaders(env, requestOrigin || undefined)
-      }
-    });
-  }
 
   if (path === ApiEndpoint.AI.OnEvent) {
-    if (request.method === HttpMethod.Post) {
-      return handleAIEvent(request, env);
+    const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Post]);
+    if (methodCheck) {
+      return methodCheck;
     }
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+    const authResult = await requireAuth(request, env, requestOrigin || undefined, ErrorMessage.AuthenticationRequired);
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return handleAIEvent(request, env);
   }
 
   if (path === ApiEndpoint.AI.Base) {
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+    const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Post]);
+    if (methodCheck) {
+      return methodCheck;
+    }
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Post,
+        ...getCorsHeaders(env),
+      },
+    });
   }
 
   return new Response(ErrorMessage.NotFound, { status: HttpStatus.NotFound, headers: getCorsHeaders(env) });
@@ -180,7 +199,12 @@ async function handleAIEvent(
   env: Env
 ): Promise<Response> {
   if (request.method !== HttpMethod.Post) {
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed });
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Post,
+      },
+    });
   }
 
   const requestOrigin = request.headers.get(HttpHeader.Origin);
@@ -229,12 +253,51 @@ async function handleAIEvent(
       });
     }
 
-    const eventRequest: AIEventRequest = await request.json();
+    let eventRequest: AIEventRequest;
+    try {
+      eventRequest = await request.json() as AIEventRequest;
+    } catch (error) {
+      logError('Invalid JSON in AI event request', getStackTrace(), { error: error instanceof Error ? error.message : String(error) });
+      return new Response(
+        JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Invalid JSON request body' }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
 
     if (!eventRequest.matchId || !eventRequest.playerId || !eventRequest.eventType) {
       return new Response(
         JSON.stringify({ error: ErrorMessage.MissingRequiredFields }),
         { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } }
+      );
+    }
+
+    const matchIdValidation = validateMatchId(String(eventRequest.matchId));
+    if (!matchIdValidation.valid) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: matchIdValidation.error || ErrorMessage.InvalidMatchIdFormat,
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
+      );
+    }
+
+    if (typeof eventRequest.playerId !== 'string' || !isPrintablePlayerId(eventRequest.playerId)) {
+      return new Response(
+        JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'playerId must be a non-empty printable string',
+        }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+        }
       );
     }
 

@@ -103,7 +103,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson
       },
       body: JSON.stringify({
-        matchId: `test-match-ai-${Date.now()}`,
+        matchId: TestConfig.TestMatchId,
         playerId: TestConfig.TestPlayerId,
         eventType: AIEventType.MatchStart,
         eventData: {},
@@ -144,6 +144,29 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const data = await response.json() as { error?: string };
     expect(typeof data.error).toBe('string');
     expect(data.error).toBe('Missing required fields: matchId, playerId, eventType');
+  });
+
+  it(testName('AI Event Handling: should reject invalid matchId format'), async () => {
+    const token = await createToken();
+    const aiEventUrl = buildTestApiUrlForEndpoint(ApiEndpoint.AI.OnEvent);
+    const response = await worker.fetch(aiEventUrl, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(TestConfig.TestUserId),
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      },
+      body: JSON.stringify({
+        matchId: 'not-a-uuid',
+        playerId: TestConfig.TestPlayerId,
+        eventType: AIEventType.MatchStart,
+      }),
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    const data = await response.json() as { error?: string; message?: string };
+    expect(data.error).toBe('Bad Request');
+    expect(typeof data.message).toBe('string');
+    expect((data.message as string).toLowerCase()).toContain('matchid');
   });
 
   it(testName('AI Event Handling: should accept request with invalid event type when AI service not configured'), async () => {

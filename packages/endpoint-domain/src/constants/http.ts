@@ -93,6 +93,7 @@ export const HttpHeader = {
   AccessControlAllowHeaders: 'Access-Control-Allow-Headers' as HeaderName,
   AccessControlAllowCredentials: 'Access-Control-Allow-Credentials' as HeaderName,
   AccessControlMaxAge: 'Access-Control-Max-Age' as HeaderName,
+  Allow: 'Allow' as HeaderName,
   XContentTypeOptions: 'X-Content-Type-Options' as HeaderName,
   XFrameOptions: 'X-Frame-Options' as HeaderName,
   WwwAuthenticate: 'WWW-Authenticate' as HeaderName,

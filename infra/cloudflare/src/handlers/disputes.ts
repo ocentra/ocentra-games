@@ -6,8 +6,10 @@ import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { FormField } from '@/constants/form-fields';
 import { computeSha256 } from '@/utils/crypto-utils';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import { buildDisputeKey, buildEvidenceKey } from '@/utils/path-sanitizer';
 import { extractAndValidateIdAfterEndpoint } from '@ocentra/endpoint-domain/utils/path-parser';
+import { validateMatchId } from '@ocentra/endpoint-domain/constants/match';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import {
@@ -53,11 +55,163 @@ function createDisputeStorage(env: Env): DisputeStorage {
   };
 }
 
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isValidDateTimeString(value: unknown): boolean {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return false;
+  }
+
+  const rfc3339Pattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+  return rfc3339Pattern.test(trimmed) && !Number.isNaN(Date.parse(trimmed));
+}
+
+function isValidDisputeId(value: unknown): value is string {
+  return typeof value === 'string' && /^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/.test(value);
+}
+
+function validateEvidenceMetadataField(value: unknown, fieldName: string, requireMatchId: boolean = false): string | null {
+  if (value === null) {
+    return null;
+  }
+
+  if (typeof value !== 'string') {
+    return `${fieldName} must be a string`;
+  }
+
+  if (requireMatchId) {
+    if (!isNonEmptyString(value)) {
+      return `${fieldName} must be a non-empty string`;
+    }
+
+    const matchIdValidation = validateMatchId(value);
+    if (!matchIdValidation.valid) {
+      return matchIdValidation.error || `${fieldName} is invalid`;
+    }
+  }
+
+  return null;
+}
+
+function validateCreateDisputePayload(disputeData: unknown): string | null {
+  if (!isPlainRecord(disputeData)) {
+    return 'Request body must be a JSON object';
+  }
+
+  const allowedKeys = new Set(['match_id', 'reason', 'reason_hash', 'created_by', 'description', 'timestamp', 'dispute_id']);
+  for (const key of Object.keys(disputeData)) {
+    if (!allowedKeys.has(key)) {
+      return `Unexpected field: ${key}`;
+    }
+  }
+
+  if (!isNonEmptyString(disputeData.match_id)) {
+    return 'match_id must be a non-empty string';
+  }
+
+  const matchIdValidation = validateMatchId(disputeData.match_id);
+  if (!matchIdValidation.valid) {
+    return matchIdValidation.error || 'match_id is invalid';
+  }
+
+  if (typeof disputeData.reason !== 'string' || disputeData.reason.length === 0) {
+    return 'reason must be a non-empty string';
+  }
+
+  if ('reason_hash' in disputeData && disputeData.reason_hash !== undefined && typeof disputeData.reason_hash !== 'string') {
+    return 'reason_hash must be a string';
+  }
+
+  if ('created_by' in disputeData && disputeData.created_by !== undefined && typeof disputeData.created_by !== 'string') {
+    return 'created_by must be a string';
+  }
+
+  if ('description' in disputeData && disputeData.description !== undefined && typeof disputeData.description !== 'string') {
+    return 'description must be a string';
+  }
+
+  if ('timestamp' in disputeData && disputeData.timestamp !== undefined && !isValidDateTimeString(disputeData.timestamp)) {
+    return 'timestamp must be a valid date-time string';
+  }
+
+  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isNonEmptyString(disputeData.dispute_id)) {
+    return 'dispute_id must be a non-empty string';
+  }
+
+  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isValidDisputeId(disputeData.dispute_id)) {
+    return 'dispute_id must contain only letters, numbers, underscores, and hyphens';
+  }
+
+  return null;
+}
+
+function validateUpdateDisputePayload(disputeData: unknown): string | null {
+  if (!isPlainRecord(disputeData)) {
+    return 'Request body must be a JSON object';
+  }
+
+  const allowedKeys = new Set(['match_id', 'reason', 'description', 'dispute_id']);
+  for (const key of Object.keys(disputeData)) {
+    if (!allowedKeys.has(key)) {
+      return `Unexpected field: ${key}`;
+    }
+  }
+
+  if ('match_id' in disputeData && disputeData.match_id !== undefined) {
+    if (!isNonEmptyString(disputeData.match_id)) {
+      return 'match_id must be a non-empty string';
+    }
+    const matchIdValidation = validateMatchId(disputeData.match_id);
+    if (!matchIdValidation.valid) {
+      return matchIdValidation.error || 'match_id is invalid';
+    }
+  }
+
+  if ('reason' in disputeData && disputeData.reason !== undefined && typeof disputeData.reason !== 'string') {
+    return 'reason must be a string';
+  }
+
+  if ('description' in disputeData && disputeData.description !== undefined && typeof disputeData.description !== 'string') {
+    return 'description must be a string';
+  }
+
+  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isNonEmptyString(disputeData.dispute_id)) {
+    return 'dispute_id must be a non-empty string';
+  }
+
+  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isValidDisputeId(disputeData.dispute_id)) {
+    return 'dispute_id must contain only letters, numbers, underscores, and hyphens';
+  }
+
+  return null;
+}
+
 export async function handleDisputeRequest(
   request: Request,
   env: Env,
   path: string
 ): Promise<Response> {
+  const allowedMethods = path === ApiEndpoint.Disputes.Base
+    ? [HttpMethod.Post]
+    : path.includes('/evidence')
+      ? [HttpMethod.Post]
+      : [HttpMethod.Get, HttpMethod.Put];
+  const methodCheck = rejectUnsupportedMethod(request, env, allowedMethods);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Delete) {
     const authResult = await requireAuth(request, env);
     if (authResult instanceof Response) {
@@ -79,28 +233,40 @@ export async function handleDisputeRequest(
 
   if (isEvidenceUpload) {
     const validationStart = Date.now();
-    const result = extractAndValidateIdAfterEndpoint(path, ApiEndpoint.Disputes.Base, 'disputeId', ApiEndpoint.Disputes.Evidence(':disputeId'), request.url);
+  const result = extractAndValidateIdAfterEndpoint(path, ApiEndpoint.Disputes.Base, 'disputeId', ApiEndpoint.Disputes.Evidence(':disputeId'), request.url);
     const validationTime = Date.now() - validationStart;
-    
+
     if (validationTime > 100) {
-      logWarn('[DISPUTES-EVIDENCE] Path validation took longer than expected', getStackTrace(), { 
-        path, 
-        validationTime, 
-        result: result.error || result.id 
+      logWarn('[DISPUTES-EVIDENCE] Path validation took longer than expected', getStackTrace(), {
+        path,
+        validationTime,
+        result: result.error || result.id
       }, true);
     }
-    
+
     if (result.error || !result.id) {
-      logDebug('[DISPUTES-EVIDENCE] Path validation failed', getStackTrace(), { 
-        path, 
-        error: result.error, 
-        validationTime 
+      logDebug('[DISPUTES-EVIDENCE] Path validation failed', getStackTrace(), {
+        path,
+        error: result.error,
+        validationTime
       }, true);
-      
+
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
         message: result.error || ErrorMessage.DisputeIdRequired
       }), { status: HttpStatus.BadRequest, headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
+    }
+    if (!isValidDisputeId(result.id)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'disputeId must contain only letters, numbers, underscores, and hyphens',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
     }
     return handleDisputeEvidenceUpload(request, env, result.id);
   }
@@ -108,22 +274,22 @@ export async function handleDisputeRequest(
   const validationStart = Date.now();
   const result = extractAndValidateIdAfterEndpoint(path, ApiEndpoint.Disputes.Base, 'disputeId', undefined, request.url);
   const validationTime = Date.now() - validationStart;
-  
+
   if (validationTime > 100) {
-    logWarn('[DISPUTES] Path validation took longer than expected', getStackTrace(), { 
-      path, 
-      validationTime, 
-      result: result.error || result.id 
+    logWarn('[DISPUTES] Path validation took longer than expected', getStackTrace(), {
+      path,
+      validationTime,
+      result: result.error || result.id
     }, true);
   }
-  
+
   if (result.error || !result.id) {
-    logDebug('[DISPUTES] Path validation failed', getStackTrace(), { 
-      path, 
-      error: result.error, 
-      validationTime 
+    logDebug('[DISPUTES] Path validation failed', getStackTrace(), {
+      path,
+      error: result.error,
+      validationTime
     }, true);
-    
+
     if (path.startsWith(ApiEndpoint.Disputes.Base) || urlPath.startsWith(ApiEndpoint.Disputes.Base)) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
@@ -132,9 +298,49 @@ export async function handleDisputeRequest(
     }
     return new Response(ErrorMessage.BadRequest, { status: HttpStatus.BadRequest, headers: getCorsHeaders(env) });
   }
+  if (!isValidDisputeId(result.id)) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'disputeId must contain only letters, numbers, underscores, and hyphens',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
   const disputeId = result.id;
-  const disputeKey = buildDisputeKey(disputeId);
+  let disputeKey: string;
+  try {
+    disputeKey = buildDisputeKey(disputeId);
+  } catch (error) {
+    logError('[DISPUTES] Failed to sanitize dispute path components', getStackTrace(), {
+      disputeId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: ErrorMessage.PathComponentBecameEmptyAfterSanitization,
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
   const storage = createDisputeStorage(env);
+
+  if (request.method !== HttpMethod.Get && request.method !== HttpMethod.Put) {
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: [HttpMethod.Get, HttpMethod.Put].join(', '),
+        ...getCorsHeaders(env),
+      },
+    });
+  }
 
   if (request.method === HttpMethod.Get) {
     const getResult = await getDisputeLogic({ disputeId, disputeKey }, storage);
@@ -163,10 +369,41 @@ export async function handleDisputeRequest(
     });
   }
 
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put) {
+  if (request.method === HttpMethod.Put) {
     try {
       const body = await request.text();
-      const dispute = JSON.parse(body);
+      let dispute: Record<string, unknown>;
+      try {
+        dispute = JSON.parse(body) as Record<string, unknown>;
+      } catch (parseError) {
+        logError('[DISPUTES-UPDATE] Failed to parse request body as JSON', getStackTrace(), {
+          bodyLength: body.length,
+          error: parseError instanceof Error ? parseError.message : String(parseError),
+        });
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: 'Invalid request body. Expected JSON.',
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
+      const validationError = validateUpdateDisputePayload(dispute);
+      if (validationError) {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: validationError,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
       const updateResult = await updateDisputeLogic({ disputeId, disputeKey, disputeData: dispute }, storage);
 
       if (!updateResult.success) {
@@ -203,7 +440,13 @@ export async function handleDisputeRequest(
     }
   }
 
-  return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+  return new Response(ErrorMessage.MethodNotAllowed, {
+    status: HttpStatus.MethodNotAllowed,
+    headers: {
+      [HttpHeader.Allow]: [HttpMethod.Get, HttpMethod.Put].join(', '),
+      ...getCorsHeaders(env),
+    },
+  });
 }
 
 async function handleDisputeEvidenceUpload(
@@ -211,60 +454,145 @@ async function handleDisputeEvidenceUpload(
   env: Env,
   disputeId: string
 ): Promise<Response> {
+  if (request.method !== HttpMethod.Post) {
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Post,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
+
   const authResult = await requireAuth(request, env);
   if (authResult instanceof Response) {
     return authResult;
   }
 
   try {
-    let formData: FormData;
     const contentType = request.headers.get(HttpHeader.ContentType) || '';
-    
+
+    if (!contentType.includes(HttpContentType.MultipartFormData)) {
+      return new Response(JSON.stringify({ error: 'Content-Type must be multipart/form-data for evidence upload' }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    let formData: FormData;
+
     try {
       formData = await request.formData();
     } catch (formDataError) {
-      if (formDataError instanceof Error && formDataError.message.includes('Content-Type')) {
-        logError('[DISPUTES-EVIDENCE] FormData parsing failed due to Content-Type', getStackTrace(), {
-          disputeId,
-          contentType,
-          error: formDataError.message,
-          bodyType: typeof request.body,
-          bodyUsed: request.bodyUsed
-        });
-        
-        if (!request.bodyUsed) {
-          try {
-            const clonedRequest = request.clone();
-            const bodyText = await clonedRequest.text();
-            const looksLikeFormData = bodyText.includes('Content-Disposition: form-data') || 
-                                      bodyText.includes('multipart/form-data') ||
-                                      bodyText.includes('boundary=');
-            
-            logDebug('[DISPUTES-EVIDENCE] Body inspection after FormData parse failure', getStackTrace(), {
-              disputeId,
-              contentType,
-              bodyLength: bodyText.length,
-              bodyPreview: bodyText.substring(0, 200),
-              looksLikeFormData
-            }, true);
-            
-            if (looksLikeFormData) {
-              logError('[DISPUTES-EVIDENCE] Body appears to be FormData but Content-Type is wrong - possible Content-Type header mismatch', getStackTrace(), {
-                disputeId,
-                contentType,
-                expectedContentType: 'multipart/form-data with boundary'
-              });
-            }
-          } catch (cloneError) {
-            logError('[DISPUTES-EVIDENCE] Failed to inspect body after FormData parse failure', getStackTrace(), {
-              disputeId,
-              contentType,
-              cloneError: cloneError instanceof Error ? cloneError.message : String(cloneError)
-            });
-          }
-        }
-        
-        return new Response(JSON.stringify({ error: 'Content-Type must be multipart/form-data for evidence upload' }), {
+      logError('[DISPUTES-EVIDENCE] FormData parsing failed', getStackTrace(), {
+        disputeId,
+        contentType,
+        error: formDataError instanceof Error ? formDataError.message : String(formDataError),
+      });
+
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Invalid multipart/form-data request body',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+    const evidenceFiles: { name: string; key: string; size: number; hash?: string; type?: string }[] = [];
+
+    const matchIdValue = formData.get(FormField.MatchId);
+    const reasonValue = formData.get(FormField.Reason);
+    const descriptionValue = formData.get(FormField.Description);
+
+    const matchIdValidation = validateEvidenceMetadataField(matchIdValue, FormField.MatchId, true);
+    if (matchIdValidation) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: matchIdValidation,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const reasonValidation = validateEvidenceMetadataField(reasonValue, FormField.Reason);
+    if (reasonValidation) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: reasonValidation,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const descriptionValidation = validateEvidenceMetadataField(descriptionValue, FormField.Description);
+    if (descriptionValidation) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: descriptionValidation,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const matchId = typeof matchIdValue === 'string' ? matchIdValue : null;
+    const reason = typeof reasonValue === 'string' ? reasonValue : null;
+    const description = typeof descriptionValue === 'string' ? descriptionValue : null;
+
+    const MAX_FILE_SIZE = 100 * 1024 * 1024;
+
+    const metadataKeys = new Set<string>([FormField.MatchId, FormField.Reason, FormField.Description]);
+
+    const storage = createDisputeStorage(env);
+    let disputeKey: string;
+    try {
+      disputeKey = buildDisputeKey(disputeId);
+    } catch (error) {
+      logError('[DISPUTES-EVIDENCE] Failed to sanitize dispute path components', getStackTrace(), {
+        disputeId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: ErrorMessage.PathComponentBecameEmptyAfterSanitization,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    logDebug('[DISPUTES-EVIDENCE] Processing formData entries', getStackTrace(), { disputeId, formDataKeys: Array.from(formData.keys()) }, true);
+
+    for (const [key, value] of formData.entries()) {
+      if (metadataKeys.has(key)) {
+        continue;
+      }
+
+      if (typeof value === 'string') {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: `Unexpected field: ${key}`,
+        }), {
           status: HttpStatus.BadRequest,
           headers: {
             [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
@@ -272,29 +600,6 @@ async function handleDisputeEvidenceUpload(
           },
         });
       }
-      throw formDataError;
-    }
-    const evidenceFiles: { name: string; key: string; size: number; hash?: string; type?: string }[] = [];
-
-    const matchId = formData.get(FormField.MatchId) as string | null;
-    const reason = formData.get(FormField.Reason) as string | null;
-    const description = formData.get(FormField.Description) as string | null;
-
-    const MAX_FILE_SIZE = 100 * 1024 * 1024;
-
-    const metadataKeys = new Set<string>([FormField.MatchId, FormField.Reason, FormField.Description]);
-    const processedKeys = new Set<string>();
-
-    const storage = createDisputeStorage(env);
-    const disputeKey = buildDisputeKey(disputeId);
-
-    logDebug('[DISPUTES-EVIDENCE] Processing formData entries', getStackTrace(), { disputeId, formDataKeys: Array.from(formData.keys()) }, true);
-
-    for (const [key, value] of formData.entries()) {
-      if (metadataKeys.has(key) || processedKeys.has(key)) {
-        continue
-      }
-      processedKeys.add(key)
 
       logDebug('[DISPUTES-EVIDENCE] Processing formData entry', getStackTrace(), { key, valueType: typeof value, hasName: value && typeof value === 'object' ? 'name' in value : false, hasArrayBuffer: value && typeof value === 'object' ? 'arrayBuffer' in value : false }, true);
 
@@ -314,7 +619,26 @@ async function handleDisputeEvidenceUpload(
         const fileType = file.type || HttpContentType.OctetStream;
         const fileData = await file.arrayBuffer();
         const hashHex = await computeSha256(fileData);
-        const evidenceKey = buildEvidenceKey(disputeId, file.name);
+        let evidenceKey: string;
+        try {
+          evidenceKey = buildEvidenceKey(disputeId, file.name);
+        } catch (error) {
+          logError('[DISPUTES-EVIDENCE] Failed to sanitize evidence path components', getStackTrace(), {
+            disputeId,
+            fileName: file.name,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          return new Response(JSON.stringify({
+            error: ErrorMessage.BadRequest,
+            message: ErrorMessage.PathComponentBecameEmptyAfterSanitization,
+          }), {
+            status: HttpStatus.BadRequest,
+            headers: {
+              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+              ...getCorsHeaders(env),
+            },
+          });
+        }
 
         const uploadResult = await uploadEvidenceFileLogic(
           {
@@ -343,7 +667,19 @@ async function handleDisputeEvidenceUpload(
         }
 
         evidenceFiles.push(uploadResult.file);
+        continue;
       }
+
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: `Unexpected field: ${key}`,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
     }
 
     logDebug('[DISPUTES-EVIDENCE] Finished processing files', getStackTrace(), { disputeId, evidenceFilesCount: evidenceFiles.length }, true);
@@ -435,6 +771,16 @@ async function handleCreateDispute(
   request: Request,
   env: Env
 ): Promise<Response> {
+  if (request.method !== HttpMethod.Post) {
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Post,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
+
   const authResult = await requireAuth(request, env, undefined, 'Authentication required to create disputes');
   if (authResult instanceof Response) {
     return authResult;
@@ -442,25 +788,18 @@ async function handleCreateDispute(
 
   try {
     const contentType = request.headers.get(HttpHeader.ContentType) || '';
-    
-    let isFormData = contentType.includes(HttpContentType.MultipartFormData);
-    
-    if (!isFormData) {
-      try {
-        const testFormData = await request.clone().formData();
-        const firstEntry = testFormData.entries().next();
-        if (!firstEntry.done) {
-          isFormData = true;
-          logDebug('[DISPUTES-CREATE] Detected FormData despite missing Content-Type header', getStackTrace(), { contentType }, true);
-        }
-      } catch {
-        isFormData = false;
-      }
-    }
-    
-    if (isFormData) {
-      const disputeId = `dispute-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-      return handleDisputeEvidenceUpload(request, env, disputeId);
+
+    if (contentType.includes(HttpContentType.MultipartFormData)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Create dispute expects JSON. Use /api/v1/disputes/{disputeId}/evidence for multipart uploads.',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
     }
 
     const body = await request.text();
@@ -468,24 +807,56 @@ async function handleCreateDispute(
     try {
       disputeData = JSON.parse(body);
     } catch (parseError) {
-      logError('[DISPUTES-CREATE] Failed to parse request body as JSON', getStackTrace(), { 
-        contentType, 
+      logError('[DISPUTES-CREATE] Failed to parse request body as JSON', getStackTrace(), {
+        contentType,
         bodyLength: body.length,
         error: parseError instanceof Error ? parseError.message : String(parseError)
       });
-      return new Response(JSON.stringify({ 
-        error: 'Invalid request body. Expected JSON or multipart/form-data.' 
+      return new Response(JSON.stringify({
+        error: 'Invalid request body. Expected JSON or multipart/form-data.'
       }), {
         status: HttpStatus.BadRequest,
-        headers: { 
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson, 
-          ...getCorsHeaders(env) 
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env)
         }
       });
     }
 
-    const disputeId = disputeData.dispute_id || `dispute-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-    const disputeKey = buildDisputeKey(disputeId);
+    const validationError = validateCreateDisputePayload(disputeData);
+    if (validationError) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: validationError,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+      const disputeId = disputeData.dispute_id || `dispute-${Date.now()}-${crypto.randomUUID()}`;
+    let disputeKey: string;
+    try {
+      disputeKey = buildDisputeKey(disputeId);
+    } catch (error) {
+      logError('[DISPUTES-CREATE] Failed to sanitize dispute path components', getStackTrace(), {
+        disputeId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: ErrorMessage.PathComponentBecameEmptyAfterSanitization,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
     const storage = createDisputeStorage(env);
 
     const createResult = await createDisputeLogic(

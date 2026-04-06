@@ -9,6 +9,7 @@ import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { ParamName } from '@ocentra/endpoint-domain/constants/paths';
 import { extractAndValidateIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { exportUserDataLogic, deleteUserDataLogic, type DataStorage } from '@/logic/data';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -50,6 +51,11 @@ export async function handleDataExportRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   const authResult = await requireAuth(request, env, undefined, 'Authentication required for data export');
   if (authResult instanceof Response) {
     return authResult;
@@ -81,7 +87,13 @@ export async function handleDataExportRequest(
   }
 
   if (request.method !== HttpMethod.Get) {
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Get,
+        ...getCorsHeaders(env),
+      },
+    });
   }
 
   const storage = createDataStorage(env);
@@ -129,6 +141,11 @@ export async function handleDataDeletionRequest(
   }, true);
   
   try {
+    const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Delete]);
+    if (methodCheck) {
+      return methodCheck;
+    }
+
     logDebug('[DATA-DELETE] Request received', getStackTrace(), {
       path,
       url: request.url,
@@ -146,10 +163,6 @@ export async function handleDataDeletionRequest(
       return authResult;
     }
     const authenticatedUserId = authResult.userId;
-
-    if (request.method !== HttpMethod.Delete) {
-      return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
-    }
 
     logDebug('[DATA-DELETE] Extracting userId from path', getStackTrace(), {
       path,

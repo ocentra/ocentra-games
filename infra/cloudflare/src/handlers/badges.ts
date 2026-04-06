@@ -23,6 +23,7 @@ import {
 } from '@/logic/badges';
 import { earnGP as earnGPHandler } from '@/handlers/credits';
 import type { Env } from '@/constants/env';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -347,6 +348,11 @@ export async function handleBadgesRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   const requestOrigin = request.headers.get(HttpHeader.Origin);
   const authResult = await requireAuth(request, env, undefined, 'Authentication required');
   if (authResult instanceof Response) {

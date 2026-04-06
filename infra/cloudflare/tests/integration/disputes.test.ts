@@ -164,7 +164,31 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect((data.error as string).length).toBeGreaterThan(0);
     });
 
-  it(testName('Create Dispute: should create dispute with multipart form data and evidence'), async () => {
+  it(testName('Create Dispute: should reject invalid timestamp payload'), async () => {
+      const token = await createToken();
+      const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
+      const response = await worker.fetch(disputesUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(TestConfig.TestUserId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.Origin]: TestConfig.LocalhostOrigin
+        },
+        body: JSON.stringify({
+          match_id: TestConfig.TestMatchId,
+          reason: 'test reason',
+          timestamp: ''
+        })
+      }, token);
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe(ErrorMessage.BadRequest);
+      expect(typeof data.message).toBe('string');
+      expect((data.message as string).toLowerCase()).toContain('timestamp must be a valid date-time string');
+    });
+
+  it(testName('Create Dispute: should reject multipart form data on create endpoint'), async () => {
       const token = await createToken();
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
@@ -183,12 +207,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         body: formData
       }, token);
 
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { success: boolean; dispute_id: string; evidence_files: number };
-      expect(data.success).toBe(true);
-      expect(typeof data.dispute_id).toBe('string');
-      expect(data.dispute_id.length).toBeGreaterThan(0);
-      expect(data.evidence_files).toBe(1);
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe(ErrorMessage.BadRequest);
+      expect(typeof data.message).toBe('string');
+      expect((data.message as string).toLowerCase()).toContain('create dispute expects json');
     });
 
   it(testName('Get Dispute: should retrieve existing dispute'), async () => {
@@ -363,7 +386,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should upload evidence file with metadata'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-${Date.now()}`;
-      
+
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
       formData.append(FormField.Reason, 'test reason');
@@ -399,13 +422,13 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should upload multiple evidence files'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-multi-${Date.now()}`;
-      
+
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
       const file1 = new File(['evidence 1'], 'evidence1.txt', { type: HttpContentType.TextPlain });
       const file2 = new File(['evidence 2'], 'evidence2.txt', { type: HttpContentType.TextPlain });
-      formData.append('file1', file1);
-      formData.append('file2', file2);
+      formData.append('evidence', file1);
+      formData.append('evidence', file2);
 
       const evidenceUrl = buildTestDisputesEvidenceApiUrl(disputeId);
       const response = await worker.fetch(evidenceUrl, {
@@ -450,7 +473,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should reject file exceeding maximum size'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-size-${Date.now()}`;
-      
+
       const formData = new FormData();
       const largeFile = new File([new ArrayBuffer(101 * 1024 * 1024)], 'large-file.bin');
       formData.append('evidence', largeFile);
@@ -473,7 +496,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should append evidence to existing dispute'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-append-${Date.now()}`;
-      
+
       const disputeData = {
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
@@ -539,7 +562,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should handle evidence upload with metadata fields'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-metadata-${Date.now()}`;
-      
+
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
       formData.append(FormField.Reason, 'updated reason');
@@ -577,5 +600,31 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(dispute.match_id).toBe(TestConfig.TestMatchId);
       expect(dispute.reason).toBe('updated reason');
       expect(dispute.description).toBe('updated description');
+    });
+
+  it(testName('Evidence Upload: should reject non-string metadata fields'), async () => {
+      const token = await createToken();
+      const disputeId = `test-dispute-evidence-invalid-metadata-${Date.now()}`;
+
+      const formData = new FormData();
+      formData.append(FormField.MatchId, new Blob(['{}'], { type: HttpContentType.ApplicationJson }), 'match-id.json');
+      const testFile = new File(['evidence'], 'evidence.txt', { type: HttpContentType.TextPlain });
+      formData.append('evidence', testFile);
+
+      const evidenceUrl = buildTestDisputesEvidenceApiUrl(disputeId);
+      const response = await worker.fetch(evidenceUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(TestConfig.TestUserId),
+          [HttpHeader.Origin]: TestConfig.LocalhostOrigin
+        },
+        body: formData
+      }, token);
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe(ErrorMessage.BadRequest);
+      expect(typeof data.message).toBe('string');
+      expect((data.message as string).toLowerCase()).toContain('match_id must be a string');
     });
 });

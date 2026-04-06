@@ -50,7 +50,13 @@ export async function handleArchiveRequest(
     }, true);
 
     if (request.method !== HttpMethod.Post) {
-      return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+      return new Response(ErrorMessage.MethodNotAllowed, {
+        status: HttpStatus.MethodNotAllowed,
+        headers: {
+          [HttpHeader.Allow]: HttpMethod.Post,
+          ...getCorsHeaders(env),
+        },
+      });
     }
 
     const requestOrigin = request.headers.get(HttpHeader.Origin) || undefined;

@@ -34,7 +34,13 @@ export async function handleSignedUrlRequest(
   path: string
 ): Promise<Response> {
   if (request.method !== HttpMethod.Get) {
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Get,
+        ...getCorsHeaders(env),
+      },
+    });
   }
 
   const adminCheck = await checkAdminStatus(request, env);
@@ -89,7 +95,9 @@ export async function handleSignedUrlRequest(
     const matchId = result.matchId;
 
     const requestUrl = new URL(request.url);
-    const expirationSeconds = parseInt(requestUrl.searchParams.get('expires') || '3600', 10);
+    const rawExpiration = requestUrl.searchParams.get('expires');
+    const parsedExpiration = rawExpiration ? Number.parseInt(rawExpiration, 10) : 3600;
+    const expirationSeconds = Number.isFinite(parsedExpiration) && parsedExpiration > 0 ? parsedExpiration : 3600;
     const maxExpiration = 86400;
 
     const cryptoImpl: SignedUrlCrypto = {

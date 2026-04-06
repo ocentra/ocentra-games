@@ -1,7 +1,7 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
-import { HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { ParamName } from '@ocentra/endpoint-domain/constants/paths';
@@ -31,6 +31,7 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 };
 
 import { getCreditBalance } from '@/handlers/credits';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import {
   computePlayerStatsLogic,
   computeLearningProgressLogic,
@@ -85,6 +86,11 @@ export async function handlePlayerRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   const authResult = await requireAuth(request, env, undefined, 'Authentication required');
   if (authResult instanceof Response) {
     return authResult;

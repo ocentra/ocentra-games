@@ -1,4 +1,5 @@
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { IdempotencyKeyPattern } from '@ocentra/endpoint-domain/constants/idempotency';
 import { HttpContentType, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { HealthStatus } from '@ocentra/endpoint-domain/constants/health';
 import { FormField } from '@/constants/form-fields';
@@ -24,17 +25,17 @@ import {
   OpenApiHtmlTitle,
 } from '@/constants/openapi';
 
-function createPathParameter(name: string, description: string) {
+function createPathParameter(name: string, description: string, options?: { pattern?: string; enum?: string[] }) {
   return {
     name,
     in: OpenApiParameterLocation.Path,
     required: true,
-    schema: { type: OpenApiSchemaType.String },
+    schema: { type: OpenApiSchemaType.String, ...(options?.pattern ? { pattern: options.pattern } : {}), ...(options?.enum ? { enum: options.enum } : {}) },
     description,
   };
 }
 
-function createQueryParameter(name: string, description: string, required: boolean = false, schema: { type: string; default?: number; enum?: string[] } = { type: OpenApiSchemaType.String }) {
+function createQueryParameter(name: string, description: string, required: boolean = false, schema: { type: string; default?: number; enum?: string[]; minLength?: number; minimum?: number; pattern?: string } = { type: OpenApiSchemaType.String }) {
   return {
     name,
     in: OpenApiParameterLocation.Query,
@@ -51,19 +52,6 @@ function createJsonResponse(status: string, description: string, schema: Record<
       content: {
         [HttpContentType.ApplicationJson]: {
           schema,
-        },
-      },
-    },
-  };
-}
-
-function createTextResponse(status: string, description: string, example?: string) {
-  return {
-    [status]: {
-      description,
-      content: {
-        [HttpContentType.TextPlain]: {
-          schema: { type: OpenApiSchemaType.String, ...(example ? { example } : {}) },
         },
       },
     },
@@ -96,18 +84,29 @@ function createMultipartRequestBody(schema: Record<string, unknown>) {
   };
 }
 
-const matchIdParameter = createPathParameter(OpenApiParameterName.MatchId, OpenApiParameterDescription.UniqueMatchIdentifier);
-const disputeIdParameter = createPathParameter(OpenApiParameterName.DisputeId, OpenApiParameterDescription.UniqueMatchIdentifier);
+const matchIdPattern = IdempotencyKeyPattern.UuidV4.source;
+const disputeIdPattern = '^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$';
+
+const matchIdParameter = createPathParameter(OpenApiParameterName.MatchId, OpenApiParameterDescription.UniqueMatchIdentifier, { pattern: matchIdPattern });
+const disputeIdParameter = createPathParameter(OpenApiParameterName.DisputeId, OpenApiParameterDescription.UniqueMatchIdentifier, { pattern: disputeIdPattern });
 const userIdParameter = createPathParameter(OpenApiParameterName.UserId, OpenApiParameterDescription.UniqueMatchIdentifier);
-const gameTypeParameter = createPathParameter(OpenApiParameterName.GameType, OpenApiParameterDescription.GameTypeDescription);
+const gameTypeParameter = createPathParameter(OpenApiParameterName.GameType, OpenApiParameterDescription.GameTypeDescription, { enum: ['0', '1', '2'] });
 
 const tokenQueryParameter = createQueryParameter(OpenApiParameterName.Token, OpenApiParameterDescription.SignedUrlToken);
 const expiresQueryParameter = createQueryParameter(OpenApiParameterName.Expires, OpenApiParameterDescription.ExpirationTimeSeconds, false, { type: OpenApiSchemaType.Integer, default: 3600 });
-const seasonIdQueryParameter = createQueryParameter(OpenApiParameterName.SeasonId, OpenApiParameterDescription.SeasonIdDefault);
-const limitQueryParameter = createQueryParameter(OpenApiParameterName.Limit, OpenApiParameterDescription.NumberOfEntries, false, { type: OpenApiSchemaType.Integer, default: 100 });
+const seasonIdQueryParameter = createQueryParameter(OpenApiParameterName.SeasonId, OpenApiParameterDescription.SeasonIdDefault, false, {
+  type: OpenApiSchemaType.String,
+  minLength: 1,
+  pattern: '^[^\\s\\x00-\\x1F\\x7F]+$',
+});
+const printableStringPattern = '^[^\\s\\x00-\\x1F\\x7F-\\x9F]+$';
+const limitQueryParameter = createQueryParameter(OpenApiParameterName.Limit, OpenApiParameterDescription.NumberOfEntries, false, { type: OpenApiSchemaType.Integer, default: 100, minimum: 0 });
 const tierQueryParameter = createQueryParameter(OpenApiParameterName.Tier, '', true, { type: OpenApiSchemaType.String, enum: Object.values(OpenApiTier) });
-const rangeQueryParameter = createQueryParameter(OpenApiParameterName.Range, OpenApiParameterDescription.NumberOfPlayersAboveBelow, false, { type: OpenApiSchemaType.Integer, default: 5 });
-const confirmQueryParameter = createQueryParameter(OpenApiParameterName.Confirm, OpenApiParameterDescription.ConfirmDeletion, true);
+const rangeQueryParameter = createQueryParameter(OpenApiParameterName.Range, OpenApiParameterDescription.NumberOfPlayersAboveBelow, false, { type: OpenApiSchemaType.Integer, default: 5, minimum: 0 });
+const confirmQueryParameter = createQueryParameter(OpenApiParameterName.Confirm, OpenApiParameterDescription.ConfirmDeletion, true, {
+  type: OpenApiSchemaType.String,
+  enum: ['true'],
+});
 
 const bearerAuthSecurity = createBearerAuthSecurity();
 
@@ -193,7 +192,63 @@ export const openApiSpec = {
         ],
         responses: {
           ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.MatchRecordFound, { type: OpenApiSchemaType.Object }),
-          ...createTextResponse(String(HttpStatus.NotFound), OpenApiResponseDescription.MatchNotFound, OpenApiResponseDescription.MatchNotFound),
+          ...badRequestResponse,
+          ...createJsonResponse(String(HttpStatus.NotFound), OpenApiResponseDescription.MatchNotFound, {
+            type: OpenApiSchemaType.Object,
+            properties: {
+              error: { type: OpenApiSchemaType.String },
+            },
+          }),
+          ...unauthorizedResponse,
+        },
+      },
+      post: {
+        tags: [OpenApiTag.Matches],
+        summary: 'Upload match record',
+        description: OpenApiDescription.UploadMatchRecord,
+        parameters: [matchIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          required: [FormField.MatchId, 'version', 'players', 'events'],
+          properties: {
+            [FormField.MatchId]: { type: OpenApiSchemaType.String },
+            version: { type: OpenApiSchemaType.String },
+            game_type: { type: OpenApiSchemaType.String },
+            created_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
+            ended_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
+            players: {
+              type: OpenApiSchemaType.Array,
+              items: {
+                type: OpenApiSchemaType.Object,
+                properties: {
+                  [FormField.PlayerId]: { type: OpenApiSchemaType.String },
+                  wallet_address: { type: OpenApiSchemaType.String },
+                  player_type: { type: OpenApiSchemaType.String, enum: [OpenApiPlayerType.Human, OpenApiPlayerType.AI] },
+                  score: { type: OpenApiSchemaType.Number },
+                },
+              },
+            },
+            events: {
+              type: OpenApiSchemaType.Array,
+              items: { type: OpenApiSchemaType.Object },
+            },
+            metadata: { type: OpenApiSchemaType.Object },
+          },
+        }),
+        security: bearerAuthSecurity,
+        responses: {
+          ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.MatchRecordUploaded, {
+            type: OpenApiSchemaType.Object,
+            properties: {
+              success: { type: OpenApiSchemaType.Boolean },
+              matchId: { type: OpenApiSchemaType.String },
+              url: { type: OpenApiSchemaType.String },
+            },
+          }),
+          ...badRequestResponse,
+          [String(HttpStatus.Unauthorized)]: { description: OpenApiResponseDescription.UnauthorizedAuthRequired },
+          [String(HttpStatus.PayloadTooLarge)]: { description: OpenApiResponseDescription.MatchRecordTooLarge },
+          [String(HttpStatus.TooManyRequests)]: { description: OpenApiResponseDescription.RateLimitExceeded },
         },
       },
       put: {
@@ -253,6 +308,7 @@ export const openApiSpec = {
         security: bearerAuthSecurity,
         responses: {
           [String(HttpStatus.Ok)]: { description: OpenApiResponseDescription.MatchRecordDeleted },
+          ...badRequestResponse,
           ...unauthorizedResponse,
           ...notFoundResponse,
         },
@@ -301,6 +357,8 @@ export const openApiSpec = {
             },
           }),
           ...badRequestResponse,
+          ...unauthorizedResponse,
+          [String(HttpStatus.Forbidden)]: { description: 'Forbidden' },
           [String(HttpStatus.InternalServerError)]: { description: OpenApiResponseDescription.SignedUrlSecretNotConfigured },
         },
       },
@@ -313,12 +371,14 @@ export const openApiSpec = {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: [FormField.MatchId, FormField.Reason],
+          additionalProperties: false,
           properties: {
-            [FormField.MatchId]: { type: OpenApiSchemaType.String },
-            [FormField.Reason]: { type: OpenApiSchemaType.String },
+            [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
+            [FormField.Reason]: { type: OpenApiSchemaType.String, minLength: 1 },
             reason_hash: { type: OpenApiSchemaType.String },
             created_by: { type: OpenApiSchemaType.String },
-            timestamp: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
+            [FormField.Description]: { type: OpenApiSchemaType.String },
+            timestamp: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime, minLength: 1 },
           },
         }),
         security: bearerAuthSecurity,
@@ -331,6 +391,7 @@ export const openApiSpec = {
               dispute: { type: OpenApiSchemaType.Object },
             },
           }),
+          ...badRequestResponse,
           ...unauthorizedResponse,
         },
       },
@@ -343,7 +404,38 @@ export const openApiSpec = {
         parameters: [disputeIdParameter],
         responses: {
           ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.DisputeFound, { type: OpenApiSchemaType.Object }),
+          ...badRequestResponse,
+          ...unauthorizedResponse,
           [String(HttpStatus.NotFound)]: { description: OpenApiResponseDescription.DisputeFound.replace('found', 'not found') },
+        },
+      },
+      put: {
+        tags: [OpenApiTag.Disputes],
+        summary: 'Update dispute',
+        description: OpenApiDescription.UpdateDispute,
+        parameters: [disputeIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          properties: {
+            [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
+            [FormField.Reason]: { type: OpenApiSchemaType.String },
+            [FormField.Description]: { type: OpenApiSchemaType.String },
+            dispute_id: { type: OpenApiSchemaType.String, minLength: 1, pattern: disputeIdPattern },
+          },
+        }),
+        security: bearerAuthSecurity,
+        responses: {
+          ...createJsonResponse(String(HttpStatus.Ok), OpenApiResponseDescription.DisputeCreated, {
+            type: OpenApiSchemaType.Object,
+            properties: {
+              success: { type: OpenApiSchemaType.Boolean },
+              disputeId: { type: OpenApiSchemaType.String },
+            },
+          }),
+          ...badRequestResponse,
+          ...unauthorizedResponse,
+          ...notFoundResponse,
         },
       },
     },
@@ -355,13 +447,15 @@ export const openApiSpec = {
         parameters: [disputeIdParameter],
         requestBody: createMultipartRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['evidence'],
+          additionalProperties: false,
           properties: {
             evidence: {
               type: OpenApiSchemaType.String,
               format: OpenApiSchemaFormat.Binary,
               description: OpenApiParameterDescription.EvidenceFileMaxSize,
             },
-            [FormField.MatchId]: { type: OpenApiSchemaType.String },
+            [FormField.MatchId]: { type: OpenApiSchemaType.String, minLength: 1, pattern: matchIdPattern },
             [FormField.Reason]: { type: OpenApiSchemaType.String },
             [FormField.Description]: { type: OpenApiSchemaType.String },
           },
@@ -372,7 +466,7 @@ export const openApiSpec = {
             type: OpenApiSchemaType.Object,
             properties: {
               success: { type: OpenApiSchemaType.Boolean },
-              dispute_id: { type: OpenApiSchemaType.String },
+              dispute_id: { type: OpenApiSchemaType.String, minLength: 1, pattern: disputeIdPattern },
               evidence_package_hash: { type: OpenApiSchemaType.String },
               evidence_files: { type: OpenApiSchemaType.Integer },
               evidence: {
@@ -411,6 +505,7 @@ export const openApiSpec = {
               archivedUrl: { type: OpenApiSchemaType.String },
             },
           }),
+          ...unauthorizedResponse,
           ...notFoundResponse,
         },
       },
@@ -422,22 +517,22 @@ export const openApiSpec = {
         description: OpenApiDescription.HandleAIEvent,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
-          required: [FormField.MatchId, 'event_type'],
+          required: ['matchId', 'playerId', 'eventType'],
           properties: {
-            [FormField.MatchId]: { type: OpenApiSchemaType.String },
-            event_type: { type: OpenApiSchemaType.String },
-            [FormField.PlayerId]: { type: OpenApiSchemaType.String },
-            current_state: { type: OpenApiSchemaType.Object },
-            player_hand: {
+            matchId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
+            playerId: { type: OpenApiSchemaType.String, minLength: 1, pattern: printableStringPattern },
+            eventType: { type: OpenApiSchemaType.String, minLength: 1 },
+            currentState: { type: OpenApiSchemaType.Object },
+            playerHand: {
               type: OpenApiSchemaType.Array,
               items: { type: OpenApiSchemaType.Object },
             },
-            available_actions: {
+            availableActions: {
               type: OpenApiSchemaType.Array,
               items: { type: OpenApiSchemaType.String },
             },
-            event_data: { type: OpenApiSchemaType.Object },
-            match_history: {
+            eventData: { type: OpenApiSchemaType.Object },
+            matchHistory: {
               type: OpenApiSchemaType.Array,
               items: { type: OpenApiSchemaType.Object },
             },
@@ -473,6 +568,8 @@ export const openApiSpec = {
               exported_at: { type: OpenApiSchemaType.String, format: OpenApiSchemaFormat.DateTime },
             },
           }),
+          ...unauthorizedResponse,
+          ...badRequestResponse,
           [String(HttpStatus.NotFound)]: { description: OpenApiResponseDescription.UserNotFound },
         },
       },
@@ -482,10 +579,11 @@ export const openApiSpec = {
         tags: [OpenApiTag.GDPR],
         summary: 'Delete user data',
         description: OpenApiDescription.DeleteUserData,
-        parameters: [userIdParameter],
+        parameters: [userIdParameter, confirmQueryParameter],
         responses: {
           [String(HttpStatus.Ok)]: { description: OpenApiResponseDescription.UserDataDeleted },
           [String(HttpStatus.NoContent)]: { description: OpenApiResponseDescription.UserDataDeletedNoContent },
+          ...unauthorizedResponse,
           ...badRequestResponse,
           [String(HttpStatus.NotFound)]: { description: OpenApiResponseDescription.UserNotFound },
         },
@@ -524,6 +622,7 @@ export const openApiSpec = {
               },
             },
           }),
+          ...badRequestResponse,
           [String(HttpStatus.NotImplemented)]: { description: OpenApiResponseDescription.NotImplementedRequiresIndexer },
         },
       },
@@ -540,6 +639,8 @@ export const openApiSpec = {
         ],
         responses: {
           [String(HttpStatus.Ok)]: { description: OpenApiResponseDescription.UserRankAndStats },
+          ...badRequestResponse,
+          ...notFoundResponse,
           ...notImplementedResponse,
         },
       },
@@ -556,6 +657,7 @@ export const openApiSpec = {
         ],
         responses: {
           [String(HttpStatus.Ok)]: { description: OpenApiResponseDescription.FilteredLeaderboardEntries },
+          ...badRequestResponse,
           ...notImplementedResponse,
         },
       },
@@ -573,6 +675,8 @@ export const openApiSpec = {
         ],
         responses: {
           [String(HttpStatus.Ok)]: { description: OpenApiResponseDescription.NearbyPlayers },
+          ...badRequestResponse,
+          ...notFoundResponse,
           ...notImplementedResponse,
         },
       },
@@ -618,6 +722,7 @@ export const openApiSpec = {
               },
             },
           },
+          ...unauthorizedResponse,
           [String(HttpStatus.Forbidden)]: {
             description: OpenApiResponseDescription.ForbiddenNotDevelopment,
             content: {

@@ -43,6 +43,7 @@ import { MetadataField } from '@ocentra/endpoint-domain/constants/idempotency';
 import { getFirestoreUsersCollectionUrl, getFirestoreAdminActivityCollectionUrl, getFirestoreUserUrl } from '@/utils/firebase';
 import { getFirestoreAuthHeader } from '@/utils/firebase-service-auth';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 const log = Logger.instance;
@@ -116,6 +117,8 @@ function stubJson(env: Env, data: unknown, status: number = HttpStatus.Ok): Resp
 
 export async function handleLobbyRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Lobby request', getStackTrace(), { path });
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete]);
+  if (methodCheck) return methodCheck;
   const ns = env.LOBBY_DO;
   if (!ns) {
     logDebug('Lobby: DO not configured, returning empty rooms', getStackTrace(), { path });
@@ -173,6 +176,8 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
 
 export async function handleMatchmakingRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Matchmaking request', getStackTrace(), { path });
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete]);
+  if (methodCheck) return methodCheck;
   const ns = env.MATCHMAKING_DO;
   if (!ns) {
     logDebug('Matchmaking: DO not configured, returning stub ticket', getStackTrace(), { path });
@@ -256,6 +261,8 @@ function parseConversationTargets(conversationId: string, fromUserId: string): s
 
 export async function handlePresenceRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Presence request', getStackTrace(), { path });
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.PRESENCE_DO;
   if (!ns) {
     logDebug('Presence: DO not configured', getStackTrace(), { path });
@@ -304,6 +311,8 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
 }
 
 export async function handleAuditRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for audit');
   if (authResult instanceof Response) return authResult;
@@ -353,6 +362,8 @@ export async function handleAuditRequest(request: Request, env: Env, path: strin
 }
 
 export async function handleProgressionRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.PROGRESSION_DO;
   if (!ns) return stubJson(env, { xp: 0, level: 1 });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -381,6 +392,8 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
 }
 
 export async function handlePersonalizationRequest(request: Request, env: Env, _path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for personalization');
   if (authResult instanceof Response) return authResult;
@@ -413,6 +426,8 @@ export async function handlePersonalizationRequest(request: Request, env: Env, _
 }
 
 async function handleAnalyticsProfileRequest(request: Request, env: Env): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for analytics profile');
   if (authResult instanceof Response) return authResult;
@@ -444,6 +459,8 @@ async function handleAnalyticsProfileRequest(request: Request, env: Env): Promis
 }
 
 export async function handleAnalyticsRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   if (path.includes('profile')) return handleAnalyticsProfileRequest(request, env);
   return new Response(JSON.stringify({ error: 'Not Found' }), {
     status: HttpStatus.NotFound,
@@ -452,6 +469,8 @@ export async function handleAnalyticsRequest(request: Request, env: Env, path: s
 }
 
 export async function handleRewardRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.REWARD_DO;
   if (!ns) return stubJson(env, { available: true, claimed: false });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -499,6 +518,8 @@ export async function handleRewardRequest(request: Request, env: Env, path: stri
 
 
 export async function handleSecurityRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
 
   if (path.includes('2fa/setup') && request.method === HttpMethod.Post) {
@@ -649,6 +670,8 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
 }
 
 export async function handleFraudRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.FRAUD_DETECTION_DO;
   if (!ns) return stubJson(env, { risk: 'low' });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -663,6 +686,8 @@ export async function handleFraudRequest(request: Request, env: Env, path: strin
 }
 
 export async function handleAntiCheatRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.ANTI_CHEAT_DO;
   if (!ns) return stubJson(env, { status: 'clear' });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -677,6 +702,8 @@ export async function handleAntiCheatRequest(request: Request, env: Env, path: s
 }
 
 export async function handleProfileRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.PROFILE_DO;
   if (!ns) return stubJson(env, { displayName: '', avatarUrl: '' });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -711,6 +738,8 @@ async function isBlockedBy(env: Env, recipientUserId: string, senderUserId: stri
 }
 
 export async function handleMessageRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.MESSAGE_DO;
   if (!ns) return stubJson(env, { messages: [] });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -750,6 +779,8 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
 }
 
 export async function handleFeedRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   if (request.method === HttpMethod.Post && path.endsWith('/fanout')) {
     const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for feed fanout');
@@ -796,6 +827,8 @@ export async function handleFeedRequest(request: Request, env: Env, path: string
 }
 
 export async function handlePartyRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.PARTY_DO;
   if (!ns) return stubJson(env, { partyId: '', members: [] });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -845,6 +878,8 @@ export async function handlePartyRequest(request: Request, env: Env, path: strin
 }
 
 export async function handleNotificationRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.NOTIFICATION_DO;
   if (!ns) return stubJson(env, { notifications: [] });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -869,6 +904,8 @@ const DISCOVERY_GAMES = [
 ] as const;
 
 export async function handleDiscoveryRequest(request: Request, env: Env, handlerPath: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   const url = new URL(request.url, 'http://dummy');
   if (handlerPath.endsWith('/search')) {
     const q = (url.searchParams.get('q') ?? '').toLowerCase();
@@ -909,6 +946,8 @@ export async function handleDiscoveryRequest(request: Request, env: Env, handler
 }
 
 export async function handleInventoryRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.INVENTORY_DO;
   if (!ns) return stubJson(env, { items: [] });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -933,6 +972,8 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
 }
 
 export async function handleMarketplaceRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.MARKETPLACE_DO;
   if (!ns) return stubJson(env, { listings: [] });
   const stub = ns.get(ns.idFromName('market'));
@@ -970,6 +1011,8 @@ export async function handleMarketplaceRequest(request: Request, env: Env, path:
 }
 
 export async function handleTournamentRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.TOURNAMENT_DO;
   if (!ns) return stubJson(env, { tournaments: [] });
   const tournamentId = extractIdFromPath(path, ApiEndpoint.Tournament.Base);
@@ -1019,6 +1062,8 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
 }
 
 export async function handleSettingsRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const ns = env.SETTINGS_DO;
   if (!ns) return stubJson(env, { settings: {} });
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
@@ -1034,6 +1079,8 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
 
 
 export async function handleAdminRequest(request: Request, env: Env, path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Patch]);
+  if (methodCheck) return methodCheck;
   const adminAuthTraceEnabled = isAdminAuthTraceRequest(request);
   logInfo(
     '[AdminAuthFlow:H] admin handler entered',
@@ -1345,6 +1392,8 @@ export async function handleAdminRequest(request: Request, env: Env, path: strin
 }
 
 export async function handleHealthDetailRequest(request: Request, env: Env, _path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
   if (authResult instanceof Response) return authResult;
@@ -1375,6 +1424,8 @@ export async function handleHealthDetailRequest(request: Request, env: Env, _pat
 }
 
 export async function handleComplianceRequest(request: Request, env: Env, _path: string): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for compliance');
   if (authResult instanceof Response) return authResult;
@@ -1383,13 +1434,6 @@ export async function handleComplianceRequest(request: Request, env: Env, _path:
   if (!adminCheck.isAdmin) {
     return new Response(JSON.stringify({ error: 'Forbidden: Admin access required' }), {
       status: HttpStatus.Forbidden,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-
-  if (request.method !== HttpMethod.Get && request.method !== HttpMethod.Post) {
-    return new Response(ErrorMessage.MethodNotAllowed, {
-      status: HttpStatus.MethodNotAllowed,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
     });
   }

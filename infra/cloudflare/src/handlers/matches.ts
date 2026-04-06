@@ -46,6 +46,7 @@ import { buildMatchKey, buildAnonymizedMatchKey } from '@/utils/path-sanitizer';
 import { extractPathAfterId, extractAndValidateMatchIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import type { MatchId } from '@ocentra/endpoint-domain/constants/match';
 import { getAIDecisions } from '@/handlers/matches-ai-decisions';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import {
   validateMatchLogic,
   uploadMatchLogic,
@@ -64,6 +65,8 @@ export async function handleMatchRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Put, HttpMethod.Delete]);
+  if (methodCheck) return methodCheck;
   const result = extractAndValidateMatchIdFromPath(path, ApiEndpoint.Matches.Base, request.url);
 
   if (result.error || !result.matchId) {
@@ -341,7 +344,18 @@ export async function handleMatchRequest(
     return deleteMatch(request, env, matchId);
   }
 
-  return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed });
+  return new Response(ErrorMessage.MethodNotAllowed, {
+    status: HttpStatus.MethodNotAllowed,
+    headers: {
+      [HttpHeader.Allow]: [
+        HttpMethod.Get,
+        HttpMethod.Post,
+        HttpMethod.Put,
+        HttpMethod.Delete,
+      ].join(', '),
+      ...getCorsHeaders(env),
+    },
+  });
 }
 
 function createMatchStorage(env: Env): MatchStorage {
@@ -766,7 +780,13 @@ export async function handleAnonymizeRequest(
   path: string
 ): Promise<Response> {
   if (request.method !== HttpMethod.Post) {
-    return new Response(ErrorMessage.MethodNotAllowed, { status: HttpStatus.MethodNotAllowed, headers: getCorsHeaders(env) });
+    return new Response(ErrorMessage.MethodNotAllowed, {
+      status: HttpStatus.MethodNotAllowed,
+      headers: {
+        [HttpHeader.Allow]: HttpMethod.Post,
+        ...getCorsHeaders(env),
+      },
+    });
   }
 
   const requestOrigin = request.headers.get(HttpHeader.Origin) || undefined;

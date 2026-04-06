@@ -46,6 +46,7 @@ import { getCurrentContext } from '@/logging/request-context';
 import { requireIdempotencyKey, validateAndRejectIdempotencyKey } from '@/utils/idempotency-validator';
 import { validateAndExtractIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
 import { formatConsumedACDescription } from '@ocentra/endpoint-domain/utils/credit-descriptions';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import {
   type CreditBalance,
   type CreditTransaction,
@@ -261,6 +262,11 @@ export async function handleCreditsRequest(
   path: string,
   rateLimiter?: RateLimiter
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
+  if (methodCheck) {
+    return methodCheck;
+  }
+
   const requestOrigin = request.headers.get(HttpHeader.Origin);
   const authResult = await requireAuth(request, env, undefined, 'Authentication required');
   if (authResult instanceof Response) {

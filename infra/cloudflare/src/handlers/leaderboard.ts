@@ -7,10 +7,22 @@ import { DOBaseUrl } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { LeaderboardDO as LeaderboardDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { GameName } from '@ocentra/endpoint-domain/constants/game';
 import { extractPathParts } from '@ocentra/endpoint-domain/utils/path-parser';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 const DEFAULT_LEADERBOARD_REGION = 'default';
+
+function isPrintableSeasonId(value: string): boolean {
+  if (value.length === 0) return false;
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 0x20 || code === 0x7f) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function tierFromScore(score: number): string {
   if (score >= 100000) return 'Master';
@@ -70,7 +82,7 @@ async function computeLeaderboard(
     return await computeLeaderboardLogic(gameType, aiOnly, limit, storage);
   } catch (error) {
     logWarn(`Error computing leaderboard for gameType ${gameType}`, getStackTrace(), error, LOG_LEADERBOARD_WARNINGS);
-    throw error;
+    return [];
   }
 }
 
@@ -206,14 +218,31 @@ export async function handleLeaderboardRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
   try {
+    const requestUrl = new URL(request.url);
+    const allowedQueryParams = new Set(['season_id', 'limit', 'tier', 'range', 'ai_only']);
+    const unexpectedQueryParams = Array.from(requestUrl.searchParams.keys()).filter((name) => !allowedQueryParams.has(name));
+    if (unexpectedQueryParams.length > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: `Unexpected query parameter(s): ${unexpectedQueryParams.join(', ')}`,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
     const pathParts = extractPathParts(path, ApiEndpoint.Leaderboard.Base);
     const gameType = pathParts[0];
     const action = pathParts[1];
     const userId = pathParts[2];
 
-    const gameTypeNum = parseInt(gameType, 10);
-    if (isNaN(gameTypeNum) || gameTypeNum < 0) {
+    if (!/^\d+$/.test(gameType)) {
       return new Response(JSON.stringify({
         error: 'Invalid game type',
         message: 'Game type must be a number (0=CLAIM, 1=Poker, 2=WordSearch, etc.)',
@@ -230,12 +259,97 @@ export async function handleLeaderboardRequest(
         },
       });
     }
+    const gameTypeNum = parseInt(gameType, 10);
+    if (gameTypeNum > 2) {
+      return new Response(JSON.stringify({
+        error: 'Invalid game type',
+        message: 'Game type must be one of 0=CLAIM, 1=Poker, or 2=WordSearch.',
+        available_game_types: {
+          0: GameName.Claim,
+          1: GameName.Poker,
+          2: GameName.WordSearch,
+        }
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
 
-    const requestUrl = new URL(request.url);
     const seasonId = requestUrl.searchParams.get('season_id');
-    const limit = Math.min(parseInt(requestUrl.searchParams.get('limit') || '100', 10), 1000);
-    const aiOnly = requestUrl.searchParams.get('ai_only') === 'true' || action === 'ai';
-    const range = parseInt(requestUrl.searchParams.get('range') || '5', 10);
+    if (seasonId !== null && !isPrintableSeasonId(seasonId)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'season_id must be a non-empty, printable string',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+    const limitParam = requestUrl.searchParams.get('limit');
+    if (limitParam !== null && !/^\d+$/.test(limitParam)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'limit must be an integer',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const rangeParam = requestUrl.searchParams.get('range');
+    if (rangeParam !== null && !/^\d+$/.test(rangeParam)) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'range must be an integer',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const aiOnlyParam = requestUrl.searchParams.get('ai_only');
+    if (aiOnlyParam !== null && aiOnlyParam !== 'true' && aiOnlyParam !== 'false') {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'ai_only must be true or false',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const limit = Math.min(parseInt(limitParam || '100', 10), 1000);
+    const aiOnly = aiOnlyParam === 'true' || action === 'ai';
+    const range = parseInt(rangeParam || '5', 10);
+    const tierParam = requestUrl.searchParams.get('tier');
+    const allowedTiers = new Set(['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Master']);
+    if (action === 'tier' && (!tierParam || !allowedTiers.has(tierParam))) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'tier must be one of Bronze, Silver, Gold, Platinum, Diamond, Master',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
 
     if (!aiOnly) {
       const doResponse = await tryLeaderboardDO(env, gameTypeNum, action ?? '', userId, limit, range, seasonId);

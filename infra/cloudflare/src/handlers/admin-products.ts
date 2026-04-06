@@ -19,6 +19,7 @@ import {
   setActiveProductIds,
 } from '@/config/products';
 import { StripeApiVersion } from '@/constants/stripe';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -102,6 +103,8 @@ export async function handleAdminProductRequest(
   env: Env,
   path: string
 ): Promise<Response> {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Patch, HttpMethod.Delete]);
+  if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
 
   // All admin endpoints require authentication

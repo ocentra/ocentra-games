@@ -10,6 +10,7 @@ import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { QueryParam, QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { Logger, getStackTrace, clearDebugLogs, flushDebugLogs } from '@/logging/domain-logger-init';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 const log = Logger.instance;
@@ -38,11 +39,35 @@ import { redeemPromoLogic } from '@/logic/promo-redeem';
 import { saveProductToKV, setActiveProductIds } from '@/config/products';
 import { DEV_SEED_PRODUCTS } from '@/config/dev-seed-products';
 
+function getTestEndpointAllowedMethods(path: string): readonly HttpMethod[] | undefined {
+  const testEndpointMethodMap: Record<string, readonly HttpMethod[] | undefined> = {
+    [ApiEndpoint.Test.SeedProducts]: [HttpMethod.Post],
+    [ApiEndpoint.Test.SeedAndRedeem]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/seed-and-redeem`]: [HttpMethod.Post],
+    [ApiEndpoint.Test.SeedPromo]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/seed-promo`]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/clear-debug-logs`]: [HttpMethod.Delete],
+    [`${ApiEndpoint.Test.Base}/flush-debug-logs`]: [HttpMethod.Post],
+    [`${ApiEndpoint.Test.Base}/get-debug-logs`]: [HttpMethod.Get],
+    [ApiEndpoint.Test.ClearAll]: [HttpMethod.Delete],
+  };
+
+  return testEndpointMethodMap[path];
+}
+
 export async function handleTestRequest(
   request: Request,
   env: Env,
   path: string
 ): Promise<Response> {
+  const allowedMethods = getTestEndpointAllowedMethods(path);
+  if (allowedMethods) {
+    const methodCheck = rejectUnsupportedMethod(request, env, allowedMethods);
+    if (methodCheck) {
+      return methodCheck;
+    }
+  }
+
   if (env.ENVIRONMENT !== Environment.Development) {
     return new Response(JSON.stringify({
       error: ErrorMessage.Forbidden,
