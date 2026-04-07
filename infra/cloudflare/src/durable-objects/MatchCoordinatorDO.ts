@@ -142,6 +142,14 @@ export class MatchCoordinatorDO implements DurableObject {
       return this.handleCreateMatch(request, parsed.matchId);
     }
 
+    if (parsed.action === MatchCoordinatorDOSegment.Delete && request.method === HttpMethod.Delete) {
+      return this.handleDeleteMatch(parsed.matchId);
+    }
+
+    if (await this.isMatchDeleted(parsed.matchId)) {
+      return new Response(ErrorMessage.MatchNotFound, { status: HttpStatus.Gone });
+    }
+
     const matchState = await this.getOrLoadMatchState(parsed.matchId);
     if (!matchState) {
       return new Response(ErrorMessage.MatchNotFound, { status: HttpStatus.NotFound });
@@ -209,6 +217,32 @@ export class MatchCoordinatorDO implements DurableObject {
     };
   }
 
+  private getMatchStorageKey(matchId: string): string {
+    return `${MatchCoordinatorDOStoragePrefix.Match}${matchId}`;
+  }
+
+  private getDeletedMatchStorageKey(matchId: string): string {
+    return `${MatchCoordinatorDOStoragePrefix.Deleted}${matchId}`;
+  }
+
+  private async isMatchDeleted(matchId: string): Promise<boolean> {
+    try {
+      const deletedValue = await this.ctx.storage.get(this.getDeletedMatchStorageKey(matchId));
+      return deletedValue !== null && deletedValue !== undefined;
+    } catch (error) {
+      this.logError('Failed to check match deletion state', getStackTrace(), error);
+      return false;
+    }
+  }
+
+  private async clearMatchDeletionMark(matchId: string): Promise<void> {
+    try {
+      await this.ctx.storage.delete(this.getDeletedMatchStorageKey(matchId));
+    } catch (error) {
+      this.logError('Failed to clear match deletion mark', getStackTrace(), error);
+    }
+  }
+
   private async handleCreateMatch(request: Request, matchId: MatchId): Promise<Response> {
     let body: { gameName?: string; gameType?: number; seed?: number };
     try {
@@ -231,6 +265,8 @@ export class MatchCoordinatorDO implements DurableObject {
       pendingTransactions: new Map(),
     };
 
+    await this.clearMatchDeletionMark(matchId);
+    this.matchStates.delete(matchId);
     this.matchStates.set(matchId, matchState);
     await this.saveMatchState(matchState);
 
@@ -240,6 +276,49 @@ export class MatchCoordinatorDO implements DurableObject {
     }), {
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
     });
+  }
+
+  private async handleDeleteMatch(matchId: MatchId): Promise<Response> {
+    const deletedKey = this.getDeletedMatchStorageKey(matchId);
+    const matchKey = this.getMatchStorageKey(matchId);
+    const cleanupKeys = [
+      matchKey,
+      `${MatchCoordinatorDOStoragePrefix.ChatHistory}${matchId}`,
+      `${MatchCoordinatorDOStoragePrefix.AiDump}${matchId}`,
+      `${MatchCoordinatorDOStoragePrefix.SyncTriggered}${matchId}`,
+      `${MatchCoordinatorDOStoragePrefix.CheckpointTriggered}${matchId}`,
+    ];
+
+    try {
+      const existingState = this.matchStates.get(matchId) ?? await this.loadMatchState(matchId);
+      if (existingState) {
+        this.closeMatchSockets(matchId, 1000, 'Match deleted');
+      }
+
+      await this.ctx.storage.put(deletedKey, JSON.stringify({ deletedAt: Date.now() }));
+      this.matchStates.delete(matchId);
+
+      const cleanupResults = await Promise.allSettled(cleanupKeys.map((key) => this.ctx.storage.delete(key)));
+      const failedCleanup = cleanupResults.find((result) => result.status === 'rejected');
+      if (failedCleanup) {
+        throw failedCleanup.reason;
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        matchId,
+      }), {
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+      });
+    } catch (error) {
+      this.logError('Failed to delete match', getStackTrace(), error);
+      return new Response(JSON.stringify({
+        error: ErrorMessage.InternalServerError,
+      }), {
+        status: HttpStatus.InternalServerError,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+      });
+    }
   }
 
   private async handleJoinMatch(request: Request, matchState: MatchState): Promise<Response> {
@@ -776,6 +855,11 @@ export class MatchCoordinatorDO implements DurableObject {
   }
 
   private async getOrLoadMatchState(matchId: string): Promise<MatchState | undefined> {
+    if (await this.isMatchDeleted(matchId)) {
+      this.matchStates.delete(matchId);
+      return undefined;
+    }
+
     const cached = this.matchStates.get(matchId);
     if (cached) {
       return cached;

@@ -35,6 +35,7 @@ export const HttpStatus = {
   MethodNotAllowed: 405,
   PaymentRequired: 402,
   Conflict: 409,
+  Gone: 410,
   UnsupportedMediaType: 415,
   PayloadTooLarge: 413,
   LengthRequired: 411,

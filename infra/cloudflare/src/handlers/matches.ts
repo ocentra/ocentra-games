@@ -8,6 +8,7 @@ import { fetchFromDO } from '@/utils/durable-object-request';
 import { getCurrentContext } from '@/logging/request-context';
 import { checkMatchInDO } from '@/utils/match-query';
 import { isMatchFinalized } from '@/utils/match-state';
+import { consumeResponseBody } from '@/utils/consume-response-body';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -38,7 +39,7 @@ import { validateMatchRecord } from '@ocentra/endpoint-domain/utils/validation';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType, WebSocketProtocol } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { MatchCoordinatorDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { MatchCoordinatorDO, MatchCoordinatorDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { TimeInMs } from '@/constants/time';
@@ -667,6 +668,13 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 
     const doCheckResult = await checkMatchInDO(matchId, env);
 
+    if (doCheckResult.deleted) {
+      return new Response(ErrorMessage.MatchNotFound, {
+        status: HttpStatus.NotFound,
+        headers: getCorsHeaders(env),
+      });
+    }
+
     if (doCheckResult.exists) {
       if (doCheckResult.isActive) {
         logDebug('[MATCHES] Returning active match from DO', getStackTrace(), { matchId }, true);
@@ -794,6 +802,29 @@ async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promis
 
     const key = buildMatchKey(matchId);
     const storage = createMatchStorage(env);
+    let coordinatorDeleteResult: Response | null = null;
+
+      if (env.MATCH_COORDINATOR) {
+        const id = env.MATCH_COORDINATOR.idFromName(matchId);
+        const stub = env.MATCH_COORDINATOR.get(id);
+        coordinatorDeleteResult = await fetchFromDO(stub, MatchCoordinatorDO.Delete(matchId), {
+          method: HttpMethod.Delete,
+          headers: Object.fromEntries(request.headers.entries()),
+          correlationId: getCurrentContext()?.correlationId,
+        });
+
+      if (coordinatorDeleteResult.status !== HttpStatus.Ok && coordinatorDeleteResult.status !== HttpStatus.NotFound) {
+        return new Response(JSON.stringify({
+          error: 'Failed to delete match from coordinator',
+        }), {
+          status: HttpStatus.InternalServerError,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
+    }
 
     const deleteResult = await deleteMatchLogic(
       { matchId, matchKey: key },
@@ -813,6 +844,10 @@ async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promis
           ...headers,
         }
       });
+    }
+
+    if (coordinatorDeleteResult) {
+      await consumeResponseBody(coordinatorDeleteResult);
     }
 
     return new Response(JSON.stringify({
@@ -900,6 +935,11 @@ export async function handleAnonymizeRequest(
       });
     }
     const matchId = matchIdResult.matchId;
+
+    const doCheckResult = await checkMatchInDO(matchId, env);
+    if (doCheckResult.deleted) {
+      return new Response(ErrorMessage.MatchNotFound, { status: HttpStatus.NotFound, headers: getCorsHeaders(env) });
+    }
 
     const matchKey = buildMatchKey(matchId);
     const storage = createMatchStorage(env);

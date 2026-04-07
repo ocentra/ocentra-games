@@ -112,6 +112,7 @@ export const MatchCoordinatorDOStoragePrefix = {
   SyncTriggered: 'sync_triggered:',
   CheckpointTriggered: 'checkpoint_triggered:',
   Match: 'match:',
+  Deleted: 'deleted:',
   ChatHistory: 'chat:',
   AiDump: 'ai-dump:',
 } as const;

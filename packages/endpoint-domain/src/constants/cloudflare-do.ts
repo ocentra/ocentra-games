@@ -10,6 +10,7 @@ export const MatchCoordinatorDOSegment = {
   Create: 'create',
   Join: 'join',
   State: 'state',
+  Delete: 'delete',
 } as const;
 
 export const MatchWSMessageType = {
@@ -37,6 +38,7 @@ export const MatchCoordinatorDO = {
   Create: (matchId: string): DOPath => `${matchDoBase(matchId)}/${MatchCoordinatorDOSegment.Create}` as DOPath,
   Join: (matchId: string): DOPath => `${matchDoBase(matchId)}/${MatchCoordinatorDOSegment.Join}` as DOPath,
   State: (matchId: string): DOPath => `${matchDoBase(matchId)}/${MatchCoordinatorDOSegment.State}` as DOPath,
+  Delete: (matchId: string): DOPath => `${matchDoBase(matchId)}/${MatchCoordinatorDOSegment.Delete}` as DOPath,
 } as const;
 
 const creditsDoPrefix = `/${ApiVersion.V1}`;

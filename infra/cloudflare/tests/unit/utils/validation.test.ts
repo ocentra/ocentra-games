@@ -186,6 +186,30 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(validateMatchRecord({ match_id: 'match123', version: '1.0.0', events: [], game_type: 1.5 }).valid).toBe(false);
   });
 
+  it(testName('validateMatchRecord: rejects invalid created_at and ended_at values'), () => {
+    expect(validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [],
+      created_at: '',
+    }).valid).toBe(false);
+
+    expect(validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [],
+      ended_at: 'not-a-date',
+    }).valid).toBe(false);
+
+    expect(validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [],
+      createdAt: '2000-01-01T00:00:00Z',
+      endedAt: '2000-01-01T00:00:01Z',
+    }).valid).toBe(true);
+  });
+
   it(testName('validateMatchRecord: rejects invalid player score and type values'), () => {
     expect(validateMatchRecord({
       match_id: 'match123',

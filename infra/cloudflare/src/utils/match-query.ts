@@ -10,6 +10,7 @@ import { consumeResponseBody } from '@/utils/consume-response-body';
 export interface MatchInDOResult {
   exists: boolean;
   isActive: boolean;
+  deleted: boolean;
   matchState?: MatchState;
   error?: string;
 }
@@ -22,6 +23,7 @@ export async function checkMatchInDO(
     return {
       exists: false,
       isActive: false,
+      deleted: false,
       error: 'MATCH_COORDINATOR not available'
     };
   }
@@ -40,7 +42,17 @@ export async function checkMatchInDO(
       await consumeResponseBody(response);
       return {
         exists: false,
-        isActive: false
+        isActive: false,
+        deleted: false,
+      };
+    }
+
+    if (response.status === HttpStatus.Gone) {
+      await consumeResponseBody(response);
+      return {
+        exists: false,
+        isActive: false,
+        deleted: true,
       };
     }
 
@@ -49,6 +61,7 @@ export async function checkMatchInDO(
       return {
         exists: false,
         isActive: false,
+        deleted: false,
         error: `DO returned status ${response.status}`
       };
     }
@@ -58,12 +71,14 @@ export async function checkMatchInDO(
     return {
       exists: true,
       isActive: isMatchActive(matchState.phase),
+      deleted: false,
       matchState
     };
   } catch (error) {
     return {
       exists: false,
       isActive: false,
+      deleted: false,
       error: error instanceof Error ? error.message : String(error)
     };
   }

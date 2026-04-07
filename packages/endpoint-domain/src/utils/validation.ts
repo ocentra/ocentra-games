@@ -1,5 +1,19 @@
 import { PlayerType } from '../constants/game';
 
+function isValidDateTimeString(value: unknown): boolean {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.length === 0) {
+    return false;
+  }
+
+  const rfc3339Pattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+  return rfc3339Pattern.test(trimmed) && !Number.isNaN(Date.parse(trimmed));
+}
+
 export function validateMatchRecord(data: unknown): { valid: boolean; error?: string } {
     if (!data || typeof data !== 'object') {
       return { valid: false, error: 'Match record must be an object' };
@@ -35,6 +49,22 @@ export function validateMatchRecord(data: unknown): { valid: boolean; error?: st
       if (!isPlainRecord(record.metadata)) {
         return { valid: false, error: 'metadata must be an object if present' };
       }
+    }
+
+    if ('created_at' in record && record.created_at !== undefined && !isValidDateTimeString(record.created_at)) {
+      return { valid: false, error: 'created_at must be a valid date-time string' };
+    }
+
+    if ('createdAt' in record && record.createdAt !== undefined && !isValidDateTimeString(record.createdAt)) {
+      return { valid: false, error: 'createdAt must be a valid date-time string' };
+    }
+
+    if ('ended_at' in record && record.ended_at !== undefined && !isValidDateTimeString(record.ended_at)) {
+      return { valid: false, error: 'ended_at must be a valid date-time string' };
+    }
+
+    if ('endedAt' in record && record.endedAt !== undefined && !isValidDateTimeString(record.endedAt)) {
+      return { valid: false, error: 'endedAt must be a valid date-time string' };
     }
 
   if (!Array.isArray(record.events)) {

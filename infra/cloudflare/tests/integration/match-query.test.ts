@@ -131,6 +131,52 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
       expect(typeof matchData.phase).toBe('number');
     });
 
+  it(testName('Deleted Match Query: should return 404 after delete'), async () => {
+      const token = await createToken();
+      const playerId = generateTestUserId('match-query-deleted');
+      const matchId = generateTestMatchId('deleted-match');
+
+      const matchHeaders = () => ({
+        ...getValidRequestHeaders(playerId),
+        [HttpHeader.XWalletId]: playerId
+      });
+
+      const createUrl = buildTestMatchApiUrl(matchId, '/create');
+      const createResponse = await worker.fetch(createUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...matchHeaders(),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+        },
+        body: JSON.stringify({
+          gameName: 'CLAIM',
+          gameType: 0,
+          seed: 12345
+        })
+      }, token);
+
+      expect(createResponse.status).toBe(HttpStatus.Ok);
+      await consumeResponseBody(createResponse);
+
+      const deleteUrl = buildTestMatchApiUrl(matchId, '');
+      const deleteResponse = await worker.fetch(deleteUrl, {
+        method: HttpMethod.Delete,
+        headers: matchHeaders()
+      }, token);
+
+      expect(deleteResponse.status).toBe(HttpStatus.Ok);
+      await consumeResponseBody(deleteResponse);
+
+      const getUrl = buildTestMatchApiUrl(matchId, '');
+      const getResponse = await worker.fetch(getUrl, {
+        method: HttpMethod.Get,
+        headers: matchHeaders()
+      }, token);
+
+      expect(getResponse.status).toBe(HttpStatus.NotFound);
+      await consumeResponseBody(getResponse);
+    });
+
   it(testName('Finalized Match Query (R2-Fallback): should return finalized match from R2'), async () => {
       const token = await createToken();
       const playerId = generateTestUserId('match-query-finalized');
