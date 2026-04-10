@@ -108,7 +108,19 @@ export async function updateDisputeLogic(
   storage: DisputeStorage
 ): Promise<UpdateDisputeResult> {
   try {
-    const disputeData: Record<string, unknown> = {
+    const disputeObject = await storage.get(input.disputeKey);
+    if (!disputeObject) {
+      return {
+        success: false,
+        disputeId: input.disputeId,
+        error: 'Dispute not found',
+      };
+    }
+
+    let disputeData = JSON.parse(await disputeObject.text()) as Record<string, unknown>;
+
+    disputeData = {
+      ...disputeData,
       ...input.disputeData,
       dispute_id: input.disputeId,
     };

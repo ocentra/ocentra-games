@@ -1,4 +1,4 @@
-import type { Env } from '@/constants/env';
+import type { Env } from '@/constants/env'; // Test comment
 import { requireAuth } from '@/utils/auth-middleware';
 import { getCorsHeaders } from '@/utils/cors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
@@ -20,6 +20,10 @@ import {
   uploadEvidenceFileLogic,
   type DisputeStorage,
 } from '@/logic/disputes';
+
+import { DisputeDescriptionRegex, DisputeReasonValues } from '@ocentra/endpoint-domain/schemas/disputes';
+import { validateZodBody } from '@/utils/zod-validation';
+import { z } from 'zod';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -55,30 +59,40 @@ function createDisputeStorage(env: Env): DisputeStorage {
   };
 }
 
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isValidDateTimeString(value: unknown): boolean {
-  if (typeof value !== 'string') {
-    return false;
-  }
-
-  const trimmed = value.trim();
-  if (trimmed.length === 0) {
-    return false;
-  }
-
-  const rfc3339Pattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
-  return rfc3339Pattern.test(trimmed) && !Number.isNaN(Date.parse(trimmed));
-}
-
 function isValidDisputeId(value: unknown): value is string {
   return typeof value === 'string' && /^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/.test(value);
+}
+
+function isPrintableAscii(value: string): boolean {
+  return /^[\x20-\x7E]+$/.test(value);
+}
+
+const disputeReasonValues = DisputeReasonValues;
+const legacyDisputeReasonValues = ['Cheating detected', 'Bug', 'Disconnection', 'Other'] as const;
+const disputeReasonSchema = z.union([
+  z.enum(disputeReasonValues),
+  z.enum(legacyDisputeReasonValues),
+]);
+
+function normalizeDisputeReason(reason: string): string {
+  switch (reason) {
+    case 'Cheating detected':
+      return 'cheating';
+    case 'Bug':
+      return 'bug';
+    case 'Disconnection':
+      return 'disconnection';
+    case 'Other':
+      return 'other';
+    default:
+      return reason;
+  }
+}
+
+function createMatchIdSchema(fieldName: string) {
+  return z.string().min(1).refine((value) => validateMatchId(value).valid, {
+    message: `${fieldName} must be a valid match identifier`,
+  });
 }
 
 function validateEvidenceMetadataField(value: unknown, fieldName: string, requireMatchId: boolean = false): string | null {
@@ -86,108 +100,19 @@ function validateEvidenceMetadataField(value: unknown, fieldName: string, requir
     return `${fieldName} must be a string`;
   }
 
-  if (requireMatchId) {
-    if (!isNonEmptyString(value)) {
-      return `${fieldName} must be a non-empty string`;
-    }
+  if (value.length < 1) {
+    return `${fieldName} must be a non-empty string`;
+  }
 
+  if (!isPrintableAscii(value)) {
+    return `${fieldName} must contain printable ASCII characters only`;
+  }
+
+  if (requireMatchId) {
     const matchIdValidation = validateMatchId(value);
     if (!matchIdValidation.valid) {
       return matchIdValidation.error || `${fieldName} is invalid`;
     }
-  }
-
-  return null;
-}
-
-function validateCreateDisputePayload(disputeData: unknown): string | null {
-  if (!isPlainRecord(disputeData)) {
-    return 'Request body must be a JSON object';
-  }
-
-  const allowedKeys = new Set(['match_id', 'reason', 'reason_hash', 'created_by', 'description', 'timestamp', 'dispute_id']);
-  for (const key of Object.keys(disputeData)) {
-    if (!allowedKeys.has(key)) {
-      return `Unexpected field: ${key}`;
-    }
-  }
-
-  if (!isNonEmptyString(disputeData.match_id)) {
-    return 'match_id must be a non-empty string';
-  }
-
-  const matchIdValidation = validateMatchId(disputeData.match_id);
-  if (!matchIdValidation.valid) {
-    return matchIdValidation.error || 'match_id is invalid';
-  }
-
-  if (typeof disputeData.reason !== 'string' || disputeData.reason.length === 0) {
-    return 'reason must be a non-empty string';
-  }
-
-  if ('reason_hash' in disputeData && disputeData.reason_hash !== undefined && typeof disputeData.reason_hash !== 'string') {
-    return 'reason_hash must be a string';
-  }
-
-  if ('created_by' in disputeData && disputeData.created_by !== undefined && typeof disputeData.created_by !== 'string') {
-    return 'created_by must be a string';
-  }
-
-  if ('description' in disputeData && disputeData.description !== undefined && typeof disputeData.description !== 'string') {
-    return 'description must be a string';
-  }
-
-  if ('timestamp' in disputeData && disputeData.timestamp !== undefined && !isValidDateTimeString(disputeData.timestamp)) {
-    return 'timestamp must be a valid date-time string';
-  }
-
-  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isNonEmptyString(disputeData.dispute_id)) {
-    return 'dispute_id must be a non-empty string';
-  }
-
-  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isValidDisputeId(disputeData.dispute_id)) {
-    return 'dispute_id must contain only letters, numbers, underscores, and hyphens';
-  }
-
-  return null;
-}
-
-function validateUpdateDisputePayload(disputeData: unknown): string | null {
-  if (!isPlainRecord(disputeData)) {
-    return 'Request body must be a JSON object';
-  }
-
-  const allowedKeys = new Set(['match_id', 'reason', 'description', 'dispute_id']);
-  for (const key of Object.keys(disputeData)) {
-    if (!allowedKeys.has(key)) {
-      return `Unexpected field: ${key}`;
-    }
-  }
-
-  if ('match_id' in disputeData && disputeData.match_id !== undefined) {
-    if (!isNonEmptyString(disputeData.match_id)) {
-      return 'match_id must be a non-empty string';
-    }
-    const matchIdValidation = validateMatchId(disputeData.match_id);
-    if (!matchIdValidation.valid) {
-      return matchIdValidation.error || 'match_id is invalid';
-    }
-  }
-
-  if ('reason' in disputeData && disputeData.reason !== undefined && typeof disputeData.reason !== 'string') {
-    return 'reason must be a string';
-  }
-
-  if ('description' in disputeData && disputeData.description !== undefined && typeof disputeData.description !== 'string') {
-    return 'description must be a string';
-  }
-
-  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isNonEmptyString(disputeData.dispute_id)) {
-    return 'dispute_id must be a non-empty string';
-  }
-
-  if ('dispute_id' in disputeData && disputeData.dispute_id !== undefined && !isValidDisputeId(disputeData.dispute_id)) {
-    return 'dispute_id must contain only letters, numbers, underscores, and hyphens';
   }
 
   return null;
@@ -236,7 +161,7 @@ export async function handleDisputeRequest(
 
   if (request.method === HttpMethod.Get) {
     const bodyText = await request.clone().text();
-    if (bodyText.trim().length > 0) {
+    if (bodyText.length > 0) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
         message: 'Dispute read requests must not include a request body',
@@ -336,6 +261,18 @@ export async function handleDisputeRequest(
     });
   }
   const disputeId = result.id;
+  if (requestUrl.pathname.includes('%')) {
+    return new Response(JSON.stringify({
+      error: ErrorMessage.BadRequest,
+      message: 'disputeId must not contain encoded characters',
+    }), {
+      status: HttpStatus.BadRequest,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
   let disputeKey: string;
   try {
     disputeKey = buildDisputeKey(disputeId);
@@ -372,9 +309,12 @@ export async function handleDisputeRequest(
 
     if (!getResult.success) {
       if (getResult.error === 'Dispute not found') {
-        return new Response(ErrorMessage.DisputeNotFound, {
+        return new Response(JSON.stringify({ error: ErrorMessage.DisputeNotFound, message: ErrorMessage.DisputeNotFound }), {
           status: HttpStatus.NotFound,
-          headers: getCorsHeaders(env),
+          headers: {
+            ...getCorsHeaders(env),
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          },
         });
       }
       return new Response(JSON.stringify({ error: getResult.error }), {
@@ -395,67 +335,36 @@ export async function handleDisputeRequest(
   }
 
   if (request.method === HttpMethod.Put) {
-    try {
-      const body = await request.text();
-      let dispute: Record<string, unknown>;
-      try {
-        dispute = JSON.parse(body) as Record<string, unknown>;
-      } catch (parseError) {
-        logError('[DISPUTES-UPDATE] Failed to parse request body as JSON', getStackTrace(), {
-          bodyLength: body.length,
-          error: parseError instanceof Error ? parseError.message : String(parseError),
-        });
-        return new Response(JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'Invalid request body. Expected JSON.',
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env),
-          },
-        });
-      }
-      const validationError = validateUpdateDisputePayload(dispute);
-      if (validationError) {
-        return new Response(JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: validationError,
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env),
-          },
-        });
-      }
-      const updateResult = await updateDisputeLogic({ disputeId, disputeKey, disputeData: dispute }, storage);
+    const validation = await validateZodBody(
+      request,
+      env,
+      z.object({
+        match_id: createMatchIdSchema('match_id'),
+        reason: disputeReasonSchema,
+        description: z.string().min(5).regex(DisputeDescriptionRegex),
+      }).strict()
+    );
 
-      if (!updateResult.success) {
-        return new Response(JSON.stringify({ error: updateResult.error }), {
-          status: HttpStatus.InternalServerError,
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
+    const normalizedBody = {
+      ...body,
+      reason: normalizeDisputeReason(body.reason as string),
+    };
+
+    const updateResult = await updateDisputeLogic({ disputeId, disputeKey, disputeData: normalizedBody as Record<string, unknown> }, storage);
+
+    if (!updateResult.success) {
+      if (updateResult.error === ErrorMessage.DisputeNotFound) {
+        return new Response(JSON.stringify({ error: ErrorMessage.DisputeNotFound, message: ErrorMessage.DisputeNotFound }), {
+          status: HttpStatus.NotFound,
           headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
             ...getCorsHeaders(env),
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           },
         });
       }
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          disputeId,
-        }),
-        {
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env),
-          },
-        }
-      );
-    } catch (error) {
-      logError('Error updating dispute', getStackTrace(), error);
-      return new Response(JSON.stringify({ error: ErrorMessage.InternalServerError }), {
+      return new Response(JSON.stringify({ error: updateResult.error }), {
         status: HttpStatus.InternalServerError,
         headers: {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
@@ -463,6 +372,19 @@ export async function handleDisputeRequest(
         },
       });
     }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        disputeId,
+      }),
+      {
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      }
+    );
   }
 
   return new Response(ErrorMessage.MethodNotAllowed, {
@@ -623,6 +545,19 @@ async function handleDisputeEvidenceUpload(
       }
 
       if (typeof value === 'string') {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.BadRequest,
+          message: `Unexpected field: ${key}`,
+        }), {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
+        });
+      }
+
+      if (key !== FormField.Evidence) {
         return new Response(JSON.stringify({
           error: ErrorMessage.BadRequest,
           message: `Unexpected field: ${key}`,
@@ -836,42 +771,29 @@ async function handleCreateDispute(
       });
     }
 
-    const body = await request.text();
-    let disputeData;
-    try {
-      disputeData = JSON.parse(body);
-    } catch (parseError) {
-      logError('[DISPUTES-CREATE] Failed to parse request body as JSON', getStackTrace(), {
-        contentType,
-        bodyLength: body.length,
-        error: parseError instanceof Error ? parseError.message : String(parseError)
-      });
-      return new Response(JSON.stringify({
-        error: 'Invalid request body. Expected JSON or multipart/form-data.'
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env)
-        }
-      });
-    }
+    const validation = await validateZodBody(
+      request,
+      env,
+      z.object({
+        match_id: createMatchIdSchema('match_id'),
+        reason: disputeReasonSchema,
+        description: z.string().min(5).regex(DisputeDescriptionRegex),
+        reported_player_id: z.string().optional(),
+        dispute_id: z.string().regex(/^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/).optional(),
+        reason_hash: z.string().optional(),
+        created_by: z.string().optional(),
+        timestamp: z.string().datetime({ offset: true, message: 'timestamp must be a valid date-time string' }).optional(),
+      }).strict()
+    );
 
-    const validationError = validateCreateDisputePayload(disputeData);
-    if (validationError) {
-      return new Response(JSON.stringify({
-        error: ErrorMessage.BadRequest,
-        message: validationError,
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env),
-        },
-      });
-    }
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
+    const normalizedBody = {
+      ...body,
+      reason: normalizeDisputeReason(body.reason as string),
+    };
 
-      const disputeId = disputeData.dispute_id || `dispute-${Date.now()}-${crypto.randomUUID()}`;
+    const disputeId = body.dispute_id || `dispute-${Date.now()}-${crypto.randomUUID()}`;
     let disputeKey: string;
     try {
       disputeKey = buildDisputeKey(disputeId);
@@ -898,7 +820,7 @@ async function handleCreateDispute(
         disputeId,
         disputeKey,
         userId: authResult.userId,
-        disputeData,
+        disputeData: normalizedBody as Record<string, unknown>,
       },
       storage
     );

@@ -1,5 +1,12 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { requireAuth } from '@/utils/auth-middleware';
+import { validateZodBody } from '@/utils/zod-validation';
+
+import { 
+  SyncFromSolanaRequestSchema, 
+  SyncReconcileRequestSchema 
+} from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { StateSyncService } from '@/services/StateSyncService';
@@ -32,13 +39,16 @@ export async function handleSyncRequest(
 ): Promise<Response> {
   logInfo('Sync request', getStackTrace(), { path, method: request.method });
   const sync = new StateSyncService(env);
+  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
 
   if (path === ApiEndpoint.Sync.ToSolana && request.method === HttpMethod.Post) {
+    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for sync');
+    if (authResult instanceof Response) return authResult;
     return new Response(
       JSON.stringify({ error: 'Sync to Solana not implemented', code: 'NOT_IMPLEMENTED' }),
       {
         status: HttpStatus.NotImplemented,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, requestOrigin) },
       }
     );
   }
@@ -53,16 +63,11 @@ export async function handleSyncRequest(
   }
 
   if (path === ApiEndpoint.Sync.FromSolana && request.method === HttpMethod.Post) {
-    let body: { matchId?: string; solanaMatchPda?: string; state?: unknown; slot?: number };
-    try {
-      const text = await request.text();
-      body = text ? (JSON.parse(text) as typeof body) : {};
-    } catch {
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON' }),
-        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } }
-      );
-    }
+    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for sync');
+    if (authResult instanceof Response) return authResult;
+    const validation = await validateZodBody(request, env, SyncFromSolanaRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
     const matchId = body.matchId ?? '';
     const solanaMatchPda = body.solanaMatchPda ?? '';
     if (!matchId) {
@@ -105,34 +110,20 @@ export async function handleSyncRequest(
   }
 
   if (path === ApiEndpoint.Sync.Reconcile && request.method === HttpMethod.Post) {
-    let body: { matchId?: string };
-    try {
-      const text = await request.text();
-      body = text ? (JSON.parse(text) as { matchId?: string }) : {};
-    } catch {
-      logWarn('Sync Reconcile: invalid JSON', getStackTrace(), { path });
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON' }),
-        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } }
-      );
-    }
-    const matchId = body.matchId ?? '';
-    if (!matchId) {
-      logWarn('Sync Reconcile: missing matchId', getStackTrace(), { path });
-      return new Response(
-        JSON.stringify({ error: 'Missing matchId' }),
-        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } }
-      );
-    }
-    const report = await sync.reconcile(matchId);
+    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for sync');
+    if (authResult instanceof Response) return authResult;
+    const validation = await validateZodBody(request, env, SyncReconcileRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
+    const report = await sync.reconcile(body.matchId);
     if (!report) {
-      logWarn('Sync Reconcile: failed or MATCH_SHARD_DO not configured', getStackTrace(), { matchId });
+      logWarn('Sync Reconcile: failed or MATCH_SHARD_DO not configured', getStackTrace(), { matchId: body.matchId });
       return new Response(
         JSON.stringify({ error: 'Reconcile failed or MATCH_SHARD_DO not configured' }),
         { status: HttpStatus.ServiceUnavailable, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } }
       );
     }
-    logInfo('Sync Reconcile success', getStackTrace(), { matchId, discrepancies: report.discrepancies.length });
+    logInfo('Sync Reconcile success', getStackTrace(), { matchId: body.matchId, discrepancies: report.discrepancies.length });
     return new Response(JSON.stringify(report), {
       status: HttpStatus.Ok,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },

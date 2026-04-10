@@ -1,0 +1,32 @@
+export const OpenApiDefaultValue = {
+  CurrentSeasonId: 'current',
+  ConfirmTrue: 'true',
+} as const;
+
+export const OpenApiExampleValue = {
+  SemanticVersion: '1.0.0',
+  UuidZero: '00000000-0000-4000-8000-000000000000',
+  UuidOne: '00000000-0000-4000-8000-000000000001',
+  PlayerId: 'player-123',
+  UserId: 'user-123',
+  WalletAddress: '0x123...',
+  Pda: 'pda-123',
+  Signature: 'sig-1',
+  InitialHash: 'initial-hash',
+  FinalHash: 'final-hash',
+  TransitionFromPending: { from: 'pending', to: 'complete' },
+  PlayerMove: { playerId: 'user-123', move: 'check' },
+  VrfSource: 'vrf',
+  Commitment: { commitment: 'commit-1' },
+  AiPlayer: { playerId: 'ai-1', model: 'gpt-5.4' },
+  DisputeSummary: { disputeId: 'D-123-456', status: 'open' },
+  SignedUrl: 'https://r2.ocentra.com/matches/0000_signed',
+  PendingStatus: 'pending',
+  CheatingDetected: 'Cheating detected',
+  SpeedHackDescription: 'Observed speed hacking in round 3',
+  MatchPlayerDisplayName: 'Player One',
+  MatchEventType: 'game_start',
+  MatchMove: 'e4',
+  MatchBoardFen: 'startpos',
+  ReportId: '00000000-0000-4000-8000-000000000001',
+} as const;

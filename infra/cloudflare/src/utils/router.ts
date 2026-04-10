@@ -48,9 +48,10 @@ export function startsWith(prefix: string): RouteMatcher {
 }
 
 export function pathWithParam(endpoint: string): RouteMatcher {
+  const normalizedEndpoint = endpoint.replace(/\/+$/, '');
   return (path: string) => {
-    if (path === endpoint) return true;
-    const prefix = endpoint + '/';
+    if (path === normalizedEndpoint) return true;
+    const prefix = `${normalizedEndpoint}/`;
     if (!path.startsWith(prefix)) return false;
     const afterPrefix = path.slice(prefix.length);
     return afterPrefix.length > 0;

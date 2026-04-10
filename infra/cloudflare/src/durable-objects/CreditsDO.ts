@@ -648,11 +648,11 @@ export class CreditsDO implements DurableObject {
 
   private async handleGetBalance(): Promise<Response> {
     return new Response(JSON.stringify({
-      gp_balance: this.state.gp_balance,
-      ac_balance: this.state.ac_balance,
-      total_gp_earned: this.state.total_gp_earned,
-      total_ac_purchased: this.state.total_ac_purchased,
-      total_ac_spent: this.state.total_ac_spent,
+      gp_balance: Math.round(this.state.gp_balance),
+      ac_balance: Math.round(this.state.ac_balance),
+      total_gp_earned: Math.round(this.state.total_gp_earned),
+      total_ac_purchased: Math.round(this.state.total_ac_purchased),
+      total_ac_spent: Math.round(this.state.total_ac_spent),
     }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
   }
 
@@ -856,6 +856,7 @@ export class CreditsDO implements DurableObject {
       escrow.refundedAmount = refunded;
       this.state.ac_balance += refunded;
     }
+    this.state.ac_balance = Math.round(this.state.ac_balance);
     await this.ctx.storage.put(`${CreditsDOStoragePrefix.Escrow}${body.escrowId}`, escrow);
     await this.persistState(true);
     return new Response(JSON.stringify({ success: true, charged, refunded, new_balance: this.state.ac_balance }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });

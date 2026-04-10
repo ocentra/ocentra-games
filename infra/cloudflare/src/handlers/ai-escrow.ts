@@ -1,5 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import {
   HttpStatus,
@@ -83,22 +84,9 @@ export async function handleAIEscrowRequest(
   const creditsStub = env.CREDITS_DO.get(env.CREDITS_DO.idFromName(userId));
 
   if (path === ApiEndpoint.AI.EscrowReserve && request.method === HttpMethod.Post) {
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
-      logWarn('AI escrow reserve: invalid JSON', getStackTrace(), { path });
-      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: HttpStatus.BadRequest, headers: cors(env) });
-    }
-    const parsed = AIEscrowReserveRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      logWarn('AI escrow reserve: validation failed', getStackTrace(), { path, issues: parsed.error.flatten() });
-      return new Response(JSON.stringify({ error: 'Validation failed', details: parsed.error.flatten() }), {
-        status: HttpStatus.BadRequest,
-        headers: cors(env),
-      });
-    }
-    const { modelVersion, estimatedInputTokens, estimatedOutputTokens, idempotencyKey } = parsed.data;
+    const validation = await validateZodBody(request, env, AIEscrowReserveRequestSchema);
+      if (validation.errorResponse) return validation.errorResponse;
+      const { modelVersion, estimatedInputTokens, estimatedOutputTokens, idempotencyKey } = validation.data!;
     if (!modelVersion?.trim()) {
       return new Response(JSON.stringify({ error: 'Invalid or missing model version' }), {
         status: HttpStatus.BadRequest,
@@ -108,7 +96,7 @@ export async function handleAIEscrowRequest(
     const catalog = await getCatalogFromEnv(env);
     if (!catalog.pricing[modelVersion]) {
       return new Response(JSON.stringify({ error: 'Unknown model for pricing', modelVersion }), {
-        status: HttpStatus.BadRequest,
+        status: HttpStatus.NotFound,
         headers: cors(env),
       });
     }
@@ -175,22 +163,9 @@ export async function handleAIEscrowRequest(
   }
 
   if (path === ApiEndpoint.AI.EscrowConsume && request.method === HttpMethod.Post) {
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
-      logWarn('AI escrow consume: invalid JSON', getStackTrace(), { path });
-      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: HttpStatus.BadRequest, headers: cors(env) });
-    }
-    const parsed = AIEscrowConsumeRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      logWarn('AI escrow consume: validation failed', getStackTrace(), { path, issues: parsed.error.flatten() });
-      return new Response(JSON.stringify({ error: 'Validation failed', details: parsed.error.flatten() }), {
-        status: HttpStatus.BadRequest,
-        headers: cors(env),
-      });
-    }
-    const { escrowId, actualInputTokens, actualOutputTokens } = parsed.data;
+    const validationConsume = await validateZodBody(request, env, AIEscrowConsumeRequestSchema);
+      if (validationConsume.errorResponse) return validationConsume.errorResponse;
+      const { escrowId, actualInputTokens, actualOutputTokens } = validationConsume.data!;
     const getRes = await doFetch(creditsStub, CreditsDOPaths.EscrowGet(escrowId));
     const escrow = (await getRes.json().catch(() => null)) as { modelVersion?: string } | null;
     if (!getRes.ok || !escrow?.modelVersion) {
@@ -201,7 +176,7 @@ export async function handleAIEscrowRequest(
       });
     }
     const catalogConsume = await getCatalogFromEnv(env);
-    const actualCost = calculateAICost(catalogConsume, escrow.modelVersion, actualInputTokens, actualOutputTokens);
+    const actualCost = Math.max(0, Math.ceil(calculateAICost(catalogConsume, escrow.modelVersion, actualInputTokens, actualOutputTokens)));
     const settleRes = await doFetch(creditsStub, CreditsDOPaths.EscrowSettle, {
       method: HttpMethod.Post,
       body: JSON.stringify({ escrowId, actualCost, promptHash: '' }),

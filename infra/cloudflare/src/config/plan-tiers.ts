@@ -1,5 +1,3 @@
-export const PLAN_TIER_IDS = ['free', 'pro', 'champion', 'founder'] as const;
-export type PlanTierId = (typeof PLAN_TIER_IDS)[number];
 
 export interface PlanTierConfig {
   name: string;
@@ -27,7 +25,7 @@ export const DEFAULT_PLAN_TIERS: Record<PlanTierId, PlanTierConfig> = {
     badgesEnabled: false,
     earlyAccess: false,
   },
-  // Arena Pass: $9.99/mo — no ads, full analysis, leaderboard
+  // Arena Pass: $9.99/mo â€” no ads, full analysis, leaderboard
   pro: {
     name: 'Arena Pass',
     monthlyTokenAllowance: 100_000,  // ~200 move hints or ~5 full analyses/mo
@@ -40,7 +38,7 @@ export const DEFAULT_PLAN_TIERS: Record<PlanTierId, PlanTierConfig> = {
     earlyAccess: false,
     stripePriceId: '',               // Fill after Stripe product created
   },
-  // Champion's Pass: $19.99/mo — everything + deep coaching + early access
+  // Champion's Pass: $19.99/mo â€” everything + deep coaching + early access
   champion: {
     name: "Champion's Pass",
     monthlyTokenAllowance: 500_000,  // ~1000 move hints or ~25 full analyses/mo
@@ -53,7 +51,7 @@ export const DEFAULT_PLAN_TIERS: Record<PlanTierId, PlanTierConfig> = {
     earlyAccess: true,
     stripePriceId: '',               // Fill after Stripe product created
   },
-  // Founder: one-time $149 — Champion's features, permanent, limited to 500 slots
+  // Founder: one-time $149 â€” Champion's features, permanent, limited to 500 slots
   founder: {
     name: 'Founder',
     monthlyTokenAllowance: 500_000,  // Same allowance as Champion's
@@ -67,6 +65,8 @@ export const DEFAULT_PLAN_TIERS: Record<PlanTierId, PlanTierConfig> = {
     stripePriceId: '',               // One-time Stripe payment, not subscription
   },
 };
+
+export type { PlanTierId };
 
 export interface UserPlanState {
   tier: PlanTierId;

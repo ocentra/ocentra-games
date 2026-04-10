@@ -259,9 +259,10 @@ export const ApiEndpoint = {
 
   Leaderboard: {
     Base: leaderboardBase as ApiPath,
-    ByGameType: (gameType: number): ApiPath => `${leaderboardBase}/${gameType}` as ApiPath,
-    User: (gameType: number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/user/${userId}` as ApiPath,
-    Nearby: (gameType: number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/nearby/${userId}` as ApiPath,
+    Tier: (gameType: string | number): ApiPath => `${leaderboardBase}/${gameType}/tier` as ApiPath,
+    ByGameType: (gameType: string | number): ApiPath => `${leaderboardBase}/${gameType}` as ApiPath,
+    User: (gameType: string | number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/user/${userId}` as ApiPath,
+    Nearby: (gameType: string | number, userId: string): ApiPath => `${leaderboardBase}/${gameType}/nearby/${userId}` as ApiPath,
   },
 
   Players: {
@@ -287,7 +288,12 @@ export const ApiEndpoint = {
   Badges: {
     Base: badgesBase as ApiPath,
     ById: (badgeId: string): ApiPath => `${badgesBase}/${badgeId}` as ApiPath,
+    Definitions: (userId: string): ApiPath => `${badgesBase}/${userId}/definitions` as ApiPath,
     Progress: (userId: string): ApiPath => `${badgesBase}/${userId}/progress` as ApiPath,
+    Active: (userId: string): ApiPath => `${badgesBase}/${userId}/active` as ApiPath,
+    Claim: (userId: string): ApiPath => `${badgesBase}/${userId}/claim` as ApiPath,
+    TrackLogin: (userId: string): ApiPath => `${badgesBase}/${userId}/track-login` as ApiPath,
+    ClaimDailyRewards: (userId: string): ApiPath => `${badgesBase}/${userId}/claim-daily-rewards` as ApiPath,
     Award: (userId: string): ApiPath => `${badgesBase}/${userId}/award` as ApiPath,
   },
 
@@ -392,6 +398,7 @@ export const ApiEndpoint = {
     Base: roomsBase as ApiPath,
     Join: (roomId: string): ApiPath => `${roomsBase}/${roomId}/join` as ApiPath,
     Leave: (roomId: string): ApiPath => `${roomsBase}/${roomId}/leave` as ApiPath,
+    Spectate: (roomId: string): ApiPath => `${roomsBase}/${roomId}/spectate` as ApiPath,
   },
 
   Ws: {
@@ -481,6 +488,7 @@ export const ApiEndpoint = {
     Event: `${securityBase}/event` as ApiPath,
     Profile: (id: string): ApiPath => `${securityBase}/profile/${id}` as ApiPath,
     Penalty: `${securityBase}/penalty` as ApiPath,
+    PenaltyIssue: `${securityBase}/penalty/issue` as ApiPath,
     Appeal: `${securityBase}/appeal` as ApiPath,
     Status: `${securityBase}/status` as ApiPath,
     TwoFaSetup: `${securityBase}/2fa/setup` as ApiPath,
@@ -508,11 +516,13 @@ export const ApiEndpoint = {
   Profile: {
     Base: profileBase as ApiPath,
     ById: (userId: string): ApiPath => `${profileBase}/${userId}` as ApiPath,
+    Update: (userId: string): ApiPath => `${profileBase}/${userId}/update` as ApiPath,
   },
 
   Message: {
     Base: messageBase as ApiPath,
     ByConversation: (conversationId: string): ApiPath => `${messageBase}/${conversationId}` as ApiPath,
+    Send: (conversationId: string): ApiPath => `${messageBase}/${conversationId}/send` as ApiPath,
   },
 
   Feed: {
@@ -526,6 +536,8 @@ export const ApiEndpoint = {
 
   Notification: {
     Base: notificationBase as ApiPath,
+    List: `${notificationBase}/list` as ApiPath,
+    Push: `${notificationBase}/push` as ApiPath,
   },
 
   Discovery: {
@@ -534,11 +546,20 @@ export const ApiEndpoint = {
 
   Inventory: {
     Base: inventoryBase as ApiPath,
+    List: `${inventoryBase}/list` as ApiPath,
+    Equip: `${inventoryBase}/equip` as ApiPath,
+    Gift: `${inventoryBase}/gift` as ApiPath,
+    Trade: `${inventoryBase}/trade` as ApiPath,
+    AddItem: `${inventoryBase}/add-item` as ApiPath,
+    RemoveItem: `${inventoryBase}/remove-item` as ApiPath,
     ByUser: (userId: string): ApiPath => `${inventoryBase}/${userId}` as ApiPath,
   },
 
   Marketplace: {
     Base: marketplaceBase as ApiPath,
+    History: `${marketplaceBase}/history` as ApiPath,
+    List: `${marketplaceBase}/list` as ApiPath,
+    Buy: `${marketplaceBase}/buy` as ApiPath,
   },
 
   Tournament: {
@@ -550,6 +571,7 @@ export const ApiEndpoint = {
   Settings: {
     Base: settingsBase as ApiPath,
     ByUser: (userId: string): ApiPath => `${settingsBase}/${userId}` as ApiPath,
+    Update: (userId: string): ApiPath => `${settingsBase}/${userId}/update` as ApiPath,
   },
 
   AdminDashboardData: `${adminBase}/dashboard-data` as ApiPath,

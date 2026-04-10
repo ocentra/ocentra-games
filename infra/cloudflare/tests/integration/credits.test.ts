@@ -232,7 +232,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       if (data.error !== 'Bad Request') {
         logError('[TEST] Unexpected error message for invalid purchase', getStackTrace(), { expected: 'Bad Request', actual: data.error });
       }
-      expect(data.message).toContain('AC amount must be a positive integer');
+      expect(data.message).toContain('Invalid request payload');
     });
 
   it(testName('Credit Purchase: should reject purchase with zero amount'), async () => {
@@ -389,7 +389,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(response.status).toBe(HttpStatus.BadRequest);
       const data = await response.json() as { error: string; message: string };
       expect(data.error).toBe('Bad Request');
-      expect(data.message).toContain('AC amount must be a positive integer');
+      expect(data.message).toContain('Invalid request payload');
     });
 
   it(testName('Transaction History: should return transaction history for user'), async () => {
@@ -746,7 +746,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
       expect(response.status).toBe(HttpStatus.BadRequest);
       const data = await response.json() as { error: string; message: string };
-      expect(data.message).toContain('AC amount must be a positive integer');
+      expect(data.message).toContain('Invalid request payload');
     });
 
   it(testName('Authorization: should require authentication'), async () => {

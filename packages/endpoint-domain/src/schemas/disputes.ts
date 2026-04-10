@@ -5,14 +5,20 @@
 import { z } from 'zod';
 import { MatchIdSchema, UserIdSchema, DisputeIdSchema, TimestampSchema } from './common';
 
+export const DisputeReasonValues = ['cheating', 'bug', 'disconnection', 'other'] as const;
+export const DisputeReasonSchema = z.enum(DisputeReasonValues);
+export const DisputeDescriptionPattern = "^[A-Za-z0-9][A-Za-z0-9 .,;:'\"!?()/-]*$";
+export const DisputeDescriptionRegex = new RegExp(DisputeDescriptionPattern);
+export const DisputeDescriptionSchema = z.string().min(5).regex(new RegExp(DisputeDescriptionPattern));
+
 // ============================================================================
 // Request Bodies
 // ============================================================================
 
 export const CreateDisputeRequestSchema = z.object({
   match_id: MatchIdSchema,
-  reason: z.enum(['cheating', 'bug', 'disconnection', 'other']),
-  description: z.string().min(1),
+  reason: DisputeReasonSchema,
+  description: DisputeDescriptionSchema,
   reported_player_id: UserIdSchema.optional(),
   dispute_id: DisputeIdSchema.optional(),
 });

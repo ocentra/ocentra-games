@@ -95,6 +95,23 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, { runIn: RunIn
       }
     });
 
+  it(testName('Data Export: should reject invalid encoded userId path values'), async () => {
+      const token = await createToken();
+      const userId = generateTestUserId('data-export-invalid');
+      const dataExportUrl = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.DataExport.Base}/%C3%AC%C2%8D%03`;
+      const response = await worker.fetch(dataExportUrl, {
+        method: HttpMethod.Get,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.Origin]: TestConfig.LocalhostOrigin
+        }
+      }, token);
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe(ErrorMessage.BadRequest);
+    });
+
   it(testName('Data Export: should allow admin to export any user data'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('data-export-admin');

@@ -5,8 +5,8 @@ import { LobbyDOStoragePrefix } from '@ocentra/boundary-domain/constants/do-stor
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 const MAX_ROOMS_PER_SHARD = 500;
-const DEFAULT_MAX_PLAYERS = 8;
-const MIN_MAX_PLAYERS = 2;
+const DEFAULT_MAX_PLAYERS = 13;
+const MIN_MAX_PLAYERS = 1;
 const CHAT_RATE_LIMIT_MS = 1000;
 const CHAT_HISTORY_MAX = 100;
 const COUNTDOWN_SECONDS = 5;
@@ -34,6 +34,7 @@ interface RoomStored {
   roomType: 'lobby' | 'game' | 'tournament' | 'private';
   maxPlayers: number;
   playerIds: string[];
+  spectatorIds?: string[];
   gameStatus: 'waiting' | 'starting' | 'in-progress' | 'ended';
   hostId: string;
   gameType?: string;
@@ -91,7 +92,7 @@ export class LobbyDO implements DurableObject {
       const segmentIndex = parts[0] === LobbyDODefaultInstanceName ? 2 : 0;
       const segment = parts[segmentIndex];
       const action = parts[segmentIndex + 1];
-      const roomIdForAction = (action === LobbyDOSegment.Join || action === LobbyDOSegment.Leave) ? (parts[segmentIndex] ?? '') : null;
+      const roomIdForAction = (action === LobbyDOSegment.Join || action === LobbyDOSegment.Leave || action === LobbyDOSegment.Spectate) ? (parts[segmentIndex] ?? '') : null;
 
       if (request.method === HttpMethod.Get && (segment === LobbyDOSegment.Rooms || pathname.endsWith(`/${LobbyDOSegment.Rooms}`))) {
         return this.listRooms(request);
@@ -104,6 +105,9 @@ export class LobbyDO implements DurableObject {
       }
       if (request.method === HttpMethod.Post && action === LobbyDOSegment.Leave && roomIdForAction) {
         return this.leaveRoom(roomIdForAction, request);
+      }
+      if (request.method === HttpMethod.Post && action === LobbyDOSegment.Spectate && roomIdForAction) {
+        return this.spectateRoom(roomIdForAction, request);
       }
       if (request.method === HttpMethod.Post && (segment === LobbyDOSegment.Message || pathname.endsWith(`/${LobbyDOSegment.Message}`))) {
         return this.json({ sent: true });
@@ -120,22 +124,13 @@ export class LobbyDO implements DurableObject {
     const url = new URL(request.url, 'http://dummy');
     const userId = url.searchParams.get('userId') ?? undefined;
     const roomIds = (await this.ctx.storage.get<string[]>(LobbyDOStoragePrefix.RoomIds)) ?? [];
-    const rooms: Array<{ roomId: string; roomType: string; maxPlayers: number; currentPlayers: number; gameStatus: string; hostId: string; gameType?: string; isPrivate?: boolean; createdAt: number }> = [];
+    const rooms: Array<{ roomId: string; roomType: string; maxPlayers: number; currentPlayers: number; currentSpectators: number; gameStatus: string; hostId: string; gameType?: string; isPrivate?: boolean; createdAt: number }> = [];
     for (const id of roomIds) {
       const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${id}`);
       if (room && room.gameStatus === 'waiting') {
-        if (room.isPrivate && (!userId || !room.playerIds.includes(userId))) continue;
-        rooms.push({
-          roomId: room.roomId,
-          roomType: room.roomType,
-          maxPlayers: room.maxPlayers,
-          currentPlayers: room.playerIds.length,
-          gameStatus: room.gameStatus,
-          hostId: room.hostId,
-          gameType: room.gameType,
-          isPrivate: room.isPrivate,
-          createdAt: room.createdAt,
-        });
+        const spectatorIds = room.spectatorIds ?? [];
+        if (room.isPrivate && (!userId || (!room.playerIds.includes(userId) && !spectatorIds.includes(userId)))) continue;
+        rooms.push(this.toRoomView(room));
       }
     }
     return this.json({ rooms });
@@ -160,6 +155,7 @@ export class LobbyDO implements DurableObject {
       roomType: (body.roomType === 'game' || body.roomType === 'tournament' || body.roomType === 'private') ? body.roomType : 'lobby',
       maxPlayers,
       playerIds: [hostId],
+      spectatorIds: [],
       gameStatus: 'waiting',
       hostId,
       gameType: body.gameType,
@@ -170,7 +166,7 @@ export class LobbyDO implements DurableObject {
     await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
     roomIds.push(roomId);
     await this.ctx.storage.put(LobbyDOStoragePrefix.RoomIds, roomIds);
-    return this.json({ roomId, joined: true, room: { roomId: room.roomId, roomType: room.roomType, maxPlayers: room.maxPlayers, currentPlayers: 1, gameStatus: room.gameStatus, hostId: room.hostId, isPrivate: room.isPrivate } });
+    return this.json({ roomId, joined: true, spectating: false, room: this.toRoomView(room) });
   }
 
   private async joinRoom(roomId: string, request: Request): Promise<Response> {
@@ -185,12 +181,38 @@ export class LobbyDO implements DurableObject {
     const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
     if (!room) return this.json({ error: 'Room not found' }, HttpStatus.NotFound);
     if (room.gameStatus !== 'waiting') return this.json({ error: 'Room not joinable' }, HttpStatus.Conflict);
-    if (room.playerIds.includes(userId)) return this.json({ joined: true, roomId });
+    const spectatorIds = room.spectatorIds ?? [];
+    room.spectatorIds = spectatorIds.filter((id) => id !== userId);
+    if (room.playerIds.includes(userId)) {
+      await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
+      return this.json({ joined: true, roomId, spectating: false, room: this.toRoomView(room) });
+    }
     if (room.playerIds.length >= room.maxPlayers) return this.json({ error: 'Room full' }, HttpStatus.Conflict);
     room.playerIds.push(userId);
     room.lastActivityAt = Date.now();
     await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
-    return this.json({ joined: true, roomId, room: { roomId: room.roomId, roomType: room.roomType, maxPlayers: room.maxPlayers, currentPlayers: room.playerIds.length, gameStatus: room.gameStatus, hostId: room.hostId } });
+    return this.json({ joined: true, roomId, spectating: false, room: this.toRoomView(room) });
+  }
+
+  private async spectateRoom(roomId: string, request: Request): Promise<Response> {
+    let body: { userId: string; displayName?: string };
+    try {
+      body = await request.json();
+    } catch {
+      return this.json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
+    }
+    const userId = body.userId ?? '';
+    if (!userId) return this.json({ error: 'userId required' }, HttpStatus.BadRequest);
+    const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
+    if (!room) return this.json({ error: 'Room not found' }, HttpStatus.NotFound);
+    room.spectatorIds = room.spectatorIds ?? [];
+    if (room.playerIds.includes(userId)) return this.json({ error: 'Already in room as player' }, HttpStatus.Conflict);
+    if (!room.spectatorIds.includes(userId)) {
+      room.spectatorIds.push(userId);
+      room.lastActivityAt = Date.now();
+      await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
+    }
+    return this.json({ joined: true, roomId, spectating: true, room: this.toRoomView(room) });
   }
 
   private async leaveRoom(roomId: string, request: Request): Promise<Response> {
@@ -204,11 +226,12 @@ export class LobbyDO implements DurableObject {
     if (!userId) return this.json({ error: 'userId required' }, HttpStatus.BadRequest);
     const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
     if (!room) return this.json({ left: true });
-    const idx = room.playerIds.indexOf(userId);
-    if (idx === -1) return this.json({ left: true });
-    room.playerIds.splice(idx, 1);
+    const playerIdx = room.playerIds.indexOf(userId);
+    if (playerIdx !== -1) room.playerIds.splice(playerIdx, 1);
+    const spectatorIds = room.spectatorIds ?? [];
+    room.spectatorIds = spectatorIds.filter((id) => id !== userId);
     room.lastActivityAt = Date.now();
-    if (room.playerIds.length === 0) {
+    if (room.playerIds.length === 0 && (room.spectatorIds?.length ?? 0) === 0) {
       await this.ctx.storage.delete(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
       const roomIds = (await this.ctx.storage.get<string[]>(LobbyDOStoragePrefix.RoomIds)) ?? [];
       const newIds = roomIds.filter((id) => id !== roomId);
@@ -218,6 +241,21 @@ export class LobbyDO implements DurableObject {
       await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
     }
     return this.json({ left: true });
+  }
+
+  private toRoomView(room: RoomStored): { roomId: string; roomType: string; maxPlayers: number; currentPlayers: number; currentSpectators: number; gameStatus: string; hostId: string; gameType?: string; isPrivate?: boolean; createdAt: number } {
+    return {
+      roomId: room.roomId,
+      roomType: room.roomType,
+      maxPlayers: room.maxPlayers,
+      currentPlayers: room.playerIds.length,
+      currentSpectators: room.spectatorIds?.length ?? 0,
+      gameStatus: room.gameStatus,
+      hostId: room.hostId,
+      gameType: room.gameType,
+      isPrivate: room.isPrivate,
+      createdAt: room.createdAt,
+    };
   }
 
   private json(data: unknown, status: number = HttpStatus.Ok): Response {

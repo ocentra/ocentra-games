@@ -1,5 +1,6 @@
 export const BucketPath = {
   Matches: 'matches/',
+  MatchesDeleted: 'matches/deleted/',
   MatchesAnonymized: 'matches/anonymized/',
   Disputes: 'disputes/',
   DisputesEvidence: 'disputes/evidence/',

@@ -1,11 +1,12 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { extractIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
+import { extractAndValidateMatchIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { ReplayService } from '@/services/ReplayService';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -28,14 +29,17 @@ export async function handleReplayRequest(
   path: string
 ): Promise<Response> {
   logInfo('Replay request', getStackTrace(), { path });
-  const matchId = extractIdFromPath(path, ApiEndpoint.Replay.Base);
-  if (!matchId) {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
+  const result = extractAndValidateMatchIdFromPath(path, ApiEndpoint.Replay.Base, request.url);
+  if (result.error || !result.matchId) {
     logWarn('Replay: invalid path', getStackTrace(), { path });
     return new Response(JSON.stringify({ error: 'Invalid replay path' }), {
       status: HttpStatus.BadRequest,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
     });
   }
+  const matchId = result.matchId;
 
   const isVerify = path.includes('/verify');
   const replayService = new ReplayService(env);

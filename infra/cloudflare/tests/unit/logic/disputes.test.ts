@@ -229,6 +229,26 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     );
   });
 
+  it(testName('should return error when dispute to update is missing'), async () => {
+    const mockStorage: DisputeStorage = {
+      get: vi.fn().mockResolvedValue(null),
+      put: vi.fn().mockResolvedValue(undefined),
+    };
+
+    const result = await updateDisputeLogic(
+      {
+        disputeId: TestConstants.DisputeId1,
+        disputeKey: `${BucketPath.Disputes}${TestConstants.Dispute1Json}`,
+        disputeData: { reason: TestConstants.Test },
+      },
+      mockStorage
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe(TestConstants.DisputeNotFound);
+    expect(mockStorage.put).not.toHaveBeenCalled();
+  });
+
   it(testName('should set created_at if not provided'), async () => {
     const disputeData = { reason: TestConstants.Test };
     const mockStorage: DisputeStorage = {

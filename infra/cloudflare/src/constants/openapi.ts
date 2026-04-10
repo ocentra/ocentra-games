@@ -1,11 +1,26 @@
+import { LeaderboardTier } from '@ocentra/endpoint-domain/constants/leaderboard';
+import { PlayerType } from '@ocentra/endpoint-domain/constants/game';
+
 export const OpenApiVersion = {
   V3_0_0: '3.0.0',
 } as const;
 
 export type OpenApiVersion = typeof OpenApiVersion[keyof typeof OpenApiVersion];
 
+export const OpenApiMethod = {
+  Get: 'get',
+  Post: 'post',
+  Put: 'put',
+  Patch: 'patch',
+  Delete: 'delete',
+  Options: 'options',
+  Head: 'head',
+} as const;
+
+export type OpenApiMethod = typeof OpenApiMethod[keyof typeof OpenApiMethod];
+
 export const OpenApiInfo = {
-  Title: 'Claim Storage API',
+  Title: 'Ocentra Games API',
   Description: 'API for storing and managing game match records, disputes, and AI decisions',
   Version: '1.0.0',
   ContactName: 'Ocentra Games',
@@ -33,6 +48,40 @@ export const OpenApiTag = {
   Leaderboard: 'Leaderboard',
   Health: 'Health',
   TestDevelopmentOnly: 'Test (Development Only)',
+  Players: 'Players',
+  Credits: 'Credits',
+  Badges: 'Badges',
+  Logs: 'Logs',
+  Assets: 'Assets',
+  Sync: 'Sync',
+  Replay: 'Replay',
+  Payment: 'Payment',
+  Lobby: 'Lobby',
+  Matchmaking: 'Matchmaking',
+  Presence: 'Presence',
+  Friends: 'Friends',
+  Audit: 'Audit',
+  Compliance: 'Compliance',
+  Progression: 'Progression',
+  Rewards: 'Rewards',
+  Personalization: 'Personalization',
+  Analytics: 'Analytics',
+  Security: 'Security',
+  Fraud: 'Fraud',
+  AntiCheat: 'Anti-Cheat',
+  Profile: 'Profile',
+  Message: 'Message',
+  Feed: 'Feed',
+  Party: 'Party',
+  Notification: 'Notification',
+  Discovery: 'Discovery',
+  Inventory: 'Inventory',
+  Marketplace: 'Marketplace',
+  Tournament: 'Tournament',
+  Settings: 'Settings',
+  Admin: 'Admin',
+  Shop: 'Shop',
+  Transparency: 'Transparency',
 } as const;
 
 export type OpenApiTag = typeof OpenApiTag[keyof typeof OpenApiTag];
@@ -46,6 +95,40 @@ export const OpenApiTagDescription = {
   GDPR: 'Privacy and data management endpoints',
   Leaderboard: 'Leaderboard and ranking endpoints (requires indexer)',
   Health: 'Health check and monitoring',
+  Players: 'Player stats and learning data',
+  Credits: 'Credit balance and transaction management',
+  Badges: 'Badge system and achievements',
+  Logs: 'Log querying and statistics',
+  Assets: 'Asset management and resource serving',
+  Sync: 'Solana blockchain synchronization',
+  Replay: 'Match replay verification',
+  Payment: 'Payment processing and status',
+  Lobby: 'Room management and lobby operations',
+  Matchmaking: 'Matchmaking queue management',
+  Presence: 'Online presence and typing indicators',
+  Friends: 'Friend list and user blocking',
+  Audit: 'Audit logging and compliance',
+  Compliance: 'Regulatory compliance reporting',
+  Progression: 'Player progression and XP',
+  Rewards: 'Daily rewards and battle pass',
+  Personalization: 'Player personalization preferences',
+  Analytics: 'Player analytics and profiling',
+  Security: 'Security events and fraud prevention',
+  Fraud: 'Fraud detection and risk analysis',
+  AntiCheat: 'Anti-cheat analysis and reporting',
+  Profile: 'Player profile management',
+  Message: 'In-game messaging',
+  Feed: 'Activity feed',
+  Party: 'Party management',
+  Notification: 'Push notifications',
+  Discovery: 'Content discovery',
+  Inventory: 'Player inventory management',
+  Marketplace: 'In-game marketplace',
+  Tournament: 'Tournament management',
+  Settings: 'User settings',
+  Admin: 'Administration dashboard',
+  Shop: 'Shop products and purchases',
+  Transparency: 'Match transparency and verification',
 } as const;
 
 export type OpenApiTagDescription = typeof OpenApiTagDescription[keyof typeof OpenApiTagDescription];
@@ -53,6 +136,7 @@ export type OpenApiTagDescription = typeof OpenApiTagDescription[keyof typeof Op
 export const OpenApiParameterLocation = {
   Path: 'path',
   Query: 'query',
+  Header: 'header',
 } as const;
 
 export type OpenApiParameterLocation = typeof OpenApiParameterLocation[keyof typeof OpenApiParameterLocation];
@@ -60,6 +144,12 @@ export type OpenApiParameterLocation = typeof OpenApiParameterLocation[keyof typ
 export const OpenApiParameterName = {
   MatchId: 'matchId',
   DisputeId: 'disputeId',
+  FriendId: 'friendId',
+  RoomId: 'roomId',
+  ConversationId: 'conversationId',
+  TournamentId: 'tournamentId',
+  ReportId: 'reportId',
+  ProviderId: 'providerId',
   UserId: 'userId',
   GameType: 'gameType',
   Token: 'token',
@@ -85,8 +175,10 @@ export const OpenApiSchemaType = {
 export type OpenApiSchemaType = typeof OpenApiSchemaType[keyof typeof OpenApiSchemaType];
 
 export const OpenApiSchemaFormat = {
+  Date: 'date',
   DateTime: 'date-time',
   Binary: 'binary',
+  Uri: 'uri',
 } as const;
 
 export type OpenApiSchemaFormat = typeof OpenApiSchemaFormat[keyof typeof OpenApiSchemaFormat];
@@ -184,6 +276,9 @@ export type OpenApiResponseDescription = typeof OpenApiResponseDescription[keyof
 
 export const OpenApiParameterDescription = {
   UniqueMatchIdentifier: 'Unique match identifier',
+  FriendIdentifier: 'Friend identifier',
+  ReportIdentifier: 'Report identifier',
+  ProviderIdentifier: 'Provider identifier',
   SignedUrlToken: 'Signed URL token for private access',
   ExpirationTimeSeconds: 'Expiration time in seconds (max 86400)',
   EvidenceFileMaxSize: 'Evidence file (max 100MB)',
@@ -202,21 +297,11 @@ export const OpenApiSecurityDescription = {
 
 export type OpenApiSecurityDescription = typeof OpenApiSecurityDescription[keyof typeof OpenApiSecurityDescription];
 
-export const OpenApiPlayerType = {
-  Human: 'human',
-  AI: 'ai',
-} as const;
+export const OpenApiPlayerType = PlayerType;
 
 export type OpenApiPlayerType = typeof OpenApiPlayerType[keyof typeof OpenApiPlayerType];
 
-export const OpenApiTier = {
-  Bronze: 'Bronze',
-  Silver: 'Silver',
-  Gold: 'Gold',
-  Platinum: 'Platinum',
-  Diamond: 'Diamond',
-  Master: 'Master',
-} as const;
+export const OpenApiTier = LeaderboardTier;
 
 export type OpenApiTier = typeof OpenApiTier[keyof typeof OpenApiTier];
 

@@ -1,70 +1,58 @@
-/**
- * Common Zod schemas for validation.
- */
-
 import { z } from 'zod';
 
-/**
- * UUID validation schema.
- */
 export const UUIDSchema = z.string().uuid();
 
-/**
- * ISO 8601 timestamp validation schema.
- */
 export const TimestampSchema = z.string().datetime();
 
-/**
- * Match ID schema.
- */
-export const MatchIdSchema = UUIDSchema;
+export const MatchIdSchema = UUIDSchema.brand<'MatchId'>();
 
-/**
- * User ID schema.
- */
-export const UserIdSchema = UUIDSchema;
+export const UserIdSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9._-]+$/).brand<'UserId'>();
 
-/**
- * Dispute ID schema.
- */
-export const DisputeIdSchema = UUIDSchema;
+export const DisputeIdSchema = z.string().min(1).max(128).brand<'DisputeId'>();
 
-/**
- * Transaction ID schema.
- */
-export const TransactionIdSchema = UUIDSchema;
+export const ReportIdSchema = UUIDSchema.brand<'ReportId'>();
 
-/**
- * Badge ID schema.
- */
-export const BadgeIdSchema = z.string().min(1);
+export const TransactionIdSchema = UUIDSchema.brand<'TransactionId'>();
 
-/**
- * Asset ID schema.
- */
-export const AssetIdSchema = z.string().min(1);
+export const RoomIdSchema = UUIDSchema.brand<'RoomId'>();
 
-/**
- * Game type schema (positive integer).
- */
+export const OperationIdSchema = UUIDSchema.brand<'OperationId'>();
+
+
+export const TicketIdSchema = z.string().min(1).max(128).brand<'TicketId'>();
+
+
+export const NotificationIdSchema = z.string().min(1).max(128).brand<'NotificationId'>();
+
+
+export const ConversationIdSchema = z.string().min(1).max(128).brand<'ConversationId'>();
+
+
+export const BadgeIdSchema = z.string().min(1).max(64).brand<'BadgeId'>();
+
+
+export const AssetIdSchema = z.string().min(1).max(128).brand<'AssetId'>();
+
+
 export const GameTypeSchema = z.number().int().positive();
 
-/**
- * Currency schema.
- */
+
 export const CurrencySchema = z.enum(['GP', 'AC']);
 
-/**
- * Pagination parameters schema.
- */
+
+export const IdempotencyKeySchema = z
+  .string()
+  .min(1)
+  .max(100)
+  .regex(/^[A-Za-z0-9_-]+$/);
+
+
 export const PaginationParamsSchema = z.object({
   limit: z.number().int().positive().max(1000).optional(),
   cursor: z.string().optional(),
 });
 
-/**
- * Error response schema.
- */
+
 export const ErrorResponseSchema = z.object({
   error: z.string(),
   message: z.string(),

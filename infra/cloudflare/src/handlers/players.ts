@@ -32,6 +32,7 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 
 import { getCreditBalance } from '@/handlers/credits';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+const USER_ID_PATH_PATTERN = /^[A-Za-z0-9._-]+$/;
 import {
   computePlayerStatsLogic,
   computeLearningProgressLogic,
@@ -98,7 +99,7 @@ export async function handlePlayerRequest(
   const authenticatedUserId = authResult.userId;
 
   const result = extractAndValidateIdFromPath(path, ApiEndpoint.Players.Base, ParamName.UserId, request.url);
-  if (result.error || !result.id) {
+  if (result.error || !result.id || !USER_ID_PATH_PATTERN.test(result.id)) {
     return new Response(JSON.stringify({
       error: 'Bad Request',
       message: result.error || 'User ID required'

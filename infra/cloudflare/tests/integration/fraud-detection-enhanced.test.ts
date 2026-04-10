@@ -125,6 +125,23 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof data.score).toBe('number');
     });
 
+    it(testName('Risk endpoint: rejects invalid nested userId path values'), async () => {
+      const userId = `fraud-invalid-${Date.now()}`;
+      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Fraud.Base}/risk/%C3%AC%C2%8D%03`;
+      const response = await worker.fetch(url, {
+        method: HttpMethod.Get,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+      });
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = (await response.json()) as { error?: string; message?: string };
+      expect(data.error).toBe('Bad Request');
+      expect(typeof data.message).toBe('string');
+    });
+
     it(testName('Unsupported fraud subroutes return 404 in current contract'), async () => {
       const userId = `fraud-routes-${Date.now()}`;
       const url = buildApiUrl(ApiEndpoint.Fraud.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder }) + '/device/register';

@@ -10,6 +10,7 @@ import {
   saveAnonymizedMatchLogic,
   type MatchStorage,
 } from '@/logic/matches';
+import { validateMatchRecord } from '@ocentra/endpoint-domain/utils/validation';
 import { BucketPath } from '@ocentra/boundary-domain/constants/bucket-paths';
 import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -105,6 +106,29 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain(TestConstants.InvalidJson);
+  });
+
+  it(testName('should reject match payload with unexpected fields'), () => {
+    const malformedMatch = {
+      match_id: TestConstants.MatchId1,
+      version: '1.0.0',
+      events: [
+        {
+          type: 'move',
+          timestamp: '2026-04-08T00:00:00.000Z',
+          extra: true,
+        },
+      ],
+      unexpected: true,
+    };
+
+    const result = validateMatchLogic({
+      body: JSON.stringify(malformedMatch),
+      validateMatchRecord,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('unexpected fields');
   });
 });
 

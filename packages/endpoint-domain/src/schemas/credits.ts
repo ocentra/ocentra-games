@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { UserIdSchema, TransactionIdSchema, TimestampSchema, CurrencySchema, PaginationParamsSchema } from './common';
+import { UserIdSchema, TransactionIdSchema, TimestampSchema, CurrencySchema, PaginationParamsSchema, IdempotencyKeySchema } from './common';
 
 // ============================================================================
 // Query Parameters
@@ -43,6 +43,16 @@ export const ConsumeCreditsRequestSchema = z.object({
   description: z.string().optional(),
   match_id: z.string().optional(),
 });
+
+export const PlanCreditsRequestSchema = z.object({
+  userId: UserIdSchema,
+  tier: z.enum(['free', 'pro', 'champion', 'founder']),
+}).strict();
+
+export const RewardDailyClaimRequestSchema = z.object({
+  idempotencyKey: IdempotencyKeySchema.optional(),
+  userId: UserIdSchema.optional(),
+}).strict();
 
 // ============================================================================
 // Response Bodies

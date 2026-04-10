@@ -5,7 +5,7 @@ export interface ConnectionTestResult {
   providerName?: string;
 }
 
-type TestFn = (apiKey: string) => Promise<ConnectionTestResult>;
+type TestFn = (apiKey: string, baseUrl?: string) => Promise<ConnectionTestResult>;
 
 const OPENAI_BASE = 'https://api.openai.com/v1';
 const ANTHROPIC_BASE = 'https://api.anthropic.com/v1';
@@ -48,6 +48,22 @@ async function testOpenAICompatible(
       providerName,
     };
   }
+}
+
+async function testOpenAICompatibleProvider(
+  baseUrl: string | undefined,
+  apiKey: string,
+  providerName: string
+): Promise<ConnectionTestResult> {
+  if (!baseUrl) {
+    return {
+      success: false,
+      latencyMs: 0,
+      error: `Provider "${providerName}" requires a baseUrl for testing`,
+      providerName,
+    };
+  }
+  return testOpenAICompatible(baseUrl, apiKey, providerName);
 }
 
 async function testAnthropic(apiKey: string): Promise<ConnectionTestResult> {
@@ -163,11 +179,15 @@ const PROVIDER_TEST_MAP: Record<string, TestFn> = {
   mistral: (key) => testOpenAICompatible(MISTRAL_BASE, key, 'mistral'),
   cohere: testCohere,
   openrouter: (key) => testOpenAICompatible(OPENROUTER_BASE, key, 'openrouter'),
+  localai: (key, baseUrl) => testOpenAICompatibleProvider(baseUrl, key, 'localai'),
+  lmstudio: (key, baseUrl) => testOpenAICompatibleProvider(baseUrl, key, 'lmstudio'),
+  vllm: (key, baseUrl) => testOpenAICompatibleProvider(baseUrl, key, 'vllm'),
 };
 
 export function testProviderKey(
   providerId: string,
-  apiKey: string
+  apiKey: string,
+  baseUrl?: string
 ): Promise<ConnectionTestResult> {
   const testFn = PROVIDER_TEST_MAP[providerId.toLowerCase()];
   if (!testFn) {
@@ -178,5 +198,5 @@ export function testProviderKey(
       providerName: providerId,
     });
   }
-  return testFn(apiKey);
+  return testFn(apiKey, baseUrl);
 }

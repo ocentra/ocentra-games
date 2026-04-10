@@ -9,6 +9,10 @@ export function buildMatchKey(matchId: MatchId): string {
   return `${BucketPath.Matches}${sanitizePathComponent(matchId)}${FileExtension.Json}`;
 }
 
+export function buildDeletedMatchKey(matchId: MatchId): string {
+  return `${BucketPath.MatchesDeleted}${sanitizePathComponent(matchId)}${FileExtension.Json}`;
+}
+
 export function buildAnonymizedMatchKey(matchId: MatchId): string {
   return `${BucketPath.MatchesAnonymized}${sanitizePathComponent(matchId)}${FileExtension.Json}`;
 }

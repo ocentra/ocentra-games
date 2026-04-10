@@ -1,5 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import {
@@ -161,25 +162,9 @@ export async function handleAdminProductRequest(
   // POST /api/v1/admin/products - Create new product
   if (path === ApiEndpoint.Admin.Products && request.method === HttpMethod.Post) {
     try {
-      let body: unknown;
-      try {
-        body = await request.json();
-      } catch {
-        return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
-          status: HttpStatus.BadRequest,
-          headers: cors(env),
-        });
-      }
-
-      const parsed = ProductSchema.safeParse(body);
-      if (!parsed.success) {
-        return new Response(
-          JSON.stringify({ error: 'Validation failed', details: parsed.error.flatten() }),
-          { status: HttpStatus.BadRequest, headers: cors(env) }
-        );
-      }
-
-      const product = parsed.data;
+      const validation = await validateZodBody(request, env, ProductSchema);
+      if (validation.errorResponse) return validation.errorResponse;
+      const product = validation.data!;
 
       // Check if product already exists
       const existing = await getProductFromKV(env, product.productId);
@@ -253,18 +238,9 @@ export async function handleAdminProductRequest(
         });
       }
 
-      let body: unknown;
-      try {
-        body = await request.json();
-      } catch {
-        return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
-          status: HttpStatus.BadRequest,
-          headers: cors(env),
-        });
-      }
-
-      // Partial update
-      const updates = body as Partial<Product>;
+      const validation = await validateZodBody(request, env, ProductSchema.partial());
+      if (validation.errorResponse) return validation.errorResponse;
+      const updates = validation.data!;
       const updated = { ...existing, ...updates };
 
       // Update in Stripe if needed

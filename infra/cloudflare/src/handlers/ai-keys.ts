@@ -1,5 +1,7 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
+import { z } from 'zod';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
@@ -97,35 +99,12 @@ async function handleStore(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  let body: { providerId?: string; apiKey?: string };
-  try {
-    body = (await request.json()) as { providerId?: string; apiKey?: string };
-  } catch {
-    return new Response(
-      JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON body' }),
-      {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env, requestOrigin),
-        },
-      }
-    );
-  }
-  const providerId = body?.providerId;
-  const apiKey = body?.apiKey;
-  if (!providerId || !apiKey || typeof providerId !== 'string' || typeof apiKey !== 'string') {
-    return new Response(
-      JSON.stringify({ error: 'Bad Request', message: 'providerId and apiKey required' }),
-      {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env, requestOrigin),
-        },
-      }
-    );
-  }
+  const validation = await validateZodBody(request, env, z.object({
+    providerId: z.string().min(1),
+    apiKey: z.string().min(1),
+  }).strict());
+  if (validation.errorResponse) return validation.errorResponse;
+  const { providerId, apiKey } = validation.data!;
 
   try {
     const masterKey = await importMasterKey(env.AI_MASTER_KEY!);
@@ -190,43 +169,20 @@ async function handleStoreCustom(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  let body: { providerId?: string; baseUrl?: string; apiKey?: string };
-  try {
-    body = (await request.json()) as { providerId?: string; baseUrl?: string; apiKey?: string };
-  } catch {
-    return new Response(
-      JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON body' }),
-      {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env, requestOrigin),
-        },
-      }
-    );
-  }
-  const providerId = body?.providerId;
-  const apiKey = body?.apiKey;
-  const baseUrl = typeof body?.baseUrl === 'string' ? body.baseUrl : undefined;
-  if (!providerId || !apiKey || typeof providerId !== 'string' || typeof apiKey !== 'string') {
-    return new Response(
-      JSON.stringify({ error: 'Bad Request', message: 'providerId and apiKey required' }),
-      {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env, requestOrigin),
-        },
-      }
-    );
-  }
+  const validation = await validateZodBody(request, env, z.object({
+    providerId: z.string().min(1),
+    apiKey: z.string().min(1),
+    baseUrl: z.string().min(1).optional(),
+  }).strict());
+  if (validation.errorResponse) return validation.errorResponse;
+  const { providerId, apiKey, baseUrl } = validation.data!;
   const catalog = await getCatalogFromEnv(env);
   const providerExists = catalog.providers.some((p) => p.id === providerId);
   if (!providerExists) {
     return new Response(
       JSON.stringify({ error: 'Bad Request', message: 'providerId not in catalog' }),
       {
-        status: HttpStatus.BadRequest,
+        status: HttpStatus.NotFound,
         headers: {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           ...getCorsHeaders(env, requestOrigin),
@@ -355,7 +311,7 @@ async function handleTest(
     body: JSON.stringify({ providerId }),
     correlationId: getCurrentContext()?.correlationId,
   });
-  const getData = (await getRes.json()) as { success?: boolean; found?: boolean; ciphertext?: string; iv?: string };
+    const getData = (await getRes.json()) as { success?: boolean; found?: boolean; ciphertext?: string; iv?: string; baseUrl?: string };
   if (!getData.found || !getData.ciphertext || !getData.iv) {
     return new Response(
       JSON.stringify({ error: 'Not Found', message: 'No key configured for this provider' }),
@@ -374,7 +330,7 @@ async function handleTest(
   const masterKey = await importMasterKey(env.AI_MASTER_KEY!);
   const apiKey = await decryptKey({ ciphertext, iv }, masterKey);
 
-  const result = await testProviderKey(providerId, apiKey);
+    const result = await testProviderKey(providerId, apiKey, getData.baseUrl);
   return new Response(JSON.stringify(result), {
     status: HttpStatus.Ok,
     headers: {

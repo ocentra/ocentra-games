@@ -2,10 +2,11 @@ import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { extractIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
+import { extractAndValidateMatchIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { MatchTransparencyService } from '@/services/MatchTransparencyService';
 import { ReplayService } from '@/services/ReplayService';
 import { AuditTrailService } from '@/services/AuditTrailService';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -34,14 +35,18 @@ export async function handleTransparencyRequest(
   path: string
 ): Promise<Response> {
   logInfo('Transparency request', getStackTrace(), { path });
-  const matchId = extractIdFromPath(path, ApiEndpoint.Matches.Base);
-  if (!matchId) {
+  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
+  if (methodCheck) return methodCheck;
+
+  const result = extractAndValidateMatchIdFromPath(path, ApiEndpoint.Matches.Base, request.url);
+  if (result.error || !result.matchId) {
     logWarn('Transparency: invalid path', getStackTrace(), { path });
     return new Response(JSON.stringify({ error: 'Invalid path' }), {
       status: HttpStatus.BadRequest,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
     });
   }
+  const matchId = result.matchId;
 
   const transparencyService = new MatchTransparencyService(env);
   const replayService = new ReplayService(env);
@@ -54,10 +59,19 @@ export async function handleTransparencyRequest(
     const result = await transparencyService.verifyMatchIntegrity(matchId);
     if (result.error) {
       logWarn('Transparency verify failed', getStackTrace(), { matchId, error: result.error });
+      if (result.error.toLowerCase().includes('not found')) {
+        return new Response(
+          JSON.stringify({ error: result.error }),
+          {
+            status: HttpStatus.NotFound,
+            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+          }
+        );
+      }
       return new Response(
         JSON.stringify({ error: result.error }),
         {
-          status: HttpStatus.ServiceUnavailable,
+          status: HttpStatus.InternalServerError,
           headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
         }
       );
@@ -85,29 +99,6 @@ export async function handleTransparencyRequest(
   }
 
   if (isReplay) {
-    if (request.method === HttpMethod.Post) {
-      try {
-        const replay = await replayService.generateReplay(matchId);
-        return new Response(
-          JSON.stringify({ matchId, replay, generated: true }),
-          {
-            status: HttpStatus.Ok,
-            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-          }
-        );
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        logError('Failed to generate replay', getStackTrace(), { matchId, error: message });
-        return new Response(
-          JSON.stringify({ error: message }),
-          {
-            status: HttpStatus.InternalServerError,
-            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-          }
-        );
-      }
-    }
-
     const replay = await replayService.loadReplay(matchId);
     if (!replay) {
       return new Response(
@@ -132,6 +123,15 @@ export async function handleTransparencyRequest(
   if (isAIDecisions) {
     const result = await transparencyService.getAIDecisions(matchId);
     if (result.error) {
+      if (result.error.toLowerCase().includes('not found')) {
+        return new Response(
+          JSON.stringify({ error: result.error }),
+          {
+            status: HttpStatus.NotFound,
+            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+          }
+        );
+      }
       return new Response(
         JSON.stringify({ error: result.error }),
         {
@@ -152,6 +152,15 @@ export async function handleTransparencyRequest(
   const record = await transparencyService.getMatchTransparency(matchId);
   if (record.error) {
     logWarn('Transparency: failed to get record', getStackTrace(), { matchId, error: record.error });
+    if (record.error.toLowerCase().includes('not found')) {
+      return new Response(
+        JSON.stringify({ error: record.error }),
+        {
+          status: HttpStatus.NotFound,
+          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+        }
+      );
+    }
     return new Response(
       JSON.stringify({ error: record.error }),
       {

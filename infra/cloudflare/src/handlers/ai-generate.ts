@@ -1,5 +1,6 @@
-import type { Env } from '@/constants/env';
+﻿import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { UserKeysDO } from '@ocentra/endpoint-domain/constants/cloudflare-do';
@@ -7,6 +8,7 @@ import { fetchFromDO } from '@/utils/durable-object-request';
 import { getCurrentContext } from '@/logging/request-context';
 import { decryptKey, importMasterKey } from '@/logic/ai-keys';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
+import { AIGenerateRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -210,20 +212,15 @@ export async function handleAIGenerateRequest(
   }
   const userId = authResult.userId;
 
-  let body: { providerId?: string; systemPrompt?: string; userPrompt?: string; model?: string };
-  try {
-    body = (await request.json()) as typeof body;
-  } catch {
-    return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON body' }), {
-      status: HttpStatus.BadRequest,
-      headers: {
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-        ...getCorsHeaders(env, requestOrigin),
-      },
-    });
-  }
+  const validation = await validateZodBody(
+    request,
+    env,
+    AIGenerateRequestSchema
+  );
 
-  const { providerId, systemPrompt, userPrompt, model: requestedModel } = body ?? {};
+  if (validation.errorResponse) return validation.errorResponse;
+  const { providerId, systemPrompt, userPrompt, model: requestedModel } = validation.data!;
+
   if (
     !providerId || typeof providerId !== 'string' ||
     !systemPrompt || typeof systemPrompt !== 'string' ||
@@ -325,7 +322,7 @@ export async function handleAIGenerateRequest(
         message: 'Provider does not support worker-side generation',
       }),
       {
-        status: HttpStatus.UnprocessableEntity,
+        status: HttpStatus.Conflict,
         headers: {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           ...getCorsHeaders(env, requestOrigin),

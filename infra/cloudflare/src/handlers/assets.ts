@@ -1,5 +1,7 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
+import { z } from 'zod';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
@@ -227,8 +229,11 @@ export async function handleAssetsRequest(
   }
 
   if (path === ApiEndpoint.Assets.SyncDiff && request.method === HttpMethod.Post) {
-    const body = (await request.json().catch(() => ({}))) as { localIndexHash?: string };
-    const localIndexHash = body.localIndexHash || '';
+    const validation = await validateZodBody(request, env, z.object({
+      localIndexHash: z.string().optional(),
+    }).strict());
+    if (validation.errorResponse) return validation.errorResponse;
+    const localIndexHash = validation.data!.localIndexHash || '';
     const { hash: cloudIndexHash, entryIndex } = await getEntryIndexHash(env);
     if (!entryIndex) {
       return jsonResponse(env, { error: ErrorMessage.ManifestNotFoundSeedFirst }, HttpStatus.NotFound);
@@ -241,7 +246,13 @@ export async function handleAssetsRequest(
     const authError = await requireAuth(request, env, undefined, ErrorMessage.AuthenticationRequired);
     if (authError instanceof Response) return authError;
 
-    const body = (await request.json()) as { hash: string; content: string; contentType?: string };
+    const validation = await validateZodBody(request, env, z.object({
+      hash: z.string().min(1),
+      content: z.string().min(1),
+      contentType: z.string().optional(),
+    }).strict());
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
     try {
       const uploaded = await uploadImageContent(env, body);
       return jsonResponse(env, { hash: uploaded.hash, url: uploaded.key }, HttpStatus.Ok);

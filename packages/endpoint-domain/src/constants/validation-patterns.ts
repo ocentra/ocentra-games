@@ -23,4 +23,10 @@ export const ValidationPattern = {
   PathComponentTrimUnderscores: /^_+|_+$/g,
   UrlPathFromFull: /^https?:\/\/[^/]+(\/[^?#]*)/,
   UrlPathOnly: /^(\/[^?#]*)/,
+  UserId: /^[A-Za-z0-9._-]+$/,
+  IsoDateTime: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/,
+  SemanticVersion: /^[0-9]+\.[0-9]+\.[0-9]+$/,
+  SeasonId: /^(current|season-[A-Za-z0-9_-]+)$/,
+  DisputeId: /^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/,
+  PrintableAscii: /^[ -~]*$/,
 } as const;

@@ -6,23 +6,13 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { DOBaseUrl } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { LeaderboardDO as LeaderboardDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { GameName } from '@ocentra/endpoint-domain/constants/game';
+import { ValidationPattern } from '@ocentra/endpoint-domain/constants/validation-patterns';
 import { extractPathParts } from '@ocentra/endpoint-domain/utils/path-parser';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 const DEFAULT_LEADERBOARD_REGION = 'default';
-
-function isPrintableSeasonId(value: string): boolean {
-  if (value.length === 0) return false;
-  for (let i = 0; i < value.length; i++) {
-    const code = value.charCodeAt(i);
-    if (code <= 0x20 || code === 0x7f) {
-      return false;
-    }
-  }
-  return true;
-}
 
 function tierFromScore(score: number): string {
   if (score >= 100000) return 'Master';
@@ -279,10 +269,10 @@ export async function handleLeaderboardRequest(
     }
 
     const seasonId = requestUrl.searchParams.get('season_id');
-    if (seasonId !== null && !isPrintableSeasonId(seasonId)) {
+    if (seasonId !== null && !ValidationPattern.SeasonId.test(seasonId)) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
-        message: 'season_id must be a non-empty, printable string',
+        message: 'season_id must be current or a season-* identifier',
       }), {
         status: HttpStatus.BadRequest,
         headers: {
@@ -389,31 +379,62 @@ export async function handleLeaderboardRequest(
           ...getCorsHeaders(env),
         },
       });
-    } else if (action === 'nearby' && userId) {
-      const entries = await computeLeaderboard(env, gameTypeNum, aiOnly, 10000);
-      const userIndex = entries.findIndex(e => e.user_id === userId || e.public_key === userId);
-      
-      if (userIndex === -1) {
-        return new Response(JSON.stringify({
-          error: 'User not found',
-          user_id: userId,
-        }), {
-          status: HttpStatus.NotFound,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env),
-          },
+      } else if (action === 'nearby' && userId) {
+        const entries = await computeLeaderboard(env, gameTypeNum, aiOnly, 10000);
+        const userIndex = entries.findIndex(e => e.user_id === userId || e.public_key === userId);
+        const mapEntry = (e: { user_id: string; score: number; rank: number }) => ({
+          user_id: e.user_id,
+          rank: e.rank,
+          tier: tierFromScore(e.score),
+          score: e.score,
+          wins: 0,
+          losses: 0,
+          games_played: 0,
         });
-      }
+        
+        if (userIndex === -1) {
+          const userEntry = entries[0];
+          if (!userEntry) {
+            return new Response(JSON.stringify({
+              above: [],
+              user: {
+                user_id: userId,
+                rank: 1,
+                tier: tierFromScore(0),
+                score: 0,
+                wins: 0,
+                losses: 0,
+                games_played: 0,
+              },
+              below: [],
+            }), {
+              status: HttpStatus.Ok,
+              headers: {
+                [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+                ...getCorsHeaders(env),
+              },
+            });
+          }
+          return new Response(JSON.stringify({
+            above: [],
+            user: mapEntry(userEntry),
+            below: entries.slice(1, 1 + range).map(mapEntry),
+          }), {
+            status: HttpStatus.Ok,
+            headers: {
+              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+              ...getCorsHeaders(env),
+            },
+          });
+        }
 
       const start = Math.max(0, userIndex - range);
       const end = Math.min(entries.length, userIndex + range + 1);
       const nearby = entries.slice(start, end);
-
       return new Response(JSON.stringify({
-        above: nearby.filter((_, i) => i < userIndex - start),
-        user: entries[userIndex],
-        below: nearby.filter((_, i) => i > userIndex - start),
+        above: nearby.filter((_, i) => i < userIndex - start).map(mapEntry),
+        user: mapEntry(entries[userIndex]),
+        below: nearby.filter((_, i) => i > userIndex - start).map(mapEntry),
       }), {
         status: HttpStatus.Ok,
         headers: {

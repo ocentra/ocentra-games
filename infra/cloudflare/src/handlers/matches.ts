@@ -10,6 +10,9 @@ import { checkMatchInDO } from '@/utils/match-query';
 import { isMatchFinalized } from '@/utils/match-state';
 import { consumeResponseBody } from '@/utils/consume-response-body';
 
+import { MatchUploadRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
+
+
 const log = Logger.instance;
 log.register(import.meta.url);
 
@@ -472,18 +475,28 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
       }
     }
 
+    let bodyText = '';
     if (env.COORDINATOR_PUBLIC_KEY && signature) {
-      const body = await request.text();
-      const isValid = await verifySignature(body, signature, env.COORDINATOR_PUBLIC_KEY);
+      bodyText = await request.text();
+      const isValid = await verifySignature(bodyText, signature, env.COORDINATOR_PUBLIC_KEY);
       if (!isValid) {
         return new Response('Invalid signature', {
           status: HttpStatus.Unauthorized,
           headers: getCorsHeaders(env),
         });
       }
+    } else {
+      bodyText = await request.text();
     }
-
-    const body = await request.text();
+    
+    // Validate that it's at least valid JSON and matches the basic structure
+    const { errorResponse: matchError } = await validateZodBody(
+      new Request(request.url, { method: request.method, body: bodyText, headers: request.headers }),
+      env,
+      MatchUploadRequestSchema
+    );
+    if (matchError) return matchError;
+    const body = bodyText;
     const key = buildMatchKey(matchId);
     const storage = createMatchStorage(env);
 
@@ -493,9 +506,15 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
     });
 
     if (!validationResult.success) {
-      return new Response(validationResult.error || 'Invalid match record', {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: validationResult.error || 'Invalid match record',
+      }), {
         status: HttpStatus.BadRequest,
-        headers: getCorsHeaders(env),
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
       });
     }
 
@@ -638,9 +657,15 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 
     if (token) {
       if (!env.SIGNED_URL_SECRET) {
-        return new Response('Signed URL secret not configured', {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.InternalServerError,
+          message: 'Signed URL secret not configured',
+        }), {
           status: HttpStatus.InternalServerError,
-          headers: getCorsHeaders(env),
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
         });
       }
 
@@ -659,9 +684,15 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
       });
 
       if (!validationResult.success) {
-        return new Response(validationResult.error || 'Invalid token', {
+        return new Response(JSON.stringify({
+          error: ErrorMessage.Unauthorized,
+          message: validationResult.error || 'Invalid token',
+        }), {
           status: HttpStatus.Unauthorized,
-          headers: getCorsHeaders(env),
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env),
+          },
         });
       }
     }
@@ -742,8 +773,22 @@ async function getMatch(request: Request, env: Env, matchId: MatchId): Promise<R
 
 async function deleteMatch(request: Request, env: Env, matchId: MatchId): Promise<Response> {
   try {
+    const requestUrl = new URL(request.url);
+    if (requestUrl.searchParams.size > 0) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Delete requests must not include query parameters',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
     const bodyText = await request.clone().text();
-    if (bodyText.trim().length > 0) {
+    if (bodyText.length > 0) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
         message: 'Match delete requests must not include a request body',
@@ -893,7 +938,7 @@ export async function handleAnonymizeRequest(
   }
 
   const bodyText = await request.clone().text();
-  if (bodyText.trim().length > 0) {
+  if (bodyText.length > 0) {
     return new Response(JSON.stringify({
       error: ErrorMessage.BadRequest,
       message: 'Anonymize requests must not include a request body',
@@ -938,7 +983,15 @@ export async function handleAnonymizeRequest(
 
     const doCheckResult = await checkMatchInDO(matchId, env);
     if (doCheckResult.deleted) {
-      return new Response(ErrorMessage.MatchNotFound, { status: HttpStatus.NotFound, headers: getCorsHeaders(env) });
+      return new Response(JSON.stringify({
+        error: ErrorMessage.MatchNotFound,
+      }), {
+        status: HttpStatus.NotFound,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
     }
 
     const matchKey = buildMatchKey(matchId);
@@ -950,7 +1003,15 @@ export async function handleAnonymizeRequest(
     );
 
     if (!matchResult.success || !matchResult.matchData) {
-      return new Response(ErrorMessage.MatchNotFound, { status: HttpStatus.NotFound, headers: getCorsHeaders(env) });
+      return new Response(JSON.stringify({
+        error: ErrorMessage.MatchNotFound,
+      }), {
+        status: HttpStatus.NotFound,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
     }
 
     const matchRecord = matchResult.matchData as Record<string, unknown>;

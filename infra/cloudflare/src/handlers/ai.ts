@@ -1,5 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
+import { z } from 'zod';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
@@ -40,33 +41,6 @@ const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
 const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logDebug(message, stackTrace, data, enabled);
 };
-
-function isPrintablePlayerId(value: string): boolean {
-  if (!value || value.trim().length === 0) {
-    return false;
-  }
-
-  for (const char of value) {
-    const code = char.charCodeAt(0);
-    if (code <= 32 || (code >= 127 && code <= 159)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function isPlainRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isStringArrayWithValues(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every(item => typeof item === 'string');
-}
-
-function isPlainRecordArray(value: unknown): value is Record<string, unknown>[] {
-  return Array.isArray(value) && value.every(item => isPlainRecord(item));
-}
 
 export interface CommunicationOutput {
   text: string;
@@ -248,154 +222,73 @@ async function handleAIEvent(
       });
     }
 
-    let eventRequest: AIEventRequest;
-    try {
-      eventRequest = await request.json() as AIEventRequest;
-    } catch (error) {
-      logError('Invalid JSON in AI event request', getStackTrace(), { error: error instanceof Error ? error.message : String(error) });
-      return new Response(
-        JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Invalid JSON request body' }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
+    const parsedBody = await request.clone().json().catch(() => null);
+    const bodyPreview = parsedBody && typeof parsedBody === 'object' && !Array.isArray(parsedBody)
+      ? (parsedBody as Record<string, unknown>)
+      : {};
+    const missingRequiredFields = ['matchId', 'playerId', 'eventType'].filter((field) => {
+      const value = bodyPreview[field];
+      return typeof value !== 'string' || value.length === 0;
+    });
+    if (missingRequiredFields.length > 0) {
+      return new Response(JSON.stringify({
+        error: 'Missing required fields: matchId, playerId, eventType',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+      });
     }
 
-    if (!isPlainRecord(eventRequest)) {
-      return new Response(
-        JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Request body must be a JSON object' }),
-        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } }
-      );
-    }
+    const validationSchema = z.object({
+      matchId: z.string().refine((value) => validateMatchId(value).valid, {
+        message: 'Invalid matchId format',
+      }),
+      playerId: z.string().min(1),
+      eventType: z.string().min(1),
+      eventData: z.record(z.string(), z.unknown()).optional(),
+      currentState: z.record(z.string(), z.unknown()).optional(),
+      playerHand: z.array(z.record(z.string(), z.unknown())).optional(),
+      availableActions: z.array(z.string()).optional(),
+      communicationOutput: z.object({
+        text: z.string(),
+        intent: z.string().optional(),
+        targetPlayers: z.array(z.string()).optional(),
+        ttsVoice: z.string().optional(),
+      }).optional(),
+      inputConsumption: z.object({
+        transcripts: z.array(z.object({
+          playerId: z.string(),
+          text: z.string(),
+          timestamp: z.string(),
+        })),
+        processedContext: z.unknown().optional(),
+        }).optional(),
+        sequenceNumber: z.number().int().optional(),
+        eventSequence: z.number().int().optional(),
+      }).strict();
 
-    if (!eventRequest.matchId || !eventRequest.playerId || !eventRequest.eventType) {
-      return new Response(
-        JSON.stringify({ error: ErrorMessage.MissingRequiredFields }),
-        { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } }
-      );
+    const validationResult = validationSchema.safeParse(bodyPreview);
+    if (!validationResult.success) {
+      const issuePaths = [...new Set(validationResult.error.issues.flatMap((issue) => issue.path.map((part) => String(part))))];
+      const message = issuePaths.length > 0
+        ? `Invalid request payload: ${issuePaths.join(', ')}`
+        : 'Invalid request payload';
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message,
+        issues: validationResult.error.issues,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+      });
     }
-
-    const matchIdValidation = validateMatchId(String(eventRequest.matchId));
-    if (!matchIdValidation.valid) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: matchIdValidation.error || ErrorMessage.InvalidMatchIdFormat,
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if (typeof eventRequest.playerId !== 'string' || !isPrintablePlayerId(eventRequest.playerId)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'playerId must be a non-empty printable string',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if (typeof eventRequest.eventType !== 'string' || eventRequest.eventType.trim().length === 0) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'eventType must be a non-empty string',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if ('currentState' in eventRequest && eventRequest.currentState !== undefined && !isPlainRecord(eventRequest.currentState)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'currentState must be an object',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if ('eventData' in eventRequest && eventRequest.eventData !== undefined && !isPlainRecord(eventRequest.eventData)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'eventData must be an object',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if ('playerHand' in eventRequest && eventRequest.playerHand !== undefined && !Array.isArray(eventRequest.playerHand)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'playerHand must be an array',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if (Array.isArray(eventRequest.playerHand) && !isPlainRecordArray(eventRequest.playerHand)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'playerHand items must be objects',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if ('availableActions' in eventRequest && eventRequest.availableActions !== undefined && !Array.isArray(eventRequest.availableActions)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'availableActions must be an array',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
-
-    if (Array.isArray(eventRequest.availableActions) && !isStringArrayWithValues(eventRequest.availableActions)) {
-      return new Response(
-        JSON.stringify({
-          error: ErrorMessage.BadRequest,
-          message: 'availableActions items must be strings',
-        }),
-        {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        }
-      );
-    }
+    const eventRequest = validationResult.data as AIEventRequest;
 
     const identifier = await getRateLimitIdentifier(request);
-    const rateLimitLimit = env.TEST_MODE === 'true' ? AIRateLimit.TestLimit : AIRateLimit.DefaultLimit;
+    const testRateLimitLimit = Number(env.AI_RATE_LIMIT_TEST_LIMIT ?? AIRateLimit.TestLimit);
+    const rateLimitLimit = env.TEST_MODE === 'true' && Number.isFinite(testRateLimitLimit) && testRateLimitLimit > 0
+      ? testRateLimitLimit
+      : AIRateLimit.DefaultLimit;
     const rateLimit = await checkRateLimit(env, identifier, rateLimitLimit, AIRateLimit.DefaultWindowMs);
 
     if (!rateLimit.allowed) {

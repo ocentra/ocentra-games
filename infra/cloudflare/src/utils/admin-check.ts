@@ -1,9 +1,10 @@
 import type { Env } from '@/constants/env';
-import { verifyAuth } from '@/utils/auth';
+import { extractTokenFromHeader, verifyAuth } from '@/utils/auth';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getFirestoreUserUrl } from '@/utils/firebase';
 import { HttpHeader, HttpContentType, HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
+import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { KvKeyPrefix, CacheLimits } from '@/constants/rate-limit';
 import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
@@ -54,6 +55,14 @@ export async function checkAdminStatus(
 
   if (isDevWithAuthDisabled) {
     return { isAdmin: true, userId: 'dev-admin' };
+  }
+
+  const authHeader = request.headers.get(HttpHeader.Authorization);
+  const token = extractTokenFromHeader(authHeader);
+
+  if (env.TEST_MODE === QueryValue.True && token?.match(new RegExp(`^${TestTokenPrefix.Test}[^:]+:admin$`))) {
+    const userId = token.slice(TestTokenPrefix.Test.length, token.lastIndexOf(':admin'));
+    return { isAdmin: true, userId };
   }
 
   if (!env.FIREBASE_PROJECT_ID) {

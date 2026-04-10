@@ -106,6 +106,23 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(typeof data.trustScore).toBe('number');
     });
 
+    it(testName('Status: rejects invalid nested userId path values'), async () => {
+      const userId = `ac-invalid-${Date.now()}`;
+      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.AntiCheat.Base}/status/%C3%AC%C2%8D%03`;
+      const response = await worker.fetch(url, {
+        method: HttpMethod.Get,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+      });
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = (await response.json()) as { error?: string; message?: string };
+      expect(data.error).toBe('Bad Request');
+      expect(typeof data.message).toBe('string');
+    });
+
     it(testName('Report: returns received true'), async () => {
       const userId = `ac-report-${Date.now()}`;
       const url = buildApiUrl(ApiEndpoint.AntiCheat.Report, { baseUrl: TestConfig.TestApiUrlPlaceholder });

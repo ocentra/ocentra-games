@@ -146,7 +146,7 @@ export const PaymentDOGetResponseSchema = z.object({
 export type PaymentDOGetResponse = z.infer<typeof PaymentDOGetResponseSchema>;
 
 export const ReconcileRequestSchema = z
-  .object({ repair: z.literal(true).optional() })
+  .object({ repair: z.boolean().optional() })
   .strict();
 
 export type ReconcileRequest = z.infer<typeof ReconcileRequestSchema>;

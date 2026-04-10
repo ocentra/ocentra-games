@@ -2,12 +2,12 @@ import type { Env } from '@/constants/env';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { getCorsHeaders } from '@/utils/cors';
+import { z } from 'zod';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType, CacheControl } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
-import { ParamName } from '@ocentra/endpoint-domain/constants/paths';
-import { extractAndValidateIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
+import { extractIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { exportUserDataLogic, deleteUserDataLogic, type DataStorage } from '@/logic/data';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
@@ -31,6 +31,19 @@ const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
 const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logDebug(message, stackTrace, data, enabled);
 };
+
+const OPENAPI_USER_ID_PATTERN = /^[A-Za-z0-9._-]+$/;
+
+function normalizeOpenApiUserId(value: string): string | null {
+  if (!value) return null;
+  let decoded = value;
+  try {
+    decoded = decodeURIComponent(value);
+  } catch {
+    //
+  }
+  return OPENAPI_USER_ID_PATTERN.test(decoded) ? decoded : null;
+}
 
 function createDataStorage(env: Env): DataStorage {
   return {
@@ -62,19 +75,19 @@ export async function handleDataExportRequest(
   }
   const userId = authResult.userId;
 
-  const pathResult = extractAndValidateIdFromPath(path, ApiEndpoint.DataExport.Base, ParamName.UserId, request.url);
-  if (pathResult.error || !pathResult.id) {
+  const pathResult = normalizeOpenApiUserId(extractIdFromPath(path, ApiEndpoint.DataExport.Base) ?? '');
+  if (!pathResult) {
     logDebug('Data export validation failed', getStackTrace(), {
       path,
-      error: pathResult.error,
+      error: 'invalid userId',
       url: request.url,
     }, false);
     return new Response(JSON.stringify({
       error: ErrorMessage.BadRequest,
-      message: pathResult.error || ErrorMessage.UserIdRequired
+      message: ErrorMessage.UserIdRequired
     }), { status: HttpStatus.BadRequest, headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
   }
-  const requestedUserId = pathResult.id;
+  const requestedUserId = pathResult;
   const requestUrl = new URL(request.url);
   if (requestUrl.searchParams.size > 0) {
     return new Response(JSON.stringify({
@@ -191,24 +204,24 @@ export async function handleDataDeletionRequest(
       url: request.url,
     }, true);
 
-    const userIdResult = extractAndValidateIdFromPath(path, ApiEndpoint.Data.Base, ParamName.UserId, request.url);
+    const userIdResult = normalizeOpenApiUserId(extractIdFromPath(path, ApiEndpoint.Data.Base) ?? '');
     
     logDebug('[DATA-DELETE] Path validation result', getStackTrace(), {
-      hasId: !!userIdResult.id,
-      id: userIdResult.id,
-      error: userIdResult.error,
+      hasId: !!userIdResult,
+      id: userIdResult,
+      error: userIdResult ? null : 'invalid userId',
       path,
       endpoint: ApiEndpoint.Data.Base,
       authenticatedUserId,
     }, true);
 
-    if (userIdResult.error) {
+    if (!userIdResult) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
-        message: userIdResult.error
+        message: ErrorMessage.UserIdRequired
       }), { status: HttpStatus.BadRequest, headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
     }
-    let userId = userIdResult.id;
+    let userId = userIdResult;
 
   const adminCheck = await checkAdminStatus(request, env);
   const isAdmin = adminCheck.isAdmin;
@@ -228,13 +241,52 @@ export async function handleDataDeletionRequest(
     return new Response(ErrorMessage.UserIdRequired, { status: HttpStatus.BadRequest, headers: getCorsHeaders(env) });
   }
 
-  let confirm = false;
-  try {
-    const body = await request.json() as { confirm?: boolean };
-    confirm = body.confirm === true;
-  } catch {
-    const requestUrl = new URL(request.url);
-    confirm = requestUrl.searchParams.get('confirm') === 'true';
+  const requestUrl = new URL(request.url);
+  for (const key of requestUrl.searchParams.keys()) {
+    if (key !== 'confirm') {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Unexpected query parameters',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) }
+      });
+    }
+  }
+  const queryConfirm = requestUrl.searchParams.get('confirm') === 'true';
+  let confirm = queryConfirm;
+
+  const requestBody = await request.clone().text();
+  if (requestBody.trim().length > 0) {
+    let parsedBody: unknown;
+    try {
+      parsedBody = JSON.parse(requestBody);
+    } catch {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Invalid JSON body',
+        issues: [],
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) }
+      });
+    }
+
+    const confirmSchema = z.object({
+      confirm: z.boolean().optional()
+    }).strict();
+    const bodyValidation = confirmSchema.safeParse(parsedBody);
+    if (!bodyValidation.success) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Invalid request payload',
+        issues: bodyValidation.error.issues,
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) }
+      });
+    }
+    confirm = bodyValidation.data.confirm === true || queryConfirm;
   }
 
   if (!confirm) {

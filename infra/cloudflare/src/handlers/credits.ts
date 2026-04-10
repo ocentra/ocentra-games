@@ -1,8 +1,19 @@
-import type { Env } from '@/constants/env';
+import type { Env } from '@/constants/env'; // TEST
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
+import { validateZodBody } from '@/utils/zod-validation';
+
+import {
+  CreditsEarnRequestSchema,
+  CreditsConsumeRequestSchema,
+  CreditsPurchaseRequestSchema,
+  CreditsRedeemRequestSchema,
+  CreditsConsumeGPRequestSchema,
+} from '@ocentra/endpoint-domain/schemas/worker-contracts';
+import { ValidationPattern } from '@ocentra/endpoint-domain/constants/validation-patterns';
+
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { ParamName } from '@ocentra/endpoint-domain/constants/paths';
 import { extractAndValidateIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
@@ -38,7 +49,7 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 import { RateLimitPrefix, CreditsRateLimit } from '@/constants/rate-limit';
 import { CreditAction, Currency, TransactionType } from '@ocentra/endpoint-domain/constants/credits';
 import { CreditsDO } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { MetadataField } from '@ocentra/endpoint-domain/constants/idempotency';
+import { MetadataField, type IdempotencyKey } from '@ocentra/endpoint-domain/constants/idempotency';
 import type { RateLimiter } from '@/utils/rate-limiter-interface';
 import { createRateLimiter } from '@/utils/rate-limiter-factory';
 import { fetchFromCreditsDO } from '@/utils/durable-object-request';
@@ -47,6 +58,7 @@ import { requireIdempotencyKey, validateAndRejectIdempotencyKey } from '@/utils/
 import { validateAndExtractIdempotencyKey } from '@ocentra/endpoint-domain/validators/idempotency-validators';
 import { formatConsumedACDescription } from '@ocentra/endpoint-domain/utils/credit-descriptions';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+const USER_ID_PATH_PATTERN = ValidationPattern.UserId;
 import {
   type CreditBalance,
   type CreditTransaction,
@@ -55,13 +67,6 @@ import {
   purchaseCreditsLogic,
 } from '@/logic/credits';
 import { redeemPromoLogic } from '@/logic/promo-redeem';
-
-interface PurchaseRequest {
-  amount: number;
-  currency: Currency;
-  payment_method?: string;
-  ac_amount: number;
-}
 
 function createCreditStorage(env: Env): CreditStorage {
   return {
@@ -129,6 +134,32 @@ function createCreditStorage(env: Env): CreditStorage {
   };
 }
 
+async function deriveFallbackIdempotencyKey(seed: unknown): Promise<string> {
+  const encoded = new TextEncoder().encode(JSON.stringify(seed));
+  const digest = await crypto.subtle.digest('SHA-256', encoded);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function resolveIdempotencyKey(
+  headerValue: string | null,
+  request: Request,
+  env: Env,
+  seed: unknown
+): Promise<Response | IdempotencyKey> {
+  if (headerValue) {
+    const keyRequirement = requireIdempotencyKey(headerValue, request, env);
+    return keyRequirement;
+  }
+
+  const fallbackKey = await deriveFallbackIdempotencyKey(seed);
+  const validation = validateAndExtractIdempotencyKey(fallbackKey);
+  if (!validation.valid) {
+    return requireIdempotencyKey(fallbackKey, request, env);
+  }
+
+  return validation.key;
+}
+
 
 export async function getCreditBalance(env: Env, userId: string): Promise<CreditBalance> {
   if (!env.CREDITS_DO) {
@@ -150,12 +181,12 @@ export async function getCreditBalance(env: Env, userId: string): Promise<Credit
   const balanceData = await response.json() as { gp_balance: number; ac_balance: number; total_gp_earned?: number; total_ac_purchased?: number; total_ac_spent?: number };
   return {
     user_id: userId,
-    gp_balance: balanceData.gp_balance,
-    ac_balance: balanceData.ac_balance,
+    gp_balance: Math.round(balanceData.gp_balance),
+    ac_balance: Math.round(balanceData.ac_balance),
     last_updated: new Date().toISOString(),
-    total_gp_earned: balanceData.total_gp_earned ?? balanceData.gp_balance,
-    total_ac_purchased: balanceData.total_ac_purchased ?? balanceData.ac_balance,
-    total_ac_spent: balanceData.total_ac_spent ?? 0,
+    total_gp_earned: Math.round(balanceData.total_gp_earned ?? balanceData.gp_balance),
+    total_ac_purchased: Math.round(balanceData.total_ac_purchased ?? balanceData.ac_balance),
+    total_ac_spent: Math.round(balanceData.total_ac_spent ?? 0),
   };
 }
 
@@ -209,9 +240,7 @@ export async function earnGP(
   return result;
 }
 
-interface RedeemBody {
-  code?: string;
-}
+// Schemas moved to @ocentra/endpoint-domain/schemas/worker-contracts
 
 async function handleCreditsRedeem(
   request: Request,
@@ -219,37 +248,25 @@ async function handleCreditsRedeem(
   userId: string,
   requestOrigin: string | null
 ): Promise<Response> {
-  const cors = getCorsHeaders(env, requestOrigin ?? undefined);
-  let body: RedeemBody;
-  try {
-    body = await request.json() as RedeemBody;
-  } catch {
-    return new Response(JSON.stringify({ error: 'Invalid JSON', message: 'Request body must be JSON with code' }), {
-      status: HttpStatus.BadRequest,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...cors },
-    });
-  }
-  const code = typeof body.code === 'string' ? body.code.trim() : '';
-  if (!code) {
-    return new Response(JSON.stringify({ error: 'Bad Request', message: 'code is required' }), {
-      status: HttpStatus.BadRequest,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...cors },
-    });
-  }
-  const result = await redeemPromoLogic({ code, userId }, env);
-  if (!result.success) {
-    return new Response(JSON.stringify({ error: result.error ?? 'Redeem failed' }), {
+  const { data, errorResponse } = await validateZodBody(request, env, CreditsRedeemRequestSchema);
+  if (errorResponse) return errorResponse;
+  const { code } = data!;
+  const redeemResult = await redeemPromoLogic({ code, userId }, env);
+  const cors = getCorsHeaders(env, requestOrigin || undefined);
+
+  if (!redeemResult.success) {
+    return new Response(JSON.stringify({ error: redeemResult.error ?? 'Redeem failed' }), {
       status: HttpStatus.BadRequest,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...cors },
     });
   }
   return new Response(JSON.stringify({
     success: true,
-    already_redeemed: result.already_redeemed,
-    ac_added: result.ac_added,
-    gp_added: result.gp_added,
-    new_ac_balance: result.new_ac_balance,
-    new_gp_balance: result.new_gp_balance,
+    already_redeemed: redeemResult.already_redeemed,
+    ac_added: redeemResult.ac_added,
+    gp_added: redeemResult.gp_added,
+    new_ac_balance: redeemResult.new_ac_balance,
+    new_gp_balance: redeemResult.new_gp_balance,
   }), {
     status: HttpStatus.Ok,
     headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...cors },
@@ -279,7 +296,7 @@ export async function handleCreditsRequest(
   }
 
   const result = extractAndValidateIdFromPath(path, ApiEndpoint.Credits.Base, ParamName.UserId, request.url);
-  if (result.error || !result.id) {
+  if (result.error || !result.id || !USER_ID_PATH_PATTERN.test(result.id)) {
     return new Response(JSON.stringify({
       error: 'Bad Request',
       message: result.error || 'User ID required'
@@ -383,12 +400,12 @@ export async function handleCreditsRequest(
         logInfo('[DIAG] credits balance', getStackTrace(), { userId, creditsId: creditsId.toString(), gp_balance: balanceData.gp_balance }, LOG_DIAG_CREDITS_BALANCE);
         const balance: CreditBalance = {
           user_id: userId,
-          gp_balance: balanceData.gp_balance,
-          ac_balance: balanceData.ac_balance,
+          gp_balance: Math.round(balanceData.gp_balance),
+          ac_balance: Math.round(balanceData.ac_balance),
           last_updated: new Date().toISOString(),
-          total_gp_earned: balanceData.total_gp_earned ?? balanceData.gp_balance,
-          total_ac_purchased: balanceData.total_ac_purchased ?? balanceData.ac_balance,
-          total_ac_spent: balanceData.total_ac_spent ?? 0,
+          total_gp_earned: Math.round(balanceData.total_gp_earned ?? balanceData.gp_balance),
+          total_ac_purchased: Math.round(balanceData.total_ac_purchased ?? balanceData.ac_balance),
+          total_ac_spent: Math.round(balanceData.total_ac_spent ?? 0),
         };
 
         return new Response(JSON.stringify(balance), {
@@ -476,91 +493,14 @@ export async function handleCreditsRequest(
         userId,
         contentType,
         bodyUsed: request.bodyUsed,
-        hasBody: request.body !== null,
+        hasBody: request.body! !== null,
         method: request.method
       }, LOG_CREDITS_OPERATIONS);
 
-      let body: PurchaseRequest;
-      let bodyLength = 0;
-      try {
-        body = await request.json() as PurchaseRequest;
-        bodyLength = JSON.stringify(body).length;
-        logDebug('[CREDITS-PURCHASE] Raw body text captured', getStackTrace(), {
-          userId,
-          bodyLength,
-          containsInfinity: body.ac_amount === Infinity,
-          containsNull: body.ac_amount === null,
-          containsZero: body.ac_amount === 0
-        }, LOG_CREDITS_OPERATIONS);
-        logDebug('[CREDITS-PURCHASE] JSON parsing succeeded', getStackTrace(), {
-          userId,
-          parsedAcAmount: body.ac_amount,
-          acAmountType: typeof body.ac_amount,
-          isNull: body.ac_amount === null,
-          isUndefined: body.ac_amount === undefined,
-          isZero: body.ac_amount === 0,
-          isInfinity: body.ac_amount === Infinity,
-          isNaN: Number.isNaN(body.ac_amount),
-          isFinite: Number.isFinite(body.ac_amount),
-          isInteger: Number.isInteger(body.ac_amount),
-          bodyLength
-        }, LOG_CREDITS_OPERATIONS);
-      } catch (jsonError) {
-        logError('[CREDITS-PURCHASE] JSON parsing failed', getStackTrace(), {
-          userId,
-          contentType,
-          bodyLength,
-          error: jsonError instanceof Error ? jsonError.message : String(jsonError),
-          errorType: jsonError instanceof Error ? jsonError.constructor.name : typeof jsonError,
-          errorStack: jsonError instanceof Error ? jsonError.stack : undefined
-        });
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON payload'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-      
-      const validationChecks = {
-        hasAcAmount: body.ac_amount !== undefined && body.ac_amount !== null,
-        isPositive: body.ac_amount > 0,
-        isInteger: Number.isInteger(body.ac_amount),
-        isFinite: Number.isFinite(body.ac_amount),
-        finalResult: !body.ac_amount || body.ac_amount <= 0 || !Number.isInteger(body.ac_amount) || !Number.isFinite(body.ac_amount)
-      };
-      
-      logDebug('[CREDITS-PURCHASE] Validation checks', getStackTrace(), {
-        userId,
-        acAmount: body.ac_amount,
-        validationChecks
-      }, LOG_CREDITS_OPERATIONS);
-      
-      if (!body.ac_amount || body.ac_amount <= 0 || !Number.isInteger(body.ac_amount) || !Number.isFinite(body.ac_amount)) {
-        logError('[CREDITS-PURCHASE] Validation failed - invalid ac_amount', getStackTrace(), {
-          userId,
-          acAmount: body.ac_amount,
-          acAmountType: typeof body.ac_amount,
-          bodyLength,
-          validationChecks
-        });
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'AC amount must be a positive integer greater than 0'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-
+      const { data: body, errorResponse: bodyError } = await validateZodBody(request, env, CreditsPurchaseRequestSchema);
+      if (bodyError) return bodyError;
       if (!env.CREDITS_DO) {
+
         return new Response(JSON.stringify({
           error: 'Service Unavailable',
           message: 'Credits service not configured'
@@ -573,12 +513,18 @@ export async function handleCreditsRequest(
         });
       }
 
-      const idempotencyKeyHeader = request.headers.get(HttpHeader.IdempotencyKey);
-      const keyRequirement = requireIdempotencyKey(idempotencyKeyHeader, request, env);
-      if (keyRequirement instanceof Response) {
-        return keyRequirement;
-      }
-      const idempotencyKey = keyRequirement;
+        const idempotencyKeyHeader = request.headers.get(HttpHeader.IdempotencyKey);
+        const keyRequirement = await resolveIdempotencyKey(idempotencyKeyHeader, request, env, {
+          userId,
+          amount: body!.amount,
+          currency: body!.currency,
+          ac_amount: body!.ac_amount,
+          payment_method: body!.payment_method ?? null,
+        });
+        if (keyRequirement instanceof Response) {
+          return keyRequirement;
+        }
+        const idempotencyKey = keyRequirement;
 
       const validationError = validateAndRejectIdempotencyKey(idempotencyKey, request, env);
       if (validationError) {
@@ -592,9 +538,9 @@ export async function handleCreditsRequest(
 
       logDebug('[CREDITS-PURCHASE-REQUEST] Starting purchase', getStackTrace(), {
         userId,
-        acAmount: body.ac_amount,
-        usdAmount: body.amount,
-        paymentMethod: body.payment_method,
+        acAmount: body!.ac_amount,
+        usdAmount: body!.amount,
+        paymentMethod: body!.payment_method,
         hasIdempotencyKey: !!validatedIdempotencyKey,
         hasCreditsDO: !!env.CREDITS_DO
       }, LOG_CREDITS_OPERATIONS);
@@ -604,9 +550,9 @@ export async function handleCreditsRequest(
         purchaseResult = await purchaseCreditsLogic(
           {
             userId,
-            acAmount: body.ac_amount,
-            usdAmount: body.amount,
-            paymentMethod: body.payment_method,
+            acAmount: body!.ac_amount,
+            usdAmount: body!.amount,
+            paymentMethod: body!.payment_method,
             idempotencyKey: validatedIdempotencyKey,
           },
           env,
@@ -615,7 +561,7 @@ export async function handleCreditsRequest(
       } catch (error) {
         logError('[CREDITS-PURCHASE-EXCEPTION] Purchase logic threw exception', getStackTrace(), {
           userId,
-          acAmount: body.ac_amount,
+          acAmount: body!.ac_amount,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined
         });
@@ -642,7 +588,7 @@ export async function handleCreditsRequest(
       if (!purchaseResult.success) {
         logError('[CREDITS-PURCHASE-FAILURE] Purchase failed', getStackTrace(), {
           userId,
-          acAmount: body.ac_amount,
+          acAmount: body!.ac_amount,
           error: purchaseResult.error,
           idempotencyKey: validatedIdempotencyKey || undefined,
           hasCreditsDO: !!env.CREDITS_DO
@@ -726,98 +672,22 @@ export async function handleCreditsRequest(
       }
 
       const contentType = request.headers.get(HttpHeader.ContentType) || '';
+      const bodyLength = request.headers.get(HttpHeader.ContentLength) || '0';
       logDebug('[CREDITS-CONSUME] Request body inspection', getStackTrace(), {
         userId,
         contentType,
         bodyUsed: request.bodyUsed,
-        hasBody: request.body !== null,
+        hasBody: request.body! !== null,
         method: request.method
       }, LOG_CREDITS_OPERATIONS);
 
-      let body: { ac_amount: number; description?: string; metadata?: Record<string, unknown> };
-      let bodyLength = 0;
-      try {
-        body = await request.json() as { ac_amount: number; description?: string; metadata?: Record<string, unknown> };
-        bodyLength = JSON.stringify(body).length;
-        logDebug('[CREDITS-CONSUME] Raw body text captured', getStackTrace(), {
-          userId,
-          bodyLength,
-          containsInfinity: body.ac_amount === Infinity,
-          containsNull: body.ac_amount === null,
-          containsZero: body.ac_amount === 0
-        }, LOG_CREDITS_OPERATIONS);
-        logDebug('[CREDITS-CONSUME] JSON parsing succeeded', getStackTrace(), {
-          userId,
-          parsedAcAmount: body.ac_amount,
-          acAmountType: typeof body.ac_amount,
-          isNull: body.ac_amount === null,
-          isUndefined: body.ac_amount === undefined,
-          isZero: body.ac_amount === 0,
-          isInfinity: body.ac_amount === Infinity,
-          isNaN: Number.isNaN(body.ac_amount),
-          isFinite: Number.isFinite(body.ac_amount),
-          isInteger: Number.isInteger(body.ac_amount),
-          bodyLength
-        }, LOG_CREDITS_OPERATIONS);
-      } catch (jsonError) {
-        logError('[CREDITS-CONSUME] JSON parsing failed', getStackTrace(), {
-          userId,
-          contentType,
-          bodyLength,
-          error: jsonError instanceof Error ? jsonError.message : String(jsonError),
-          errorType: jsonError instanceof Error ? jsonError.constructor.name : typeof jsonError,
-          errorStack: jsonError instanceof Error ? jsonError.stack : undefined
-        });
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON payload'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-      
-      const validationChecks = {
-        hasAcAmount: body.ac_amount !== undefined && body.ac_amount !== null,
-        isPositive: body.ac_amount > 0,
-        isInteger: Number.isInteger(body.ac_amount),
-        isFinite: Number.isFinite(body.ac_amount),
-        finalResult: !body.ac_amount || body.ac_amount <= 0 || !Number.isInteger(body.ac_amount) || !Number.isFinite(body.ac_amount)
-      };
-      
-      logDebug('[CREDITS-CONSUME] Validation checks', getStackTrace(), {
-        userId,
-        acAmount: body.ac_amount,
-        validationChecks
-      }, LOG_CREDITS_OPERATIONS);
-      
-      if (!body.ac_amount || body.ac_amount <= 0 || !Number.isInteger(body.ac_amount) || !Number.isFinite(body.ac_amount)) {
-        logError('[CREDITS-CONSUME] Validation failed - invalid ac_amount', getStackTrace(), {
-          userId,
-          acAmount: body.ac_amount,
-          acAmountType: typeof body.ac_amount,
-          bodyLength,
-          validationChecks
-        });
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'AC amount must be a positive integer greater than 0'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-
+      const { data: body, errorResponse: bodyError } = await validateZodBody(request, env, CreditsConsumeRequestSchema);
+      if (bodyError) return bodyError;
       if (!env.CREDITS_DO) {
+
         logError('[CREDITS-CONSUME] CREDITS_DO not configured - returning 503', getStackTrace(), {
           userId,
-          acAmount: body.ac_amount,
+          acAmount: body!.ac_amount,
           hasEnv: !!env,
           envKeys: Object.keys(env).filter(k => k.includes('CREDIT') || k.includes('DO')),
           contentType,
@@ -836,7 +706,12 @@ export async function handleCreditsRequest(
       }
 
       const idempotencyKeyHeader = request.headers.get(HttpHeader.IdempotencyKey);
-      const keyRequirement = requireIdempotencyKey(idempotencyKeyHeader, request, env);
+      const keyRequirement = await resolveIdempotencyKey(idempotencyKeyHeader, request, env, {
+        userId,
+        ac_amount: body!.ac_amount,
+        description: body!.description,
+        metadata: body!.metadata ?? null,
+      });
       if (keyRequirement instanceof Response) {
         return keyRequirement;
       }
@@ -864,18 +739,17 @@ export async function handleCreditsRequest(
       const creditsStub = env.CREDITS_DO.get(creditsId);
       const doBody = {
         consumeId,
-        amount: body.ac_amount,
+        amount: body!.ac_amount,
         currency: Currency.AC,
-        description: body.description || formatConsumedACDescription(body.ac_amount),
-        metadata: body.metadata,
+        description: body!.description || formatConsumedACDescription(body!.ac_amount),
+        metadata: body!.metadata,
       };
-
       logDebug('[CREDITS-CONSUME-REQUEST] Starting AC consumption via CreditsDO', getStackTrace(), {
         userId,
         creditsId: creditsId.toString(),
         doPath: CreditsDO.Consume,
         consumeId,
-        acAmount: body.ac_amount,
+        acAmount: body!.ac_amount,
         hasCreditsStub: !!creditsStub
       }, LOG_CREDITS_OPERATIONS);
 
@@ -891,26 +765,26 @@ export async function handleCreditsRequest(
           
           if (response.status === HttpStatus.Conflict && errorData.error?.includes('Insufficient')) {
             let currentBalance = 0;
-            try {
-              const balanceResponse = await fetchFromCreditsDO(creditsStub, CreditsDO.Balance, {
-                method: HttpMethod.Get,
-                correlationId: getCurrentContext()?.correlationId,
-              });
-              if (balanceResponse.ok) {
-                const balanceData = await balanceResponse.json() as { ac_balance: number };
-                currentBalance = balanceData.ac_balance;
-              } else {
-                await consumeResponseBody(balanceResponse);
-              }
+              try {
+                const balanceResponse = await fetchFromCreditsDO(creditsStub, CreditsDO.Balance, {
+                  method: HttpMethod.Get,
+                  correlationId: getCurrentContext()?.correlationId,
+                });
+                if (balanceResponse.ok) {
+                  const balanceData = await balanceResponse.json() as { ac_balance: number };
+                  currentBalance = Math.round(balanceData.ac_balance);
+                } else {
+                  await consumeResponseBody(balanceResponse);
+                }
             } catch (error) {
               logWarn(`[CREDITS-PURCHASE] Failed to get current balance for transaction archive`, getStackTrace(), { userId, error: String(error) }, LOG_CREDITS_WARNINGS);
             }
 
             return new Response(JSON.stringify({
               error: 'Insufficient Credits',
-              message: `Insufficient AC balance. Current: ${currentBalance}, Required: ${body.ac_amount}`,
+              message: `Insufficient AC balance. Current: ${currentBalance}, Required: ${body!.ac_amount}`,
               current_balance: currentBalance,
-              required: body.ac_amount,
+              required: body!.ac_amount,
             }), {
               status: 402,
               headers: {
@@ -922,7 +796,7 @@ export async function handleCreditsRequest(
 
           logError('[CREDITS-CONSUME-FAILURE] Consumption failed', getStackTrace(), {
             userId,
-            acAmount: body.ac_amount,
+            acAmount: body!.ac_amount,
             error: errorData.error,
             status: response.status
           });
@@ -951,7 +825,7 @@ export async function handleCreditsRequest(
         if (!result.success) {
           logError('[CREDITS-CONSUME-FAILURE] Consumption failed', getStackTrace(), {
             userId,
-            acAmount: body.ac_amount,
+            acAmount: body!.ac_amount,
             error: result.error
           });
           return new Response(JSON.stringify({
@@ -972,11 +846,11 @@ export async function handleCreditsRequest(
             transaction_id: consumeId,
             user_id: userId,
             type: TransactionType.Consumption,
-            amount: -body.ac_amount,
+            amount: -body!.ac_amount,
             currency: Currency.AC,
-            description: body.description || formatConsumedACDescription(body.ac_amount),
+            description: body!.description || formatConsumedACDescription(body!.ac_amount),
             timestamp: new Date().toISOString(),
-            metadata: body.metadata,
+            metadata: body!.metadata,
           };
           await storage.addTransaction(transaction);
         } catch (error) {
@@ -987,7 +861,7 @@ export async function handleCreditsRequest(
           success: true,
           transaction_id: consumeId,
           new_balance: result.new_balance,
-          ac_consumed: body.ac_amount,
+          ac_consumed: body!.ac_amount,
         }), {
           status: HttpStatus.Ok,
           headers: {
@@ -1007,7 +881,7 @@ export async function handleCreditsRequest(
           creditsId: creditsId.toString(),
           doPath: CreditsDO.Consume,
           consumeId,
-          acAmount: body.ac_amount
+          acAmount: body!.ac_amount
         });
         logError(`Failed to consume AC for user ${userId}`, getStackTrace(), error);
         return new Response(JSON.stringify({
@@ -1072,50 +946,18 @@ export async function handleCreditsRequest(
         });
       }
 
-      let body: { gp_amount: number; description: string; game_type?: number; metadata?: Record<string, unknown> };
-      try {
-        body = await request.json() as { gp_amount: number; description: string; game_type?: number; metadata?: Record<string, unknown> };
-      } catch {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON payload'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
+      const validation = await validateZodBody(request, env, CreditsEarnRequestSchema);
 
-      if (!body.gp_amount || body.gp_amount <= 0 || !Number.isInteger(body.gp_amount) || !Number.isFinite(body.gp_amount)) {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'GP amount must be a positive integer greater than 0'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-
-      if (!body.description || typeof body.description !== 'string' || body.description.trim().length === 0) {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Description is required'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
+      if (validation.errorResponse) return validation.errorResponse;
+      const body = validation.data!;
 
       const idempotencyKeyHeader = request.headers.get(HttpHeader.IdempotencyKey);
-      const keyRequirement = requireIdempotencyKey(idempotencyKeyHeader, request, env);
+      const keyRequirement = await resolveIdempotencyKey(idempotencyKeyHeader, request, env, {
+        userId,
+        gp_amount: body!.gp_amount,
+        description: body!.description,
+        metadata: body!.metadata ?? null,
+      });
       if (keyRequirement instanceof Response) {
         return keyRequirement;
       }
@@ -1129,10 +971,10 @@ export async function handleCreditsRequest(
       const earnResult = await earnGPLogic(
         {
           userId,
-          gpAmount: body.gp_amount,
-          description: body.description,
+          gpAmount: body!.gp_amount,
+          description: body!.description,
           metadata: {
-            ...body.metadata,
+            ...body!.metadata,
             [MetadataField.IdempotencyKey]: idempotencyKey,
           },
         },
@@ -1217,47 +1059,10 @@ export async function handleCreditsRequest(
         });
       }
 
-      let body: { amount: number; currency?: Currency; description: string; metadata?: Record<string, unknown> };
-      try {
-        body = await request.json() as { amount: number; currency?: Currency; description: string; metadata?: Record<string, unknown> };
-      } catch {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Invalid JSON payload'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
+      const validation = await validateZodBody(request, env, CreditsConsumeGPRequestSchema);
 
-      if (!body.amount || body.amount <= 0 || !Number.isInteger(body.amount) || !Number.isFinite(body.amount)) {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Amount must be a positive integer greater than 0'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
-
-      if (!body.description || typeof body.description !== 'string' || body.description.trim().length === 0) {
-        return new Response(JSON.stringify({
-          error: 'Bad Request',
-          message: 'Description is required'
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env, requestOrigin || undefined),
-          },
-        });
-      }
+      if (validation.errorResponse) return validation.errorResponse;
+      const body = validation.data!;
 
       const currency = body.currency || Currency.GP;
       if (currency !== Currency.GP && currency !== Currency.AC) {
@@ -1325,18 +1130,17 @@ export async function handleCreditsRequest(
       const creditsStub = env.CREDITS_DO.get(creditsId);
       const doBody = {
         consumeId,
-        amount: body.amount,
+        amount: body!.amount,
         currency,
-        description: body.description,
-        metadata: body.metadata,
+        description: body!.description,
+        metadata: body!.metadata,
       };
-
       logDebug(`[CREDITS-CONSUME] Fetching consume from DO`, getStackTrace(), {
         userId,
         creditsId: creditsId.toString(),
         doPath: CreditsDO.Consume,
         consumeId,
-        amount: body.amount,
+        amount: body!.amount,
         currency,
         hasCreditsStub: !!creditsStub,
         hasEnvCreditsDO: !!env.CREDITS_DO
@@ -1355,26 +1159,28 @@ export async function handleCreditsRequest(
           
           if (response.status === HttpStatus.Conflict && errorMessage.includes('Insufficient')) {
             let currentBalance = 0;
-            try {
-              const balanceResponse = await fetchFromCreditsDO(creditsStub, CreditsDO.Balance, {
-                method: HttpMethod.Get,
-                correlationId: getCurrentContext()?.correlationId,
-              });
-              if (balanceResponse.ok) {
-                const balanceData = await balanceResponse.json() as { gp_balance?: number; ac_balance?: number };
-                currentBalance = currency === Currency.GP ? (balanceData.gp_balance ?? 0) : (balanceData.ac_balance ?? 0);
-              } else {
-                await consumeResponseBody(balanceResponse);
-              }
+              try {
+                const balanceResponse = await fetchFromCreditsDO(creditsStub, CreditsDO.Balance, {
+                  method: HttpMethod.Get,
+                  correlationId: getCurrentContext()?.correlationId,
+                });
+                if (balanceResponse.ok) {
+                  const balanceData = await balanceResponse.json() as { gp_balance?: number; ac_balance?: number };
+                  currentBalance = currency === Currency.GP
+                    ? Math.round(balanceData.gp_balance ?? 0)
+                    : Math.round(balanceData.ac_balance ?? 0);
+                } else {
+                  await consumeResponseBody(balanceResponse);
+                }
             } catch (error) {
               logWarn(`[CREDITS-PURCHASE] Failed to get current balance for transaction archive`, getStackTrace(), { userId, error: String(error) }, LOG_CREDITS_WARNINGS);
             }
 
             return new Response(JSON.stringify({
               error: errorMessage,
-              message: `Insufficient ${currency} balance. Current: ${currentBalance}, Required: ${body.amount}`,
+              message: `Insufficient ${currency} balance. Current: ${currentBalance}, Required: ${body!.amount}`,
               current_balance: currentBalance,
-              required: body.amount,
+              required: body!.amount,
             }), {
               status: HttpStatus.Conflict,
               headers: {
@@ -1420,7 +1226,7 @@ export async function handleCreditsRequest(
           creditsId: creditsId.toString(),
           doPath: CreditsDO.Consume,
           consumeId,
-          amount: body.amount,
+          amount: body!.amount,
           currency
         });
         logError(`Failed to consume ${currency} for user ${userId}`, getStackTrace(), error);

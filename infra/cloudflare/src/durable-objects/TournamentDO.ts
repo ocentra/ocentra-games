@@ -129,7 +129,9 @@ export class TournamentDO implements DurableObject {
 
   private async getBracket(): Promise<Response> {
     const state = await this.loadState();
-    if (!state) return this.json({ bracket: [], status: null });
+    if (!state || state.status === 'registration') {
+      return this.json({ error: 'Tournament not found' }, HttpStatus.NotFound);
+    }
     return this.json({
       bracket: state.bracket,
       status: state.status,
@@ -143,7 +145,7 @@ export class TournamentDO implements DurableObject {
     if (state.status !== 'registration') return this.json({ error: 'Already started or ended' }, HttpStatus.Conflict);
     const minPlayers = 2;
     if (state.participants.length < minPlayers) {
-      return this.json({ error: `Need at least ${minPlayers} players` }, HttpStatus.BadRequest);
+      return this.json({ error: `Need at least ${minPlayers} players` }, HttpStatus.Conflict);
     }
     const participants = [...state.participants];
     participants.sort((a, b) => (b.elo ?? 0) - (a.elo ?? 0));

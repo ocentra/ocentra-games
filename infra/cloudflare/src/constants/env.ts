@@ -44,6 +44,7 @@ export interface Env {
   /** Public R2 base URL for asset reads (e.g. https://assets.ocentra.ca). Used for entry index, slices, and GUID URLs. */
   ASSETS_PUBLIC_URL?: string;
   TEST_MODE?: string;
+  AI_RATE_LIMIT_TEST_LIMIT?: string;
   ADMIN_USER_IDS?: string;
   DISABLE_AUTH?: string;
   EMERGENCY_SHUTDOWN?: string;

@@ -1030,7 +1030,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
       expect(response.status).toBe(HttpStatus.BadRequest);
       const data = await response.json() as { error?: string; message?: string };
-      expect(data.message).toContain('AC amount must be a positive integer');
+      expect(data.message).toContain('Invalid request payload');
     });
 
   it(testName('Concurrency & Race Conditions: should handle concurrent purchase requests correctly'), async () => {
@@ -1487,5 +1487,4 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(bodyText).toContain('"ac_amount":null');
     });
 });
-
 

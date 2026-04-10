@@ -288,6 +288,7 @@ export async function verifyAuth(
           token === TestTokenValue.InvalidFormat || token === TestTokenValue.NotValidJwt || token === TestTokenValue.InvalidToken) {
         return { userId: '', error: ErrorMessage.InvalidTestTokenFormat };
       }
+      return { userId: '', error: ErrorMessage.InvalidTestTokenFormat };
     }
 
     const verifiedToken = await verifyFirebaseToken(token, projectId, env as Env | undefined);

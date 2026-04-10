@@ -1,19 +1,7 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import {
-  HttpStatus,
-  HttpHeader,
-  HttpContentType,
-  HttpMethod,
-} from '@ocentra/endpoint-domain/constants/http';
-import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { StripeEndpoint, PaymentTrigger } from '@ocentra/endpoint-domain/constants/stripe';
+import { validateZodBody } from '@/utils/zod-validation';
 import { verifyTurnstileToken, TurnstileTokenHeader } from '@/utils/turnstile';
-import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
-import {
-  PaymentDO as PaymentDOPaths,
-  DOBaseUrl,
-} from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import {
   CreateCheckoutRequestSchema,
   TestInitPaymentRequestSchema,
@@ -21,7 +9,12 @@ import {
   ReconcileRequestSchema,
   StripeExpandableIdSchema,
 } from '@ocentra/endpoint-domain/schemas/payments';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { DOBaseUrl, PaymentDO as PaymentDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { HttpStatus, HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { extractIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
+import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
+import { StripeEndpoint, PaymentTrigger } from '@ocentra/endpoint-domain/constants/stripe';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
@@ -81,17 +74,9 @@ export async function handlePaymentRequest(
     const userId = authResult.userId;
     const stub = getPaymentStub(env, userId);
     if (!stub) return json({ error: 'Payment service unavailable' }, HttpStatus.ServiceUnavailable);
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
-      return json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
-    }
-    const parsed = TestInitPaymentRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      return json({ error: 'Validation failed', details: parsed.error.flatten() }, HttpStatus.BadRequest);
-    }
-    const { paymentId, amount } = parsed.data;
+    const validation = await validateZodBody(request, env, TestInitPaymentRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const { paymentId, amount } = validation.data!;
     const initRes = await doFetch(stub, PaymentDOPaths.InitPayment, {
       method: HttpMethod.Post,
       body: JSON.stringify({
@@ -146,17 +131,9 @@ export async function handlePaymentRequest(
     }
     const stub = getPaymentStub(env, userId);
     if (!stub) return json({ error: 'Payment service unavailable' }, HttpStatus.ServiceUnavailable);
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
-      return json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
-    }
-    const parsed = CreateCheckoutRequestSchema.safeParse(body);
-    if (!parsed.success) {
-      return json({ error: 'Validation failed', details: parsed.error.flatten() }, HttpStatus.BadRequest);
-    }
-    const { productType, productId, quantity, successUrl, cancelUrl } = parsed.data;
+    const validation = await validateZodBody(request, env, CreateCheckoutRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    const { productType, productId, quantity, successUrl, cancelUrl } = validation.data!;
     const product = await validateProduct(env, productType, productId);
     if (!product) {
       return json({ error: 'Invalid product' }, HttpStatus.BadRequest);
@@ -231,6 +208,18 @@ export async function handlePaymentRequest(
     return new Response(JSON.stringify({ error: 'Payment service unavailable' }), {
       status: HttpStatus.ServiceUnavailable,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+    });
+  }
+
+  if (path === ApiEndpoint.Payment.Base && request.method === HttpMethod.Get) {
+    const res = await doFetch(stub, PaymentDOPaths.ListPayments);
+    const data = await res.json().catch(() => ({}));
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
     });
   }
 
@@ -388,13 +377,9 @@ export async function handlePaymentRequest(
       });
     }
     let repair = false;
-    try {
-      const body = await request.json().catch(() => ({}));
-      const parsed = ReconcileRequestSchema.safeParse(body);
-      repair = parsed.success && parsed.data.repair === true;
-    } catch {
-      //
-    }
+    const validation = await validateZodBody(request, env, ReconcileRequestSchema);
+    if (validation.errorResponse) return validation.errorResponse;
+    if (validation.data) repair = validation.data.repair === true;
     const result = await runReconciliation(env, { repair });
     return new Response(JSON.stringify(result), {
       status: HttpStatus.Ok,

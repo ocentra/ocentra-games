@@ -104,6 +104,20 @@ export async function handleSignedUrlRequest(
         });
       }
     }
+    const expiresValues = requestUrl.searchParams.getAll('expires');
+    if (expiresValues.length > 1) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Unexpected query parameter: expires',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.CacheControl]: CacheControl.PrivateShortTerm,
+          ...getCorsHeaders(env)
+        }
+      });
+    }
 
     const result = extractAndValidateMatchIdFromPath(path, ApiEndpoint.SignedUrl.Base, request.url);
     if (result.error || !result.matchId) {
@@ -126,7 +140,7 @@ export async function handleSignedUrlRequest(
     }
     const matchId = result.matchId;
 
-    const rawExpiration = requestUrl.searchParams.get('expires');
+    const rawExpiration = expiresValues[0] ?? requestUrl.searchParams.get('expires');
     const parsedExpiration = rawExpiration ? Number.parseInt(rawExpiration, 10) : 3600;
     const expirationSeconds = Number.isFinite(parsedExpiration) && parsedExpiration > 0 ? parsedExpiration : 3600;
     const maxExpiration = 86400;

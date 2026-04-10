@@ -1,4 +1,5 @@
 import { BucketPath } from '@ocentra/boundary-domain/constants/bucket-paths';
+import { LeaderboardTier } from '@ocentra/endpoint-domain/constants/leaderboard';
 
 export interface LeaderboardStorage {
   list(options: {
@@ -50,12 +51,12 @@ export interface LeaderboardEntry {
 }
 
 function calculateTier(score: number): string {
-  if (score >= 100000) return 'Master';
-  if (score >= 50000) return 'Diamond';
-  if (score >= 20000) return 'Platinum';
-  if (score >= 5000) return 'Gold';
-  if (score >= 1000) return 'Silver';
-  return 'Bronze';
+  if (score >= 100000) return LeaderboardTier.Master;
+  if (score >= 50000) return LeaderboardTier.Diamond;
+  if (score >= 20000) return LeaderboardTier.Platinum;
+  if (score >= 5000) return LeaderboardTier.Gold;
+  if (score >= 1000) return LeaderboardTier.Silver;
+  return LeaderboardTier.Bronze;
 }
 
 function isAIPlayer(player: PlayerRecord | undefined): boolean {

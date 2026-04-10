@@ -1,126 +1,93 @@
-/**
- * Matches endpoint Zod schemas.
- */
-
 import { z } from 'zod';
-import { MatchIdSchema, UserIdSchema, GameTypeSchema, TimestampSchema, PaginationParamsSchema } from './common';
+import { PlayerType } from '../constants/game';
+import { MatchIdSchema, TimestampSchema } from './common';
 
-// ============================================================================
-// Query Parameters
-// ============================================================================
+function requiredFields(shape: Record<string, z.ZodTypeAny>): string[] {
+  return Object.entries(shape)
+    .filter(([, schema]) => !schema.isOptional())
+    .map(([key]) => key);
+}
 
-export const ListMatchesQuerySchema = PaginationParamsSchema.extend({
-  game_type: GameTypeSchema.optional(),
-  player_id: UserIdSchema.optional(),
-  sort: z.enum(['newest', 'oldest', 'popular']).optional(),
-});
+export const MatchPhaseValues = ['waiting', 'active', 'completed', 'finalized'] as const;
 
-export const ListBenchmarksQuerySchema = PaginationParamsSchema.extend({
-  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
-  game_type: GameTypeSchema.optional(),
-});
+const MatchPlayerShape = {
+  player_id: z.string().min(1),
+  display_name: z.string().min(1),
+  rating: z.number().finite(),
+  wallet_address: z.string().optional(),
+  player_type: z.nativeEnum(PlayerType),
+  score: z.number().finite(),
+};
 
-export const GetMatchQuerySchema = z.object({
-  token: z.string().optional(),
-});
+/**
+ * Match Player Schema
+ */
+export const MatchPlayerSchema = z.object(MatchPlayerShape).strict();
+export const MatchPlayerRequiredFields = requiredFields(MatchPlayerShape);
 
-// ============================================================================
-// Request Bodies
-// ============================================================================
-
-export const PlayerDataSchema = z.object({
-  player_id: UserIdSchema,
-  display_name: z.string(),
-  rating: z.number().optional(),
-});
-
-export const MoveDataSchema = z.object({
-  turn: z.number().int().positive(),
-  player_id: UserIdSchema,
-  move: z.string(),
+const MatchEventShape = {
+  type: z.string().min(1),
   timestamp: TimestampSchema,
-  metadata: z.record(z.unknown()).optional(),
-});
+};
 
-export const GameStateSchema = z.object({
-  phase: z.enum(['waiting', 'active', 'completed', 'finalized']),
-  current_turn: z.number().int().positive().optional(),
-  current_player: UserIdSchema.optional(),
-  board_state: z.record(z.unknown()).optional(),
-  winner: UserIdSchema.optional(),
-});
+/**
+ * Match Event Schema
+ */
+export const MatchEventSchema = z.object(MatchEventShape).strict();
+export const MatchEventRequiredFields = requiredFields(MatchEventShape);
 
-export const UploadMatchRequestSchema = z.object({
-  game_type: GameTypeSchema,
-  players: z.array(PlayerDataSchema),
-  moves: z.array(MoveDataSchema),
-  final_state: GameStateSchema,
-  started_at: TimestampSchema,
-  ended_at: TimestampSchema,
-  metadata: z.record(z.unknown()).optional(),
-});
+const MatchMoveShape = {
+  turn: z.number().int().nonnegative(),
+  player_id: z.string().min(1),
+  move: z.string().min(1),
+  timestamp: TimestampSchema,
+  metadata: z.record(z.string(), z.unknown()).optional(),
+};
 
-export const AnonymizeMatchRequestSchema = z.object({
-  reason: z.enum(['gdpr', 'privacy', 'testing']).optional(),
-});
+/**
+ * Match Move Schema
+ */
+export const MatchMoveSchema = z.object(MatchMoveShape).strict();
+export const MatchMoveRequiredFields = requiredFields(MatchMoveShape);
 
-// ============================================================================
-// Response Bodies
-// ============================================================================
+const MatchBoardStateShape = {
+  fen: z.string(),
+};
 
-export const MatchSummarySchema = z.object({
+const MatchFinalStateShape = {
+  phase: z.enum(MatchPhaseValues),
+  current_turn: z.number().int().nonnegative().optional(),
+  current_player: z.string().optional(),
+  board_state: z.object(MatchBoardStateShape).strict().optional(),
+  winner: z.string().optional(),
+};
+
+/**
+ * Match Final State Schema
+ */
+export const MatchFinalStateSchema = z.object(MatchFinalStateShape).strict();
+export const MatchFinalStateRequiredFields = requiredFields(MatchFinalStateShape);
+export const MatchBoardStateRequiredFields = requiredFields(MatchBoardStateShape);
+
+const MatchRecordShape = {
   match_id: MatchIdSchema,
-  game_type: GameTypeSchema,
-  created_at: TimestampSchema,
-  player_count: z.number().int().nonnegative(),
-  duration_seconds: z.number().positive().optional(),
-  is_benchmark: z.boolean(),
-});
+  version: z.string().regex(/^[0-9]+\.[0-9]+\.[0-9]+$/),
+  schema_version: z.string().regex(/^[0-9]+\.[0-9]+\.[0-9]+$/).optional(),
+  game_type: z.number().int().nonnegative().optional(),
+  created_at: TimestampSchema.optional(),
+  ended_at: TimestampSchema.optional(),
+  started_at: TimestampSchema.optional(),
+  players: z.array(MatchPlayerSchema).optional(),
+  events: z.array(MatchEventSchema),
+  moves: z.array(MatchMoveSchema).optional(),
+  final_state: MatchFinalStateSchema.optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+};
 
-export const ListMatchesResponseSchema = z.object({
-  data: z.array(MatchSummarySchema),
-  cursor: z.string().optional(),
-  has_more: z.boolean(),
-  total_count: z.number().int().nonnegative(),
-});
+/**
+ * Match Record Schema (Authoritative shape for R2 and Worker)
+ */
+export const MatchRecordSchema = z.object(MatchRecordShape).strict();
+export const MatchRecordRequiredFields = requiredFields(MatchRecordShape);
 
-export const GetMatchResponseSchema = z.object({
-  match_id: MatchIdSchema,
-  game_type: GameTypeSchema,
-  players: z.array(PlayerDataSchema),
-  moves: z.array(MoveDataSchema),
-  final_state: GameStateSchema,
-  created_at: TimestampSchema,
-  updated_at: TimestampSchema,
-});
-
-export const UploadMatchResponseSchema = z.object({
-  success: z.boolean(),
-  matchId: MatchIdSchema,
-  url: z.string().url(),
-});
-
-export const AnonymizeMatchResponseSchema = z.object({
-  success: z.boolean(),
-  match_id: MatchIdSchema,
-  anonymized_at: TimestampSchema,
-  anonymized_url: z.string(),
-});
-
-export const AIDecisionSchema = z.object({
-  turn: z.number().int().positive(),
-  player_id: UserIdSchema,
-  decision: z.string(),
-  confidence: z.number().min(0).max(1),
-  reasoning: z.string().optional(),
-});
-
-export const AIDecisionsResponseSchema = z.object({
-  match_id: MatchIdSchema,
-  decisions: z.array(AIDecisionSchema),
-});
-
-export const DeleteMatchResponseSchema = z.object({
-  success: z.boolean(),
-  match_id: MatchIdSchema,
-});
+export type MatchRecord = z.infer<typeof MatchRecordSchema>;

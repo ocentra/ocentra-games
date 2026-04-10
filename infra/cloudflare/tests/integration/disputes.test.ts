@@ -66,7 +66,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const disputeData = {
         dispute_id: `test-dispute-${Date.now()}`,
         match_id: TestConfig.TestMatchId,
-        reason: 'test reason',
+        reason: 'cheating',
         description: 'test description'
       };
       logInfo('[TEST] Testing dispute creation', getStackTrace(), { disputeId: disputeData.dispute_id, matchId: disputeData.match_id }, LOG_TEST_OPERATIONS);
@@ -103,7 +103,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const disputeData = {
         dispute_id: `test-dispute-${Date.now()}`,
         match_id: TestConfig.TestMatchId,
-        reason: 'test reason'
+        reason: 'cheating',
+        description: 'test description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -124,7 +125,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const token = await createToken();
       const disputeData = {
         match_id: TestConfig.TestMatchId,
-        reason: 'test reason'
+        reason: 'cheating',
+        description: 'test description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -176,7 +178,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         },
         body: JSON.stringify({
           match_id: TestConfig.TestMatchId,
-          reason: 'test reason',
+          reason: 'cheating',
+          description: 'test description',
           timestamp: ''
         })
       }, token);
@@ -185,7 +188,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const data = await response.json() as { error?: string; message?: string };
       expect(data.error).toBe(ErrorMessage.BadRequest);
       expect(typeof data.message).toBe('string');
-      expect((data.message as string).toLowerCase()).toContain('timestamp must be a valid date-time string');
+      expect((data.message as string).toLowerCase()).toContain('invalid request payload');
     });
 
   it(testName('Create Dispute: should reject multipart form data on create endpoint'), async () => {
@@ -220,7 +223,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const disputeData = {
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'test reason',
+        reason: 'cheating',
         description: 'test description'
       };
 
@@ -291,7 +294,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const initialData = {
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'initial reason'
+        reason: 'cheating',
+        description: 'initial description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -309,8 +313,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const updatedData = {
-        ...initialData,
-        reason: 'updated reason',
+        match_id: initialData.match_id,
+        reason: 'bug',
         description: 'updated description'
       };
 
@@ -341,7 +345,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           [HttpHeader.Origin]: TestConfig.LocalhostOrigin
         },
-        body: JSON.stringify({ dispute_id: disputeId })
+        body: JSON.stringify({ match_id: TestConfig.TestMatchId, reason: 'cheating' })
       }, token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -500,7 +504,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const disputeData = {
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'initial reason'
+        reason: 'cheating',
+        description: 'initial description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);

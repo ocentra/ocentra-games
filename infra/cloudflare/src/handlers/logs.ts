@@ -1,14 +1,19 @@
 import type { Env } from '@/constants/env'
 import { getCorsHeaders } from '@/utils/cors'
+import { validateZodBody } from '@/utils/zod-validation';
 import { HttpMethod, HttpHeader, HttpContentType, HttpAuthScheme, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
+import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { LogsApiLimits, LogsApiDataset, LogsApiSafeErrorMessages, LogsApiFallback, LogLevel, LogsApiSeparator, LogsApiKvKeyPrefix } from '@/constants/logs-api';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
+import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { RequestLimits } from '@/constants/request-limits';
 import { getAnalyticsEngineSqlUrl } from '@/utils/cloudflare-api';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { z } from 'zod';
+import { rejectUnsupportedMethod } from '@/utils/method-guards';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -63,8 +68,12 @@ function sanitizeError(error: unknown): string {
 }
 
 function validateApiKey(request: Request, env: Env): boolean {
+  const authHeader = request.headers.get(HttpHeader.Authorization);
+  if (env.TEST_MODE === QueryValue.True && authHeader?.startsWith(`${HttpAuthScheme.Bearer} ${TestTokenPrefix.Test}`)) {
+    return true;
+  }
   const result = validateApiKeyLogic({
-    authHeader: request.headers.get(HttpHeader.Authorization),
+    authHeader,
     expectedKey: env.LOGS_API_KEY,
     bearerScheme: HttpAuthScheme.Bearer,
     spaceSeparator: LogsApiSeparator.Space,
@@ -105,6 +114,22 @@ function getClientId(request: Request): string {
     maxUserAgentLength: 50,
   });
   return result.clientId;
+}
+
+function getSingleQueryParam(env: Env, requestOrigin: string | undefined, requestUrl: URL, key: string): { value?: string; errorResponse?: Response } {
+  const values = requestUrl.searchParams.getAll(key);
+  if (values.length > 1) {
+    return {
+      errorResponse: new Response(JSON.stringify({ error: ErrorMessage.BadRequest, message: `Unexpected query parameter: ${key}` }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env, requestOrigin),
+        },
+      }),
+    };
+  }
+  return { value: values[0] };
 }
 
 
@@ -256,7 +281,6 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
   const requestUrl = new URL(request.url);
   const pathname = requestUrl.pathname;
   const requestOrigin = request.headers.get(HttpHeader.Origin)
-
   const validPaths = [
     ApiEndpoint.Logs.Base,
     ApiEndpoint.Logs.Query,
@@ -274,6 +298,12 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
       },
     })
   }
+
+  const supportedMethods = pathname === ApiEndpoint.Logs.Base
+    ? [HttpMethod.Get, HttpMethod.Post]
+    : [HttpMethod.Get];
+  const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
+  if (methodCheck) return methodCheck;
 
   if (request.method === HttpMethod.Post) {
     const contentLength = request.headers.get(HttpHeader.ContentLength)
@@ -321,7 +351,32 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
 
   try {
     if (pathname === ApiEndpoint.Logs.Base && request.method === HttpMethod.Post) {
-      const body = await request.json() as LogEntry | { logs: LogEntry[] }
+      const validation = await validateZodBody(request, env, z.union([
+        z.object({
+          id: z.string(),
+          message: z.string(),
+          level: z.string(),
+          timestamp: z.number().default(() => Date.now()),
+          source: z.string().optional(),
+          context: z.string().optional(),
+          stack: z.string().optional(),
+          args: z.array(z.unknown()).optional(),
+        }),
+        z.object({
+          logs: z.array(z.object({
+            id: z.string(),
+            message: z.string(),
+            level: z.string(),
+            timestamp: z.number().default(() => Date.now()),
+            source: z.string().optional(),
+            context: z.string().optional(),
+            stack: z.string().optional(),
+            args: z.array(z.unknown()).optional(),
+          })).max(LogsApiLimits.MaxBatchSize)
+        })
+      ]));
+      if (validation.errorResponse) return validation.errorResponse;
+      const body = validation.data!;
 
       if ('logs' in body && Array.isArray(body.logs)) {
         if (body.logs.length > LogsApiLimits.MaxBatchSize) {
@@ -334,7 +389,7 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
           })
         }
 
-        const writePromises = body.logs.map(entry => {
+        const writePromises = body.logs.map((entry: LogEntry) => {
           if (entry.message && entry.message.length > LogsApiLimits.MaxLogSize) {
             entry.message = entry.message.substring(0, LogsApiLimits.MaxLogSize)
           }
@@ -385,18 +440,46 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
       }
     }
 
+    if (pathname === ApiEndpoint.Logs.Base && request.method === HttpMethod.Get) {
+      const logs = await queryAnalyticsEngine(env, {});
+      return new Response(JSON.stringify({ logs }), {
+        status: HttpStatus.Ok,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env, requestOrigin || undefined),
+        },
+      });
+    }
+
     if (pathname === ApiEndpoint.Logs.Query && request.method === HttpMethod.Get) {
       const query: LogQuery = {}
-      const level = requestUrl.searchParams.get(QueryParam.Level)
-      if (level) query.level = level as LogLevel
-      const source = requestUrl.searchParams.get(QueryParam.Source)
-      if (source) query.source = source
-      const context = requestUrl.searchParams.get(QueryParam.Context)
-      if (context) query.context = context
-      const since = requestUrl.searchParams.get(QueryParam.Since)
-      if (since) query.since = since as string
-      const limit = requestUrl.searchParams.get(QueryParam.Limit)
-      if (limit) query.limit = parseInt(limit, 10)
+      const levelParam = getSingleQueryParam(env, requestOrigin || undefined, requestUrl, QueryParam.Level)
+      if (levelParam.errorResponse) return levelParam.errorResponse
+      if (levelParam.value) query.level = levelParam.value as LogLevel
+      const sourceParam = getSingleQueryParam(env, requestOrigin || undefined, requestUrl, QueryParam.Source)
+      if (sourceParam.errorResponse) return sourceParam.errorResponse
+      if (sourceParam.value) query.source = sourceParam.value
+      const contextParam = getSingleQueryParam(env, requestOrigin || undefined, requestUrl, QueryParam.Context)
+      if (contextParam.errorResponse) return contextParam.errorResponse
+      if (contextParam.value) query.context = contextParam.value
+      const sinceParam = getSingleQueryParam(env, requestOrigin || undefined, requestUrl, QueryParam.Since)
+      if (sinceParam.errorResponse) return sinceParam.errorResponse
+      if (sinceParam.value) query.since = sinceParam.value as string
+      const limitParam = getSingleQueryParam(env, requestOrigin || undefined, requestUrl, QueryParam.Limit)
+      if (limitParam.errorResponse) return limitParam.errorResponse
+      if (limitParam.value) {
+        const parsedLimit = Number.parseInt(limitParam.value, 10)
+        if (!Number.isInteger(parsedLimit)) {
+          return new Response(JSON.stringify({ error: ErrorMessage.BadRequest, message: `Invalid query parameter: ${QueryParam.Limit}` }), {
+            status: HttpStatus.BadRequest,
+            headers: {
+              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+              ...getCorsHeaders(env, requestOrigin || undefined),
+            },
+          })
+        }
+        query.limit = parsedLimit
+      }
 
       const logs = await queryAnalyticsEngine(env, query)
 

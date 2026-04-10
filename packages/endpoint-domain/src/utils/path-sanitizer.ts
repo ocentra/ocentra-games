@@ -27,5 +27,6 @@ export function buildSafePathKey(prefix: string, ...components: string[]): strin
     }
     return sanitizePathComponent(component);
   });
-  return `${prefix}${PathSeparator.ForwardSlash}${sanitizedComponents.join(PathSeparator.ForwardSlash)}`;
+  const normalizedPrefix = prefix.replace(/\/+$/, '');
+  return `${normalizedPrefix}${PathSeparator.ForwardSlash}${sanitizedComponents.join(PathSeparator.ForwardSlash)}`;
 }

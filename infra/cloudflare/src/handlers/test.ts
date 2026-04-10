@@ -2,6 +2,8 @@ import type { Env } from '@/constants/env';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { getCorsHeaders } from '@/utils/cors';
+import { validateZodBody } from '@/utils/zod-validation';
+import { z } from 'zod';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
@@ -101,6 +103,43 @@ export async function handleTestRequest(
   }
 
   const requestOrigin = request.headers.get(HttpHeader.Origin) || undefined;
+  if (path === `${ApiEndpoint.Test.Base}/mock-ai/v1/models` && request.method === HttpMethod.Get) {
+    return new Response(JSON.stringify({
+      object: 'list',
+      data: [
+        { id: 'mock-model', object: 'model' },
+      ],
+    }), {
+      status: HttpStatus.Ok,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
+
+  if (path === `${ApiEndpoint.Test.Base}/mock-ai/v1/chat/completions` && request.method === HttpMethod.Post) {
+    return new Response(JSON.stringify({
+      id: 'chatcmpl-mock',
+      object: 'chat.completion',
+      created: Math.floor(Date.now() / 1000),
+      model: 'mock-model',
+      choices: [
+        {
+          index: 0,
+          message: { role: 'assistant', content: 'Mock AI response' },
+          finish_reason: 'stop',
+        },
+      ],
+    }), {
+      status: HttpStatus.Ok,
+      headers: {
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        ...getCorsHeaders(env),
+      },
+    });
+  }
+
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for test endpoints');
   if (authResult instanceof Response) {
     return authResult;
@@ -119,21 +158,13 @@ export async function handleTestRequest(
         },
       });
     }
-    let body: { code?: string; ac?: number; gp?: number };
-    try {
-      body = (await request.json()) as { code?: string; ac?: number; gp?: number };
-    } catch {
-      return new Response(JSON.stringify({
-        error: 'Invalid JSON',
-        message: 'Request body must be JSON with code (string), optional ac (number), optional gp (number)',
-      }), {
-        status: HttpStatus.BadRequest,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          ...getCorsHeaders(env),
-        },
-      });
-    }
+    const validation = await validateZodBody(request, env, z.object({
+      code: z.string().optional(),
+      ac: z.number().optional(),
+      gp: z.number().optional(),
+    }).strict());
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
     const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';
     if (!code) {
       return new Response(JSON.stringify({
@@ -277,21 +308,13 @@ export async function handleTestRequest(
           },
         });
       }
-      let body: { code?: string; ac?: number; gp?: number };
-      try {
-        body = (await request.json()) as { code?: string; ac?: number; gp?: number };
-      } catch {
-        return new Response(JSON.stringify({
-          error: 'Invalid JSON',
-          message: 'Request body must be JSON with code (string), optional ac (number), optional gp (number)',
-        }), {
-          status: HttpStatus.BadRequest,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            ...getCorsHeaders(env),
-          },
-        });
-      }
+      const validation = await validateZodBody(request, env, z.object({
+      code: z.string().optional(),
+      ac: z.number().optional(),
+      gp: z.number().optional(),
+    }).strict());
+    if (validation.errorResponse) return validation.errorResponse;
+    const body = validation.data!;
       const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';
       if (!code) {
         return new Response(JSON.stringify({

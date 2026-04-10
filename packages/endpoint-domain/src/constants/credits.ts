@@ -62,3 +62,7 @@ export const CreditDescriptionTemplate = {
 } as const;
 
 export type CreditDescriptionTemplate = typeof CreditDescriptionTemplate[keyof typeof CreditDescriptionTemplate];
+
+export const PLAN_TIER_IDS = ['free', 'pro', 'champion', 'founder'] as const;
+
+export type PlanTierId = (typeof PLAN_TIER_IDS)[number];

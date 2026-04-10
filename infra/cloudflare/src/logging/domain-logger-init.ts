@@ -174,6 +174,13 @@ async function flushDebugLogsToR2(entries: InternalLogEntry[], force?: boolean):
     return;
   }
 
+  // Optimize: Skip R2 flush if we're in a high-frequency testing scenario (like Schemathesis)
+  // unless explicitly forced, to prevent excessive R2 I/O in the request loop
+  const context = getCurrentContext();
+  if (context?.testName?.toLowerCase().includes('schemathesis') && !force) {
+    return;
+  }
+
   try {
     const key = `${BucketPath.DebugLogs}${DEBUG_LOG_FILE_NAME}`;
 
@@ -190,10 +197,15 @@ async function flushDebugLogsToR2(entries: InternalLogEntry[], force?: boolean):
       }
     }
 
-    const allLogs = [...existingEntries, ...entries];
+    // Rolling buffer: keep ONLY the most recent logs to prevent file growth
+    // This prevents the "hanging" behavior observed during long Schemathesis runs
+    const MaxLogRetention = 100;
+    const allLogs = [...existingEntries, ...entries].slice(-MaxLogRetention);
+    
     const logData = {
       timestamp: Date.now(),
       logs: allLogs,
+      truncated: allLogs.length < (existingEntries.length + entries.length)
     };
 
     await r2Bucket.put(key, JSON.stringify(logData, null, 2), {
@@ -356,20 +368,18 @@ function createTestLogger(): void {
   });
 }
 
-const LoggerProxy = new Proxy(CloudflareLogger, {
-  get(target, prop) {
-    if (prop === 'instance') {
-      if (isDevOrTestEnvironment()) {
-        try {
-          void target.instance;
-        } catch {
-          createTestLogger();
-        }
+const LoggerProxy = {
+  get instance() {
+    if (isDevOrTestEnvironment()) {
+      try {
+        void CloudflareLogger.instance;
+      } catch {
+        createTestLogger();
       }
     }
-    return Reflect.get(target, prop);
-  }
-});
+    return CloudflareLogger.instance;
+  },
+} as unknown as typeof CloudflareLogger;
 
 export async function flushTestLogs(): Promise<void> {
   try {

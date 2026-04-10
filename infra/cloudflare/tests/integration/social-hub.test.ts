@@ -6,7 +6,7 @@ import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
-import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
+import { generateValidGuid, getValidRequestHeaders } from '@tests/helpers/test-helpers';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -265,11 +265,13 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Party POST invite: returns 200 or 403 when authenticated'), async () => {
+    const inviterId = generateValidGuid();
+    const inviteeId = generateValidGuid();
     const createUrl = buildApiUrl(ApiEndpoint.Party.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const createRes = await worker.fetch(createUrl, {
       method: HttpMethod.Post,
       headers: {
-        ...getValidRequestHeaders(TestConfig.TestUserId),
+        ...getValidRequestHeaders(inviterId),
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
       body: JSON.stringify({}),
@@ -281,10 +283,10 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const inviteRes = await worker.fetch(inviteUrl, {
       method: HttpMethod.Post,
       headers: {
-        ...getValidRequestHeaders(TestConfig.TestUserId),
+        ...getValidRequestHeaders(inviterId),
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
-      body: JSON.stringify({ inviteeId: TestConfig.OtherUserId }),
+      body: JSON.stringify({ inviteeId }),
     });
     expect([HttpStatus.Ok, HttpStatus.BadRequest, HttpStatus.Forbidden]).toContain(inviteRes.status);
     await inviteRes.text().catch(() => undefined);
@@ -320,8 +322,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Party POST invite: returns 403 when invitee has blocked inviter (Rule 14.1)'), async () => {
-    const inviterId = TestConfig.TestUserId;
-    const inviteeId = TestConfig.OtherUserId;
+    const inviterId = generateValidGuid();
+    const inviteeId = generateValidGuid();
     const blockUrl = buildApiUrl(ApiEndpoint.Users.Block(inviterId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const blockRes = await worker.fetch(blockUrl, {
       method: HttpMethod.Post,
@@ -363,8 +365,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Party POST kick: leader kicks member returns 200 and member removed from state (Rule 14.1)'), async () => {
-    const leaderId = TestConfig.TestUserId;
-    const memberId = TestConfig.OtherUserId;
+    const leaderId = generateValidGuid();
+    const memberId = generateValidGuid();
     const createUrl = buildApiUrl(ApiEndpoint.Party.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const createRes = await worker.fetch(createUrl, {
       method: HttpMethod.Post,
@@ -426,8 +428,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Party POST transfer-leader: leader transfers to member returns 200 and leaderId updated (Rule 14.1)'), async () => {
-    const leaderId = TestConfig.TestUserId;
-    const memberId = TestConfig.OtherUserId;
+    const leaderId = generateValidGuid();
+    const memberId = generateValidGuid();
     const createUrl = buildApiUrl(ApiEndpoint.Party.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const createRes = await worker.fetch(createUrl, {
       method: HttpMethod.Post,
@@ -451,6 +453,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       },
       body: JSON.stringify({ inviteeId: memberId }),
     });
+    expect(inviteRes.status).toBe(HttpStatus.Ok);
     await inviteRes.text().catch(() => undefined);
     const joinUrl = buildApiUrl(`${ApiEndpoint.Party.ById(partyId)}/join`, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const joinRes = await worker.fetch(joinUrl, {
