@@ -16,6 +16,8 @@ export const SecurityPenaltyTypeValues = ['warning', 'mute', 'suspension', 'ban'
 
 export const FeedReportTypeValues = ['pci', 'gdpr', 'soc2'] as const;
 
+export const ComplianceReportTypeValues = ['pci', 'gdpr', 'soc2'] as const;
+
 export const FiatCurrencyValues = ['USD', 'EUR'] as const;
 
 export const MatchIdRequiredFields = ['matchId'] as const;

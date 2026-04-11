@@ -27,7 +27,6 @@ import {
   TournamentDO as TournamentDOPaths,
   TournamentDOSegment,
   SettingsDO as SettingsDOPaths,
-  CreditsDO as CreditsDOPaths,
   PenaltyDO as PenaltyDOPaths,
   FraudDetectionDO as FraudDetectionDOPaths,
   AntiCheatDO as AntiCheatDOPaths,
@@ -37,24 +36,28 @@ import {
   MessageDOSegment,
 } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { MissionsDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { KvKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes';
-import { getCatalogFromEnv, saveCatalogToKV } from '@/data/ai-catalog';
-import type { AICatalogProviderEntry } from '@/data/ai-catalog-types';
 import { AuditTrailService } from '@/services/AuditTrailService';
 import { getPersonalizedContentFromData, getChurnPredictionFromData } from '@/logic/retention';
 import { earnGP } from '@/handlers/credits';
 import { MetadataField } from '@ocentra/endpoint-domain/constants/idempotency';
 import {
-  AdminAICatalogRequestSchema,
-  AdminBaseRequestSchema,
-  AdminCreditsPlanRequestSchema,
-  AdminModerationReportRequestSchema,
-  AdminUserStatusRequestSchema,
   AntiCheatAnalyzeRequestSchema,
+  AntiCheatReportRequestSchema,
   FeedFanoutRequestSchema,
   FeedAppendRequestSchema,
   FeedReportRequestSchema,
   FraudCheckRequestSchema,
+  FraudCheckPreviewRequestSchema,
+  InventoryAddItemRequestSchema,
+  InventoryEquipItemRequestSchema,
+  InventoryGiftRequestSchema,
+  InventoryRemoveItemRequestSchema,
+  InventoryTradeRequestSchema,
+  MarketplaceBuyRequestSchema,
+  MarketplaceEmptyRequestSchema,
+  MarketplaceSellRequestSchema,
+  MessageListQuerySchema,
+  MessageReadReceiptRequestSchema,
   MatchmakingLeaveRequestSchema,
   MatchmakingQueueRequestSchema,
   MessageSendRequestSchema,
@@ -65,24 +68,31 @@ import {
   PartyActionRequestSchema,
   PresenceStatusUpdateRequestSchema,
   PresenceTypingRequestSchema,
+  PresenceFriendPathRequestSchema,
+  PresenceFriendDeleteRequestSchema,
+  PresenceBlockPathRequestSchema,
+  PresenceBlockRequestSchema,
+  PresenceFriendRequestSchema,
   ProfileAvatarRequestSchema,
   ProfileBadgeRequestSchema,
   ProfileStatsRequestSchema,
   ProfileUpdateRequestSchema,
   ProgressionXpRequestSchema,
+  PenaltyAppealRequestSchema,
+  PenaltyAppealReviewRequestSchema,
   RoomCreateRequestSchema,
   RoomJoinRequestSchema,
   RoomLeaveRequestSchema,
   RoomSpectateRequestSchema,
   SecurityPenaltyIssueRequestSchema,
   SettingsUpdateRequestSchema,
+  TournamentActionRequestSchema,
+  TournamentRegisterRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { AuditEventSchema } from '@ocentra/endpoint-domain/schemas/audit';
-import { getFirestoreUsersCollectionUrl, getFirestoreAdminActivityCollectionUrl, getFirestoreUserUrl } from '@/utils/firebase';
-import { getFirestoreAuthHeader } from '@/utils/firebase-service-auth';
+import { EmptyObjectSchema } from '@ocentra/endpoint-domain/schemas/common';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
-import { z } from 'zod';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { createFlowContext } from '@/flows/core/FlowContext';
 import { FlowRunner } from '@/flows/core/FlowRunner';
@@ -92,19 +102,15 @@ import {
   DEFAULT_REGION,
   DEFAULT_SHARD,
   LOBBY_SHARD_COUNT,
-  OPENAPI_USER_ID_PATTERN,
   doFetch,
   getLobbyShardKey,
   getPresenceShardKey,
-  isAdminAuthTraceRequest,
   isBlockedBy,
   parseConversationTargets,
-  LOG_ADMIN_AUTH,
   stubJson,
   normalizeOpenApiPathSegment,
   validateOpenApiUserIdPath,
 } from '@/handlers/feature-handlers-helpers';
-import { IdempotencyKeySchema } from '@ocentra/endpoint-domain/schemas/common';
 const log = Logger.instance;
 log.register(import.meta.url);
 const flowRunner = new FlowRunner();
@@ -291,10 +297,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     const targetId = blockSegments[0] ?? '';
     if (!targetId) return new Response(JSON.stringify({ error: 'User id required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
     const doPath = PresenceDOPaths.Block(shardKey);
-    const { data: bData, errorResponse: bErr } = await validateZodBody(request.clone(), env, z.object({
-      userId: z.string().min(1).optional(),
-      targetId: z.string().min(1).optional(),
-    }).strict());
+    const { data: bData, errorResponse: bErr } = await validateZodBody(request.clone(), env, PresenceBlockRequestSchema);
     if (bErr) return bErr;
     const res = await doFetch(stub, doPath, { method: HttpMethod.Post, body: JSON.stringify({ ...bData, userId, targetId }) });
     const data = await res.json().catch(() => ({}));
@@ -318,10 +321,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     if (!friendId) return new Response(JSON.stringify({ error: 'Friend id required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
     if (request.method === HttpMethod.Post) {
       const doPath = PresenceDOPaths.Friends(shardKey);
-      const { data: fPData, errorResponse: fPErr } = await validateZodBody(request.clone(), env, z.object({
-        userId: z.string().min(1).optional(),
-        displayName: z.string().min(1).optional(),
-      }).strict());
+      const { data: fPData, errorResponse: fPErr } = await validateZodBody(request.clone(), env, PresenceFriendRequestSchema);
       if (fPErr) return fPErr;
       const res = await doFetch(stub, doPath, { method: HttpMethod.Post, body: JSON.stringify({ ...fPData, userId, friendId }) });
       const data = await res.json().catch(() => ({}));
@@ -332,9 +332,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     }
     if (request.method === HttpMethod.Delete) {
       const doPath = PresenceDOPaths.Friends(shardKey);
-      const { data: fDData, errorResponse: fDErr } = await validateZodBody(request.clone(), env, z.object({
-        userId: z.string().min(1).optional(),
-      }).strict());
+      const { data: fDData, errorResponse: fDErr } = await validateZodBody(request.clone(), env, PresenceFriendDeleteRequestSchema);
       if (fDErr) return fDErr;
       const res = await doFetch(stub, doPath, { method: HttpMethod.Delete, body: JSON.stringify({ ...fDData, userId, friendId }) });
       const data = await res.json().catch(() => ({}));
@@ -394,11 +392,11 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (path.endsWith('friends')) {
-      const { data: friendBody, errorResponse: friendError } = await validateZodBody(request.clone(), env, z.object({ friendId: z.string().min(1) }).strict());
+      const { data: friendBody, errorResponse: friendError } = await validateZodBody(request.clone(), env, PresenceFriendPathRequestSchema);
       if (friendError) return friendError;
       validatedGenericBody = JSON.stringify(friendBody);
     } else if (path.endsWith('block')) {
-      const { data: blockBody, errorResponse: blockError } = await validateZodBody(request.clone(), env, z.object({ targetId: z.string().min(1) }).strict());
+      const { data: blockBody, errorResponse: blockError } = await validateZodBody(request.clone(), env, PresenceBlockPathRequestSchema);
       if (blockError) return blockError;
       validatedGenericBody = JSON.stringify(blockBody);
     } else {
@@ -526,7 +524,7 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
     } else if (doPath === ProgressionDOPaths.UnlockSkill || doPath === ProgressionDOPaths.UpdateAchievement) {
       validatedGenericBody = await request.clone().text();
     } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, z.object({}).strict());
+      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, EmptyObjectSchema);
       if (genError) return genError;
       validatedGenericBody = JSON.stringify(genData);
     }
@@ -712,14 +710,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
   }
 
   if (pathParts[0] === 'appeal' && pathParts[1] !== 'review' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(
-      request,
-      env,
-      z.object({
-        penaltyId: z.string().min(1),
-        reason: z.string().min(1).max(1024),
-      }).strict()
-    );
+    const { data, errorResponse } = await validateZodBody(request, env, PenaltyAppealRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) {
@@ -742,16 +733,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const { data, errorResponse } = await validateZodBody(
-      request,
-      env,
-      z.object({
-        userId: z.string().min(1),
-        appealId: z.string().min(1),
-        action: z.enum(['approve', 'deny']),
-        moderatorId: z.string().min(1).optional(),
-      }).strict()
-    );
+    const { data, errorResponse } = await validateZodBody(request, env, PenaltyAppealReviewRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) {
@@ -838,15 +820,7 @@ export async function handleFraudRequest(request: Request, env: Env, path: strin
       });
     }
     if (request.method === HttpMethod.Post) {
-      const { data, errorResponse } = await validateZodBody(
-        request,
-        env,
-        z.object({
-          amount: z.coerce.number().nonnegative().optional(),
-          paymentMethod: z.string().min(1).max(64).optional(),
-          currency: z.string().min(1).max(64).optional(),
-        }).strict()
-      );
+      const { data, errorResponse } = await validateZodBody(request, env, FraudCheckPreviewRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       if (!ns) return stubJson(env, { risk: 'low', score: 0 });
@@ -957,16 +931,7 @@ export async function handleAntiCheatRequest(request: Request, env: Env, path: s
   }
 
   if (pathParts[0] === 'report' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(
-      request,
-      env,
-      z.object({
-        reporterId: z.string().min(1).optional(),
-        targetId: z.string().min(1).max(128),
-        reason: z.string().min(1).max(512),
-        matchId: z.string().min(1).max(128).optional(),
-      }).strict()
-    );
+    const { data, errorResponse } = await validateZodBody(request, env, AntiCheatReportRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     const payload = { reporterId: authUserId, ...body };
@@ -1151,13 +1116,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === MessageDOSegment.ReadReceipt && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(
-      request,
-      env,
-      z.object({
-        messageIds: z.array(z.string().min(1).max(128)).default([]),
-      }).strict()
-    );
+    const { data, errorResponse } = await validateZodBody(request, env, MessageReadReceiptRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, MessageDOPaths.ReadReceipt, {
       method: HttpMethod.Post,
@@ -1171,11 +1130,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   }
 
   if (request.method === HttpMethod.Get) {
-    const listQuerySchema = z.object({
-      limit: z.coerce.number().int().min(1).max(100).default(50),
-      before: z.string().min(1).optional(),
-    }).strict();
-    const queryResult = listQuerySchema.safeParse({
+    const queryResult = MessageListQuerySchema.safeParse({
       limit: new URL(request.url).searchParams.get('limit') ?? undefined,
       before: new URL(request.url).searchParams.get('before') ?? undefined,
     });
@@ -1487,16 +1442,7 @@ export async function handlePartyRequest(request: Request, env: Env, path: strin
   const userId = authResult.userId;
   const partyId = extractIdFromPath(path, ApiEndpoint.Party.Base);
   if (!partyId && request.method === HttpMethod.Post) {
-    const { errorResponse: createBodyError } = await validateZodBody(
-      request.clone(),
-      env,
-      z.object({
-        action: z.string().min(1).optional(),
-        inviteeId: z.string().min(1).optional(),
-        targetId: z.string().min(1).optional(),
-        newLeaderId: z.string().min(1).optional(),
-      }).strict()
-    );
+    const { errorResponse: createBodyError } = await validateZodBody(request.clone(), env, PartyActionRequestSchema);
     if (createBodyError) return createBodyError;
     const newPartyId = crypto.randomUUID();
     const stub = ns.get(ns.idFromName(newPartyId));
@@ -1658,15 +1604,7 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
   const isList = path === ApiEndpoint.Inventory.List || path.endsWith(`/${InventoryDOSegment.List}`);
   if (request.method === HttpMethod.Post && (isGift || isTrade)) {
     if (isGift) {
-      const { data, errorResponse } = await validateZodBody(
-        request,
-        env,
-        z.object({
-          itemId: z.string().min(1),
-          targetUserId: z.string().min(1),
-          idempotencyKey: IdempotencyKeySchema.optional(),
-        }).strict()
-      );
+      const { data, errorResponse } = await validateZodBody(request, env, InventoryGiftRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data! as { itemId: string; targetUserId: string; idempotencyKey?: string };
       const flowResult = await flowRunner.run(
@@ -1687,16 +1625,7 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const { data, errorResponse } = await validateZodBody(
-      request,
-      env,
-      z.object({
-        myItemId: z.string().min(1),
-        theirItemId: z.string().min(1),
-        targetUserId: z.string().min(1),
-        idempotencyKey: IdempotencyKeySchema.optional(),
-      }).strict()
-    );
+    const { data, errorResponse } = await validateZodBody(request, env, InventoryTradeRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data! as { myItemId: string; theirItemId: string; targetUserId: string; idempotencyKey?: string };
     const flowResult = await flowRunner.run(
@@ -1727,29 +1656,15 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (isAddItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-        itemId: z.string().min(1),
-        type: z.string().min(1),
-        count: z.number().int().nonnegative().optional(),
-        slot: z.string().min(1).optional(),
-        metadata: z.record(z.string(), z.unknown()).optional(),
-        idempotencyKey: IdempotencyKeySchema.optional(),
-      }).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryAddItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     } else if (isRemoveItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-        itemId: z.string().min(1),
-        idempotencyKey: IdempotencyKeySchema.optional(),
-      }).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryRemoveItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-        itemId: z.string().min(1),
-        slot: z.string().min(1),
-        idempotencyKey: IdempotencyKeySchema.optional(),
-      }).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryEquipItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     }
@@ -1781,20 +1696,15 @@ export async function handleMarketplaceRequest(request: Request, env: Env, path:
   let body: string | undefined;
   if (request.method === HttpMethod.Post) {
     if (buyPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({ listingId: z.string().min(1) }).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceBuyRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify({ ...data, buyerId: authUserId });
     } else if (sellPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-        itemId: z.string().min(1),
-        itemType: z.string().min(1).optional(),
-        price: z.coerce.number().nonnegative().optional(),
-        currency: z.string().min(1).optional(),
-      }).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceSellRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify({ ...data, sellerId: authUserId });
     } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({}).strict());
+      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceEmptyRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify(data);
     }
@@ -1884,15 +1794,7 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (segment === 'register') {
-      const { data: registerData, errorResponse: registerError } = await validateZodBody(
-        request.clone(),
-        env,
-        z.object({
-          userId: z.string().min(1).optional(),
-          displayName: z.string().min(1).optional(),
-          elo: z.coerce.number().int().optional(),
-        }).strict()
-      );
+      const { data: registerData, errorResponse: registerError } = await validateZodBody(request.clone(), env, TournamentRegisterRequestSchema);
       if (registerError) return registerError;
       const body = registerData!;
       validatedGenericBody = JSON.stringify({
@@ -1901,11 +1803,11 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
         elo: body.elo,
       });
     } else if (segment === 'start') {
-      const { errorResponse: startError } = await validateZodBody(request.clone(), env, z.object({}).strict());
+      const { errorResponse: startError } = await validateZodBody(request.clone(), env, TournamentActionRequestSchema);
       if (startError) return startError;
       validatedGenericBody = JSON.stringify({});
     } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, z.object({}).strict());
+      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, TournamentActionRequestSchema);
       if (genError) return genError;
       validatedGenericBody = JSON.stringify(genData);
     }
@@ -1964,391 +1866,3 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
 }
 
 
-export async function handleAdminRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post, HttpMethod.Patch]);
-  if (methodCheck) return methodCheck;
-  const adminAuthTraceEnabled = isAdminAuthTraceRequest(request);
-  logInfo(
-    '[AdminAuthFlow:H] admin handler entered',
-    getStackTrace(),
-    {
-      path,
-      method: request.method,
-      hasAuthorizationHeader: Boolean(request.headers.get(HttpHeader.Authorization)),
-    },
-    adminAuthTraceEnabled
-  );
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
-  if (authResult instanceof Response) {
-    logWarn(
-      '[AdminAuthFlow:I] admin request rejected by requireAuth',
-      getStackTrace(),
-      {
-        path,
-        status: authResult.status,
-        hasAuthorizationHeader: Boolean(request.headers.get(HttpHeader.Authorization)),
-      },
-      adminAuthTraceEnabled || LOG_ADMIN_AUTH
-    );
-    return authResult;
-  }
-  const kv = env.MODERATION_KV;
-  if (path.includes('moderation/report') && request.method === HttpMethod.Post) {
-    if (!kv) return stubJson(env, { error: 'Moderation not configured' }, HttpStatus.ServiceUnavailable);
-    const { data: modReportData, errorResponse: modReportErr } = await validateZodBody(request.clone(), env, AdminModerationReportRequestSchema);
-    if (modReportErr) return modReportErr;
-    const body = modReportData! as { reporterId: string; targetId: string; reason: string; category?: string };
-    const { reporterId, targetId, reason } = body;
-    if (!reporterId || !targetId || !reason) return stubJson(env, { error: 'reporterId, targetId, reason required' }, HttpStatus.BadRequest);
-    const reportId = crypto.randomUUID();
-    await kv.put(`${KvKeyPrefix.ReportPending}${reportId}`, JSON.stringify({ reportId, reporterId, targetId, reason, category: body.category ?? 'other', createdAt: Date.now() }));
-    return stubJson(env, { reportId, submitted: true });
-  }
-  const adminCheck = await checkAdminStatus(request, env);
-  if (!adminCheck.isAdmin) {
-    logWarn(
-      '[AdminAuthFlow:J] admin request rejected by adminCheck',
-      getStackTrace(),
-      {
-        path,
-        userId: adminCheck.userId,
-        error: adminCheck.error,
-      },
-      adminAuthTraceEnabled || LOG_ADMIN_AUTH
-    );
-    return new Response(JSON.stringify({ error: 'Forbidden: Admin required' }), {
-      status: HttpStatus.Forbidden,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-  if (path === ApiEndpoint.Admin.Base && request.method === HttpMethod.Post) {
-    const { errorResponse } = await validateZodBody(request.clone(), env, AdminBaseRequestSchema);
-    if (errorResponse) return errorResponse;
-  }
-  const adminPathParts = extractPathParts(path, ApiEndpoint.Admin.Base);
-  if (adminPathParts[0] === 'users' && adminPathParts[2] === 'status' && request.method === HttpMethod.Post) {
-    const targetUserId = adminPathParts[1];
-    if (!targetUserId || !OPENAPI_USER_ID_PATTERN.test(targetUserId)) {
-      return stubJson(env, { error: 'Target user ID is required' }, HttpStatus.BadRequest);
-    }
-    const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminUserStatusRequestSchema); if (bodyResultError) return bodyResultError;
-    const body = data!;
-    if (typeof body.isAdmin !== 'boolean') {
-      return stubJson(env, { error: 'isAdmin must be boolean' }, HttpStatus.BadRequest);
-    }
-    if (env.TEST_MODE === QueryValue.True) {
-      return stubJson(env, { success: true });
-    }
-    if (!env.FIREBASE_PROJECT_ID) {
-      return stubJson(env, { error: ErrorMessage.FirebaseNotConfigured }, HttpStatus.ServiceUnavailable);
-    }
-    const authHeader = await getFirestoreAuthHeader(env);
-    if (!authHeader) {
-      return stubJson(env, { error: ErrorMessage.FirebaseNotConfigured }, HttpStatus.ServiceUnavailable);
-    }
-
-    const targetUserUrl = getFirestoreUserUrl(env.FIREBASE_PROJECT_ID, targetUserId);
-    const updateUrl = `${targetUserUrl}?updateMask.fieldPaths=isAdmin&updateMask.fieldPaths=updatedAt`;
-    const updateResponse = await fetch(updateUrl, {
-      method: HttpMethod.Patch,
-      headers: {
-        [HttpHeader.Authorization]: authHeader,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      },
-      body: JSON.stringify({
-        fields: {
-          isAdmin: { booleanValue: body.isAdmin },
-          updatedAt: { timestampValue: new Date().toISOString() },
-        },
-      }),
-    });
-    if (!updateResponse.ok) {
-      const errorBody = await updateResponse.text().catch(() => '');
-      logWarn('Admin user status update failed', getStackTrace(), { status: updateResponse.status, errorBody, targetUserId }, true);
-      return stubJson(env, { error: `${ErrorMessage.FirestoreErrorPrefix} ${updateResponse.status}` }, updateResponse.status);
-    }
-    await updateResponse.text().catch(() => undefined);
-
-    const adminActivityUrl = getFirestoreAdminActivityCollectionUrl(env.FIREBASE_PROJECT_ID);
-    const activityResponse = await fetch(adminActivityUrl, {
-      method: HttpMethod.Post,
-      headers: {
-        [HttpHeader.Authorization]: authHeader,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      },
-      body: JSON.stringify({
-        fields: {
-          callerId: { stringValue: adminCheck.userId },
-          targetUserId: { stringValue: targetUserId },
-          action: { stringValue: body.isAdmin ? 'grant_admin' : 'revoke_admin' },
-          timestamp: { timestampValue: new Date().toISOString() },
-        },
-      }),
-    });
-    if (!activityResponse.ok) {
-      const errorBody = await activityResponse.text().catch(() => '');
-      logWarn('Admin activity write failed after status update', getStackTrace(), { status: activityResponse.status, errorBody, targetUserId }, true);
-    } else {
-      await activityResponse.text().catch(() => undefined);
-    }
-
-    return stubJson(env, { success: true });
-  }
-  if (path === ApiEndpoint.Admin.DashboardData && request.method === HttpMethod.Get) {
-    logInfo(
-      '[AdminAuthFlow:K] admin dashboard authorized',
-      getStackTrace(),
-      {
-        path,
-        userId: adminCheck.userId,
-      },
-      adminAuthTraceEnabled
-    );
-    const authHeader = await getFirestoreAuthHeader(env);
-    if (!env.FIREBASE_PROJECT_ID || !authHeader) {
-      if (env.TEST_MODE === 'true') {
-        return stubJson(env, { users: [], activity: [] });
-      }
-      return stubJson(env, { error: ErrorMessage.FirebaseNotConfigured }, HttpStatus.ServiceUnavailable);
-    }
-
-    const usersUrl = getFirestoreUsersCollectionUrl(env.FIREBASE_PROJECT_ID);
-    const usersResponse = await fetch(usersUrl, {
-      method: HttpMethod.Get,
-      headers: {
-        [HttpHeader.Authorization]: authHeader,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      },
-    });
-
-    if (!usersResponse.ok) {
-      const errorBody = await usersResponse.text().catch(() => '');
-      logWarn('Admin dashboard users fetch failed', getStackTrace(), { status: usersResponse.status, errorBody }, true);
-      return stubJson(env, { error: `${ErrorMessage.FirestoreErrorPrefix} ${usersResponse.status}` }, usersResponse.status);
-    }
-
-    const usersData = await usersResponse.json().catch(() => ({} as Record<string, unknown>)) as {
-      documents?: Array<{ name?: string; fields?: Record<string, { stringValue?: string; booleanValue?: boolean; timestampValue?: string }> }>;
-    };
-
-    const users = (usersData.documents ?? []).map((doc) => {
-      const fields = doc.fields ?? {};
-      const uid = (doc.name ?? '').split('/').pop() ?? '';
-      const email = fields.email?.stringValue ?? '';
-      const displayName = (fields.displayName?.stringValue ?? email) || 'Unknown User';
-      const isAdmin = fields.isAdmin?.booleanValue === true;
-      const photoURL = fields.photoURL?.stringValue;
-      const lastLoginAt = fields.lastLoginAt?.timestampValue ? Date.parse(fields.lastLoginAt.timestampValue) : undefined;
-      return { uid, email, displayName, isAdmin, photoURL, lastLogin: Number.isNaN(lastLoginAt) ? undefined : lastLoginAt };
-    });
-
-    const activityUrl = getFirestoreAdminActivityCollectionUrl(env.FIREBASE_PROJECT_ID);
-    const activityResponse = await fetch(`${activityUrl}?pageSize=50`, {
-      method: HttpMethod.Get,
-      headers: {
-        [HttpHeader.Authorization]: authHeader,
-        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      },
-    });
-
-    const userEmailById = new Map(users.map((item) => [item.uid, item.email]));
-    let activity: Array<{ timestamp: number; adminEmail: string; action: string; targetEmail: string; targetUid: string }> = [];
-    if (activityResponse.ok) {
-      const activityData = await activityResponse.json().catch(() => ({} as Record<string, unknown>)) as {
-        documents?: Array<{ fields?: Record<string, { stringValue?: string; timestampValue?: string }> }>;
-      };
-      activity = (activityData.documents ?? []).map((doc) => {
-        const fields = doc.fields ?? {};
-        const callerId = fields.callerId?.stringValue ?? '';
-        const targetUserId = fields.targetUserId?.stringValue ?? '';
-        const actionRaw = fields.action?.stringValue ?? '';
-        const timestampRaw = fields.timestamp?.timestampValue;
-        const timestamp = timestampRaw ? Date.parse(timestampRaw) : Date.now();
-        const action = actionRaw === 'grant_admin' || actionRaw === 'grant' ? 'grant' : 'revoke';
-        return {
-          timestamp: Number.isNaN(timestamp) ? Date.now() : timestamp,
-          adminEmail: userEmailById.get(callerId) ?? 'unknown',
-          action,
-          targetEmail: userEmailById.get(targetUserId) ?? 'unknown',
-          targetUid: targetUserId,
-        };
-      });
-      activity.sort((a, b) => b.timestamp - a.timestamp);
-    } else {
-      const errorBody = await activityResponse.text().catch(() => '');
-      logWarn('Admin dashboard activity fetch failed', getStackTrace(), { status: activityResponse.status, errorBody }, true);
-    }
-
-    return stubJson(env, { users, activity });
-  }
-  if (path.includes('moderation/queue') && request.method === HttpMethod.Get) {
-    if (!kv) return stubJson(env, { reports: [] });
-    const list = await kv.list({ prefix: KvKeyPrefix.ReportPending, limit: 100 });
-    const reports: unknown[] = [];
-    for (const key of list.keys) {
-      const raw = await kv.get(key.name);
-      if (raw) {
-        try {
-          reports.push(JSON.parse(raw));
-        } catch {
-          void 0;
-        }
-      }
-    }
-    return stubJson(env, { reports });
-  }
-  if (path.includes('moderation/') && path.includes('/resolve') && request.method === HttpMethod.Post) {
-    const parts = extractPathParts(path, ApiEndpoint.Admin.Base);
-    const reportId = parts[0] === 'moderation' && parts[2] === 'resolve' ? parts[1] : null;
-    const reportKey = reportId ? `${KvKeyPrefix.ReportPending}${reportId}` : '';
-    if (!kv || !reportId) return stubJson(env, { error: 'Report ID required' }, HttpStatus.BadRequest);
-    const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, z.object({ action: z.string(), moderatorId: z.string().optional() })); if (bodyResultError) return bodyResultError;
-    const body = data!;
-    const raw = await kv.get(reportKey);
-    if (!raw) return stubJson(env, { error: 'Report not found' }, HttpStatus.NotFound);
-    const report = JSON.parse(raw) as Record<string, unknown>;
-    await kv.delete(reportKey);
-    await kv.put(`${KvKeyPrefix.ReportResolved}${reportId}`, JSON.stringify({ ...report, resolvedAt: Date.now(), action: body.action, moderatorId: body.moderatorId }));
-    return stubJson(env, { resolved: true, reportId });
-  }
-  if (path.includes('transparency/dashboard') && request.method === HttpMethod.Get) {
-    const audit = new AuditTrailService(env);
-    const { events, total, error } = await audit.queryEvents(adminCheck.userId, 'admin', {
-      actorId: 'system',
-      category: 'transparency',
-      limit: 50,
-      startTime: Date.now() - 7 * 24 * 60 * 60 * 1000,
-    });
-    if (error) return stubJson(env, { error, verifications: [] }, HttpStatus.InternalServerError);
-    return stubJson(env, { verifications: events, total });
-  }
-  if (path.includes('credits/plan') && request.method === HttpMethod.Post) {
-    if (!env.CREDITS_DO) {
-      return stubJson(env, { error: 'Credits DO not configured' }, HttpStatus.ServiceUnavailable);
-    }
-    const { data: planBody, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminCreditsPlanRequestSchema); if (bodyResultError) return bodyResultError;
-    const { userId, tier } = planBody!;
-    if (!userId || !tier) {
-      return stubJson(env, { error: 'userId and tier required' }, HttpStatus.BadRequest);
-    }
-    const creditsStub = env.CREDITS_DO.get(env.CREDITS_DO.idFromName(userId));
-    const res = await doFetch(creditsStub, CreditsDOPaths.PlanStateSet, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({ tier }),
-    });
-    const data = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-  }
-  if (path.includes('ai/catalog') && request.method === HttpMethod.Patch) {
-    if (!env.AI_CATALOG_KV) {
-      return stubJson(env, { error: 'AI catalog KV not configured' }, HttpStatus.ServiceUnavailable);
-    }
-    const { data: body, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminAICatalogRequestSchema); if (bodyResultError) return bodyResultError;
-    const toMerge: AICatalogProviderEntry[] = (body!.providers
-      ? body!.providers
-      : body!.provider
-        ? [body!.provider]
-        : []) as unknown as AICatalogProviderEntry[];
-    if (toMerge.length === 0) {
-      return stubJson(env, { ok: true, providers: (await getCatalogFromEnv(env)).providers.length });
-    }
-    const catalog = await getCatalogFromEnv(env);
-    const byId = new Map(catalog.providers.map((p) => [p.id, p]));
-    for (const p of toMerge) {
-      if (p?.id && typeof p.id === 'string') {
-        byId.set(p.id, p as AICatalogProviderEntry);
-      }
-    }
-    const merged: typeof catalog = {
-      ...catalog,
-      providers: Array.from(byId.values()),
-    };
-    await saveCatalogToKV(env, merged);
-    return stubJson(env, { ok: true, providers: merged.providers.length });
-  }
-  return stubJson(env, { ok: true });
-}
-
-export async function handleHealthDetailRequest(request: Request, env: Env, _path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
-  if (methodCheck) return methodCheck;
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
-  if (authResult instanceof Response) return authResult;
-  const adminCheck = await checkAdminStatus(request, env);
-  if (!adminCheck.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Forbidden: Admin required' }), {
-      status: HttpStatus.Forbidden,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-  const checks: Record<string, { status: string; latencyMs?: number }> = {};
-  if (env.RATE_LIMIT_KV) {
-    const t0 = Date.now();
-    try {
-      await env.RATE_LIMIT_KV.get(KvKeyPrefix.HealthPing);
-      checks.kv = { status: 'ok', latencyMs: Date.now() - t0 };
-    } catch {
-      checks.kv = { status: 'error' };
-    }
-  } else {
-    checks.kv = { status: 'not_configured' };
-  }
-  if (env.LOBBY_DO) checks.lobbyDo = { status: 'bound' };
-  if (env.CREDITS_DO) checks.creditsDo = { status: 'bound' };
-  if (env.AUDIT_LOG_DO) checks.auditLogDo = { status: 'bound' };
-  if (env.PENALTY_DO) checks.penaltyDo = { status: 'bound' };
-  return stubJson(env, { status: 'ok', version: '1.0', checks });
-}
-
-export async function handleComplianceRequest(request: Request, env: Env, _path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for compliance');
-  if (authResult instanceof Response) return authResult;
-
-  const adminCheck = await checkAdminStatus(request, env);
-  if (!adminCheck.isAdmin) {
-    return new Response(JSON.stringify({ error: 'Forbidden: Admin access required' }), {
-      status: HttpStatus.Forbidden,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-
-  const auditService = new AuditTrailService(env);
-  let body: { startDate?: string; endDate?: string; reportType?: 'pci' | 'gdpr' | 'soc2' } = {};
-
-  if (request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      reportType: z.enum(['pci', 'gdpr', 'soc2']).optional(),
-    }).strict());
-    if (errorResponse) return errorResponse;
-    body = data! as typeof body;
-  } else {
-    const url = new URL(request.url);
-    body.startDate = url.searchParams.get('startDate') || undefined;
-    body.endDate = url.searchParams.get('endDate') || undefined;
-    body.reportType = (url.searchParams.get('reportType') as typeof body.reportType) || undefined;
-  }
-
-  const startDate = body.startDate ? new Date(body.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const endDate = body.endDate ? new Date(body.endDate) : new Date();
-  const reportType = body.reportType || 'soc2';
-
-  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-    return new Response(JSON.stringify({ error: 'Invalid date format' }), {
-      status: HttpStatus.BadRequest,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-
-  const result = await auditService.generateComplianceReport(startDate, endDate, reportType);
-  return new Response(JSON.stringify(result), {
-    status: result.error ? HttpStatus.InternalServerError : HttpStatus.Ok,
-    headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-  });
-}

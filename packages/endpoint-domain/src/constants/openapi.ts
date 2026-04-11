@@ -1,5 +1,5 @@
-import { LeaderboardTier } from '@ocentra/endpoint-domain/constants/leaderboard';
-import { PlayerType } from '@ocentra/endpoint-domain/constants/game';
+import { LeaderboardTier } from './leaderboard';
+import { PlayerType } from './game';
 
 export const OpenApiVersion = {
   V3_0_0: '3.0.0',

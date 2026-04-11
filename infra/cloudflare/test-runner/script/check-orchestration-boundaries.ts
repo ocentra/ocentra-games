@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-const handlerLineLimit = 2400;
+const handlerLineLimit = 1900;
 const forbiddenLiterals = [
   'daily/claim',
   'battle-pass/claim',
@@ -12,6 +12,7 @@ const forbiddenLiterals = [
   'add-item',
   'remove-item',
 ] as const;
+const forbiddenInlineSchemaPattern = /\bz\.(?:object|enum|union)\s*\(/;
 
 function collectFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true });
@@ -43,6 +44,13 @@ function main(): void {
     .map((file) => ({ file, lines: readText(file).split(/\r?\n/).length }))
     .filter((entry) => entry.lines > handlerLineLimit);
 
+  const contractSchemaFiles = [
+    ...handlerFiles,
+    ...collectFiles(path.join(cwd, 'tests')),
+    ...collectFiles(path.join(cwd, 'test-runner', 'script')),
+  ];
+  const contractSchemaOffenders = contractSchemaFiles.filter((file) => forbiddenInlineSchemaPattern.test(readText(file)));
+
   const policyFiles = [
     ...collectFiles(path.join(srcRoot, 'handlers')),
     ...collectFiles(path.join(srcRoot, 'durable-objects')),
@@ -65,6 +73,11 @@ function main(): void {
   if (handlerOffenders.length > 0) {
     errors.push(
       `Handlers exceed ${handlerLineLimit} lines:\n${handlerOffenders.map((entry) => `- ${entry.file} (${entry.lines} lines)`).join('\n')}`
+    );
+  }
+  if (contractSchemaOffenders.length > 0) {
+    errors.push(
+      `Inline Zod contract definitions found outside endpoint-domain:\n${contractSchemaOffenders.map((file) => `- ${file}`).join('\n')}`
     );
   }
   if (literalOffenders.length > 0) {

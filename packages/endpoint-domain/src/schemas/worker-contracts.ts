@@ -7,15 +7,17 @@ import {
   TicketIdSchema,
   NotificationIdSchema,
   ConversationIdSchema,
-  BadgeIdSchema
+  BadgeIdSchema,
+  EmptyObjectSchema,
 } from './common';
 import { MatchRecordSchema } from './matches';
 import {
-  Currency,
+  ConsumeGpCurrencyValues,
   PLAN_TIER_IDS
 } from '../constants/credits';
 import {
   FeedReportTypeValues,
+  ComplianceReportTypeValues,
   FiatCurrencyValues,
   PresenceStatusValues,
   ProfileVisibilityValues,
@@ -37,7 +39,7 @@ export const AdminModerationReportRequestSchema = z.object({
 }).strict();
 
 export const AdminUserStatusRequestSchema = z.object({
-  isAdmin: z.boolean().optional(),
+  isAdmin: z.boolean(),
 }).strict();
 
 export const AdminCreditsPlanRequestSchema = z.object({
@@ -48,6 +50,11 @@ export const AdminCreditsPlanRequestSchema = z.object({
 export const AdminAICatalogRequestSchema = z.object({
   provider: z.record(z.string(), z.unknown()).optional(),
   providers: z.array(z.record(z.string(), z.unknown())).optional(),
+}).strict();
+
+export const AdminModerationResolveRequestSchema = z.object({
+  action: z.string().min(1),
+  moderatorId: z.string().min(1).optional(),
 }).strict();
 
 export const FraudCheckRequestSchema = z.object({
@@ -75,6 +82,13 @@ export const AntiCheatAnalyzeRequestSchema = z.object({
   moveTimingMs: z.coerce.number().nonnegative().optional(),
 }).strict();
 
+export const AntiCheatReportRequestSchema = z.object({
+  reporterId: UserIdSchema.optional(),
+  targetId: UserIdSchema,
+  reason: z.string().min(1).max(512),
+  matchId: MatchIdSchema.optional(),
+}).strict();
+
 export const SyncFromSolanaRequestSchema = z.object({
   matchId: MatchIdSchema,
   solanaMatchPda: z.string().min(1).optional(),
@@ -96,6 +110,29 @@ export const PresenceStatusUpdateRequestSchema = z.object({
 
 export const PresenceTypingRequestSchema = z.object({
   conversationId: ConversationIdSchema.optional(),
+}).strict();
+
+export const PresenceFriendRequestSchema = z.object({
+  userId: UserIdSchema.optional(),
+  displayName: z.string().min(1).optional(),
+  friendId: UserIdSchema.optional(),
+}).strict();
+
+export const PresenceFriendDeleteRequestSchema = z.object({
+  userId: UserIdSchema.optional(),
+}).strict();
+
+export const PresenceFriendPathRequestSchema = z.object({
+  friendId: UserIdSchema,
+}).strict();
+
+export const PresenceBlockRequestSchema = z.object({
+  userId: UserIdSchema.optional(),
+  targetId: UserIdSchema.optional(),
+}).strict();
+
+export const PresenceBlockPathRequestSchema = z.object({
+  targetId: UserIdSchema,
 }).strict();
 
 export const ProfileUpdateRequestSchema = z.object({
@@ -233,6 +270,26 @@ export const ProgressionUpdateAchievementRequestSchema = z.object({
   progress: z.coerce.number().int().nonnegative().optional(),
 }).strict();
 
+export const InventoryAddItemRequestSchema = z.object({
+  itemId: z.string().min(1),
+  type: z.string().min(1),
+  count: z.number().int().nonnegative().optional(),
+  slot: z.string().min(1).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
+export const InventoryRemoveItemRequestSchema = z.object({
+  itemId: z.string().min(1),
+  idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
+export const InventoryEquipItemRequestSchema = z.object({
+  itemId: z.string().min(1),
+  slot: z.string().min(1),
+  idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
 export const TypingRequestSchema = z.object({
   conversationId: ConversationIdSchema.optional(),
 }).strict();
@@ -263,12 +320,168 @@ export const CreditsRedeemRequestSchema = z.object({
 
 export const CreditsConsumeGPRequestSchema = z.object({
   amount: z.number().int().positive(),
-  currency: z.nativeEnum(Currency).optional(),
+  currency: z.enum(ConsumeGpCurrencyValues).optional(),
   description: z.string().min(1),
   metadata: z.record(z.string(), z.unknown()).optional(),
 }).strict();
 
 export const MatchUploadRequestSchema = MatchRecordSchema;
+
+export const AIKeysStoreRequestSchema = z.object({
+  providerId: z.string().min(1),
+  apiKey: z.string().min(1),
+}).strict();
+
+export const AIKeysStoreCustomRequestSchema = z.object({
+  providerId: z.string().min(1),
+  apiKey: z.string().min(1),
+  baseUrl: z.string().min(1).optional(),
+}).strict();
+
+export const AIEventIngressRequestSchema = z.object({
+  matchId: MatchIdSchema,
+  playerId: UserIdSchema,
+  eventType: z.string().min(1),
+  eventData: z.record(z.string(), z.unknown()).optional(),
+  currentState: z.record(z.string(), z.unknown()).optional(),
+  playerHand: z.array(z.record(z.string(), z.unknown())).optional(),
+  availableActions: z.array(z.string()).optional(),
+  communicationOutput: z.object({
+    text: z.string(),
+    intent: z.string().optional(),
+    targetPlayers: z.array(z.string()).optional(),
+    ttsVoice: z.string().optional(),
+  }).optional(),
+  inputConsumption: z.object({
+    transcripts: z.array(z.object({
+      playerId: z.string(),
+      text: z.string(),
+      timestamp: z.string(),
+    })),
+    processedContext: z.unknown().optional(),
+  }).optional(),
+  sequenceNumber: z.number().int().optional(),
+  eventSequence: z.number().int().optional(),
+}).strict();
+
+export const AssetsSyncDiffRequestSchema = z.object({
+  localIndexHash: z.string().optional(),
+}).strict();
+
+export const AssetsUploadImageRequestSchema = z.object({
+  hash: z.string().min(1),
+  content: z.string().min(1),
+  contentType: z.string().optional(),
+}).strict();
+
+export const DataDeletionConfirmRequestSchema = z.object({
+  confirm: z.boolean().optional(),
+}).strict();
+
+export const BadgesSetActiveRequestSchema = z.object({
+  badge_ids: z.array(BadgeIdSchema),
+}).strict();
+
+export const LogEntryInputSchema = z.object({
+  id: z.string(),
+  message: z.string(),
+  level: z.string(),
+  timestamp: z.number().default(() => Date.now()),
+  source: z.string().optional(),
+  context: z.string().optional(),
+  stack: z.string().optional(),
+  args: z.array(z.unknown()).optional(),
+}).strict();
+
+export const LogsBatchRequestSchema = z.union([
+  LogEntryInputSchema,
+  z.object({
+    logs: z.array(LogEntryInputSchema),
+  }).strict(),
+]);
+
+export const TestPromoSeedRequestSchema = z.object({
+  code: z.string().optional(),
+  ac: z.number().optional(),
+  gp: z.number().optional(),
+}).strict();
+
+export const TournamentRegisterRequestSchema = z.object({
+  userId: UserIdSchema.optional(),
+  displayName: z.string().min(1).optional(),
+  elo: z.coerce.number().int().optional(),
+}).strict();
+
+export const TournamentActionRequestSchema = EmptyObjectSchema;
+
+export const InventoryGiftRequestSchema = z.object({
+  itemId: z.string().min(1),
+  targetUserId: UserIdSchema,
+  idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
+export const InventoryTradeRequestSchema = z.object({
+  myItemId: z.string().min(1),
+  theirItemId: z.string().min(1),
+  targetUserId: UserIdSchema,
+  idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
+export const BadgeClaimRequestSchema = z.object({
+  badge_id: BadgeIdSchema,
+  game_type: z.coerce.number().int().nonnegative().optional(),
+}).strict();
+
+export const MarketplaceBuyRequestSchema = z.object({
+  listingId: z.string().min(1),
+}).strict();
+
+export const MarketplaceSellRequestSchema = z.object({
+  itemId: z.string().min(1),
+  itemType: z.string().min(1).optional(),
+  price: z.coerce.number().nonnegative().optional(),
+  currency: z.string().min(1).optional(),
+}).strict();
+
+export const MarketplaceEmptyRequestSchema = EmptyObjectSchema;
+
+export const ComplianceReportRequestSchema = z.object({
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  reportType: z.enum(ComplianceReportTypeValues).optional(),
+}).strict();
+
+export const AdminReportResolveRequestSchema = z.object({
+  action: z.string().min(1),
+  moderatorId: z.string().min(1).optional(),
+}).strict();
+
+export const FraudCheckPreviewRequestSchema = z.object({
+  amount: z.coerce.number().nonnegative().optional(),
+  paymentMethod: z.string().min(1).max(64).optional(),
+  currency: z.string().min(1).max(64).optional(),
+}).strict();
+
+export const PenaltyAppealRequestSchema = z.object({
+  penaltyId: z.string().min(1),
+  reason: z.string().min(1).max(1024),
+}).strict();
+
+export const PenaltyAppealReviewRequestSchema = z.object({
+  userId: UserIdSchema,
+  appealId: z.string().min(1),
+  action: z.enum(['approve', 'deny']),
+  moderatorId: UserIdSchema.optional(),
+}).strict();
+
+export const MessageReadReceiptRequestSchema = z.object({
+  messageIds: z.array(z.string().min(1).max(128)).default([]),
+}).strict();
+
+export const MessageListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  before: z.string().min(1).optional(),
+}).strict();
 
 export const AIGenerateRequestSchema = z.object({
   providerId: z.string().min(1),

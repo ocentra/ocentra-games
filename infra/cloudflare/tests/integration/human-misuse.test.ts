@@ -88,7 +88,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const promoCode = `HUMAN_MISUSE_${Date.now()}`;
 
     const seedResponse = await worker.fetch(
-      buildTestApiUrlForEndpoint(`${ApiEndpoint.Test.Base}/seed-promo`),
+      buildTestApiUrlForEndpoint(ApiEndpoint.Test.SeedPromo),
       {
         method: HttpMethod.Post,
         headers: {

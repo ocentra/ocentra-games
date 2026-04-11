@@ -1,12 +1,15 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { validateZodBody } from '@/utils/zod-validation';
-import { z } from 'zod';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import {
+  AssetsSyncDiffRequestSchema,
+  AssetsUploadImageRequestSchema,
+} from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import {
   putAssetByKey,
   deleteAssetByKey,
@@ -229,9 +232,7 @@ export async function handleAssetsRequest(
   }
 
   if (path === ApiEndpoint.Assets.SyncDiff && request.method === HttpMethod.Post) {
-    const validation = await validateZodBody(request, env, z.object({
-      localIndexHash: z.string().optional(),
-    }).strict());
+    const validation = await validateZodBody(request, env, AssetsSyncDiffRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const localIndexHash = validation.data!.localIndexHash || '';
     const { hash: cloudIndexHash, entryIndex } = await getEntryIndexHash(env);
@@ -246,11 +247,7 @@ export async function handleAssetsRequest(
     const authError = await requireAuth(request, env, undefined, ErrorMessage.AuthenticationRequired);
     if (authError instanceof Response) return authError;
 
-    const validation = await validateZodBody(request, env, z.object({
-      hash: z.string().min(1),
-      content: z.string().min(1),
-      contentType: z.string().optional(),
-    }).strict());
+    const validation = await validateZodBody(request, env, AssetsUploadImageRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     try {

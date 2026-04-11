@@ -88,7 +88,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Redeem Rule 14.8: replay same code same user does not double-credit (state safety)'), async () => {
-    const seedPath = `${ApiEndpoint.Test.Base}/seed-promo`;
+    const seedPath = ApiEndpoint.Test.SeedPromo;
     const seedUrl = buildTestApiUrlForEndpoint(seedPath);
     await worker.fetch(seedUrl, {
       method: HttpMethod.Post,

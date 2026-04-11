@@ -1,11 +1,14 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { validateZodBody } from '@/utils/zod-validation';
-import { z } from 'zod';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { UserKeysDO } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import {
+  AIKeysStoreCustomRequestSchema,
+  AIKeysStoreRequestSchema,
+} from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { fetchFromDO } from '@/utils/durable-object-request';
 import { getCurrentContext } from '@/logging/request-context';
 import { decryptKey, encryptKey, importMasterKey } from '@/logic/ai-keys';
@@ -99,10 +102,7 @@ async function handleStore(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  const validation = await validateZodBody(request, env, z.object({
-    providerId: z.string().min(1),
-    apiKey: z.string().min(1),
-  }).strict());
+  const validation = await validateZodBody(request, env, AIKeysStoreRequestSchema);
   if (validation.errorResponse) return validation.errorResponse;
   const { providerId, apiKey } = validation.data!;
 
@@ -169,11 +169,7 @@ async function handleStoreCustom(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  const validation = await validateZodBody(request, env, z.object({
-    providerId: z.string().min(1),
-    apiKey: z.string().min(1),
-    baseUrl: z.string().min(1).optional(),
-  }).strict());
+  const validation = await validateZodBody(request, env, AIKeysStoreCustomRequestSchema);
   if (validation.errorResponse) return validation.errorResponse;
   const { providerId, apiKey, baseUrl } = validation.data!;
   const catalog = await getCatalogFromEnv(env);

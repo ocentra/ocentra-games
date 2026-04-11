@@ -1,4 +1,4 @@
-import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare'
+﻿import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare'
 import { ValidationPattern } from '@ocentra/endpoint-domain/constants/validation-patterns'
 import { IdempotencyKeyPattern } from '@ocentra/endpoint-domain/constants/idempotency'
 import {
@@ -24,6 +24,10 @@ import {
 } from '@ocentra/endpoint-domain/schemas/matches'
 import { DefaultLeaderboardTier } from '@ocentra/endpoint-domain/constants/leaderboard'
 import {
+  ConsumeGpCurrencyValues,
+  PLAN_TIER_IDS,
+} from '@ocentra/endpoint-domain/constants/credits'
+import {
   FiatCurrencyValues,
   MatchIdRequiredFields,
   PresenceStatusValues,
@@ -34,6 +38,7 @@ import {
 } from '@ocentra/endpoint-domain/constants/worker-contract-values'
 import {
   GameTypeIdValues,
+  GameTypeId,
   PlayerTypeValues,
 } from '@ocentra/endpoint-domain/constants/game'
 import {
@@ -61,7 +66,7 @@ import {
   OpenApiTier,
   OpenApiHtmlTitle,
   OpenApiMethod,
-} from '@/constants/openapi'
+} from '@ocentra/endpoint-domain/constants/openapi'
 
 type OpenApiParameter = {
   name?: string
@@ -78,7 +83,11 @@ function createPathParameter(
   description: string,
   options?: { pattern?: string; enum?: string[]; example?: string }
 ) {
-  const example = options?.example
+  const example = options?.example ?? createSchemaExample({
+    type: OpenApiSchemaType.String,
+    ...(options?.pattern ? { pattern: options.pattern } : {}),
+    ...(options?.enum ? { enum: options.enum } : {}),
+  })
   return {
     name,
     in: OpenApiParameterLocation.Path,
@@ -108,7 +117,7 @@ function createQueryParameter(
     example?: number | string
   } = { type: OpenApiSchemaType.String }
 ) {
-  const example = schema.example
+  const example = schema.example ?? createSchemaExample(schema as OpenApiSchemaShape)
   return {
     name,
     in: OpenApiParameterLocation.Query,
@@ -133,7 +142,7 @@ function createHeaderParameter(
     example?: number | string
   } = { type: OpenApiSchemaType.String }
 ) {
-  const example = schema.example
+  const example = schema.example ?? createSchemaExample(schema as OpenApiSchemaShape)
   return {
     name,
     in: OpenApiParameterLocation.Header,
@@ -284,8 +293,26 @@ function createSchemaExample(schema: OpenApiSchemaShape): unknown {
   }
 
   if (schema.type === OpenApiSchemaType.String) {
+    if (schema.pattern === ValidationPattern.UuidV4.source) {
+      return OpenApiExampleValue.UuidZero
+    }
+    if (schema.pattern === ValidationPattern.UserId.source) {
+      return OpenApiExampleValue.UserId
+    }
+    if (schema.pattern === ValidationPattern.DisputeId.source) {
+      return OpenApiExampleValue.DisputeId
+    }
+    if (schema.pattern === ValidationPattern.HashHex64.source) {
+      return OpenApiExampleValue.HashHex64
+    }
+    if (schema.pattern === ValidationPattern.IsoDateTime.source) {
+      return OpenApiExampleValue.IsoDateTime
+    }
+    if (schema.pattern === IdempotencyKeyPattern.AllowedCharacters.source) {
+      return OpenApiExampleValue.IdempotencyKeyEarn
+    }
     if (schema.format === OpenApiSchemaFormat.DateTime) {
-      return '2026-04-07T20:30:40Z'
+      return OpenApiExampleValue.IsoDateTime
     }
     if (schema.format === OpenApiSchemaFormat.Date) {
       return '2026-04-07'
@@ -320,7 +347,7 @@ const disputeIdParameter = createPathParameter(
   OpenApiParameterDescription.UniqueMatchIdentifier,
   {
     pattern: ValidationPattern.DisputeId.source,
-    example: OpenApiExampleValue.ReportId,
+    example: OpenApiExampleValue.DisputeId,
   }
 )
 const roomIdParameter = createPathParameter(
@@ -343,7 +370,12 @@ const reportIdParameter = createPathParameter(
 const userIdParameter = createPathParameter(
   OpenApiParameterName.UserId,
   OpenApiParameterDescription.UniqueMatchIdentifier,
-  { pattern: ValidationPattern.UserId.source, example: 'schemathesis' }
+  { pattern: ValidationPattern.UserId.source, example: OpenApiExampleValue.UserId }
+)
+const conversationIdParameter = createPathParameter(
+  OpenApiParameterName.ConversationId,
+  'Conversation identifier',
+  { example: OpenApiExampleValue.ConversationId }
 )
 const idempotencyKeyHeaderParameter = createHeaderParameter(
   HttpHeader.IdempotencyKey,
@@ -353,7 +385,7 @@ const idempotencyKeyHeaderParameter = createHeaderParameter(
     type: OpenApiSchemaType.String,
     pattern: IdempotencyKeyPattern.AllowedCharacters.source,
     minLength: 8,
-    example: 'earn-schemathesis-001',
+    example: OpenApiExampleValue.IdempotencyKeyEarn,
   }
 )
 const authorizationHeaderExampleParameter = createHeaderParameter(
@@ -362,13 +394,13 @@ const authorizationHeaderExampleParameter = createHeaderParameter(
   false,
   {
     type: OpenApiSchemaType.String,
-    example: 'Bearer test-token:schemathesis:admin',
+    example: OpenApiExampleValue.AuthorizationBearerAdmin,
   }
 )
 const gameTypeParameter = createPathParameter(
   OpenApiParameterName.GameType,
   OpenApiParameterDescription.GameTypeDescription,
-  { enum: GameTypeIdValues.map(String), example: '1' }
+  { enum: GameTypeIdValues.map(String), example: String(GameTypeId.Poker) }
 )
 
 
@@ -665,7 +697,7 @@ function createMatchPaths() {
                   rating: { type: OpenApiSchemaType.Number, example: 1200 },
                   wallet_address: {
                     type: OpenApiSchemaType.String,
-                    example: OpenApiExampleValue.WalletAddress,
+                    example: OpenApiExampleValue.MatchWalletAddress,
                   },
                   player_type: {
                     type: OpenApiSchemaType.String,
@@ -715,7 +747,7 @@ function createMatchPaths() {
                   timestamp: {
                     type: OpenApiSchemaType.String,
                     pattern: utcDateTimePattern,
-                    example: '2026-04-08T00:00:00.000Z',
+                    example: OpenApiExampleValue.IsoDateTime,
                   },
                   metadata: {
                     type: OpenApiSchemaType.Object,
@@ -726,7 +758,7 @@ function createMatchPaths() {
                   turn: 1,
                   player_id: OpenApiExampleValue.UuidOne,
                   move: OpenApiExampleValue.MatchMove,
-                  timestamp: '2026-04-08T00:00:00.000Z',
+                  timestamp: OpenApiExampleValue.IsoDateTime,
                   metadata: { source: 'schemathesis' },
                 },
               },
@@ -738,7 +770,7 @@ function createMatchPaths() {
                 phase: {
                   type: OpenApiSchemaType.String,
                   enum: MatchPhaseValues,
-                  example: 'completed',
+                  example: MatchPhaseValues[2],
                 },
                 current_turn: { type: OpenApiSchemaType.Integer, example: 1 },
                 current_player: {
@@ -764,7 +796,7 @@ function createMatchPaths() {
                 },
               },
               example: {
-                phase: 'completed',
+                phase: MatchPhaseValues[2],
                 current_turn: 1,
                 current_player: OpenApiExampleValue.UuidOne,
                 board_state: { fen: OpenApiExampleValue.MatchBoardFen },
@@ -863,7 +895,7 @@ function createMatchPaths() {
                   rating: { type: OpenApiSchemaType.Number, example: 1200 },
                   wallet_address: {
                     type: OpenApiSchemaType.String,
-                    example: '675S9ZqD3QndK4Yh7o2zT6qT6qT6qT6qT6qT6qT6qT6q',
+                    example: OpenApiExampleValue.MatchWalletAddress,
                   },
                   player_type: {
                     type: OpenApiSchemaType.String,
@@ -876,7 +908,7 @@ function createMatchPaths() {
                   player_id: OpenApiExampleValue.UuidOne,
                   display_name: OpenApiExampleValue.MatchPlayerDisplayName,
                   rating: 1200,
-                  wallet_address: OpenApiExampleValue.WalletAddress,
+                  wallet_address: OpenApiExampleValue.MatchWalletAddress,
                   player_type: PlayerTypeValues[0],
                   score: 100,
                 },
@@ -887,7 +919,7 @@ function createMatchPaths() {
               example: [
                 {
                   type: OpenApiExampleValue.MatchEventType,
-                  timestamp: '2026-04-08T00:00:00.000Z',
+                  timestamp: OpenApiExampleValue.IsoDateTime,
                 },
               ],
               items: {
@@ -901,12 +933,12 @@ function createMatchPaths() {
                   timestamp: {
                     type: OpenApiSchemaType.String,
                     pattern: utcDateTimePattern,
-                    example: '2026-04-08T00:00:00.000Z',
+                    example: OpenApiExampleValue.IsoDateTime,
                   },
                 },
                 example: {
                   type: OpenApiExampleValue.MatchEventType,
-                  timestamp: '2026-04-08T00:00:00.000Z',
+                  timestamp: OpenApiExampleValue.IsoDateTime,
                 },
               },
             },
@@ -918,7 +950,7 @@ function createMatchPaths() {
                   turn: 1,
                   player_id: OpenApiExampleValue.UuidOne,
                   move: OpenApiExampleValue.MatchMove,
-                  timestamp: '2026-04-08T00:00:00.000Z',
+                  timestamp: OpenApiExampleValue.IsoDateTime,
                   metadata: { source: 'schemathesis' },
                 },
               ],
@@ -936,7 +968,7 @@ function createMatchPaths() {
                   timestamp: {
                     type: OpenApiSchemaType.String,
                     pattern: utcDateTimePattern,
-                    example: '2026-04-08T00:00:00.000Z',
+                    example: OpenApiExampleValue.IsoDateTime,
                   },
                   metadata: {
                     type: OpenApiSchemaType.Object,
@@ -947,7 +979,7 @@ function createMatchPaths() {
                   turn: 1,
                   player_id: OpenApiExampleValue.UuidOne,
                   move: OpenApiExampleValue.MatchMove,
-                  timestamp: '2026-04-08T00:00:00.000Z',
+                  timestamp: OpenApiExampleValue.IsoDateTime,
                   metadata: { source: 'schemathesis' },
                 },
               },
@@ -959,7 +991,7 @@ function createMatchPaths() {
                 phase: {
                   type: OpenApiSchemaType.String,
                   enum: MatchPhaseValues,
-                  example: 'completed',
+                  example: MatchPhaseValues[2],
                 },
                 current_turn: { type: OpenApiSchemaType.Integer, example: 1 },
                 current_player: {
@@ -985,7 +1017,7 @@ function createMatchPaths() {
                 },
               },
               example: {
-                phase: 'completed',
+                phase: MatchPhaseValues[2],
                 current_turn: 1,
                 current_player: OpenApiExampleValue.UuidOne,
                 board_state: { fen: 'startpos' },
@@ -996,7 +1028,7 @@ function createMatchPaths() {
               type: OpenApiSchemaType.String,
               format: OpenApiSchemaFormat.DateTime,
               minLength: 1,
-              example: '2026-04-08T00:00:00.000Z',
+              example: OpenApiExampleValue.IsoDateTime,
             },
           },
         }),
@@ -1092,7 +1124,7 @@ function createMatchPaths() {
               example: {
                 success: true,
                 match_id: OpenApiExampleValue.UuidZero,
-                anonymized_at: '2026-04-08T00:00:00.000Z',
+                anonymized_at: OpenApiExampleValue.IsoDateTime,
                 anonymized_url:
                   '/assets/matches/anonymized/00000000-0000-4000-8000-000000000000.json',
               },
@@ -1220,6 +1252,7 @@ function createSignedUrlPaths() {
                 expiresAt: {
                   type: OpenApiSchemaType.String,
                   format: OpenApiSchemaFormat.DateTime,
+                  example: OpenApiExampleValue.IsoDateTime,
                 },
               },
             }
@@ -1260,7 +1293,7 @@ function createDisputePaths() {
             [FormField.Reason]: {
               type: OpenApiSchemaType.String,
               enum: [...DisputeReasonValues],
-              example: 'cheating',
+              example: DisputeReasonValues[0],
             },
             reason_hash: { type: OpenApiSchemaType.String },
             created_by: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.PlayerId },
@@ -1275,13 +1308,13 @@ function createDisputePaths() {
               format: OpenApiSchemaFormat.DateTime,
               pattern: utcDateTimePattern,
               minLength: 1,
-              example: '2026-04-08T00:00:00.000Z',
+              example: OpenApiExampleValue.IsoDateTime,
             },
             dispute_id: {
               type: OpenApiSchemaType.String,
               minLength: 1,
               pattern: ValidationPattern.DisputeId.source,
-              example: OpenApiExampleValue.ReportId,
+              example: OpenApiExampleValue.DisputeId,
             },
           },
         }),
@@ -1296,7 +1329,7 @@ function createDisputePaths() {
                 success: { type: OpenApiSchemaType.Boolean, example: true },
                 disputeId: {
                   type: OpenApiSchemaType.String,
-                  example: OpenApiExampleValue.ReportId,
+                  example: OpenApiExampleValue.DisputeId,
                 },
                 dispute: { type: OpenApiSchemaType.Object },
               },
@@ -1321,7 +1354,7 @@ function createDisputePaths() {
               properties: {
                 dispute_id: {
                   type: OpenApiSchemaType.String,
-                  example: OpenApiExampleValue.ReportId,
+                  example: OpenApiExampleValue.DisputeId,
                 },
                 match_id: {
                   type: OpenApiSchemaType.String,
@@ -1339,7 +1372,7 @@ function createDisputePaths() {
                 created_at: {
                   type: OpenApiSchemaType.String,
                   format: OpenApiSchemaFormat.DateTime,
-                  example: '2026-04-08T00:00:00.000Z',
+                  example: OpenApiExampleValue.IsoDateTime,
                 },
                 user_id: {
                   type: OpenApiSchemaType.String,
@@ -1347,12 +1380,12 @@ function createDisputePaths() {
                 },
               },
               example: {
-                dispute_id: OpenApiExampleValue.ReportId,
+                dispute_id: OpenApiExampleValue.DisputeId,
                 match_id: OpenApiExampleValue.UuidZero,
                 reason: OpenApiExampleValue.CheatingDetected,
                 description: OpenApiExampleValue.SpeedHackDescription,
                 status: OpenApiExampleValue.PendingStatus,
-                created_at: '2026-04-08T00:00:00.000Z',
+                created_at: OpenApiExampleValue.IsoDateTime,
                 user_id: OpenApiExampleValue.UserId,
               },
             }
@@ -1389,19 +1422,19 @@ function createDisputePaths() {
             [FormField.Reason]: {
               type: OpenApiSchemaType.String,
               enum: [...DisputeReasonValues],
-              example: 'bug',
+              example: DisputeReasonValues[1],
             },
             [FormField.Description]: {
               type: OpenApiSchemaType.String,
               minLength: 5,
               pattern: DisputeDescriptionPattern,
-              example: 'More details added',
+              example: OpenApiExampleValue.DisputeUpdateDescription,
             },
           },
           example: {
             match_id: OpenApiExampleValue.UuidZero,
-            reason: 'bug',
-            description: 'More details added',
+            reason: DisputeReasonValues[1],
+            description: OpenApiExampleValue.DisputeUpdateDescription,
           },
         }),
         security: bearerAuthSecurity,
@@ -1449,12 +1482,12 @@ function createDisputePaths() {
             [FormField.Reason]: {
               type: OpenApiSchemaType.String,
               pattern: ValidationPattern.PrintableAscii.source,
-              example: 'Evidence for cheating',
+              example: OpenApiExampleValue.EvidenceReason,
             },
             [FormField.Description]: {
               type: OpenApiSchemaType.String,
               pattern: ValidationPattern.PrintableAscii.source,
-              example: 'Round 3 replay data',
+              example: OpenApiExampleValue.EvidenceDescription,
             },
           },
         }),
@@ -1475,7 +1508,7 @@ function createDisputePaths() {
                 },
                 evidence_package_hash: {
                   type: OpenApiSchemaType.String,
-                  example: 'abc123hash',
+                  example: OpenApiExampleValue.EvidencePackageHash,
                 },
                 evidence_files: {
                   type: OpenApiSchemaType.Integer,
@@ -1497,10 +1530,10 @@ function createDisputePaths() {
 function createArchivePaths() {
   return {
     [ApiEndpoint.Archive.ByMatchId(`{${OpenApiParameterName.MatchId}}`)]: {
-      [OpenApiMethod.Get]: {
+      [OpenApiMethod.Post]: {
         tags: [OpenApiTag.Archive],
-        summary: 'Get archived match',
-        description: 'Retrieves archived match data',
+        summary: 'Archive match',
+        description: 'Archives a match record',
         parameters: [matchIdParameter],
         responses: withStandardErrors(
           createJsonResponse(
@@ -1542,10 +1575,22 @@ function createAiPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
-          required: ['match_id', 'game_type'],
+          required: ['providerId', 'systemPrompt', 'userPrompt'],
           properties: {
-            match_id: { type: OpenApiSchemaType.String },
-            game_type: { type: OpenApiSchemaType.Integer },
+            providerId: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.AiProviderId,
+            },
+            systemPrompt: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+            },
+            userPrompt: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+            },
+            model: { type: OpenApiSchemaType.String },
           },
         }),
         responses: withAuthErrors(
@@ -1818,7 +1863,11 @@ function createCreditPaths() {
           required: ['amount', 'description'],
           properties: {
             amount: { type: OpenApiSchemaType.Integer, minimum: 1 },
-            currency: { type: OpenApiSchemaType.String },
+            currency: {
+              type: OpenApiSchemaType.String,
+              enum: ConsumeGpCurrencyValues,
+              example: ConsumeGpCurrencyValues[0],
+            },
             description: { type: OpenApiSchemaType.String, minLength: 1 },
             metadata: { type: OpenApiSchemaType.Object },
           },
@@ -1862,7 +1911,11 @@ function createCreditPaths() {
           type: OpenApiSchemaType.Object,
           required: ['code'],
           properties: {
-            code: { type: OpenApiSchemaType.String, minLength: 1 },
+            code: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.PromoCode,
+            },
           },
         }),
         responses: withAuthErrors(
@@ -1888,6 +1941,11 @@ function createBadgePaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['badge_id'],
+          properties: {
+            badge_id: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+            game_type: { type: OpenApiSchemaType.Integer, minimum: 0 },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -1986,6 +2044,8 @@ function createAssetPaths() {
             true,
             {
               type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.AssetHash,
             }
           ),
           createQueryParameter(
@@ -1994,6 +2054,8 @@ function createAssetPaths() {
             false,
             {
               type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.UuidZero,
             }
           ),
           createQueryParameter(
@@ -2002,6 +2064,8 @@ function createAssetPaths() {
             false,
             {
               type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.HashHex64,
             }
           ),
         ],
@@ -2364,12 +2428,13 @@ function createMatchmakingPaths() {
 
 function createPresencePaths() {
   return {
-    [ApiEndpoint.Presence.Base]: {
+    [ApiEndpoint.Presence.ById(`{${OpenApiParameterName.UserId}}`)]: {
       [OpenApiMethod.Get]: {
         tags: [OpenApiTag.Presence],
         summary: 'Get presence',
         description: 'Retrieves online status of users',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'User presence info', {
@@ -2383,6 +2448,7 @@ function createPresencePaths() {
         summary: 'Update presence',
         description: 'Updates online status of the authenticated user',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           properties: {
@@ -2706,6 +2772,7 @@ function createFraudPaths() {
         summary: 'Check fraud risks',
         description: 'Retrieves current fraud risk assessment',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Fraud risk data', {
@@ -2723,6 +2790,12 @@ function createFraudPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['amount', 'paymentMethod', 'currency'],
+          properties: {
+            amount: { type: OpenApiSchemaType.Number, minimum: 0 },
+            paymentMethod: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+            currency: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -2744,6 +2817,7 @@ function createAntiCheatPaths() {
         summary: 'Anti-cheat status',
         description: 'Check anti-cheat integration status',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Anti-cheat status', {
@@ -2791,6 +2865,7 @@ function createProfilePaths() {
         summary: 'Get user profile',
         description: 'Retrieves public or private profile data',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Profile data', {
@@ -2806,6 +2881,7 @@ function createProfilePaths() {
         summary: 'Update profile',
         description: 'Updates user profile metadata',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           properties: {
@@ -2865,6 +2941,7 @@ function createMessagePaths() {
         summary: 'List message history',
         description: 'Retrieves message history for a conversation',
         security: bearerAuthSecurity,
+        parameters: [conversationIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Message history', {
@@ -2880,6 +2957,7 @@ function createMessagePaths() {
         summary: 'Send message',
         description: 'Sends a direct message or chat message',
         security: bearerAuthSecurity,
+        parameters: [conversationIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['content'],
@@ -2972,13 +3050,10 @@ function createDiscoveryPaths() {
         tags: [OpenApiTag.Discovery],
         summary: 'Discover content',
         description: 'Discover games, events, and featured activities',
-        security: bearerAuthSecurity,
-        responses: withAuthErrors(
-          withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Discovered content', {
-              type: OpenApiSchemaType.Object,
-            })
-          )
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Discovered content', {
+            type: OpenApiSchemaType.Object,
+          })
         ),
       },
     },
@@ -3045,6 +3120,14 @@ function createMarketplacePaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['listingId'],
+          properties: {
+            listingId: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.ListingId,
+            },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3086,6 +3169,7 @@ function createSettingsPaths() {
         summary: 'Get user settings',
         description: 'Retrieves user settings and configurations',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'User settings', {
@@ -3101,6 +3185,7 @@ function createSettingsPaths() {
         summary: 'Update settings',
         description: 'Updates user account settings',
         security: bearerAuthSecurity,
+        parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           properties: {
@@ -3155,17 +3240,9 @@ function postAdminActionOperation() {
     security: bearerAuthSecurity,
     requestBody: createJsonRequestBody({
       type: OpenApiSchemaType.Object,
-      required: ['action'],
       properties: {
         action: { type: OpenApiSchemaType.String, minLength: 1 },
-        targetUserId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
-        tier: { type: OpenApiSchemaType.String },
-        isAdmin: { type: OpenApiSchemaType.Boolean },
-        provider: { type: OpenApiSchemaType.Object },
-        providers: {
-          type: OpenApiSchemaType.Array,
-          items: { type: OpenApiSchemaType.Object },
-        },
+        targetUserId: { type: OpenApiSchemaType.String, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
       },
     }),
     responses: withAuthErrors(
@@ -3236,6 +3313,13 @@ function createAdminModerationPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['reporterId', 'targetId', 'reason'],
+          properties: {
+            reporterId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
+            targetId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
+            reason: { type: OpenApiSchemaType.String, minLength: 1 },
+            category: { type: OpenApiSchemaType.String },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3260,6 +3344,11 @@ function createAdminModerationPaths() {
         parameters: [reportIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['action'],
+          properties: {
+            action: { type: OpenApiSchemaType.String, minLength: 1 },
+            moderatorId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3288,6 +3377,10 @@ function createAdminUserPaths() {
         parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['isAdmin'],
+          properties: {
+            isAdmin: { type: OpenApiSchemaType.Boolean },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3311,6 +3404,11 @@ function createAdminFinancePaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['userId', 'tier'],
+          properties: {
+            userId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
+            tier: { type: OpenApiSchemaType.String, enum: PLAN_TIER_IDS, example: PLAN_TIER_IDS[0] },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3334,6 +3432,13 @@ function createAdminAiPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          properties: {
+            provider: { type: OpenApiSchemaType.Object },
+            providers: {
+              type: OpenApiSchemaType.Array,
+              items: { type: OpenApiSchemaType.Object },
+            },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3778,3 +3883,4 @@ export function generateSwaggerHtml(baseUrl: string): string {
 </body>
 </html>`
 }
+

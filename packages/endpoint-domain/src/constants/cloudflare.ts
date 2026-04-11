@@ -358,6 +358,12 @@ export const ApiEndpoint = {
   Test: {
     Base: testBase as ApiPath,
     ClearAll: `${testBase}/clear-all` as ApiPath,
+    ClearDebugLogs: `${testBase}/clear-debug-logs` as ApiPath,
+    FlushDebugLogs: `${testBase}/flush-debug-logs` as ApiPath,
+    GetDebugLogs: `${testBase}/get-debug-logs` as ApiPath,
+    MockAIBase: `${testBase}/mock-ai/v1` as ApiPath,
+    MockAIModels: `${testBase}/mock-ai/v1/models` as ApiPath,
+    MockAIChatCompletions: `${testBase}/mock-ai/v1/chat/completions` as ApiPath,
     SeedPromo: `${testBase}/seed-promo` as ApiPath,
     SeedAndRedeem: `${testBase}/seed-and-redeem` as ApiPath,
     SeedProducts: `${testBase}/seed-products` as ApiPath,

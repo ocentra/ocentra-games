@@ -47,7 +47,12 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 };
 
 import { RateLimitPrefix, CreditsRateLimit } from '@/constants/rate-limit';
-import { CreditAction, Currency, TransactionType } from '@ocentra/endpoint-domain/constants/credits';
+import {
+  CreditAction,
+  Currency,
+  TransactionType,
+  ConsumeGpCurrencyValues,
+} from '@ocentra/endpoint-domain/constants/credits';
 import { CreditsDO } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { MetadataField, type IdempotencyKey } from '@ocentra/endpoint-domain/constants/idempotency';
 import type { RateLimiter } from '@/utils/rate-limiter-interface';
@@ -1057,7 +1062,7 @@ export async function handleCreditsRequest(
       const body = validation.data!;
 
       const currency = body.currency || Currency.GP;
-      if (currency !== Currency.GP && currency !== Currency.AC) {
+      if (!ConsumeGpCurrencyValues.includes(currency as (typeof ConsumeGpCurrencyValues)[number])) {
         return new Response(JSON.stringify({
           error: 'Bad Request',
           message: 'Currency must be GP or AC'

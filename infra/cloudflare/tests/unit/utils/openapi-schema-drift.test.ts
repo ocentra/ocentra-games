@@ -3,7 +3,7 @@ import { testName } from '@tests/helpers/test-name';
 import { afterAll } from 'vitest';
 import { generateOpenApiJson } from '@/utils/openapi';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { OpenApiVersion } from '@/constants/openapi';
+import { OpenApiVersion } from '@ocentra/endpoint-domain/constants/openapi';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
 type ParsedOpenApi = {

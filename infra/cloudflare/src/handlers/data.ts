@@ -2,10 +2,10 @@ import type { Env } from '@/constants/env';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { getCorsHeaders } from '@/utils/cors';
-import { z } from 'zod';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType, CacheControl } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { DataDeletionConfirmRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { extractIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
 import { exportUserDataLogic, deleteUserDataLogic, type DataStorage } from '@/logic/data';
@@ -272,10 +272,7 @@ export async function handleDataDeletionRequest(
       });
     }
 
-    const confirmSchema = z.object({
-      confirm: z.boolean().optional()
-    }).strict();
-    const bodyValidation = confirmSchema.safeParse(parsedBody);
+    const bodyValidation = DataDeletionConfirmRequestSchema.safeParse(parsedBody);
     if (!bodyValidation.success) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,

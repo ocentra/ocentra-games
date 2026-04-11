@@ -123,12 +123,10 @@ async function devOnlyMiddleware(request: Request, env: Env): Promise<Response |
   const devOnlyMethodMap: Record<string, readonly HttpMethod[] | undefined> = {
     [ApiEndpoint.Test.SeedProducts]: [HttpMethod.Post],
     [ApiEndpoint.Test.SeedAndRedeem]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/seed-and-redeem`]: [HttpMethod.Post],
     [ApiEndpoint.Test.SeedPromo]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/seed-promo`]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/clear-debug-logs`]: [HttpMethod.Delete],
-    [`${ApiEndpoint.Test.Base}/flush-debug-logs`]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/get-debug-logs`]: [HttpMethod.Get],
+    [ApiEndpoint.Test.ClearDebugLogs]: [HttpMethod.Delete],
+    [ApiEndpoint.Test.FlushDebugLogs]: [HttpMethod.Post],
+    [ApiEndpoint.Test.GetDebugLogs]: [HttpMethod.Get],
     [ApiEndpoint.Test.ClearAll]: [HttpMethod.Delete],
   };
   const allowedMethods = devOnlyMethodMap[requestPath];

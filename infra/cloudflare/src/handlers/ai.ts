@@ -1,6 +1,5 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { z } from 'zod';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
@@ -9,13 +8,13 @@ import { AIEventType, AIActionType, AIModelProvider, AIModelId, AIAllowedDomains
 import { RateLimitPrefix } from '@/constants/rate-limit';
 import { buildSafeBucketKey, generateUniqueFilename } from '@/utils/path-sanitizer';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { validateMatchId } from '@ocentra/endpoint-domain/constants/match';
 import type { RateLimiter } from '@/utils/rate-limiter-interface';
 import { createRateLimiter } from '@/utils/rate-limiter-factory';
 import { getRateLimitIdentifier } from '@/utils/rate-limit';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+import { AIEventIngressRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import {
   processAIEventLogic,
   saveAIDecisionLogic,
@@ -239,33 +238,7 @@ async function handleAIEvent(
       });
     }
 
-    const validationSchema = z.object({
-      matchId: z.string().refine((value) => validateMatchId(value).valid, {
-        message: 'Invalid matchId format',
-      }),
-      playerId: z.string().min(1),
-      eventType: z.string().min(1),
-      eventData: z.record(z.string(), z.unknown()).optional(),
-      currentState: z.record(z.string(), z.unknown()).optional(),
-      playerHand: z.array(z.record(z.string(), z.unknown())).optional(),
-      availableActions: z.array(z.string()).optional(),
-      communicationOutput: z.object({
-        text: z.string(),
-        intent: z.string().optional(),
-        targetPlayers: z.array(z.string()).optional(),
-        ttsVoice: z.string().optional(),
-      }).optional(),
-      inputConsumption: z.object({
-        transcripts: z.array(z.object({
-          playerId: z.string(),
-          text: z.string(),
-          timestamp: z.string(),
-        })),
-        processedContext: z.unknown().optional(),
-        }).optional(),
-        sequenceNumber: z.number().int().optional(),
-        eventSequence: z.number().int().optional(),
-      }).strict();
+    const validationSchema = AIEventIngressRequestSchema;
 
     const validationResult = validationSchema.safeParse(bodyPreview);
     if (!validationResult.success) {
@@ -282,7 +255,7 @@ async function handleAIEvent(
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const eventRequest = validationResult.data as AIEventRequest;
+    const eventRequest = validationResult.data as unknown as AIEventRequest;
 
     const identifier = await getRateLimitIdentifier(request);
     const testRateLimitLimit = Number(env.AI_RATE_LIMIT_TEST_LIMIT ?? AIRateLimit.TestLimit);

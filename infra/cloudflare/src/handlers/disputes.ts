@@ -1,4 +1,4 @@
-import type { Env } from '@/constants/env'; // Test comment
+import type { Env } from '@/constants/env';
 import { requireAuth } from '@/utils/auth-middleware';
 import { getCorsHeaders } from '@/utils/cors';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
@@ -21,9 +21,11 @@ import {
   type DisputeStorage,
 } from '@/logic/disputes';
 
-import { DisputeDescriptionRegex, DisputeReasonValues } from '@ocentra/endpoint-domain/schemas/disputes';
+import {
+  CreateDisputeRequestSchema,
+  UpdateDisputeRequestSchema,
+} from '@ocentra/endpoint-domain/schemas/disputes';
 import { validateZodBody } from '@/utils/zod-validation';
-import { z } from 'zod';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -67,13 +69,6 @@ function isPrintableAscii(value: string): boolean {
   return /^[\x20-\x7E]+$/.test(value);
 }
 
-const disputeReasonValues = DisputeReasonValues;
-const legacyDisputeReasonValues = ['Cheating detected', 'Bug', 'Disconnection', 'Other'] as const;
-const disputeReasonSchema = z.union([
-  z.enum(disputeReasonValues),
-  z.enum(legacyDisputeReasonValues),
-]);
-
 function normalizeDisputeReason(reason: string): string {
   switch (reason) {
     case 'Cheating detected':
@@ -87,12 +82,6 @@ function normalizeDisputeReason(reason: string): string {
     default:
       return reason;
   }
-}
-
-function createMatchIdSchema(fieldName: string) {
-  return z.string().min(1).refine((value) => validateMatchId(value).valid, {
-    message: `${fieldName} must be a valid match identifier`,
-  });
 }
 
 function validateEvidenceMetadataField(value: unknown, fieldName: string, requireMatchId: boolean = false): string | null {
@@ -338,11 +327,7 @@ export async function handleDisputeRequest(
     const validation = await validateZodBody(
       request,
       env,
-      z.object({
-        match_id: createMatchIdSchema('match_id'),
-        reason: disputeReasonSchema,
-        description: z.string().min(5).regex(DisputeDescriptionRegex),
-      }).strict()
+      UpdateDisputeRequestSchema
     );
 
     if (validation.errorResponse) return validation.errorResponse;
@@ -771,20 +756,7 @@ async function handleCreateDispute(
       });
     }
 
-    const validation = await validateZodBody(
-      request,
-      env,
-      z.object({
-        match_id: createMatchIdSchema('match_id'),
-        reason: disputeReasonSchema,
-        description: z.string().min(5).regex(DisputeDescriptionRegex),
-        reported_player_id: z.string().optional(),
-        dispute_id: z.string().regex(/^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/).optional(),
-        reason_hash: z.string().optional(),
-        created_by: z.string().optional(),
-        timestamp: z.string().datetime({ offset: true, message: 'timestamp must be a valid date-time string' }).optional(),
-      }).strict()
-    );
+    const validation = await validateZodBody(request, env, CreateDisputeRequestSchema);
 
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;

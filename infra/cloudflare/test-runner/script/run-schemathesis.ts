@@ -9,7 +9,8 @@ import { fileURLToPath } from 'url';
 import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpAuthScheme, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
-import { OpenApiParameterName } from '@/constants/openapi';
+import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { generateOpenApiJson, openApiExplicitExampleRoutes } from '@/utils/openapi';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -165,6 +166,7 @@ type SchemathesisRuntimeFixtures = {
   registerTournamentId: string;
   startTournamentId: string;
   assetHash: string;
+  promoCode: string;
   leaderboardMatchIds: string[];
   leaderboardGameType: number;
   leaderboardUserId: string;
@@ -210,14 +212,14 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     .join('\n');
   const assetsCase = assetHash.length > 0
     ? [
-        '    if (method, path) == ("GET", "/api/v1/assets"):',
+        `    if (method, path) == ("GET", ${pythonStringLiteral(ApiEndpoint.Assets.Base)}):`,
         `        examples.append(Case(operation, method, path, query={"hash": ${pythonStringLiteral(assetHash)}}))`,
         '        return',
         '',
       ].join('\n')
     : '';
   const playerCase = [
-    '    if (method, path) == ("GET", "/api/v1/players/{userId}"):',
+    `    if (method, path) == ("GET", ${pythonStringLiteral(ApiEndpoint.Players.ById('{userId}'))}):`,
     '        examples.append(Case(operation, method, path, path_parameters={"userId": "schemathesis"}))',
     '        return',
     '',
@@ -418,7 +420,8 @@ function createSchemathesisRuntimeFixtures(baseUrl: string): SchemathesisRuntime
     roomId: '00000000-0000-4000-8000-000000000001',
     registerTournamentId: `schemathesis-register-${runId}`,
     startTournamentId: `schemathesis-start-${runId}`,
-    assetHash: '',
+    assetHash: OpenApiExampleValue.AssetHash,
+    promoCode: OpenApiExampleValue.PromoCode,
     leaderboardMatchIds: [],
     leaderboardGameType: 0,
     leaderboardUserId: 'human-player-1',
@@ -440,17 +443,29 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     paths?: Record<string, Record<string, OpenApiOperation>>;
   };
 
-    const setPathParameterExample = (pathKey: string, method: string, parameterName: string, example: string): void => {
-        const operation = spec.paths?.[pathKey]?.[method];
-        const parameter = operation?.parameters?.find((item) => item.name === parameterName);
-        if (!parameter) {
-          return;
-        }
-        if (parameter.schema) {
-          parameter.schema.example = example;
-        }
-        parameter.example = example;
-      };
+  const setPathParameterExample = (pathKey: string, method: string, parameterName: string, example: string): void => {
+    const operation = spec.paths?.[pathKey]?.[method];
+    const parameter = operation?.parameters?.find((item) => item.name === parameterName);
+    if (!parameter) {
+      return;
+    }
+    if (parameter.schema) {
+      parameter.schema.example = example;
+    }
+    parameter.example = example;
+  };
+
+  const setQueryParameterExample = (pathKey: string, method: string, parameterName: string, example: string): void => {
+    const operation = spec.paths?.[pathKey]?.[method];
+    const parameter = operation?.parameters?.find((item) => item.name === parameterName);
+    if (!parameter) {
+      return;
+    }
+    if (parameter.schema) {
+      parameter.schema.example = example;
+    }
+    parameter.example = example;
+  };
 
   const setRequestBodyExample = (pathKey: string, method: string, updater: (body: { content?: Record<string, { schema?: Record<string, unknown>; example?: unknown }> }) => void): void => {
     const operation = spec.paths?.[pathKey]?.[method];
@@ -542,6 +557,7 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
       example.actualOutputTokens = 12;
     }
   });
+  setQueryParameterExample(ApiEndpoint.Assets.Base, 'get', 'hash', fixtures.assetHash);
   setRequestBodyExample(`${ApiEndpoint.Marketplace.Base}/buy`, 'post', (body) => {
     const json = body.content?.['application/json'];
     const schema = json?.schema as OpenApiSchema | undefined;
@@ -554,6 +570,19 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     }
     if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
       (json.example as Record<string, unknown>).listingId = fixtures.listingId;
+    }
+  });
+  setRequestBodyExample(ApiEndpoint.Credits.Redeem, 'post', (body) => {
+    const json = body.content?.['application/json'];
+    const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema?.properties?.code) {
+      schema.properties.code.example = fixtures.promoCode;
+    }
+    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
+      (schema.example as Record<string, unknown>).code = fixtures.promoCode;
+    }
+    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
+      (json.example as Record<string, unknown>).code = fixtures.promoCode;
     }
   });
   setRequestBodyExample(ApiEndpoint.Progression.Base, 'post', (body) => {
@@ -619,6 +648,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
       console.log(`  Example seeding warning: seed-and-redeem returned ${seedResponse.status}${text ? ` - ${text}` : ''}`);
     } else {
       console.log(`  Seeded example credits with promo ${seedCode}`);
+      fixtures.promoCode = seedCode;
     }
   } catch (error) {
     console.log(`  Example seeding warning: failed to seed credits (${String(error)})`);
@@ -653,7 +683,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
       console.log(`  Example seeding warning: asset seed returned ${uploadImageResponse.status}${text ? ` - ${text}` : ''}`);
     } else {
       const uploaded = await uploadImageResponse.json().catch(() => ({})) as { hash?: string };
-      fixtures.assetHash = typeof uploaded.hash === 'string' && uploaded.hash.length > 0 ? uploaded.hash : fixtures.assetHash;
+      fixtures.assetHash = typeof uploaded.hash === 'string' && uploaded.hash.length > 0 ? uploaded.hash : OpenApiExampleValue.AssetHash;
       console.log(`  Seeded example asset with hash ${fixtures.assetHash || 'unknown'}`);
     }
   } catch (error) {

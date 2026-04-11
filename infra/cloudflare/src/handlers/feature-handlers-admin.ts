@@ -16,7 +16,6 @@ import { getFirestoreUsersCollectionUrl, getFirestoreAdminActivityCollectionUrl,
 import { getFirestoreAuthHeader } from '@/utils/firebase-service-auth';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
-import { z } from 'zod';
 import {
   LOG_ADMIN_AUTH,
   OPENAPI_USER_ID_PATTERN,
@@ -29,7 +28,9 @@ import {
   AdminBaseRequestSchema,
   AdminCreditsPlanRequestSchema,
   AdminModerationReportRequestSchema,
+  AdminModerationResolveRequestSchema,
   AdminUserStatusRequestSchema,
+  ComplianceReportRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { CreditsDO as CreditsDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 
@@ -235,7 +236,7 @@ async function handleAdminModerationResolveRequest(request: Request, env: Env, k
   const reportId = parts[0] === 'moderation' && parts[2] === 'resolve' ? parts[1] : null;
   const reportKey = reportId ? `${KvKeyPrefix.ReportPending}${reportId}` : '';
   if (!kv || !reportId) return stubJson(env, { error: 'Report ID required' }, HttpStatus.BadRequest);
-  const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, z.object({ action: z.string(), moderatorId: z.string().optional() }));
+  const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminModerationResolveRequestSchema);
   if (bodyResultError) return bodyResultError;
   const body = data!;
   const raw = await kv.get(reportKey);
@@ -297,11 +298,7 @@ export async function handleComplianceRequest(request: Request, env: Env, _path:
   let body: { startDate?: string; endDate?: string; reportType?: 'pci' | 'gdpr' | 'soc2' } = {};
 
   if (request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request.clone(), env, z.object({
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      reportType: z.enum(['pci', 'gdpr', 'soc2']).optional(),
-    }).strict());
+    const { data, errorResponse } = await validateZodBody(request.clone(), env, ComplianceReportRequestSchema);
     if (errorResponse) return errorResponse;
     body = data! as typeof body;
   } else {

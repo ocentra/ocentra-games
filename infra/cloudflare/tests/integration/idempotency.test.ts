@@ -209,7 +209,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Redeem Idempotency: same user same code twice returns 200 with already_redeemed on second and balance unchanged (Rule 14.8)'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('idem-redeem');
-    const seedPath = `${ApiEndpoint.Test.Base}/seed-promo`;
+    const seedPath = ApiEndpoint.Test.SeedPromo;
     const seedUrl = buildTestApiUrlForEndpoint(seedPath);
     const seedRes = await worker.fetch(seedUrl, {
       method: HttpMethod.Post,

@@ -4,6 +4,7 @@ import { beforeAll, afterAll } from 'vitest';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
@@ -133,10 +134,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
         body: JSON.stringify({
+          ...OpenApiExampleValue.AntiCheatReportRequest,
           reporterId: userId,
-          targetId: 'target-user',
-          reason: 'suspicious',
-          matchId: 'match-1',
+          matchId: OpenApiExampleValue.MatchId,
         }),
       });
       expect(response.status).toBe(HttpStatus.Ok);
@@ -158,10 +158,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           method: HttpMethod.Post,
           headers,
           body: JSON.stringify({
+            ...OpenApiExampleValue.AntiCheatReportRequest,
             reporterId: userId,
             targetId: `target-${i}`,
             reason: 'cheating',
-            matchId: `match-${i}`,
+            matchId: OpenApiExampleValue.MatchId,
           }),
         });
         expect(reportRes.status).toBe(HttpStatus.Ok);

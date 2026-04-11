@@ -3,7 +3,6 @@ import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { getCorsHeaders } from '@/utils/cors';
 import { validateZodBody } from '@/utils/zod-validation';
-import { z } from 'zod';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
@@ -14,6 +13,7 @@ import { QueryParam, QueryValue } from '@ocentra/endpoint-domain/constants/query
 import { Logger, getStackTrace, clearDebugLogs, flushDebugLogs } from '@/logging/domain-logger-init';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { TestPromoSeedRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -45,12 +45,10 @@ function getTestEndpointAllowedMethods(path: string): readonly HttpMethod[] | un
   const testEndpointMethodMap: Record<string, readonly HttpMethod[] | undefined> = {
     [ApiEndpoint.Test.SeedProducts]: [HttpMethod.Post],
     [ApiEndpoint.Test.SeedAndRedeem]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/seed-and-redeem`]: [HttpMethod.Post],
     [ApiEndpoint.Test.SeedPromo]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/seed-promo`]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/clear-debug-logs`]: [HttpMethod.Delete],
-    [`${ApiEndpoint.Test.Base}/flush-debug-logs`]: [HttpMethod.Post],
-    [`${ApiEndpoint.Test.Base}/get-debug-logs`]: [HttpMethod.Get],
+    [ApiEndpoint.Test.ClearDebugLogs]: [HttpMethod.Delete],
+    [ApiEndpoint.Test.FlushDebugLogs]: [HttpMethod.Post],
+    [ApiEndpoint.Test.GetDebugLogs]: [HttpMethod.Get],
     [ApiEndpoint.Test.ClearAll]: [HttpMethod.Delete],
   };
 
@@ -103,7 +101,7 @@ export async function handleTestRequest(
   }
 
   const requestOrigin = request.headers.get(HttpHeader.Origin) || undefined;
-  if (path === `${ApiEndpoint.Test.Base}/mock-ai/v1/models` && request.method === HttpMethod.Get) {
+  if (path === ApiEndpoint.Test.MockAIModels && request.method === HttpMethod.Get) {
     return new Response(JSON.stringify({
       object: 'list',
       data: [
@@ -118,7 +116,7 @@ export async function handleTestRequest(
     });
   }
 
-  if (path === `${ApiEndpoint.Test.Base}/mock-ai/v1/chat/completions` && request.method === HttpMethod.Post) {
+  if (path === ApiEndpoint.Test.MockAIChatCompletions && request.method === HttpMethod.Post) {
     return new Response(JSON.stringify({
       id: 'chatcmpl-mock',
       object: 'chat.completion',
@@ -145,7 +143,7 @@ export async function handleTestRequest(
     return authResult;
   }
 
-  if ((path === ApiEndpoint.Test.SeedAndRedeem || path === `${ApiEndpoint.Test.Base}/seed-and-redeem`) && request.method === HttpMethod.Post) {
+  if (path === ApiEndpoint.Test.SeedAndRedeem && request.method === HttpMethod.Post) {
     if (!env.PROMO_KV || !env.CREDITS_DO) {
       return new Response(JSON.stringify({
         error: ErrorMessage.Forbidden,
@@ -158,11 +156,7 @@ export async function handleTestRequest(
         },
       });
     }
-    const validation = await validateZodBody(request, env, z.object({
-      code: z.string().optional(),
-      ac: z.number().optional(),
-      gp: z.number().optional(),
-    }).strict());
+    const validation = await validateZodBody(request, env, TestPromoSeedRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';
@@ -226,7 +220,7 @@ export async function handleTestRequest(
   const bucketName = env.BUCKET_NAME || 'unknown';
 
   try {
-    if (path === `${ApiEndpoint.Test.Base}/clear-debug-logs` && request.method === HttpMethod.Delete) {
+    if (path === ApiEndpoint.Test.ClearDebugLogs && request.method === HttpMethod.Delete) {
       if (bucketName !== StorageBucketName.TestMatches) {
         return new Response(JSON.stringify({
           error: ErrorMessage.Forbidden,
@@ -258,7 +252,7 @@ export async function handleTestRequest(
       });
     }
 
-    if (path === `${ApiEndpoint.Test.Base}/flush-debug-logs` && request.method === HttpMethod.Post) {
+    if (path === ApiEndpoint.Test.FlushDebugLogs && request.method === HttpMethod.Post) {
       if (bucketName !== StorageBucketName.TestMatches) {
         return new Response(JSON.stringify({
           error: ErrorMessage.Forbidden,
@@ -295,7 +289,7 @@ export async function handleTestRequest(
       });
     }
 
-    if ((path === ApiEndpoint.Test.SeedPromo || path === `${ApiEndpoint.Test.Base}/seed-promo`) && request.method === HttpMethod.Post) {
+    if (path === ApiEndpoint.Test.SeedPromo && request.method === HttpMethod.Post) {
       if (!env.PROMO_KV) {
         return new Response(JSON.stringify({
           error: ErrorMessage.Forbidden,
@@ -308,11 +302,7 @@ export async function handleTestRequest(
           },
         });
       }
-      const validation = await validateZodBody(request, env, z.object({
-      code: z.string().optional(),
-      ac: z.number().optional(),
-      gp: z.number().optional(),
-    }).strict());
+      const validation = await validateZodBody(request, env, TestPromoSeedRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
       const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';
@@ -348,7 +338,7 @@ export async function handleTestRequest(
       });
     }
 
-    if (path === `${ApiEndpoint.Test.Base}/get-debug-logs` && request.method === HttpMethod.Get) {
+    if (path === ApiEndpoint.Test.GetDebugLogs && request.method === HttpMethod.Get) {
       const key = `${BucketPath.DebugLogs}test.json`;
       const logFile = await env.MATCHES_BUCKET.get(key);
       
@@ -462,9 +452,9 @@ export async function handleTestRequest(
       message: 'Unknown test endpoint',
       available_endpoints: [
         `DELETE ${ApiEndpoint.Test.ClearAll}?${QueryParam.Confirm}=${QueryValue.True} - Clear all records from R2`,
-        `DELETE ${ApiEndpoint.Test.Base}/clear-debug-logs - Clear debug logs from R2`,
-        `POST ${ApiEndpoint.Test.Base}/flush-debug-logs - Flush debug logs to R2`,
-        `GET ${ApiEndpoint.Test.Base}/get-debug-logs - Get debug logs from R2`
+        `DELETE ${ApiEndpoint.Test.ClearDebugLogs} - Clear debug logs from R2`,
+        `POST ${ApiEndpoint.Test.FlushDebugLogs} - Flush debug logs to R2`,
+        `GET ${ApiEndpoint.Test.GetDebugLogs} - Get debug logs from R2`
       ],
     }), {
       status: HttpStatus.NotFound,

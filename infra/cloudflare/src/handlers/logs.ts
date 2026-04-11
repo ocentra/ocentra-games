@@ -12,8 +12,8 @@ import { RequestLimits } from '@/constants/request-limits';
 import { getAnalyticsEngineSqlUrl } from '@/utils/cloudflare-api';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { z } from 'zod';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+import { LogsBatchRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -351,30 +351,7 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
 
   try {
     if (pathname === ApiEndpoint.Logs.Base && request.method === HttpMethod.Post) {
-      const validation = await validateZodBody(request, env, z.union([
-        z.object({
-          id: z.string(),
-          message: z.string(),
-          level: z.string(),
-          timestamp: z.number().default(() => Date.now()),
-          source: z.string().optional(),
-          context: z.string().optional(),
-          stack: z.string().optional(),
-          args: z.array(z.unknown()).optional(),
-        }),
-        z.object({
-          logs: z.array(z.object({
-            id: z.string(),
-            message: z.string(),
-            level: z.string(),
-            timestamp: z.number().default(() => Date.now()),
-            source: z.string().optional(),
-            context: z.string().optional(),
-            stack: z.string().optional(),
-            args: z.array(z.unknown()).optional(),
-          })).max(LogsApiLimits.MaxBatchSize)
-        })
-      ]));
+      const validation = await validateZodBody(request, env, LogsBatchRequestSchema);
       if (validation.errorResponse) return validation.errorResponse;
       const body = validation.data!;
 

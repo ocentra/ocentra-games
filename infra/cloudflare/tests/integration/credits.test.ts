@@ -887,7 +887,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Redeem: happy path awards AC and GP (seed-and-redeem single request)'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('redeem-happy');
-    const seedAndRedeemPath = `${ApiEndpoint.Test.Base}/seed-and-redeem`;
+    const seedAndRedeemPath = ApiEndpoint.Test.SeedAndRedeem;
     const seedAndRedeemUrl = buildTestApiUrlForEndpoint(seedAndRedeemPath);
     const response = await worker.fetch(seedAndRedeemUrl,
       {
@@ -921,7 +921,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Redeem: idempotency same user same code returns already_redeemed (Rule 14.8)'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('redeem-idem');
-    const seedAndRedeemPath = `${ApiEndpoint.Test.Base}/seed-and-redeem`;
+    const seedAndRedeemPath = ApiEndpoint.Test.SeedAndRedeem;
     const seedAndRedeemUrl = buildTestApiUrlForEndpoint(seedAndRedeemPath);
     const first = await worker.fetch(seedAndRedeemUrl,
       {
@@ -968,7 +968,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Redeem: concurrency same user same code final state at most one award (Rule 14.8.5)'), async () => {
-    const seedPath = `${ApiEndpoint.Test.Base}/seed-promo`;
+    const seedPath = ApiEndpoint.Test.SeedPromo;
     const seedUrl = buildTestApiUrlForEndpoint(seedPath);
     const seedRes = await worker.fetch(seedUrl,
       {
@@ -1052,7 +1052,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Redeem: success response shape has success and optional ac_added gp_added new_balance fields'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('redeem-shape');
-    const seedPath = `${ApiEndpoint.Test.Base}/seed-and-redeem`;
+    const seedPath = ApiEndpoint.Test.SeedAndRedeem;
     const seedUrl = buildTestApiUrlForEndpoint(seedPath);
     const res = await worker.fetch(seedUrl,
       {
@@ -1085,7 +1085,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Redeem: already_redeemed response does not include ac_added or gp_added'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('redeem-already');
-    const seedPath = `${ApiEndpoint.Test.Base}/seed-and-redeem`;
+    const seedPath = ApiEndpoint.Test.SeedAndRedeem;
     const seedUrl = buildTestApiUrlForEndpoint(seedPath);
     const seedAlreadyRes = await worker.fetch(seedUrl,
       {

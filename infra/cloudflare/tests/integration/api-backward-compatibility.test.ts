@@ -9,7 +9,7 @@ import { HttpMethod, HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/con
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
-import { OpenApiParameterName } from '@/constants/openapi';
+import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
 type OpenApiDocument = {

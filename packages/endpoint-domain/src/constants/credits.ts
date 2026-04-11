@@ -15,6 +15,11 @@ export const Currency = {
 
 export type Currency = typeof Currency[keyof typeof Currency];
 
+export const ConsumeGpCurrencyValues = ['GP', 'AC'] as const;
+
+export type ConsumeGpCurrencyValue =
+  (typeof ConsumeGpCurrencyValues)[number];
+
 export const CreditOperation = {
   Purchase: 'purchase',
   Consume: 'consume',

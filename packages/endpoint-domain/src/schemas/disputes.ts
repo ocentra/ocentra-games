@@ -7,6 +7,11 @@ import { MatchIdSchema, UserIdSchema, DisputeIdSchema, TimestampSchema } from '.
 
 export const DisputeReasonValues = ['cheating', 'bug', 'disconnection', 'other'] as const;
 export const DisputeReasonSchema = z.enum(DisputeReasonValues);
+export const LegacyDisputeReasonValues = ['Cheating detected', 'Bug', 'Disconnection', 'Other'] as const;
+export const DisputeReasonInputSchema = z.union([
+  DisputeReasonSchema,
+  z.enum(LegacyDisputeReasonValues),
+]);
 export const DisputeDescriptionPattern = "^[A-Za-z0-9][A-Za-z0-9 .,;:'\"!?()/-]*$";
 export const DisputeDescriptionRegex = new RegExp(DisputeDescriptionPattern);
 export const DisputeDescriptionSchema = z.string().min(5).regex(new RegExp(DisputeDescriptionPattern));
@@ -17,11 +22,20 @@ export const DisputeDescriptionSchema = z.string().min(5).regex(new RegExp(Dispu
 
 export const CreateDisputeRequestSchema = z.object({
   match_id: MatchIdSchema,
-  reason: DisputeReasonSchema,
+  reason: DisputeReasonInputSchema,
   description: DisputeDescriptionSchema,
   reported_player_id: UserIdSchema.optional(),
   dispute_id: DisputeIdSchema.optional(),
+  reason_hash: z.string().optional(),
+  created_by: z.string().optional(),
+  timestamp: z.string().datetime({ offset: true, message: 'timestamp must be a valid date-time string' }).optional(),
 });
+
+export const UpdateDisputeRequestSchema = z.object({
+  match_id: MatchIdSchema,
+  reason: DisputeReasonInputSchema,
+  description: DisputeDescriptionSchema,
+}).strict();
 
 export const SubmitEvidenceRequestSchema = z.object({
   evidence_type: z.enum(['screenshot', 'replay', 'log', 'other']),

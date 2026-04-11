@@ -38,6 +38,10 @@ import {
 } from '@/logic/badges'
 import { earnGP as earnGPHandler } from '@/handlers/credits'
 import type { Env } from '@/constants/env'
+import {
+  BadgeClaimRequestSchema,
+  BadgesSetActiveRequestSchema,
+} from '@ocentra/endpoint-domain/schemas/worker-contracts'
 import { rejectUnsupportedMethod } from '@/utils/method-guards'
 const USER_ID_PATH_PATTERN = /^[A-Za-z0-9._-]+$/
 
@@ -548,15 +552,7 @@ export async function handleBadgesRequest(
       action === BadgeAction.Active &&
       request.method === HttpMethod.Post
     ) {
-      const validation = await validateZodBody(
-        request,
-        env,
-        z
-          .object({
-            badge_ids: z.array(z.string()),
-          })
-          .strict()
-      )
+      const validation = await validateZodBody(request, env, BadgesSetActiveRequestSchema)
       if (validation.errorResponse) return validation.errorResponse
       const body = validation.data!
 
@@ -629,12 +625,7 @@ export async function handleBadgesRequest(
       const validation = await validateZodBody(
         request,
         env,
-        z
-          .object({
-            badge_id: z.string().min(1),
-            game_type: z.number().optional(),
-          })
-          .strict()
+        BadgeClaimRequestSchema
       )
       if (validation.errorResponse) return validation.errorResponse
       const body = validation.data!

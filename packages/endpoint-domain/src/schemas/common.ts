@@ -52,6 +52,8 @@ export const PaginationParamsSchema = z.object({
   cursor: z.string().optional(),
 });
 
+export const EmptyObjectSchema = z.object({}).strict();
+
 
 export const ErrorResponseSchema = z.object({
   error: z.string(),

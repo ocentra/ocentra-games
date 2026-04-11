@@ -35,7 +35,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const acGrant = 25;
     const gpGrant = 15;
 
-    const seedUrl = buildTestApiUrlForEndpoint(`${ApiEndpoint.Test.Base}/seed-promo`);
+    const seedUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Test.SeedPromo);
     const seedRes = await worker.fetch(seedUrl, {
       method: HttpMethod.Post,
       headers: {

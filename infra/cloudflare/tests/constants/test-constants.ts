@@ -1,4 +1,4 @@
-import { OpenApiServer, OpenApiSecurityScheme } from '@/constants/openapi';
+import { OpenApiServer, OpenApiSecurityScheme } from '@ocentra/endpoint-domain/constants/openapi';
 import { MonitoringWebhookDomain } from '@/constants/monitoring';
 import { NodeCryptoKeyFormat, NodeCryptoKeyType, NodeCryptoSignAlgorithm } from '@/constants/crypto';
 import { asMatchId } from '@ocentra/endpoint-domain/constants/match';
