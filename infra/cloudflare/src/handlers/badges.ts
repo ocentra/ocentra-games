@@ -9,7 +9,6 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare'
 import { BucketPath } from '@ocentra/boundary-domain/constants/bucket-paths'
 import {
   BadgeAction,
-  MaxActiveBadges,
   BadgeId,
   BadgeType,
   BadgeRarity,
@@ -554,7 +553,7 @@ export async function handleBadgesRequest(
         env,
         z
           .object({
-            badge_ids: z.array(z.string()).max(MaxActiveBadges),
+            badge_ids: z.array(z.string()),
           })
           .strict()
       )
@@ -567,13 +566,16 @@ export async function handleBadgesRequest(
       )
 
       if (!result.success) {
+        const status = typeof result.error === 'string' && result.error.startsWith('Maximum ')
+          ? HttpStatus.BadRequest
+          : HttpStatus.InternalServerError
         return new Response(
           JSON.stringify({
             error: 'Internal Server Error',
             message: result.error || 'Failed to set active badges',
           }),
           {
-            status: HttpStatus.InternalServerError,
+            status,
             headers: {
               [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
               ...getCorsHeaders(env, requestOrigin || undefined),
@@ -753,7 +755,7 @@ export async function handleBadgesRequest(
           result.error?.includes('not found') ||
           result.error?.includes('Invalid')
         const statusCode = result.error?.includes('not found')
-          ? HttpStatus.NotFound
+          ? HttpStatus.BadRequest
           : isClientError
             ? HttpStatus.BadRequest
             : HttpStatus.InternalServerError

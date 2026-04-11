@@ -28,7 +28,7 @@ export async function validateZodBody<T>(
     if (typeof json === 'symbol') {
       return {
         errorResponse: new Response(
-          JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Invalid JSON body', issues: [] }),
+          JSON.stringify({ success: false, error: ErrorMessage.BadRequest, message: 'Invalid JSON body', issues: [] }),
           { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, request.headers.get(HttpHeader.Origin) || undefined) } }
         ),
       };
@@ -39,6 +39,7 @@ export async function validateZodBody<T>(
       return {
         errorResponse: new Response(
           JSON.stringify({
+            success: false,
             error: ErrorMessage.BadRequest,
             message: 'Invalid request payload',
             issues: parsed.error.issues,
@@ -51,7 +52,7 @@ export async function validateZodBody<T>(
   } catch {
     return {
       errorResponse: new Response(
-        JSON.stringify({ error: ErrorMessage.BadRequest, message: 'Invalid JSON body', issues: [] }),
+        JSON.stringify({ success: false, error: ErrorMessage.BadRequest, message: 'Invalid JSON body', issues: [] }),
         { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, request.headers.get(HttpHeader.Origin) || undefined) } }
       ),
     };

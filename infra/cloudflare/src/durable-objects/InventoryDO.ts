@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
-import { InventoryDO as InventoryDOPaths, InventoryDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { InventoryDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -21,6 +21,15 @@ interface StoredItems {
 interface EquippedMap {
   [slot: string]: string;
 }
+
+interface InventoryOperationRecord {
+  kind: 'add' | 'remove' | 'equip';
+  itemId?: string;
+  item?: InventoryItem;
+  slot?: string;
+}
+
+type InventoryOperationJournal = Record<string, InventoryOperationRecord>;
 
 export class InventoryDO implements DurableObject {
   private readonly log = Logger.instance;
@@ -67,38 +76,16 @@ export class InventoryDO implements DurableObject {
           ? this.json({ error: result.error }, result.status)
           : this.json({ equipped: true, slot: result.slot, itemId: result.itemId });
       }
-      if (request.method === HttpMethod.Post && pathname.includes(InventoryDOSegment.Gift)) {
-        const body = (await request.json().catch(() => ({}))) as { itemId?: string; targetUserId?: string };
-        const result = await this.gift(body.itemId ?? '', body.targetUserId ?? '');
-        return result.error
-          ? this.json({ error: result.error }, result.status)
-          : this.json({ sent: true });
-      }
-      if (request.method === HttpMethod.Post && pathname.includes(InventoryDOSegment.Trade)) {
-        const body = (await request.json().catch(() => ({}))) as {
-          myItemId?: string;
-          theirItemId?: string;
-          targetUserId?: string;
-        };
-        const result = await this.trade(
-          body.myItemId ?? '',
-          body.theirItemId ?? '',
-          body.targetUserId ?? ''
-        );
-        return result.error
-          ? this.json({ error: result.error }, result.status)
-          : this.json({ traded: true });
-      }
       if (request.method === HttpMethod.Post && pathname.includes(InventoryDOSegment.AddItem)) {
-        const body = (await request.json().catch(() => ({}))) as InventoryItem;
+        const body = (await request.json().catch(() => ({}))) as InventoryItem & { operationId?: string };
         const result = await this.addItem(body);
         return result.error
           ? this.json({ error: result.error }, result.status)
           : this.json({ added: true, itemId: result.itemId });
       }
       if (request.method === HttpMethod.Post && pathname.includes(InventoryDOSegment.RemoveItem)) {
-        const body = (await request.json().catch(() => ({}))) as { itemId?: string };
-        const result = await this.removeItem(body.itemId ?? '');
+        const body = (await request.json().catch(() => ({}))) as { itemId?: string; operationId?: string };
+        const result = await this.removeItem(body.itemId ?? '', body.operationId);
         return result.error
           ? this.json({ error: result.error }, result.status)
           : this.json({ item: result.item });
@@ -119,12 +106,29 @@ export class InventoryDO implements DurableObject {
     return { items: items ?? {}, equipped: equipped ?? {} };
   }
 
+  private async loadOperationJournal(): Promise<InventoryOperationJournal> {
+    return (await this.ctx.storage.get<InventoryOperationJournal>(InventoryDOStoragePrefix.Operations)) ?? {};
+  }
+
+  private async recordOperation(operationId: string, record: InventoryOperationRecord): Promise<void> {
+    const journal = await this.loadOperationJournal();
+    journal[operationId] = record;
+    await this.ctx.storage.put(InventoryDOStoragePrefix.Operations, journal);
+  }
+
   private async equip(
     itemId: string,
-    slot: string
+    slot: string,
+    operationId?: string
   ): Promise<{ error?: string; status?: number; slot?: string; itemId?: string }> {
     if (!itemId || !slot) {
       return { error: 'Missing itemId or slot', status: HttpStatus.BadRequest };
+    }
+    const opKey = operationId ?? `equip:${itemId}:${slot}`;
+    const journal = await this.loadOperationJournal();
+    const existing = journal[opKey];
+    if (existing?.kind === 'equip') {
+      return { slot: existing.slot ?? slot, itemId: existing.itemId ?? itemId };
     }
     const { items, equipped } = await this.getState();
     const item = items[itemId];
@@ -135,112 +139,37 @@ export class InventoryDO implements DurableObject {
     }
     nextEquipped[slot] = itemId;
     await this.ctx.storage.put(InventoryDOStoragePrefix.Equipped, nextEquipped);
+    await this.recordOperation(opKey, { kind: 'equip', itemId, slot });
     return { slot, itemId };
   }
 
-  private async gift(itemId: string, targetUserId: string): Promise<{ error?: string; status?: number }> {
-    if (!itemId || !targetUserId) {
-      return { error: 'Missing itemId or targetUserId', status: HttpStatus.BadRequest };
-    }
-    const { items } = await this.getState();
-    const item = items[itemId];
-    if (!item) return { error: 'Item not found', status: HttpStatus.NotFound };
-    const removed = await this.removeItem(itemId);
-    if (removed.error) return { error: removed.error, status: removed.status };
-    const ns = this.env.INVENTORY_DO;
-    if (!ns) return { error: 'INVENTORY_DO not configured', status: HttpStatus.ServiceUnavailable };
-    const targetId = ns.idFromName(targetUserId);
-    const stub = ns.get(targetId);
-    const addUrl = `http://dummy${InventoryDOPaths.AddItem}`;
-    const addRes = await stub.fetch(addUrl, {
-      method: HttpMethod.Post,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-      body: JSON.stringify(removed.item),
-    });
-    if (!addRes.ok) {
-      await addRes.text().catch(() => undefined);
-      if (removed.item) await this.addItem(removed.item);
-      return { error: 'Failed to add item to target', status: HttpStatus.BadGateway };
-    }
-    await addRes.text().catch(() => undefined);
-    return {};
-  }
-
-  private async trade(
-    myItemId: string,
-    theirItemId: string,
-    targetUserId: string
-  ): Promise<{ error?: string; status?: number }> {
-    if (!myItemId || !theirItemId || !targetUserId) {
-      return { error: 'Missing myItemId, theirItemId or targetUserId', status: HttpStatus.BadRequest };
-    }
-    const ns = this.env.INVENTORY_DO;
-    if (!ns) return { error: 'INVENTORY_DO not configured', status: HttpStatus.ServiceUnavailable };
-    const targetId = ns.idFromName(targetUserId);
-    const stub = ns.get(targetId);
-    const removeUrl = `http://dummy${InventoryDOPaths.RemoveItem}`;
-    const removeRes = await stub.fetch(removeUrl, {
-      method: HttpMethod.Post,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-      body: JSON.stringify({ itemId: theirItemId }),
-    });
-    if (!removeRes.ok) {
-      const err = (await removeRes.json().catch(() => ({}))) as { error?: string };
-      return { error: err.error ?? 'Target could not give item', status: removeRes.status };
-    }
-    const theirItem = (await removeRes.json()) as { item?: InventoryItem };
-    if (!theirItem?.item) return { error: 'Target item not returned', status: HttpStatus.BadGateway };
-    const { items } = await this.getState();
-    const myItem = items[myItemId];
-    if (!myItem) {
-      const r = await stub.fetch(`http://dummy${InventoryDOPaths.AddItem}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify(theirItem.item),
-      });
-      await r.text().catch(() => undefined);
-      return { error: 'My item not found', status: HttpStatus.NotFound };
-    }
-    const removed = await this.removeItem(myItemId);
-    if (removed.error) {
-      const r = await stub.fetch(`http://dummy${InventoryDOPaths.AddItem}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify(theirItem.item),
-      });
-      await r.text().catch(() => undefined);
-      return { error: removed.error, status: removed.status };
-    }
-    await this.addItem(theirItem.item);
-    const addRes = await stub.fetch(`http://dummy${InventoryDOPaths.AddItem}`, {
-      method: HttpMethod.Post,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-      body: JSON.stringify(removed.item),
-    });
-    if (!addRes.ok) {
-      await addRes.text().catch(() => undefined);
-      if (removed.item) await this.addItem(removed.item);
-      await this.removeItem(theirItem.item.itemId);
-      return { error: 'Failed to give my item to target', status: HttpStatus.BadGateway };
-    }
-    await addRes.text().catch(() => undefined);
-    return {};
-  }
-
-  private async addItem(item: InventoryItem): Promise<{ error?: string; status?: number; itemId?: string }> {
+  private async addItem(item: InventoryItem & { operationId?: string }): Promise<{ error?: string; status?: number; itemId?: string }> {
     if (!item?.itemId || !item?.type) {
       return { error: 'Invalid item: need itemId and type', status: HttpStatus.BadRequest };
     }
+    const opKey = item.operationId ?? `add:${item.itemId}`;
+    const journal = await this.loadOperationJournal();
+    const existing = journal[opKey];
+    if (existing?.kind === 'add') {
+      return { itemId: existing.itemId ?? item.itemId };
+    }
     const { items } = await this.getState();
-    const existing = items[item.itemId];
-    const count = (existing?.count ?? 0) + (item.count > 0 ? item.count : 1);
+    const currentItem = items[item.itemId];
+    const count = (currentItem?.count ?? 0) + (item.count > 0 ? item.count : 1);
     const next: StoredItems = { ...items, [item.itemId]: { ...item, count } };
     await this.ctx.storage.put(InventoryDOStoragePrefix.Items, next);
+    await this.recordOperation(opKey, { kind: 'add', itemId: item.itemId });
     return { itemId: item.itemId };
   }
 
-  private async removeItem(itemId: string): Promise<{ error?: string; status?: number; item?: InventoryItem }> {
+  private async removeItem(itemId: string, operationId?: string): Promise<{ error?: string; status?: number; item?: InventoryItem }> {
     if (!itemId) return { error: 'Missing itemId', status: HttpStatus.BadRequest };
+    const opKey = operationId ?? `remove:${itemId}`;
+    const journal = await this.loadOperationJournal();
+    const existing = journal[opKey];
+    if (existing?.kind === 'remove') {
+      return { item: existing.item ?? { itemId, type: 'unknown', count: 1 } };
+    }
     const { items, equipped } = await this.getState();
     const item = items[itemId];
     if (!item) return { error: 'Item not found', status: HttpStatus.NotFound };
@@ -257,6 +186,7 @@ export class InventoryDO implements DurableObject {
     }
     await this.ctx.storage.put(InventoryDOStoragePrefix.Items, nextItems);
     await this.ctx.storage.put(InventoryDOStoragePrefix.Equipped, nextEquipped);
+    await this.recordOperation(opKey, { kind: 'remove', item: { ...item, count: 1 }, itemId });
     return { item: { ...item, count: 1 } };
   }
 

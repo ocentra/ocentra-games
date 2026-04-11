@@ -87,7 +87,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Sync from-solana: returns 200 and cache when matchId and state provided'), async () => {
     const token = getTokenForFetch();
-    const matchId = `sync-test-${Date.now()}`;
+    const matchId = crypto.randomUUID();
     const url = buildApiUrl(ApiEndpoint.Sync.FromSolana, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
       method: HttpMethod.Post,
@@ -113,7 +113,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Sync reconcile: returns 200 and report with resolution when matchId provided'), async () => {
     const token = getTokenForFetch();
-    const matchId = `reconcile-test-${Date.now()}`;
+    const matchId = crypto.randomUUID();
     const fromUrl = buildApiUrl(ApiEndpoint.Sync.FromSolana, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const fromRes = await worker.fetch(fromUrl, {
       method: HttpMethod.Post,

@@ -126,7 +126,7 @@
     "contracts:generate": "vitest run --config vitest.contract.config.ts tests/contracts/consumers",
     "contracts:verify": "cross-env TEST_RUNNER=unstable vitest run --config vitest.contract.config.ts tests/contracts/providers",
     "contracts:test": "npm run contracts:generate && npm run contracts:verify",
-    "lint": "eslint --config eslint.config.js . && tsc --noEmit",
+    "lint": "eslint --config eslint.config.js . && tsc --noEmit && npx tsx test-runner/script/check-orchestration-boundaries.ts",
     "lint:fix": "eslint . --fix",
     "test:ui:serve": "npx serve tests/test-ui -l 3999",
     "test:ui:e2e": "playwright test --config=playwright.test-ui.config.ts"

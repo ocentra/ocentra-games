@@ -558,7 +558,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         ...getValidRequestHeaders(TestConfig.TestUserId),
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
-      body: JSON.stringify({ ids: [] }),
+      body: JSON.stringify({ notificationId: crypto.randomUUID() }),
     });
     expect(response.status).toBe(HttpStatus.Ok);
     const data = (await response.json()) as { read?: boolean; error?: string };

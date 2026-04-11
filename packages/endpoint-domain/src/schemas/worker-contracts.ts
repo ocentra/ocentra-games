@@ -70,7 +70,7 @@ export const SecurityPenaltyIssueRequestSchema = z.object({
 }).strict();
 
 export const AntiCheatAnalyzeRequestSchema = z.object({
-  matchId: MatchIdSchema,
+  matchId: MatchIdSchema.optional(),
   events: z.array(z.unknown()).optional(),
   moveTimingMs: z.coerce.number().nonnegative().optional(),
 }).strict();
@@ -137,7 +137,7 @@ export const SettingsUpdateRequestSchema = z.object({
 
 export const RoomCreateRequestSchema = z.object({
   roomId: RoomIdSchema.optional(),
-  hostId: UserIdSchema.optional(),
+  hostId: UserIdSchema,
   hostDisplayName: z.string().min(1).optional(),
   roomType: z.enum(RoomTypeValues).optional(),
   maxPlayers: z.coerce.number().int().min(1).max(13).optional(),
@@ -172,10 +172,26 @@ export const MatchmakingLeaveRequestSchema = z.object({
   ticketId: TicketIdSchema.optional(),
 }).strict();
 
-export const NotificationActionRequestSchema = z.object({
+export const NotificationPushRequestSchema = z.object({
+  type: z.string().min(1).max(64).optional(),
+  title: z.string().min(1).max(256).optional(),
+  body: z.string().min(1).max(2048).optional(),
+}).strict();
+
+export const NotificationMarkReadRequestSchema = z.object({
   action: z.string().min(1).optional(),
   notificationId: NotificationIdSchema.optional(),
+  ids: z.array(NotificationIdSchema).min(1).optional(),
 }).strict();
+
+export const NotificationPreferencesRequestSchema = z.object({
+  email: z.boolean().optional(),
+  push: z.boolean().optional(),
+  inApp: z.boolean().optional(),
+  muted: z.record(z.boolean()).optional(),
+}).strict();
+
+export const NotificationActionRequestSchema = NotificationMarkReadRequestSchema;
 
 export const PartyActionRequestSchema = z.object({
   action: z.string().min(1).optional(),
@@ -188,6 +204,8 @@ export const FeedFanoutRequestSchema = z.object({
   type: z.string().min(1).optional(),
   payload: z.record(z.string(), z.unknown()).optional(),
 }).strict();
+
+export const FeedAppendRequestSchema = FeedFanoutRequestSchema;
 
 export const FeedReportRequestSchema = z.object({
   startDate: z.string().optional(),
@@ -204,6 +222,15 @@ export const ProgressionXpRequestSchema = z.object({
   amount: z.coerce.number().int().positive().optional(),
   reason: z.string().min(1).max(256).optional(),
   idempotencyKey: IdempotencyKeySchema.optional(),
+}).strict();
+
+export const ProgressionUnlockSkillRequestSchema = z.object({
+  skillId: z.string().min(1).optional(),
+}).strict();
+
+export const ProgressionUpdateAchievementRequestSchema = z.object({
+  achievementId: z.string().min(1).optional(),
+  progress: z.coerce.number().int().nonnegative().optional(),
 }).strict();
 
 export const TypingRequestSchema = z.object({

@@ -171,6 +171,10 @@ const complianceBase = `${ApiPathPrefix}/compliance`;
 const progressionBase = `${ApiPathPrefix}/progression`;
 const rewardsBase = `${ApiPathPrefix}/rewards`;
 const missionsBase = `${ApiPathPrefix}/missions`;
+export const MissionsDOSegment = {
+  Claim: 'claim',
+  Progress: 'progress',
+} as const;
 const personalizationBase = `${ApiPathPrefix}/personalization`;
 const analyticsBase = `${ApiPathPrefix}/analytics`;
 const securityBase = `${ApiPathPrefix}/security`;
@@ -471,7 +475,8 @@ export const ApiEndpoint = {
 
   Missions: {
     Base: missionsBase as ApiPath,
-    Claim: (missionId: string): ApiPath => `${missionsBase}/${missionId}/claim` as ApiPath,
+    Claim: (missionId: string): ApiPath => `${missionsBase}/${missionId}/${MissionsDOSegment.Claim}` as ApiPath,
+    Progress: (missionId: string): ApiPath => `${missionsBase}/${missionId}/${MissionsDOSegment.Progress}` as ApiPath,
   },
 
   Personalization: {

@@ -27,6 +27,7 @@ const logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enable
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
   const LOGS_API_KEY = getLogsApiKey();
+  const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
   const WORKER_URL = process.env[TestEnvVar.TestMode] === TestEnvValue.Real 
     ? (process.env[TestEnvVar.WorkerUrl] || TestConfig.WorkerUrlDev)
     : TestConfig.TestApiUrlPlaceholder;
@@ -51,8 +52,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     if (worker.stop) await worker.stop();
   });
 
-  if (!LOGS_API_KEY) {
-    it.skip(testName('All analytics tests - LOGS_API_KEY not set'), () => {
+  if (!LOGS_API_KEY || !CLOUDFLARE_API_TOKEN) {
+    it.skip(testName('All analytics tests - analytics token not set'), () => {
     });
   } else {
     it(testName('Basic SQL Queries: should execute SELECT * FROM logs LIMIT 1'), async () => {

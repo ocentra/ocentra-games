@@ -126,6 +126,24 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(validateMatchRecord({ match_id: 'match123', version: '10.20.30', events: [] }).valid).toBe(true);
   });
 
+  it(testName('validateMatchRecord: accepts player-linked events and chain of thought payloads'), () => {
+    const result = validateMatchRecord({
+      match_id: 'match123',
+      version: '1.0.0',
+      events: [
+        { type: 'move', timestamp: '2024-01-15T10:05:00.000Z', player_id: 'player-1' },
+      ],
+      chain_of_thought: {
+        'ai-model-alpha': {
+          notes: ['allowed'],
+        },
+      },
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.error).toBeUndefined();
+  });
+
   it(testName('validateMatchRecord: rejects unicode semantic version digits'), () => {
     expect(validateMatchRecord({ match_id: 'match123', version: '\u0661.\u0662.\u0663', events: [] }).valid).toBe(false);
   });

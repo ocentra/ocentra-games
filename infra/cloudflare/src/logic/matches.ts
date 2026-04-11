@@ -28,9 +28,12 @@ export function validateMatchLogic(
     const data = JSON.parse(input.body);
     const validation = input.validateMatchRecord(data);
     if (!validation.valid) {
+      const unexpectedFields = validation.error?.includes('Unrecognized key(s) in object');
       return {
         success: false,
-        error: validation.error || 'Invalid match record',
+        error: unexpectedFields
+          ? `Match payload has unexpected fields: ${validation.error}`
+          : validation.error || 'Invalid match record',
       };
     }
     return {

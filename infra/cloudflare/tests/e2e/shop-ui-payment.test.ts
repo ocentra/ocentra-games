@@ -94,6 +94,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       body: JSON.stringify({ paymentId, amount: acAmount }),
     }, token);
     expect(initRes.status).toBe(HttpStatus.Ok);
+    await initRes.text();
 
     const payload = buildStripeWebhookPayload({
       eventId: `evt_${paymentId.slice(0, 8)}`,
@@ -112,6 +113,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       body: payload,
     }, token);
     expect(webhookRes.status).toBe(HttpStatus.Ok);
+    await webhookRes.text();
 
     const afterRes = await worker.fetch(balanceUrl, {
       method: HttpMethod.Get,

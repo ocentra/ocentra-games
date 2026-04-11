@@ -61,6 +61,7 @@ export const FraudDetectionDOStoragePrefix = {
 export const InventoryDOStoragePrefix = {
   Items: 'items',
   Equipped: 'equipped',
+  Operations: 'operations',
 } as const;
 
 export const PresenceDOStoragePrefix = {

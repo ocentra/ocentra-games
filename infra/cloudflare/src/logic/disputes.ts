@@ -109,7 +109,7 @@ export async function updateDisputeLogic(
 ): Promise<UpdateDisputeResult> {
   try {
     const disputeObject = await storage.get(input.disputeKey);
-    if (!disputeObject) {
+    if (disputeObject === null) {
       return {
         success: false,
         disputeId: input.disputeId,
@@ -117,7 +117,10 @@ export async function updateDisputeLogic(
       };
     }
 
-    let disputeData = JSON.parse(await disputeObject.text()) as Record<string, unknown>;
+    let disputeData: Record<string, unknown> = {};
+    if (disputeObject !== undefined) {
+      disputeData = JSON.parse(await disputeObject.text()) as Record<string, unknown>;
+    }
 
     disputeData = {
       ...disputeData,

@@ -6,14 +6,14 @@ import { computeSha256 } from '@/utils/crypto-utils';
 import { Timeout } from '@/constants/time';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { buildMatchKey, buildSafeBucketKey } from '@/utils/path-sanitizer';
-import { MetadataField } from '@ocentra/endpoint-domain/constants/idempotency';
+import { createFlowContext } from '@/flows/core/FlowContext';
+import { FlowRunner } from '@/flows/core/FlowRunner';
+import { MatchFinalizationFlow } from '@/flows/match-finalization-flow';
 import { CorsOrigin } from '@/constants/cors';
 import type { MatchId } from '@ocentra/endpoint-domain/constants/match';
 import { validateMatchId } from '@ocentra/endpoint-domain/constants/match';
-import { CreditsDO, DOBaseUrl, MatchCoordinatorDOSegment, MatchWSChannel, MatchWSMessageType } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { MatchCoordinatorDOSegment, MatchWSChannel, MatchWSMessageType } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { MatchCoordinatorDOStoragePrefix } from '@ocentra/boundary-domain/constants/do-storage-prefixes';
-import { BucketPath } from '@ocentra/boundary-domain/constants/bucket-paths';
 import { GameName, PlayerType } from '@ocentra/endpoint-domain/constants/game';
 import {
   MatchWSIncomingMessageSchema,
@@ -66,17 +66,12 @@ export interface Checkpoint {
   anchorTxSignature?: string;
 }
 
-interface BatchAwardEntry {
-  userId: string;
-  amount: number;
-  reason: string;
-  metadata: Record<string, unknown>;
-}
-
 interface StoredAIDump extends MatchAIDump {
   uploaderId: string;
   uploadedAt: number;
 }
+
+const flowRunner = new FlowRunner();
 
 export class MatchCoordinatorDO implements DurableObject {
   private readonly log = Logger.instance;
@@ -586,88 +581,36 @@ export class MatchCoordinatorDO implements DurableObject {
       return;
     }
 
-    const finalizeValidation = this.validateFinalizePayload(payload, matchState);
-    if (!finalizeValidation.valid) {
-      this.sendError(ws, finalizeValidation.message, attachment.matchId);
+    const matchFinalizationFlow = new MatchFinalizationFlow({
+      loadChatHistory: this.loadChatHistory.bind(this),
+      loadAIDump: this.loadAIDump.bind(this),
+    });
+    const flowResult = await flowRunner.run(
+      matchFinalizationFlow,
+      createFlowContext({
+        env: this.env,
+        request: new Request('https://match-finalization.local/finalize', { method: HttpMethod.Post }),
+        operationId: attachment.matchId,
+        authUserId: attachment.userId,
+        path: `/match/${attachment.matchId}/finalize`,
+        method: HttpMethod.Post,
+      }),
+      {
+        matchState,
+        payload,
+      }
+    );
+
+    if (flowResult.status !== HttpStatus.Ok) {
+      const errorMessage = flowResult.body && typeof flowResult.body === 'object' && 'error' in flowResult.body
+        ? String((flowResult.body as { error?: unknown }).error ?? 'Failed to finalize match')
+        : flowResult.warnings?.[0] ?? 'Failed to finalize match';
+      this.sendError(ws, errorMessage, attachment.matchId);
       return;
     }
 
-    const endedAt = Date.now();
-    const finalizedState: MatchState = {
-      ...matchState,
-      phase: 3,
-      endedAt,
-      matchHash: payload.matchHash || matchState.matchHash,
-      hotUrl: payload.hotUrl || matchState.hotUrl,
-    };
-
+    const finalizedState = flowResult.body.finalizedState;
     try {
-      const chatHistory = await this.loadChatHistory(matchState.matchId);
-      const aiDump = await this.loadAIDump(matchState.matchId);
-
-      const matchRecord = {
-        match_id: matchState.matchId,
-        matchId: matchState.matchId,
-        version: '2.0.0',
-        schema_version: '2.0.0',
-        gameName: matchState.gameName,
-        gameType: matchState.gameType,
-        seed: matchState.seed,
-        phase: finalizedState.phase,
-        currentPlayer: finalizedState.currentPlayer,
-        moveCount: finalizedState.moveCount,
-        createdAt: new Date(matchState.createdAt).toISOString(),
-        endedAt: new Date(endedAt).toISOString(),
-        matchHash: finalizedState.matchHash,
-        hotUrl: finalizedState.hotUrl,
-        players: matchState.players.map((pubkey, index) => ({
-          player_id: pubkey,
-          public_key: pubkey,
-          pubkey,
-          index,
-          type: PlayerType.Human,
-        })),
-        scores: [],
-        winner: undefined,
-        events: payload.events || [],
-        playerCount: matchState.playerCount,
-        lastCheckpoint: finalizedState.lastCheckpoint ? {
-          eventIndex: finalizedState.lastCheckpoint.eventIndex,
-          stateHash: finalizedState.lastCheckpoint.stateHash,
-          timestamp: finalizedState.lastCheckpoint.timestamp,
-          anchoredAt: finalizedState.lastCheckpoint.anchoredAt,
-          anchorTxSignature: finalizedState.lastCheckpoint.anchorTxSignature,
-        } : undefined,
-        chatHistory,
-        aiDump,
-      };
-
-      await this.env.MATCHES_BUCKET.put(buildMatchKey(matchState.matchId), JSON.stringify(matchRecord, null, 2), {
-        httpMetadata: { contentType: HttpContentType.ApplicationJson },
-      });
-
-      if (chatHistory.length > 0) {
-        const chatKey = buildSafeBucketKey(BucketPath.MatchChat, `${matchState.matchId}.json`);
-        await this.env.MATCHES_BUCKET.put(chatKey, JSON.stringify({
-          matchId: matchState.matchId,
-          messages: chatHistory,
-          persistedAt: new Date().toISOString(),
-        }), {
-          httpMetadata: { contentType: HttpContentType.ApplicationJson },
-        });
-      }
-
-      if (aiDump) {
-        const aiDumpKey = buildSafeBucketKey(BucketPath.AiDecisions, matchState.matchId, 'all.json');
-        await this.env.MATCHES_BUCKET.put(aiDumpKey, JSON.stringify({
-          matchId: matchState.matchId,
-          ...aiDump,
-        }), {
-          httpMetadata: { contentType: HttpContentType.ApplicationJson },
-        });
-      }
-
-      await this.awardPlayersViaBatch(matchState);
       matchState.phase = finalizedState.phase;
       matchState.endedAt = finalizedState.endedAt;
       matchState.matchHash = finalizedState.matchHash;
@@ -764,94 +707,6 @@ export class MatchCoordinatorDO implements DurableObject {
       uploadedAt: Date.now(),
     };
     await this.ctx.storage.put(`${MatchCoordinatorDOStoragePrefix.AiDump}${attachment.matchId}`, dump);
-  }
-
-  private async awardPlayersViaBatch(matchState: MatchState): Promise<void> {
-    if (!this.env.CREDITS_DO || matchState.players.length === 0) {
-      return;
-    }
-
-    const awards: BatchAwardEntry[] = [];
-
-    for (let i = 0; i < matchState.players.length; i++) {
-      const playerId = matchState.players[i];
-      const amount = 25;
-      const reason = `Completed match ${matchState.matchId}`;
-      awards.push({
-        userId: playerId,
-        amount,
-        reason,
-        metadata: {
-          match_id: matchState.matchId,
-          game_type: matchState.gameType,
-          position: i + 1,
-          payout_type: 'participation',
-          [MetadataField.IdempotencyKey]: this.buildAwardIdempotencyKey(matchState.matchId, i),
-        },
-      });
-    }
-
-    const stub = this.env.CREDITS_DO.get(this.env.CREDITS_DO.idFromName(`match-${matchState.matchId}`));
-    const response = await stub.fetch(`${DOBaseUrl}${CreditsDO.BatchAward}`, {
-      method: HttpMethod.Post,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-      body: JSON.stringify({ awards }),
-    });
-
-    if (!response.ok) {
-      await response.text().catch(() => undefined);
-      throw new Error(`Batch GP award failed with status ${response.status}`);
-    }
-
-    const payloadResponse = await response.json() as {
-      results?: Array<{ userId: string; success: boolean; error?: string; already_processed?: boolean }>;
-    };
-    const failed = (payloadResponse.results || []).filter(result => !result.success);
-    if (failed.length > 0) {
-      throw new Error(`Batch GP award failed for ${failed.length} participant(s)`);
-    }
-
-    this.logInfo('GP batch award completed', getStackTrace(), {
-      matchId: matchState.matchId,
-      count: awards.length,
-    }, this.LOG_MATCH_INFO);
-  }
-
-  private buildAwardIdempotencyKey(matchId: string, playerIndex: number): string {
-    return `earn-${matchId.replace(/-/g, '')}-${playerIndex}`;
-  }
-
-  private validateFinalizePayload(
-    payload: MatchWSFinalizeMessage,
-    matchState: MatchState
-  ): { valid: true } | { valid: false; message: string } {
-    if (payload.scores !== undefined) {
-      if (!Array.isArray(payload.scores) || payload.scores.length !== matchState.players.length) {
-        return { valid: false, message: 'Finalize scores must match player count' };
-      }
-
-      for (const score of payload.scores) {
-        if (!Number.isFinite(score) || !Number.isInteger(score) || score < 0) {
-          return { valid: false, message: 'Finalize scores must be non-negative integers' };
-        }
-      }
-    }
-
-    if (payload.winner !== undefined) {
-      if (!matchState.players.includes(payload.winner)) {
-        return { valid: false, message: 'Finalize winner must be a match participant' };
-      }
-      if (!payload.scores) {
-        return { valid: false, message: 'Finalize winner requires scores' };
-      }
-      const maxScore = Math.max(...payload.scores);
-      const winnerIndex = matchState.players.indexOf(payload.winner);
-      if (winnerIndex < 0 || payload.scores[winnerIndex] !== maxScore) {
-        return { valid: false, message: 'Finalize winner must have the highest score' };
-      }
-    }
-
-    return { valid: true };
   }
 
   private async getOrLoadMatchState(matchId: string): Promise<MatchState | undefined> {

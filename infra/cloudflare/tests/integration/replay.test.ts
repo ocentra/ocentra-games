@@ -37,7 +37,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Replay GET: returns 404 when match does not exist'), async () => {
     const token = getTokenForFetch();
-    const url = buildApiUrl(ApiEndpoint.Replay.ByMatchId('no-such-match-999'), {
+    const url = buildApiUrl(ApiEndpoint.Replay.ByMatchId(crypto.randomUUID()), {
       baseUrl: TestConfig.TestApiUrlPlaceholder,
     });
     const response = await worker.fetch(url, {
@@ -50,7 +50,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Replay: sync match then GET replay returns replay with timeline and verification'), async () => {
     const token = getTokenForFetch();
-    const matchId = `replay-e2e-${Date.now()}`;
+    const matchId = crypto.randomUUID();
     const syncUrl = buildApiUrl(ApiEndpoint.Sync.FromSolana, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const syncRes = await worker.fetch(syncUrl, {
       method: HttpMethod.Post,
@@ -91,7 +91,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Replay verify: GET replay/:matchId/verify returns verified true or false'), async () => {
     const token = getTokenForFetch();
-    const matchId = `replay-verify-${Date.now()}`;
+    const matchId = crypto.randomUUID();
     const syncUrl = buildApiUrl(ApiEndpoint.Sync.FromSolana, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const syncRes2 = await worker.fetch(syncUrl, {
       method: HttpMethod.Post,

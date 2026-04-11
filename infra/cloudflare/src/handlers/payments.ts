@@ -2,6 +2,9 @@ import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { validateZodBody } from '@/utils/zod-validation';
 import { verifyTurnstileToken, TurnstileTokenHeader } from '@/utils/turnstile';
+import { createFlowContext } from '@/flows/core/FlowContext';
+import { FlowRunner } from '@/flows/core/FlowRunner';
+import { PaymentCheckoutFlow } from '@/flows/payment-checkout-flow';
 import {
   CreateCheckoutRequestSchema,
   TestInitPaymentRequestSchema,
@@ -18,13 +21,15 @@ import { StripeEndpoint, PaymentTrigger } from '@ocentra/endpoint-domain/constan
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
-import { validateProduct, calculateAmount } from '@/config/products';
 import { runReconciliation } from '@/logic/reconciliation';
 import { StripeApiVersion } from '@/constants/stripe';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+import type { FlowResult } from '@/flows/core/FlowResult';
 
 const log = Logger.instance;
 log.register(import.meta.url);
+const flowRunner = new FlowRunner();
+const paymentCheckoutFlow = new PaymentCheckoutFlow();
 
 function getPaymentStub(env: Env, userId: string): DurableObjectStub | null {
   const ns = env.PAYMENT_DO;
@@ -50,6 +55,13 @@ async function doFetch(
   return new Response(body, { status: res.status, statusText: res.statusText, headers: res.headers });
 }
 
+function flowResponse<TBody>(env: Env, result: FlowResult<TBody>): Response {
+  return new Response(JSON.stringify(result.body), {
+    status: result.status,
+    headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+  });
+}
+
 export async function handlePaymentRequest(
   request: Request,
   env: Env,
@@ -72,37 +84,26 @@ export async function handlePaymentRequest(
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
     if (authResult instanceof Response) return authResult;
     const userId = authResult.userId;
-    const stub = getPaymentStub(env, userId);
-    if (!stub) return json({ error: 'Payment service unavailable' }, HttpStatus.ServiceUnavailable);
     const validation = await validateZodBody(request, env, TestInitPaymentRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const { paymentId, amount } = validation.data!;
-    const initRes = await doFetch(stub, PaymentDOPaths.InitPayment, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({
-        paymentId,
-        userId,
-        amount,
-        currency: 'usd',
-        productType: 'AC_CREDITS',
-        productId: 'test',
+    const flowResult = await flowRunner.run(
+      paymentCheckoutFlow,
+      createFlowContext({
+        env,
+        request,
+        authUserId: userId,
+        path,
+        method: request.method,
+        origin: requestOrigin,
       }),
-    });
-    if (!initRes.ok) {
-      await initRes.text().catch(() => undefined);
-      return json({ error: 'Failed to initialize payment' }, HttpStatus.InternalServerError);
-    }
-    const t1 = await doFetch(stub, PaymentDOPaths.Transition, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({ paymentId, toState: 'CHECKOUT_CREATED', trigger: 'test_init' }),
-    });
-    await t1.text().catch(() => undefined);
-    const t2 = await doFetch(stub, PaymentDOPaths.Transition, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({ paymentId, toState: 'PAYMENT_PENDING', trigger: 'test_init' }),
-    });
-    await t2.text().catch(() => undefined);
-    return json({ paymentId, amount }, HttpStatus.Ok);
+      {
+        kind: 'test-init',
+        paymentId,
+        amount,
+      }
+    );
+    return flowResponse(env, flowResult);
   }
 
   const isCheckoutPath =
@@ -129,75 +130,29 @@ export async function handlePaymentRequest(
         HttpStatus.Forbidden
       );
     }
-    const stub = getPaymentStub(env, userId);
-    if (!stub) return json({ error: 'Payment service unavailable' }, HttpStatus.ServiceUnavailable);
     const validation = await validateZodBody(request, env, CreateCheckoutRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const { productType, productId, quantity, successUrl, cancelUrl } = validation.data!;
-    const product = await validateProduct(env, productType, productId);
-    if (!product) {
-      return json({ error: 'Invalid product' }, HttpStatus.BadRequest);
-    }
-    const acAmount = calculateAmount(product, quantity);
-    const paymentId = crypto.randomUUID();
-    const initRes = await doFetch(stub, PaymentDOPaths.InitPayment, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({
-        paymentId,
-        userId,
-        amount: acAmount,
-        currency: product.currency,
+    const flowResult = await flowRunner.run(
+      paymentCheckoutFlow,
+      createFlowContext({
+        env,
+        request,
+        authUserId: userId,
+        path,
+        method: request.method,
+        origin: requestOrigin,
+      }),
+      {
+        kind: 'checkout',
         productType,
         productId,
-      }),
-    });
-    if (!initRes.ok) {
-      await initRes.text().catch(() => undefined);
-      log.logError('Payment DO init failed', getStackTrace(), { status: initRes.status, paymentId });
-      return json({ error: 'Failed to initialize payment' }, HttpStatus.InternalServerError);
-    }
-    const stripe = env.STRIPE_SECRET_KEY;
-    if (!stripe) return json({ error: 'Stripe not configured' }, HttpStatus.ServiceUnavailable);
-    const Stripe = (await import('stripe')).default;
-    const stripeClient = new Stripe(stripe, {
-      apiVersion: StripeApiVersion,
-      httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
-    });
-    const lineItems = product.unitPriceCents != null
-      ? [{
-          price_data: {
-            currency: product.currency,
-            product_data: { name: product.displayName, metadata: { productType, productId, paymentId } },
-            unit_amount: product.unitPriceCents,
-          },
-          quantity,
-        }]
-      : [{ price: product.stripePriceId, quantity }];
-    const session = await stripeClient.checkout.sessions.create({
-      mode: 'payment',
-      client_reference_id: paymentId,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      line_items: lineItems,
-      metadata: { userId, productType, productId, paymentId },
-      payment_intent_data: { metadata: { userId, paymentId } },
-    });
-    const transitionRes = await doFetch(stub, PaymentDOPaths.Transition, {
-      method: HttpMethod.Post,
-      body: JSON.stringify({
-        paymentId,
-        toState: 'CHECKOUT_CREATED',
-        trigger: 'checkout_created',
-        stripeCheckoutSessionId: session.id,
-      }),
-    });
-    await transitionRes.text().catch(() => undefined);
-    return json({
-      paymentId,
-      checkoutSessionId: session.id,
-      url: session.url,
-      expiresAt: session.expires_at ?? 0,
-    }, HttpStatus.Ok);
+        quantity,
+        successUrl,
+        cancelUrl,
+      }
+    );
+    return flowResponse(env, flowResult);
   }
 
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');

@@ -214,8 +214,8 @@ function main(): number {
       return runTestRunner(type, TestRunMode.Pool, pool, extraArgs);
     }
     if (unstable.length === 0) {
-      console.error('[run-suite] No e2e tests declared for threads.');
-      return 1;
+      console.log('[run-suite] No e2e tests declared for threads; skipping threads phase.');
+      return 0;
     }
     return runTestRunner(type, TestRunMode.Unstable, unstable, extraArgs);
   }

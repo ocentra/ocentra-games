@@ -14,7 +14,7 @@ export const ReportIdSchema = UUIDSchema.brand<'ReportId'>();
 
 export const TransactionIdSchema = UUIDSchema.brand<'TransactionId'>();
 
-export const RoomIdSchema = UUIDSchema.brand<'RoomId'>();
+export const RoomIdSchema = z.string().min(1).max(128).brand<'RoomId'>();
 
 export const OperationIdSchema = UUIDSchema.brand<'OperationId'>();
 

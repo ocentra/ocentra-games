@@ -1,6 +1,7 @@
 import type { Env } from '@/constants/env';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ActivityFeedDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { FeedAppendRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -47,8 +48,12 @@ export class ActivityFeedDO implements DurableObject {
       const pathname = url.pathname;
 
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${ActivityFeedDOSegment.Append}`)) {
-        const body = (await request.json().catch(() => ({}))) as { type?: string; payload?: Record<string, unknown> };
-        const result = await this.append(body.type ?? FeedType.Activity, body.payload ?? {});
+        const body = await request.json().catch(() => ({}));
+        const parsed = FeedAppendRequestSchema.safeParse(body);
+        if (!parsed.success) {
+          return this.json({ error: 'Invalid activity feed append request' }, HttpStatus.BadRequest);
+        }
+        const result = await this.append(parsed.data.type ?? FeedType.Activity, parsed.data.payload ?? {});
         return result.error
           ? this.json({ error: result.error }, result.status)
           : this.json({ appended: true, id: result.id });

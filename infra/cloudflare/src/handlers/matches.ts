@@ -9,6 +9,7 @@ import { getCurrentContext } from '@/logging/request-context';
 import { checkMatchInDO } from '@/utils/match-query';
 import { isMatchFinalized } from '@/utils/match-state';
 import { consumeResponseBody } from '@/utils/consume-response-body';
+import { validateZodBody } from '@/utils/zod-validation';
 
 import { MatchUploadRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 
@@ -495,7 +496,9 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
       env,
       MatchUploadRequestSchema
     );
-    if (matchError) return matchError;
+    if (matchError) {
+      return matchError;
+    }
     const body = bodyText;
     const key = buildMatchKey(matchId);
     const storage = createMatchStorage(env);
@@ -558,7 +561,10 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
       }
     );
   } catch (error) {
-    logError('Error in uploadMatch', getStackTrace(), error);
+    logError('Error in uploadMatch', getStackTrace(), {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return new Response(JSON.stringify({ error: ErrorMessage.InternalServerError }), {
       status: HttpStatus.InternalServerError,
       headers: {

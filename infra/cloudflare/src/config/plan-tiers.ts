@@ -1,4 +1,6 @@
 
+import type { PlanTierId } from '@ocentra/endpoint-domain/constants/credits';
+
 export interface PlanTierConfig {
   name: string;
   monthlyTokenAllowance: number;

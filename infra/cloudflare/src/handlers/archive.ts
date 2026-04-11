@@ -6,7 +6,6 @@ import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { buildMatchKey, buildArchiveKey } from '@/utils/path-sanitizer';
 import { extractAndValidateMatchIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser';
-import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { archiveMatchLogic, type ArchiveStorage } from '@/logic/archive';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -151,19 +150,6 @@ export async function handleArchiveRequest(
         error: archiveResult.error,
       });
       if (archiveResult.error === 'Match not found') {
-        if (env.TEST_MODE === QueryValue.True) {
-          return new Response(JSON.stringify({
-            success: true,
-            matchId: archiveResult.matchId,
-            archivedAt: archiveResult.archivedAt,
-          }), {
-            status: HttpStatus.Ok,
-            headers: {
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-              ...getCorsHeaders(env),
-            },
-          });
-        }
         return new Response(JSON.stringify({
           error: ErrorMessage.MatchNotFound,
         }), {

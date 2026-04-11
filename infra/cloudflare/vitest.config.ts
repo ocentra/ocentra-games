@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { existsSync, readFileSync } from 'node:fs';
 import { RunType } from '@ocentra/logging-domain/test-log/types';
 import { TestWorkerBindings } from './tests/constants/test-worker-bindings';
-import { getUnstableIncludeFiles } from './test-runner/script/lib/suite-type-map.js';
+import { getUnstableIncludeFiles, getWebsocketIncludeFiles } from './test-runner/script/lib/suite-type-map.js';
 import { getDurableObjectsFromWrangler } from './test-runner/wrangler-do-bindings';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -60,6 +60,7 @@ function cfTestsEnvForVitest(): Record<string, string> {
 }
 
 const unstableExclude = getUnstableIncludeFiles(__dirname);
+const websocketExclude = getWebsocketIncludeFiles(__dirname);
 const durableObjectsFromWrangler = getDurableObjectsFromWrangler(__dirname);
 
 // Fixtures base path for binary test files
@@ -94,7 +95,7 @@ export default defineWorkersConfig({
           'tests/integration/**/*.test.ts',
           'tests/e2e/**/*.test.ts',
         ],
-        exclude: ['**/node_modules/**', ...unstableExclude],
+        exclude: ['**/node_modules/**', ...unstableExclude, ...websocketExclude],
     reporters: ['default', './test-runner/script/report/summary-reporter.ts'],
     poolOptions: {
       workers: ({ inject }) => ({

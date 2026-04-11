@@ -182,7 +182,7 @@ async function handleStoreCustom(
     return new Response(
       JSON.stringify({ error: 'Bad Request', message: 'providerId not in catalog' }),
       {
-        status: HttpStatus.NotFound,
+        status: HttpStatus.BadRequest,
         headers: {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           ...getCorsHeaders(env, requestOrigin),

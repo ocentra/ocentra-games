@@ -432,6 +432,13 @@ Every authoritative mutation (Money, Inventory, Outcome, XP) **MUST** require a 
 **Rule 6: Resilience & Sequencing.**
 Flows MUST sequence **Authoritative work** (Critical state changes) before **Projection work** (Lag-tolerant side effects). If a Worker dies, the client retries with the same `operationId`, and the Flow runner ensures idempotent execution.
 
+**Rule 7: String Literal Ban & Type Hardening.**
+The use of raw string literals for infrastructure or cross-domain boundaries is strictly forbidden.
+- **Constants first**: Path segments, bucket names, and collection names must be imported from domain packages (`boundary-domain`, `endpoint-domain`).
+- **Branded Types**: Any variable representing an ID (e.g., `UserId`, `MatchId`, `ListingId`) must use **Branded Types** from `@ocentra/endpoint-domain/types/entities`. No "naked" strings.
+- **Centralized Zod**: Every handler must use the centralized Request/Response schemas from `@ocentra/endpoint-domain/schemas/worker-contracts`. Do not define ad-hoc validation logic inside handlers.
+
+
 ---
 
 ### 2. Why the Hard Ban?
@@ -464,6 +471,21 @@ We adopt this strict boundary for three reasons:
     - [ ] Implement `FlowRunner` with support for authoritative vs projection sequencing.
 3.  **Validation**:
     - [ ] Update `credits-batch-award.test.ts` to use a mocked `MatchFinalizationFlow` instead of checking DO-to-DO calls.
+
+### Phase 1.5: Monolith Deconstruction (In Progress)
+1. **Decompose `feature-handlers.ts`**:
+   - [ ] Split into domain files: `src/handlers/inventory.ts`, `src/handlers/marketplace.ts`, `src/handlers/progression.ts`, etc.
+   - [ ] Ensure every new handler follows the **Rule 2: < 100 lines** target.
+2. **Cleanup `feature-handlers-admin.ts`**:
+   - [ ] Identify orchestration logic (like Firebase + Firestore sync) and slate it for conversion into Flows.
+3. **Deprecate `feature-handlers-helpers.ts`**:
+   - [ ] Move generalized helpers to `@/utils/worker-utils` and domain specific logic to the new domain handlers.
+4. **Standardize Type Hardening**:
+   - [ ] Audit all new handlers for raw string literals; replace with domain constants.
+   - [ ] Convert all ID handling to use Branded Types (`UserId`, `MatchId`).
+   - [ ] Refactor all `validateZodBody` calls to use centralized schemas from `@ocentra/endpoint-domain`.
+
+
 
 ### Phase 2: The "Match Finalization" Refactor (High Priority)
 1.  **Create `MatchFinalizationFlow`**:

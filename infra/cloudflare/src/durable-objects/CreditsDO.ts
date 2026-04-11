@@ -1,7 +1,7 @@
 import type { Env } from '@/constants/env';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { CreditLedgerType, CreditLedgerSource, Currency, TransactionType } from '@ocentra/endpoint-domain/constants/credits';
-import { CreditsDO as CreditsDOEndpoints, DOBaseUrl } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { CreditsDO as CreditsDOEndpoints } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { CreditsDOStoragePrefix } from '@ocentra/boundary-domain/constants/do-storage-prefixes';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -422,52 +422,17 @@ export class CreditsDO implements DurableObject {
       };
 
       try {
-        const creditsId = this.env.CREDITS_DO.idFromName(userId);
-        const creditsStub = this.env.CREDITS_DO.get(creditsId);
-        const response = await creditsStub.fetch(`${DOBaseUrl}${CreditsDOEndpoints.Award}`, {
-          method: HttpMethod.Post,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          },
-          body: JSON.stringify({
-            awardId,
-            amount,
-            description: reason,
-            source: CreditLedgerSource.Match,
-            metadata: awardMetadata,
-          }),
+        const result = await this.applyAward({
+          awardId,
+          amount,
+          description: reason,
+          source: CreditLedgerSource.Match,
+          metadata: awardMetadata,
         });
-
-        if (!response.ok) {
-          let error = `CreditsDO award failed with status ${response.status}`;
-          try {
-            const payload = await response.json() as { error?: string };
-            if (payload.error) {
-              error = payload.error;
-            }
-          } catch {
-            //
-          }
-          results.push({
-            userId,
-            success: false,
-            error,
-          });
-          continue;
-        }
-
-        const payload = await response.json() as {
-          success?: boolean;
-          already_processed?: boolean;
-          new_balance?: number;
-          transaction_id?: string;
-        };
         results.push({
           userId,
-          success: payload.success === true,
-          already_processed: payload.already_processed,
-          new_balance: payload.new_balance,
-          transaction_id: payload.transaction_id,
+          success: true,
+          ...result,
         });
       } catch (error) {
         results.push({
@@ -482,6 +447,54 @@ export class CreditsDO implements DurableObject {
       success: true,
       results,
     }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
+  }
+
+  private async applyAward(body: {
+    awardId: string;
+    amount: number;
+    description: string;
+    source?: CreditLedgerSource;
+    metadata?: Record<string, unknown>;
+  }): Promise<{
+    already_processed?: boolean;
+    new_balance?: number;
+    transaction_id?: string;
+  }> {
+    const awardKeyValidation = validateIdempotencyKey(body.awardId);
+    if (!awardKeyValidation.valid) {
+      throw new Error(awardKeyValidation.error || 'Invalid idempotency key format');
+    }
+
+    if (this.state.processed[body.awardId]) {
+      return {
+        already_processed: true,
+        new_balance: this.state.gp_balance,
+      };
+    }
+
+    this.log.logInfo('Processing award', getStackTrace(), { awardId: body.awardId, amount: body.amount, previousBalance: this.state.gp_balance });
+    this.state.gp_balance += body.amount;
+    this.state.total_gp_earned += body.amount;
+    this.state.processed[body.awardId] = Date.now();
+
+    this.state.ledger.push({
+      id: body.awardId,
+      amount: body.amount,
+      type: CreditLedgerType.Earn,
+      source: body.source || CreditLedgerSource.Other,
+      timestamp: Date.now(),
+      description: body.description,
+      metadata: body.metadata,
+    });
+
+    this.pruneLedger();
+    await this.persistState();
+
+    this.log.logInfo('Award processed successfully', getStackTrace(), { awardId: body.awardId, newBalance: this.state.gp_balance });
+    return {
+      new_balance: this.state.gp_balance,
+      transaction_id: body.awardId,
+    };
   }
 
   private async handlePurchase(request: Request): Promise<Response> {

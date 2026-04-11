@@ -17,12 +17,12 @@ import { getSuiteTypeFromPath, getFileKeyFromSuitePath } from '@ocentra/logging-
 import { isTestSuiteType, SUITE_TYPE_META_KEY } from '@ocentra/logging-domain/test-log/types';
 import { NdjsonLineType, LogRealm, RunType } from '@ocentra/logging-domain/test-log/types';
 import { enqueueReporterPayload, flushReporterQueue, fetchRunInfoFromBridge } from '@ocentra/logging-domain/transport/bridgeTransport';
-import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 import { emitTestModuleEnd, onTestModuleEnd } from '@ocentra/logging-domain/test-log/testModuleEndEvents';
 import { appendPerFileBlockToTxt } from '@ocentra/logging-domain/test-log/formatPerFileBlock';
 
 const TEST_RESULTS_TXT_PATH_ENV = 'TEST_RESULTS_TXT_PATH';
 const LOG_BRIDGE_URL_ENV = 'LOG_BRIDGE_URL';
+const LOCAL_BRIDGE_URL = 'http://127.0.0.1:8765';
 
 onTestModuleEnd((payload) => {
   const resultsPath = process.env[TEST_RESULTS_TXT_PATH_ENV];
@@ -30,8 +30,7 @@ onTestModuleEnd((payload) => {
     appendPerFileBlockToTxt(payload, resultsPath);
   }
 });
-
-const BRIDGE_BASE_URL = process.env[LOG_BRIDGE_URL_ENV] ?? PUBLIC_TUNNEL_BRIDGE_URL;
+const BRIDGE_BASE_URL = process.env[LOG_BRIDGE_URL_ENV] ?? LOCAL_BRIDGE_URL;
 
 /**
  * Max age for bridge run info before we consider it stale.
@@ -102,6 +101,8 @@ const VALID_RUN_TYPES: RunType[] = [
   RunType.SinglePool,
   RunType.SingleThreads,
 ];
+
+const pendingFlushes: Promise<void>[] = [];
 
 function resolveRunType(raw: string | null): RunType {
   if (!raw) return RunType.SinglePool;
@@ -252,10 +253,17 @@ class SummaryReporter implements Reporter {
         );
         const scope = { consumer: LogRealm.Cloudflare, runType, suiteType };
         enqueueReporterPayload({ type: 'run_summary', scope, fileKey, content }, BRIDGE_BASE_URL);
-        flushReporterQueue().then(() => {
-          emitTestModuleEnd({ runId, runType, suiteType, fileKey });
-        }).catch(() => {
-          /* flush failed — bridge will handle */
+        const flushPromise = flushReporterQueue()
+          .then(() => {
+            emitTestModuleEnd({ runId, runType, suiteType, fileKey });
+          })
+          .catch(() => {
+            /* flush failed — bridge will handle */
+          });
+        pendingFlushes.push(flushPromise);
+        void flushPromise.finally(() => {
+          const idx = pendingFlushes.indexOf(flushPromise);
+          if (idx >= 0) pendingFlushes.splice(idx, 1);
         });
       } catch {
         /* enqueue failed */
@@ -270,6 +278,9 @@ class SummaryReporter implements Reporter {
   ): Promise<void> {
     void unhandledErrors;
     void reason;
+    if (pendingFlushes.length > 0) {
+      await Promise.allSettled([...pendingFlushes]);
+    }
     for (const testModule of testModules) {
       const moduleFileKey = getModuleFileKey(testModule);
       let passed = 0;

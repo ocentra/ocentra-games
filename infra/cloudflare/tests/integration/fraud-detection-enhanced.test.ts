@@ -62,12 +62,12 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const low = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 100, paymentMethod: 'card' }),
+        body: JSON.stringify({ amount: 100, paymentMethod: 'card', currency: 'USD' }),
       });
       const high = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 20000, paymentMethod: 'card' }),
+        body: JSON.stringify({ amount: 20000, paymentMethod: 'card', currency: 'USD' }),
       });
 
       expect(low.status).toBe(HttpStatus.Ok);
@@ -90,7 +90,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         const res = await worker.fetch(url, {
           method: HttpMethod.Post,
           headers,
-          body: JSON.stringify({ amount: 50, paymentMethod: 'card' }),
+          body: JSON.stringify({ amount: 50, paymentMethod: 'card', currency: 'USD' }),
         });
         expect(res.status).toBe(HttpStatus.Ok);
         const data = (await res.json()) as { score?: number };
@@ -112,7 +112,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await worker.fetch(checkUrl, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 1500, paymentMethod: 'card' }),
+        body: JSON.stringify({ amount: 1500, paymentMethod: 'card', currency: 'USD' }),
       });
 
       const response = await worker.fetch(riskUrl, {

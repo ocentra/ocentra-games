@@ -30,7 +30,6 @@ import {
 } from '../test-runner/script/lib/suite-type-map.js';
 import * as http from 'http';
 import { notifyBridgeRunStarted } from '@ocentra/logging-domain/transport/bridgeTransport';
-import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -340,9 +339,10 @@ const SKIP_BRIDGE_CHECK_ENV = 'SKIP_BRIDGE_CHECK';
 const SKIP_LIVE_DUCKDB_ENV = 'SKIP_DUCKDB_LIVE_RUN_INSERT';
 const LOG_BRIDGE_URL_ENV = 'LOG_BRIDGE_URL';
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
+const LOCAL_BRIDGE_URL = 'http://127.0.0.1:8765';
 
 function getBridgeBaseUrl(): string {
-  return process.env[LOG_BRIDGE_URL_ENV] ?? PUBLIC_TUNNEL_BRIDGE_URL;
+  return process.env[LOG_BRIDGE_URL_ENV] ?? LOCAL_BRIDGE_URL;
 }
 
 function checkBridgeHealthy(): Promise<boolean> {
@@ -435,6 +435,7 @@ async function ensureBridgeAndWipe(type: Type, mode: Mode, testFile?: string): P
     console.error('============================================================');
     process.exit(1);
   }
+  process.env[LOG_BRIDGE_URL_ENV] = LOCAL_BRIDGE_URL;
   runScopedWipe(type, mode, testFile);
   if (!process.env[SKIP_BRIDGE_CHECK_ENV]) process.env[SKIP_BRIDGE_CHECK_ENV] = '1';
 }

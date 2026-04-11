@@ -62,8 +62,11 @@ export class NotificationDO implements DurableObject {
         return this.json({ notifications: result.notifications, nextCursor: result.nextCursor });
       }
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${NotificationDOSegment.MarkRead}`)) {
-        const body = (await request.json().catch(() => ({}))) as { ids?: string[] };
-        await this.markRead(body.ids ?? []);
+        const body = (await request.json().catch(() => ({}))) as { ids?: string[]; notificationId?: string };
+        await this.markRead([
+          ...(body.ids ?? []),
+          ...(body.notificationId ? [body.notificationId] : []),
+        ]);
         return this.json({ read: true });
       }
       if (request.method === HttpMethod.Get && pathname.endsWith(`/${NotificationDOSegment.Preferences}`)) {

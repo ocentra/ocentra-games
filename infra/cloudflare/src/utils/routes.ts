@@ -49,7 +49,6 @@ import {
   handlePresenceRequest,
   handleFriendsRequest,
   handleAuditRequest,
-  handleComplianceRequest,
   handleProgressionRequest,
   handleRewardRequest,
   handlePersonalizationRequest,
@@ -67,9 +66,12 @@ import {
   handleMarketplaceRequest,
   handleTournamentRequest,
   handleSettingsRequest,
-  handleAdminRequest,
-  handleHealthDetailRequest,
 } from '@/handlers/feature-handlers';
+import {
+  handleAdminRequest,
+  handleComplianceRequest,
+  handleHealthDetailRequest,
+} from '@/handlers/feature-handlers-admin';
 import { handleAdminProductRequest } from '@/handlers/admin-products';
 import { handleAssetsRequest } from '@/handlers/assets';
 import { handleSlicesRequest } from '@/handlers/slices';

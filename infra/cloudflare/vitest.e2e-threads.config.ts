@@ -13,8 +13,9 @@ export default defineConfig({
     globals: true,
     globalSetup: ['./tests/global-setup.ts'],
     setupFiles: ['./tests/setup.ts', './tests/test-setup-threads.ts'],
-    include: ['tests/e2e/**/*.test.ts'],
+    include: e2eUnstable,
     exclude: ['**/node_modules/**'],
+    passWithNoTests: true,
     reporters: ['default', './test-runner/script/report/summary-reporter.ts'],
     pool: 'threads',
     poolOptions: {

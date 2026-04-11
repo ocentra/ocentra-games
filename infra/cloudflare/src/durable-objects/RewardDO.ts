@@ -1,7 +1,6 @@
 import type { Env } from '@/constants/env';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
-import { RewardDOSegment, CreditsDO, ProgressionDO, DOBaseUrl } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { CreditLedgerSource } from '@ocentra/endpoint-domain/constants/credits';
+import { RewardDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { RateLimitKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes';
 import { RewardDOStoragePrefix } from '@ocentra/boundary-domain/constants/do-storage-prefixes';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
@@ -35,18 +34,10 @@ function dateKey(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
 }
 
-function normalizeRewardKey(value: string, fallback: string): string {
-  const sanitize = (input: string): string =>
-    input
-      .replace(/[^A-Za-z0-9_-]/g, '_')
-      .replace(/_+/g, '_')
-      .replace(/^_+|_+$/g, '');
-
-  const cleaned = sanitize(value);
-  if (cleaned.length >= 8) return cleaned.slice(0, 100);
-  const fallbackCleaned = sanitize(fallback);
-  if (fallbackCleaned.length >= 8) return fallbackCleaned.slice(0, 100);
-  return `${fallbackCleaned || 'reward'}-key`;
+function getDailyClaimReward(state: DailyState): { xp: number; gp: number } {
+  const claimedDay = state.currentDay === 1 ? DAILY_CYCLE_DAYS : state.currentDay - 1;
+  const reward = DAILY_REWARDS[claimedDay - 1] ?? DAILY_REWARDS[0];
+  return { xp: reward.xp, gp: reward.gp ?? 0 };
 }
 
 const DAILY_REWARDS: DailyRewardItem[] = [
@@ -149,7 +140,7 @@ export class RewardDO implements DurableObject {
       if (request.method === HttpMethod.Post && pathname.includes(RewardDOSegment.StreakFreeze)) {
         return this.useStreakFreeze(request);
       }
-      if (request.method === HttpMethod.Get && pathname.includes(RewardDOSegment.BattlePass) && !pathname.includes('claim') && !pathname.includes('xp')) {
+      if (request.method === HttpMethod.Get && pathname.includes(RewardDOSegment.BattlePass) && !pathname.includes(RewardDOSegment.BattlePassClaim) && !pathname.includes(RewardDOSegment.BattlePassXp)) {
         return this.getBattlePass();
       }
       if (request.method === HttpMethod.Post && pathname.includes(RewardDOSegment.BattlePassClaim)) {
@@ -203,15 +194,21 @@ export class RewardDO implements DurableObject {
     } catch {
       return this.json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
     }
-    const userId = typeof body.userId === 'string' ? body.userId : '';
     const now = Date.now();
     const today = dateKey(now);
+    const state = await this.loadDailyState();
     const idempotencyKey = body.idempotencyKey ?? `daily-${today}`;
     const idemExists = await this.ctx.storage.get<boolean>(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`);
     if (idemExists) {
-      return this.json({ claimed: true, alreadyClaimed: true });
+      const reward = getDailyClaimReward(state);
+      return this.json({
+        claimed: true,
+        alreadyClaimed: true,
+        reward: { type: 'xp', amount: reward.xp, gp: reward.gp },
+        currentDay: state.currentDay,
+        loginStreak: state.loginStreak,
+      });
     }
-    const state = await this.loadDailyState();
     if (now < state.canClaimAt && this.env.TEST_MODE !== 'true') {
       return this.json({ error: 'Not yet available', nextAt: state.canClaimAt }, HttpStatus.TooManyRequests);
     }
@@ -219,45 +216,6 @@ export class RewardDO implements DurableObject {
     const rewardItem = DAILY_REWARDS[dayIndex] ?? DAILY_REWARDS[0];
     const xpReward = rewardItem.xp;
     const gpReward = rewardItem.gp ?? 0;
-    const safeRewardBase = normalizeRewardKey(`${idempotencyKey}-${today}`, `daily-${today}-${userId}`);
-
-    if (gpReward > 0 && this.env.CREDITS_DO && userId) {
-      const creditsStub = this.env.CREDITS_DO.get(this.env.CREDITS_DO.idFromName(userId));
-      const awardUrl = `${DOBaseUrl}${CreditsDO.Award}`;
-      const awardRes = await creditsStub.fetch(awardUrl, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({
-          awardId: `${safeRewardBase}-gp`,
-          amount: gpReward,
-          description: 'Daily reward',
-          source: CreditLedgerSource.Daily,
-        }),
-      });
-      if (!awardRes.ok) {
-        const err = await awardRes.text().catch(() => '');
-        this.log.logError('RewardDO claimDaily: CreditsDO award failed', getStackTrace(), { status: awardRes.status, error: err });
-        return this.json({ error: 'Failed to grant GP reward' }, HttpStatus.InternalServerError);
-      }
-      await awardRes.text().catch(() => undefined);
-    }
-
-    if (xpReward > 0 && this.env.PROGRESSION_DO && userId) {
-      const progressionStub = this.env.PROGRESSION_DO.get(this.env.PROGRESSION_DO.idFromName(userId));
-      const xpUrl = `${DOBaseUrl}${ProgressionDO.Xp}`;
-      const xpRes = await progressionStub.fetch(xpUrl, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({ amount: xpReward, idempotencyKey: `${safeRewardBase}-xp` }),
-      });
-      if (!xpRes.ok) {
-        const err = await xpRes.text().catch(() => '');
-        this.log.logError('RewardDO claimDaily: ProgressionDO addXp failed', getStackTrace(), { status: xpRes.status, error: err });
-        return this.json({ error: 'Failed to grant XP reward' }, HttpStatus.InternalServerError);
-      }
-      await xpRes.text().catch(() => undefined);
-    }
-
     state.lastClaimedAt = now;
     state.canClaimAt = nextMidnightUtc(now);
     state.history[dayIndex] = true;
@@ -365,53 +323,19 @@ export class RewardDO implements DurableObject {
       return this.json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
     }
     const missionId = body.missionId ?? '';
-    const userId = typeof body.userId === 'string' ? body.userId : '';
     const def = MISSION_DEFINITIONS.find((d) => d.missionId === missionId);
     if (!def) return this.json({ error: 'Unknown mission' }, HttpStatus.BadRequest);
-    const idempotencyKey = body.idempotencyKey ?? `mission-${missionId}`;
-    const idemExists = await this.ctx.storage.get<boolean>(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`);
-    if (idemExists) return this.json({ claimed: true, alreadyClaimed: true });
     const key = `${RewardDOStoragePrefix.Mission}${missionId}`;
     const stored = await this.ctx.storage.get<MissionProgressStored>(key);
     const progress = stored?.progress ?? 0;
     const claimed = stored?.claimed ?? false;
-    if (claimed) return this.json({ claimed: true, alreadyClaimed: true });
+    const idempotencyKey = body.idempotencyKey ?? `mission-${missionId}`;
+    const idemExists = await this.ctx.storage.get<boolean>(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`);
+    if (idemExists || claimed) {
+      return this.json({ claimed: true, alreadyClaimed: true, missionId, reward: { xp: def.xp, gp: def.gp }, progress, target: def.target });
+    }
     if (progress < def.target) {
       return this.json({ error: 'Mission not complete', progress, target: def.target }, HttpStatus.BadRequest);
-    }
-
-    if (def.gp > 0 && this.env.CREDITS_DO && userId) {
-      const creditsStub = this.env.CREDITS_DO.get(this.env.CREDITS_DO.idFromName(userId));
-      const awardRes = await creditsStub.fetch(`${DOBaseUrl}${CreditsDO.Award}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({
-          awardId: `${idempotencyKey}-gp`,
-          amount: def.gp,
-          description: `Mission: ${def.description}`,
-          source: CreditLedgerSource.Other,
-        }),
-      });
-      if (!awardRes.ok) {
-        await awardRes.text().catch(() => undefined);
-        this.log.logError('RewardDO claimMission: CreditsDO award failed', getStackTrace(), { missionId });
-        return this.json({ error: 'Failed to grant GP' }, HttpStatus.InternalServerError);
-      }
-      await awardRes.text().catch(() => undefined);
-    }
-    if (def.xp > 0 && this.env.PROGRESSION_DO && userId) {
-      const progressionStub = this.env.PROGRESSION_DO.get(this.env.PROGRESSION_DO.idFromName(userId));
-      const xpRes = await progressionStub.fetch(`${DOBaseUrl}${ProgressionDO.Xp}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({ amount: def.xp, idempotencyKey: `${idempotencyKey}-xp` }),
-      });
-      if (!xpRes.ok) {
-        await xpRes.text().catch(() => undefined);
-        this.log.logError('RewardDO claimMission: ProgressionDO addXp failed', getStackTrace(), { missionId });
-        return this.json({ error: 'Failed to grant XP' }, HttpStatus.InternalServerError);
-      }
-      await xpRes.text().catch(() => undefined);
     }
 
     await this.ctx.storage.put(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`, true);
@@ -504,54 +428,21 @@ export class RewardDO implements DurableObject {
     if (tier < 0 || tier > MAX_BATTLE_PASS_TIER) {
       return this.json({ error: 'tier must be between 0 and ' + MAX_BATTLE_PASS_TIER }, HttpStatus.BadRequest);
     }
-    const userId = typeof body.userId === 'string' ? body.userId : '';
     const state = await this.loadBattlePassState();
     const currentTier = tierFromBattlePassXp(state.xp);
     if (tier > currentTier) {
       return this.json({ error: 'Tier not yet unlocked', currentTier, requestedTier: tier }, HttpStatus.BadRequest);
     }
-    if (state.claimedRewards.includes(tier)) {
-      return this.json({ claimed: true, alreadyClaimed: true, tier });
-    }
     const idempotencyKey = body.idempotencyKey ?? `bp-${state.seasonId}-${tier}`;
     const idemExists = await this.ctx.storage.get<boolean>(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`);
-    if (idemExists) return this.json({ claimed: true, alreadyClaimed: true, tier });
+    if (idemExists || state.claimedRewards.includes(tier)) {
+      const gp = this.tierRewardGp(tier);
+      const xp = this.tierRewardXp(tier);
+      return this.json({ claimed: true, alreadyClaimed: true, tier, reward: { gp, xp } });
+    }
 
     const gp = this.tierRewardGp(tier);
     const xp = this.tierRewardXp(tier);
-    if (gp > 0 && this.env.CREDITS_DO && userId) {
-      const creditsStub = this.env.CREDITS_DO.get(this.env.CREDITS_DO.idFromName(userId));
-      const awardRes = await creditsStub.fetch(`${DOBaseUrl}${CreditsDO.Award}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({
-          awardId: `${idempotencyKey}-gp`,
-          amount: gp,
-          description: `Battle pass tier ${tier}`,
-          source: CreditLedgerSource.Other,
-        }),
-      });
-      if (!awardRes.ok) {
-        await awardRes.text().catch(() => undefined);
-        this.log.logError('RewardDO claimBattlePassTier: CreditsDO award failed', getStackTrace(), { tier });
-        return this.json({ error: 'Failed to grant GP' }, HttpStatus.InternalServerError);
-      }
-      await awardRes.text().catch(() => undefined);
-    }
-    if (xp > 0 && this.env.PROGRESSION_DO && userId) {
-      const progressionStub = this.env.PROGRESSION_DO.get(this.env.PROGRESSION_DO.idFromName(userId));
-      const xpRes = await progressionStub.fetch(`${DOBaseUrl}${ProgressionDO.Xp}`, {
-        method: HttpMethod.Post,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
-        body: JSON.stringify({ amount: xp, idempotencyKey: `${idempotencyKey}-xp` }),
-      });
-      if (!xpRes.ok) {
-        await xpRes.text().catch(() => undefined);
-        this.log.logError('RewardDO claimBattlePassTier: ProgressionDO addXp failed', getStackTrace(), { tier });
-        return this.json({ error: 'Failed to grant XP' }, HttpStatus.InternalServerError);
-      }
-      await xpRes.text().catch(() => undefined);
-    }
     state.claimedRewards = [...state.claimedRewards, tier].sort((a, b) => a - b);
     await this.ctx.storage.put(RewardDOStoragePrefix.BattlePass, state);
     await this.ctx.storage.put(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`, true);

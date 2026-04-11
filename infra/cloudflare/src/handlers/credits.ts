@@ -135,9 +135,8 @@ function createCreditStorage(env: Env): CreditStorage {
 }
 
 async function deriveFallbackIdempotencyKey(seed: unknown): Promise<string> {
-  const encoded = new TextEncoder().encode(JSON.stringify(seed));
-  const digest = await crypto.subtle.digest('SHA-256', encoded);
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  void seed;
+  return crypto.randomUUID();
 }
 
 async function resolveIdempotencyKey(
@@ -514,36 +513,29 @@ export async function handleCreditsRequest(
       }
 
         const idempotencyKeyHeader = request.headers.get(HttpHeader.IdempotencyKey);
-        const keyRequirement = await resolveIdempotencyKey(idempotencyKeyHeader, request, env, {
+        const keyRequirement = requireIdempotencyKey(idempotencyKeyHeader, request, env);
+        if (keyRequirement instanceof Response) {
+          return keyRequirement;
+        }
+        const idempotencyKey = keyRequirement;
+        const validationError = validateAndRejectIdempotencyKey(idempotencyKey, request, env);
+        if (validationError) {
+          return validationError;
+        }
+        const keyValidation = validateAndExtractIdempotencyKey(idempotencyKey);
+        const validatedIdempotencyKey = keyValidation.valid ? keyValidation.key : undefined;
+
+        const storage = createCreditStorage(env);
+
+        logDebug('[CREDITS-PURCHASE-REQUEST] Starting purchase', getStackTrace(), {
           userId,
           amount: body!.amount,
           currency: body!.currency,
           ac_amount: body!.ac_amount,
           payment_method: body!.payment_method ?? null,
-        });
-        if (keyRequirement instanceof Response) {
-          return keyRequirement;
-        }
-        const idempotencyKey = keyRequirement;
-
-      const validationError = validateAndRejectIdempotencyKey(idempotencyKey, request, env);
-      if (validationError) {
-        return validationError;
-      }
-
-      const keyValidation = validateAndExtractIdempotencyKey(idempotencyKey);
-      const validatedIdempotencyKey = keyValidation.valid ? keyValidation.key : undefined;
-
-      const storage = createCreditStorage(env);
-
-      logDebug('[CREDITS-PURCHASE-REQUEST] Starting purchase', getStackTrace(), {
-        userId,
-        acAmount: body!.ac_amount,
-        usdAmount: body!.amount,
-        paymentMethod: body!.payment_method,
-        hasIdempotencyKey: !!validatedIdempotencyKey,
-        hasCreditsDO: !!env.CREDITS_DO
-      }, LOG_CREDITS_OPERATIONS);
+          hasIdempotencyKey: !!validatedIdempotencyKey,
+          hasCreditsDO: !!env.CREDITS_DO
+        }, LOG_CREDITS_OPERATIONS);
 
       let purchaseResult;
       try {

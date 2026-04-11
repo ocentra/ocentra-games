@@ -18,7 +18,7 @@ import {
   AIEscrowConsumeRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/ai-escrow';
 import { getCatalogFromEnv, calculateAICost } from '@/data/ai-catalog';
-import { ESCROW_TIMEOUT_MS, ESCROW_BUFFER } from '@/constants/ai-escrow';
+import { ESCROW_TIMEOUT_MS, ESCROW_BUFFER, AC_PER_USD } from '@/constants/ai-escrow';
 import { DEFAULT_PLAN_TIERS, getAllowanceRemaining, isPeriodExpired, type UserPlanState } from '@/config/plan-tiers';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -137,7 +137,7 @@ export async function handleAIEscrowRequest(
         ...(data.already_processed !== undefined && { already_processed: data.already_processed }),
       }), { status: HttpStatus.Ok, headers: cors(env) });
     }
-    const reservedAmount = Math.ceil(estimatedCost * ESCROW_BUFFER);
+    const reservedAmount = Math.max(1, Math.ceil(estimatedCost * ESCROW_BUFFER * AC_PER_USD));
     const res = await doFetch(creditsStub, CreditsDOPaths.EscrowReserve, {
       method: HttpMethod.Post,
       body: JSON.stringify({
@@ -176,7 +176,7 @@ export async function handleAIEscrowRequest(
       });
     }
     const catalogConsume = await getCatalogFromEnv(env);
-    const actualCost = Math.max(0, Math.ceil(calculateAICost(catalogConsume, escrow.modelVersion, actualInputTokens, actualOutputTokens)));
+    const actualCost = Math.max(0, Math.ceil(calculateAICost(catalogConsume, escrow.modelVersion, actualInputTokens, actualOutputTokens) * AC_PER_USD));
     const settleRes = await doFetch(creditsStub, CreditsDOPaths.EscrowSettle, {
       method: HttpMethod.Post,
       body: JSON.stringify({ escrowId, actualCost, promptHash: '' }),
