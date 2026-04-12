@@ -119,7 +119,7 @@ async function isBridgeAlive(base: string): Promise<boolean> {
 
 export async function sendToBridge(entries: BridgeEntry[], endpoint: string): Promise<void> {
   if (entries.length === 0) return;
-  const base = endpoint.replace(/\/+$/, '');
+  const base = endpoint.endsWith('/') ? endpoint.slice(0, -1).replace(/\/+$/, '') : endpoint;
   const now = Date.now();
   let alive = isHealthCacheValid(base, now);
   if (!alive) {
@@ -165,7 +165,7 @@ const RUN_STARTED_PATH = '/__run_started__';
 const RUN_INFO_PATH = '/__run_info__';
 
 export async function fetchRunInfoFromBridge(endpoint: string): Promise<{ runId: string; runType: string; suiteType: string | null; startedAt: number | null } | null> {
-  const base = endpoint.replace(/\/+$/, '');
+  const base = endpoint.endsWith('/') ? endpoint.slice(0, -1).replace(/\/+$/, '') : endpoint;
   const url = `${base}${RUN_INFO_PATH}`;
   try {
     const res = await fetch(url, { method: 'GET' });
@@ -187,7 +187,7 @@ export async function notifyBridgeRunStarted(
   endpoint: string,
   payload: { runId: string; runType: string; suiteType?: string; testFiles?: string[]; wipeAll?: boolean }
 ): Promise<boolean> {
-  const base = endpoint.replace(/\/+$/, '');
+  const base = endpoint.endsWith('/') ? endpoint.slice(0, -1).replace(/\/+$/, '') : endpoint;
   const url = `${base}${RUN_STARTED_PATH}`;
   const body = JSON.stringify({ startedAt: new Date().toISOString(), ...payload });
   try {
@@ -215,12 +215,12 @@ export type ReporterPayload = {
 const reporterQueue: Array<{ endpoint: string; payload: ReporterPayload }> = [];
 
 export function enqueueReporterPayload(payload: ReporterPayload, endpoint: string): void {
-  reporterQueue.push({ endpoint: endpoint.replace(/\/+$/, ''), payload });
+  reporterQueue.push({ endpoint: endpoint.endsWith('/') ? endpoint.slice(0, -1).replace(/\/+$/, '') : endpoint, payload });
 }
 
 export async function sendReporterPayloadsToBridge(payloads: ReporterPayload[], endpoint: string): Promise<void> {
   if (payloads.length === 0) return;
-  const base = endpoint.replace(/\/+$/, '');
+  const base = endpoint.endsWith('/') ? endpoint.slice(0, -1).replace(/\/+$/, '') : endpoint;
   const now = Date.now();
   let alive = isHealthCacheValid(base, now);
   if (!alive) {

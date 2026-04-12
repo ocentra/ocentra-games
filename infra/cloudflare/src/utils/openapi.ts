@@ -1958,10 +1958,17 @@ function createBadgePaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['badge_id'],
+          additionalProperties: false,
           properties: {
-            badge_id: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+            badge_id: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 64,
+              example: OpenApiExampleValue.BadgeClaimRequest.badge_id,
+            },
             game_type: { type: OpenApiSchemaType.Integer, minimum: 0 },
           },
+          example: OpenApiExampleValue.BadgeClaimRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -2103,16 +2110,28 @@ function createAssetPaths() {
             }
           ),
         ],
-        responses: withStandardErrors({
-          [String(HttpStatus.Ok)]: {
-            description: 'Asset content',
-            content: {
-              [HttpContentType.ApplicationJson]: {
-                schema: {
-                  type: OpenApiSchemaType.Object,
+          responses: withStandardErrors({
+            [String(HttpStatus.Ok)]: {
+              description: 'Asset content',
+              content: {
+                [HttpContentType.ApplicationJson]: {
+                  schema: {
+                    type: OpenApiSchemaType.Object,
+                    example: OpenApiExampleValue.AssetDownloadResponse,
+                    properties: {
+                      url: {
+                        type: OpenApiSchemaType.String,
+                        example: OpenApiExampleValue.AssetDownloadResponse.url,
+                      },
+                      delivery: {
+                        type: OpenApiSchemaType.String,
+                        enum: ['local', 'public', 'signed'],
+                        example: OpenApiExampleValue.AssetDownloadResponse.delivery,
+                      },
+                    },
+                  },
                 },
-              },
-              'image/png': {
+                'image/png': {
                 schema: {
                   type: OpenApiSchemaType.String,
                   format: 'binary',
@@ -2562,6 +2581,7 @@ function createMatchmakingPaths() {
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Matchmaking status', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.MatchmakingStatusResponse,
             })
           )
         ),

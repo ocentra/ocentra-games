@@ -7,7 +7,8 @@ function isValidAuditUrl(url: string): boolean {
 }
 
 function normalizeUrl(u: string): string {
-  return u.trim().replace(/\/+$/, '');
+  const trimmed = u.trim();
+  return trimmed.endsWith('/') ? trimmed.slice(0, -1).replace(/\/+$/, '') : trimmed;
 }
 
 export interface UrlAuditEntry {

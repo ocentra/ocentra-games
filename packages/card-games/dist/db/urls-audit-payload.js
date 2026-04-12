@@ -5,7 +5,8 @@ function isValidAuditUrl(url) {
     return /^https?:\/\/[^/]+/.test(u);
 }
 function normalizeUrl(u) {
-    return u.trim().replace(/\/+$/, '');
+    const trimmed = u.trim();
+    return trimmed.endsWith('/') ? trimmed.slice(0, -1).replace(/\/+$/, '') : trimmed;
 }
 export function buildUrlsAuditPayload(rows) {
     const byUrl = new Map();

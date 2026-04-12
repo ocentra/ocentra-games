@@ -64,7 +64,7 @@ export class CanonicalJSON {
       const absNum = Math.abs(num);
       const precision = Math.max(0, -Math.floor(Math.log10(absNum)) + 15);
       const expanded = num.toFixed(precision);
-      const trimmed = expanded.replace(/\.?0+$/, '');
+      const trimmed = this.trimTrailingZeros(expanded);
       if (!trimmed.includes('.')) {
         return parseInt(trimmed, 10);
       }
@@ -72,7 +72,7 @@ export class CanonicalJSON {
     }
 
     if (str.includes('.')) {
-      const trimmed = str.replace(/\.?0+$/, '');
+      const trimmed = this.trimTrailingZeros(str);
       if (!trimmed.includes('.')) {
         return parseInt(trimmed, 10);
       }
@@ -80,6 +80,17 @@ export class CanonicalJSON {
     }
 
     return num;
+  }
+
+  private static trimTrailingZeros(str: string): string {
+    let end = str.length;
+    while (end > 0 && str[end - 1] === '0') {
+      end--;
+    }
+    if (end > 0 && str[end - 1] === '.') {
+      end--;
+    }
+    return str.slice(0, end);
   }
 
 

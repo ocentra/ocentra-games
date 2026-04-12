@@ -31,7 +31,8 @@ export interface TournamentPrizeDistributionFlowBody {
 
 function buildTournamentAwardId(context: FlowContext, tournamentId: string, winner: TournamentWinner): string {
   const base = context.operationId ?? `tournament-${tournamentId}`;
-  return `${base}:${winner.userId}:${winner.place}`;
+  const sanitize = (value: string): string => String(value).replace(/[^A-Za-z0-9_-]/g, '_');
+  return `${sanitize(base)}-${sanitize(winner.userId)}-${winner.place}`;
 }
 
 export class TournamentPrizeDistributionFlow extends BaseFlow<TournamentPrizeDistributionFlowInput, TournamentPrizeDistributionFlowBody> {

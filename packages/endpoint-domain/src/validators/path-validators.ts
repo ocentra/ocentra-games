@@ -13,7 +13,6 @@ export class PathValidator {
   private static readonly INVISIBLE_CHARS = ValidationPattern.InvisibleChars;
   private static readonly PATH_TRAVERSAL = ValidationPattern.PathTraversal;
   private static readonly CONTROL_CHARS = ValidationPattern.ControlChars;
-  private static readonly WHITESPACE_BOUNDARY = ValidationPattern.WhitespaceBoundary;
   private static readonly DOUBLE_ENCODING = ValidationPattern.DoubleEncoding;
 
   static hasInvisibleChars(value: string): boolean {
@@ -29,7 +28,7 @@ export class PathValidator {
   }
 
   static hasWhitespaceBoundary(value: string): boolean {
-    return this.WHITESPACE_BOUNDARY.test(value);
+    return value !== value.trim();
   }
 
   static hasDoubleEncoding(value: string): boolean {

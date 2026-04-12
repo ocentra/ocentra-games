@@ -8,7 +8,8 @@ export function sanitizePathComponent(component: string): string {
   }
   const sanitized = component
     .replace(ValidationPattern.PathComponentAllowed, '_')
-    .replace(ValidationPattern.PathComponentTrimUnderscores, '')
+    .replace(ValidationPattern.PathComponentTrimStartUnderscores, '')
+    .replace(ValidationPattern.PathComponentTrimEndUnderscores, '')
     .substring(0, PathLimits.MaxComponentLength);
   if (!sanitized) {
     throw new Error(ErrorMessage.PathComponentBecameEmptyAfterSanitization);
@@ -27,6 +28,6 @@ export function buildSafePathKey(prefix: string, ...components: string[]): strin
     }
     return sanitizePathComponent(component);
   });
-  const normalizedPrefix = prefix.replace(/\/+$/, '');
+  const normalizedPrefix = prefix.endsWith('/') ? prefix.slice(0, -1).replace(/\/+$/, '') : prefix;
   return `${normalizedPrefix}${PathSeparator.ForwardSlash}${sanitizedComponents.join(PathSeparator.ForwardSlash)}`;
 }

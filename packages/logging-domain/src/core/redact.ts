@@ -33,13 +33,13 @@ const SENSITIVE_KEYS = new Set([
   'firebasetoken',
 ]);
 
-const BEARER_REGEX = /Bearer\s+\S+/gi;
-const JWT_REGEX = /eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g;
-const SK_LIVE_REGEX = /sk_live_[A-Za-z0-9]+/g;
-const SK_TEST_REGEX = /sk_test_[A-Za-z0-9]+/g;
+const BEARER_REGEX = /Bearer\s+\S{1,500}/gi;
+const JWT_REGEX = /eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g;
+const SK_LIVE_REGEX = /sk_live_[A-Za-z0-9]{20,}/g;
+const SK_TEST_REGEX = /sk_test_[A-Za-z0-9]{20,}/g;
 const AIZA_REGEX = /AIza[A-Za-z0-9_-]{20,}/g;
-const PEM_REGEX = /-----BEGIN [A-Z\s]+-----[A-Za-z0-9+/=\s\n\r]+-----END [A-Z\s]+-----/g;
-const BASE64_LONG_REGEX = /[A-Za-z0-9+/]{33,}={0,2}/g;
+const PEM_REGEX = /-----BEGIN [A-Z ]{1,50}-----[A-Za-z0-9+/=\s\n\r]{1,10000}-----END [A-Z ]{1,50}-----/g;
+const BASE64_LONG_REGEX = /[A-Za-z0-9+/]{33,10000}={0,2}/g;
 const HEX_64_REGEX = /\b[a-fA-F0-9]{64}\b/g;
 
 function normalizeKey(key: string): string {

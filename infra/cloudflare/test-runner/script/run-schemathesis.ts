@@ -8,10 +8,12 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { TournamentDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { HttpAuthScheme, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { FormField } from '@ocentra/endpoint-domain/constants/form-fields';
 import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
+import { TournamentResultField } from '@ocentra/endpoint-domain/constants/worker-contract-values';
 import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { generateOpenApiJson, openApiExplicitExampleRoutes } from '@/utils/openapi';
 
@@ -166,8 +168,12 @@ type SchemathesisRuntimeFixtures = {
   aiMockBaseUrl: string;
   userId: string;
   roomId: string;
+  matchToken: string;
   registerTournamentId: string;
   startTournamentId: string;
+  prizeTournamentId: string;
+  tournamentResultMatchId: string;
+  tournamentResultWinnerId: string;
   assetHash: string;
   promoCode: string;
   leaderboardMatchIds: string[];
@@ -241,6 +247,101 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     `    return st.just(Case(operation, "POST", ${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))}, path_parameters={"disputeId": ${pythonStringLiteral(OpenApiExampleValue.DisputeId)}}, body=${JSON.stringify(OpenApiExampleValue.DisputeEvidenceRequest)}, media_type=${pythonStringLiteral(HttpContentType.MultipartFormData)}, multipart_content_types={${pythonStringLiteral(FormField.Evidence)}: ${pythonStringLiteral(HttpContentType.TextPlain)}}))`,
     '',
   ].join('\n');
+  const tournamentBasePath = ApiEndpoint.Tournament.ById(`{${OpenApiParameterName.TournamentId}}`);
+  const tournamentBracketPath = `${tournamentBasePath}/${TournamentDOSegment.Bracket}`;
+  const tournamentStartPath = `${tournamentBasePath}/${TournamentDOSegment.Start}`;
+  const archiveMatchPath = ApiEndpoint.Archive.ByMatchId(`{${OpenApiParameterName.MatchId}}`);
+  const anonymizeMatchPath = ApiEndpoint.Matches.Anonymize(`{${OpenApiParameterName.MatchId}}`);
+  const roomSpectatePath = ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`);
+  const tournamentBracketExample = [
+    `    if (method, path) == ("GET", ${pythonStringLiteral(tournamentBracketPath)}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"tournamentId": ${pythonStringLiteral(fixtures.startTournamentId)}}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const tournamentStartExample = [
+    `    if (method, path) == ("POST", ${pythonStringLiteral(tournamentStartPath)}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"tournamentId": ${pythonStringLiteral(fixtures.startTournamentId)}}, body={}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const archiveExample = [
+    `    if (method, path) == ("POST", ${pythonStringLiteral(archiveMatchPath)}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"matchId": ${pythonStringLiteral(fixtures.archiveMatchId)}}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const anonymizeExample = [
+    `    if (method, path) == ("POST", ${pythonStringLiteral(anonymizeMatchPath)}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"matchId": ${pythonStringLiteral(fixtures.archiveMatchId)}}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const roomSpectateExample = [
+    `    if (method, path) == ("POST", ${pythonStringLiteral(roomSpectatePath)}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"roomId": ${pythonStringLiteral(fixtures.roomId)}}, body=${JSON.stringify(OpenApiExampleValue.LobbySpectateRequest)}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const matchmakingExample = [
+    `    if (method, path) == ("GET", ${pythonStringLiteral(ApiEndpoint.Matchmaking.Base)}):`,
+    '        examples.clear()',
+    '        examples.append(Case(operation, method, path))',
+    '        return',
+    '',
+  ].join('\n');
+  const createPinnedCaseStrategy = (
+    functionName: string,
+    method: string,
+    routePath: string,
+    options: {
+      pathParameters?: Record<string, string | number>;
+      body?: unknown;
+    } = {}
+  ): string => {
+    const pathParameters = options.pathParameters ? `, path_parameters=${JSON.stringify(options.pathParameters)}` : '';
+    const body = options.body !== undefined ? `, body=${JSON.stringify(options.body)}` : '';
+    return [
+      `@schemathesis.hook("before_generate_case").apply_to(method=${pythonStringLiteral(method)}, path=${pythonStringLiteral(routePath)})`,
+      `def ${functionName}(ctx, strategy):`,
+      '    operation = ctx.operation',
+      `    return st.just(Case(operation, ${pythonStringLiteral(method)}, ${pythonStringLiteral(routePath)}${pathParameters}${body}))`,
+      '',
+    ].join('\n');
+  };
+  const tournamentBracketCaseStrategy = createPinnedCaseStrategy('generate_tournament_bracket_case', 'GET', tournamentBracketPath, {
+    pathParameters: {
+      tournamentId: fixtures.startTournamentId,
+    },
+  });
+  const tournamentStartCaseStrategy = createPinnedCaseStrategy('generate_tournament_start_case', 'POST', tournamentStartPath, {
+    pathParameters: {
+      tournamentId: fixtures.startTournamentId,
+    },
+    body: {},
+  });
+  const archiveCaseStrategy = createPinnedCaseStrategy('generate_archive_case', 'POST', archiveMatchPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const anonymizeCaseStrategy = createPinnedCaseStrategy('generate_anonymize_case', 'POST', anonymizeMatchPath, {
+    pathParameters: {
+      matchId: fixtures.archiveMatchId,
+    },
+  });
+  const roomSpectateCaseStrategy = createPinnedCaseStrategy('generate_room_spectate_case', 'POST', roomSpectatePath, {
+    pathParameters: {
+      roomId: fixtures.roomId,
+    },
+    body: OpenApiExampleValue.LobbySpectateRequest,
+  });
+  const matchmakingCaseStrategy = createPinnedCaseStrategy('generate_matchmaking_case', 'GET', ApiEndpoint.Matchmaking.Base);
   const content = [
     'import warnings',
     '',
@@ -267,10 +368,22 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     assetsCase,
     playerCase,
     disputeEvidenceCase,
+    tournamentBracketExample,
+    tournamentStartExample,
+    archiveExample,
+    anonymizeExample,
+    roomSpectateExample,
+    matchmakingExample,
     '    if (method, path) not in EXPLICIT_EXAMPLE_ROUTES:',
     '        return',
     '    examples.append(operation.as_strategy().example())',
     '',
+    tournamentBracketCaseStrategy,
+    tournamentStartCaseStrategy,
+    archiveCaseStrategy,
+    anonymizeCaseStrategy,
+    roomSpectateCaseStrategy,
+    matchmakingCaseStrategy,
     disputeEvidenceCaseStrategy,
   ].join('\n');
   fs.writeFileSync(hooksPath, content, 'utf-8');
@@ -440,8 +553,12 @@ function createSchemathesisRuntimeFixtures(baseUrl: string): SchemathesisRuntime
     aiMockBaseUrl: `${baseUrl}${ApiEndpoint.Test.Base}/mock-ai/v1`,
     userId: '',
     roomId: OpenApiExampleValue.UuidOne,
+    matchToken: '',
     registerTournamentId: `schemathesis-register-${runId}`,
     startTournamentId: `schemathesis-start-${runId}`,
+    prizeTournamentId: `schemathesis-prize-${runId}`,
+    tournamentResultMatchId: OpenApiExampleValue.MatchId,
+    tournamentResultWinnerId: OpenApiExampleValue.UserId,
     assetHash: OpenApiExampleValue.AssetHash,
     promoCode: OpenApiExampleValue.PromoCode,
     leaderboardMatchIds: [],
@@ -465,7 +582,12 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     paths?: Record<string, Record<string, OpenApiOperation>>;
   };
 
-  const setPathParameterExample = (pathKey: string, method: string, parameterName: string, example: string): void => {
+  const setPathParameterExample = (
+    pathKey: string,
+    method: string,
+    parameterName: string,
+    example: string | number
+  ): void => {
     const operation = spec.paths?.[pathKey]?.[method];
     const parameter = operation?.parameters?.find((item) => item.name === parameterName);
     if (!parameter) {
@@ -477,7 +599,12 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     parameter.example = example;
   };
 
-  const setQueryParameterExample = (pathKey: string, method: string, parameterName: string, example: string): void => {
+  const setQueryParameterExample = (
+    pathKey: string,
+    method: string,
+    parameterName: string,
+    example: string | number
+  ): void => {
     const operation = spec.paths?.[pathKey]?.[method];
     const parameter = operation?.parameters?.find((item) => item.name === parameterName);
     if (!parameter) {
@@ -498,16 +625,22 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
   };
 
   const tournamentBasePath = ApiEndpoint.Tournament.ById('{tournamentId}');
-  setPathParameterExample(tournamentBasePath, 'get', 'tournamentId', fixtures.registerTournamentId);
+  setPathParameterExample(tournamentBasePath, 'get', 'tournamentId', fixtures.startTournamentId);
+  setPathParameterExample(`${tournamentBasePath}/${TournamentDOSegment.Bracket}`, 'get', 'tournamentId', fixtures.startTournamentId);
   setPathParameterExample(`${tournamentBasePath}/register`, 'post', 'tournamentId', fixtures.registerTournamentId);
   setPathParameterExample(`${tournamentBasePath}/start`, 'post', 'tournamentId', fixtures.startTournamentId);
-  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}`, 'get', 'gameType', String(fixtures.leaderboardGameType));
-  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/user/{${OpenApiParameterName.UserId}}`, 'get', 'gameType', String(fixtures.leaderboardGameType));
+  setPathParameterExample(`${tournamentBasePath}/result`, 'post', 'tournamentId', fixtures.startTournamentId);
+  setPathParameterExample(`${tournamentBasePath}/distribute-prizes`, 'post', 'tournamentId', fixtures.prizeTournamentId);
+  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}`, 'get', 'gameType', fixtures.leaderboardGameType);
+  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/user/{${OpenApiParameterName.UserId}}`, 'get', 'gameType', fixtures.leaderboardGameType);
   setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/user/{${OpenApiParameterName.UserId}}`, 'get', 'userId', fixtures.leaderboardUserId);
-  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/nearby/{${OpenApiParameterName.UserId}}`, 'get', 'gameType', String(fixtures.leaderboardGameType));
+  setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/nearby/{${OpenApiParameterName.UserId}}`, 'get', 'gameType', fixtures.leaderboardGameType);
   setPathParameterExample(`${ApiEndpoint.Leaderboard.Base}/{${OpenApiParameterName.GameType}}/nearby/{${OpenApiParameterName.UserId}}`, 'get', 'userId', fixtures.leaderboardUserId);
   setPathParameterExample(ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`), 'post', 'roomId', fixtures.roomId);
   setPathParameterExample(`${ApiEndpoint.Archive.Base}/{${OpenApiParameterName.MatchId}}`, 'post', 'matchId', fixtures.archiveMatchId);
+  setPathParameterExample(ApiEndpoint.Matches.ById(`{${OpenApiParameterName.MatchId}}`), 'get', 'matchId', fixtures.archiveMatchId);
+  setPathParameterExample(ApiEndpoint.Matches.ById(`{${OpenApiParameterName.MatchId}}`), 'post', 'matchId', fixtures.archiveMatchId);
+  setPathParameterExample(ApiEndpoint.Matches.Anonymize(`{${OpenApiParameterName.MatchId}}`), 'post', 'matchId', fixtures.archiveMatchId);
   setPathParameterExample(ApiEndpoint.Replay.ByMatchId(`{${OpenApiParameterName.MatchId}}`), 'get', 'matchId', fixtures.archiveMatchId);
   setPathParameterExample(ApiEndpoint.Replay.Verify(`{${OpenApiParameterName.MatchId}}`), 'get', 'matchId', fixtures.archiveMatchId);
   setPathParameterExample(ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`), 'get', 'disputeId', OpenApiExampleValue.DisputeId);
@@ -515,9 +648,66 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
   setPathParameterExample(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`), 'post', 'disputeId', OpenApiExampleValue.DisputeId);
   setPathParameterExample(ApiEndpoint.Admin.ModerationResolve(`{${OpenApiParameterName.ReportId}}`), 'post', 'reportId', fixtures.moderationReportId);
   setPathParameterExample(ApiEndpoint.Friends.ById(`{${OpenApiParameterName.FriendId}}`), 'post', 'friendId', fixtures.friendId);
+  setPathParameterExample(ApiEndpoint.Credits.Balance(`{${OpenApiParameterName.UserId}}`), 'get', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.Transactions(`{${OpenApiParameterName.UserId}}`), 'get', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.Award(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.Purchase(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.Consume(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.ConsumeGP(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Credits.Earn(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
+  setPathParameterExample(ApiEndpoint.Badges.Claim(`{${OpenApiParameterName.UserId}}`), 'post', OpenApiParameterName.UserId, fixtures.userId);
 
   setPathParameterExample(ApiEndpoint.AI.KeysById('{providerId}'), 'delete', 'providerId', fixtures.aiProviderId);
   setPathParameterExample(ApiEndpoint.AI.KeysTest('{providerId}'), 'post', 'providerId', fixtures.aiProviderId);
+  if (fixtures.matchToken) {
+    setQueryParameterExample(ApiEndpoint.Matches.ById(`{${OpenApiParameterName.MatchId}}`), 'get', OpenApiParameterName.Token, fixtures.matchToken);
+  }
+  setRequestBodyExample(ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`), 'post', (body) => {
+    const json = body.content?.['application/json'];
+    const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.LobbySpectateRequest;
+    }
+    if (schema?.properties?.userId) {
+      schema.properties.userId.example = fixtures.userId;
+    }
+    if (schema?.properties?.displayName) {
+      schema.properties.displayName.example = 'Guest Spectator';
+    }
+    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
+      const example = schema.example as Record<string, unknown>;
+      example.userId = fixtures.userId;
+      example.displayName = 'Guest Spectator';
+    }
+    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
+      const example = json.example as Record<string, unknown>;
+      example.userId = fixtures.userId;
+      example.displayName = 'Guest Spectator';
+    }
+  });
+  setRequestBodyExample(`${tournamentBasePath}/result`, 'post', (body) => {
+    const json = body.content?.['application/json'];
+    const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.TournamentResultRequest;
+    }
+    if (schema?.properties?.[OpenApiParameterName.MatchId]) {
+      schema.properties[OpenApiParameterName.MatchId].example = fixtures.tournamentResultMatchId;
+    }
+    if (schema?.properties?.[TournamentResultField.WinnerId]) {
+      schema.properties[TournamentResultField.WinnerId].example = fixtures.tournamentResultWinnerId;
+    }
+    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
+      const example = schema.example as Record<string, unknown>;
+      example[OpenApiParameterName.MatchId] = fixtures.tournamentResultMatchId;
+      example[TournamentResultField.WinnerId] = fixtures.tournamentResultWinnerId;
+    }
+    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
+      const example = json.example as Record<string, unknown>;
+      example[OpenApiParameterName.MatchId] = fixtures.tournamentResultMatchId;
+      example[TournamentResultField.WinnerId] = fixtures.tournamentResultWinnerId;
+    }
+  });
   setRequestBodyExample(ApiEndpoint.AI.Generate, 'post', (body) => {
     const json = body.content?.['application/json'];
     const schema = json?.schema as { properties?: Record<string, { example?: unknown }> } | undefined;
@@ -777,6 +967,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
     const roomHostToken = `${TestTokenPrefix.Test}${userId}-room-host`;
     const roomResponse = await postJson(`${baseUrl}${ApiEndpoint.Rooms.Base}`, roomHostToken, {
       roomId: fixtures.roomId,
+      hostId: userId,
       roomType: 'game',
       maxPlayers: 2,
     });
@@ -794,6 +985,35 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
     console.log(`  Example seeding warning: failed to seed room (${String(error)})`);
   }
 
+  const seedTournamentBracket = async (tournamentId: string): Promise<{
+    bracket?: Array<{ matchId?: string; playerA?: string; playerB?: string }>;
+  }> => {
+    const tournamentPath = `${baseUrl}${ApiEndpoint.Tournament.ById(tournamentId)}`;
+    const registerPath = `${tournamentPath}/register`;
+    const primaryRegister = await postJson(registerPath, authToken, {});
+    if (!primaryRegister.ok) {
+      const text = await primaryRegister.text().catch(() => '');
+      console.log(`  Example seeding warning: tournament ${tournamentId} register returned ${primaryRegister.status}${text ? ` - ${text}` : ''}`);
+      return {};
+    }
+    const peerRegister = await postJson(registerPath, peerToken, {});
+    if (!peerRegister.ok) {
+      const text = await peerRegister.text().catch(() => '');
+      console.log(`  Example seeding warning: tournament ${tournamentId} peer registration returned ${peerRegister.status}${text ? ` - ${text}` : ''}`);
+      return {};
+    }
+    const startResponse = await postJson(`${tournamentPath}/start`, authToken, {});
+    if (!startResponse.ok) {
+      const text = await startResponse.text().catch(() => '');
+      console.log(`  Example seeding warning: tournament ${tournamentId} start returned ${startResponse.status}${text ? ` - ${text}` : ''}`);
+      return {};
+    }
+    const startData = await startResponse.json().catch(() => ({})) as { bracket?: Array<{ matchId?: string; playerA?: string; playerB?: string }> };
+    return {
+      bracket: Array.isArray(startData.bracket) ? startData.bracket : [],
+    };
+  };
+
   try {
     const registerTournamentPath = `${baseUrl}${ApiEndpoint.Tournament.ById(fixtures.registerTournamentId)}/register`;
     const firstRegister = await postJson(registerTournamentPath, authToken, {});
@@ -804,18 +1024,29 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
       console.log(`  Seeded tournament ${fixtures.registerTournamentId} for registration examples`);
     }
 
-    const startTournamentPath = `${baseUrl}${ApiEndpoint.Tournament.ById(fixtures.startTournamentId)}/register`;
-    const secondRegister = await postJson(startTournamentPath, authToken, {});
-    if (!secondRegister.ok) {
-      const text = await secondRegister.text().catch(() => '');
-      console.log(`  Example seeding warning: tournament start seed (primary) returned ${secondRegister.status}${text ? ` - ${text}` : ''}`);
-    }
-    const thirdRegister = await postJson(startTournamentPath, peerToken, {});
-    if (!thirdRegister.ok) {
-      const text = await thirdRegister.text().catch(() => '');
-      console.log(`  Example seeding warning: tournament start seed (peer) returned ${thirdRegister.status}${text ? ` - ${text}` : ''}`);
-    } else {
+    const startTournament = await seedTournamentBracket(fixtures.startTournamentId);
+    const startBracket = startTournament.bracket?.[0];
+    if (startBracket?.matchId) {
+      fixtures.tournamentResultMatchId = startBracket.matchId;
+      fixtures.tournamentResultWinnerId = startBracket.playerA || startBracket.playerB || userId;
       console.log(`  Seeded tournament ${fixtures.startTournamentId} with two test players`);
+    }
+
+    const prizeTournament = await seedTournamentBracket(fixtures.prizeTournamentId);
+    const prizeBracket = prizeTournament.bracket?.[0];
+    if (prizeBracket?.matchId) {
+      const prizeWinnerId = prizeBracket.playerA || prizeBracket.playerB || userId;
+      const prizeResultPath = `${baseUrl}${ApiEndpoint.Tournament.ById(fixtures.prizeTournamentId)}/result`;
+      const prizeResultResponse = await postJson(prizeResultPath, authToken, {
+        matchId: prizeBracket.matchId,
+        winnerId: prizeWinnerId,
+      });
+      if (!prizeResultResponse.ok) {
+        const text = await prizeResultResponse.text().catch(() => '');
+        console.log(`  Example seeding warning: tournament ${fixtures.prizeTournamentId} result returned ${prizeResultResponse.status}${text ? ` - ${text}` : ''}`);
+      } else {
+        console.log(`  Seeded tournament ${fixtures.prizeTournamentId} with prize-ready results`);
+      }
     }
   } catch (error) {
     console.log(`  Example seeding warning: failed to seed tournament (${String(error)})`);
@@ -864,6 +1095,33 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
     }
   } catch (error) {
     console.log(`  Example seeding warning: failed to seed leaderboard matches (${String(error)})`);
+  }
+
+  try {
+    if (fixtures.archiveMatchId) {
+      const signedUrlResponse = await fetch(`${baseUrl}${ApiEndpoint.SignedUrl.ByMatchId(fixtures.archiveMatchId)}`, {
+        method: 'GET',
+        headers: {
+          [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${authToken}`,
+        },
+      });
+      if (signedUrlResponse.ok) {
+        const signedUrlData = await signedUrlResponse.json().catch(() => ({})) as { signedUrl?: string };
+        const signedUrl = typeof signedUrlData.signedUrl === 'string' ? signedUrlData.signedUrl : '';
+        if (signedUrl) {
+          const token = new URL(signedUrl).searchParams.get(OpenApiParameterName.Token) ?? '';
+          fixtures.matchToken = token;
+          if (token) {
+            console.log(`  Seeded signed URL token for match ${fixtures.archiveMatchId}`);
+          }
+        }
+      } else {
+        const text = await signedUrlResponse.text().catch(() => '');
+        console.log(`  Example seeding warning: signed URL seed returned ${signedUrlResponse.status}${text ? ` - ${text}` : ''}`);
+      }
+    }
+  } catch (error) {
+    console.log(`  Example seeding warning: failed to seed signed URL token (${String(error)})`);
   }
 
   try {

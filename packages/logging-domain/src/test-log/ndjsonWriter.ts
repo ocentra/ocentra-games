@@ -36,7 +36,8 @@ export function sanitizeTestNameForFile(testName: string): string {
   const sanitized = testName
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '')
     .substring(0, 100);
   return sanitized || 'unnamed-test';
 }

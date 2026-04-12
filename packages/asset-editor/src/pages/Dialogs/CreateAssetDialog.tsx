@@ -44,7 +44,7 @@ async function getGamesByAssetType(assetType: string): Promise<Array<{ gameId: s
         }
 
         const filteredEntries = result.value.filter(entry => {
-            const normalizedType = entry.assetType?.replace(/\d+$/, '');
+            const normalizedType = entry.assetType ? (entry.assetType.match(/\d+$/) ? entry.assetType.replace(/\d+$/, '') : entry.assetType) : null;
             return normalizedType === assetType || entry.assetType === assetType;
         });
 
@@ -342,8 +342,9 @@ export const CreateAssetDialog: React.FC<CreateAssetDialogProps> = ({
                 const gameId = assetName.toLowerCase().replace(/\s+/g, '_');
                 treePath = `Resources/GameMode/${gameModeCategory}/${gameId}/${gameId}.asset`;
             } else {
-                const cleanPath = customPath.replace(/^\/+/, '').replace(/\/+$/, '');
-                treePath = `${cleanPath ? cleanPath + '/' : ''}${assetName}.asset`;
+                const cleanPath = customPath.startsWith('/') ? customPath.substring(1).replace(/^\/+/, '') : customPath;
+                treePath = (cleanPath.endsWith('/') ? cleanPath.slice(0, -1).replace(/\/+$/, '') : cleanPath);
+                treePath = `${treePath ? treePath + '/' : ''}${assetName}.asset`;
             }
             systemBlock.treePath = treePath;
 
@@ -544,7 +545,7 @@ export const CreateAssetDialog: React.FC<CreateAssetDialogProps> = ({
                             <strong>Full Path:</strong>
                             <code>
                                 packages/asset-editor/
-                                {customPath && `${customPath.replace(/^\/+/, '').replace(/\/+$/, '')}/`}
+                                {customPath && `${(customPath.startsWith('/') ? customPath.substring(1).replace(/^\/+/, '') : customPath).endsWith('/') ? customPath.replace(/\/+$/, '') : customPath}/`}
                                 {assetName}.asset
                             </code>
                         </div>

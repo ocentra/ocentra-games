@@ -1,4 +1,5 @@
 import { ApiEndpoint } from './cloudflare';
+import { BadgeId } from './badges';
 
 const DisputeIdExample = 'D-123-456';
 const MatchIdExample = '00000000-0000-4000-8000-000000000000';
@@ -35,6 +36,10 @@ export const OpenApiExampleValue = {
   TournamentId: TournamentIdExample,
   PromoCode: PromoCodeExample,
   AssetHash: 'schemathesis-asset',
+  AssetDownloadResponse: {
+    url: 'https://r2.ocentra.com/assets/example.png',
+    delivery: 'signed',
+  },
   HashHex64: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
   WalletAddress: '0x123...',
   MatchWalletAddress: '675S9ZqD3QndK4Yh7o2zT6qT6qT6qT6qT6qT6qT6qT6q',
@@ -78,6 +83,13 @@ export const OpenApiExampleValue = {
   },
   CreditsRedeemRequest: {
     code: 'schemathesis-promo',
+  },
+  MatchmakingStatusResponse: {
+    status: 'idle',
+    position: 0,
+  },
+  BadgeClaimRequest: {
+    badge_id: BadgeId.ProBronze,
   },
   RewardDailyClaimRequest: {
     idempotencyKey: 'earn-schemathesis-001',
@@ -410,15 +422,15 @@ export const OpenApiExampleValue = {
     isPrivate: false,
   },
   LobbyJoinRequest: {
-    userId: FriendIdExample,
+    userId: UserIdExample,
     displayName: 'Guest Player',
   },
   LobbySpectateRequest: {
-    userId: FriendIdExample,
+    userId: UserIdExample,
     displayName: 'Guest Spectator',
   },
   LobbyLeaveRequest: {
-    userId: FriendIdExample,
+    userId: UserIdExample,
   },
   AntiCheatReportRequest: {
     reporterId: UserIdExample,

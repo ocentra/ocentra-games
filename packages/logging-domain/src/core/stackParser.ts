@@ -17,7 +17,7 @@ export function parseStackFrame(
   let frame: StackFrame | null = null;
 
   const withFunction = trimmed.match(
-    /at\s+(?:async\s+)?([\w.]+)\s+\(([^)]+):(\d+):(\d+)\)/
+    /^at\s+(?:async\s+)?([\w.]+)\s+\((.+):(\d+):(\d+)\)$/
   );
   if (withFunction) {
     const [, funcName, filePath, lineNum, colNum] = withFunction;
@@ -32,7 +32,7 @@ export function parseStackFrame(
       raw: trimmed,
     };
   } else {
-    const withoutFunction = trimmed.match(/at\s+([^:]+):(\d+):(\d+)/);
+    const withoutFunction = trimmed.match(/^at\s+(.+):(\d+):(\d+)$/);
     if (withoutFunction) {
       const [, filePath, lineNum, colNum] = withoutFunction;
       const fileName = filePath.split(/[/\\]/).pop() || filePath;
@@ -45,7 +45,7 @@ export function parseStackFrame(
         raw: trimmed,
       };
     } else {
-      const evalMatch = trimmed.match(/at eval \(([^)]+):(\d+):(\d+)\)/);
+      const evalMatch = trimmed.match(/^at eval \((.+):(\d+):(\d+)\)$/);
       if (evalMatch) {
         const [, filePath, lineNum, colNum] = evalMatch;
         const fileName = filePath.split(/[/\\]/).pop() || filePath;

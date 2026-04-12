@@ -3,7 +3,10 @@ import { testName } from '@tests/helpers/test-name';
 import { afterAll } from 'vitest';
 import { generateOpenApiJson } from '@/utils/openapi';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { BadgeId } from '@ocentra/endpoint-domain/constants/badges';
 import { OpenApiVersion } from '@ocentra/endpoint-domain/constants/openapi';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
+import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
 type ParsedOpenApi = {
@@ -70,5 +73,31 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     for (const p of criticalPaths) {
       expect(Object.prototype.hasOwnProperty.call(parsed.paths, p)).toBe(true);
     }
+  });
+
+  it(testName('openapi schema drift: badge claim example is centralized and valid'), () => {
+    const parsed = JSON.parse(generateOpenApiJson()) as {
+      paths: Record<string, { post?: { requestBody?: { content?: Record<string, { example?: unknown }> } } }>;
+    };
+    const pathKey = ApiEndpoint.Badges.Claim(`{${OpenApiParameterName.UserId}}`);
+    const example = parsed.paths[pathKey]?.post?.requestBody?.content?.['application/json']?.example as
+      | { badge_id?: string }
+      | undefined;
+
+    expect(example).toEqual(OpenApiExampleValue.BadgeClaimRequest);
+    expect(example?.badge_id).toBe(BadgeId.ProBronze);
+  });
+
+  it(testName('openapi schema drift: matchmaking status example is centralized and valid'), () => {
+    const parsed = JSON.parse(generateOpenApiJson()) as {
+      paths: Record<string, { get?: { responses?: Record<string, { content?: Record<string, { example?: unknown }> }> } }>;
+    };
+    const example = parsed.paths[ApiEndpoint.Matchmaking.Base]?.get?.responses?.['200']?.content?.['application/json']?.example as
+      | { status?: string; position?: number }
+      | undefined;
+
+    expect(example).toEqual(OpenApiExampleValue.MatchmakingStatusResponse);
+    expect(example?.status).toBe('idle');
+    expect(example?.position).toBe(0);
   });
 });
