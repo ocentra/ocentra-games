@@ -8,9 +8,11 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { HttpAuthScheme, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
+import { HttpAuthScheme, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { FormField } from '@ocentra/endpoint-domain/constants/form-fields';
 import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
+import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import { generateOpenApiJson, openApiExplicitExampleRoutes } from '@/utils/openapi';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -162,6 +164,7 @@ type SchemathesisPhaseRun = {
 type SchemathesisRuntimeFixtures = {
   aiProviderId: string;
   aiMockBaseUrl: string;
+  userId: string;
   roomId: string;
   registerTournamentId: string;
   startTournamentId: string;
@@ -224,11 +227,26 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     '        return',
     '',
   ].join('\n');
+  const disputeEvidenceCase = [
+    `    if (method, path) == ("POST", ${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))}):`,
+    '        examples.clear()',
+    `        examples.append(Case(operation, method, path, path_parameters={"disputeId": ${pythonStringLiteral(OpenApiExampleValue.DisputeId)}}, body=${JSON.stringify(OpenApiExampleValue.DisputeEvidenceRequest)}, media_type=${pythonStringLiteral(HttpContentType.MultipartFormData)}, multipart_content_types={${pythonStringLiteral(FormField.Evidence)}: ${pythonStringLiteral(HttpContentType.TextPlain)}}))`,
+    '        return',
+    '',
+  ].join('\n');
+  const disputeEvidenceCaseStrategy = [
+    `@schemathesis.hook("before_generate_case").apply_to(method="POST", path=${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))})`,
+    'def generate_dispute_evidence_case(ctx, strategy):',
+    '    operation = ctx.operation',
+    `    return st.just(Case(operation, "POST", ${pythonStringLiteral(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`))}, path_parameters={"disputeId": ${pythonStringLiteral(OpenApiExampleValue.DisputeId)}}, body=${JSON.stringify(OpenApiExampleValue.DisputeEvidenceRequest)}, media_type=${pythonStringLiteral(HttpContentType.MultipartFormData)}, multipart_content_types={${pythonStringLiteral(FormField.Evidence)}: ${pythonStringLiteral(HttpContentType.TextPlain)}}))`,
+    '',
+  ].join('\n');
   const content = [
     'import warnings',
     '',
     'import schemathesis',
     'from schemathesis import Case',
+    'from hypothesis import strategies as st',
     'from hypothesis.errors import NonInteractiveExampleWarning',
     '',
     'warnings.filterwarnings("ignore", category=NonInteractiveExampleWarning)',
@@ -248,10 +266,12 @@ function writeSchemathesisHooksFile(runtimeDir: string, fixtures: SchemathesisRu
     '    path = str(getattr(operation, "path", ""))',
     assetsCase,
     playerCase,
+    disputeEvidenceCase,
     '    if (method, path) not in EXPLICIT_EXAMPLE_ROUTES:',
     '        return',
     '    examples.append(operation.as_strategy().example())',
     '',
+    disputeEvidenceCaseStrategy,
   ].join('\n');
   fs.writeFileSync(hooksPath, content, 'utf-8');
   return hooksPath;
@@ -390,6 +410,7 @@ function getSchemathesisEnv(runtimeDir?: string): NodeJS.ProcessEnv {
       ? {
           PYTHONPATH: pythonPath,
           SCHEMATHESIS_HOOKS: 'schemathesis_hooks',
+          TEST_MODE: QueryValue.True,
         }
       : {}),
     PYTHONIOENCODING: 'utf-8',
@@ -415,21 +436,22 @@ function createRuntimeArtifactsDir(): string {
 function createSchemathesisRuntimeFixtures(baseUrl: string): SchemathesisRuntimeFixtures {
   const runId = `${Date.now()}-${process.pid}`;
   return {
-    aiProviderId: 'localai',
+    aiProviderId: OpenApiExampleValue.AiProviderId,
     aiMockBaseUrl: `${baseUrl}${ApiEndpoint.Test.Base}/mock-ai/v1`,
-    roomId: '00000000-0000-4000-8000-000000000001',
+    userId: '',
+    roomId: OpenApiExampleValue.UuidOne,
     registerTournamentId: `schemathesis-register-${runId}`,
     startTournamentId: `schemathesis-start-${runId}`,
     assetHash: OpenApiExampleValue.AssetHash,
     promoCode: OpenApiExampleValue.PromoCode,
     leaderboardMatchIds: [],
     leaderboardGameType: 0,
-    leaderboardUserId: 'human-player-1',
-    archiveMatchId: '550e8400-e29b-41d4-a716-446655440020',
-    moderationReportId: 'rep-1',
-    escrowId: '00000000-0000-4000-8000-000000000000',
-    listingId: 'listing-1',
-    friendId: 'user-456',
+    leaderboardUserId: OpenApiExampleValue.UserId,
+    archiveMatchId: OpenApiExampleValue.MatchId,
+    moderationReportId: OpenApiExampleValue.ReportId,
+    escrowId: OpenApiExampleValue.UuidZero,
+    listingId: OpenApiExampleValue.ListingId,
+    friendId: OpenApiExampleValue.FriendId,
   };
 }
 
@@ -488,6 +510,9 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
   setPathParameterExample(`${ApiEndpoint.Archive.Base}/{${OpenApiParameterName.MatchId}}`, 'post', 'matchId', fixtures.archiveMatchId);
   setPathParameterExample(ApiEndpoint.Replay.ByMatchId(`{${OpenApiParameterName.MatchId}}`), 'get', 'matchId', fixtures.archiveMatchId);
   setPathParameterExample(ApiEndpoint.Replay.Verify(`{${OpenApiParameterName.MatchId}}`), 'get', 'matchId', fixtures.archiveMatchId);
+  setPathParameterExample(ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`), 'get', 'disputeId', OpenApiExampleValue.DisputeId);
+  setPathParameterExample(ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`), 'put', 'disputeId', OpenApiExampleValue.DisputeId);
+  setPathParameterExample(ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`), 'post', 'disputeId', OpenApiExampleValue.DisputeId);
   setPathParameterExample(ApiEndpoint.Admin.ModerationResolve(`{${OpenApiParameterName.ReportId}}`), 'post', 'reportId', fixtures.moderationReportId);
   setPathParameterExample(ApiEndpoint.Friends.ById(`{${OpenApiParameterName.FriendId}}`), 'post', 'friendId', fixtures.friendId);
 
@@ -558,9 +583,35 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     }
   });
   setQueryParameterExample(ApiEndpoint.Assets.Base, 'get', 'hash', fixtures.assetHash);
-  setRequestBodyExample(`${ApiEndpoint.Marketplace.Base}/buy`, 'post', (body) => {
+  setRequestBodyExample(ApiEndpoint.Rewards.DailyClaim, 'post', (body) => {
     const json = body.content?.['application/json'];
     const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.RewardDailyClaimRequest;
+    }
+    if (schema?.properties?.userId) {
+      schema.properties.userId.example = fixtures.userId;
+    }
+    if (schema?.properties?.idempotencyKey) {
+      schema.properties.idempotencyKey.example = OpenApiExampleValue.IdempotencyKeyEarn;
+    }
+    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
+      const example = schema.example as Record<string, unknown>;
+      example.userId = fixtures.userId;
+      example.idempotencyKey = OpenApiExampleValue.IdempotencyKeyEarn;
+    }
+    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
+      const example = json.example as Record<string, unknown>;
+      example.userId = fixtures.userId;
+      example.idempotencyKey = OpenApiExampleValue.IdempotencyKeyEarn;
+    }
+  });
+  setRequestBodyExample(ApiEndpoint.Marketplace.Buy, 'post', (body) => {
+    const json = body.content?.['application/json'];
+    const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.MarketplaceBuyRequest;
+    }
     if (schema?.properties?.listingId) {
       schema.properties.listingId.example = fixtures.listingId;
       schema.properties.listingId.enum = [fixtures.listingId];
@@ -572,9 +623,37 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
       (json.example as Record<string, unknown>).listingId = fixtures.listingId;
     }
   });
+  setRequestBodyExample(ApiEndpoint.Marketplace.Sell, 'post', (body) => {
+    const json = body.content?.['application/json'];
+    const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.MarketplaceSellRequest;
+    }
+    if (schema?.properties?.itemId) {
+      schema.properties.itemId.example = OpenApiExampleValue.MarketplaceSellRequest.itemId;
+    }
+    if (schema?.properties?.itemType) {
+      schema.properties.itemType.example = OpenApiExampleValue.MarketplaceSellRequest.itemType;
+    }
+    if (schema?.properties?.price) {
+      schema.properties.price.example = OpenApiExampleValue.MarketplaceSellRequest.price;
+    }
+    if (schema?.properties?.currency) {
+      schema.properties.currency.example = OpenApiExampleValue.MarketplaceSellRequest.currency;
+    }
+    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
+      Object.assign(schema.example as Record<string, unknown>, OpenApiExampleValue.MarketplaceSellRequest);
+    }
+    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
+      Object.assign(json.example as Record<string, unknown>, OpenApiExampleValue.MarketplaceSellRequest);
+    }
+  });
   setRequestBodyExample(ApiEndpoint.Credits.Redeem, 'post', (body) => {
     const json = body.content?.['application/json'];
     const schema = json?.schema as OpenApiSchema | undefined;
+    if (schema) {
+      schema.example = OpenApiExampleValue.CreditsRedeemRequest;
+    }
     if (schema?.properties?.code) {
       schema.properties.code.example = fixtures.promoCode;
     }
@@ -589,25 +668,27 @@ function applyRuntimeOpenApiFixtures(openApiJson: string, fixtures: Schemathesis
     const json = body.content?.['application/json'];
     const schema = json?.schema as OpenApiSchema | undefined;
     if (schema) {
-      schema.additionalProperties = false;
-      schema.required = ['xpAwarded'];
+      schema.example = OpenApiExampleValue.ProgressionUpdate;
     }
-    if (schema?.properties?.xpAwarded) {
-      schema.properties.xpAwarded.example = 100;
-      schema.properties.xpAwarded.minimum = 1;
+    for (const branch of schema?.oneOf ?? []) {
+      if (branch.properties?.amount) {
+        branch.properties.amount.example = OpenApiExampleValue.ProgressionUpdate.amount;
+      }
+      if (branch.properties?.xpAwarded) {
+        branch.properties.xpAwarded.example = OpenApiExampleValue.ProgressionUpdate.amount;
+      }
+      if (branch.properties?.reason) {
+        branch.properties.reason.example = OpenApiExampleValue.ProgressionUpdate.reason;
+      }
+      if (branch.properties?.idempotencyKey) {
+        branch.properties.idempotencyKey.example = OpenApiExampleValue.ProgressionUpdate.idempotencyKey;
+      }
     }
-    if (schema?.properties?.reason) {
-      schema.properties.reason.example = 'Match win';
+    if (schema?.properties?.amount) {
+      schema.properties.amount.example = OpenApiExampleValue.ProgressionUpdate.amount;
     }
-    if (schema && 'example' in schema && schema.example && typeof schema.example === 'object' && !Array.isArray(schema.example)) {
-      const example = schema.example as Record<string, unknown>;
-      example.xpAwarded = 100;
-      example.reason = 'Match win';
-    }
-    if (json?.example && typeof json.example === 'object' && !Array.isArray(json.example)) {
-      const example = json.example as Record<string, unknown>;
-      example.xpAwarded = 100;
-      example.reason = 'Match win';
+    if (json) {
+      json.example = OpenApiExampleValue.ProgressionUpdate;
     }
   });
 
@@ -635,6 +716,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
     console.log('  Example seeding skipped: auth token is not a test token.');
     return;
   }
+  fixtures.userId = userId;
 
   const seedCode = `schemathesis-${Date.now()}`;
   try {
@@ -657,7 +739,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
   try {
     const aiKeyResponse = await postJson(`${baseUrl}${ApiEndpoint.AI.KeysCustom}`, authToken, {
       providerId: fixtures.aiProviderId,
-      apiKey: 'schemathesis-localai',
+      apiKey: OpenApiExampleValue.AiApiKey,
       baseUrl: fixtures.aiMockBaseUrl,
     });
     if (!aiKeyResponse.ok) {
@@ -827,12 +909,10 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
 
   try {
     const sellerAuthToken = `${TestTokenPrefix.Test}schemathesis-seller`;
-    const listingResponse = await postJson(`${baseUrl}${ApiEndpoint.Marketplace.Base}/sell`, sellerAuthToken, {
-      itemId: `schemathesis-item-${Date.now()}`,
-      itemType: 'card',
-      price: 10,
-      currency: 'GP',
-    });
+     const listingResponse = await postJson(`${baseUrl}${ApiEndpoint.Marketplace.Sell}`, sellerAuthToken, {
+       ...OpenApiExampleValue.MarketplaceSellRequest,
+       itemId: `schemathesis-item-${Date.now()}`,
+     });
     if (listingResponse.ok) {
       const listingData = await listingResponse.json().catch(() => ({})) as { listingId?: string };
       if (listingData.listingId) {
@@ -942,7 +1022,7 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
 
   try {
     const rewardsResponse = await postJson(`${baseUrl}${ApiEndpoint.Rewards.DailyClaim}`, authToken, {
-      idempotencyKey: `schemathesis-daily-${Date.now()}`,
+      idempotencyKey: OpenApiExampleValue.IdempotencyKeyEarn,
     });
     if (!rewardsResponse.ok) {
       const text = await rewardsResponse.text().catch(() => '');
@@ -969,8 +1049,9 @@ async function seedExampleState(baseUrl: string, authToken: string, fixtures: Sc
 
   try {
     const fraudResponse = await postJson(`${baseUrl}${ApiEndpoint.Fraud.Check}`, authToken, {
-      amount: 100,
-      currency: 'usd',
+      amount: OpenApiExampleValue.FraudCheckRequest.amount,
+      paymentMethod: OpenApiExampleValue.FraudCheckRequest.paymentMethod,
+      currency: OpenApiExampleValue.FraudCheckRequest.currency,
     });
     if (!fraudResponse.ok) {
       const text = await fraudResponse.text().catch(() => '');

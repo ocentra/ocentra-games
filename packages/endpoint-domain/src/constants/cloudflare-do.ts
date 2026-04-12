@@ -411,7 +411,7 @@ export const MarketplaceDO = {
 } as const;
 
 const tournamentPrefix = `/${ApiVersion.V1}`;
-export const TournamentDOSegment = { Register: 'register', Bracket: 'bracket', Start: 'start', Result: 'result', Winners: 'winners' } as const;
+export const TournamentDOSegment = { Register: 'register', Bracket: 'bracket', Start: 'start', Result: 'result', Winners: 'winners', DistributePrizes: 'distribute-prizes' } as const;
 export const TournamentDO = {
   Base: tournamentPrefix as DOPath,
   Register: `${tournamentPrefix}/${TournamentDOSegment.Register}` as DOPath,

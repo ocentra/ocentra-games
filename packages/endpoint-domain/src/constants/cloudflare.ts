@@ -1,5 +1,6 @@
 import type { ApiPath, EndpointId, PathSegment } from '@/types/brands';
 import { ApiPathPrefix } from '@/constants/versions';
+import { MarketplaceDOSegment, TournamentDOSegment } from '@/constants/cloudflare-do';
 
 export const EndpointIds = {
   Root: 'root' as EndpointId,
@@ -165,6 +166,9 @@ const matchmakingBase = `${ApiPathPrefix}/matchmaking`;
 const presenceBase = `${ApiPathPrefix}/presence`;
 const friendsBase = `${ApiPathPrefix}/friends`;
 const usersBase = `${ApiPathPrefix}/users`;
+export const UsersSegment = {
+  Block: 'block' as PathSegment,
+} as const;
 const auditBase = `${ApiPathPrefix}/audit`;
 const matchesTransparencyBase = `${ApiPathPrefix}/matches`;
 const complianceBase = `${ApiPathPrefix}/compliance`;
@@ -254,6 +258,7 @@ export const ApiEndpoint = {
     KeysCustom: `${aiBase}/keys/custom` as ApiPath,
     KeysById: (providerId: string): ApiPath => `${aiBase}/keys/${providerId}` as ApiPath,
     KeysTest: (providerId: string): ApiPath => `${aiBase}/keys/${providerId}/test` as ApiPath,
+    KeysTestSegment: '/test' as PathSegment,
     OAuthStart: `${aiBase}/oauth/start` as ApiPath,
     OAuthCallback: `${aiBase}/oauth/callback` as ApiPath,
     Generate: `${aiBase}/generate` as ApiPath,
@@ -437,7 +442,7 @@ export const ApiEndpoint = {
 
   Users: {
     Base: usersBase as ApiPath,
-    Block: (id: string): ApiPath => `${usersBase}/${id}/block` as ApiPath,
+    Block: (id: string): ApiPath => `${usersBase}/${id}/${UsersSegment.Block}` as ApiPath,
   },
 
   Audit: {
@@ -538,6 +543,8 @@ export const ApiEndpoint = {
 
   Feed: {
     Base: feedBase as ApiPath,
+    List: `${feedBase}/list` as ApiPath,
+    Fanout: `${feedBase}/fanout` as ApiPath,
   },
 
   Party: {
@@ -553,6 +560,9 @@ export const ApiEndpoint = {
 
   Discovery: {
     Base: discoveryBase as ApiPath,
+    Search: `${discoveryBase}/search` as ApiPath,
+    Trending: `${discoveryBase}/trending` as ApiPath,
+    Featured: `${discoveryBase}/featured` as ApiPath,
   },
 
   Inventory: {
@@ -568,15 +578,21 @@ export const ApiEndpoint = {
 
   Marketplace: {
     Base: marketplaceBase as ApiPath,
-    History: `${marketplaceBase}/history` as ApiPath,
-    List: `${marketplaceBase}/list` as ApiPath,
-    Buy: `${marketplaceBase}/buy` as ApiPath,
+    History: `${marketplaceBase}/${MarketplaceDOSegment.History}` as ApiPath,
+    List: `${marketplaceBase}/${MarketplaceDOSegment.List}` as ApiPath,
+    Buy: `${marketplaceBase}/${MarketplaceDOSegment.Buy}` as ApiPath,
+    Sell: `${marketplaceBase}/${MarketplaceDOSegment.Sell}` as ApiPath,
   },
 
   Tournament: {
     Base: tournamentBase as ApiPath,
     ById: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}` as ApiPath,
-    DistributePrizes: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/distribute-prizes` as ApiPath,
+    Bracket: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.Bracket}` as ApiPath,
+    Register: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.Register}` as ApiPath,
+    Start: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.Start}` as ApiPath,
+    Result: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.Result}` as ApiPath,
+    Winners: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.Winners}` as ApiPath,
+    DistributePrizes: (tournamentId: string): ApiPath => `${tournamentBase}/${tournamentId}/${TournamentDOSegment.DistributePrizes}` as ApiPath,
   },
 
   Settings: {

@@ -40,10 +40,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({
-          events: new Array(120).fill({ type: 'move' }),
-          moveTimingMs: 5,
-        }),
+        body: JSON.stringify(OpenApiExampleValue.AntiCheatAnalyzeRequest),
       });
 
       expect(response.status).toBe(HttpStatus.Ok);
@@ -64,7 +61,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const first = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ events: new Array(120).fill({}), moveTimingMs: 5 }),
+        body: JSON.stringify({ ...OpenApiExampleValue.AntiCheatAnalyzeRequest, events: new Array(120).fill({}), moveTimingMs: 5 }),
       });
       expect(first.status).toBe(HttpStatus.Ok);
       const firstData = (await first.json()) as { trustScore?: number };
@@ -72,7 +69,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const second = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ events: new Array(120).fill({}), moveTimingMs: 5 }),
+        body: JSON.stringify({ ...OpenApiExampleValue.AntiCheatAnalyzeRequest, events: new Array(120).fill({}), moveTimingMs: 5 }),
       });
       expect(second.status).toBe(HttpStatus.Ok);
       const secondData = (await second.json()) as { trustScore?: number };
@@ -94,7 +91,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await worker.fetch(analyzeUrl, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ events: new Array(60).fill({}), moveTimingMs: 25 }),
+        body: JSON.stringify({ ...OpenApiExampleValue.AntiCheatAnalyzeRequest, events: new Array(60).fill({}), moveTimingMs: 25 }),
       });
 
       const statusResponse = await worker.fetch(statusUrl, {
@@ -109,7 +106,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
     it(testName('Status: rejects invalid nested userId path values'), async () => {
       const userId = `ac-invalid-${Date.now()}`;
-      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.AntiCheat.Base}/status/%C3%AC%C2%8D%03`;
+      const url = buildApiUrl(ApiEndpoint.AntiCheat.Status('invalid\nid'), { baseUrl: TestConfig.TestApiUrlPlaceholder });
       const response = await worker.fetch(url, {
         method: HttpMethod.Get,
         headers: {

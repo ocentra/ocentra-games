@@ -4,6 +4,8 @@ import { beforeAll, afterAll } from 'vitest';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { FraudDetectionDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
@@ -39,11 +41,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           ...getValidRequestHeaders(userId),
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
         },
-        body: JSON.stringify({
-          amount: 100,
-          paymentMethod: 'card',
-          currency: 'USD',
-        }),
+        body: JSON.stringify(OpenApiExampleValue.FraudCheckRequest),
       });
       expect(response.status).toBe(HttpStatus.Ok);
       const data = (await response.json()) as { risk?: string; score?: number };
@@ -62,12 +60,12 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const low = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 100, paymentMethod: 'card', currency: 'USD' }),
+        body: JSON.stringify(OpenApiExampleValue.FraudCheckRequest),
       });
       const high = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 20000, paymentMethod: 'card', currency: 'USD' }),
+        body: JSON.stringify({ ...OpenApiExampleValue.FraudCheckRequest, amount: 20000 }),
       });
 
       expect(low.status).toBe(HttpStatus.Ok);
@@ -90,7 +88,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         const res = await worker.fetch(url, {
           method: HttpMethod.Post,
           headers,
-          body: JSON.stringify({ amount: 50, paymentMethod: 'card', currency: 'USD' }),
+          body: JSON.stringify({ ...OpenApiExampleValue.FraudCheckRequest, amount: 50 }),
         });
         expect(res.status).toBe(HttpStatus.Ok);
         const data = (await res.json()) as { score?: number };
@@ -112,7 +110,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await worker.fetch(checkUrl, {
         method: HttpMethod.Post,
         headers,
-        body: JSON.stringify({ amount: 1500, paymentMethod: 'card', currency: 'USD' }),
+        body: JSON.stringify({ ...OpenApiExampleValue.FraudCheckRequest, amount: 1500 }),
       });
 
       const response = await worker.fetch(riskUrl, {
@@ -127,7 +125,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
     it(testName('Risk endpoint: rejects invalid nested userId path values'), async () => {
       const userId = `fraud-invalid-${Date.now()}`;
-      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Fraud.Base}/risk/%C3%AC%C2%8D%03`;
+      const url = buildApiUrl(ApiEndpoint.Fraud.Risk('invalid\nid'), { baseUrl: TestConfig.TestApiUrlPlaceholder });
       const response = await worker.fetch(url, {
         method: HttpMethod.Get,
         headers: {
@@ -144,7 +142,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
     it(testName('Unsupported fraud subroutes return 404 in current contract'), async () => {
       const userId = `fraud-routes-${Date.now()}`;
-      const url = buildApiUrl(ApiEndpoint.Fraud.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder }) + '/device/register';
+      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Fraud.Base}/${FraudDetectionDOSegment.Check}/device/register`;
       const response = await worker.fetch(url, {
         method: HttpMethod.Post,
         headers: {
@@ -158,7 +156,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
     it(testName('Link analysis route currently resolves to fraud risk contract'), async () => {
       const userId = `fraud-link-${Date.now()}`;
-      const url = buildApiUrl(ApiEndpoint.Fraud.Base, { baseUrl: TestConfig.TestApiUrlPlaceholder }) + '/link/analysis';
+      const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Fraud.Base}/link/analysis`;
       const response = await worker.fetch(url, {
         method: HttpMethod.Get,
         headers: {

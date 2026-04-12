@@ -4,6 +4,7 @@ import { beforeAll, afterAll } from 'vitest';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getAdminAuthHeaders } from '@tests/helpers/test-helpers';
@@ -35,7 +36,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   });
 
   it(testName('Marketplace GET list: returns 200 with listings array'), async () => {
-    const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Marketplace.Base}/list`;
+    const url = buildApiUrl(ApiEndpoint.Marketplace.List, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
       method: HttpMethod.Get,
       headers: {
@@ -63,7 +64,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Tournament GET by id: returns 200 with bracket or tournament data'), async () => {
     const tournamentId = 'test-tournament-' + Date.now();
-    const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Tournament.ById(tournamentId)}/bracket`;
+    const url = buildApiUrl(ApiEndpoint.Tournament.Bracket(tournamentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
       method: HttpMethod.Get,
       headers: {
@@ -93,7 +94,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
 
   it(testName('Tournament POST register: returns 200 or 400/404 for tournament id'), async () => {
     const tournamentId = 'test-tournament-reg-' + Date.now();
-    const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Tournament.ById(tournamentId)}/register`;
+    const url = buildApiUrl(ApiEndpoint.Tournament.Register(tournamentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
       method: HttpMethod.Post,
       headers: {
@@ -101,14 +102,14 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify(OpenApiExampleValue.TournamentRegisterRequest),
     });
     expect([HttpStatus.Ok, HttpStatus.BadRequest, HttpStatus.NotFound]).toContain(response.status);
   });
 
   it(testName('Tournament POST start: returns 200 or 400/404 for tournament id (scheduling)'), async () => {
     const tournamentId = 'test-tournament-start-' + Date.now();
-    const url = `${TestConfig.TestApiUrlPlaceholder}${ApiEndpoint.Tournament.ById(tournamentId)}/start`;
+    const url = buildApiUrl(ApiEndpoint.Tournament.Start(tournamentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
       method: HttpMethod.Post,
       headers: {
@@ -116,7 +117,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify(OpenApiExampleValue.TournamentStartRequest),
     });
     expect([HttpStatus.Ok, HttpStatus.BadRequest, HttpStatus.NotFound]).toContain(response.status);
   });

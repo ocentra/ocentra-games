@@ -18,7 +18,6 @@ import {
 } from '@/constants/badges'
 import { getCorsHeaders } from '@/utils/cors'
 import { validateZodBody } from '@/utils/zod-validation'
-import { z } from 'zod'
 import { requireAuth } from '@/utils/auth-middleware'
 import { ParamName } from '@ocentra/endpoint-domain/constants/paths'
 import { extractAndValidateIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser'

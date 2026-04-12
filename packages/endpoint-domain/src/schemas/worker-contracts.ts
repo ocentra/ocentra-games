@@ -11,11 +11,13 @@ import {
   EmptyObjectSchema,
 } from './common';
 import { MatchRecordSchema } from './matches';
+import { QueryParam } from '../constants/query';
 import {
   ConsumeGpCurrencyValues,
   PLAN_TIER_IDS
 } from '../constants/credits';
 import {
+  FraudCheckField,
   FeedReportTypeValues,
   ComplianceReportTypeValues,
   FiatCurrencyValues,
@@ -24,6 +26,7 @@ import {
   RoomTypeValues,
   SecurityPenaltyTypeValues,
   SettingsThemeValues,
+  TournamentResultField,
 } from '../constants/worker-contract-values';
 
 export const AdminBaseRequestSchema = z.object({
@@ -58,9 +61,9 @@ export const AdminModerationResolveRequestSchema = z.object({
 }).strict();
 
 export const FraudCheckRequestSchema = z.object({
-  amount: z.coerce.number().nonnegative(),
-  paymentMethod: z.string().min(1).max(64),
-  currency: z.string().min(1).max(64),
+  [FraudCheckField.Amount]: z.coerce.number().nonnegative(),
+  [FraudCheckField.PaymentMethod]: z.string().min(1).max(64),
+  [FraudCheckField.Currency]: z.enum(FiatCurrencyValues),
 }).strict();
 
 export const RewardDailyClaimRequestSchema = z.object({
@@ -250,6 +253,10 @@ export const FeedReportRequestSchema = z.object({
   reportType: z.enum(FeedReportTypeValues).optional(),
 }).strict();
 
+export const DiscoverySearchQuerySchema = z.object({
+  [QueryParam.Search]: z.string().min(1).optional(),
+}).strict();
+
 export const MessageSendRequestSchema = z.object({
   content: z.string().min(1).max(4096),
 }).strict();
@@ -259,7 +266,14 @@ export const ProgressionXpRequestSchema = z.object({
   amount: z.coerce.number().int().positive().optional(),
   reason: z.string().min(1).max(256).optional(),
   idempotencyKey: IdempotencyKeySchema.optional(),
-}).strict();
+}).strict().superRefine((data, ctx) => {
+  if (typeof data.amount !== 'number' && typeof data.xpAwarded !== 'number') {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'amount or xpAwarded is required',
+    });
+  }
+}).brand<'ProgressionXpRequest'>();
 
 export const ProgressionUnlockSkillRequestSchema = z.object({
   skillId: z.string().min(1).optional(),
@@ -412,7 +426,14 @@ export const TournamentRegisterRequestSchema = z.object({
   elo: z.coerce.number().int().optional(),
 }).strict();
 
-export const TournamentActionRequestSchema = EmptyObjectSchema;
+export const TournamentStartRequestSchema = EmptyObjectSchema;
+
+export const TournamentResultRequestSchema = z.object({
+  [TournamentResultField.MatchId]: MatchIdSchema,
+  [TournamentResultField.WinnerId]: UserIdSchema,
+}).strict();
+
+export const TournamentActionRequestSchema = TournamentStartRequestSchema;
 
 export const InventoryGiftRequestSchema = z.object({
   itemId: z.string().min(1),

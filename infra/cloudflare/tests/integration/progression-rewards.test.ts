@@ -5,6 +5,7 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getTokenForFetch } from '@tests/test-setup-core';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
@@ -17,6 +18,8 @@ log.register(import.meta.url);
 const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
   log.logError(message, stackTrace, data);
 };
+
+const progressionAmount = OpenApiExampleValue.ProgressionUpdate.amount;
 
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   let worker: TestWorker;
@@ -71,11 +74,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
         ...getValidRequestHeaders(TestConfig.TestUserId),
         [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
       },
-      body: JSON.stringify({ amount: 50 }),
+      body: JSON.stringify({ amount: progressionAmount }),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
     const data = (await response.json()) as { added?: number; total?: number; level?: number };
-    expect(data.added).toBe(50);
+    expect(data.added).toBe(progressionAmount);
     expect(typeof data.total).toBe('number');
     expect(typeof data.level).toBe('number');
   });
@@ -83,8 +86,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Progression POST xp with idempotencyKey: second call returns already_processed'), async () => {
     const token = getTokenForFetch();
     const url = buildApiUrl(ApiEndpoint.Progression.Xp, { baseUrl: TestConfig.TestApiUrlPlaceholder });
-    const key = `test-idem-${Date.now()}`;
-    const body = JSON.stringify({ amount: 30, idempotencyKey: key });
+    const key = `${OpenApiExampleValue.IdempotencyKeyEarn}-${Date.now()}`;
+    const body = JSON.stringify({ amount: progressionAmount, idempotencyKey: key });
     const headers = {
       ...getValidRequestHeaders(TestConfig.TestUserId),
       [HttpHeader.ContentType]: HttpContentType.ApplicationJson,

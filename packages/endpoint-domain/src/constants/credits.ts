@@ -54,6 +54,8 @@ export const CreditLedgerSource = {
   Purchase: 'purchase',
   Daily: 'daily',
   Promo: 'promo',
+  Tournament: 'tournament',
+  Marketplace: 'marketplace',
   Other: 'other',
 } as const;
 

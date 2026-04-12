@@ -26,6 +26,7 @@ export const QueryParam = {
   PaymentId: 'paymentId',
   StripeEventId: 'stripeEventId',
   Url: 'url',
+  Search: 'q',
 } as const;
 
 export type QueryParam = typeof QueryParam[keyof typeof QueryParam];

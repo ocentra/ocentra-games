@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { ValidationPattern } from '../constants/validation-patterns';
+import { IdempotencyKeyLimits, IdempotencyKeyPattern } from '../constants/idempotency';
 
 export const UUIDSchema = z.string().uuid();
 
@@ -6,9 +8,11 @@ export const TimestampSchema = z.string().datetime();
 
 export const MatchIdSchema = UUIDSchema.brand<'MatchId'>();
 
-export const UserIdSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9._-]+$/).brand<'UserId'>();
+export const UserIdSchema = z.string().min(1).max(128).regex(ValidationPattern.UserId).brand<'UserId'>();
 
-export const DisputeIdSchema = z.string().min(1).max(128).brand<'DisputeId'>();
+export const DisputeIdSchema = z.string().min(1).max(128).regex(ValidationPattern.DisputeId).brand<'DisputeId'>();
+
+export const TournamentIdSchema = z.string().min(1).max(128).regex(ValidationPattern.TournamentId).brand<'TournamentId'>();
 
 export const ReportIdSchema = UUIDSchema.brand<'ReportId'>();
 
@@ -40,11 +44,16 @@ export const GameTypeSchema = z.number().int().positive();
 export const CurrencySchema = z.enum(['GP', 'AC']);
 
 
-export const IdempotencyKeySchema = z
+const CustomIdempotencyKeySchema = z
   .string()
-  .min(1)
-  .max(100)
-  .regex(/^[A-Za-z0-9_-]+$/);
+  .min(IdempotencyKeyLimits.CustomMinLength)
+  .max(IdempotencyKeyLimits.CustomMaxLength)
+  .regex(IdempotencyKeyPattern.AllowedCharacters);
+
+export const IdempotencyKeySchema = z.union([
+  z.string().regex(ValidationPattern.UuidV4),
+  CustomIdempotencyKeySchema,
+]).brand<'IdempotencyKey'>();
 
 
 export const PaginationParamsSchema = z.object({

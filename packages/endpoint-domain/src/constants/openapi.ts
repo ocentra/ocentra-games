@@ -277,6 +277,8 @@ export type OpenApiResponseDescription = typeof OpenApiResponseDescription[keyof
 export const OpenApiParameterDescription = {
   UniqueMatchIdentifier: 'Unique match identifier',
   FriendIdentifier: 'Friend identifier',
+  TournamentIdentifier: 'Tournament identifier',
+  TournamentIdentifierPathSafe: 'Tournament identifier (path-safe slug)',
   ReportIdentifier: 'Report identifier',
   ProviderIdentifier: 'Provider identifier',
   SignedUrlToken: 'Signed URL token for private access',

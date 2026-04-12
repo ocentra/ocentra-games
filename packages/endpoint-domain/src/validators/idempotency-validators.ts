@@ -23,9 +23,6 @@ export function validateIdempotencyKey(key: string | null | undefined): Idempote
   if (trimmed.length === 0) {
     return { valid: false, error: ErrorMessage.IdempotencyKeyCannotBeEmptyOrWhitespace };
   }
-  if (trimmed.length < IdempotencyKeyLimits.MinLength) {
-    return { valid: false, error: `${ErrorMessage.IdempotencyKeyMinLength} ${IdempotencyKeyLimits.MinLength} character(s)` };
-  }
   if (trimmed.length > IdempotencyKeyLimits.MaxLength) {
     return { valid: false, error: `${ErrorMessage.IdempotencyKeyMaxLength} ${IdempotencyKeyLimits.MaxLength} characters` };
   }

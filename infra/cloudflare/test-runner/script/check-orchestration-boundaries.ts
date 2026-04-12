@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
-const handlerLineLimit = 1900;
+const handlerLineLimit = 1300;
 const forbiddenLiterals = [
   'daily/claim',
   'battle-pass/claim',
@@ -11,6 +11,8 @@ const forbiddenLiterals = [
   'streak/freeze',
   'add-item',
   'remove-item',
+  "endsWith('buy')",
+  "endsWith('sell')",
 ] as const;
 const forbiddenInlineSchemaPattern = /\bz\.(?:object|enum|union)\s*\(/;
 

@@ -39,6 +39,8 @@ export const ParamName = {
   MatchId: 'matchId',
   UserId: 'userId',
   DisputeId: 'disputeId',
+  FriendId: 'friendId',
+  TournamentId: 'tournamentId',
 } as const;
 
 export type ParamNameValue = typeof ParamName[keyof typeof ParamName];

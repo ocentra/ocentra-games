@@ -25,7 +25,12 @@ export type UserId = UUID;
 /**
  * Dispute identifier.
  */
-export type DisputeId = UUID;
+export type DisputeId = string;
+
+/**
+ * Tournament identifier.
+ */
+export type TournamentId = string;
 
 /**
  * Transaction identifier.

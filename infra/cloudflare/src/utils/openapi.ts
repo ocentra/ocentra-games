@@ -1,6 +1,6 @@
 ﻿import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare'
 import { ValidationPattern } from '@ocentra/endpoint-domain/constants/validation-patterns'
-import { IdempotencyKeyPattern } from '@ocentra/endpoint-domain/constants/idempotency'
+import { IdempotencyKeyLimits, IdempotencyKeyPattern } from '@ocentra/endpoint-domain/constants/idempotency'
 import {
   HttpContentType,
   HttpHeader,
@@ -29,18 +29,23 @@ import {
 } from '@ocentra/endpoint-domain/constants/credits'
 import {
   FiatCurrencyValues,
+  FraudCheckField,
+  FraudCheckRequiredFields,
   MatchIdRequiredFields,
   PresenceStatusValues,
   ProfileVisibilityValues,
   RoomTypeValues,
   SecurityPenaltyTypeValues,
   SettingsThemeValues,
+  TournamentResultField,
+  TournamentResultRequiredFields,
 } from '@ocentra/endpoint-domain/constants/worker-contract-values'
 import {
   GameTypeIdValues,
   GameTypeId,
   PlayerTypeValues,
 } from '@ocentra/endpoint-domain/constants/game'
+import { TournamentDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do'
 import {
   OpenApiDefaultValue,
   OpenApiExampleValue,
@@ -337,6 +342,7 @@ function createSchemaExample(schema: OpenApiSchemaShape): unknown {
 const matchIdPattern = ValidationPattern.UuidV4.source
 const utcDateTimePattern = ValidationPattern.IsoDateTime.source
 const userIdPattern = ValidationPattern.UserId.source
+const tournamentIdPattern = ValidationPattern.TournamentId.source
 const matchIdParameter = createPathParameter(
   OpenApiParameterName.MatchId,
   OpenApiParameterDescription.UniqueMatchIdentifier,
@@ -371,6 +377,16 @@ const userIdParameter = createPathParameter(
   OpenApiParameterName.UserId,
   OpenApiParameterDescription.UniqueMatchIdentifier,
   { pattern: ValidationPattern.UserId.source, example: OpenApiExampleValue.UserId }
+)
+const friendIdParameter = createPathParameter(
+  OpenApiParameterName.FriendId,
+  OpenApiParameterDescription.FriendIdentifier,
+  { pattern: userIdPattern, example: OpenApiExampleValue.FriendId }
+)
+const tournamentIdParameter = createPathParameter(
+  OpenApiParameterName.TournamentId,
+  OpenApiParameterDescription.TournamentIdentifierPathSafe,
+  { pattern: tournamentIdPattern, example: OpenApiExampleValue.TournamentId }
 )
 const conversationIdParameter = createPathParameter(
   OpenApiParameterName.ConversationId,
@@ -819,7 +835,7 @@ function createMatchPaths() {
                 },
                 url: {
                   type: OpenApiSchemaType.String,
-                  example: `https://ocentra.com/matches/${OpenApiExampleValue.UuidZero}`,
+                  example: OpenApiExampleValue.MatchRecordUrl,
                 },
               },
             }
@@ -1047,8 +1063,7 @@ function createMatchPaths() {
                 },
                 url: {
                   type: OpenApiSchemaType.String,
-                  example:
-                    'https://ocentra.com/matches/00000000-0000-4000-8000-000000000000',
+                  example: OpenApiExampleValue.MatchRecordUrl,
                 },
               },
             }
@@ -1115,23 +1130,22 @@ function createMatchPaths() {
                   type: OpenApiSchemaType.String,
                   example: OpenApiExampleValue.UuidZero,
                 },
-                anonymized_at: {
-                  type: OpenApiSchemaType.String,
-                  format: OpenApiSchemaFormat.DateTime,
-                },
-                anonymized_url: { type: OpenApiSchemaType.String },
+              anonymized_at: {
+                type: OpenApiSchemaType.String,
+                format: OpenApiSchemaFormat.DateTime,
               },
-              example: {
-                success: true,
-                match_id: OpenApiExampleValue.UuidZero,
-                anonymized_at: OpenApiExampleValue.IsoDateTime,
-                anonymized_url:
-                  '/assets/matches/anonymized/00000000-0000-4000-8000-000000000000.json',
-              },
-            }
-          ),
-          ...unauthorizedResponse,
-        }),
+              anonymized_url: { type: OpenApiSchemaType.String },
+            },
+            example: {
+              success: true,
+              match_id: OpenApiExampleValue.UuidZero,
+              anonymized_at: OpenApiExampleValue.IsoDateTime,
+              anonymized_url: OpenApiExampleValue.AnonymizedMatchUrl,
+            },
+          }
+        ),
+        ...unauthorizedResponse,
+      }),
       },
     },
     [ApiEndpoint.Transparency.ByMatchId(`{${OpenApiParameterName.MatchId}}`)]: {
@@ -1200,24 +1214,10 @@ function createMatchPaths() {
               },
               replayLocation: {
                 type: OpenApiSchemaType.String,
-                example: ApiEndpoint.Replay.ByMatchId(OpenApiExampleValue.UuidZero),
+                example: OpenApiExampleValue.ReplayPath,
               },
             },
-            example: {
-              matchId: OpenApiExampleValue.UuidZero,
-              solanaMatchPda: OpenApiExampleValue.Pda,
-              transactionSignatures: [OpenApiExampleValue.Signature],
-              initialStateHash: OpenApiExampleValue.InitialHash,
-              finalStateHash: OpenApiExampleValue.FinalHash,
-              stateTransitions: [OpenApiExampleValue.TransitionFromPending],
-              moves: [OpenApiExampleValue.PlayerMove],
-              randomnessSource: OpenApiExampleValue.VrfSource,
-              randomnessCommitments: [OpenApiExampleValue.Commitment],
-              aiPlayers: [OpenApiExampleValue.AiPlayer],
-              disputes: [OpenApiExampleValue.DisputeSummary],
-              replayAvailable: true,
-              replayLocation: ApiEndpoint.Replay.ByMatchId(OpenApiExampleValue.UuidZero),
-            },
+            example: OpenApiExampleValue.MatchTransparencyRecord,
           })
         ),
       },
@@ -1317,6 +1317,7 @@ function createDisputePaths() {
               example: OpenApiExampleValue.DisputeId,
             },
           },
+          example: OpenApiExampleValue.DisputeCreateRequest,
         }),
         security: bearerAuthSecurity,
         responses: withStandardErrors({
@@ -1325,6 +1326,7 @@ function createDisputePaths() {
             OpenApiResponseDescription.DisputeCreated,
             {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.DisputeCreateResponse,
               properties: {
                 success: { type: OpenApiSchemaType.Boolean, example: true },
                 disputeId: {
@@ -1431,11 +1433,7 @@ function createDisputePaths() {
               example: OpenApiExampleValue.DisputeUpdateDescription,
             },
           },
-          example: {
-            match_id: OpenApiExampleValue.UuidZero,
-            reason: DisputeReasonValues[1],
-            description: OpenApiExampleValue.DisputeUpdateDescription,
-          },
+          example: OpenApiExampleValue.DisputeUpdateRequest,
         }),
         security: bearerAuthSecurity,
         responses: withStandardErrors({
@@ -1444,11 +1442,12 @@ function createDisputePaths() {
             OpenApiResponseDescription.DisputeCreated,
             {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.DisputeUpdateResponse,
               properties: {
                 success: { type: OpenApiSchemaType.Boolean, example: true },
                 disputeId: {
                   type: OpenApiSchemaType.String,
-                  example: OpenApiExampleValue.ReportId,
+                  example: OpenApiExampleValue.DisputeId,
                 },
               },
             }
@@ -1467,11 +1466,17 @@ function createDisputePaths() {
           type: OpenApiSchemaType.Object,
           required: ['evidence'],
           additionalProperties: false,
+          encoding: {
+            [FormField.Evidence]: {
+              contentType: HttpContentType.TextPlain,
+            },
+          },
           properties: {
             evidence: {
               type: OpenApiSchemaType.String,
               format: OpenApiSchemaFormat.Binary,
               description: OpenApiParameterDescription.EvidenceFileMaxSize,
+              example: OpenApiExampleValue.DisputeEvidenceRequest.evidence,
             },
             [FormField.MatchId]: {
               type: OpenApiSchemaType.String,
@@ -1481,15 +1486,18 @@ function createDisputePaths() {
             },
             [FormField.Reason]: {
               type: OpenApiSchemaType.String,
+              minLength: 1,
               pattern: ValidationPattern.PrintableAscii.source,
               example: OpenApiExampleValue.EvidenceReason,
             },
             [FormField.Description]: {
               type: OpenApiSchemaType.String,
+              minLength: 1,
               pattern: ValidationPattern.PrintableAscii.source,
               example: OpenApiExampleValue.EvidenceDescription,
             },
           },
+          example: OpenApiExampleValue.DisputeEvidenceRequest,
         }),
         security: bearerAuthSecurity,
         responses: {
@@ -1498,13 +1506,14 @@ function createDisputePaths() {
             OpenApiResponseDescription.EvidenceUploaded,
             {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.DisputeEvidenceResponse,
               properties: {
                 success: { type: OpenApiSchemaType.Boolean, example: true },
                 dispute_id: {
                   type: OpenApiSchemaType.String,
                   minLength: 1,
                   pattern: ValidationPattern.DisputeId.source,
-                  example: OpenApiExampleValue.ReportId,
+                  example: OpenApiExampleValue.DisputeId,
                 },
                 evidence_package_hash: {
                   type: OpenApiSchemaType.String,
@@ -1555,18 +1564,6 @@ function createArchivePaths() {
 
 function createAiPaths() {
   return {
-    [ApiEndpoint.AI.Base]: {
-      [OpenApiMethod.Get]: {
-        tags: [OpenApiTag.AI],
-        summary: 'Get AI player config',
-        description: 'Returns AI player configuration parameters',
-        responses: withStandardErrors(
-          createJsonResponse(String(HttpStatus.Ok), 'AI Config', {
-            type: OpenApiSchemaType.Object,
-          })
-        ),
-      },
-    },
     [ApiEndpoint.AI.Generate]: {
       [OpenApiMethod.Post]: {
         tags: [OpenApiTag.AI],
@@ -1576,6 +1573,7 @@ function createAiPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['providerId', 'systemPrompt', 'userPrompt'],
+          additionalProperties: false,
           properties: {
             providerId: {
               type: OpenApiSchemaType.String,
@@ -1608,7 +1606,7 @@ function createAiPaths() {
 function createGdprPaths() {
   return {
     [ApiEndpoint.DataExport.ByUserId(`{${OpenApiParameterName.UserId}}`)]: {
-      [OpenApiMethod.Post]: {
+      [OpenApiMethod.Get]: {
         tags: [OpenApiTag.GDPR],
         summary: 'Export user data',
         description: OpenApiDescription.ExportUserData,
@@ -1628,7 +1626,7 @@ function createGdprPaths() {
       },
     },
     [ApiEndpoint.Data.ByUserId(`{${OpenApiParameterName.UserId}}`)]: {
-      [OpenApiMethod.Post]: {
+      [OpenApiMethod.Delete]: {
         tags: [OpenApiTag.GDPR],
         summary: 'Delete user data',
         description: OpenApiDescription.DeleteUserData,
@@ -1639,6 +1637,13 @@ function createGdprPaths() {
           }),
           confirmQueryParameter,
         ],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          properties: {
+            confirm: { type: OpenApiSchemaType.Boolean },
+          },
+        }, false),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Account deleted', {
@@ -1910,6 +1915,7 @@ function createCreditPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['code'],
+          additionalProperties: false,
           properties: {
             code: {
               type: OpenApiSchemaType.String,
@@ -1917,11 +1923,21 @@ function createCreditPaths() {
               example: OpenApiExampleValue.PromoCode,
             },
           },
+          example: OpenApiExampleValue.CreditsRedeemRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Redeem result', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.CreditsRedeemResponse,
+              properties: {
+                success: { type: OpenApiSchemaType.Boolean, example: true },
+                already_redeemed: { type: OpenApiSchemaType.Boolean, example: false },
+                ac_added: { type: OpenApiSchemaType.Integer, example: 0 },
+                gp_added: { type: OpenApiSchemaType.Integer, example: 50 },
+                new_ac_balance: { type: OpenApiSchemaType.Integer, example: 0 },
+                new_gp_balance: { type: OpenApiSchemaType.Integer, example: 50 },
+              },
             })
           )
         ),
@@ -1982,6 +1998,24 @@ function createLogPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          properties: {
+            type: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 64,
+            },
+            title: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 256,
+            },
+            body: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 2048,
+            },
+          },
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -2115,17 +2149,54 @@ function createSyncPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: MatchIdRequiredFields,
+          additionalProperties: false,
           properties: {
             matchId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
             solanaMatchPda: { type: OpenApiSchemaType.String, minLength: 1 },
             state: { type: OpenApiSchemaType.Object },
             slot: { type: OpenApiSchemaType.Integer, minimum: 0 },
           },
+          example: OpenApiExampleValue.SyncFromSolanaRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Sync result', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.SyncFromSolanaResponse,
+              properties: {
+                matchId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                solanaMatchPda: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.Pda },
+                lastSyncedSlot: { type: OpenApiSchemaType.Integer, example: 1 },
+                lastSyncedAt: { type: OpenApiSchemaType.Integer, example: 1712520000000 },
+                syncStatus: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['synced', 'pending', 'stale', 'conflict'],
+                  example: 'synced',
+                },
+                gameType: { type: OpenApiSchemaType.Integer, example: 0 },
+                status: { type: OpenApiSchemaType.String, example: 'active' },
+                turnCount: { type: OpenApiSchemaType.Integer, example: 0 },
+                stateHash: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.InitialHash },
+                merkleRoot: { type: OpenApiSchemaType.String, example: 'merkle-root' },
+                initialStateHash: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.InitialHash },
+                finalStateHash: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.FinalHash },
+                transactionSignatures: {
+                  type: OpenApiSchemaType.Array,
+                  items: { type: OpenApiSchemaType.String },
+                  example: [OpenApiExampleValue.Signature],
+                },
+                randomnessSource: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.VrfSource },
+                randomnessCommitments: {
+                  type: OpenApiSchemaType.Array,
+                  items: { type: OpenApiSchemaType.String },
+                  example: [OpenApiExampleValue.Commitment.commitment],
+                },
+                disputes: {
+                  type: OpenApiSchemaType.Array,
+                  items: { type: OpenApiSchemaType.Object },
+                  example: [OpenApiExampleValue.DisputeSummary],
+                },
+              },
             })
           )
         ),
@@ -2140,15 +2211,38 @@ function createSyncPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: MatchIdRequiredFields,
+          additionalProperties: false,
           properties: {
             matchId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
             repair: { type: OpenApiSchemaType.Boolean },
           },
+          example: OpenApiExampleValue.SyncReconcileRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Reconcile result', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.SyncReconcileResponse,
+              properties: {
+                matchId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                timestamp: { type: OpenApiSchemaType.Integer, example: 1712520000000 },
+                discrepancies: {
+                  type: OpenApiSchemaType.Array,
+                  items: { type: OpenApiSchemaType.Object },
+                  example: [
+                    {
+                      field: 'stateHash',
+                      solanaValue: OpenApiExampleValue.InitialHash,
+                      cloudflareValue: OpenApiExampleValue.FinalHash,
+                    },
+                  ],
+                },
+                resolution: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['none', 'solana_wins', 'no_conflict'],
+                  example: 'no_conflict',
+                },
+              },
             })
           )
         ),
@@ -2168,6 +2262,31 @@ function createReplayPaths() {
         responses: withStandardErrors(
           createJsonResponse(String(HttpStatus.Ok), 'Replay data', {
             type: OpenApiSchemaType.Object,
+            example: OpenApiExampleValue.Replay,
+            properties: {
+              matchId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+              version: { type: OpenApiSchemaType.String, example: '1.0' },
+              createdAt: { type: OpenApiSchemaType.Integer, example: 1712520000000 },
+              initialState: { type: OpenApiSchemaType.Object },
+              timeline: {
+                type: OpenApiSchemaType.Array,
+                items: { type: OpenApiSchemaType.Object },
+                example: OpenApiExampleValue.Replay.timeline,
+              },
+              finalState: { type: OpenApiSchemaType.Object },
+              verification: {
+                type: OpenApiSchemaType.Object,
+                properties: {
+                  solanaMatchPda: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.Pda },
+                  stateHashes: {
+                    type: OpenApiSchemaType.Array,
+                    items: { type: OpenApiSchemaType.String },
+                    example: [OpenApiExampleValue.InitialHash, OpenApiExampleValue.FinalHash],
+                  },
+                  merkleRoot: { type: OpenApiSchemaType.String, example: 'merkle-root' },
+                },
+              },
+            },
           })
         ),
       },
@@ -2184,6 +2303,11 @@ function createReplayPaths() {
             'Replay verification result',
             {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.ReplayVerification,
+              properties: {
+                matchId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                verified: { type: OpenApiSchemaType.Boolean, example: true },
+              },
             }
           )
         ),
@@ -2218,15 +2342,16 @@ function createPaymentPaths() {
         ),
       },
     },
-    [paymentReconcilePath]: {
-      [OpenApiMethod.Post]: {
-        tags: [OpenApiTag.Payment],
-        summary: 'Reconcile payments',
-        description: 'Runs payment reconciliation',
-        requestBody: createJsonRequestBody({
-          type: OpenApiSchemaType.Object,
-        }),
-        security: bearerAuthSecurity,
+      [paymentReconcilePath]: {
+        [OpenApiMethod.Post]: {
+          tags: [OpenApiTag.Payment],
+          summary: 'Reconcile payments',
+          description: 'Runs payment reconciliation',
+          requestBody: createJsonRequestBody({
+            type: OpenApiSchemaType.Object,
+            additionalProperties: false,
+          }),
+          security: bearerAuthSecurity,
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Payment reconciled', {
@@ -2251,6 +2376,16 @@ function createLobbyPaths() {
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Room listing', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.LobbyRoomsResponse,
+              properties: {
+                rooms: {
+                  type: OpenApiSchemaType.Array,
+                  items: {
+                    type: OpenApiSchemaType.Object,
+                    example: OpenApiExampleValue.LobbyRoom,
+                  },
+                },
+              },
             })
           )
         ),
@@ -2262,6 +2397,8 @@ function createLobbyPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          required: ['hostId'],
+          additionalProperties: false,
           properties: {
             roomId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
             hostId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
@@ -2278,11 +2415,22 @@ function createLobbyPaths() {
             gameType: { type: OpenApiSchemaType.String, minLength: 1 },
             isPrivate: { type: OpenApiSchemaType.Boolean },
           },
+          example: OpenApiExampleValue.LobbyCreateRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Room created', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.LobbyCreateResponse,
+              properties: {
+                roomId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                joined: { type: OpenApiSchemaType.Boolean, example: true },
+                spectating: { type: OpenApiSchemaType.Boolean, example: false },
+                room: {
+                  type: OpenApiSchemaType.Object,
+                  example: OpenApiExampleValue.LobbyRoom,
+                },
+              },
             })
           )
         ),
@@ -2298,16 +2446,33 @@ function createLobbyPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
             displayName: { type: OpenApiSchemaType.String, minLength: 1 },
           },
+          example: OpenApiExampleValue.LobbyJoinRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Room joined', {
-              type: OpenApiSchemaType.Object,
-            })
+            {
+              ...createJsonResponse(String(HttpStatus.Ok), 'Room joined', {
+                type: OpenApiSchemaType.Object,
+                example: OpenApiExampleValue.LobbyJoinResponse,
+                properties: {
+                  joined: { type: OpenApiSchemaType.Boolean, example: true },
+                  roomId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                  spectating: { type: OpenApiSchemaType.Boolean, example: false },
+                  room: {
+                    type: OpenApiSchemaType.Object,
+                    example: OpenApiExampleValue.LobbyRoom,
+                  },
+                },
+              }),
+              [String(HttpStatus.Conflict)]: {
+                description: 'Room full or not joinable',
+              },
+            }
           )
         ),
       },
@@ -2323,15 +2488,27 @@ function createLobbyPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
             displayName: { type: OpenApiSchemaType.String, minLength: 1 },
           },
+          example: OpenApiExampleValue.LobbySpectateRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors({
             ...createJsonResponse(String(HttpStatus.Ok), 'Room spectated', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.LobbySpectateResponse,
+              properties: {
+                joined: { type: OpenApiSchemaType.Boolean, example: true },
+                roomId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
+                spectating: { type: OpenApiSchemaType.Boolean, example: true },
+                room: {
+                  type: OpenApiSchemaType.Object,
+                  example: OpenApiExampleValue.LobbyRoom,
+                },
+              },
             }),
             [String(HttpStatus.Conflict)]: {
               description: 'Already in room as player',
@@ -2350,14 +2527,20 @@ function createLobbyPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
           },
+          example: OpenApiExampleValue.LobbyLeaveRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Room left', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.LobbyLeaveResponse,
+              properties: {
+                left: { type: OpenApiSchemaType.Boolean, example: true },
+              },
             })
           )
         ),
@@ -2393,6 +2576,7 @@ function createMatchmakingPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
             displayName: { type: OpenApiSchemaType.String, minLength: 1 },
@@ -2402,11 +2586,14 @@ function createMatchmakingPaths() {
           },
         }),
         responses: withAuthErrors(
-          withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Joined queue', {
+          withStandardErrors({
+            ...createJsonResponse(String(HttpStatus.Ok), 'Joined queue', {
               type: OpenApiSchemaType.Object,
-            })
-          )
+            }),
+            [String(HttpStatus.Conflict)]: {
+              description: 'Already in queue',
+            },
+          })
         ),
       },
       [OpenApiMethod.Delete]: {
@@ -2415,11 +2602,14 @@ function createMatchmakingPaths() {
         description: 'Leaves the matchmaking queue',
         security: bearerAuthSecurity,
         responses: withAuthErrors(
-          withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Left queue', {
+          withStandardErrors({
+            ...createJsonResponse(String(HttpStatus.Ok), 'Left queue', {
               type: OpenApiSchemaType.Object,
-            })
-          )
+            }),
+            [String(HttpStatus.Conflict)]: {
+              description: 'Already in queue',
+            },
+          })
         ),
       },
     },
@@ -2451,6 +2641,7 @@ function createPresencePaths() {
         parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
           properties: {
             status: {
               type: OpenApiSchemaType.String,
@@ -2502,11 +2693,7 @@ function createFriendsPaths() {
         summary: 'Add/Accept friend request',
         description: 'Sends or accepts a friend request',
         security: bearerAuthSecurity,
-        parameters: [
-          createPathParameter(OpenApiParameterName.FriendId, 'Friend ID', {
-            pattern: userIdPattern,
-          }),
-        ],
+        parameters: [friendIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Friend request sent', {
@@ -2520,11 +2707,7 @@ function createFriendsPaths() {
         summary: 'Remove friend',
         description: 'Removes a friend or rejects a request',
         security: bearerAuthSecurity,
-        parameters: [
-          createPathParameter(OpenApiParameterName.FriendId, 'Friend ID', {
-            pattern: userIdPattern,
-          }),
-        ],
+        parameters: [friendIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Friend removed', {
@@ -2600,19 +2783,57 @@ function createProgressionPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
-          properties: {
-            xpAwarded: { type: OpenApiSchemaType.Integer, minimum: 1 },
-            amount: { type: OpenApiSchemaType.Integer, minimum: 1 },
-            reason: {
-              type: OpenApiSchemaType.String,
-              minLength: 1,
-              maxLength: 256,
+          example: OpenApiExampleValue.ProgressionUpdate,
+          oneOf: [
+            {
+              type: OpenApiSchemaType.Object,
+              additionalProperties: false,
+              required: ['amount'],
+              properties: {
+                amount: {
+                  type: OpenApiSchemaType.Integer,
+                  minimum: 1,
+                  example: OpenApiExampleValue.ProgressionUpdate.amount,
+                },
+                reason: {
+                  type: OpenApiSchemaType.String,
+                  minLength: 1,
+                  maxLength: 256,
+                  example: OpenApiExampleValue.ProgressionUpdate.reason,
+                },
+                idempotencyKey: {
+                  type: OpenApiSchemaType.String,
+                  pattern: IdempotencyKeyPattern.AllowedCharacters.source,
+                  minLength: IdempotencyKeyLimits.CustomMinLength,
+                  example: OpenApiExampleValue.IdempotencyKeyEarn,
+                },
+              },
             },
-            idempotencyKey: {
-              type: OpenApiSchemaType.String,
-              pattern: IdempotencyKeyPattern.AllowedCharacters.source,
+            {
+              type: OpenApiSchemaType.Object,
+              additionalProperties: false,
+              required: ['xpAwarded'],
+              properties: {
+                xpAwarded: {
+                  type: OpenApiSchemaType.Integer,
+                  minimum: 1,
+                  example: OpenApiExampleValue.ProgressionUpdate.amount,
+                },
+                reason: {
+                  type: OpenApiSchemaType.String,
+                  minLength: 1,
+                  maxLength: 256,
+                  example: OpenApiExampleValue.ProgressionUpdate.reason,
+                },
+                idempotencyKey: {
+                  type: OpenApiSchemaType.String,
+                  pattern: IdempotencyKeyPattern.AllowedCharacters.source,
+                  minLength: IdempotencyKeyLimits.CustomMinLength,
+                  example: OpenApiExampleValue.IdempotencyKeyEarn,
+                },
+              },
             },
-          },
+          ],
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -2643,21 +2864,29 @@ function createRewardPaths() {
         ),
       },
     },
-    [rewardDailyClaimPath]: {
-      [OpenApiMethod.Post]: {
-        tags: [OpenApiTag.Rewards],
-        summary: 'Claim daily reward',
-        description: 'Claims the daily login reward',
-        security: bearerAuthSecurity,
+      [rewardDailyClaimPath]: {
+        [OpenApiMethod.Post]: {
+          tags: [OpenApiTag.Rewards],
+          summary: 'Claim daily reward',
+          description: 'Claims the daily login reward',
+          security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
           properties: {
             idempotencyKey: {
               type: OpenApiSchemaType.String,
-              pattern: '^[A-Za-z0-9_-]+$',
+              pattern: IdempotencyKeyPattern.AllowedCharacters.source,
+              minLength: IdempotencyKeyLimits.CustomMinLength,
+              example: OpenApiExampleValue.IdempotencyKeyEarn,
             },
-            userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
+            userId: {
+              type: OpenApiSchemaType.String,
+              pattern: userIdPattern,
+              example: OpenApiExampleValue.UserId,
+            },
           },
+          example: OpenApiExampleValue.RewardDailyClaimRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -2737,6 +2966,7 @@ function createSecurityPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId', 'type', 'reason'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
             type: {
@@ -2777,6 +3007,15 @@ function createFraudPaths() {
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Fraud risk data', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.FraudCheckResponse,
+              properties: {
+                risk: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['low', 'medium', 'high', 'critical'],
+                  example: 'low',
+                },
+                score: { type: OpenApiSchemaType.Number, example: 12 },
+              },
             })
           )
         ),
@@ -2788,19 +3027,34 @@ function createFraudPaths() {
         summary: 'Run fraud check',
         description: 'Runs a manual fraud assessment check',
         security: bearerAuthSecurity,
-        requestBody: createJsonRequestBody({
-          type: OpenApiSchemaType.Object,
-          required: ['amount', 'paymentMethod', 'currency'],
-          properties: {
-            amount: { type: OpenApiSchemaType.Number, minimum: 0 },
-            paymentMethod: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
-            currency: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
-          },
-        }),
+          requestBody: createJsonRequestBody({
+            type: OpenApiSchemaType.Object,
+            required: [...FraudCheckRequiredFields],
+            additionalProperties: false,
+            properties: {
+              [FraudCheckField.Amount]: { type: OpenApiSchemaType.Number, minimum: 0 },
+              [FraudCheckField.PaymentMethod]: { type: OpenApiSchemaType.String, minLength: 1, maxLength: 64 },
+              [FraudCheckField.Currency]: {
+                type: OpenApiSchemaType.String,
+                enum: FiatCurrencyValues,
+                example: OpenApiExampleValue.FraudCheckRequest.currency,
+              },
+            },
+            example: OpenApiExampleValue.FraudCheckRequest,
+          }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Fraud check complete', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.FraudCheckResponse,
+              properties: {
+                risk: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['low', 'medium', 'high', 'critical'],
+                  example: 'low',
+                },
+                score: { type: OpenApiSchemaType.Number, example: 12 },
+              },
             })
           )
         ),
@@ -2822,33 +3076,53 @@ function createAntiCheatPaths() {
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Anti-cheat status', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.AntiCheatStatusResponse,
+              properties: {
+                status: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['clear', 'flagged', 'suspended'],
+                  example: 'clear',
+                },
+                trustScore: { type: OpenApiSchemaType.Number, example: 95 },
+              },
             })
           )
         ),
       },
     },
-    [ApiEndpoint.AntiCheat.Analyze]: {
-      [OpenApiMethod.Post]: {
-        tags: [OpenApiTag.AntiCheat],
-        summary: 'Analyze gameplay telemetry',
-        description: 'Submits telemetry data for anti-cheat analysis',
-        security: bearerAuthSecurity,
-        requestBody: createJsonRequestBody({
-          type: OpenApiSchemaType.Object,
-          required: MatchIdRequiredFields,
-          properties: {
-            matchId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
-            events: {
+      [ApiEndpoint.AntiCheat.Analyze]: {
+        [OpenApiMethod.Post]: {
+          tags: [OpenApiTag.AntiCheat],
+          summary: 'Analyze gameplay telemetry',
+          description: 'Submits telemetry data for anti-cheat analysis',
+          security: bearerAuthSecurity,
+          requestBody: createJsonRequestBody({
+            type: OpenApiSchemaType.Object,
+            additionalProperties: false,
+            properties: {
+              matchId: { type: OpenApiSchemaType.String, pattern: matchIdPattern },
+              events: {
               type: OpenApiSchemaType.Array,
               items: { type: OpenApiSchemaType.Object },
             },
             moveTimingMs: { type: OpenApiSchemaType.Number, minimum: 0 },
           },
+          example: OpenApiExampleValue.AntiCheatAnalyzeRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
             createJsonResponse(String(HttpStatus.Ok), 'Analysis complete', {
               type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.AntiCheatAnalyzeResponse,
+              properties: {
+                risk: {
+                  type: OpenApiSchemaType.String,
+                  enum: ['low', 'medium', 'high'],
+                  example: 'low',
+                },
+                score: { type: OpenApiSchemaType.Number, example: 10 },
+                trustScore: { type: OpenApiSchemaType.Number, example: 95 },
+              },
             })
           )
         ),
@@ -2884,6 +3158,7 @@ function createProfilePaths() {
         parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
           properties: {
             displayName: {
               type: OpenApiSchemaType.String,
@@ -2961,6 +3236,7 @@ function createMessagePaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['content'],
+          additionalProperties: false,
           properties: {
             content: {
               type: OpenApiSchemaType.String,
@@ -2998,6 +3274,54 @@ function createFeedPaths() {
         ),
       },
     },
+    [ApiEndpoint.Feed.List]: {
+      [OpenApiMethod.Get]: {
+        tags: [OpenApiTag.Feed],
+        summary: 'List social feed items',
+        description: 'Retrieves the feed list view',
+        security: bearerAuthSecurity,
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Feed list', {
+              type: OpenApiSchemaType.Object,
+            })
+          )
+        ),
+      },
+    },
+    [ApiEndpoint.Feed.Fanout]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Feed],
+        summary: 'Fan out feed activity',
+        description: 'Distributes a feed event to followers',
+        security: bearerAuthSecurity,
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          properties: {
+            type: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 64,
+              example: OpenApiExampleValue.FeedFanoutRequest.type,
+            },
+            payload: {
+              type: OpenApiSchemaType.Object,
+              additionalProperties: true,
+              example: OpenApiExampleValue.FeedFanoutRequest.payload,
+            },
+          },
+          example: OpenApiExampleValue.FeedFanoutRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Feed fanout complete', {
+              type: OpenApiSchemaType.Object,
+            })
+          )
+        ),
+      },
+    },
   }
 }
 
@@ -3018,17 +3342,35 @@ function createNotificationPaths() {
         ),
       },
     },
-    [notificationPushPath]: {
-      [OpenApiMethod.Post]: {
-        tags: [OpenApiTag.Notification],
-        summary: 'Send push notification',
-        description: 'Sends a push notification (Admin/Internal)',
-        security: bearerAuthSecurity,
-        requestBody: createJsonRequestBody({
-          type: OpenApiSchemaType.Object,
-        }),
-        responses: withAuthErrors(
-          withStandardErrors(
+      [notificationPushPath]: {
+        [OpenApiMethod.Post]: {
+          tags: [OpenApiTag.Notification],
+          summary: 'Send push notification',
+          description: 'Sends a push notification (Admin/Internal)',
+          security: bearerAuthSecurity,
+          requestBody: createJsonRequestBody({
+            type: OpenApiSchemaType.Object,
+            additionalProperties: false,
+            properties: {
+              type: {
+                type: OpenApiSchemaType.String,
+                minLength: 1,
+                maxLength: 64,
+              },
+              title: {
+                type: OpenApiSchemaType.String,
+                minLength: 1,
+                maxLength: 256,
+              },
+              body: {
+                type: OpenApiSchemaType.String,
+                minLength: 1,
+                maxLength: 2048,
+              },
+            },
+          }),
+          responses: withAuthErrors(
+            withStandardErrors(
             createJsonResponse(
               String(HttpStatus.Ok),
               'Notification push complete',
@@ -3052,6 +3394,49 @@ function createDiscoveryPaths() {
         description: 'Discover games, events, and featured activities',
         responses: withStandardErrors(
           createJsonResponse(String(HttpStatus.Ok), 'Discovered content', {
+            type: OpenApiSchemaType.Object,
+          })
+        ),
+      },
+    },
+    [ApiEndpoint.Discovery.Search]: {
+      [OpenApiMethod.Get]: {
+        tags: [OpenApiTag.Discovery],
+        summary: 'Search discovery content',
+        description: 'Searches available games and events',
+        parameters: [
+          createQueryParameter(QueryParam.Search, 'Search term', false, {
+            type: OpenApiSchemaType.String,
+            minLength: 1,
+            example: OpenApiExampleValue.DiscoverySearchQuery,
+          }),
+        ],
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Discovery search results', {
+            type: OpenApiSchemaType.Object,
+          })
+        ),
+      },
+    },
+    [ApiEndpoint.Discovery.Trending]: {
+      [OpenApiMethod.Get]: {
+        tags: [OpenApiTag.Discovery],
+        summary: 'Get trending discovery content',
+        description: 'Returns trending games and events',
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Trending discovery content', {
+            type: OpenApiSchemaType.Object,
+          })
+        ),
+      },
+    },
+    [ApiEndpoint.Discovery.Featured]: {
+      [OpenApiMethod.Get]: {
+        tags: [OpenApiTag.Discovery],
+        summary: 'Get featured discovery content',
+        description: 'Returns featured games and events',
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Featured discovery content', {
             type: OpenApiSchemaType.Object,
           })
         ),
@@ -3121,6 +3506,7 @@ function createMarketplacePaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['listingId'],
+          additionalProperties: false,
           properties: {
             listingId: {
               type: OpenApiSchemaType.String,
@@ -3128,6 +3514,7 @@ function createMarketplacePaths() {
               example: OpenApiExampleValue.ListingId,
             },
           },
+          example: OpenApiExampleValue.MarketplaceBuyRequest,
         }),
         responses: withAuthErrors(
           withStandardErrors(
@@ -3138,21 +3525,189 @@ function createMarketplacePaths() {
         ),
       },
     },
+    [ApiEndpoint.Marketplace.Sell]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Marketplace],
+        summary: 'Sell item',
+        description: 'Creates a marketplace listing for an item',
+        security: bearerAuthSecurity,
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          required: ['itemId'],
+          additionalProperties: false,
+          properties: {
+            itemId: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.MarketplaceSellRequest.itemId,
+            },
+            itemType: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.MarketplaceSellRequest.itemType,
+            },
+            price: {
+              type: OpenApiSchemaType.Number,
+              minimum: 0,
+              example: OpenApiExampleValue.MarketplaceSellRequest.price,
+            },
+            currency: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.MarketplaceSellRequest.currency,
+            },
+          },
+          example: OpenApiExampleValue.MarketplaceSellRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Listing created', {
+              type: OpenApiSchemaType.Object,
+            })
+          )
+        ),
+      },
+    },
   }
 }
 
 function createTournamentPaths() {
+  const tournamentByIdPath = ApiEndpoint.Tournament.ById(`{${OpenApiParameterName.TournamentId}}`)
   return {
-    [ApiEndpoint.Tournament.Base]: {
+    [`${tournamentByIdPath}/${TournamentDOSegment.Bracket}`]: {
       [OpenApiMethod.Get]: {
         tags: [OpenApiTag.Tournament],
-        summary: 'List tournaments',
-        description: 'Retrieves current and upcoming tournaments',
+        summary: 'Get tournament bracket',
+        description: 'Retrieves the current tournament bracket',
         security: bearerAuthSecurity,
+        parameters: [tournamentIdParameter],
         responses: withAuthErrors(
           withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Tournament list', {
+            createJsonResponse(String(HttpStatus.Ok), 'Tournament bracket', {
               type: OpenApiSchemaType.Object,
+            })
+          )
+        ),
+      },
+    },
+    [`${tournamentByIdPath}/${TournamentDOSegment.Register}`]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Tournament],
+        summary: 'Register for tournament',
+        description: 'Registers a player for the tournament',
+        security: bearerAuthSecurity,
+        parameters: [tournamentIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          properties: {
+            userId: {
+              type: OpenApiSchemaType.String,
+              pattern: ValidationPattern.UserId.source,
+              example: OpenApiExampleValue.UserId,
+            },
+            displayName: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              example: OpenApiExampleValue.MatchPlayerDisplayName,
+            },
+            elo: {
+              type: OpenApiSchemaType.Integer,
+              example: 1200,
+            },
+          },
+          example: OpenApiExampleValue.TournamentRegisterRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Tournament registration', {
+              type: OpenApiSchemaType.Object,
+            })
+          )
+        ),
+      },
+    },
+    [`${tournamentByIdPath}/${TournamentDOSegment.Start}`]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Tournament],
+        summary: 'Start tournament',
+        description: 'Starts tournament play and transitions state',
+        security: bearerAuthSecurity,
+        parameters: [tournamentIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          example: OpenApiExampleValue.TournamentStartRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            {
+              ...createJsonResponse(String(HttpStatus.Conflict), 'Tournament cannot be started', {
+                type: OpenApiSchemaType.Object,
+              }),
+              ...createJsonResponse(String(HttpStatus.Ok), 'Tournament started', {
+                type: OpenApiSchemaType.Object,
+              }),
+            }
+          )
+        ),
+      },
+    },
+    [`${tournamentByIdPath}/${TournamentDOSegment.Result}`]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Tournament],
+        summary: 'Submit tournament result',
+        description: 'Submits the final result for a tournament',
+        security: bearerAuthSecurity,
+        parameters: [tournamentIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+          required: [...TournamentResultRequiredFields],
+          properties: {
+            [TournamentResultField.MatchId]: {
+              type: OpenApiSchemaType.String,
+              pattern: matchIdPattern,
+              example: OpenApiExampleValue.MatchId,
+            },
+            [TournamentResultField.WinnerId]: {
+              type: OpenApiSchemaType.String,
+              pattern: userIdPattern,
+              example: OpenApiExampleValue.UserId,
+            },
+          },
+          example: OpenApiExampleValue.TournamentResultRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            {
+              ...createJsonResponse(String(HttpStatus.Conflict), 'Tournament result cannot be recorded', {
+                type: OpenApiSchemaType.Object,
+              }),
+              ...createJsonResponse(String(HttpStatus.Ok), 'Tournament result submitted', {
+                type: OpenApiSchemaType.Object,
+              }),
+            }
+          )
+        ),
+      },
+    },
+    [`${tournamentByIdPath}/${TournamentDOSegment.DistributePrizes}`]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Tournament],
+        summary: 'Distribute tournament prizes',
+        description: 'Admin-only prize distribution for tournament winners',
+        security: bearerAuthSecurity,
+        parameters: [tournamentIdParameter],
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          additionalProperties: false,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Tournament prizes distributed', {
+              type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.TournamentPrizesDistributedResponse,
             })
           )
         ),
@@ -3188,6 +3743,7 @@ function createSettingsPaths() {
         parameters: [userIdParameter],
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
           properties: {
             theme: {
               type: OpenApiSchemaType.String,
@@ -3240,6 +3796,7 @@ function postAdminActionOperation() {
     security: bearerAuthSecurity,
     requestBody: createJsonRequestBody({
       type: OpenApiSchemaType.Object,
+      additionalProperties: false,
       properties: {
         action: { type: OpenApiSchemaType.String, minLength: 1 },
         targetUserId: { type: OpenApiSchemaType.String, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
@@ -3314,6 +3871,7 @@ function createAdminModerationPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['reporterId', 'targetId', 'reason'],
+          additionalProperties: false,
           properties: {
             reporterId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
             targetId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
@@ -3345,6 +3903,7 @@ function createAdminModerationPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['action'],
+          additionalProperties: false,
           properties: {
             action: { type: OpenApiSchemaType.String, minLength: 1 },
             moderatorId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
@@ -3378,6 +3937,7 @@ function createAdminUserPaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['isAdmin'],
+          additionalProperties: false,
           properties: {
             isAdmin: { type: OpenApiSchemaType.Boolean },
           },
@@ -3405,6 +3965,7 @@ function createAdminFinancePaths() {
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
           required: ['userId', 'tier'],
+          additionalProperties: false,
           properties: {
             userId: { type: OpenApiSchemaType.String, minLength: 1, pattern: userIdPattern, example: OpenApiExampleValue.UserId },
             tier: { type: OpenApiSchemaType.String, enum: PLAN_TIER_IDS, example: PLAN_TIER_IDS[0] },
@@ -3432,6 +3993,7 @@ function createAdminAiPaths() {
         security: bearerAuthSecurity,
         requestBody: createJsonRequestBody({
           type: OpenApiSchemaType.Object,
+          additionalProperties: false,
           properties: {
             provider: { type: OpenApiSchemaType.Object },
             providers: {
@@ -3744,7 +4306,12 @@ export const openApiExplicitExampleRoutes: OpenApiExplicitExampleRoute[] = [
   { path: auditQueryPath, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Compliance.Base, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Discovery.Base, method: OpenApiMethod.Get },
+  { path: ApiEndpoint.Discovery.Search, method: OpenApiMethod.Get },
+  { path: ApiEndpoint.Discovery.Trending, method: OpenApiMethod.Get },
+  { path: ApiEndpoint.Discovery.Featured, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Feed.Base, method: OpenApiMethod.Get },
+  { path: ApiEndpoint.Feed.List, method: OpenApiMethod.Get },
+  { path: ApiEndpoint.Feed.Fanout, method: OpenApiMethod.Post },
   { path: fraudRiskPath, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Friends.Base, method: OpenApiMethod.Get },
   {
@@ -3757,6 +4324,7 @@ export const openApiExplicitExampleRoutes: OpenApiExplicitExampleRoute[] = [
   { path: ApiEndpoint.Marketplace.History, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Marketplace.List, method: OpenApiMethod.Get },
   { path: ApiEndpoint.Marketplace.Buy, method: OpenApiMethod.Post },
+  { path: ApiEndpoint.Marketplace.Sell, method: OpenApiMethod.Post },
   { path: messageByConversationPath, method: OpenApiMethod.Get },
   { path: messageSendPath, method: OpenApiMethod.Post },
   { path: notificationListPath, method: OpenApiMethod.Get },
@@ -3772,12 +4340,24 @@ export const openApiExplicitExampleRoutes: OpenApiExplicitExampleRoute[] = [
   { path: profileByUserPath, method: OpenApiMethod.Get },
   { path: profileUpdatePath, method: OpenApiMethod.Post },
   { path: ApiEndpoint.Progression.Base, method: OpenApiMethod.Get },
-  { path: ApiEndpoint.Progression.Base, method: OpenApiMethod.Post },
-  { path: rewardDailyPath, method: OpenApiMethod.Get },
-  { path: rewardDailyClaimPath, method: OpenApiMethod.Post },
-  { path: ApiEndpoint.Rooms.Base, method: OpenApiMethod.Get },
-  {
-    path: ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`),
+    { path: ApiEndpoint.Progression.Base, method: OpenApiMethod.Post },
+    { path: rewardDailyPath, method: OpenApiMethod.Get },
+    { path: rewardDailyClaimPath, method: OpenApiMethod.Post },
+    {
+      path: ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`),
+      method: OpenApiMethod.Get,
+    },
+    {
+      path: ApiEndpoint.Disputes.ById(`{${OpenApiParameterName.DisputeId}}`),
+      method: OpenApiMethod.Put,
+    },
+    {
+      path: ApiEndpoint.Disputes.Evidence(`{${OpenApiParameterName.DisputeId}}`),
+      method: OpenApiMethod.Post,
+    },
+    { path: ApiEndpoint.Rooms.Base, method: OpenApiMethod.Get },
+    {
+      path: ApiEndpoint.Rooms.Spectate(`{${OpenApiParameterName.RoomId}}`),
     method: OpenApiMethod.Post,
   },
   { path: securityPenaltyPath, method: OpenApiMethod.Get },

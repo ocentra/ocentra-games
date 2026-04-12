@@ -1,6 +1,7 @@
 import { PathValidator } from '@/validators/path-validators';
 import type { MatchId } from '@/constants/match';
 import { validateMatchId } from '@/constants/match';
+import { TournamentIdSchema } from '@/schemas/common';
 import { LeadingSlashPattern, ParamName, PathSeparator } from '@/constants/paths';
 import { ErrorMessage } from '@/constants/errors';
 import { ValidationPattern } from '@/constants/validation-patterns';
@@ -64,6 +65,13 @@ export function extractAndValidateIdFromPath(path: string, endpoint: string, par
       }
       return { id: matchValidation.matchId, error: null };
     }
+    if (paramName === ParamName.TournamentId) {
+      const tournamentValidation = TournamentIdSchema.safeParse(normalized);
+      if (!tournamentValidation.success) {
+        return { id: null, error: `${paramName} ${ErrorMessage.PathParamContainsInvalidChars}` };
+      }
+      return { id: tournamentValidation.data, error: null };
+    }
     return { id: normalized, error: null };
   } catch {
     if (paramName === ParamName.MatchId) {
@@ -72,6 +80,13 @@ export function extractAndValidateIdFromPath(path: string, endpoint: string, par
         return { id: null, error: matchValidation.error || ErrorMessage.InvalidMatchIdFormatPath };
       }
       return { id: matchValidation.matchId, error: null };
+    }
+    if (paramName === ParamName.TournamentId) {
+      const tournamentValidation = TournamentIdSchema.safeParse(cleaned);
+      if (!tournamentValidation.success) {
+        return { id: null, error: `${paramName} ${ErrorMessage.PathParamContainsInvalidChars}` };
+      }
+      return { id: tournamentValidation.data, error: null };
     }
     return { id: cleaned, error: null };
   }

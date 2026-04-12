@@ -25,6 +25,7 @@ import {
   CreateDisputeRequestSchema,
   UpdateDisputeRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/disputes';
+import { DisputeIdSchema } from '@ocentra/endpoint-domain/schemas/common';
 import { validateZodBody } from '@/utils/zod-validation';
 
 const log = Logger.instance;
@@ -59,10 +60,6 @@ function createDisputeStorage(env: Env): DisputeStorage {
       });
     },
   };
-}
-
-function isValidDisputeId(value: unknown): value is string {
-  return typeof value === 'string' && /^[A-Za-z][A-Za-z0-9_-]*-[A-Za-z0-9_-]+$/.test(value);
 }
 
 function isPrintableAscii(value: string): boolean {
@@ -195,7 +192,7 @@ export async function handleDisputeRequest(
         message: result.error || ErrorMessage.DisputeIdRequired
       }), { status: HttpStatus.BadRequest, headers: { ...getCorsHeaders(env), [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
     }
-    if (!isValidDisputeId(result.id)) {
+    if (!DisputeIdSchema.safeParse(result.id).success) {
       return new Response(JSON.stringify({
         error: ErrorMessage.BadRequest,
         message: 'disputeId must contain only letters, numbers, underscores, and hyphens',
@@ -237,7 +234,7 @@ export async function handleDisputeRequest(
     }
     return new Response(ErrorMessage.BadRequest, { status: HttpStatus.BadRequest, headers: getCorsHeaders(env) });
   }
-  if (!isValidDisputeId(result.id)) {
+  if (!DisputeIdSchema.safeParse(result.id).success) {
     return new Response(JSON.stringify({
       error: ErrorMessage.BadRequest,
       message: 'disputeId must contain only letters, numbers, underscores, and hyphens',

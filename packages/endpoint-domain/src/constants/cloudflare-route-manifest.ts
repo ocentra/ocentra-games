@@ -1,4 +1,4 @@
-import { ApiEndpoint } from '@/constants/cloudflare';
+import { ApiEndpoint, UsersSegment } from '@/constants/cloudflare';
 import { StripeEndpoint } from '@/constants/stripe';
 import { PathValue } from '@/constants/paths';
 import { HttpMethod } from '@/constants/http';
@@ -134,7 +134,7 @@ export const CloudflareRouteManifest: readonly RouteSpec[] = [
   { path: ApiEndpoint.AI.Keys, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.AIKeys, method: HttpMethod.Post, middleware: [MiddlewareKey.Auth], priority: 15 },
   { path: ApiEndpoint.AI.KeysCustom, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.AIKeys, method: HttpMethod.Post, middleware: [MiddlewareKey.Auth], priority: 15 },
    { path: ApiEndpoint.AI.Keys, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.AIKeys, method: HttpMethod.Delete, middleware: [MiddlewareKey.Auth], priority: 15 },
-   { path: ApiEndpoint.AI.Keys, match: RouteMatch.PrefixAndIncludes, includes: '/test' as PathSegment, handlerKey: CloudflareHandlerKey.AIKeys, method: HttpMethod.Post, middleware: [MiddlewareKey.Auth], priority: 15 },
+   { path: ApiEndpoint.AI.Keys, match: RouteMatch.PrefixAndIncludes, includes: ApiEndpoint.AI.KeysTestSegment, handlerKey: CloudflareHandlerKey.AIKeys, method: HttpMethod.Post, middleware: [MiddlewareKey.Auth], priority: 15 },
   {
     path: ApiEndpoint.AI.EscrowReserve,
     match: RouteMatch.Exact,
@@ -426,7 +426,7 @@ export const CloudflareRouteManifest: readonly RouteSpec[] = [
   { path: ApiEndpoint.Friends.Base, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.Friends, method: HttpMethod.Get, priority: 10 },
   { path: `${ApiEndpoint.Friends.Base}/`, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Friends, method: HttpMethod.Post, priority: 10 },
   { path: `${ApiEndpoint.Friends.Base}/`, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Friends, method: HttpMethod.Delete, priority: 10 },
-   { path: ApiEndpoint.Users.Base, match: RouteMatch.PrefixAndIncludes, includes: '/block' as PathSegment, handlerKey: CloudflareHandlerKey.Friends, method: HttpMethod.Post, priority: 10 },
+  { path: ApiEndpoint.Users.Base, match: RouteMatch.PrefixAndIncludes, includes: `/${UsersSegment.Block}` as PathSegment, handlerKey: CloudflareHandlerKey.Friends, method: HttpMethod.Post, priority: 10 },
   { path: ApiEndpoint.Audit.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Audit, priority: 10 },
   { path: ApiEndpoint.Progression.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Progression, priority: 10 },
   { path: ApiEndpoint.Rewards.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Reward, priority: 10 },

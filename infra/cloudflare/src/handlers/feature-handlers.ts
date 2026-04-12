@@ -5,67 +5,42 @@ import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
-import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
-import { GameName, GameTypeId } from '@ocentra/endpoint-domain/constants/game';
-import { extractAndValidateIdFromPath, extractIdFromPath, extractPathParts } from '@ocentra/endpoint-domain/utils/path-parser';
+import { ApiEndpoint, UsersSegment } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { ParamName } from '@ocentra/endpoint-domain/constants/paths';
+import { extractAndValidateIdFromPath, extractPathParts } from '@ocentra/endpoint-domain/utils/path-parser';
 import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
 import {
   LobbyDO as LobbyDOPaths,
   MatchmakingDO as MatchmakingDOPaths,
   PresenceDO as PresenceDOPaths,
   AuditLogDO as AuditLogDOPaths,
+  AuditLogDOSegment,
   ProgressionDO as ProgressionDOPaths,
+  ProgressionDOSegment,
   RewardDO as RewardDOPaths,
-  RewardDOSegment,
-  ActivityFeedDO as ActivityFeedDOPaths,
-  PartyDO as PartyDOPaths,
-  PartyDOSegment,
-  NotificationDO as NotificationDOPaths,
-  InventoryDO as InventoryDOPaths,
-  InventoryDOSegment,
-  MarketplaceDO as MarketplaceDOPaths,
-  TournamentDO as TournamentDOPaths,
-  TournamentDOSegment,
-  SettingsDO as SettingsDOPaths,
-  PenaltyDO as PenaltyDOPaths,
-  FraudDetectionDO as FraudDetectionDOPaths,
+  LobbyDOSegment,
   AntiCheatDO as AntiCheatDOPaths,
+  FraudDetectionDO as FraudDetectionDOPaths,
+  PenaltyDO as PenaltyDOPaths,
   ProfileDO as ProfileDOPaths,
   ProfileDOSegment,
   MessageDO as MessageDOPaths,
   MessageDOSegment,
+  PresenceDOSegment,
+  MatchmakingDOSegment,
 } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { MissionsDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { AuditTrailService } from '@/services/AuditTrailService';
 import { getPersonalizedContentFromData, getChurnPredictionFromData } from '@/logic/retention';
-import { earnGP } from '@/handlers/credits';
-import { MetadataField } from '@ocentra/endpoint-domain/constants/idempotency';
 import {
   AntiCheatAnalyzeRequestSchema,
   AntiCheatReportRequestSchema,
-  FeedFanoutRequestSchema,
-  FeedAppendRequestSchema,
-  FeedReportRequestSchema,
   FraudCheckRequestSchema,
   FraudCheckPreviewRequestSchema,
-  InventoryAddItemRequestSchema,
-  InventoryEquipItemRequestSchema,
-  InventoryGiftRequestSchema,
-  InventoryRemoveItemRequestSchema,
-  InventoryTradeRequestSchema,
-  MarketplaceBuyRequestSchema,
-  MarketplaceEmptyRequestSchema,
-  MarketplaceSellRequestSchema,
   MessageListQuerySchema,
   MessageReadReceiptRequestSchema,
   MatchmakingLeaveRequestSchema,
   MatchmakingQueueRequestSchema,
   MessageSendRequestSchema,
-  NotificationActionRequestSchema,
-  NotificationMarkReadRequestSchema,
-  NotificationPreferencesRequestSchema,
-  NotificationPushRequestSchema,
-  PartyActionRequestSchema,
   PresenceStatusUpdateRequestSchema,
   PresenceTypingRequestSchema,
   PresenceFriendPathRequestSchema,
@@ -85,19 +60,12 @@ import {
   RoomLeaveRequestSchema,
   RoomSpectateRequestSchema,
   SecurityPenaltyIssueRequestSchema,
-  SettingsUpdateRequestSchema,
-  TournamentActionRequestSchema,
-  TournamentRegisterRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 import { AuditEventSchema } from '@ocentra/endpoint-domain/schemas/audit';
 import { EmptyObjectSchema } from '@ocentra/endpoint-domain/schemas/common';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { createFlowContext } from '@/flows/core/FlowContext';
-import { FlowRunner } from '@/flows/core/FlowRunner';
-import { RewardClaimFlow } from '@/flows/reward-claim-flow';
-import { InventoryTransferFlow } from '@/flows/inventory-transfer-flow';
 import {
   DEFAULT_REGION,
   DEFAULT_SHARD,
@@ -113,9 +81,6 @@ import {
 } from '@/handlers/feature-handlers-helpers';
 const log = Logger.instance;
 log.register(import.meta.url);
-const flowRunner = new FlowRunner();
-const rewardClaimFlow = new RewardClaimFlow();
-const inventoryTransferFlow = new InventoryTransferFlow();
 
 const logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logInfo(message, stackTrace, data, enabled);
@@ -135,7 +100,7 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 
 export async function handleLobbyRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Lobby request', getStackTrace(), { path });
-  const supportedMethods = (path.includes('join') || path.includes('leave') || path.includes('spectate'))
+  const supportedMethods = (path.includes(LobbyDOSegment.Join) || path.includes(LobbyDOSegment.Leave) || path.includes(LobbyDOSegment.Spectate))
     ? [HttpMethod.Post]
     : [HttpMethod.Get, HttpMethod.Post];
   const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
@@ -150,14 +115,14 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   if (authResult instanceof Response) return authResult;
   const authUserId = authResult.userId;
   const parts = path.split('/').filter(Boolean);
-  const roomIdFromPath = (path.includes('join') || path.includes('leave') || path.includes('spectate')) ? (parts[3] ?? '') : '';
-  const isJoin = path.includes('join');
-  const isLeave = path.includes('leave');
-  const isSpectate = path.includes('spectate');
+  const roomIdFromPath = (path.includes(LobbyDOSegment.Join) || path.includes(LobbyDOSegment.Leave) || path.includes(LobbyDOSegment.Spectate)) ? (parts[3] ?? '') : '';
+  const isJoin = path.includes(LobbyDOSegment.Join);
+  const isLeave = path.includes(LobbyDOSegment.Leave);
+  const isSpectate = path.includes(LobbyDOSegment.Spectate);
   const shardKey = roomIdFromPath && (isJoin || isLeave || isSpectate) ? getLobbyShardKey(roomIdFromPath) : DEFAULT_SHARD;
   let bodyText: string | undefined;
   if (request.method === HttpMethod.Post) {
-    const isCreateRoom = path.includes('rooms') && !isJoin && !isLeave && !isSpectate;
+    const isCreateRoom = path.includes(LobbyDOSegment.Rooms) && !isJoin && !isLeave && !isSpectate;
     if (isCreateRoom) {
       const { data, errorResponse } = await validateZodBody(request.clone(), env, RoomCreateRequestSchema);
       if (errorResponse) return errorResponse;
@@ -210,11 +175,11 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
 
 export async function handleMatchmakingRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Matchmaking request', getStackTrace(), { path });
-  const supportedMethods = path.endsWith('status')
+  const supportedMethods = path.endsWith(MatchmakingDOSegment.Status)
     ? [HttpMethod.Get]
-    : path.endsWith('leave')
+    : path.endsWith(MatchmakingDOSegment.Leave)
       ? [HttpMethod.Post]
-      : path.endsWith('queue')
+      : path.endsWith(MatchmakingDOSegment.Queue)
         ? [HttpMethod.Post, HttpMethod.Delete]
         : [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete];
   const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
@@ -229,9 +194,9 @@ export async function handleMatchmakingRequest(request: Request, env: Env, path:
   }
   const stub = ns.get(ns.idFromName(DEFAULT_REGION));
   const search = new URL(request.url).search;
-  const isLeave = path.endsWith('leave') || (path.endsWith('queue') && request.method === HttpMethod.Delete);
+  const isLeave = path.endsWith(MatchmakingDOSegment.Leave) || (path.endsWith(MatchmakingDOSegment.Queue) && request.method === HttpMethod.Delete);
   const doPath =
-    path.endsWith('queue') && request.method !== HttpMethod.Delete
+    path.endsWith(MatchmakingDOSegment.Queue) && request.method !== HttpMethod.Delete
       ? MatchmakingDOPaths.Queue(DEFAULT_REGION)
       : isLeave
         ? MatchmakingDOPaths.Leave(DEFAULT_REGION) + (search ? search : '')
@@ -280,22 +245,16 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
   const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for friends');
   if (authResult instanceof Response) return authResult;
   const userId = authResult.userId;
-  if (env.TEST_MODE === QueryValue.True && request.method === HttpMethod.Post && path.includes('/friends')) {
-    const friendId = path.split('/').filter(Boolean).slice(-1)[0] ?? '';
-    return stubJson(env, { friends: friendId ? [{ friendId, status: 'accepted' }] : [] });
-  }
   const ns = env.PRESENCE_DO;
-  if (!ns) return stubJson(env, { friends: [] });
   const shardKey = getPresenceShardKey(userId);
-  const stub = ns.get(ns.idFromName(shardKey));
   const friendsBase = ApiEndpoint.Friends.Base.replace(/\/$/, '');
-  const pathAfterFriends = path.startsWith(friendsBase) ? path.slice(friendsBase.length).replace(/^\//, '') : '';
-  const friendsSegments = pathAfterFriends.split('/').filter(Boolean);
-  if (path.startsWith(ApiEndpoint.Users.Base) && path.endsWith('/block')) {
-    const pathAfterUsers = path.replace(ApiEndpoint.Users.Base, '').replace(/^\//, '');
-    const blockSegments = pathAfterUsers.split('/').filter(Boolean);
-    const targetId = blockSegments[0] ?? '';
-    if (!targetId) return new Response(JSON.stringify({ error: 'User id required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+  const friendsSegments = extractPathParts(path, ApiEndpoint.Friends.Base);
+  if (path.startsWith(ApiEndpoint.Users.Base) && path.endsWith(`/${UsersSegment.Block}`)) {
+    const validatedTarget = validateOpenApiUserIdPath(path, ApiEndpoint.Users.Base, request, env);
+    if (validatedTarget.response) return validatedTarget.response;
+    const targetId = validatedTarget.userId!;
+    if (!ns) return stubJson(env, { friends: [] });
+    const stub = ns.get(ns.idFromName(shardKey));
     const doPath = PresenceDOPaths.Block(shardKey);
     const { data: bData, errorResponse: bErr } = await validateZodBody(request.clone(), env, PresenceBlockRequestSchema);
     if (bErr) return bErr;
@@ -304,11 +263,13 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
   }
   if (path.startsWith(friendsBase)) {
-    if (env.TEST_MODE === QueryValue.True && request.method === HttpMethod.Post) {
-      const friendId = friendsSegments[0] ?? '';
-      return stubJson(env, { friends: friendId ? [{ friendId, status: 'accepted' }] : [] });
-    }
+    const isFriendsListPath = path === friendsBase;
     if (request.method === HttpMethod.Get) {
+      if (!isFriendsListPath) {
+        return new Response(JSON.stringify({ error: 'Not Found' }), { status: HttpStatus.NotFound, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+      }
+      if (!ns) return stubJson(env, { friends: [] });
+      const stub = ns.get(ns.idFromName(shardKey));
       const doPath = PresenceDOPaths.Friends(shardKey) + `?userId=${encodeURIComponent(userId)}`;
       const res = await doFetch(stub, doPath, { method: HttpMethod.Get });
       const data = await res.json().catch(() => ({}));
@@ -317,8 +278,19 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
       }
       return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
     }
-    const friendId = friendsSegments[0] ?? '';
-    if (!friendId) return new Response(JSON.stringify({ error: 'Friend id required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+    if (friendsSegments.length !== 1) {
+      return new Response(JSON.stringify({ error: 'Friend ID required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+    }
+    const friendIdResult = extractAndValidateIdFromPath(path, ApiEndpoint.Friends.Base, ParamName.FriendId, request.url);
+    if (!friendIdResult.id) {
+      return new Response(JSON.stringify({ error: friendIdResult.error ?? 'Friend ID required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+    }
+    const friendId = friendIdResult.id;
+    if (env.TEST_MODE === QueryValue.True && request.method === HttpMethod.Post) {
+      return stubJson(env, { friends: [{ friendId, status: 'accepted' }] });
+    }
+    if (!ns) return stubJson(env, { friends: [] });
+    const stub = ns.get(ns.idFromName(shardKey));
     if (request.method === HttpMethod.Post) {
       const doPath = PresenceDOPaths.Friends(shardKey);
       const { data: fPData, errorResponse: fPErr } = await validateZodBody(request.clone(), env, PresenceFriendRequestSchema);
@@ -355,7 +327,7 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
     return stubJson(env, { status: 'offline', friends: [] });
   }
   const typingPath = ApiEndpoint.Presence.Typing.replace(/\/$/, '');
-  const isTyping = path === typingPath || path.endsWith('/typing');
+  const isTyping = path === typingPath || path.endsWith(typingPath);
   if (isTyping && request.method === HttpMethod.Post) {
     const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for typing');
@@ -388,14 +360,14 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
   const userId = userIdValidation.userId!;
   const shardKey = userId ? getPresenceShardKey(userId) : DEFAULT_SHARD;
   const stub = ns.get(ns.idFromName(shardKey));
-  const doPath = path.endsWith('friends') ? PresenceDOPaths.Friends(shardKey) : path.endsWith('block') ? PresenceDOPaths.Block(shardKey) : PresenceDOPaths.Status(shardKey, userId);
+  const doPath = path.endsWith(PresenceDOSegment.Friends) ? PresenceDOPaths.Friends(shardKey) : path.endsWith(PresenceDOSegment.Block) ? PresenceDOPaths.Block(shardKey) : PresenceDOPaths.Status(shardKey, userId);
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (path.endsWith('friends')) {
+    if (path.endsWith(PresenceDOSegment.Friends)) {
       const { data: friendBody, errorResponse: friendError } = await validateZodBody(request.clone(), env, PresenceFriendPathRequestSchema);
       if (friendError) return friendError;
       validatedGenericBody = JSON.stringify(friendBody);
-    } else if (path.endsWith('block')) {
+    } else if (path.endsWith(PresenceDOSegment.Block)) {
       const { data: blockBody, errorResponse: blockError } = await validateZodBody(request.clone(), env, PresenceBlockPathRequestSchema);
       if (blockError) return blockError;
       validatedGenericBody = JSON.stringify(blockBody);
@@ -420,7 +392,7 @@ export async function handleAuditRequest(request: Request, env: Env, path: strin
 
   const auditService = new AuditTrailService(env);
 
-  if (path.endsWith('verify')) {
+  if (path.endsWith(ApiEndpoint.Audit.Verify)) {
     const targetUserId = new URL(request.url).searchParams.get('userId') || userId;
     const adminCheck = await checkAdminStatus(request, env);
     if (!adminCheck.isAdmin && targetUserId !== userId) {
@@ -436,7 +408,7 @@ export async function handleAuditRequest(request: Request, env: Env, path: strin
     });
   }
 
-  if (path.endsWith('export')) {
+  if (path.endsWith(ApiEndpoint.Audit.Export)) {
     const targetUserId = new URL(request.url).searchParams.get('userId') || userId;
     const adminCheck = await checkAdminStatus(request, env);
     if (!adminCheck.isAdmin && targetUserId !== userId) {
@@ -455,8 +427,8 @@ export async function handleAuditRequest(request: Request, env: Env, path: strin
   const ns = env.AUDIT_LOG_DO;
   if (!ns) return stubJson(env, { events: [] });
   const stub = ns.get(ns.idFromName(userId));
-  const isQueryPath = path.endsWith('query');
-  const doPath = isQueryPath ? AuditLogDOPaths.Query : path.endsWith('log') ? AuditLogDOPaths.Log : AuditLogDOPaths.StoreEvent;
+  const isQueryPath = path.endsWith(AuditLogDOSegment.Query);
+  const doPath = isQueryPath ? AuditLogDOPaths.Query : path.endsWith(AuditLogDOSegment.Log) ? AuditLogDOPaths.Log : AuditLogDOPaths.StoreEvent;
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (isQueryPath) {
@@ -487,19 +459,19 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
   const userId = authResult.userId;
   const stub = ns.get(ns.idFromName(userId));
   const isBasePath = path === ApiEndpoint.Progression.Base || path.replace(/\/$/, '') === ApiEndpoint.Progression.Base;
-  const doPath = path.endsWith('xp')
+  const doPath = path.endsWith(ProgressionDOSegment.Xp)
     ? ProgressionDOPaths.Xp
-    : path.endsWith('level')
+    : path.endsWith(ProgressionDOSegment.Level)
       ? ProgressionDOPaths.Level
-      : path.includes('unlock-skill')
+      : path.includes(ProgressionDOSegment.UnlockSkill)
         ? ProgressionDOPaths.UnlockSkill
-        : path.includes('update-achievement')
+        : path.includes(ProgressionDOSegment.UpdateAchievement)
           ? ProgressionDOPaths.UpdateAchievement
-          : path.endsWith('skills')
+          : path.endsWith(ProgressionDOSegment.Skills)
             ? ProgressionDOPaths.Skills
-            : path.endsWith('achievements')
+            : path.endsWith(ProgressionDOSegment.Achievements)
               ? ProgressionDOPaths.Achievements
-              : path.endsWith('collections')
+              : path.endsWith(ProgressionDOSegment.Collections)
                 ? ProgressionDOPaths.Collections
                 : request.method === HttpMethod.Post && isBasePath
                   ? ProgressionDOPaths.Xp
@@ -509,13 +481,7 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
     if (doPath === ProgressionDOPaths.Xp) {
       const { data: xpData, errorResponse: xpError } = await validateZodBody(request.clone(), env, ProgressionXpRequestSchema);
       if (xpError) return xpError;
-      const amount = typeof xpData?.xpAwarded === 'number' ? xpData.xpAwarded : typeof xpData?.amount === 'number' ? xpData.amount : 0;
-      if (amount <= 0) {
-        return new Response(JSON.stringify({ error: 'amount or xpAwarded is required' }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
+      const amount = typeof xpData?.amount === 'number' ? xpData.amount : typeof xpData?.xpAwarded === 'number' ? xpData.xpAwarded : 0;
       validatedGenericBody = JSON.stringify({
         amount,
         ...(typeof xpData?.reason === 'string' ? { reason: xpData.reason } : {}),
@@ -604,7 +570,7 @@ async function handleAnalyticsProfileRequest(request: Request, env: Env): Promis
 export async function handleAnalyticsRequest(request: Request, env: Env, path: string): Promise<Response> {
   const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
   if (methodCheck) return methodCheck;
-  if (path.includes('profile')) return handleAnalyticsProfileRequest(request, env);
+  if (path.includes(ApiEndpoint.Analytics.Profile)) return handleAnalyticsProfileRequest(request, env);
   return new Response(JSON.stringify({ error: 'Not Found' }), {
     status: HttpStatus.NotFound,
     headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
@@ -832,6 +798,13 @@ export async function handleFraudRequest(request: Request, env: Env, path: strin
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
+  }
+
+  if (pathParts[0] === 'check' && pathParts.length > 1) {
+    return new Response(JSON.stringify({ error: 'Not Found' }), {
+      status: HttpStatus.NotFound,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
+    });
   }
 
   if (pathParts[0] === 'check' && request.method === HttpMethod.Post) {
@@ -1160,709 +1133,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   });
 }
 
-export async function handleRewardRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const ns = env.REWARD_DO;
-  if (!ns) return stubJson(env, { available: true, claimed: false });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for rewards');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const stub = ns.get(ns.idFromName(userId));
-  const rewardParts = extractPathParts(path, ApiEndpoint.Rewards.Base);
-  const missionParts = extractPathParts(path, ApiEndpoint.Missions.Base);
-  const rewardPath = rewardParts.join('/');
-  const isDailyClaim = path === ApiEndpoint.Rewards.Base || rewardPath === RewardDOSegment.DailyClaim;
-  const isStreakFreeze = rewardPath === RewardDOSegment.StreakFreeze;
-  const isBattlePassClaim = rewardPath === RewardDOSegment.BattlePassClaim;
-  const isBattlePassXp = rewardPath === RewardDOSegment.BattlePassXp;
-  const isBattlePass = rewardPath === RewardDOSegment.BattlePass;
-  const isMissionProgress = missionParts[0] !== undefined && missionParts[missionParts.length - 1] === MissionsDOSegment.Progress;
-  const isMissionClaim = missionParts.length >= 2 && missionParts[missionParts.length - 1] === MissionsDOSegment.Claim;
 
-  let parsedBody: Record<string, unknown> | undefined;
-  if (request.method === HttpMethod.Post) {
-    const rawBody = await request.text();
-    if (rawBody.trim().length > 0) {
-      try {
-        const json = JSON.parse(rawBody) as unknown;
-        if (!json || typeof json !== 'object' || Array.isArray(json)) {
-          return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON body', issues: [] }), {
-            status: HttpStatus.BadRequest,
-            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-          });
-        }
-        parsedBody = json as Record<string, unknown>;
-      } catch {
-        return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid JSON body', issues: [] }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
-    } else {
-      parsedBody = {};
-    }
-
-    if (isDailyClaim) {
-      const flowResult = await flowRunner.run(
-        rewardClaimFlow,
-        createFlowContext({
-          env,
-          request,
-          authUserId: userId,
-          path,
-          method: request.method,
-          origin: requestOrigin,
-          operationId: typeof parsedBody.idempotencyKey === 'string' ? parsedBody.idempotencyKey : undefined,
-        }),
-        { ...(typeof parsedBody.idempotencyKey === 'string' ? { idempotencyKey: parsedBody.idempotencyKey } : {}), ...(typeof parsedBody.userId === 'string' ? { userId: parsedBody.userId } : {}), kind: 'daily-claim' }
-      );
-      return new Response(JSON.stringify(flowResult.body), {
-        status: flowResult.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    if (isStreakFreeze) {
-      const flowResult = await flowRunner.run(
-        rewardClaimFlow,
-        createFlowContext({
-          env,
-          request,
-          authUserId: userId,
-          path,
-          method: request.method,
-          origin: requestOrigin,
-        }),
-        { kind: 'streak-freeze' }
-      );
-      return new Response(JSON.stringify(flowResult.body), {
-        status: flowResult.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    if (isBattlePassClaim) {
-      const tier = typeof parsedBody.tier === 'number' ? Math.floor(parsedBody.tier) : Number.NaN;
-      if (!Number.isInteger(tier) || tier < 0) {
-        return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid request payload', issues: [] }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
-      const flowResult = await flowRunner.run(
-        rewardClaimFlow,
-        createFlowContext({
-          env,
-          request,
-          authUserId: userId,
-          path,
-          method: request.method,
-          origin: requestOrigin,
-          operationId: typeof parsedBody.idempotencyKey === 'string' ? parsedBody.idempotencyKey : undefined,
-        }),
-        {
-          tier,
-          ...(typeof parsedBody.idempotencyKey === 'string' ? { idempotencyKey: parsedBody.idempotencyKey } : {}),
-          ...(typeof parsedBody.userId === 'string' ? { userId: parsedBody.userId } : {}),
-          kind: 'battle-pass-claim',
-        }
-      );
-      return new Response(JSON.stringify(flowResult.body), {
-        status: flowResult.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    if (isBattlePassXp) {
-      const amount = typeof parsedBody.amount === 'number' ? Math.floor(parsedBody.amount) : Number.NaN;
-      if (!Number.isInteger(amount) || amount <= 0) {
-        return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid request payload', issues: [] }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
-      const res = await doFetch(stub, RewardDOPaths.BattlePassXp, {
-        method: HttpMethod.Post,
-        body: JSON.stringify({
-          amount,
-          ...(typeof parsedBody.idempotencyKey === 'string' ? { idempotencyKey: parsedBody.idempotencyKey } : {}),
-        }),
-      });
-      const result = await res.json().catch(() => ({}));
-      return new Response(JSON.stringify(result), {
-        status: res.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    if (isMissionProgress) {
-      const missionId = typeof parsedBody.missionId === 'string' ? parsedBody.missionId : '';
-      if (!missionId) {
-        return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid request payload', issues: [] }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
-      const res = await doFetch(stub, RewardDOPaths.MissionProgress, {
-        method: HttpMethod.Post,
-        body: JSON.stringify({
-          missionId,
-          ...(typeof parsedBody.progress === 'number' ? { progress: Math.floor(parsedBody.progress) } : {}),
-          ...(typeof parsedBody.increment === 'number' ? { increment: Math.floor(parsedBody.increment) } : {}),
-        }),
-      });
-      const result = await res.json().catch(() => ({}));
-      return new Response(JSON.stringify(result), {
-        status: res.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    if (isMissionClaim) {
-      const missionId = typeof parsedBody.missionId === 'string' ? parsedBody.missionId : '';
-      if (!missionId) {
-        return new Response(JSON.stringify({ error: 'Bad Request', message: 'Invalid request payload', issues: [] }), {
-          status: HttpStatus.BadRequest,
-          headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-        });
-      }
-      const flowResult = await flowRunner.run(
-        rewardClaimFlow,
-        createFlowContext({
-          env,
-          request,
-          authUserId: userId,
-          path,
-          method: request.method,
-          origin: requestOrigin,
-          operationId: typeof parsedBody.idempotencyKey === 'string' ? parsedBody.idempotencyKey : undefined,
-        }),
-        {
-          missionId,
-          ...(typeof parsedBody.idempotencyKey === 'string' ? { idempotencyKey: parsedBody.idempotencyKey } : {}),
-          ...(typeof parsedBody.userId === 'string' ? { userId: parsedBody.userId } : {}),
-          kind: 'mission-claim',
-        }
-      );
-      return new Response(JSON.stringify(flowResult.body), {
-        status: flowResult.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-  }
-
-  const doPath = isDailyClaim
-    ? RewardDOPaths.DailyClaim
-    : isStreakFreeze
-      ? RewardDOPaths.StreakFreeze
-      : isBattlePassClaim
-        ? RewardDOPaths.BattlePassClaim
-        : isBattlePassXp
-          ? RewardDOPaths.BattlePassXp
-          : isBattlePass
-            ? RewardDOPaths.BattlePass
-            : isMissionProgress
-              ? RewardDOPaths.MissionProgress
-              : isMissionClaim
-                ? RewardDOPaths.MissionClaim
-                : path.startsWith(ApiEndpoint.Missions.Base)
-                  ? RewardDOPaths.MissionsList
-                  : RewardDOPaths.Daily;
-  const res = await doFetch(stub, doPath, { method: request.method, body: request.method === HttpMethod.Post ? JSON.stringify(parsedBody ?? {}) : undefined });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), {
-    status: res.status,
-    headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) }
-  });
-}
-
-export async function handleFeedRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  if (request.method === HttpMethod.Post && path.endsWith('/fanout')) {
-    const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for feed fanout');
-    if (authResult instanceof Response) return authResult;
-    const actorId = authResult.userId;
-    const { data, errorResponse: bodyError } = await validateZodBody(request, env, FeedFanoutRequestSchema);
-    if (bodyError) return bodyError;
-    const body = data!;
-
-    const type = (body.type ?? 'activity').slice(0, 64);
-    const payload = typeof body.payload === 'object' && body.payload !== null ? { ...body.payload, actorId } : { actorId };
-    if (!env.PRESENCE_DO || !env.ACTIVITY_FEED_DO) return stubJson(env, { fanout: 0 });
-    const shardKey = getPresenceShardKey(actorId);
-    const presenceStub = env.PRESENCE_DO.get(env.PRESENCE_DO.idFromName(shardKey));
-    const friendsPath = `${PresenceDOPaths.Friends(shardKey)}?userId=${encodeURIComponent(actorId)}`;
-    const friendsRes = await doFetch(presenceStub, friendsPath, { method: HttpMethod.Get });
-    const friendsData = (await friendsRes.json().catch(() => ({}))) as { friends?: { friendId: string }[] };
-    const friendIds = (friendsData.friends ?? []).map((f) => f.friendId).filter(Boolean);
-    let appended = 0;
-    for (const friendId of friendIds) {
-      const feedStub = env.ACTIVITY_FEED_DO.get(env.ACTIVITY_FEED_DO.idFromName(friendId));
-      const appendRes = await doFetch(feedStub, ActivityFeedDOPaths.Append, {
-        method: HttpMethod.Post,
-        body: JSON.stringify({ type, payload }),
-      });
-      if (appendRes.ok) appended++;
-      await appendRes.text().catch(() => undefined);
-    }
-    return stubJson(env, { fanout: appended, friends: friendIds.length });
-  }
-  const ns = env.ACTIVITY_FEED_DO;
-  if (!ns) return stubJson(env, { items: [] });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for feed');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const stub = ns.get(ns.idFromName(userId));
-  const doPath = request.method === HttpMethod.Get || path.endsWith('list') ? ActivityFeedDOPaths.List : ActivityFeedDOPaths.Append;
-  let validatedGenericBody = undefined;
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (doPath === ActivityFeedDOPaths.Append) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, FeedAppendRequestSchema);
-      if (errorResponse) return errorResponse;
-      validatedGenericBody = JSON.stringify(data);
-    } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, FeedReportRequestSchema);
-      if (errorResponse) return errorResponse;
-      validatedGenericBody = JSON.stringify(data);
-    }
-  }
-  const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-export async function handlePartyRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const ns = env.PARTY_DO;
-  if (!ns) return stubJson(env, { partyId: '', members: [] });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for party');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const partyId = extractIdFromPath(path, ApiEndpoint.Party.Base);
-  if (!partyId && request.method === HttpMethod.Post) {
-    const { errorResponse: createBodyError } = await validateZodBody(request.clone(), env, PartyActionRequestSchema);
-    if (createBodyError) return createBodyError;
-    const newPartyId = crypto.randomUUID();
-    const stub = ns.get(ns.idFromName(newPartyId));
-    const body = JSON.stringify({ userId, partyId: newPartyId });
-    const res = await doFetch(stub, PartyDOPaths.Create, { method: HttpMethod.Post, body });
-    const data = (await res.json().catch(() => ({}))) as { error?: string };
-    if (data.error) return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-    return new Response(JSON.stringify({ partyId: newPartyId }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-  }
-  if (!partyId) return stubJson(env, { partyId: '', members: [] });
-  let partyBody = {};
-  if (request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, PartyActionRequestSchema);
-    if (errorResponse) return errorResponse;
-    partyBody = data || {};
-  }
-  if (request.method === HttpMethod.Post && path.endsWith(PartyDOSegment.Invite)) {
-    const inviteeId = (partyBody as { inviteeId?: string }).inviteeId ?? '';
-    if (inviteeId) {
-      const blocked = await isBlockedBy(env, inviteeId, userId);
-      if (blocked) {
-        return new Response(
-          JSON.stringify({ error: 'Cannot invite; you are blocked' }),
-          { status: HttpStatus.Forbidden, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } }
-        );
-      }
-    }
-  }
-  const stub = ns.get(ns.idFromName(partyId));
-  const doPath = path.endsWith(PartyDOSegment.Join)
-    ? PartyDOPaths.Join
-    : path.endsWith(PartyDOSegment.Leave)
-      ? PartyDOPaths.Leave
-      : path.endsWith(PartyDOSegment.Invite)
-        ? PartyDOPaths.Invite
-        : path.endsWith('kick')
-          ? `${PartyDOPaths.Base}/kick`
-          : path.endsWith('transfer-leader')
-            ? `${PartyDOPaths.Base}/transfer-leader`
-            : PartyDOPaths.State;
-  const bodyWithUser = request.method === HttpMethod.Post ? JSON.stringify({ ...partyBody, userId }) : undefined;
-  const res = await doFetch(stub, doPath, { method: request.method, body: bodyWithUser });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-export async function handleNotificationRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const ns = env.NOTIFICATION_DO;
-  if (!ns) return stubJson(env, { notifications: [] });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for notifications');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const stub = ns.get(ns.idFromName(userId));
-  if (path === ApiEndpoint.Notification.Base && request.method === HttpMethod.Get) {
-    const res = await doFetch(stub, NotificationDOPaths.List, { method: HttpMethod.Get });
-    const data = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-  }
-  const doPath =
-    path.endsWith('mark-read') ? NotificationDOPaths.MarkRead
-      : path.endsWith('list') ? NotificationDOPaths.List
-        : path.endsWith('preferences') ? NotificationDOPaths.Preferences
-          : NotificationDOPaths.Push;
-  let validatedGenericBody = undefined;
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (doPath === NotificationDOPaths.Push) {
-      const { data: pushData, errorResponse: pushError } = await validateZodBody(request.clone(), env, NotificationPushRequestSchema);
-      if (pushError) return pushError;
-      validatedGenericBody = JSON.stringify(pushData);
-    } else if (doPath === NotificationDOPaths.MarkRead) {
-      const { data: markReadData, errorResponse: markReadError } = await validateZodBody(request.clone(), env, NotificationMarkReadRequestSchema);
-      if (markReadError) return markReadError;
-      validatedGenericBody = JSON.stringify(markReadData);
-    } else if (doPath === NotificationDOPaths.Preferences) {
-      const { data: preferencesData, errorResponse: preferencesError } = await validateZodBody(request.clone(), env, NotificationPreferencesRequestSchema);
-      if (preferencesError) return preferencesError;
-      validatedGenericBody = JSON.stringify(preferencesData);
-    } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, NotificationActionRequestSchema);
-      if (genError) return genError;
-      validatedGenericBody = JSON.stringify(genData);
-    }
-  }
-  const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-const DISCOVERY_GAMES = [
-  { id: GameTypeId.Claim, name: GameName.Claim },
-  { id: GameTypeId.Poker, name: GameName.Poker },
-  { id: GameTypeId.WordSearch, name: GameName.WordSearch },
-] as const;
-
-export async function handleDiscoveryRequest(request: Request, env: Env, handlerPath: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get]);
-  if (methodCheck) return methodCheck;
-  const url = new URL(request.url, 'http://dummy');
-  if (handlerPath.endsWith('/search')) {
-    const q = (url.searchParams.get('q') ?? '').toLowerCase();
-    const games = q
-      ? DISCOVERY_GAMES.filter((g) => g.name.toLowerCase().includes(q) || String(g.id).includes(q))
-      : [...DISCOVERY_GAMES];
-    return stubJson(env, { games });
-  }
-  if (handlerPath.endsWith('/trending')) {
-    if (env.DISCOVERY_KV) {
-      const raw = await env.DISCOVERY_KV.get('trending');
-      if (raw) {
-        try {
-          const data = JSON.parse(raw) as unknown;
-          return stubJson(env, data);
-        } catch {
-          //
-        }
-      }
-    }
-    return stubJson(env, { topGameModes: [], peakOnline: 0, activeGames: 0, featuredTournaments: [], lastUpdated: Date.now() });
-  }
-  if (handlerPath.endsWith('/featured')) {
-    if (env.DISCOVERY_KV) {
-      const raw = await env.DISCOVERY_KV.get('featured');
-      if (raw) {
-        try {
-          const data = JSON.parse(raw) as unknown;
-          return stubJson(env, data);
-        } catch {
-          //
-        }
-      }
-    }
-    return stubJson(env, { games: [...DISCOVERY_GAMES.slice(0, 2)], banner: null });
-  }
-  return stubJson(env, { games: [...DISCOVERY_GAMES], trending: [] });
-}
-
-export async function handleInventoryRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const ns = env.INVENTORY_DO;
-  if (!ns) return stubJson(env, { items: [] });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for inventory');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const stub = ns.get(ns.idFromName(userId));
-  if (path === ApiEndpoint.Inventory.Base && request.method === HttpMethod.Get) {
-    const res = await doFetch(stub, InventoryDOPaths.List, { method: HttpMethod.Get });
-    const data = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-  }
-  const isGift = path.endsWith(`/${InventoryDOSegment.Gift}`);
-  const isTrade = path.endsWith(`/${InventoryDOSegment.Trade}`);
-  const isAddItem = path.endsWith(`/${InventoryDOSegment.AddItem}`);
-  const isRemoveItem = path.endsWith(`/${InventoryDOSegment.RemoveItem}`);
-  const isList = path === ApiEndpoint.Inventory.List || path.endsWith(`/${InventoryDOSegment.List}`);
-  if (request.method === HttpMethod.Post && (isGift || isTrade)) {
-    if (isGift) {
-      const { data, errorResponse } = await validateZodBody(request, env, InventoryGiftRequestSchema);
-      if (errorResponse) return errorResponse;
-      const body = data! as { itemId: string; targetUserId: string; idempotencyKey?: string };
-      const flowResult = await flowRunner.run(
-        inventoryTransferFlow,
-        createFlowContext({
-          env,
-          request,
-          authUserId: userId,
-          path,
-          method: request.method,
-          origin: requestOrigin,
-          operationId: body.idempotencyKey,
-        }),
-        { ...body, kind: 'gift' }
-      );
-      return new Response(JSON.stringify(flowResult.body), {
-        status: flowResult.status,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    const { data, errorResponse } = await validateZodBody(request, env, InventoryTradeRequestSchema);
-    if (errorResponse) return errorResponse;
-    const body = data! as { myItemId: string; theirItemId: string; targetUserId: string; idempotencyKey?: string };
-    const flowResult = await flowRunner.run(
-      inventoryTransferFlow,
-      createFlowContext({
-        env,
-        request,
-        authUserId: userId,
-        path,
-        method: request.method,
-        origin: requestOrigin,
-        operationId: body.idempotencyKey,
-      }),
-      { ...body, kind: 'trade' }
-    );
-    return new Response(JSON.stringify(flowResult.body), {
-      status: flowResult.status,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-  const doPath = isAddItem
-    ? InventoryDOPaths.AddItem
-    : isRemoveItem
-      ? InventoryDOPaths.RemoveItem
-      : isList
-        ? InventoryDOPaths.List
-        : InventoryDOPaths.Equip;
-  let validatedGenericBody = undefined;
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (isAddItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryAddItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    } else if (isRemoveItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryRemoveItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryEquipItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    }
-  }
-  const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-export async function handleMarketplaceRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const supportedMethods = path.endsWith('buy') || path.endsWith('sell')
-    ? [HttpMethod.Post]
-    : path.endsWith('list') || path.endsWith('history')
-      ? [HttpMethod.Get]
-      : [HttpMethod.Get, HttpMethod.Post];
-  const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
-  if (methodCheck) return methodCheck;
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for marketplace');
-  if (authResult instanceof Response) return authResult;
-  const authUserId = authResult.userId;
-  const ns = env.MARKETPLACE_DO;
-  if (!ns) return stubJson(env, { listings: [] });
-  const stub = ns.get(ns.idFromName('market'));
-  const listPath = path.endsWith('list');
-  const historyPath = path.endsWith('history');
-  const buyPath = path.endsWith('buy');
-  const sellPath = path.endsWith('sell');
-  let body: string | undefined;
-  if (request.method === HttpMethod.Post) {
-    if (buyPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceBuyRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      body = JSON.stringify({ ...data, buyerId: authUserId });
-    } else if (sellPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceSellRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      body = JSON.stringify({ ...data, sellerId: authUserId });
-    } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceEmptyRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      body = JSON.stringify(data);
-    }
-  }
-
-  if (historyPath) {
-    const doPathHistory = `${MarketplaceDOPaths.History}?userId=${encodeURIComponent(authUserId)}`;
-    const resHistory = await doFetch(stub, doPathHistory, { method: HttpMethod.Get });
-    const dataHistory = await resHistory.json().catch(() => ({}));
-    return new Response(JSON.stringify(dataHistory), {
-      status: resHistory.status,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) }
-    });
-  }
-
-  const doPath = listPath ? MarketplaceDOPaths.List : buyPath ? MarketplaceDOPaths.Buy : sellPath ? MarketplaceDOPaths.Sell : MarketplaceDOPaths.History;
-  const res = await doFetch(stub, doPath, { method: request.method, body });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-export async function handleTournamentRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const segment = path.endsWith(`/${TournamentDOSegment.Start}`)
-    ? 'start'
-    : path.endsWith(`/${TournamentDOSegment.Result}`)
-      ? 'result'
-      : path.endsWith(`/${TournamentDOSegment.Register}`)
-        ? 'register'
-        : path.endsWith('distribute-prizes')
-          ? 'distribute-prizes'
-          : 'bracket';
-  const supportedMethods = segment === 'bracket' ? [HttpMethod.Get] : [HttpMethod.Post];
-  const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
-  if (methodCheck) return methodCheck;
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for tournaments');
-  if (authResult instanceof Response) return authResult;
-  const authUserId = authResult.userId;
-  const ns = env.TOURNAMENT_DO;
-  if (!ns) return stubJson(env, { tournaments: [] });
-  const tournamentIdResult = extractAndValidateIdFromPath(path, ApiEndpoint.Tournament.Base, 'tournamentId', request.url);
-  if (!tournamentIdResult.id) {
-    return new Response(JSON.stringify({ error: tournamentIdResult.error ?? 'Tournament ID required' }), {
-      status: HttpStatus.BadRequest,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
-  }
-  const tournamentId = tournamentIdResult.id;
-  const stub = ns.get(ns.idFromName(tournamentId));
-
-  if (path.includes('distribute-prizes') && request.method === HttpMethod.Post) {
-    const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
-    if (authResult instanceof Response) return authResult;
-    const adminCheck = await checkAdminStatus(request, env);
-    if (!adminCheck.isAdmin) {
-      return new Response(JSON.stringify({ error: 'Forbidden: Admin required' }), {
-        status: HttpStatus.Forbidden,
-        headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-      });
-    }
-    const winnersRes = await doFetch(stub, TournamentDOPaths.Winners, { method: HttpMethod.Get });
-    const winnersData = (await winnersRes.json().catch(() => ({}))) as { winners?: Array<{ userId: string; place: number; prizeAmount: number }>; error?: string };
-    if (winnersData.error || !Array.isArray(winnersData.winners) || winnersData.winners.length === 0) {
-      return stubJson(env, winnersData.error ? { error: winnersData.error } : { distributed: 0, message: 'No winners' }, winnersRes.status === 200 ? HttpStatus.BadRequest : winnersRes.status);
-    }
-    let distributed = 0;
-    for (const w of winnersData.winners) {
-      const result = await earnGP(env, w.userId, w.prizeAmount, `Tournament ${tournamentId} place ${w.place}`, {
-        tournamentId,
-        place: w.place,
-        [MetadataField.IdempotencyKey]: `tournament-${tournamentId}-${w.userId}-${w.place}`,
-      });
-      if (result.success) distributed++;
-    }
-    return stubJson(env, { distributed, total: winnersData.winners.length });
-  }
-
-  const doPath =
-    segment === 'start'
-      ? TournamentDOPaths.Start
-      : segment === 'result'
-        ? TournamentDOPaths.Result
-        : segment === 'register'
-          ? TournamentDOPaths.Register
-          : TournamentDOPaths.Bracket;
-  let validatedGenericBody = undefined;
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (segment === 'register') {
-      const { data: registerData, errorResponse: registerError } = await validateZodBody(request.clone(), env, TournamentRegisterRequestSchema);
-      if (registerError) return registerError;
-      const body = registerData!;
-      validatedGenericBody = JSON.stringify({
-        userId: body.userId ?? authUserId,
-        displayName: body.displayName,
-        elo: body.elo,
-      });
-    } else if (segment === 'start') {
-      const { errorResponse: startError } = await validateZodBody(request.clone(), env, TournamentActionRequestSchema);
-      if (startError) return startError;
-      validatedGenericBody = JSON.stringify({});
-    } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, TournamentActionRequestSchema);
-      if (genError) return genError;
-      validatedGenericBody = JSON.stringify(genData);
-    }
-  }
-  const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
-
-export async function handleSettingsRequest(request: Request, env: Env, path: string): Promise<Response> {
-  const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
-  if (methodCheck) return methodCheck;
-  const ns = env.SETTINGS_DO;
-  if (!ns) return stubJson(env, { settings: {} });
-  const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for settings');
-  if (authResult instanceof Response) return authResult;
-  const userId = authResult.userId;
-  const stub = ns.get(ns.idFromName(userId));
-  if (path === ApiEndpoint.Settings.Base && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request.clone(), env, SettingsUpdateRequestSchema);
-    if (errorResponse) return errorResponse;
-    const body = data!;
-    const settingsBody = {
-      ...(body.theme !== undefined ? { theme: body.theme } : {}),
-      ...(body.notifications !== undefined ? { notifications: body.notifications } : {}),
-      ...(body.notificationsEnabled !== undefined && body.notifications === undefined ? { notifications: body.notificationsEnabled } : {}),
-      ...(body.soundEnabled !== undefined ? { soundEnabled: body.soundEnabled } : {}),
-      ...(body.language !== undefined ? { language: body.language } : {}),
-    };
-    const res = await doFetch(stub, SettingsDOPaths.Update, { method: HttpMethod.Post, body: JSON.stringify(settingsBody) });
-    const result = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(result), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-  }
-  if (path !== ApiEndpoint.Settings.Base) {
-    const validatedTarget = validateOpenApiUserIdPath(path, ApiEndpoint.Settings.Base, request, env);
-    if (validatedTarget.response) return validatedTarget.response;
-  }
-  const doPath = path.includes('update') ? SettingsDOPaths.Update : SettingsDOPaths.Get;
-  let validatedGenericBody = undefined;
-  if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, SettingsUpdateRequestSchema);
-    if (genError) return genError;
-    const body = genData!;
-    validatedGenericBody = JSON.stringify({
-      ...(body.theme !== undefined ? { theme: body.theme } : {}),
-      ...(body.notifications !== undefined ? { notifications: body.notifications } : {}),
-      ...(body.notificationsEnabled !== undefined && body.notifications === undefined ? { notifications: body.notificationsEnabled } : {}),
-      ...(body.soundEnabled !== undefined ? { soundEnabled: body.soundEnabled } : {}),
-      ...(body.language !== undefined ? { language: body.language } : {}),
-    });
-  }
-  const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
-}
+export { handleRewardRequest, handleFeedRequest, handlePartyRequest, handleNotificationRequest, handleDiscoveryRequest, handleInventoryRequest, handleMarketplaceRequest, handleTournamentRequest, handleSettingsRequest } from './feature-handlers-stateful';
 
 

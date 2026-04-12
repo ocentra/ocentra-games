@@ -5,6 +5,7 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { getTokenForFetch } from '@tests/test-setup-core';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
@@ -57,7 +58,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const response = await worker.fetch(url, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ hostId }),
+        body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, hostId }),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
     const data = (await response.json()) as { roomId?: string; joined?: boolean; room?: unknown };
@@ -77,7 +78,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const createRes = await worker.fetch(createUrl, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ hostId }),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, hostId }),
     }, token);
     expect(createRes.status).toBe(HttpStatus.Ok);
     const createData = (await createRes.json()) as { roomId?: string; joined?: boolean };
@@ -91,17 +92,17 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const joinRes = await worker.fetch(joinUrl, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId: guestId }),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyJoinRequest, userId: guestId }),
     }, token);
     expect(joinRes.status).toBe(HttpStatus.Ok);
     const joinData = (await joinRes.json()) as { joined?: boolean };
     expect(joinData.joined).toBe(true);
 
-    const leaveUrl = `${baseUrl}${ApiEndpoint.Rooms.Base}/${roomId}/leave`;
+    const leaveUrl = ApiEndpoint.Rooms.Leave(roomId!);
     const leaveRes = await worker.fetch(leaveUrl, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId: guestId }),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyLeaveRequest, userId: guestId }),
     }, token);
     expect(leaveRes.status).toBe(HttpStatus.Ok);
     const leaveData = (await leaveRes.json()) as { left?: boolean };
@@ -114,7 +115,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const response = await worker.fetch(url, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, hostId: undefined }),
     }, token);
     expect(response.status).toBe(HttpStatus.BadRequest);
     await response.text().catch(() => undefined);
@@ -125,7 +126,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const createRes = await worker.fetch(buildApiUrl(ApiEndpoint.Rooms.Base, { baseUrl }), {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ hostId: 'host-join-test' }),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, hostId: 'host-join-test' }),
     }, token);
     const createData = (await createRes.json()) as { roomId?: string };
     const roomId = createData.roomId ?? 'any-room-id';
@@ -133,7 +134,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const response = await worker.fetch(joinUrl, {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyJoinRequest, userId: undefined }),
     }, token);
     expect(response.status).toBe(HttpStatus.BadRequest);
     await response.text().catch(() => undefined);

@@ -5,6 +5,7 @@ import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { getTokenForFetch } from '@tests/test-setup-core';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
 import { getValidRequestHeaders } from '@tests/helpers/test-helpers';
@@ -93,9 +94,14 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       method: HttpMethod.Post,
       headers: { ...getValidRequestHeaders(), [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
       body: JSON.stringify({
+        ...OpenApiExampleValue.SyncFromSolanaRequest,
         matchId,
         solanaMatchPda: 'pda-placeholder',
-        state: { stateHash: 'abc', turnCount: 0, gameType: 0, status: 'active' },
+        state: {
+          ...OpenApiExampleValue.SyncFromSolanaRequest.state,
+          stateHash: 'abc',
+          turnCount: 0,
+        },
         slot: 0,
       }),
     }, token);
@@ -119,9 +125,14 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       method: HttpMethod.Post,
       headers: { ...getValidRequestHeaders(), [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
       body: JSON.stringify({
+        ...OpenApiExampleValue.SyncFromSolanaRequest,
         matchId,
         solanaMatchPda: 'pda-placeholder',
-        state: { stateHash: 'h1', turnCount: 1, gameType: 0, status: 'active' },
+        state: {
+          ...OpenApiExampleValue.SyncFromSolanaRequest.state,
+          stateHash: 'h1',
+          turnCount: 1,
+        },
         slot: 1,
       }),
     }, token);

@@ -9,7 +9,6 @@ export const IdempotencyKeyFormat = {
 export type IdempotencyKeyFormat = typeof IdempotencyKeyFormat[keyof typeof IdempotencyKeyFormat];
 
 export const IdempotencyKeyLimits = {
-  MinLength: 1,
   MaxLength: 100,
   UuidV4Length: 36,
   CustomMinLength: 8,
@@ -54,11 +53,6 @@ export function asIdempotencyKey(value: string): IdempotencyKey {
 
   if (value !== value.trim()) {
     throw new Error(ErrorMessage.IdempotencyKeyCannotHaveWhitespace);
-  }
-
-  if (value.length < IdempotencyKeyLimits.MinLength) {
-    const unit = IdempotencyKeyLimits.MinLength === 1 ? ErrorMessage.CharacterUnit.Singular : ErrorMessage.CharacterUnit.Plural;
-    throw new Error(`${ErrorMessage.IdempotencyKeyMustBeAtLeast} ${IdempotencyKeyLimits.MinLength}${unit}`);
   }
 
   if (value.length > IdempotencyKeyLimits.MaxLength) {

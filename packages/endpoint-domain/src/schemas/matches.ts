@@ -32,7 +32,7 @@ const MatchFinalStateShape = {
   phase: z.enum(MatchPhaseValues),
   current_turn: z.number().int().nonnegative().optional(),
   current_player: z.string().optional(),
-  board_state: z.object(MatchBoardStateShape).strict().optional(),
+  board_state: z.object(MatchBoardStateShape).strict(),
   winner: z.string().optional(),
 };
 

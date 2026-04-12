@@ -5,8 +5,9 @@ import { createToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildTestApiUrlForEndpoint, buildTestApiUrlForEndpointWithPath, buildTestDisputesEvidenceApiUrl, getValidRequestHeaders } from '@tests/helpers/test-helpers';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
-import { FormField } from '@/constants/form-fields';
+import { FormField } from '@ocentra/endpoint-domain/constants/form-fields';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { TestConfig } from '@tests/constants/test-constants';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
@@ -64,10 +65,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Create Dispute: should create dispute with JSON payload'), async () => {
       const token = await createToken();
       const disputeData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
         dispute_id: `test-dispute-${Date.now()}`,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'test description'
       };
       logInfo('[TEST] Testing dispute creation', getStackTrace(), { disputeId: disputeData.dispute_id, matchId: disputeData.match_id }, LOG_TEST_OPERATIONS);
 
@@ -101,10 +101,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Create Dispute: should reject dispute creation without authentication'), async () => {
       const token = await createToken();
       const disputeData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
         dispute_id: `test-dispute-${Date.now()}`,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'test description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -124,9 +123,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Create Dispute: should auto-generate dispute_id if not provided'), async () => {
       const token = await createToken();
       const disputeData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
+        dispute_id: undefined,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'test description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -177,10 +176,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           [HttpHeader.Origin]: TestConfig.LocalhostOrigin
         },
         body: JSON.stringify({
+          ...OpenApiExampleValue.DisputeCreateRequest,
           match_id: TestConfig.TestMatchId,
-          reason: 'cheating',
-          description: 'test description',
-          timestamp: ''
+          timestamp: '',
         })
       }, token);
 
@@ -195,8 +193,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const token = await createToken();
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
-      formData.append(FormField.Reason, 'test reason');
-      formData.append(FormField.Description, 'test description');
+      formData.append(FormField.Reason, OpenApiExampleValue.DisputeEvidenceRequest.reason);
+      formData.append(FormField.Description, OpenApiExampleValue.DisputeEvidenceRequest.description);
       const testFile = new File(['evidence content'], 'evidence.txt', { type: HttpContentType.TextPlain });
       formData.append('evidence', testFile);
 
@@ -221,10 +219,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const token = await createToken();
       const disputeId = `test-dispute-get-${Date.now()}`;
       const disputeData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'test description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -292,10 +289,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const token = await createToken();
       const disputeId = `test-dispute-update-${Date.now()}`;
       const initialData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'initial description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -313,9 +309,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       const updatedData = {
+        ...OpenApiExampleValue.DisputeUpdateRequest,
         match_id: initialData.match_id,
-        reason: 'bug',
-        description: 'updated description'
       };
 
       const disputeUrl = buildTestApiUrlForEndpointWithPath(ApiEndpoint.Disputes.Base, disputeId);
@@ -345,7 +340,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
           [HttpHeader.Origin]: TestConfig.LocalhostOrigin
         },
-        body: JSON.stringify({ match_id: TestConfig.TestMatchId, reason: 'cheating' })
+        body: JSON.stringify(OpenApiExampleValue.DisputeUpdateRequest)
       }, token);
 
       expect(response.status).toBe(HttpStatus.Unauthorized);
@@ -390,11 +385,13 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should upload evidence file with metadata'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-${Date.now()}`;
+      const evidenceReason = OpenApiExampleValue.DisputeEvidenceRequest.reason;
+      const evidenceDescription = OpenApiExampleValue.DisputeEvidenceRequest.description;
 
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
-      formData.append(FormField.Reason, 'test reason');
-      formData.append(FormField.Description, 'test description');
+      formData.append(FormField.Reason, evidenceReason);
+      formData.append(FormField.Description, evidenceDescription);
       const testFile = new File(['test evidence content'], 'evidence.txt', { type: HttpContentType.TextPlain });
       formData.append('evidence', testFile);
 
@@ -502,10 +499,9 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       const disputeId = `test-dispute-evidence-append-${Date.now()}`;
 
       const disputeData = {
+        ...OpenApiExampleValue.DisputeCreateRequest,
         dispute_id: disputeId,
         match_id: TestConfig.TestMatchId,
-        reason: 'cheating',
-        description: 'initial description'
       };
 
       const disputesUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Disputes.Base);
@@ -567,11 +563,13 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Evidence Upload: should handle evidence upload with metadata fields'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-metadata-${Date.now()}`;
+      const evidenceReason = OpenApiExampleValue.DisputeEvidenceRequest.reason;
+      const evidenceDescription = OpenApiExampleValue.DisputeEvidenceRequest.description;
 
       const formData = new FormData();
       formData.append(FormField.MatchId, TestConfig.TestMatchId);
-      formData.append(FormField.Reason, 'updated reason');
-      formData.append(FormField.Description, 'updated description');
+      formData.append(FormField.Reason, evidenceReason);
+      formData.append(FormField.Description, evidenceDescription);
       const testFile = new File(['evidence'], 'evidence.txt', { type: HttpContentType.TextPlain });
       formData.append('evidence', testFile);
 
@@ -603,8 +601,8 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       expect(getResponse.status).toBe(HttpStatus.Ok);
       const dispute = await getResponse.json() as { match_id?: string; reason?: string; description?: string };
       expect(dispute.match_id).toBe(TestConfig.TestMatchId);
-      expect(dispute.reason).toBe('updated reason');
-      expect(dispute.description).toBe('updated description');
+      expect(dispute.reason).toBe(evidenceReason);
+      expect(dispute.description).toBe(evidenceDescription);
     });
 
   it(testName('Evidence Upload: should reject non-string metadata fields'), async () => {
