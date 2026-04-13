@@ -65,7 +65,7 @@ jobs:
 
   sync-r2-main:
     name: R2 sync dev (ocentra-assets-test, incremental)
-    if: ${{ false }}
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     needs: [cloudflare-security]
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -110,7 +110,7 @@ jobs:
 
   deploy-worker-dev:
     name: Deploy claim-storage-dev Worker
-    if: ${{ false }}
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     needs: [sync-r2-main]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -136,13 +136,13 @@ jobs:
       - name: Deploy Worker (development)
         working-directory: infra/cloudflare
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          CLOUDFLARE_ACCOUNT_ID: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
         run: npm ci && npm run deploy:dev
 
   deploy-preview-main:
     name: Deploy Pages preview (main)
-    if: ${{ false }}
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     needs: [deploy-worker-dev]
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -155,15 +155,15 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
-          VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
-          VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
-          VITE_LOGS_API_KEY: ${{ secrets.LOGS_API_KEY }}
+          VITE_R2_WORKER_URL: "${{ secrets.VITE_R2_WORKER_URL }}"
+          VITE_R2_BUCKET_NAME: "${{ secrets.VITE_R2_BUCKET_NAME }}"
+          VITE_LOGS_WORKER_URL: "${{ secrets.VITE_LOGS_WORKER_URL }}"
+          VITE_LOGS_API_KEY: "${{ secrets.VITE_LOGS_API_KEY }}"
       - name: Deploy preview to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          accountId: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
           command: pages deploy dist --project-name=ocentra-games --branch=main
 
   sync-r2-production:
@@ -201,12 +201,12 @@ jobs:
       - name: Sync assets to production R2
         env:
           SYNC_ENV: production
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLAIM_STORAGE_ASSETS_URL_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_URL_PROD }}
-          CLAIM_STORAGE_ASSETS_TOKEN_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_PROD }}
-          ASSETS_WORKER_URL_PROD: ${{ secrets.ASSETS_WORKER_URL_PROD }}
-          ASSETS_WORKER_TOKEN_PROD: ${{ secrets.ASSETS_WORKER_TOKEN_PROD }}
+          CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          CLOUDFLARE_ACCOUNT_ID: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          CLAIM_STORAGE_ASSETS_URL_PROD: "${{ secrets.CLAIM_STORAGE_ASSETS_URL_PROD }}"
+          CLAIM_STORAGE_ASSETS_TOKEN_PROD: "${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_PROD }}"
+          ASSETS_WORKER_URL_PROD: "${{ secrets.ASSETS_WORKER_URL_PROD }}"
+          ASSETS_WORKER_TOKEN_PROD: "${{ secrets.ASSETS_WORKER_TOKEN_PROD }}"
         run: npm run sync:assets:prod -- --apply --prune
 
   deploy-worker-prod:
@@ -237,8 +237,8 @@ jobs:
       - name: Deploy Worker (production)
         working-directory: infra/cloudflare
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          CLOUDFLARE_ACCOUNT_ID: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
         run: npm ci && npm run deploy
 
   deploy-production-pages:
@@ -256,13 +256,13 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
-          VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
-          VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
-          VITE_LOGS_API_KEY: ${{ secrets.LOGS_API_KEY }}
+          VITE_R2_WORKER_URL: "${{ secrets.VITE_R2_WORKER_URL }}"
+          VITE_R2_BUCKET_NAME: "${{ secrets.VITE_R2_BUCKET_NAME }}"
+          VITE_LOGS_WORKER_URL: "${{ secrets.VITE_LOGS_WORKER_URL }}"
+          VITE_LOGS_API_KEY: "${{ secrets.VITE_LOGS_API_KEY }}"
       - name: Deploy production to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          accountId: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
           command: pages deploy dist --project-name=ocentra-games --branch=production
