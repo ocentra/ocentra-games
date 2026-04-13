@@ -11,6 +11,7 @@ import {
   CreditAction as EndpointDomainCreditAction,
   Currency as EndpointDomainCurrency,
 } from '@ocentra/endpoint-domain/constants/credits';
+import { IdempotencyKeyPrefix as EndpointDomainIdempotencyKeyPrefix } from '@ocentra/endpoint-domain/constants/idempotency';
 import { ApiEndpoint as EndpointDomainApi } from '@ocentra/endpoint-domain/constants/cloudflare';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,6 +87,7 @@ const Currency = EndpointDomainCurrency;
 const HttpContentType = EndpointDomainContentType;
 const HttpAuthScheme = EndpointDomainHttpAuthScheme;
 const CreditAction = EndpointDomainCreditAction;
+const IdempotencyKeyPrefix = EndpointDomainIdempotencyKeyPrefix;
 const TestConfig = extractTestConfig();
 const TestDefaults = extractTestDefaults();
 
@@ -105,6 +107,8 @@ export const HttpContentType = ${JSON.stringify(HttpContentType, null, 2)};
 export const HttpAuthScheme = ${JSON.stringify(HttpAuthScheme, null, 2)};
 
 export const CreditAction = ${JSON.stringify(CreditAction, null, 2)};
+
+export const IdempotencyKeyPrefix = ${JSON.stringify(IdempotencyKeyPrefix, null, 2)};
 
 export const TestConfig = ${JSON.stringify(TestConfig, null, 2)};
 

@@ -177,7 +177,8 @@ async function flushDebugLogsToR2(entries: InternalLogEntry[], force?: boolean):
   // Optimize: Skip R2 flush if we're in a high-frequency testing scenario (like Schemathesis)
   // unless explicitly forced, to prevent excessive R2 I/O in the request loop
   const context = getCurrentContext();
-  if (context?.testName?.toLowerCase().includes('schemathesis') && !force) {
+  const testName = context?.testName?.toLowerCase();
+  if (testName?.includes('schemathesis') || testName?.includes('k6')) {
     return;
   }
 
