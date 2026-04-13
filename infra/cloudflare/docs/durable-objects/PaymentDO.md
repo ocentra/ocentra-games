@@ -1,24 +1,26 @@
 # PaymentDO
 
-**Purpose:** Payment event storage and status; receives Stripe webhook payloads (signature verified by handler). Query param for status. PaymentDOStoragePrefix for events.
+**Purpose:** Payment event storage and payment status tracking. The DO stores webhook events, transition markers, and payment metadata keyed by user or payment identifier.
 
-**Shard key:** userId (webhooks-stripe: `ns.idFromName(userId)`); payments handler uses extractIdFromPath for payment/session id.
+**Shard key:** `userId` for webhook-backed state and the payment/session identifier for status lookup.
 
-**HTTP surface:** PaymentDOSegment paths (endpoint-domain); POST for event ingestion; GET for status (query params from endpoint-domain QueryParam).
+**HTTP surface:** `PaymentDOSegment` paths from endpoint-domain for event ingestion and status lookup.
 
-**Message types:** N/A (HTTP only).
+**Storage:** `PaymentDOStoragePrefix` from boundary-domain; local state for payment events and status.
 
-**Storage:** PaymentDOStoragePrefix (boundary-domain); PaymentEventSchema/ PaymentEvent types from endpoint-domain schemas.
+**Flows that use it:** `PaymentCheckoutFlow` creates payment state before Stripe checkout, and `StripeWebhookFlow` dedupes events, advances payment state, and triggers credit purchase on success.
 
-**Handlers:** [handlePaymentRequest](../features/payments-and-stripe.md) (payments.ts), [handleStripeWebhookRequest](../features/payments-and-stripe.md) (webhooks-stripe.ts); reconciliation logic (reconciliation.ts) reads PaymentDO by userId.
+**Handlers:** `payments.ts` and `webhooks-stripe.ts`, plus reconciliation logic. The handler layer dispatches into payment flows for the multi-step path.
 
-**Domain constants:** endpoint-domain: PaymentDOSegment, QueryParam, PaymentEventSchema, PaymentEvent; boundary-domain: PaymentDOStoragePrefix.
+**Domain constants:** endpoint-domain: `PaymentDOSegment`, `QueryParam`, `PaymentEventSchema`, `PaymentEvent`; boundary-domain: `PaymentDOStoragePrefix`.
 
 ```mermaid
 sequenceDiagram
-  participant Webhook
+  participant Flow
   participant PaymentDO
-  Webhook->>PaymentDO: fetch event path
+  participant Stripe
+  Flow->>PaymentDO: create, ingest, or query payment state
+  Stripe->>Flow: signed webhook event
   PaymentDO->>PaymentDO: storage put event
-  PaymentDO-->>Webhook: 200
+  PaymentDO-->>Flow: 200 or status JSON
 ```

@@ -2,13 +2,18 @@
 
 One doc per Durable Object. Content is derived from the DO class and its callers only.
 
+Flows coordinate cross-domain work. Durable Objects own local state, journaling, and invariants, and they should not orchestrate sibling DOs directly.
+
 ```mermaid
 flowchart LR
-  Handlers[Handlers] --> DOs[Durable Objects]
+  Handlers[Handlers] --> Flows[Flows]
+  Flows --> DOs[Durable Objects]
   DOs --> Storage[DO storage state]
   DOs --> R2[R2 archive paths]
   DOs --> WS[WebSocket channels]
 ```
+
+## DO index
 
 | DO | Doc |
 | -- | --- |
@@ -41,3 +46,4 @@ flowchart LR
 | UserKeysDO | [UserKeysDO.md](UserKeysDO.md) |
 
 See [ARCHITECTURE.md](../ARCHITECTURE.md#do-summary-and-detail-links) for the DO summary table with one-line purpose and links back here.
+See [../flows/README.md](../flows/README.md) for the orchestration layer that coordinates these DOs.

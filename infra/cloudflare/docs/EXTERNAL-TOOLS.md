@@ -82,7 +82,7 @@ These must be installed separately and are called directly:
      - Economic correctness under load (no double spending)
      - Graceful degradation under load (Rule 4.3.1)
    - **WHAT FAILURE MEANS**: If correctness rate drops, concurrent requests can cause economic violations
-   - **Default test file**: `tests/k6/concurrency.test.js` (invoked by `npm run test:load`). Other k6 scripts in `tests/k6/` (e.g. `badge-concurrent-unlock.test.js`, `idempotency-concurrent.test.js`) can be run manually: `k6 run tests/k6/<script>.js`.
+   - **Default test file**: `tests/k6/concurrency.test.js` (invoked by `npm run test:k6`). Other k6 scripts in `tests/k6/` (e.g. `badge-concurrent-unlock.test.js`, `idempotency-concurrent.test.js`) can be run manually: `k6 run tests/k6/<script>.js`.
 
 2. **CodeQL** - Static analysis
    - Command: `codeql database create ...` and `codeql database analyze ...`

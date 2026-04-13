@@ -1,28 +1,27 @@
 # TournamentDO
 
-**Purpose:** Per-tournament state: register (userId, displayName, elo), bracket (GET), start (POST), result (POST), winners (GET). TournamentState: status (registration/running/ended), participants, bracket (BracketSlot[]). Handler calls earnGP for prize distribution (admin distribute-prizes).
+**Purpose:** Per-tournament state for registration, bracket, start, result, and winners. The DO owns tournament lifecycle state and the canonical winner list.
 
-**Shard key:** tournamentId (handler: extractIdFromPath(path, ApiEndpoint.Tournament.Base)).
+**Shard key:** `tournamentId`.
 
-**HTTP surface:** POST `/${TournamentDOSegment.Register}`; GET `/${TournamentDOSegment.Bracket}`; POST TournamentDOPaths.Start, TournamentDOPaths.Result; GET TournamentDOPaths.Winners.
+**HTTP surface:** `TournamentDOSegment` and `TournamentDOPaths` from endpoint-domain for register, bracket, start, result, and winners.
 
-**Message types:** N/A (HTTP only).
+**Storage:** `TournamentDOStoragePrefix` from boundary-domain; local tournament state and bracket data.
 
-**Storage:** TournamentDOStoragePrefix.Tournament (boundary-domain): TournamentState.
+**Flows that use it:** `TournamentPrizeDistributionFlow` reads winners from `TournamentDO` and awards prizes through `CreditsDO`.
 
-**Handlers:** handleTournamentRequest (feature-handlers.ts); distribute-prizes uses Winners then earnGP per winner.
+**Handlers:** `handleTournamentRequest` in the feature handler path. The handler layer dispatches into the tournament flow for prize distribution.
 
-**Domain constants:** endpoint-domain: TournamentDOSegment, TournamentDOPaths, Http*; boundary-domain: TournamentDOStoragePrefix.
+**Domain constants:** endpoint-domain: `TournamentDOSegment`, `TournamentDOPaths`, `Http*`; boundary-domain: `TournamentDOStoragePrefix`.
 
 ```mermaid
 sequenceDiagram
-  participant Handler
+  participant Flow
   participant TournamentDO
   participant CreditsDO
-  Handler->>TournamentDO: fetch Register/Bracket/Start/Result/Winners
-  opt distribute-prizes (admin)
-    Handler->>TournamentDO: GET Winners
-    Handler->>CreditsDO: earnGP per winner
+  Flow->>TournamentDO: fetch register/bracket/start/result/winners
+  opt prize distribution
+    Flow->>CreditsDO: award GP per winner
   end
-  TournamentDO-->>Handler: JSON
+  TournamentDO-->>Flow: JSON
 ```

@@ -62,10 +62,9 @@ The current suite is "Credits-Heavy". While it proves our most critical money-pa
 - **Payment -> Credit Chain**: Verifying the Stripe Webhook -> `PaymentDO` -> `CreditsDO` flow handles concurrent webhook retries without double-crediting.
 
 ### Current Issues
-- Some scripts still use local assumptions that need to stay synchronized with the current worker contract
-- The harness can fail on startup or logging behavior before the application logic is exercised
-- **Logger Bottleneck**: Local logging I/O (specifically R2 flushing in dev) creates backpressure that causes false-positive timeouts under load.
-- The load suite is still too narrow to claim it covers every major orchestration chain
+- **Contract Synchronization**: Load scripts must stay synchronized with the latest `endpoint-domain` exports to avoid payload drift.
+- **Harness Stability**: The harness is currently stable (verified <50ms p95 on local credits contention), but requires monitoring for R2 flush backpressure in high-VU runs.
+- **Coverage Depth**: The suite remains focused on Credits/Badges; the [Comprehensive Gap Analysis](#comprehensive-gap-analysis) must be addressed to cover the full match lifecycle.
 
 ## Principles
 
@@ -113,55 +112,40 @@ The current suite is "Credits-Heavy". While it proves our most critical money-pa
 ## Inventory
 
 ### 1. Credits Contention
-Files:
-- `infra/cloudflare/tests/k6/concurrency.test.js`
-- `infra/cloudflare/tests/k6/same-user-contention.test.js`
-- `infra/cloudflare/tests/k6/idempotency-concurrent.test.js`
-- `infra/cloudflare/tests/k6/burst-ddos.test.js`
+Files: `concurrency.test.js`, `same-user-contention.test.js`, `idempotency-concurrent.test.js`, `burst-ddos.test.js`
 
-Coverage:
-- balance
-- purchase
-- concurrent purchase replay
-- same-user contention
-- burst rejection behavior
-
-Status:
-- Keep
-- Fix to remain aligned with the current purchase contract
+#### Technical Invariants Verified:
+| Invariant | Method / Route | Success Criteria |
+| :--- | :--- | :--- |
+| **Atomic Balance** | `POST /credits/:userId/purchase` | Final Balance must equal $Initial + \sum(Added)$ across isolated VUs. |
+| **Write Isolation** | `POST /credits/:shared/purchase` | Concurrent writes to a single `CreditsDO` must result in sequential-equivalent state (no lost updates). |
+| **Idempotent Replay** | `Header: Idempotency-Key` | Concurrent duplicate keys must yield exactly 1 execution + $N$ cached responses. |
+| **Burst Rejection** | 500+ requests/sec spike | System must return `429 TooManyRequests` without 500s or state corruption. |
+| **Contract Schema** | `balance`, `purchase` | Responses must strictly match `@ocentra/endpoint-domain` schemas under load. |
 
 ### 2. Badge / Reward Contention
-Files:
-- `infra/cloudflare/tests/k6/badge-concurrent-unlock.test.js`
-- `infra/cloudflare/tests/k6/cross-endpoint-concurrency.test.js`
+Files: `badge-concurrent-unlock.test.js`, `cross-endpoint-concurrency.test.js`
 
-Coverage:
-- badge unlock contention
-- badge and credits concurrent state interaction
+#### Technical Invariants Verified:
+| Invariant | Method / Route | Success Criteria |
+| :--- | :--- | :--- |
+| **Zero-Sum Rewards** | `POST /badges/:userId/claim` | Only ONE reward is issued regardless of concurrent claim attempts for the same badge. |
+| **Cross-Domain Safety** | `/credits` + `/badges` | Concurrent updates to Credits and Badges domains do not corrupt the shared Profile state. |
+| **Idempotency** | `/claim` | Subsequent claims for an already unlocked badge return successful `already_unlocked: true` without double-crediting. |
 
 Status:
 - Keep
 - Fix if the badge reward contract changes
 
-### 3. Soak And Memory Pressure
-Files:
-- `infra/cloudflare/tests/k6/soak.test.js`
-- `infra/cloudflare/tests/k6/memory-pressure.test.js`
+### 3. Infrastructure & Resilience
+Files: `soak.test.js`, `memory-pressure.test.js`, `fd-exhaustion.test.js`
 
-Coverage:
-- longer runtime stability
-- resource pressure
-
-Status:
-- Keep
-- Treat as infrastructure pressure, not business-logic correctness
-
-### 4. WebSocket / FD Pressure
-Files:
-- `infra/cloudflare/tests/k6/fd-exhaustion.test.js`
-
-Coverage:
-- signaling / websocket connection pressure
+#### Technical Invariants Verified:
+| Invariant | Stimulus | Success Criteria |
+| :--- | :--- | :--- |
+| **Connection Storm** | WebSocket connect bursts | `SignalingDO` handles 100+ concurrent upgrades without FD exhaustion or handshake failure. |
+| **Heap Stability** | 100KB+ payloads | Worker process does not exceed memory limit or trigger OOM restarts. |
+| **Soak Stability** | 15min @ 50 RPS | Resource usage (CPU/Memory) remains linear; no leaks detected in `ctx.storage`. |
 
 Status:
 - Keep

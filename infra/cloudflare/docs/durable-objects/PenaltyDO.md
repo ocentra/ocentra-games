@@ -4,7 +4,7 @@
 
 **Shard key:** userId.
 
-**HTTP surface:** PenaltyDOPaths (endpoint-domain): Issue, Appeal, ReviewAppeal, Status. Path includes 'issue' → Issue; 'appeal' (not 'review') → Appeal; 'review' → ReviewAppeal; else Status.
+**HTTP surface:** PenaltyDOPaths (endpoint-domain): Issue, Appeal, ReviewAppeal, Status. Path includes 'issue' -> Issue; 'appeal' (not 'review') -> Appeal; 'review' -> ReviewAppeal; else Status.
 
 **Message types:** N/A (HTTP only).
 

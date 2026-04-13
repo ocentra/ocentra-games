@@ -1,24 +1,24 @@
 # CreditsDO
 
-**Purpose:** GP/AC balance and ledger; idempotent award, batch award, earn, consume, purchase, plan state; escrow reserve/settle/consume/expire. Processes idempotency keys; flushes ledger to R2 (CREDITS_LEDGER_ARCHIVE) when configured. Plan tiers and allowance for AI escrow.
+**Purpose:** GP/AC balance and ledger for earn, consume, purchase, batch award, and escrow state. The DO is the authoritative local store for balance, transaction history, and idempotency tracking.
 
-**Shard key:** userId (handlers and MatchCoordinatorDO use `env.CREDITS_DO.idFromName(userId)` or `idFromName('match-'+matchId)` for match-scoped credits).
+**Shard key:** `userId`.
 
-**HTTP surface:** Paths from CreditsDOEndpoints (endpoint-domain): Award, BatchAward, Balance, Earn, Consume, Purchase, PlanStateSet; escrow paths for reserve, settle, consume, expire. POST/GET as per path.
+**HTTP surface:** Paths from `CreditsDOPaths` in endpoint-domain: award, batch-award, balance, earn, consume, purchase, plan-state-set, and escrow paths for reserve, settle, consume, and expire.
 
-**Message types:** N/A (HTTP only).
+**Storage:** `CreditsDOStoragePrefix` from boundary-domain; local state includes `gp_balance`, `ac_balance`, `ledger`, `processed`, and escrow records. Optional R2 archive for older ledger entries.
 
-**Storage:** CreditsDOStoragePrefix (boundary-domain); in-DO state: gp_balance, ac_balance, ledger, processed (idempotency), escrow records. Optional R2 archive.
+**Flows that use it:** `MatchFinalizationFlow`, `RewardClaimFlow`, `StripeWebhookFlow`, and `TournamentPrizeDistributionFlow`.
 
-**Handlers:** [handleCreditsRequest](../features/credits-and-economy.md) (credits.ts), [handleAIEscrowRequest](../features/ai-integration.md) (ai-escrow.ts), webhooks-stripe (credit grant), feature-handlers (admin credits/plan). MatchCoordinatorDO calls CreditsDO for batch award.
+**Handlers:** `credits.ts`, `ai-escrow.ts`, stripe webhook handling, and admin credits/plan routes. The handler layer dispatches into flows for multi-step work.
 
-**Domain constants:** endpoint-domain: CreditsDO, DOBaseUrl, Http*, CreditLedgerType, CreditLedgerSource, Currency, TransactionType, MetadataField, validateIdempotencyKey; boundary-domain: CreditsDOStoragePrefix.
+**Domain constants:** endpoint-domain: `CreditsDOPaths`, `Http*`, `CreditLedgerType`, `CreditLedgerSource`, `Currency`, `TransactionType`, `MetadataField`, `validateIdempotencyKey`; boundary-domain: `CreditsDOStoragePrefix`.
 
 ```mermaid
 sequenceDiagram
-  participant Handler
+  participant Flow
   participant CreditsDO
-  Handler->>CreditsDO: fetch Award/Balance/Earn/Consume/Escrow...
+  Flow->>CreditsDO: fetch Award/Balance/Earn/Consume/Escrow
   CreditsDO->>CreditsDO: loadState; process idempotency; storage put
-  CreditsDO-->>Handler: JSON success/balance/error
+  CreditsDO-->>Flow: JSON success/balance/error
 ```

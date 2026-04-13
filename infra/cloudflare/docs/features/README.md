@@ -1,16 +1,19 @@
 # Feature docs
 
-One doc per feature area. Content and flows are derived from handler and DO code only.
+One doc per feature area. Content comes from handler, flow, and DO code.
 
 ```mermaid
 flowchart LR
   Router[Route manifest] --> Handlers[Feature handlers]
-  Handlers --> Social[Social features]
-  Handlers --> Realtime[Realtime features]
-  Handlers --> Economy[Economy features]
-  Handlers --> AI[AI features]
-  Handlers --> Discovery[Discovery features]
+  Handlers --> Flows[Flow orchestration]
+  Flows --> Social[Social features]
+  Flows --> Realtime[Realtime features]
+  Flows --> Economy[Economy features]
+  Flows --> AI[AI features]
+  Flows --> Discovery[Discovery features]
 ```
+
+## Feature index
 
 | Feature | Doc |
 | ------- | --- |
@@ -30,4 +33,5 @@ flowchart LR
 | Match coordination | [match-coordination.md](match-coordination.md) |
 | AI integration | [ai-integration.md](ai-integration.md) |
 
-See [ARCHITECTURE.md](../ARCHITECTURE.md#handlers-and-feature--do-links) for the handler-to-feature table.
+See [../flows/README.md](../flows/README.md) for the flow layer that coordinates multi-DO work.
+See [../ARCHITECTURE.md](../ARCHITECTURE.md#component-breakdown) for the handler-to-feature table.

@@ -319,7 +319,7 @@ Check finished: 45 passed, 0 failed
 
 ```powershell
 cd infra/cloudflare
-npm run test:load
+npm run test:k6
 ```
 
 **What it does:**
@@ -779,7 +779,7 @@ npm run test:production -- tests/unit/auth.test.ts
 | `npx tsx test-runner/script/run-all-tests.ts local` | Legacy full run (with prompts) | Free | Cross-platform |
 | `npx tsx test-runner/script/run-all-tests.ts real` | Legacy full run vs real worker (set WORKER_URL) | **Costs** | Cross-platform |
 | `npm run test:schemathesis` | API fuzzing (worker on 8787) | Free | Cross-platform |
-| `npm run test:load` | k6 load test | Free | Cross-platform |
+| `npm run test:k6` | k6 load test | Free | Cross-platform |
 | `npm run test:mutation` | Stryker mutation tests | Free | Cross-platform |
 | `npm run test:property` | Property-based invariants | Free | Cross-platform |
 

@@ -1,34 +1,35 @@
 # Match Coordination
 
-**Purpose:** In-match state and real-time updates: MatchCoordinatorDO (per matchId), MatchShardDO, PlayerShardDO, StateSyncCoordinatorDO. HTTP: match record validate/upload/get/delete, anonymize, transparency; WebSocket: upgrade to MatchCoordinatorDO for live game channel. Match records stored in R2 (MATCHES_BUCKET); DO uses storage and R2 for archive.
+**Purpose:** Match storage, retrieval, finalization, and live WebSocket coordination. Match state lives in `MatchCoordinatorDO`; final archive and reward settlement are handled by the flow layer.
 
-**Handlers:** `handleMatchRequest` (handlers/matches.ts), `handleWsRequest` (handlers/ws.ts). Routes: Matches prefix (path with matchId), WS prefix (match WS to coordinator). Auth and signature verification where required.
+**Handlers:** `handleMatchRequest` (`handlers/matches.ts`) and `handleWsRequest` (`handlers/ws.ts`).
 
-**Durable Objects:** [MatchCoordinatorDO](../durable-objects/MatchCoordinatorDO.md), [MatchShardDO](../durable-objects/MatchShardDO.md), [PlayerShardDO](../durable-objects/PlayerShardDO.md), [StateSyncCoordinatorDO](../durable-objects/StateSyncCoordinatorDO.md). Shard keys: matchId for coordinator; shard keys for MatchShard/PlayerShard from endpoint-domain; StateSyncCoordinator by sync group.
+**Durable Objects:** [MatchCoordinatorDO](../durable-objects/MatchCoordinatorDO.md), [MatchShardDO](../durable-objects/MatchShardDO.md), [PlayerShardDO](../durable-objects/PlayerShardDO.md), [StateSyncCoordinatorDO](../durable-objects/StateSyncCoordinatorDO.md).
+
+**Flows:** `MatchFinalizationFlow` persists the final match archive and coordinates GP award when a match ends.
 
 **API surface (from code):**
-- Matches: extractAndValidateMatchIdFromPath; WebSocket Upgrade to MATCH_COORDINATOR.idFromName(matchId); HTTP to MatchCoordinatorDOSegment paths (validate, upload, get, delete, anonymize, transparency); validateMatchRecord; MatchStorage backed by R2 (buildMatchKey, buildAnonymizedMatchKey); logic in logic/matches.
-- WS: DOBaseUrl, LobbyDODefaultInstanceName, PresenceDO paths; WS upgrade can target lobby or presence or match coordinator per path.
-- MatchCoordinatorDO: MatchWSMessageType, MatchWSChannel; storage prefixes and BucketPath from boundary-domain; GameName, PlayerType.
+- Matches: validate, upload, get, delete, anonymize, and transparency paths.
+- WS: upgrade to the match coordinator for live play, chat, sync, AI dump, and checkpoint traffic.
+- Match coordinator storage: R2 archive paths and local checkpoint state.
 
 **Flow**
 
 ```mermaid
 sequenceDiagram
   participant Client
-  participant Worker
+  participant Handler
+  participant Flow
   participant MatchCoordinatorDO
+  participant CreditsDO
   participant R2
 
-  Client->>Worker: GET/POST /api/v1/matches/:matchId/... or WS Upgrade
-  Worker->>Worker: validate matchId
-  alt WebSocket
-    Worker->>MatchCoordinatorDO: upgrade to DO (idFromName(matchId))
-    MatchCoordinatorDO->>MatchCoordinatorDO: WS messages; storage; archive R2
-  else HTTP
-    Worker->>MatchCoordinatorDO: fetch(segment path)
-    MatchCoordinatorDO->>R2: archive when needed
-    MatchCoordinatorDO-->>Worker: JSON
-  end
-  Worker-->>Client: response or WS
+  Client->>Handler: match finalize or archive request
+  Handler->>Flow: normalized match finalization input
+  Flow->>MatchCoordinatorDO: state and archive operations
+  Flow->>CreditsDO: award GP on finalize
+  MatchCoordinatorDO->>R2: archive match record
+  MatchCoordinatorDO-->>Flow: JSON or WS response
+  Flow-->>Handler: response
+  Handler-->>Client: JSON or WS
 ```

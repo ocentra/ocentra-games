@@ -4,15 +4,16 @@ This package is the off-chain backend for Ocentra APIs on Cloudflare Workers.
 
 ## Primary docs
 
-- `../../docs/ocentra/asset-handling.md` — **`/api/v1/assets/download-url`**, R2/CDN delivery, main app vs asset editor, and **deploy vars** for presigned URLs.
-- `.dev.vars.example` — template for local **`CLOUDFLARE_ACCOUNT_ID`**, **`R2_*`** S3 API keys, and **`R2_ASSETS_BUCKET_NAME`** (copy to **`.dev.vars`**, gitignored). Production: `wrangler secret put` for the two secrets; see *Deploy and environment variables* in asset-handling.
-- `docs/ARCHITECTURE.md` — main architecture document (mermaid diagrams, request flow, components).
-- `docs/OVERVIEW.md` — quick scope: what this worker does and does not do.
-- `docs/DOMAIN-DEPENDENCIES.md` — domain package boundaries.
-- `docs/DOC-INDEX.md` — full docs index by task.
-- `docs/features/README.md` — feature-level docs.
-- `docs/durable-objects/README.md` — per-DO docs.
-- `docs/TEST-README.md` — test systems, modes, and commands.
+- `../../docs/ocentra/asset-handling.md` - `/api/v1/assets/download-url`, R2/CDN delivery, main app vs asset editor, and deploy vars for presigned URLs.
+- `.dev.vars.example` - template for local `CLOUDFLARE_ACCOUNT_ID`, `R2_*` S3 API keys, and `R2_ASSETS_BUCKET_NAME` (copy to `.dev.vars`, gitignored). Production: `wrangler secret put` for the two secrets; see deploy and environment variables in asset-handling.
+- `docs/ARCHITECTURE.md` - main architecture document with flow-first diagrams and component mapping.
+- `docs/OVERVIEW.md` - quick scope: what this worker does and does not do.
+- `docs/DOMAIN-DEPENDENCIES.md` - domain package boundaries.
+- `docs/DOC-INDEX.md` - full docs index by task.
+- `docs/features/README.md` - feature-level docs.
+- `docs/flows/README.md` - orchestration layer docs for every flow.
+- `docs/durable-objects/README.md` - per-DO docs.
+- `docs/TEST-README.md` - test systems, modes, and commands.
 
 ## Runtime shape
 
@@ -21,19 +22,28 @@ flowchart LR
   Client[Clients] --> Worker[Cloudflare Worker]
   Worker --> Router[Route manifest router]
   Router --> Handlers[Handler adapters]
-  Handlers --> DOs[Durable Objects]
-  Handlers --> R2[R2 / KV / Analytics]
-  Handlers --> External[Firebase / Stripe / AI]
+  Handlers --> Flows[Flow orchestration]
+  Flows --> DOs[Durable Objects]
+  Flows --> R2[R2 / KV / Analytics]
+  Flows --> External[Firebase / Stripe / AI]
 ```
+
+## Architecture contract
+
+- Handlers validate, authorize, and dispatch.
+- Flows coordinate cross-domain work and own the orchestration path.
+- Durable Objects own local state, journaling, and invariants.
+- Shared paths, headers, buckets, and route keys come from the domain packages, not raw strings.
 
 ## Source layout
 
-- `src/index.ts` — worker entrypoint and cross-cutting guards.
-- `src/utils/routes.ts` — route-manifest-based handler mapping + middleware.
-- `src/handlers/` — HTTP adapters.
-- `src/durable-objects/` — stateful actor implementations.
-- `src/logic/` — business logic units.
-- `tests/` — unit, integration, e2e, and security tests.
+- `src/index.ts` - worker entrypoint and cross-cutting guards.
+- `src/utils/routes.ts` - route-manifest-based handler mapping and middleware.
+- `src/handlers/` - HTTP adapters.
+- `src/flows/` - orchestration flows.
+- `src/durable-objects/` - stateful actor implementations.
+- `src/logic/` - business logic units.
+- `tests/` - unit, integration, e2e, and security tests.
 
 ## Commands
 

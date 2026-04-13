@@ -1,33 +1,33 @@
 # Credits and Economy
 
-**Purpose:** GP/AC balance and ledger (earn, consume, purchase, promo redeem). Balance and transactions stored in R2 (MATCHES_BUCKET, BucketPath.UserCredits, UserTransactions); optional CreditsDO for DO-backed operations. Idempotency keys required for state-changing operations. Stripe webhooks update payment state and can trigger credit grants; AI escrow reserve/consume uses CreditsDO.
+**Purpose:** GP/AC balance and ledger for earn, consume, purchase, promo redeem, and escrow. The worker keeps the contract centralized in `endpoint-domain`, while the flow layer handles multi-step award and settlement paths.
 
-**Handlers:** `handleCreditsRequest` (handlers/credits.ts), `handleStripeWebhookRequest` (handlers/webhooks-stripe.ts), `handleAIEscrowRequest` (handlers/ai-escrow.ts). Routes: Credits prefix, Stripe webhook, AI escrow (reserve/consume).
+**Handlers:** `handleCreditsRequest` (`handlers/credits.ts`), `handleStripeWebhookRequest` (`handlers/webhooks-stripe.ts`), and `handleAIEscrowRequest` (`handlers/ai-escrow.ts`).
 
-**Durable Object:** [CreditsDO](../durable-objects/CreditsDO.md). Shard key: userId. Used for balance/ledger when CREDITS_DO is bound; handler also uses R2 via CreditStorage (getBalance, saveBalance, addTransaction) for some code paths.
+**Durable Object:** [CreditsDO](../durable-objects/CreditsDO.md). Shard key: `userId`. Local state stores balance, ledger, and idempotency markers.
+
+**Flows:** `MatchFinalizationFlow`, `RewardClaimFlow`, `StripeWebhookFlow`, and `TournamentPrizeDistributionFlow` all use CreditsDO for the GP or AC side of the operation.
 
 **API surface (from code):**
-- Credits handler: balance (GET), earn GP, consume AC, purchase (POST with idempotency); path parsing via extractAndValidateIdFromPath; ParamName; CreditAction, Currency, TransactionType from endpoint-domain; MetadataField idempotency; fetchFromCreditsDO for DO; logic in logic/credits and logic/promo-redeem.
-- Stripe webhook: signature verification; event types from endpoint-domain; PaymentEventSchema; forwards to PaymentDO and/or credit grant when applicable.
-- AI escrow: POST reserve (AIEscrowReserveRequestSchema), POST consume (AIEscrowConsumeRequestSchema); calculateAICost, getCatalogFromEnv; CreditsDO paths for reserve/consume; plan tiers and allowance.
+- Credits handler: balance, earn GP, consume AC, purchase, and batch award paths.
+- Stripe webhook: signature verification, event ingestion, and credit settlement on successful payment.
+- AI escrow: reserve and consume paths that route through CreditsDO when the AI plan requires balance checks.
 
 **Flow**
 
 ```mermaid
 sequenceDiagram
   participant Client
-  participant Worker
+  participant Handler
+  participant Flow
   participant CreditsDO
   participant R2
 
-  Client->>Worker: POST /api/v1/credits/... (earn/consume/purchase)
-  Worker->>Worker: requireAuth; idempotency key
-  alt DO bound
-    Worker->>CreditsDO: fetchFromCreditsDO(path, body)
-    CreditsDO->>CreditsDO: storage/ledger
-    CreditsDO-->>Worker: JSON
-  else R2 path
-    Worker->>R2: getBalance/saveBalance/addTransaction
-  end
-  Worker-->>Client: JSON + CORS
+  Client->>Handler: POST /api/v1/credits/...
+  Handler->>Flow: normalized reward/purchase/settlement request
+  Flow->>CreditsDO: award, consume, or escrow
+  CreditsDO->>CreditsDO: storage/ledger
+  CreditsDO-->>Flow: JSON
+  Flow-->>Handler: response
+  Handler-->>Client: JSON + CORS
 ```

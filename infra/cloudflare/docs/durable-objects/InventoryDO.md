@@ -1,27 +1,27 @@
 # InventoryDO
 
-**Purpose:** Per-user inventory: list (items, equipped), add-item, remove-item, equip (itemId, slot), gift (itemId, targetUserId), trade (myItemId, theirItemId, targetUserId). Gift/trade call target user's InventoryDO (idFromName(targetUserId)).
+**Purpose:** Per-user inventory for list, equip, add-item, remove-item, gift, and trade. The DO owns the item map and equipped map for one user.
 
-**Shard key:** userId. For gift/trade the DO fetches target DO stub via env.INVENTORY_DO.idFromName(targetUserId).
+**Shard key:** `userId`.
 
-**HTTP surface:** InventoryDOPaths / InventoryDOSegment (endpoint-domain): List, Equip, Gift, Trade, AddItem (Base + '/add-item'), RemoveItem (Base + '/remove-item').
+**HTTP surface:** `InventoryDOPaths` and `InventoryDOSegment` from endpoint-domain.
 
-**Message types:** N/A (HTTP only).
+**Storage:** `InventoryDOStoragePrefix` from boundary-domain; local items and equipped state.
 
-**Storage:** InventoryDOStoragePrefix (boundary-domain): items map, equipped map.
+**Flows that use it:** `InventoryTransferFlow` coordinates gifts and trades across source and target inventory DOs.
 
-**Handlers:** handleInventoryRequest (feature-handlers.ts).
+**Handlers:** `handleInventoryRequest` in the feature handler path.
 
-**Domain constants:** endpoint-domain: InventoryDO, InventoryDOSegment, Http*; boundary-domain: InventoryDOStoragePrefix.
+**Domain constants:** endpoint-domain: `InventoryDO`, `InventoryDOSegment`, `Http*`; boundary-domain: `InventoryDOStoragePrefix`.
 
 ```mermaid
 sequenceDiagram
-  participant Handler
-  participant InventoryDO
-  participant TargetDO
-  Handler->>InventoryDO: fetch List/Equip/Gift/Trade/AddItem/RemoveItem
+  participant Flow
+  participant SourceInventoryDO
+  participant TargetInventoryDO
+  Flow->>SourceInventoryDO: list/equip/remove
   opt Gift/Trade
-    InventoryDO->>TargetDO: stub.idFromName(targetUserId)
+    Flow->>TargetInventoryDO: add item to target inventory
   end
-  InventoryDO-->>Handler: JSON
+  SourceInventoryDO-->>Flow: JSON
 ```

@@ -4,7 +4,7 @@
 
 **Shard key:** userId.
 
-**HTTP surface:** Path endsWith 'check' → FraudDetectionDOPaths.Check; else FraudDetectionDOPaths.Risk. GET/POST as per DO.
+**HTTP surface:** Path endsWith 'check' -> FraudDetectionDOPaths.Check; else FraudDetectionDOPaths.Risk. GET/POST as per DO.
 
 **Message types:** N/A (HTTP only).
 

@@ -1,13 +1,13 @@
 # Notifications
 
-**Purpose:** Per-user notifications: list, mark-read, preferences, push registration. NotificationDO sharded by userId.
+**Purpose:** Per-user notifications: list, mark-read, preferences, and push registration. NotificationDO is sharded by userId.
 
 **Handlers:** `handleNotificationRequest` (feature-handlers.ts). Route: Notification prefix. Auth required.
 
 **Durable Object:** [NotificationDO](../durable-objects/NotificationDO.md). Shard key: userId.
 
 **API surface (from code):**
-- Path ends: mark-read → NotificationDOPaths.MarkRead; list → NotificationDOPaths.List; preferences → NotificationDOPaths.Preferences; else NotificationDOPaths.Push.
+- Path ends: mark-read -> NotificationDOPaths.MarkRead; list -> NotificationDOPaths.List; preferences -> NotificationDOPaths.Preferences; else NotificationDOPaths.Push.
 - GET/POST to DO; body forwarded for POST.
 
 **Flow**

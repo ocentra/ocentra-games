@@ -1,27 +1,27 @@
 # RewardDO
 
-**Purpose:** Per-user rewards: daily (claim), streak freeze, battle-pass (claim, xp), missions (list, progress, claim). Can call CreditsDO and ProgressionDO for grant/XP. RewardDOPaths: Daily, DailyClaim, StreakFreeze, BattlePass, BattlePassClaim, BattlePassXp, MissionsList, MissionProgress, MissionClaim.
+**Purpose:** Per-user rewards for daily claims, streak freeze, battle-pass claims and XP, and mission progress. RewardDO owns the local reward state and idempotency ledger.
 
-**Shard key:** userId.
+**Shard key:** `userId`.
 
-**HTTP surface:** POST/GET paths per RewardDOPaths (endpoint-domain).
+**HTTP surface:** POST and GET paths per `RewardDOPaths` in endpoint-domain.
 
-**Message types:** N/A (HTTP only).
+**Storage:** Reward DO storage prefix from boundary-domain; local state for reward history and progress markers.
 
-**Storage:** RewardDO storage prefix (boundary-domain). Internal calls to CreditsDO.idFromName(userId), ProgressionDO.idFromName(userId) when bound.
+**Flows that use it:** `RewardClaimFlow` coordinates reward mutation and forwards GP or XP to `CreditsDO` and `ProgressionDO` when needed.
 
-**Handlers:** handleRewardRequest (feature-handlers.ts); handlePersonalizationRequest, handleAnalyticsRequest read RewardDO for daily/streak.
+**Handlers:** `handleRewardRequest` in the reward handler path, plus personalization and analytics reads. The handler layer dispatches into the reward flow for reward mutations.
 
-**Domain constants:** endpoint-domain: RewardDOPaths, Http*; boundary-domain: do-storage-prefixes.
+**Domain constants:** endpoint-domain: `RewardDOPaths`, `Http*`; boundary-domain: reward storage prefix.
 
 ```mermaid
 sequenceDiagram
-  participant Handler
+  participant Flow
   participant RewardDO
   participant CreditsDO
   participant ProgressionDO
-  Handler->>RewardDO: fetch Daily/Claim/BattlePass/...
-  RewardDO->>CreditsDO: earn (when applicable)
-  RewardDO->>ProgressionDO: update (when applicable)
-  RewardDO-->>Handler: JSON
+  Flow->>RewardDO: fetch Daily/Claim/BattlePass/Mission
+  Flow->>CreditsDO: earn GP when applicable
+  Flow->>ProgressionDO: update XP when applicable
+  RewardDO-->>Flow: JSON
 ```

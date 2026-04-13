@@ -1,28 +1,31 @@
 # MatchCoordinatorDO
 
-**Purpose:** Per-match coordination: HTTP validate, upload, get, delete, anonymize, transparency; WebSocket for live game channel (move, sync, chat, voice-text, finalize, AI dump, checkpoint). Calls CreditsDO for batch award; archives to R2 (BucketPath, buildMatchKey). Match state, pending transactions, checkpoints in storage.
+**Purpose:** Per-match coordination for HTTP validate, upload, get, delete, anonymize, transparency, and the live WebSocket channel. The DO owns match state, pending transactions, checkpoints, and archive metadata.
 
-**Shard key:** matchId (handlers/matches.ts and match-query: `env.MATCH_COORDINATOR.idFromName(matchId)`).
+**Shard key:** `matchId`.
 
-**HTTP surface:** MatchCoordinatorDOSegment paths (endpoint-domain); validate, upload, get, delete, anonymize, transparency. Request body/query as per logic.
+**HTTP surface:** `MatchCoordinatorDOSegment` paths from endpoint-domain for validate, upload, get, delete, anonymize, and transparency.
 
-**WebSocket:** Upgrade accepted. Message types from endpoint-domain: MatchWSMessageType, MatchWSChannel; schemas MatchWSIncomingMessageSchema, MatchWSChatMessageSchema, etc. Types: move, sync, chat, voice-text, finalize, ai-dump, checkpoint (from types/cloudflare/matches).
+**WebSocket:** Upgrade accepted for live game messages, sync, chat, voice-text, finalize, AI dump, and checkpoint traffic.
 
-**Storage:** MatchCoordinatorDOStoragePrefix (boundary-domain); BucketPath (boundary-domain) for R2 archive. State: MatchState, pendingTransactions, lastCheckpoint, etc.
+**Storage:** `MatchCoordinatorDOStoragePrefix` from boundary-domain and `BucketPath` for R2 archive data.
 
-**Handlers:** [handleMatchRequest](../features/match-coordination.md) (matches.ts); match-query, StateSyncService.
+**Flows that use it:** `MatchFinalizationFlow` coordinates archive persistence and reward payout around finalized matches.
 
-**Domain constants:** endpoint-domain: MatchCoordinatorDOSegment, MatchWSMessageType, MatchWSChannel, Http*, MetadataField, validateMatchId, GameName, PlayerType; boundary-domain: MatchCoordinatorDOStoragePrefix, BucketPath; endpoint-domain schemas and types (match-ws, cloudflare/matches).
+**Handlers:** `matches.ts` and `ws.ts` route into the match DO. The handler layer validates the request and then dispatches into the flow or DO path that owns the work.
+
+**Domain constants:** endpoint-domain: `MatchCoordinatorDOSegment`, `MatchWSMessageType`, `MatchWSChannel`, `Http*`, `MetadataField`, `validateMatchId`, `GameName`, `PlayerType`; boundary-domain: `MatchCoordinatorDOStoragePrefix`, `BucketPath`.
 
 ```mermaid
 sequenceDiagram
   participant Client
+  participant Flow
   participant MatchCoordinatorDO
   participant CreditsDO
   participant R2
-  Client->>MatchCoordinatorDO: HTTP or WS
-  MatchCoordinatorDO->>MatchCoordinatorDO: state; storage
-  MatchCoordinatorDO->>CreditsDO: batch award (when finalize)
+  Client->>Flow: HTTP or WS request path
+  Flow->>MatchCoordinatorDO: state and archive operations
+  Flow->>CreditsDO: award GP on finalize
   MatchCoordinatorDO->>R2: archive match
-  MatchCoordinatorDO-->>Client: JSON or WS
+  MatchCoordinatorDO-->>Flow: JSON or WS response
 ```

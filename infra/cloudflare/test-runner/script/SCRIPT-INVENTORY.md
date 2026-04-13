@@ -1,6 +1,6 @@
-# test-runner/script — What's New vs Legacy
+# test-runner/script - What's New vs Legacy
 
-**Use this** to know what to run and what’s deprecated.
+Use this to know what to run and what is deprecated.
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Script | Type | What it does | Use when |
 |--------|------|--------------|----------|
-| **run-full-suite.ts** | **CURRENT** | Full orchestrator: Vitest → coverage → analytics → schemathesis → k6 → mutation → static → observability → report. Supports `[local|real|cloud]`, `--skip-tests=...`, `--open`. Logs via NDJSON/tunnel. | `npm run test:full` |
+| **run-full-suite.ts** | **CURRENT** | Full orchestrator: Vitest -> coverage -> analytics -> schemathesis -> k6 -> mutation -> static -> observability -> report. Supports `[local|real|cloud]`, `--skip-tests=...`, `--open`. Logs via NDJSON/tunnel. | `npm run test:full` |
 | **run-full-suite-interactive.ts** | **CURRENT** | Interactive terminal: checkbox menu to select steps (Vitest, coverage, analytics, schemathesis, k6, mutation, static-analysis, observability), then run full suite with selected steps + optional open report. Cross-platform (Node.js + @inquirer/prompts). | `npm run test:full` |
 | **run-all-tests.ts** | **LEGACY** | Old monolithic runner (~2700 lines). Kept as reference. Delete when proven. | Do not use |
 
@@ -29,7 +29,7 @@
 
 ---
 
-## Report & lib (supporting)
+## Report and lib (supporting)
 
 | Path | Type | Purpose |
 |------|------|---------|
@@ -37,7 +37,7 @@
 | report/summary-reporter.ts | Support | Vitest summary reporter |
 | report/test-coverage.ts | Support | Coverage runner |
 | report/apply-dark-theme-coverage.ts | Support | Dark theme for coverage HTML |
-| lib/suite-type-map.ts | Support | Suite type → file mapping |
+| lib/suite-type-map.ts | Support | Suite type -> file mapping |
 | lib/suite-type-collector.ts | Support | Collects suite types from sources |
 | lib/mutation-collector.ts | Support | Finds @mutation targets |
 | lib/path-utils.ts | Support | Path helpers |
@@ -47,7 +47,7 @@
 
 ---
 
-## Legacy / generated (don't run directly)
+## Legacy / generated (do not run directly)
 
 | Item | Notes |
 |------|-------|
@@ -57,7 +57,7 @@
 
 ## Quick reference
 
-- **Full suite (all platforms):** `npm run test:full` or `npm run test:full -- --skip-tests=k6,mutation`
-- **Full suite (pick steps, run, open report):** `npm run test:full` — terminal prompts, cross-platform
-- **Individual steps:** `npm run test:k6`, `npm run test:schemathesis`, etc.
-- **Report only:** `npm run test:report` → `test-runner/reports/test-report.html`
+- Full suite (all platforms): `npm run test:full` or `npm run test:full -- --skip-tests=k6,mutation`
+- Full suite (pick steps, run, open report): `npm run test:full` - terminal prompts, cross-platform
+- Individual steps: `npm run test:k6`, `npm run test:schemathesis`, etc.
+- Report only: `npm run test:report` -> `test-runner/reports/test-report.html`
