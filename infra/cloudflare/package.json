@@ -128,7 +128,8 @@
     "contracts:test": "npm run contracts:generate && npm run contracts:verify",
     "lint": "eslint --config eslint.config.js . && tsc --noEmit && npx tsx test-runner/script/check-orchestration-boundaries.ts",
     "lint:fix": "eslint . --fix",
-    "test:ui:serve": "npx serve tests/test-ui -l 3999",
+    "test:ui:dev": "npx vite tests/test-ui --port 3999 --strictPort",
+    "test:ui:serve": "npx vite build tests/test-ui && npx vite preview tests/test-ui -l 3999",
     "test:ui:e2e": "playwright test --config=playwright.test-ui.config.ts"
   },
   "devDependencies": {
