@@ -68,6 +68,7 @@ jobs:
     if: ${{ false }}
     needs: [cloudflare-security]
     runs-on: ubuntu-latest
+    environment: development
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -111,6 +112,7 @@ jobs:
     if: ${{ false }}
     needs: [sync-r2-main]
     runs-on: ubuntu-latest
+    environment: development
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -143,6 +145,7 @@ jobs:
     if: ${{ false }}
     needs: [deploy-worker-dev]
     runs-on: ubuntu-latest
+    environment: development
     timeout-minutes: 25
     permissions:
       contents: read
@@ -169,6 +172,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/production'
     needs: [cloudflare-security]
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -212,6 +216,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/production'
     needs: [sync-r2-production]
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -244,6 +249,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/production'
     needs: [deploy-worker-prod]
     runs-on: ubuntu-latest
+    environment: production
     timeout-minutes: 25
     permissions:
       contents: read
