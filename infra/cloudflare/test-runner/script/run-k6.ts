@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawn } from 'child_process';
+import { execFileSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as http from 'http';
@@ -13,6 +13,10 @@ const cloudflareDir = path.dirname(testRunnerDir);
 const testsDir = path.join(cloudflareDir, 'tests');
 const testRunnerReportJsonDir = path.join(testRunnerDir, 'ReportJson');
 const testRunnerLogsDir = path.join(testRunnerDir, 'logs');
+const workerPort = 8787;
+const workerBaseUrl = `http://localhost:${workerPort}`;
+const workerHealthUrl = `${workerBaseUrl}/health`;
+const workerReadySettleMs = Number(process.env.K6_WORKER_READY_SETTLE_MS || '5000');
 
 if (!fs.existsSync(testRunnerReportJsonDir)) {
   fs.mkdirSync(testRunnerReportJsonDir, { recursive: true });
@@ -25,6 +29,31 @@ const k6LogPath = path.join(testRunnerLogsDir, 'k6.log');
 const k6LogStream = fs.createWriteStream(k6LogPath, { flags: 'w' });
 const workerStartLogPath = path.join(testRunnerLogsDir, 'worker-start-k6.log');
 const workerStartLogStream = fs.createWriteStream(workerStartLogPath, { flags: 'w' });
+
+type PortOwner = {
+  pid: number;
+  name?: string;
+  command?: string;
+};
+
+type WorkerStartHandle = {
+  child: ReturnType<typeof spawn>;
+  getOutput: () => string;
+  getStatus: () => {
+    exited: boolean;
+    exitCode: number | null;
+    signal: NodeJS.Signals | null;
+    error?: string;
+  };
+};
+
+type WorkerEnsureResult = {
+  ok: boolean;
+  started: boolean;
+  reason?: string;
+  details?: string;
+  cleanup?: () => void;
+};
 
 interface K6Metrics {
   requests?: number;
@@ -121,27 +150,6 @@ async function checkWorkerHealth(url: string, timeout = 2000): Promise<boolean> 
   });
 }
 
-async function waitForWorker(port: number, maxWait = 30, shouldAbort?: () => boolean): Promise<boolean> {
-  const url = `http://localhost:${port}/health`;
-  const checkInterval = 1000;
-  let elapsed = 0;
-  while (elapsed < maxWait * 1000) {
-    if (shouldAbort?.()) {
-      return false;
-    }
-    const healthy = await checkWorkerHealth(url);
-    if (healthy) return true;
-    if (shouldAbort?.()) {
-      return false;
-    }
-    await new Promise((r) => setTimeout(r, checkInterval));
-    elapsed += checkInterval;
-    process.stdout.write(`\r  Waiting for worker... (${Math.floor(elapsed / 1000)}s)`);
-  }
-  process.stdout.write('\r');
-  return false;
-}
-
 async function checkPortInUse(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const server = http.createServer();
@@ -150,6 +158,190 @@ async function checkPortInUse(port: number): Promise<boolean> {
     });
     server.on('error', () => resolve(true));
   });
+}
+
+function createRollingBuffer(maxChars = 20000): { append: (text: string) => void; getText: () => string } {
+  const chunks: string[] = [];
+  let size = 0;
+
+  return {
+    append(text: string) {
+      chunks.push(text);
+      size += text.length;
+      while (size > maxChars && chunks.length > 1) {
+        size -= chunks.shift()!.length;
+      }
+    },
+    getText() {
+      return chunks.join('');
+    },
+  };
+}
+
+function startWorkerProcess(port: number): WorkerStartHandle {
+  const isWindows = process.platform === 'win32';
+  const npmCommand = isWindows ? 'npm.cmd' : 'npm';
+  const stdoutBuffer = createRollingBuffer();
+  const stderrBuffer = createRollingBuffer();
+  const status = {
+    exited: false,
+    exitCode: null as number | null,
+    signal: null as NodeJS.Signals | null,
+    error: undefined as string | undefined,
+  };
+  const child = spawn(npmCommand, ['run', 'worker:start'], {
+    cwd: cloudflareDir,
+    env: { ...process.env, WORKER_HTTP_PORT: String(port) },
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false,
+    shell: isWindows,
+    windowsHide: true,
+  });
+
+  child.stdout?.on('data', (data) => {
+    const text = data.toString();
+    stdoutBuffer.append(text);
+    process.stdout.write(text);
+    workerStartLogStream.write(text);
+  });
+
+  child.stderr?.on('data', (data) => {
+    const text = data.toString();
+    stderrBuffer.append(text);
+    process.stderr.write(text);
+    workerStartLogStream.write(text);
+  });
+
+  child.on('error', (error) => {
+    status.exited = true;
+    status.error = error.message;
+    workerStartLogStream.write(`\n[worker-start] process error: ${error.message}\n`);
+  });
+
+  child.on('close', (exitCode, signal) => {
+    status.exited = true;
+    status.exitCode = exitCode;
+    status.signal = signal;
+    workerStartLogStream.write(`\n[worker-start] exited with code ${exitCode ?? 0}${signal ? ` signal ${signal}` : ''}\n`);
+  });
+
+  return {
+    child,
+    getOutput: () => {
+      const stdout = stdoutBuffer.getText().trim();
+      const stderr = stderrBuffer.getText().trim();
+      return [stdout, stderr].filter((value) => value.length > 0).join('\n');
+    },
+    getStatus: () => ({ ...status }),
+  };
+}
+
+function isWorkerReadyOutput(output: string): boolean {
+  return new RegExp(`Ready on http://(?:127\\.0\\.0\\.1|localhost|0\\.0\\.0\\.0):${workerPort}\\b`, 'i').test(output);
+}
+
+function getPortOwners(port: number): PortOwner[] {
+  try {
+    if (process.platform === 'win32') {
+      const script = `
+$matches = netstat -ano -p tcp | Select-String ':${port}\\s+.*LISTENING\\s+(\\d+)\\s*$'
+$pids = @($matches | ForEach-Object { if ($_.Matches.Count -gt 0) { $_.Matches[0].Groups[1].Value } } | Select-Object -Unique)
+foreach ($pid in $pids) {
+  $proc = Get-CimInstance Win32_Process -Filter "ProcessId = $pid"
+  if ($proc) {
+    [pscustomobject]@{
+      pid = [int]$pid
+      name = [string]$proc.Name
+      command = [string]$proc.CommandLine
+    } | ConvertTo-Json -Compress
+  }
+}
+`;
+      const output = execFileSync('powershell.exe', ['-NoProfile', '-Command', script], {
+        encoding: 'utf-8',
+        windowsHide: true,
+      }).trim();
+      if (!output) {
+        return [];
+      }
+      return output
+        .split(/\r?\n/)
+        .map((line) => JSON.parse(line) as PortOwner)
+        .filter((owner) => Number.isFinite(owner.pid));
+    }
+
+    const output = execFileSync(
+      'sh',
+      ['-lc', `for pid in $(lsof -ti tcp:${port} -sTCP:LISTEN 2>/dev/null | sort -u); do ps -p "$pid" -o pid=,comm=,args=; done`],
+      {
+        encoding: 'utf-8',
+      }
+    ).trim();
+    if (!output) {
+      return [];
+    }
+    const owners: PortOwner[] = [];
+    for (const rawLine of output.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line) {
+        continue;
+      }
+      const match = line.match(/^(\d+)\s+(\S+)\s+(.+)$/);
+      if (!match) {
+        continue;
+      }
+      const pid = Number.parseInt(match[1], 10);
+      if (!Number.isFinite(pid)) {
+        continue;
+      }
+      owners.push({
+        pid,
+        name: match[2],
+        command: match[3],
+      });
+    }
+    return owners;
+  } catch {
+    return [];
+  }
+}
+
+function isKnownWorkerOwner(owner: PortOwner): boolean {
+  const haystack = `${owner.name ?? ''} ${owner.command ?? ''}`;
+  return /workerd(\.exe)?\b|wrangler(\.cmd)?\s+dev|npm(\.cmd)?\s+run\s+worker:start|start-worker-server\.ts/i.test(haystack);
+}
+
+function formatPortOwners(owners: PortOwner[]): string {
+  return owners
+    .map((owner) => `pid=${owner.pid} name=${owner.name ?? 'unknown'} command=${owner.command ?? 'unknown'}`)
+    .join('\n');
+}
+
+function terminateProcessTree(pid: number): void {
+  try {
+    if (process.platform === 'win32') {
+      execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], {
+        windowsHide: true,
+        stdio: 'ignore',
+      });
+      return;
+    }
+    process.kill(pid, 'SIGTERM');
+  } catch {
+    void 0;
+  }
+}
+
+async function waitForPortRelease(port: number, maxWaitSeconds = 10): Promise<boolean> {
+  const deadline = Date.now() + maxWaitSeconds * 1000;
+  while (Date.now() < deadline) {
+    const portInUse = await checkPortInUse(port);
+    if (!portInUse) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  return !(await checkPortInUse(port));
 }
 
 function parseK6Metrics(output: string): K6Metrics | undefined {
@@ -254,63 +446,134 @@ function parseK6Metrics(output: string): K6Metrics | undefined {
   }
 }
 
-async function ensureWorker(): Promise<boolean> {
-  const portInUse = await checkPortInUse(8787);
-  let workerRunning = false;
-  const waitSeconds = 60;
-  if (portInUse) {
-    workerRunning = await waitForWorker(8787, waitSeconds);
+async function ensureWorker(): Promise<WorkerEnsureResult> {
+  if (await checkWorkerHealth(workerHealthUrl)) {
+    console.log(`  Worker already healthy on port ${workerPort}; continuing.`);
+    return { ok: true, started: false };
   }
-  if (!workerRunning && !portInUse) {
-    console.log('  Starting worker (npm run worker:start)...');
-    const isWindows = process.platform === 'win32';
-    const npmCommand = isWindows ? 'npm.cmd' : 'npm';
-    let workerExited = false;
-    let workerExitCode: number | null = null;
-    const workerJob = spawn(npmCommand, ['run', 'worker:start'], {
-      cwd: cloudflareDir,
-      env: { ...process.env, WORKER_HTTP_PORT: '8787' },
-      stdio: ['ignore', 'pipe', 'pipe'],
-      detached: false,
-      shell: isWindows,
-    });
 
-    const forwardWorkerOutput = (text: string, stream: 'stdout' | 'stderr'): void => {
-      workerStartLogStream.write(text);
-      process[stream].write(text);
-    };
+  const portInUse = await checkPortInUse(workerPort);
+  if (portInUse) {
+    console.warn(`  Port ${workerPort} is in use but /health is not healthy.`);
 
-    workerJob.stdout?.on('data', (data) => {
-      forwardWorkerOutput(data.toString(), 'stdout');
-    });
+    const owners = getPortOwners(workerPort);
+    if (owners.length === 0) {
+      return {
+        ok: false,
+        started: false,
+        reason: 'port_in_use_unknown_owner',
+        details: `Port ${workerPort} is occupied, but the owning process could not be identified.`,
+      };
+    }
 
-    workerJob.stderr?.on('data', (data) => {
-      forwardWorkerOutput(data.toString(), 'stderr');
-    });
+    const knownOwners = owners.filter(isKnownWorkerOwner);
+    if (knownOwners.length !== owners.length) {
+      return {
+        ok: false,
+        started: false,
+        reason: 'port_in_use_non_worker',
+        details: `Port ${workerPort} is occupied by a non-worker process:\n${formatPortOwners(owners)}`,
+      };
+    }
 
-    workerJob.once('close', (code) => {
-      workerExited = true;
-      workerExitCode = code ?? 0;
-      workerStartLogStream.write(`\n[worker-start] exited with code ${workerExitCode}\n`);
-      workerStartLogStream.end();
-    });
+    console.log(`  Recycling stale worker on port ${workerPort}...`);
+    for (const owner of knownOwners) {
+      terminateProcessTree(owner.pid);
+    }
 
-    workerJob.once('error', (error) => {
-      workerExited = true;
-      workerExitCode = 1;
-      workerStartLogStream.write(`\n[worker-start] process error: ${error.message}\n`);
-      workerStartLogStream.end();
-    });
+    const released = await waitForPortRelease(workerPort, 10);
+    if (!released && !(await checkWorkerHealth(workerHealthUrl))) {
+      return {
+        ok: false,
+        started: false,
+        reason: 'port_release_timeout',
+        details: `Timed out waiting for port ${workerPort} to be released.\n${formatPortOwners(owners)}`,
+      };
+    }
 
-    workerRunning = await waitForWorker(8787, waitSeconds, () => workerExited);
-    if (!workerRunning && workerJob) {
-      workerJob.kill();
-      if (workerExitCode !== null) {
-        console.error(`  [FAIL] worker:start exited before health check completed (code ${workerExitCode})`);
-      }
+    if (await checkWorkerHealth(workerHealthUrl)) {
+      console.log(`  Worker on port ${workerPort} became healthy after recycle; continuing.`);
+      return { ok: true, started: false };
     }
   }
-  return workerRunning;
+
+  let lastFailureDetails: string | undefined;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    console.log(attempt === 1 ? '  Starting worker (npm run worker:start)...' : '  Retrying worker (npm run worker:start)...');
+    const workerHandle = startWorkerProcess(workerPort);
+    const deadline = Date.now() + 30_000;
+    let workerReadyBannerSeenAt: number | undefined;
+
+    while (Date.now() < deadline) {
+      const workerOutput = workerHandle.getOutput();
+      if (workerReadyBannerSeenAt === undefined && isWorkerReadyOutput(workerOutput)) {
+        workerReadyBannerSeenAt = Date.now();
+      }
+      const shouldProbeHealth =
+        workerReadyBannerSeenAt === undefined || Date.now() - workerReadyBannerSeenAt >= workerReadySettleMs;
+      if (shouldProbeHealth && (await checkWorkerHealth(workerHealthUrl, 1000))) {
+        const cleanup = () => {
+          if (!workerHandle.child.killed && workerHandle.child.exitCode === null && workerHandle.child.pid) {
+            terminateProcessTree(workerHandle.child.pid);
+          }
+        };
+        process.once('exit', cleanup);
+        process.once('SIGINT', () => {
+          cleanup();
+          process.exit(130);
+        });
+        process.once('SIGTERM', () => {
+          cleanup();
+          process.exit(143);
+        });
+        return { ok: true, started: true, cleanup };
+      }
+      const status = workerHandle.getStatus();
+      if (status.exited) {
+        const exitDetails = status.error
+          ? `Worker start failed: ${status.error}`
+          : `Worker exited with code ${status.exitCode ?? 'unknown'}${status.signal ? ` signal ${status.signal}` : ''}`;
+        const output = workerOutput.length > 0 ? `${exitDetails}\n${workerOutput}` : exitDetails;
+        lastFailureDetails = output;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    const workerOutput = workerHandle.getOutput();
+    const portOwners = getPortOwners(workerPort).filter(isKnownWorkerOwner);
+    if (!workerHandle.child.killed && workerHandle.child.exitCode === null && workerHandle.child.pid) {
+      try {
+        terminateProcessTree(workerHandle.child.pid);
+      } catch {
+        void 0;
+      }
+    }
+    for (const owner of portOwners) {
+      terminateProcessTree(owner.pid);
+    }
+
+    const released = await waitForPortRelease(workerPort, 10);
+    if (attempt === 2) {
+      return {
+        ok: false,
+        started: true,
+        reason: 'worker_start_timeout',
+        details: lastFailureDetails ?? (workerOutput.length > 0 ? workerOutput : `Worker did not become healthy on port ${workerPort}.`),
+      };
+    }
+
+    if (!released) {
+      lastFailureDetails = `Worker did not become healthy on port ${workerPort} and the port did not release cleanly.`;
+    }
+  }
+
+  return {
+    ok: false,
+    started: true,
+    reason: 'worker_start_timeout',
+    details: lastFailureDetails ?? `Worker did not become healthy on port ${workerPort}.`,
+  };
 }
 
 async function main(): Promise<void> {
@@ -331,14 +594,17 @@ async function main(): Promise<void> {
       process.exit(1);
     }
   } else {
-    const workerRunning = await ensureWorker();
-    if (!workerRunning) {
+    const workerResult = await ensureWorker();
+    if (!workerResult.ok) {
       console.error('  [FAIL] Worker not available. Start with: npm run dev');
+      if (workerResult.details) {
+        console.error(workerResult.details);
+      }
       const result = {
         name: 'k6 Concurrency/Load Tests',
         status: 'failed',
         errorType: 'worker_unavailable',
-        summary: 'Worker not available - start with npm run dev or worker:start',
+        summary: workerResult.details ?? 'Worker not available - start with npm run dev or worker:start',
       };
       fs.writeFileSync(path.join(testRunnerReportJsonDir, 'k6-results.json'), JSON.stringify(result, null, 2), 'utf-8');
       process.exit(1);
@@ -431,6 +697,9 @@ async function main(): Promise<void> {
     process.exit(code === 0 ? 0 : 1);
   } catch (error: unknown) {
     k6LogStream.end();
+    if (!workerStartLogStream.closed) {
+      workerStartLogStream.end();
+    }
     const errMsg = error instanceof Error ? error.message : String(error);
     const result = {
       name: 'k6 Concurrency/Load Tests',

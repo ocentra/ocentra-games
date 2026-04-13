@@ -9,31 +9,62 @@ can the worker survive concurrency and pressure without breaking correctness, id
 
 ## Current State
 
-### What Exists Today
-- `concurrency.test.js`
-- `same-user-contention.test.js`
-- `idempotency-concurrent.test.js`
-- `burst-ddos.test.js`
-- `soak.test.js`
-- `memory-pressure.test.js`
-- `cross-endpoint-concurrency.test.js`
-- `badge-concurrent-unlock.test.js`
-- `fd-exhaustion.test.js`
+### Granular Inventory of Current Coverage
 
-### What Those Tests Actually Cover
-- Credits balance, purchase, contention, idempotency, soak, and memory pressure
-- Badge unlock contention and cross-endpoint state interaction with credits
-- WebSocket / signaling connection pressure
+The following k6 scripts are currently active and maintained. They primarily target the **Credits** and **Badges** domains.
 
-### What They Do Not Yet Cover
-- Match finalization under load
-- Payment flow pressure
-- Progression/reward flow pressure beyond badge unlock and credits
-- Other real multi-DO chains that are not already proven by the current k6 inventory
+#### 1. Credits & Economy Invariants
+- **`concurrency.test.js`**: `GET /credits/:userId/balance`, `POST /credits/:userId/purchase`
+  - **Invariant**: Validates balance arithmetic ($Initial + Added = New$) under isolated VU pressure.
+- **`same-user-contention.test.js`**: 50 VUs targeting a SINGLE user ID.
+  - **Invariant**: Verifies State Safety (no partial writes) and storage atomicity in a single `CreditsDO` instance.
+- **`idempotency-concurrent.test.js`**: `Idempotency-Key` replay during active transit.
+  - **Invariant**: Guarantees exactly one execution for duplicate keys; verifies cached response delivery for retries.
+- **`burst-ddos.test.js`**: Rapid request spikes.
+  - **Invariant**: Graceful degradation via `429 TooManyRequests` without triggering `500 InternalServerError`.
+
+#### 2. Rewards & Cross-Domain Interaction
+- **`badge-concurrent-unlock.test.js`**: `POST /badges/:userId/claim`
+  - **Invariant**: **Economic Safety**: Exactly one GP reward issued even if 50 requests attempt to claim the same badge simultaneously.
+- **`cross-endpoint-concurrency.test.js`**: Parallel calls to `/credits` and `/badges`.
+  - **Invariant**: Verifies no state interference between disparate DO domains when updating shared user profile state.
+
+#### 3. Infrastructure Pressure
+- **`fd-exhaustion.test.js`**: WebSocket connection storm on `/ws/*`.
+  - **Invariant**: Validates Worker FD limits and `SignalingDO` connection capacity.
+- **`memory-pressure.test.js`**: Large payload injection (100KB+).
+  - **Invariant**: Verifies heap stability and prevents memory-limit crashes under throughput.
+- **`soak.test.js`**: 15-minute sustained traffic.
+  - **Invariant**: Checks for resource leaks (storage CPU, memory) over extended durations.
+
+### Comprehensive Gap Analysis
+
+The current suite is "Credits-Heavy". While it proves our most critical money-path (CreditsDO) is resilient, it leaves significant operational blind spots in the game lifecycle and global singletons.
+
+#### 1. Coverage Gap Matrix
+| Domain / Component | Pressure Type | Current Status | Critical Risk Factor |
+| :--- | :--- | :--- | :--- |
+| **Credits & Badges** | Contention / Idempotency | **High** | None (centralization pending) |
+| **Matchmaking** | Singleton Contention | **Zero** | $O(N^2)$ `tryMatch` + entire queue storage write on every join/leave. |
+| **Leaderboard** | Global Write Contention | **Zero** | Sort/Put of 1000-entry array on every score upsert. |
+| **Match Lifecycle** | Handshake / Orchestration | **Zero** | Latency chains in `MatchFinalizationFlow`. |
+| **Signaling (Ws)** | Message Throughput | **Low** | Only connection count is tested; real broadcast pressure is missing. |
+| **Audit Logging** | I/O Backpressure | **Zero** | High-volume writes potentially choking state operations. |
+
+#### 2. Specific Missing Scenarios (High Priority)
+- **The "Matchmaking Gauntlet"**: 5,000 concurrent tickets hitting `MatchmakingDO` with varied ELO/Region. Measures: `tryMatch` latency and Ticket-to-Match conversion rate.
+- **The "Finalization bottleneck"**: 100 concurrent `MatchCoordinatorDO.finalize()` calls triggering 100 `MatchFinalizationFlow` instances. Measures: Impact on `CreditsDO`, `ProgressionDO`, and `LeaderboardDO` shared dependencies.
+- **The "Leaderboard Slam"**: 1,000 users updating scores simultaneously. Measures: Write-lock contention on the singleton `Entries` key.
+- **The "Audit Log Firehose"**: Simulate 10k audit events/sec. Measures: Backend pressure and its secondary impact on application response times.
+
+#### 3. Real Multi-DO Orchestration Gaps
+- **Match -> Reward Chain**: Ensuring that a single match result correctly (and idempotently) increments: `MatchCoordinatorDO` (Phase) -> `CreditsDO` (Winnings) -> `ProgressionDO` (XP) -> `LeaderboardDO` (Rank).
+- **Payment -> Credit Chain**: Verifying the Stripe Webhook -> `PaymentDO` -> `CreditsDO` flow handles concurrent webhook retries without double-crediting.
 
 ### Current Issues
 - Some scripts still use local assumptions that need to stay synchronized with the current worker contract
 - The harness can fail on startup or logging behavior before the application logic is exercised
+- **Logger Bottleneck**: Local logging I/O (specifically R2 flushing in dev) creates backpressure that causes false-positive timeouts under load.
 - The load suite is still too narrow to claim it covers every major orchestration chain
 
 ## Principles
@@ -138,11 +169,14 @@ Status:
 
 ## Gaps
 
-### Confirmed Gaps
-- No current k6 test for match finalization
-- No current k6 test for payment checkout / payment webhook flow
-- No current k6 test for progression update pressure outside the badge-reward path
-- No current k6 test for multi-DO orchestration chains beyond credits plus badges
+### Confirmed Gaps (Priority Backlog)
+These gaps are detailed in the [Comprehensive Gap Analysis](#comprehensive-gap-analysis) section and prioritized in the [Phases](#phases) below.
+
+1. **Matchmaking Pressure**: Singleton bottleneck on $O(N^2)$ pairing logic.
+2. **Leaderboard Stress**: Concurrent array-sort/put on a single storage key.
+3. **The "Gauntlet" Orchestration**: Full "Join-to-Finish" flow (Matchmaking -> Lobby -> Signaling -> Finalize).
+4. **Audit Backpressure**: Impact of write-heavy logging on core state performance.
+5. **Payment Resilience**: Multi-stage webhook-to-credits flow under retry pressure.
 
 ### Unverified Ideas
 - A “joint pressure” scenario spanning match, credits, progression, and leaderboard
@@ -186,6 +220,12 @@ These ideas should not be implemented until the corresponding routes and DO chai
   - the invariant is written
   - the test data can be seeded deterministically
 
+### Phase 6: Build Orchestration Models
+- Implement "The Gauntlet": A single player's journey through the 5-6 primary DOs involved in a game.
+
+### Phase 7: Global Break-Point Testing
+- Determine the requests-per-second limits for singleton DOs like `MatchmakingDO`.
+
 ## Test Plan
 
 ### Baseline Runs
@@ -215,3 +255,12 @@ These ideas should not be implemented until the corresponding routes and DO chai
 - The current `k6` suite is valuable, but it is not a full system load model yet.
 - The right next step is to standardize the shared helpers and stabilize the harness before adding any new scenarios.
 - Once the inventory and contract layer are fully centralized, the suite can be expanded with confidence instead of speculation.
+
+## DO Type Load Profiles
+
+| DO Type | Examples | Test Strategy |
+| :--- | :--- | :--- |
+| **Global Singleton** | `MatchmakingDO`, `LeaderboardDO` | **Burst Pressure**: High volume to a single instance. |
+| **Entity Partitioned** | `CreditsDO`, `ProfileDO` | **User Contention**: Rapid Ops for the SAME user ID. |
+| **Ephemeral Stage** | `MatchShardDO`, `LobbyDO` | **Lifetime Stability**: Managing thousands of short-lived DOs. |
+| **Coordination** | `MatchCoordinatorDO` | **Handshake Latency**: Timing the chain of multi-DO calls. |
