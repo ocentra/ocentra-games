@@ -69,6 +69,8 @@ jobs:
     needs: [cloudflare-security]
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Restore asset hash cache
@@ -98,12 +100,12 @@ jobs:
       - name: Sync assets to development R2
         env:
           SYNC_ENV: development
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLAIM_STORAGE_ASSETS_URL_DEV: ${{ secrets.CLAIM_STORAGE_ASSETS_URL_DEV }}
-          CLAIM_STORAGE_ASSETS_TOKEN_DEV: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_DEV }}
-          ASSETS_WORKER_URL_DEV: ${{ secrets.ASSETS_WORKER_URL_DEV }}
-          ASSETS_WORKER_TOKEN_DEV: ${{ secrets.ASSETS_WORKER_TOKEN_DEV }}
+          CLOUDFLARE_API_TOKEN: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          CLOUDFLARE_ACCOUNT_ID: "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          CLAIM_STORAGE_ASSETS_URL_DEV: "${{ secrets.CLAIM_STORAGE_ASSETS_URL_DEV }}"
+          CLAIM_STORAGE_ASSETS_TOKEN_DEV: "${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_DEV }}"
+          ASSETS_WORKER_URL_DEV: "${{ secrets.ASSETS_WORKER_URL_DEV }}"
+          ASSETS_WORKER_TOKEN_DEV: "${{ secrets.ASSETS_WORKER_TOKEN_DEV }}"
         run: npm run sync:assets:dev -- --apply --prune
 
   deploy-worker-dev:
