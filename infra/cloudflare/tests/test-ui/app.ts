@@ -97,8 +97,9 @@
   getEl('btnRoomCreate').addEventListener('click', async () => {
     const r = await api('POST', API_PREFIX + '/rooms', { hostId: getUserId() });
     setResult('lobbyResult', JSON.stringify(r.data, null, 2), !r.ok);
-    if (r.ok && r.data && r.data.roomId) {
-      (document.getElementById('roomId') as HTMLInputElement).value = r.data.roomId;
+    const data = r.data as Record<string, unknown>;
+    if (r.ok && data && typeof data.roomId === 'string') {
+      (document.getElementById('roomId') as HTMLInputElement).value = data.roomId;
     }
   });
 
@@ -337,8 +338,9 @@
   getEl('btnPartyCreate').addEventListener('click', async () => {
     const r = await api('POST', API_PREFIX + '/party', {});
     setResult('socialResult', JSON.stringify(r.data, null, 2), !r.ok);
-    if (r.ok && r.data && r.data.partyId) {
-      (document.getElementById('socialPartyId') as HTMLInputElement).value = r.data.partyId;
+    const data = r.data as Record<string, unknown>;
+    if (r.ok && data && typeof data.partyId === 'string') {
+      (document.getElementById('socialPartyId') as HTMLInputElement).value = data.partyId;
     }
   });
 

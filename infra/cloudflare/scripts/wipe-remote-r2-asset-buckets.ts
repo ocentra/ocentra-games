@@ -1,5 +1,5 @@
 import { config as loadEnv } from 'dotenv';
-import { DeleteObjectsCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectsCommand, ListObjectsV2Command, ListObjectsV2CommandOutput, S3Client } from '@aws-sdk/client-s3';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
@@ -59,7 +59,7 @@ async function listAllKeys(client: S3Client, bucket: string): Promise<string[]> 
   const keys: string[] = [];
   let continuationToken: string | undefined;
   do {
-    const out = await client.send(
+    const out: ListObjectsV2CommandOutput = await client.send(
       new ListObjectsV2Command({
         Bucket: bucket,
         ContinuationToken: continuationToken,

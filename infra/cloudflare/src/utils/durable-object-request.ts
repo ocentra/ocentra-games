@@ -65,7 +65,7 @@ export function createDORequest(
 }
 
 export async function fetchFromDO(
-  stub: DurableObjectStub,
+  stub: { fetch: DurableObjectStub['fetch'] },
   path: string,
   options: DORequestOptions
 ): Promise<Response> {
