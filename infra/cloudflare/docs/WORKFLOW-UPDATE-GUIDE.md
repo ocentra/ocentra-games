@@ -18,6 +18,7 @@
 
 The former standalone triggers on `secret-scan`, `cloudflare-preflight`, `pull-request`, and `cloudflare-security-tests` were removed so work is not duplicated in parallel; those workflows are now **`workflow_call`** + optional **`workflow_dispatch`** for manual reruns.
 
+**Dependabot PRs:** `ci-gate.yml` routes Dependabot pull requests to the static-only Cloudflare quick gate (`cloudflare-security-quick.yml` with `mode: static`). The full preflight, pull-request, and dynamic Cloudflare checks stay on normal PRs. When you want dynamic coverage for a Dependabot branch, run `cloudflare-security-quick.yml` manually with `mode: dynamic` or `mode: both`.
 ```mermaid
 flowchart TD
   PR[PR or push] --> CG[ci-gate.yml]
@@ -25,10 +26,12 @@ flowchart TD
   S --> P[cloudflare-preflight]
   P --> Q[pull-request-checks]
   Q --> CF[cloudflare-security-tests]
+  CG --> D[dependabot static quick gate]
   CF --> R2M[sync-r2-main wipe or prod R2]
   R2M --> WD[deploy worker dev or prod]
   WD --> PG[Pages deploy preview or production]
   Manual[workflow_dispatch] --> R2Manual[development-r2-worker or production-r2-worker]
+  Manual --> DQ[cloudflare-security-quick.yml mode=dynamic or both]
   Manual --> PD[production-deploy.yml full manual deploy]
 ```
 

@@ -28,24 +28,24 @@ concurrency:
 
 jobs:
   secret-scan:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+    if: (github.event_name != 'push' || github.ref != 'refs/heads/main') && github.actor != 'dependabot[bot]'
     uses: ./.github/workflows/secret-scan.yml
     secrets: inherit
 
   cloudflare-preflight:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+    if: (github.event_name != 'push' || github.ref != 'refs/heads/main') && github.actor != 'dependabot[bot]'
     needs: [secret-scan]
     uses: ./.github/workflows/cloudflare-preflight.yml
     secrets: inherit
 
   pull-request-checks:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+    if: (github.event_name != 'push' || github.ref != 'refs/heads/main') && github.actor != 'dependabot[bot]'
     needs: [cloudflare-preflight]
     uses: ./.github/workflows/pull-request-checks.yml
     secrets: inherit
 
   cloudflare-security:
-    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+    if: (github.event_name != 'push' || github.ref != 'refs/heads/main') && github.actor != 'dependabot[bot]'
     needs: [pull-request-checks]
     uses: ./.github/workflows/cloudflare-security-tests.yml
     secrets: inherit
@@ -53,6 +53,14 @@ jobs:
   cloudflare-security-only:
     if: (github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     uses: ./.github/workflows/cloudflare-security-quick.yml
+    secrets: inherit
+
+  dependabot-cloudflare-security:
+    name: Dependabot Cloudflare Security
+    if: github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+    uses: ./.github/workflows/cloudflare-security-quick.yml
+    with:
+      mode: static
     secrets: inherit
 
   sync-r2-main:
