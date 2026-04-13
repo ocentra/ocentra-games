@@ -18,13 +18,19 @@ on:
           - dynamic
           - static
         default: both
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'infra/cloudflare/**'
+      - 'packages/boundary-domain/**'
+      - 'packages/endpoint-domain/**'
 
 permissions:
   contents: read
   security-events: write
 
 concurrency:
-  group: cloudflare-security-quick-${{ github.ref }}
+  group: security-quick-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
