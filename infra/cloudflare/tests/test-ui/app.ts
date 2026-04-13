@@ -43,10 +43,10 @@
   interface ApiResponse {
     ok: boolean;
     status: number;
-    data: any;
+    data: unknown;
   }
 
-  async function api(method: string, path: string, body?: any): Promise<ApiResponse> {
+  async function api(method: string, path: string, body?: unknown): Promise<ApiResponse> {
     const base = getApiBase().replace(/\/+$/, '');
     const url = path.startsWith('http') ? path : base + (path.startsWith('/') ? path : API_PREFIX + '/' + path);
     const headers: Record<string, string> = {
@@ -74,9 +74,10 @@
       }
       log('HTTP ' + res.status);
       return { ok: true, status: res.status, data };
-    } catch (e: any) {
-      log('Fetch Error: ' + e.message, 'error');
-      return { ok: false, status: 0, data: { error: e.message } };
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      log('Fetch Error: ' + msg, 'error');
+      return { ok: false, status: 0, data: { error: msg } };
     }
   }
 
