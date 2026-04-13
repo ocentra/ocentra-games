@@ -46,9 +46,6 @@ export default function () {
     {
       headers: {
         [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
-        [HttpHeader.Origin]: TestConfig.LocalhostOrigin2,
-        [HttpHeader.Upgrade]: 'websocket',
-        [HttpHeader.Connection]: 'Upgrade',
       },
     },
     (socket) => {

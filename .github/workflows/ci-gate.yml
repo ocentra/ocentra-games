@@ -45,13 +45,13 @@ jobs:
     secrets: inherit
 
   cloudflare-security:
-    if: (github.event_name != 'push' || github.ref != 'refs/heads/main') && github.actor != 'dependabot[bot]'
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
     needs: [pull-request-checks]
     uses: ./.github/workflows/cloudflare-security-tests.yml
     secrets: inherit
 
   cloudflare-security-only:
-    if: (github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: (github.event_name == 'workflow_dispatch' && inputs.mode == 'cloudflare-security') || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/production'))
     uses: ./.github/workflows/cloudflare-security-quick.yml
     secrets: inherit
 

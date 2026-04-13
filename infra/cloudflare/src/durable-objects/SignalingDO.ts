@@ -44,18 +44,24 @@ export class SignalingDO implements DurableObject {
 
   async fetch(request: Request): Promise<Response> {
     try {
-      if (request.headers.get(HttpHeader.Upgrade) === 'websocket') {
+      const upgradeHeader = request.headers.get(HttpHeader.Upgrade);
+      if (upgradeHeader && upgradeHeader.toLowerCase() === 'websocket') {
         if (this.peers.length >= MAX_PEERS) {
-          return new Response(JSON.stringify({ error: 'Session full' }), {
-            status: HttpStatus.ServiceUnavailable,
-            headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+          this.logWarn('Refusing connection: Signaling session full', getStackTrace(), {
+            sessionId: this.ctx.id.toString(),
+            peers: this.peers.length
           });
+          return new Response('Session Full', { status: HttpStatus.ServiceUnavailable });
         }
         const pair = new WebSocketPair();
         this.ctx.acceptWebSocket(pair[1]);
         this.peers.push(pair[1]);
         this.flushPendingToPeers();
-        return new Response(null, { status: 101, webSocket: pair[0] });
+        this.logInfo('Accepting WebSocket connection', getStackTrace(), {
+          sessionId: this.ctx.id.toString(),
+          peerCount: this.peers.length + 1
+        });
+        return new Response(null, { status: HttpStatus.SwitchingProtocols, webSocket: pair[0] });
       }
       const url = new URL(request.url, 'http://dummy');
       const pathname = url.pathname;

@@ -3,7 +3,7 @@ import { getCorsHeaders } from '@/utils/cors';
 import { HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { DOBaseUrl, LobbyDODefaultInstanceName, PresenceDO as PresenceDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { Logger } from '@/logging/domain-logger-init';
+import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 const PRESENCE_SHARD_COUNT = 256;
@@ -43,7 +43,12 @@ export async function handleWsRequest(
   env: Env,
   _path: string
 ): Promise<Response> {
-  if (request.headers.get(HttpHeader.Upgrade) !== 'websocket') {
+  const upgradeHeader = request.headers.get(HttpHeader.Upgrade);
+  if (!upgradeHeader || upgradeHeader.toLowerCase() !== 'websocket') {
+    logWarn('Rejected non-websocket upgrade request', getStackTrace(), { 
+      upgrade: upgradeHeader,
+      connection: request.headers.get(HttpHeader.Connection)
+    });
     return new Response(JSON.stringify({ error: 'Expected WebSocket upgrade' }), {
       status: HttpStatus.UpgradeRequired,
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
@@ -75,7 +80,13 @@ export async function handleWsRequest(
       });
     }
     const stub = ns.get(ns.idFromName(sessionId));
-    return stub.fetch(request);
+    logDebug('Routing to Signaling DO', getStackTrace(), { sessionId });
+    // Use URL + headers pattern for more robust local dev proxying of upgrades
+    return stub.fetch(request.url, { 
+      headers: request.headers,
+      method: request.method,
+      redirect: 'manual'
+    });
   }
 
   const presenceWsPrefix = '/ws/presence/';

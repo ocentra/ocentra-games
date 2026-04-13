@@ -1,0 +1,61 @@
+version: 2
+updates:
+  # 1. Root Workspace
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    groups:
+      security:
+        patterns: ["*"]
+        update-types: ["security"]
+      build-tools:
+        patterns: ["vite*", "esbuild*", "@vitejs/*", "vitest", "typescript"]
+      core-dependencies:
+        patterns: ["react*", "@ocentra/*"]
+
+  # 2. Cloudflare Infrastructure
+  - package-ecosystem: "npm"
+    directory: "/infra/cloudflare"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      cloudflare:
+        patterns: ["wrangler", "@cloudflare/*", "miniflare"]
+
+  # 3. Firebase Infrastructure
+  - package-ecosystem: "npm"
+    directory: "/infra/firebase"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+
+  # 4. Key Domain Packages
+  - package-ecosystem: "npm"
+    directory: "/packages/card-games"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/packages/network-domain"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/packages/crypto-domain"
+    schedule:
+      interval: "weekly"
+
+  # 5. Rust Core
+  - package-ecosystem: "cargo"
+    directory: "/Rust/ocentra-games"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      rust-security:
+        patterns: ["*"]
+        update-types: ["security"]

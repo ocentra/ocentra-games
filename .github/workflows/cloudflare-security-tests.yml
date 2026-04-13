@@ -11,7 +11,7 @@ permissions:
   security-events: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: cloudflare-security-tests-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -138,7 +138,7 @@ jobs:
           echo "Concise per-suite summaries: download artifact 'cloudflare-test-artifacts' → infra/cloudflare/test-runner/logs/ (e.g. integration-test-helper-results.txt)."
 
   cloudflare-dynamic-security:
-    name: Cloudflare Dynamic Security Gates
+    name: Cloudflare Dynamic Security Gates (Full)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: cloudflare-tests
@@ -312,7 +312,7 @@ jobs:
           if-no-files-found: ignore
 
   cloudflare-static-security:
-    name: Cloudflare Static Security Gates
+    name: Cloudflare Static Security Gates (Full)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: cloudflare-tests
