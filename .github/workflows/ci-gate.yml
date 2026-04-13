@@ -44,16 +44,8 @@ jobs:
     uses: ./.github/workflows/pull-request-checks.yml
     secrets: inherit
 
-  cloudflare-security-pr:
-    name: Cloudflare Security (Quick)
-    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
-    needs: [pull-request-checks]
-    uses: ./.github/workflows/cloudflare-security-quick.yml
-    secrets: inherit
-
-  cloudflare-security-full:
-    name: Cloudflare Security (Full)
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/production') && github.actor != 'dependabot[bot]'
+  cloudflare-security:
+    if: (github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/production'))) && github.actor != 'dependabot[bot]'
     needs: [pull-request-checks]
     uses: ./.github/workflows/cloudflare-security-tests.yml
     secrets: inherit
