@@ -26,49 +26,40 @@ can the worker survive concurrency and pressure without breaking correctness, id
 - WebSocket / signaling connection pressure
 
 ### What They Do Not Yet Cover
-- **Full Match Lifecycle**: From matchmaking queue to result submission across `MatchCoordinatorDO` and `MatchShardDO`.
-- **Payment flow pressure**: Stressing the checkout/webhook orchestration.
-- **Progression/reward flow pressure**: Beyond simple badge unlocks.
-- **Global Hot-Shards**: Contention on singletons like `LeaderboardDO` or `MatchmakingDO`.
-- **Inter-DO Handshaking**: Latency and failure modes in long Conductor/Instrument chains.
+- Match finalization under load
+- Payment flow pressure
+- Progression/reward flow pressure beyond badge unlock and credits
+- Other real multi-DO chains that are not already proven by the current k6 inventory
 
 ### Current Issues
 - Some scripts still use local assumptions that need to stay synchronized with the current worker contract
-- **Logger Bottleneck**: Local logging I/O (specifically R2 flushing in dev) creates backpressure that causes false-positive timeouts under load.
-- The load suite is still too narrow to claim it covers every major orchestration chain.
+- The harness can fail on startup or logging behavior before the application logic is exercised
+- The load suite is still too narrow to claim it covers every major orchestration chain
 
 ## Principles
 
-1. **Use centralized contracts.**
+1. Use centralized contracts.
    - Route constants, headers, methods, query keys, path builders, idempotency helpers, and payload examples must come from domain packages.
    - No load script should invent its own route string or payload shape if a shared export already exists.
 
-2. **Test the real system, not a guessed system.**
+2. Test the real system, not a guessed system.
    - A load scenario must be tied to an actual route, flow, or DO chain that exists in the repo.
    - If the chain does not exist, do not add a load test for it yet.
 
-3. **Keep the harness boring.**
+3. Keep the harness boring.
    - Worker startup, health checks, and log flushing must not create false failures.
    - A k6 failure should mean the app failed, not the test wrapper.
 
-4. **Treat idempotency as part of the contract.**
+4. Treat idempotency as part of the contract.
    - Money-critical and stateful write paths must use deterministic idempotency keys.
    - Concurrent tests must verify that retry or replay does not create extra value.
 
-5. **Separate pressure types.**
+5. Separate pressure types.
    - Contention tests
    - Soak tests
    - Memory-pressure tests
    - WebSocket / FD pressure tests
    - Cross-endpoint correctness tests
-
-6. **Isolate Observability I/O.**
-   - High-concurrency tests must not be blocked by logging.
-   - The logger should move to an asynchronous, non-blocking mode or skip expensive local I/O (like `test.json` flushes) during load runs to ensure we measure application latency, not disk I/O.
-
-7. **Model the DO Topology.**
-   - Distinguish between **Singleton DOs** (Global bottlenecks like `MatchmakingDO`) and **Partitioned DOs** (Per-user/Match like `CreditsDO`).
-   - Load scenarios must specifically target the unique contention points of each type.
 
 ## Centralized Sources Of Truth
 
@@ -148,53 +139,79 @@ Status:
 ## Gaps
 
 ### Confirmed Gaps
-- **The "Join-to-Finish" Flow**: Matchmaking -> Lobby -> Signaling -> Match Result.
-- **Payment Lifecycle**: Checkout session creation -> Payment success webhook -> Credit grant.
-- **Global Singleton Stress**: High volume to `LeaderboardDO` and `MatchmakingDO`.
-- **Audit Backpressure**: Does high volume in gameplay DOs choke the `AuditLogDO`?
+- No current k6 test for match finalization
+- No current k6 test for payment checkout / payment webhook flow
+- No current k6 test for progression update pressure outside the badge-reward path
+- No current k6 test for multi-DO orchestration chains beyond credits plus badges
 
 ### Unverified Ideas
 - A “joint pressure” scenario spanning match, credits, progression, and leaderboard
 - A single hot-shard test for a queue-like singleton DO
 - A distributed lock contention test for user-key or profile update paths
 
+These ideas should not be implemented until the corresponding routes and DO chains are confirmed in the codebase and the expected invariants are written down first.
+
 ## Phases
 
 ### Phase 1: Centralize The k6 Contract Layer
-- Generate and consume shared constants for routes, headers, and payloads.
-- Move repeated test data construction into shared builders.
+- Generate and consume shared constants for:
+  - API routes
+  - headers
+  - auth schemes
+  - idempotency keys
+  - request payload builders
+- Move any repeated test payload construction into shared helpers.
+- Keep the generated `tests/k6/constants.js` in sync with `endpoint-domain`.
 
-### Phase 2: Stabilize The Harness & Logger
-- Fix worker startup health checks.
-- **Decouple Logger I/O**: Modify `domain-logger-init.ts` to skip expensive local R2 flushes when a `k6` context is detected.
+### Phase 2: Stabilize The Harness
+- Make worker startup and health checks deterministic.
+- Separate application failures from harness failures.
+- Avoid log-flush behavior that makes load tests measure logging I/O instead of application behavior.
 
 ### Phase 3: Reconcile Existing Scripts
-- Fix payloads and route usage to match the current 2026 worker contracts.
+- Confirm each script uses the current worker contract.
+- Fix payloads, headers, and route usage where needed.
+- Preserve deterministic success and failure expectations.
 
 ### Phase 4: Classify Scripts
-- `keep` / `fix` / `delete` / `defer` based on current relevance.
+- `keep` for scripts that still represent real pressure on a current route
+- `fix` for scripts that still represent a real route but have stale payloads or assumptions
+- `delete` for scripts that no longer correspond to a real route or useful invariant
+- `defer` for scenarios that require a new real route or a larger orchestration refactor first
 
-### Phase 5: Build Orchestration Models
-- Implement "The Gauntlet": A single player's journey through the 5-6 primary DOs involved in a game.
+### Phase 5: Add Real Cross-DO Scenarios Only
+- Add a new scenario only when:
+  - the route exists
+  - the chain is real
+  - the invariant is written
+  - the test data can be seeded deterministically
 
-### Phase 6: Global Break-Point Testing
-- Determine the requests-per-second limits for singleton DOs like `MatchmakingDO`.
+## Test Plan
 
-## Success Criteria
-- k6 runs pass without harness-induced false failures.
-- **Zero Double-Spending**: Verified via concurrent purchase tests.
-- **Orchestration Integrity**: Verified via "Match-to-Payout" chains.
-- Any new cross-DO pressure test maps to a real, existing chain.
+### Baseline Runs
+- `npm run test:k6`
+- `npm run test:schemathesis`
+- `npm run test:helper`
 
-## DO Type Load Profiles
+### Expected Verification Order
+1. Centralized helper and constants updates
+2. Harness stability fixes
+3. Existing k6 script reconciliation
+4. New scenario additions only after the above are green
 
-| DO Type | Examples | Test Strategy |
-| :--- | :--- | :--- |
-| **Global Singleton** | `MatchmakingDO`, `LeaderboardDO` | **Burst Pressure**: High volume to a single instance. |
-| **Entity Partitioned** | `CreditsDO`, `ProfileDO` | **User Contention**: Rapid Ops for the SAME user ID. |
-| **Ephemeral Task** | `MatchShardDO`, `LobbyDO` | **Lifetime Stability**: Managing thousands of short-lived DOs. |
-| **Coordination** | `MatchCoordinatorDO` | **Handshake Latency**: Timing the chain of multi-DO calls. |
+### Success Criteria
+- k6 runs pass without harness-induced false failures
+- Credits and badge pressure tests remain deterministic
+- Load scripts do not duplicate contract definitions locally
+- Any new cross-DO pressure test maps to a real, existing chain
+
+## Non-Goals
+- Do not invent a load test for a route or DO chain that does not exist
+- Do not expand the suite by guesswork
+- Do not use k6 to validate application logic that belongs in unit, integration, contract, or Schemathesis tests
+- Do not let logging backpressure become the thing the load suite measures unless the goal is specifically logger resilience
 
 ## Notes
-- The logging bottleneck found during recent audits is the #1 blocker for reliable local load testing.
-- Standardizing the contract layer is mandatory before adding complex orchestration flows.
+- The current `k6` suite is valuable, but it is not a full system load model yet.
+- The right next step is to standardize the shared helpers and stabilize the harness before adding any new scenarios.
+- Once the inventory and contract layer are fully centralized, the suite can be expanded with confidence instead of speculation.

@@ -23,6 +23,8 @@ if (!fs.existsSync(testRunnerLogsDir)) {
 
 const k6LogPath = path.join(testRunnerLogsDir, 'k6.log');
 const k6LogStream = fs.createWriteStream(k6LogPath, { flags: 'w' });
+const workerStartLogPath = path.join(testRunnerLogsDir, 'worker-start-k6.log');
+const workerStartLogStream = fs.createWriteStream(workerStartLogPath, { flags: 'w' });
 
 interface K6Metrics {
   requests?: number;
@@ -119,13 +121,19 @@ async function checkWorkerHealth(url: string, timeout = 2000): Promise<boolean> 
   });
 }
 
-async function waitForWorker(port: number, maxWait = 30): Promise<boolean> {
+async function waitForWorker(port: number, maxWait = 30, shouldAbort?: () => boolean): Promise<boolean> {
   const url = `http://localhost:${port}/health`;
   const checkInterval = 1000;
   let elapsed = 0;
   while (elapsed < maxWait * 1000) {
+    if (shouldAbort?.()) {
+      return false;
+    }
     const healthy = await checkWorkerHealth(url);
     if (healthy) return true;
+    if (shouldAbort?.()) {
+      return false;
+    }
     await new Promise((r) => setTimeout(r, checkInterval));
     elapsed += checkInterval;
     process.stdout.write(`\r  Waiting for worker... (${Math.floor(elapsed / 1000)}s)`);
@@ -257,16 +265,49 @@ async function ensureWorker(): Promise<boolean> {
     console.log('  Starting worker (npm run worker:start)...');
     const isWindows = process.platform === 'win32';
     const npmCommand = isWindows ? 'npm.cmd' : 'npm';
+    let workerExited = false;
+    let workerExitCode: number | null = null;
     const workerJob = spawn(npmCommand, ['run', 'worker:start'], {
       cwd: cloudflareDir,
       env: { ...process.env, WORKER_HTTP_PORT: '8787' },
-      stdio: 'pipe',
+      stdio: ['ignore', 'pipe', 'pipe'],
       detached: false,
       shell: isWindows,
     });
-    workerRunning = await waitForWorker(8787, waitSeconds);
+
+    const forwardWorkerOutput = (text: string, stream: 'stdout' | 'stderr'): void => {
+      workerStartLogStream.write(text);
+      process[stream].write(text);
+    };
+
+    workerJob.stdout?.on('data', (data) => {
+      forwardWorkerOutput(data.toString(), 'stdout');
+    });
+
+    workerJob.stderr?.on('data', (data) => {
+      forwardWorkerOutput(data.toString(), 'stderr');
+    });
+
+    workerJob.once('close', (code) => {
+      workerExited = true;
+      workerExitCode = code ?? 0;
+      workerStartLogStream.write(`\n[worker-start] exited with code ${workerExitCode}\n`);
+      workerStartLogStream.end();
+    });
+
+    workerJob.once('error', (error) => {
+      workerExited = true;
+      workerExitCode = 1;
+      workerStartLogStream.write(`\n[worker-start] process error: ${error.message}\n`);
+      workerStartLogStream.end();
+    });
+
+    workerRunning = await waitForWorker(8787, waitSeconds, () => workerExited);
     if (!workerRunning && workerJob) {
       workerJob.kill();
+      if (workerExitCode !== null) {
+        console.error(`  [FAIL] worker:start exited before health check completed (code ${workerExitCode})`);
+      }
     }
   }
   return workerRunning;
@@ -328,6 +369,9 @@ async function main(): Promise<void> {
     });
 
     k6LogStream.end();
+    if (!workerStartLogStream.closed) {
+      workerStartLogStream.end();
+    }
 
     const duration = (Date.now() - startTime) / 1000;
     const k6JsonPath = path.join(testRunnerReportJsonDir, 'k6-results.json');
