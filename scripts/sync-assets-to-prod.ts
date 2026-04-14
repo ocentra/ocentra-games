@@ -5,6 +5,8 @@ import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
+import { config as loadDotenv } from 'dotenv';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
 import { resolveAssetSourceRoot } from './assets/assetSourceRoot';
 import { buildAppAssetSlices } from './assets/buildAppAssetSlices';
@@ -22,6 +24,11 @@ interface SyncConfig {
   useHashCache: boolean;
   concurrency: number;
   resourcesDir: string;
+  r2Config?: {
+    accountId: string;
+    accessKeyId: string;
+    secretAccessKey: string;
+  };
 }
 
 interface FileHashCacheEntry {
@@ -52,26 +59,37 @@ interface DiffResult {
   delete: RemoteObject[];
 }
 
-function getSyncConfig(args: string[]): SyncConfig {
+async function getSyncConfig(args: string[]): Promise<SyncConfig> {
   const env: SyncEnv = process.env.SYNC_ENV === 'development' ? 'development' : 'production';
+
+  // Load local .env if it exists (relative to script location)
+  const envPath = join(process.cwd(), 'infra', 'cloudflare', '.env');
+  if (existsSync(envPath)) {
+    loadDotenv({ path: envPath });
+  }
+
   const apply = args.includes('--apply');
   const dryRun = !apply || args.includes('--dry-run');
   const prune = args.includes('--prune');
   const wipe = args.includes('--wipe');
   const useHashCache =
     !args.includes('--no-hash-cache') && process.env.SYNC_SKIP_HASH_CACHE !== '1';
-  const concurrency = Math.max(1, Number(process.env.SYNC_CONCURRENCY || 4));
+  const concurrency = Math.max(1, Number(process.env.SYNC_CONCURRENCY || 15));
   const resourcesArg = args.find((arg) => arg.startsWith('--resources-dir='));
   const resourcesDir = resourcesArg
     ? resourcesArg.slice('--resources-dir='.length)
     : (process.env.ASSET_SYNC_ROOT || '');
+
   const bucketName = env === 'development' ? `${StorageBucketName.DefaultAssets}-test` : StorageBucketName.DefaultAssets;
-  const workerUrl = env === 'development'
+
+  // Fallback to LOGS_API_KEY and WORKER_URL if specific sync vars are missing
+  const workerUrl = (env === 'development'
     ? (
       process.env.CLAIM_STORAGE_ASSETS_URL_DEV ||
       process.env.CLAIM_STORAGE_ASSETS_URL ||
       process.env.ASSETS_WORKER_URL_DEV ||
       process.env.ASSETS_WORKER_URL ||
+      process.env.WORKER_URL ||
       'http://127.0.0.1:8787'
     )
     : (
@@ -79,14 +97,16 @@ function getSyncConfig(args: string[]): SyncConfig {
       process.env.CLAIM_STORAGE_ASSETS_URL ||
       process.env.ASSETS_WORKER_URL_PROD ||
       process.env.ASSETS_WORKER_URL ||
+      process.env.WORKER_URL ||
       ''
-    );
-  const workerToken = env === 'development'
+    ));
+  const workerToken = (env === 'development'
     ? (
       process.env.CLAIM_STORAGE_ASSETS_TOKEN_DEV ||
       process.env.CLAIM_STORAGE_ASSETS_TOKEN ||
       process.env.ASSETS_WORKER_TOKEN_DEV ||
       process.env.ASSETS_WORKER_TOKEN ||
+      process.env.LOGS_API_KEY ||
       ''
     )
     : (
@@ -94,8 +114,18 @@ function getSyncConfig(args: string[]): SyncConfig {
       process.env.CLAIM_STORAGE_ASSETS_TOKEN ||
       process.env.ASSETS_WORKER_TOKEN_PROD ||
       process.env.ASSETS_WORKER_TOKEN ||
+      process.env.LOGS_API_KEY ||
       ''
-    );
+    ));
+
+  const r2Config = (process.env.R2_ACCESS_KEY_ID && process.env.R2_SECRET_ACCESS_KEY && process.env.CLOUDFLARE_ACCOUNT_ID)
+    ? {
+      accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    }
+    : undefined;
+
   return {
     env,
     bucketName,
@@ -107,6 +137,7 @@ function getSyncConfig(args: string[]): SyncConfig {
     useHashCache,
     concurrency,
     resourcesDir,
+    r2Config,
   };
 }
 
@@ -195,6 +226,18 @@ async function listLocalFiles(
         continue;
       }
 
+      // Skip editor meta files and system junk
+      if (
+        entry.name.endsWith('.meta') ||
+        entry.name === '.DS_Store' ||
+        entry.name === 'Thumbs.db' ||
+        entry.name === '.index' ||
+        dir.includes('/.index') ||
+        dir.endsWith('/.index')
+      ) {
+        continue;
+      }
+
       const fileStat = await stat(fullPath);
       if (!fileStat.isFile()) {
         continue;
@@ -252,7 +295,7 @@ async function listRemoteObjects(workerUrl: string, workerToken: string): Promis
   }
 
   const endpoint = `${workerUrl.replace(/\/$/, '')}/api/v1/assets/list`;
-  
+
   let response: Response;
   try {
     response = await fetch(endpoint, {
@@ -308,7 +351,18 @@ function buildDiff(localFiles: LocalFile[], remoteObjects: RemoteObject[], prune
 
 function runWranglerCommand(args: string[]): void {
   const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-  const result = spawnSync(command, ['wrangler', ...args], { stdio: 'inherit', shell: false });
+
+  // Ensure wrangler picks up our local token
+  const env = { ...process.env };
+  if (env.CLOUDFLARE_API_TOKEN) {
+    env.CLOUDFLARE_API_TOKEN = env.CLOUDFLARE_API_TOKEN.replace(/^"+|"+$/g, '').trim();
+  }
+
+  const result = spawnSync(command, ['wrangler', ...args], {
+    stdio: 'inherit',
+    shell: process.platform === 'win32', // The Magic Windows Fix
+    env
+  });
   if (result.status !== 0) {
     throw new Error(`wrangler command failed: ${args.join(' ')}`);
   }
@@ -342,6 +396,61 @@ function runWranglerDelete(bucketName: string, key: string, env: SyncEnv): void 
     '--env',
     env,
   ]);
+}
+
+function getS3Client(config: SyncConfig): S3Client | undefined {
+  if (!config.r2Config) return undefined;
+  return new S3Client({
+    region: 'auto',
+    endpoint: `https://${config.r2Config.accountId}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: config.r2Config.accessKeyId,
+      secretAccessKey: config.r2Config.secretAccessKey,
+    },
+  });
+}
+
+function getContentType(key: string): string {
+  const ext = key.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'png': return 'image/png';
+    case 'jpg':
+    case 'jpeg': return 'image/jpeg';
+    case 'webp': return 'image/webp';
+    case 'json': return 'application/json';
+    case 'db': return 'application/x-sqlite3';
+    case 'asset': return 'application/octet-stream';
+    default: return 'application/octet-stream';
+  }
+}
+
+async function runPut(s3: S3Client | undefined, config: SyncConfig, file: LocalFile): Promise<void> {
+  if (!s3) {
+    // Fallback to wrangler if S3 config is missing
+    runWranglerPut(config.bucketName, file, config.env);
+    return;
+  }
+
+  const bytes = await readFile(file.fullPath);
+  await s3.send(new PutObjectCommand({
+    Bucket: config.bucketName,
+    Key: file.key,
+    Body: bytes,
+    ContentType: getContentType(file.key),
+  }));
+}
+
+async function runDelete(s3: S3Client | undefined, config: SyncConfig, key: string): Promise<void> {
+  if (!s3) {
+    // Fallback to wrangler if S3 config is missing
+    runWranglerDelete(config.bucketName, key, config.env);
+    return;
+  }
+
+  await s3.send(new DeleteObjectCommand({
+    Bucket: config.bucketName,
+    Key: key,
+  }));
 }
 
 async function runInBatches<T>(items: T[], concurrency: number, runner: (item: T, index: number) => Promise<void>): Promise<void> {
@@ -400,7 +509,7 @@ async function writeReport(
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const config = getSyncConfig(args);
+  const config = await getSyncConfig(args);
   const resourcesDir = resolveAssetSourceRoot(process.cwd(), config.resourcesDir);
   const generatedSlicesDir = join(process.cwd(), 'infra', 'cloudflare', '.generated', 'app-slices');
 
@@ -439,6 +548,11 @@ async function main(): Promise<void> {
   const remoteListed = await listRemoteObjects(config.workerUrl, config.workerToken);
   let remoteObjects = remoteListed;
 
+  const s3 = getS3Client(config);
+  if (s3) {
+    console.log('[sync-assets] High-speed S3 sync mode enabled.');
+  }
+
   if (config.wipe) {
     if (config.dryRun) {
       console.log(
@@ -449,7 +563,7 @@ async function main(): Promise<void> {
       console.log(`[sync-assets] --wipe: deleting ${remoteListed.length} remote object(s) before upload.`);
       let removed = 0;
       await runInBatches(remoteListed, config.concurrency, async (object) => {
-        runWranglerDelete(config.bucketName, object.key, config.env);
+        await runDelete(s3, config, object.key);
         removed += 1;
         if (removed % 25 === 0 || removed === remoteListed.length) {
           console.log(`[sync-assets] wiped ${removed}/${remoteListed.length}`);
@@ -480,7 +594,7 @@ async function main(): Promise<void> {
 
   let uploaded = 0;
   await runInBatches(diff.upload, config.concurrency, async (file) => {
-    runWranglerPut(config.bucketName, file, config.env);
+    await runPut(s3, config, file);
     uploaded += 1;
     if (uploaded % 25 === 0 || uploaded === diff.upload.length) {
       console.log(`[sync-assets] uploaded ${uploaded}/${diff.upload.length}`);
@@ -489,7 +603,7 @@ async function main(): Promise<void> {
 
   let deleted = 0;
   await runInBatches(diff.delete, config.concurrency, async (object) => {
-    runWranglerDelete(config.bucketName, object.key, config.env);
+    await runDelete(s3, config, object.key);
     deleted += 1;
     if (deleted % 25 === 0 || deleted === diff.delete.length) {
       console.log(`[sync-assets] deleted ${deleted}/${diff.delete.length}`);

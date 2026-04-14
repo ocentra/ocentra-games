@@ -28,6 +28,10 @@ on:
         required: false
       ASSETS_WORKER_TOKEN_PROD:
         required: false
+      R2_ACCESS_KEY_ID:
+        required: false
+      R2_SECRET_ACCESS_KEY:
+        required: false
   workflow_dispatch:
     inputs:
       environment:
@@ -73,6 +77,8 @@ jobs:
           CLAIM_STORAGE_ASSETS_TOKEN_DEV: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_DEV }}
           ASSETS_WORKER_URL_DEV: ${{ secrets.ASSETS_WORKER_URL_DEV }}
           ASSETS_WORKER_TOKEN_DEV: ${{ secrets.ASSETS_WORKER_TOKEN_DEV }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: npm run sync:assets:dev -- --apply --prune
 
       - name: Sync assets to production R2
@@ -85,4 +91,6 @@ jobs:
           CLAIM_STORAGE_ASSETS_TOKEN_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_PROD }}
           ASSETS_WORKER_URL_PROD: ${{ secrets.ASSETS_WORKER_URL_PROD }}
           ASSETS_WORKER_TOKEN_PROD: ${{ secrets.ASSETS_WORKER_TOKEN_PROD }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: npm run sync:assets:prod -- --apply --prune
