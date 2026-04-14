@@ -86,42 +86,58 @@ To prevent copy-pasting install scripts, every job uses:
 
 ## Detailed Node Breakdown
 
-Here is exactly what happens under the hood inside each node of the pipeline:
+Here is exactly what runs under the hood inside each phase of the pipeline:
 
-### 1. Fail Fast (Install, Build, Lint, Types)
-- **Role:** The absolute gatekeeper.
-- **Actions:** Uses `setup-ci` to install Node and run `npm ci`. Runs a Turbo build of internal `@ocentra` domain packages. Executes ESLint and exactly type-checks the entire monorepo using `tsc -b --force`.
-- **Why:** Catches 90% of developer errors (typos, bad imports, mismatched types) in under 5 minutes without wasting CI cost.
+### 1. Fail Fast (`fail-fast.yml`)
+**Role:** The absolute gatekeeper.
+**Executes:**
+- `npm ci` (Installs all dependencies)
+- `npm run build:domains` (Turbo builds internal `@ocentra` packages)
+- `npm run lint` (Runs ESLint across the entire source code)
+- `npm run type-check` (Runs `tsc -b --force` to validate all TypeScript typings)
 
 ### 2. Secrets and Sensitive Files (`secret-scan.yml`)
-- **Role:** Security check.
-- **Actions:** Uses `setup-ci` (but skips `npm install` because it only needs the Node binary). Runs custom scripts and the `gitleaks` CLI.
-- **Why:** Ensures no API keys, Stripe secrets, or private certificates were accidentally committed. Dies immediately if a leak is found.
+**Role:** Security check against hardcoded keys.
+**Executes:**
+- `node scripts/security/scan-staged-secrets.mjs --repo` (Custom regex-based repo scanner)
+- `gitleaks detect --source . --redact` (Open-source credential scanner)
 
 ### 3. Cloudflare Prebuild Preflight (`cloudflare-preflight.yml`)
-- **Role:** Infrastructure validation.
-- **Actions:** Installs Cloudflare's `wrangler` CLI and runs `wrangler types`.
-- **Why:** Ensures that your Cloudflare `wrangler.toml` configuration is valid and all expected environment bindings are correctly typed before proceeding to deep testing.
+**Role:** Infrastructure typings and script validation.
+**Executes:**
+- `npm run prebuild` (Autogenerates logging modules via `generate-log-modules.ts`)
+- `npm run dev:prep:worker` (Reads `wrangler.toml` to generate static typing for DB/KV bindings)
 
 ### 4. Phase 3: Parallel Checks & Compilation
-Because the preflight succeeded, `ci-gate.yml` now furiously spins up 4 distinct nodes all operating at the exact same time:
-- **Unit Tests:** Runs `npm test` across the monorepo to verify pure functional logic without spinning up heavy environments.
-- **Mobile Web Smoke:** Automatically starts *after* Unit Tests succeed. Installs Playwright and rigorously tests the UI on mobile-width views.
-- **Build Web App:** Runs Vite to compile the React frontend. Proves the web app successfully bundles for production.
-- **Solana Integration Pipeline:** The heaviest node. It installs Anchor and Rust, compiles your smart contracts, and then spins up a local Devnet cluster to run integration tests directly against the compiled `.idl` artifacts.
+Because the preflight succeeded, `ci-gate.yml` concurrently boots 4 isolated nodes:
 
-### 5. Cloudflare Test Gates (`cloudflare-security-tests.yml`)
-- **Role:** End-to-end integration proving ground.
-- **Actions:** This is the most complex node. It waits for the entire Pull Request Checks block to pass. It then spins up the Cloudflare Worker locally, starts the Logging Domain bridge, and opens a `cloudflared` tunnel exposing the local worker to the internet. 
+**A. Unit Tests (`unit-tests.yml`)**
+- **Executes:** `npm test` -> `vitest --run`
+- Runs all standard, pure-logic Javascript tests indiscriminately across the monorepo.
 
-### 6. Security Gates
-Once the Cloudflare Tunnel is open, two heavy scans pound the live local worker:
-- **Cloudflare Dynamic Security:** Runs `schemathesis`. It dynamically reads your OpenAPI spec and forcefully generates thousands of malicious HTTP requests (mutating parameters, headers, and payloads) to try and crash your application bounds.
-- **Cloudflare Static Security:** Runs load testing (`k6`) to ensure concurrency isn't causing memory leaks or race conditions in Durable Objects.
+**B. Mobile Web Smoke (`mobile-smoke.yml`) - Waits for Unit Tests**
+- **Executes:** `npx playwright install` -> `npm run test:e2e -- --project=db-mobile-e2e`
+- Runs headless chromium mobile-viewport UI interaction tests.
 
-### 7. Deployment (Sync R2 -> Deploy Worker -> Deploy Pages)
-- **Role:** The final rollout.
-- **Actions:** If we are on `main` or explicitly deploying:
-  1. `sync-r2.yml` hashes and uploads your static game assets exactly as specified in `app-assets`.
-  2. `deploy-worker.yml` runs a final `wrangler deploy` to push your backend code to Cloudflare's edge servers.
-  3. `deploy-pages.yml` pushes the compiled React Frontend to Cloudflare Pages.
+**C. Build Web App (`build-web.yml`)**
+- **Executes:** `npm run build` -> `vite build`
+- Packages the React frontend.
+
+**D. Solana Integration Pipeline (`solana-tests.yml`)**
+- **Executes:** `anchor build` -> Compiles Rust smart contracts.
+- **Executes:** `npm run test:integration` -> Spins up a local Devnet cluster to execute blockchain assertions using the compiled artifact.
+
+### 5. Cloudflare End-To-End Test Gates (`cloudflare-security-tests.yml`)
+**Role:** Heavy E2E server orchestration and fuzzing.
+**Executes:**
+- `wrangler dev` (Boots local backend worker in Miniflare)
+- `cloudflared tunnel` (Exposes local `wrangler` server to the internet)
+- **Node: Dynamic Security:** Runs `schemathesis --workers 10` (Forcefully fuzzes your OpenAPI specification)
+- **Node: Static Security:** Runs `k6 run tests/k6/concurrency.test.js` (Stress-tests memory limits and connection scaling)
+
+### 6. Deployment (R2, Worker, Pages)
+**Role:** Production Rollout (Runs sequentially).
+**Executes:**
+- `npm run sync:assets:prod` (`sync-r2.yml` hashes and uploads game assets)
+- `npm run deploy` (`deploy-worker.yml` pushes backend to edge)
+- `wrangler pages deploy` (`deploy-pages.yml` pushes Vite dist to Pages)
