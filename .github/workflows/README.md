@@ -138,7 +138,7 @@ Because the preflight succeeded, `ci-gate.yml` concurrently boots 4 isolated nod
 ### 6. Deployment (R2, Worker, Pages)
 **Role:** Production Rollout (Runs sequentially).
 **Executes:**
-- `npm run sync:assets:prod` (`sync-r2.yml` hashes and uploads game assets)
+- `npm run sync:assets:prod` (`sync-r2.yml` uses the High-Speed S3 engine to hash and parallel-upload game assets)
 - `npm run deploy` (`deploy-worker.yml` pushes backend to edge)
 - `wrangler pages deploy` (`deploy-pages.yml` pushes Vite dist to Pages)
 
@@ -163,3 +163,23 @@ If the deployment failed because of a missing API key or an expired Stripe secre
 2. Go to the failed `ci-gate.yml` run in the GitHub Web UI.
 3. Click the **Re-run failed jobs** button in the top right corner.
 4. GitHub natively remembers that Phase 1 through 5 already passed perfectly. It will instantly jump straight to Phase 6 and ONLY run the deployment node that previously failed!
+
+---
+
+## High-Speed S3 Asset Synchronization 🚀
+
+To prevent deployment bottlenecks, the asset synchronization workflow (`sync-r2.yml`) uses a high-performance, S3-native engine (`scripts/sync-assets-to-prod.ts`).
+
+### Key Features:
+- **Parallel Uploads**: Uses `@aws-sdk/client-s3` to upload multiple assets concurrently (default concurrency: 15).
+- **Direct Bucket Listing**: Bypasses the Cloudflare Worker API to list remote objects directly via S3, ensuring 100% accuracy between environments.
+- **Smart Filtering**: Automatically excludes editor-only files (`.meta`, `.index`, `.DS_Store`, etc.) to keep production buckets clean.
+- **Hash Caching**: Maintains a local `.wrangler/asset-hash-cache.json` to avoid re-hashing unchanged files, reducing sync startup time from minutes to seconds.
+
+### Required Secrets (CI & Local):
+For maximum performance, the following secrets must be configured in GitHub (for CI) or `infra/cloudflare/.env` (for local runs):
+- `R2_ACCESS_KEY_ID`: R2 S3-standard access key.
+- `R2_SECRET_ACCESS_KEY`: R2 S3-standard secret key.
+- `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare account ID.
+
+If these keys are missing, the script will gracefully fall back to the slower `wrangler` CLI method.
