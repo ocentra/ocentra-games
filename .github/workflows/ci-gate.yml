@@ -69,17 +69,35 @@ jobs:
     uses: ./.github/workflows/cloudflare-preflight.yml
     secrets: inherit
 
-  # ── Phase 3: Code Quality & Tests ──────────────────────────────────────
-  pull-request-checks:
+  # ── Phase 3: Parallel Checks & Compilation ─────────────────────────────
+  unit-tests:
     if: github.actor != 'dependabot[bot]'
     needs: [cloudflare-preflight]
-    uses: ./.github/workflows/pull-request-checks.yml
+    uses: ./.github/workflows/unit-tests.yml
+    secrets: inherit
+
+  mobile-smoke:
+    if: github.actor != 'dependabot[bot]'
+    needs: [unit-tests]
+    uses: ./.github/workflows/mobile-smoke.yml
+    secrets: inherit
+
+  build-web:
+    if: github.actor != 'dependabot[bot]'
+    needs: [cloudflare-preflight]
+    uses: ./.github/workflows/build-web.yml
+    secrets: inherit
+
+  solana-tests:
+    if: github.actor != 'dependabot[bot]'
+    needs: [cloudflare-preflight]
+    uses: ./.github/workflows/solana-tests.yml
     secrets: inherit
 
   # ── Phase 4: Cloudflare Security ───────────────────────────────────────
   cloudflare-security:
     if: (github.event_name == 'pull_request' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/production'))) && github.actor != 'dependabot[bot]'
-    needs: [pull-request-checks]
+    needs: [unit-tests, mobile-smoke, build-web, solana-tests]
     uses: ./.github/workflows/cloudflare-security-tests.yml
     secrets: inherit
 

@@ -1,0 +1,17 @@
+name: Build Web App
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build-web:
+    name: Build Web App
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci
+
+      - name: Build project
+        run: npm run build

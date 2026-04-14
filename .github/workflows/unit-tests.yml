@@ -1,0 +1,21 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci
+        with:
+          build-domains: 'true'
+
+      - name: Run unit tests
+        run: npm test
+        env:
+          SKIP_SOLANA_TESTS: 'true'
