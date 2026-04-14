@@ -246,13 +246,22 @@ async function listLocalFiles(
   return files;
 }
 
-async function listRemoteObjects(workerUrl: string): Promise<RemoteObject[]> {
+async function listRemoteObjects(workerUrl: string, workerToken: string): Promise<RemoteObject[]> {
   if (!workerUrl) {
     throw new Error('Claim-storage asset endpoint URL is required for remote diff.');
   }
 
   const endpoint = `${workerUrl.replace(/\/$/, '')}/api/v1/assets/list`;
-  const response = await fetch(endpoint);
+  
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      headers: workerToken ? { Authorization: `Bearer ${workerToken}` } : undefined,
+    });
+  } catch (err) {
+    throw new Error(`Failed to connect to remote asset API at ${endpoint}. If running in CI, ensure CLAIM_STORAGE_ASSETS_URL_DEV secret is set! Error: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
   if (!response.ok) {
     const body = await response.text().catch(() => '');
     throw new Error(`remote list failed (${response.status}): ${body}`);
@@ -427,7 +436,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const remoteListed = await listRemoteObjects(config.workerUrl);
+  const remoteListed = await listRemoteObjects(config.workerUrl, config.workerToken);
   let remoteObjects = remoteListed;
 
   if (config.wipe) {
