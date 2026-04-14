@@ -81,3 +81,48 @@ To prevent copy-pasting install scripts, every job uses:
     install-cloudflared: 'true'    # Dynamically installs tunnels
     install-k6: 'true'             # Dynamically installs load-testing tools
 ```
+
+---
+
+## Detailed Node Breakdown
+
+Here is exactly what happens under the hood inside each node of the pipeline:
+
+### 1. Fail Fast (Install, Build, Lint, Types)
+- **Role:** The absolute gatekeeper.
+- **Actions:** Uses `setup-ci` to install Node and run `npm ci`. Runs a Turbo build of internal `@ocentra` domain packages. Executes ESLint and exactly type-checks the entire monorepo using `tsc -b --force`.
+- **Why:** Catches 90% of developer errors (typos, bad imports, mismatched types) in under 5 minutes without wasting CI cost.
+
+### 2. Secrets and Sensitive Files (`secret-scan.yml`)
+- **Role:** Security check.
+- **Actions:** Uses `setup-ci` (but skips `npm install` because it only needs the Node binary). Runs custom scripts and the `gitleaks` CLI.
+- **Why:** Ensures no API keys, Stripe secrets, or private certificates were accidentally committed. Dies immediately if a leak is found.
+
+### 3. Cloudflare Prebuild Preflight (`cloudflare-preflight.yml`)
+- **Role:** Infrastructure validation.
+- **Actions:** Installs Cloudflare's `wrangler` CLI and runs `wrangler types`.
+- **Why:** Ensures that your Cloudflare `wrangler.toml` configuration is valid and all expected environment bindings are correctly typed before proceeding to deep testing.
+
+### 4. Pull Request Checks (The Parallel Split)
+This module (`pull-request-checks.yml`) spins up multiple machines simultaneously:
+- **Build Web App:** Runs Vite to compile the React frontend. Proves the web app successfully bundles.
+- **Build Rust Contracts:** Installs the Solana CLI, Anchor, and Rust toolchain. Compiles the game's smart contracts. If successful, passes the generated `.idl` files to the next step.
+- **Solana Integration Tests:** Takes the Rust contracts and spins up local tests against a Solana Devnet cluster to ensure blockchain logic works.
+- **Code Quality / Unit Tests:** Runs `npm test` (Vitest) to execute all fast logic unit tests.
+- **Mobile Web Smoke E2E:** Requires "Code Quality" to finish first. Installs Playwright on a Linux machine and runs lightning-fast headless browser tests on mobile viewport dimensions.
+
+### 5. Cloudflare Test Gates (`cloudflare-security-tests.yml`)
+- **Role:** End-to-end integration proving ground.
+- **Actions:** This is the most complex node. It waits for the entire Pull Request Checks block to pass. It then spins up the Cloudflare Worker locally, starts the Logging Domain bridge, and opens a `cloudflared` tunnel exposing the local worker to the internet. 
+
+### 6. Security Gates
+Once the Cloudflare Tunnel is open, two heavy scans pound the live local worker:
+- **Cloudflare Dynamic Security:** Runs `schemathesis`. It dynamically reads your OpenAPI spec and forcefully generates thousands of malicious HTTP requests (mutating parameters, headers, and payloads) to try and crash your application bounds.
+- **Cloudflare Static Security:** Runs load testing (`k6`) to ensure concurrency isn't causing memory leaks or race conditions in Durable Objects.
+
+### 7. Deployment (Sync R2 -> Deploy Worker -> Deploy Pages)
+- **Role:** The final rollout.
+- **Actions:** If we are on `main` or explicitly deploying:
+  1. `sync-r2.yml` hashes and uploads your static game assets exactly as specified in `app-assets`.
+  2. `deploy-worker.yml` runs a final `wrangler deploy` to push your backend code to Cloudflare's edge servers.
+  3. `deploy-pages.yml` pushes the compiled React Frontend to Cloudflare Pages.
