@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { config as loadDotenv } from 'dotenv';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, type ListObjectsV2CommandOutput } from '@aws-sdk/client-s3';
 import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
 import { resolveAssetSourceRoot } from './assets/assetSourceRoot';
 import { buildAppAssetSlices } from './assets/buildAppAssetSlices';
@@ -289,13 +289,35 @@ async function listLocalFiles(
   return files;
 }
 
-async function listRemoteObjects(workerUrl: string, workerToken: string): Promise<RemoteObject[]> {
-  if (!workerUrl) {
-    throw new Error('Claim-storage asset endpoint URL is required for remote diff.');
-  }
+async function listRemoteS3(s3: S3Client, bucket: string): Promise<RemoteObject[]> {
+  const objects: RemoteObject[] = [];
+  let continuationToken: string | undefined;
 
-  const endpoint = `${workerUrl.replace(/\/$/, '')}/api/v1/assets/list`;
+  do {
+    const command = new ListObjectsV2Command({
+      Bucket: bucket,
+      ContinuationToken: continuationToken,
+    });
+    const response = await s3.send(command) as ListObjectsV2CommandOutput;
+    
+    if (response.Contents) {
+      for (const obj of response.Contents) {
+        if (!obj.Key) continue;
+        objects.push({
+          key: obj.Key,
+          etag: normalizeEtag(obj.ETag),
+          md5: undefined, // S3 list doesn't always provide custom MD5 metadata easily
+          size: obj.Size ?? 0,
+        });
+      }
+    }
+    continuationToken = response.NextContinuationToken;
+  } while (continuationToken);
 
+  return objects.sort((a, b) => a.key.localeCompare(b.key));
+}
+
+async function listRemoteObjects(endpoint: string, workerToken: string): Promise<RemoteObject[]> {
   let response: Response;
   try {
     response = await fetch(endpoint, {
@@ -545,13 +567,16 @@ async function main(): Promise<void> {
     return;
   }
 
-  const remoteListed = await listRemoteObjects(config.workerUrl, config.workerToken);
-  let remoteObjects = remoteListed;
-
   const s3 = getS3Client(config);
   if (s3) {
     console.log('[sync-assets] High-speed S3 sync mode enabled.');
   }
+
+  const remoteListed = s3 
+    ? await listRemoteS3(s3, config.bucketName)
+    : await listRemoteObjects(config.workerUrl, config.workerToken);
+    
+  let remoteObjects = remoteListed;
 
   if (config.wipe) {
     if (config.dryRun) {
