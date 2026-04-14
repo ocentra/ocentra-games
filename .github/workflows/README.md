@@ -103,13 +103,12 @@ Here is exactly what happens under the hood inside each node of the pipeline:
 - **Actions:** Installs Cloudflare's `wrangler` CLI and runs `wrangler types`.
 - **Why:** Ensures that your Cloudflare `wrangler.toml` configuration is valid and all expected environment bindings are correctly typed before proceeding to deep testing.
 
-### 4. Pull Request Checks (The Parallel Split)
-This module (`pull-request-checks.yml`) spins up multiple machines simultaneously:
-- **Build Web App:** Runs Vite to compile the React frontend. Proves the web app successfully bundles.
-- **Build Rust Contracts:** Installs the Solana CLI, Anchor, and Rust toolchain. Compiles the game's smart contracts. If successful, passes the generated `.idl` files to the next step.
-- **Solana Integration Tests:** Takes the Rust contracts and spins up local tests against a Solana Devnet cluster to ensure blockchain logic works.
-- **Code Quality / Unit Tests:** Runs `npm test` (Vitest) to execute all fast logic unit tests.
-- **Mobile Web Smoke E2E:** Requires "Code Quality" to finish first. Installs Playwright on a Linux machine and runs lightning-fast headless browser tests on mobile viewport dimensions.
+### 4. Phase 3: Parallel Checks & Compilation
+Because the preflight succeeded, `ci-gate.yml` now furiously spins up 4 distinct nodes all operating at the exact same time:
+- **Unit Tests:** Runs `npm test` across the monorepo to verify pure functional logic without spinning up heavy environments.
+- **Mobile Web Smoke:** Automatically starts *after* Unit Tests succeed. Installs Playwright and rigorously tests the UI on mobile-width views.
+- **Build Web App:** Runs Vite to compile the React frontend. Proves the web app successfully bundles for production.
+- **Solana Integration Pipeline:** The heaviest node. It installs Anchor and Rust, compiles your smart contracts, and then spins up a local Devnet cluster to run integration tests directly against the compiled `.idl` artifacts.
 
 ### 5. Cloudflare Test Gates (`cloudflare-security-tests.yml`)
 - **Role:** End-to-end integration proving ground.
