@@ -1,0 +1,23 @@
+name: Fail Fast (Install, Build, Lint, Types)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  fail-fast:
+    name: Fail Fast (Install, Build, Lint, Types)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci
+        with:
+          install-mode: ci-only
+          build-domains: 'true'
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check

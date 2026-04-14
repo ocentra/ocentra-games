@@ -51,20 +51,9 @@ jobs:
   # broken imports, type errors, lint errors. If this passes, no downstream
   # job will ever fail for these reasons.
   fail-fast:
-    name: Fail Fast (Install, Build, Lint, Types)
     if: github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-ci
-        with:
-          install-mode: ci-only
-          build-domains: 'true'
-      - name: Lint
-        run: npm run lint
-      - name: Type check
-        run: npm run type-check
+    uses: ./.github/workflows/fail-fast.yml
+    secrets: inherit
 
   # ── Phase 1: Security Scan ──────────────────────────────────────────────
   secret-scan:
