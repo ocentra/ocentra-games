@@ -132,7 +132,7 @@ Because the preflight succeeded, `ci-gate.yml` concurrently boots 4 isolated nod
 **Executes:**
 - `wrangler dev` (Boots local backend worker in Miniflare)
 - `cloudflared tunnel` (Exposes local `wrangler` server to the internet)
-- **Node: Dynamic Security:** Runs `schemathesis --workers 10` (Forcefully fuzzes your OpenAPI specification)
+- **Node: Dynamic Security:** Runs `schemathesis --workers 50` (Forcefully fuzzes your OpenAPI specification)
 - **Node: Static Security:** Runs `k6 run tests/k6/concurrency.test.js` (Stress-tests memory limits and connection scaling)
 
 ### 6. Deployment (R2, Worker, Pages)
