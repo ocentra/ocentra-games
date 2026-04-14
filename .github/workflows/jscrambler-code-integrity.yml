@@ -1,21 +1,9 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This is a basic workflow to help you get started with Using Jscrambler Code Integrity Action.
-# It automates the protection of your JavaScript Applications, so you can run it whenever a new version of your application is built.
-# A Jscrambler account is required to use this Workflow.
-#
-# More info can be found here : https://docs.jscrambler.com/latest/code-integrity/documentation/github-ci-integration
-
 name: Jscrambler Code Integrity
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
 
 permissions:
@@ -28,6 +16,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - name: Check Jscrambler inputs
         id: jscrambler-preflight
         shell: bash
@@ -38,24 +27,22 @@ jobs:
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "Skipping Jscrambler because jscrambler.json or required secrets are missing."
           fi
+
       - if: steps.jscrambler-preflight.outputs.run == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - if: steps.jscrambler-preflight.outputs.run == 'true'
-        run: npm ci
+        uses: ./.github/actions/setup-ci
+
       - if: steps.jscrambler-preflight.outputs.run == 'true'
         run: npm run build
+
       - name: Jscrambler Code Integrity
         id: jscrambler
         if: steps.jscrambler-preflight.outputs.run == 'true'
-        # the complete list of inputs can be found here: https://github.com/marketplace/actions/jscrambler#inputs
         uses: jscrambler/code-integrity-actions/protect@ab65962a2ecffcc362b75a997e24a181d0bde5fb
         with:
-          application-id: ${{ secrets.JSCRAMBLER_APPLICATION_ID }}  # This value should be created within your Jscrambler account
-          secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}          # This value can be found in your Jscrambler account
-          access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}          # This value can be found in your Jscrambler account
-          jscrambler-config-path: jscrambler.json                   # Download from your Jscrambler account
-          files-src: |                                              # List of Files to be protected
+          application-id: ${{ secrets.JSCRAMBLER_APPLICATION_ID }}
+          secret-key: ${{ secrets.JSCRAMBLER_SECRET_KEY }}
+          access-key: ${{ secrets.JSCRAMBLER_ACCESS_KEY }}
+          jscrambler-config-path: jscrambler.json
+          files-src: |
             dist/**/*
           files-dest: .

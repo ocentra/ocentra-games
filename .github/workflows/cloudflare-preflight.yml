@@ -20,18 +20,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-ci
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Pin npm version
-        run: npm install -g npm@11.7.0
-
-      - name: Install workspace dependencies
-        run: npm ci --ignore-scripts
+          install-mode: ci-only
 
       - name: Run prebuild (same path as security tests)
         working-directory: infra/cloudflare

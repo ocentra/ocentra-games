@@ -1,0 +1,53 @@
+name: Deploy Cloudflare Worker
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment: development or production'
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+        default: development
+
+jobs:
+  deploy-worker:
+    name: Deploy Worker (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-ci
+        with:
+          install-mode: ci-only
+          build-domains: 'true'
+
+      - name: Deploy Worker (development)
+        if: inputs.environment == 'development'
+        working-directory: infra/cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm ci && npm run deploy:dev
+
+      - name: Deploy Worker (production)
+        if: inputs.environment == 'production'
+        working-directory: infra/cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm ci && npm run deploy

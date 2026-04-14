@@ -1,0 +1,60 @@
+name: Deploy Cloudflare Pages
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Pages branch to deploy to (e.g. main, production)'
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+      VITE_R2_WORKER_URL:
+        required: false
+      VITE_R2_BUCKET_NAME:
+        required: false
+      VITE_LOGS_WORKER_URL:
+        required: false
+      VITE_LOGS_API_KEY:
+        required: false
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Pages branch to deploy to'
+        required: true
+        type: choice
+        options:
+          - main
+          - production
+        default: main
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy-pages:
+    name: Deploy Pages (${{ inputs.branch }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
+          VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
+          VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
+          VITE_LOGS_API_KEY: ${{ secrets.VITE_LOGS_API_KEY }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=ocentra-games --branch=${{ inputs.branch }}

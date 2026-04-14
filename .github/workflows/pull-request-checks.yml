@@ -15,10 +15,9 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node
-
-      - name: Build domain packages
-        run: npm run build:domains
+      - uses: ./.github/actions/setup-ci
+        with:
+          build-domains: 'true'
 
       - name: Run linter
         run: npm run lint
@@ -79,10 +78,9 @@ jobs:
     needs: build-rust
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node
-
-      - name: Build domain packages
-        run: npm run build:domains
+      - uses: ./.github/actions/setup-ci
+        with:
+          build-domains: 'true'
 
       - name: Download IDL artifact
         uses: actions/download-artifact@v4
@@ -103,7 +101,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/setup-ci
 
       - name: Build project
         run: npm run build
@@ -115,7 +113,7 @@ jobs:
     needs: quality-check
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node
+      - uses: ./.github/actions/setup-ci
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium

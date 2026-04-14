@@ -1,0 +1,88 @@
+name: Sync Assets to R2
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Target environment: development or production'
+        required: true
+        type: string
+    secrets:
+      CLOUDFLARE_API_TOKEN:
+        required: true
+      CLOUDFLARE_ACCOUNT_ID:
+        required: true
+      CLAIM_STORAGE_ASSETS_URL_DEV:
+        required: false
+      CLAIM_STORAGE_ASSETS_TOKEN_DEV:
+        required: false
+      ASSETS_WORKER_URL_DEV:
+        required: false
+      ASSETS_WORKER_TOKEN_DEV:
+        required: false
+      CLAIM_STORAGE_ASSETS_URL_PROD:
+        required: false
+      CLAIM_STORAGE_ASSETS_TOKEN_PROD:
+        required: false
+      ASSETS_WORKER_URL_PROD:
+        required: false
+      ASSETS_WORKER_TOKEN_PROD:
+        required: false
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - production
+        default: development
+
+permissions:
+  contents: read
+
+jobs:
+  sync-r2:
+    name: Sync assets to R2 (${{ inputs.environment }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore asset hash cache
+        uses: actions/cache@v4
+        with:
+          path: infra/cloudflare/.wrangler/asset-hash-cache.json
+          key: asset-sync-hash-v1-${{ runner.os }}-${{ hashFiles('packages/asset-editor/Resources/**', 'scripts/assets/**', 'scripts/sync-assets-to-prod.ts', 'scripts/assets/assetSourceRoot.ts', 'scripts/assets/buildAppAssetSlices.ts') }}
+          restore-keys: |
+            asset-sync-hash-v1-${{ runner.os }}-
+
+      - uses: ./.github/actions/setup-ci
+        with:
+          install-mode: ci-only
+          build-domains: 'true'
+
+      - name: Sync assets to development R2
+        if: inputs.environment == 'development'
+        env:
+          SYNC_ENV: development
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLAIM_STORAGE_ASSETS_URL_DEV: ${{ secrets.CLAIM_STORAGE_ASSETS_URL_DEV }}
+          CLAIM_STORAGE_ASSETS_TOKEN_DEV: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_DEV }}
+          ASSETS_WORKER_URL_DEV: ${{ secrets.ASSETS_WORKER_URL_DEV }}
+          ASSETS_WORKER_TOKEN_DEV: ${{ secrets.ASSETS_WORKER_TOKEN_DEV }}
+        run: npm run sync:assets:dev -- --apply --prune
+
+      - name: Sync assets to production R2
+        if: inputs.environment == 'production'
+        env:
+          SYNC_ENV: production
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLAIM_STORAGE_ASSETS_URL_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_URL_PROD }}
+          CLAIM_STORAGE_ASSETS_TOKEN_PROD: ${{ secrets.CLAIM_STORAGE_ASSETS_TOKEN_PROD }}
+          ASSETS_WORKER_URL_PROD: ${{ secrets.ASSETS_WORKER_URL_PROD }}
+          ASSETS_WORKER_TOKEN_PROD: ${{ secrets.ASSETS_WORKER_TOKEN_PROD }}
+        run: npm run sync:assets:prod -- --apply --prune

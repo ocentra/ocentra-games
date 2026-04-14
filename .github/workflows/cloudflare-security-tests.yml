@@ -34,18 +34,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-ci
         with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Pin npm version
-        run: npm install -g npm@11.7.0
-
-      - name: Install root workspace dependencies
-        working-directory: .
-        run: npm ci --ignore-scripts
+          install-mode: ci-only
+          install-cloudflared: 'true'
 
       - name: Build domain packages and generate log modules
         run: npm run prebuild
@@ -66,12 +58,6 @@ jobs:
             fi
             sleep 1
           done
-
-      - name: Install cloudflared
-        run: |
-          curl -sL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
-          sudo dpkg -i /tmp/cloudflared.deb
-          cloudflared --version
 
       - name: Start CI tunnel
         env:
@@ -151,18 +137,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-ci
         with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Pin npm version
-        run: npm install -g npm@11.7.0
-
-      - name: Install root workspace dependencies
-        working-directory: .
-        run: npm ci --ignore-scripts
+          install-mode: ci-only
+          install-python: 'true'
+          install-k6: 'true'
+          install-cloudflared: 'true'
 
       - name: Build domain packages and generate log modules
         run: npm run prebuild
@@ -183,12 +163,6 @@ jobs:
             fi
             sleep 1
           done
-
-      - name: Install cloudflared
-        run: |
-          curl -sL -o /tmp/cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
-          sudo dpkg -i /tmp/cloudflared.deb
-          cloudflared --version
 
       - name: Start CI tunnel
         env:
@@ -212,24 +186,8 @@ jobs:
             sleep 1
           done
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: pip
-
       - name: Install Schemathesis
         run: pip install schemathesis==4.9.0
-
-      - name: Install k6
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates gnupg2
-          sudo mkdir -p /usr/share/keyrings
-          curl -fsSL https://dl.k6.io/key.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/k6-archive-keyring.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install -y k6
 
       - name: Enable auth for dynamic security tests
         run: |
