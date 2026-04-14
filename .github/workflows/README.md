@@ -141,3 +141,25 @@ Because the preflight succeeded, `ci-gate.yml` concurrently boots 4 isolated nod
 - `npm run sync:assets:prod` (`sync-r2.yml` hashes and uploads game assets)
 - `npm run deploy` (`deploy-worker.yml` pushes backend to edge)
 - `wrangler pages deploy` (`deploy-pages.yml` pushes Vite dist to Pages)
+
+---
+
+## Emergency Hotfixes & Bypasses 🚑
+
+If a deployment fails or you need to urgently roll out a hotfix, **you do not need to wait for the 1-hour CI gate to run again!**
+
+### Scenario 1: You pushed code, but want to skip the CI gate
+If you push an urgent hotfix and want to instantly bypass testing and go straight to deployment:
+1. Include the magic string `[skip ci]` anywhere in your commit message:
+   ```bash
+   git commit -m "hotfix: fixing match logic [skip ci]"
+   ```
+2. GitHub will silently abort `ci-gate.yml` and nothing will happen.
+3. Open GitHub Actions Web UI, click the **development-r2-worker** or **production-r2-worker** manual workflow, and click "Run Workflow". This forces an instant brute-force deployment, skipping all gates.
+
+### Scenario 2: You didn't push code (Environment Variable / Secrets Fix)
+If the deployment failed because of a missing API key or an expired Stripe secret, you don't need to push a new commit:
+1. Fix the error in the Cloudflare Dashboard / Vault.
+2. Go to the failed `ci-gate.yml` run in the GitHub Web UI.
+3. Click the **Re-run failed jobs** button in the top right corner.
+4. GitHub natively remembers that Phase 1 through 5 already passed perfectly. It will instantly jump straight to Phase 6 and ONLY run the deployment node that previously failed!
