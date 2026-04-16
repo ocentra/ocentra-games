@@ -153,10 +153,10 @@ async function devOnlyMiddleware(request: Request, env: Env): Promise<Response |
 }
 
 function withHandlerPath(
-  handler: (request: Request, env: Env, handlerPath: string) => Promise<Response>
+  handler: (request: Request, env: Env, handlerPath: string, requestOrigin?: string) => Promise<Response>
 ): (request: Request, env: Env, context?: { path?: string; url?: URL; requestOrigin?: string }) => Promise<Response> {
   return (request, env, context) =>
-    handler(request, env, context?.path ?? new URL(request.url).pathname);
+    handler(request, env, context?.path ?? new URL(request.url).pathname, context?.requestOrigin);
 }
 
 function createMatcherFromSpec(spec: (typeof CloudflareRouteManifest)[number]): (path: string, method: string) => boolean {
@@ -213,7 +213,7 @@ const HANDLER_MAP: Record<string, RouteHandler> = {
   [CloudflareHandlerKey.AIGenerate]: withHandlerPath(handleAIGenerateRequest),
   [CloudflareHandlerKey.Leaderboard]: withHandlerPath(handleLeaderboardRequest),
   [CloudflareHandlerKey.Players]: withHandlerPath(handlePlayerRequest),
-  [CloudflareHandlerKey.Credits]: withHandlerPath(handleCreditsRequest),
+  [CloudflareHandlerKey.Credits]: withHandlerPath((req, env, path) => handleCreditsRequest(req, env, path)),
   [CloudflareHandlerKey.Badges]: withHandlerPath(handleBadgesRequest),
   [CloudflareHandlerKey.Logs]: (request, env, context: { executionContext?: ExecutionContext } | undefined) =>
     handleLogsRequest(request, env, context?.executionContext),

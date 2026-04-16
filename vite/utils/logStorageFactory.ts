@@ -1,3 +1,5 @@
+import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import type { ILogStorage } from './logStorageInterface';
 import { createNdjsonDuckDbLogStorage } from './ndjsonDuckDbLogStorage';
 import type { LogStats } from '@ocentra/logging-domain/types/logStats';
@@ -23,13 +25,34 @@ const noopStorage: ILogStorage = {
 let mainStorage: (ILogStorage & { dispose?(): Promise<void> }) | null = null;
 let viteStorage: (ILogStorage & { dispose?(): Promise<void> }) | null = null;
 
+function logStorageInitFailure(error: unknown): void {
+  MainAppLogger.instance.logWarn(
+    '[logStorageFactory] Failed to initialize DuckDB log storage (missing native binary?), falling back to noop',
+    getStackTrace(),
+    { error: error instanceof Error ? error.message : String(error) },
+  );
+}
+
 export function getLogStorage(): ILogStorage {
-  if (!mainStorage) mainStorage = createNdjsonDuckDbLogStorage({ scope: 'main' });
+  if (!mainStorage) {
+    try {
+      mainStorage = createNdjsonDuckDbLogStorage({ scope: 'main' });
+    } catch (error: unknown) {
+      logStorageInitFailure(error);
+      mainStorage = noopStorage as ILogStorage & { dispose?(): Promise<void> };
+    }
+  }
   return mainStorage;
 }
 
 export function getViteLogStorage(): ILogStorage {
-  if (!viteStorage) viteStorage = createNdjsonDuckDbLogStorage({ scope: 'vite' });
+  if (!viteStorage) {
+    try {
+      viteStorage = createNdjsonDuckDbLogStorage({ scope: 'vite' });
+    } catch {
+      viteStorage = noopStorage as ILogStorage & { dispose?(): Promise<void> };
+    }
+  }
   return viteStorage;
 }
 

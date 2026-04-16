@@ -142,7 +142,9 @@ export function useGamesFilter(games: Game[], metadata: GameMetadata | null) {
     }
 
     if (qualityFilter !== 'all') {
-      if (qualityFilter === 'missing_json')
+      if (qualityFilter === 'available')
+        result = result.filter(g => g.source === 'asset');
+      else if (qualityFilter === 'missing_json')
         result = result.filter(g => !g.file_exists);
       else if (qualityFilter === 'missing_name')
         result = result.filter(g => !g.name?.trim() || g.name.toLowerCase() === 'placeholder' || g.name.length < 2);
@@ -167,6 +169,11 @@ export function useGamesFilter(games: Game[], metadata: GameMetadata | null) {
         case 'name':         return a.normalizedName.localeCompare(b.normalizedName);
         case 'category':     return a.category.localeCompare(b.category) || a.normalizedName.localeCompare(b.normalizedName);
         case 'completeness': return b.completenessPercent - a.completenessPercent || a.normalizedName.localeCompare(b.normalizedName);
+        case 'available': {
+          const aIsAsset = a.source === 'asset' ? 0 : 1;
+          const bIsAsset = b.source === 'asset' ? 0 : 1;
+          return aIsAsset - bIsAsset || a.normalizedName.localeCompare(b.normalizedName);
+        }
         default:             return a.normalizedName.localeCompare(b.normalizedName);
       }
     });

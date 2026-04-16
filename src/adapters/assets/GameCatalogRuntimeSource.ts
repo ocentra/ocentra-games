@@ -49,3 +49,34 @@ export async function loadRemoteGameEngine(gameId: string): Promise<GameEngine |
     await getPlatformAssetRuntime().getGameEngine(gameId, getStorageConfig())
   );
 }
+
+export async function loadRemoteCatalogIndex(): Promise<unknown | null> {
+  const storageConfig = getStorageConfig();
+  const workerBase = storageConfig.r2Assets?.workerUrl?.replace(/\/$/, '') ?? '';
+  if (!workerBase) return null;
+  const url = `${workerBase}/api/v1/slices/catalog/index`;
+  return await withRuntimeRead('remote catalog index', async () => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      await res.text().catch(() => undefined);
+      return null;
+    }
+    return await res.json() as unknown;
+  });
+}
+
+export async function loadRemoteCatalogGame(slug: string): Promise<unknown | null> {
+  const storageConfig = getStorageConfig();
+  const workerBase = storageConfig.r2Assets?.workerUrl?.replace(/\/$/, '') ?? '';
+  if (!workerBase) return null;
+  const url = `${workerBase}/api/v1/slices/catalog/games/${encodeURIComponent(slug)}`;
+  return await withRuntimeRead(`remote catalog game (${slug})`, async () => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      await res.text().catch(() => undefined);
+      return null;
+    }
+    return await res.json() as unknown;
+  });
+}
+

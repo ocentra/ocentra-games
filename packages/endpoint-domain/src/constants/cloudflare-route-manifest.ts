@@ -485,4 +485,10 @@ export const CloudflareRouteManifest: readonly RouteSpec[] = [
   },
   { path: ApiEndpoint.Compliance.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Compliance, priority: 10 },
   { path: ApiEndpoint.HealthDetail, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.HealthDetail, priority: 15 },
+  {
+    path: ApiEndpoint.CardGames.Base,
+    match: RouteMatch.Prefix,
+    handlerKey: CloudflareHandlerKey.Assets,
+    priority: 10,
+  },
 ] as const;

@@ -28,7 +28,8 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
   const pct = game.completenessPercent ?? 0;
   const fillClass = pct >= 75 ? 'is-high' : pct >= 40 ? 'is-medium' : 'is-low';
   const quality = game.quality ?? 'complete';
-  const qualityColor = QUALITY_COLORS[quality] ?? '#6b7280';
+  const isAsset = game.source === 'asset';
+  const qualityColor = isAsset ? '#3b82f6' : (QUALITY_COLORS[quality] ?? '#6b7280');
   const completeness = game.completeness ?? {};
   const filledSections = SECTIONS.filter((s) => completeness[s]);
 
@@ -36,7 +37,7 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
 
   return (
     <div
-      className={`cge-game-card cge-game-card--${quality}`}
+      className={`cge-game-card cge-game-card--${quality} ${isAsset ? 'cge-game-card--asset' : 'cge-game-card--catalog'}`}
       onClick={handleClick}
       {...(onGameClick && {
         role: 'button' as const,
@@ -57,8 +58,8 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
         <span className="cge-game-card__cat-badge">
           {CATEGORY_ICONS[game.category] ?? '📦'} {game.subcategory ? `${game.category} / ${game.subcategory}` : game.category}
         </span>
-        <span className={`cge-game-card__quality-chip cge-game-card__quality-chip--${quality}`}>
-          {quality}
+        <span className={`cge-game-card__status-chip cge-game-card__status-chip--${isAsset ? 'available' : 'soon'}`}>
+          {isAsset ? '✓ Available' : '◷ Coming Soon'}
         </span>
       </div>
 

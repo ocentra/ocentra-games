@@ -378,25 +378,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logInfo('[loginWithGoogle] Starting Google login...', LOG_AUTH_SOCIAL);
 
     if (!auth) {
-      logInfo('[loginWithGoogle] ⚠️ Firebase not configured, using simulated auth', LOG_AUTH_FLOW);
-      // Simulate successful Google login
-      setIsAuthenticated(true);
-      setUser({
-        uid: 'simulated-google-user',
-        displayName: 'Google User',
-        email: 'google@example.com',
-        photoURL: '',
-        createdAt: new Date(),
-        lastLoginAt: new Date(),
-        gamesPlayed: 0,
-        wins: 0,
-        losses: 0,
-        winRate: 0,
-        eloRating: 1200,
-        achievements: []
-      });
-      logInfo('[loginWithGoogle] ✅ Simulated Google login successful', LOG_AUTH_SOCIAL);
-      return { success: true };
+      logInfo('[loginWithGoogle] ⚠️ Firebase auth not yet ready, waiting for initialization...', LOG_AUTH_FLOW);
+      const { waitForAuthResolution } = await import('@/adapters/firebase/config');
+      await waitForAuthResolution();
+      if (!auth) {
+        logError('[loginWithGoogle] ❌ Firebase auth not configured', LOG_AUTH_ERROR);
+        return { success: false, error: 'Firebase is not configured. Please check your .env settings.' };
+      }
     }
     
     const { loginWithGoogle } = await import('@/adapters/firebase/service');
@@ -412,6 +400,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     return { success: result.success, error: result.error };
   };
+
 
   const loginAsGuestAuth = async (): Promise<{ success: boolean; error?: string }> => {
     logInfo('[loginAsGuest] Starting guest login...', LOG_AUTH_GUEST);

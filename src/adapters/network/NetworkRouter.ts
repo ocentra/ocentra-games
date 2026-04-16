@@ -3,7 +3,7 @@ import { getStorageConfig } from '@/services/storage/StorageConfig';
 import type { ResourceRequest } from '@ocentra/network-domain/router-types';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { HttpHeader, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
+import { HttpHeader, HttpMethod, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { EventRegistrar } from '@ocentra/eventing-domain/core/EventRegistrar';
 import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { GetResourceEvent } from '@ocentra/eventing-domain/events/assets/GetResourceEvent';
@@ -192,6 +192,33 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onSaveLogsEvent(event: SaveLogsEvent): Promise<void> {
     try {
+      const storageConfig = getStorageConfig();
+      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+
+      // Use Cloudflare Worker for logs if in Real Cloud mode
+      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
+        const url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs`;
+        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
+
+        const response = await fetch(url, {
+          method: HttpMethod.Post,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            [HttpHeader.Authorization]: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({ logs: event.logs }),
+        });
+
+        if (!response.ok) {
+          event.deferred.reject(new Error(`Save logs to cloud failed: ${response.status}`));
+          return;
+        }
+        await response.text().catch(() => undefined);
+        event.deferred.resolve(OperationResult.success(undefined));
+        return;
+      }
+
+      // Fallback to local bridge
       const ndjson = event.logs.map((entry) => JSON.stringify(entry)).join('\n');
       const response = await fetch(LocalApiEndpoint.Logs.Base, {
         method: HttpMethod.Post,
@@ -211,8 +238,21 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onQueryLogsEvent(event: QueryLogsEvent): Promise<void> {
     try {
-      const url = `${LocalApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
-      const response = await fetch(url, { method: HttpMethod.Get });
+      const storageConfig = getStorageConfig();
+      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+
+      let url: string;
+      const headers: Record<string, string> = {};
+
+      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
+        url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/query?${event.queryParams.toString()}`;
+        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
+        headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
+      } else {
+        url = `${LocalApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
+      }
+
+      const response = await fetch(url, { method: HttpMethod.Get, headers });
       if (!response.ok) {
         await response.text().catch(() => undefined);
         event.deferred.reject(new Error(`Query logs failed: ${response.status}`));
@@ -227,10 +267,24 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onGetLogStatsEvent(event: GetLogStatsEvent): Promise<void> {
     try {
-      const url = event.source
-        ? `${LocalApiEndpoint.Logs.Stats}?source=${encodeURIComponent(event.source)}`
-        : String(LocalApiEndpoint.Logs.Stats);
-      const response = await fetch(url, { method: HttpMethod.Get });
+      const storageConfig = getStorageConfig();
+      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+
+      let url: string;
+      const headers: Record<string, string> = {};
+
+      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
+        const baseUrl = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/stats`;
+        url = event.source ? `${baseUrl}?source=${encodeURIComponent(event.source)}` : baseUrl;
+        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
+        headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
+      } else {
+        url = event.source
+          ? `${LocalApiEndpoint.Logs.Stats}?source=${encodeURIComponent(event.source)}`
+          : String(LocalApiEndpoint.Logs.Stats);
+      }
+
+      const response = await fetch(url, { method: HttpMethod.Get, headers });
       if (!response.ok) {
         await response.text().catch(() => undefined);
         event.deferred.reject(new Error(`Get log stats failed: ${response.status}`));
@@ -245,6 +299,16 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onClearLogsEvent(event: ClearLogsEvent): Promise<void> {
     try {
+      const storageConfig = getStorageConfig();
+      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+
+      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
+        // We typically don't allow clearing remote logs via the frontend for security,
+        // but if we did, we'd implementation it here. For now, just resolve success or no-op.
+        event.deferred.resolve(OperationResult.success(undefined));
+        return;
+      }
+
       const response = await fetch(LocalApiEndpoint.Logs.Clear, { method: HttpMethod.Delete });
       if (!response.ok) {
         await response.text().catch(() => undefined);

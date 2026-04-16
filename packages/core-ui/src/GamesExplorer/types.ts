@@ -17,6 +17,7 @@ export interface GamesExplorerGame {
   file_exists?: boolean;
   link_valid?: string;
   file?: string;
+  source?: 'asset' | 'catalog';
 }
 
 export interface GamesExplorerMetadata {
@@ -33,7 +34,8 @@ export interface CategoryWithSubs {
   subList: ReadonlyArray<readonly [string, number]>;
 }
 
-export type SortBy = 'name' | 'category' | 'completeness';
+export type QualityFilter = 'all' | 'available' | 'complete' | 'partial' | 'placeholder' | 'missing_json' | 'missing_name';
+export type SortBy = 'name' | 'category' | 'completeness' | 'available';
 export type ViewMode = 'grid' | 'list' | 'alphabet';
 
 export const SECTIONS = ['overview', 'history', 'setup', 'rules', 'strategy', 'variations', 'ai', 'sources'] as const;

@@ -26,6 +26,8 @@ export const GameCatalogEntrySchema = z.object({
   playersDisplay: z.string().nullable().optional(),
   playerMode: z.string().nullable().optional(),
   quality: z.string().nullable().optional(),
+  completeness: z.record(z.string(), z.boolean()).optional(),
+  description: z.string().optional(),
 });
 
 const ImageUrlsSchema = z.record(z.string(), z.string());

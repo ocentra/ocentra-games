@@ -5,8 +5,6 @@
 .cge-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
   position: relative;
   background: transparent;
   color: #f9fafb;
@@ -16,7 +14,7 @@
 
 /* Body: sidebar + content side-by-side, pushed below sticky GameHeader */
 .cge-page__top-bar {
-  padding: calc(max(7vh, 50px) + 1.125rem) 0.75rem 0 0.75rem;
+  padding: 0;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -26,11 +24,32 @@
   display: flex;
   flex: 1;
   min-height: 0;
-  padding: 0.75rem;
-  /* Standard outer margin */
+  padding: 0;
   overflow: hidden;
-  gap: 0.75rem;
-  /* Standard gap between sidebar and content */
+  gap: 0;
+}
+
+/* Responsive: below 700px collapse sidebar automatically and show just content */
+@media (max-width: 700px) {
+  .cge-page__body {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .cge-page__body .cge-sidebar {
+    width: 100% !important;
+    height: auto;
+    max-height: 40dvh;
+    flex-shrink: 0;
+  }
+
+  .cge-page__body.is-sidebar-collapsed .cge-sidebar {
+    max-height: 2rem;
+  }
+
+  .cge-page__content {
+    overflow-y: auto;
+  }
 }
 
 /* Content column */
@@ -182,4 +201,143 @@
   display: flex;
   flex-direction: column;
   padding: 0 0.75rem 0.75rem 0.75rem;
+}
+
+/* =========================================================
+   Responsive Fixes for Thin UI
+   ========================================================= */
+
+/* 1. Ensure Sidebar categories truncation works reliably */
+.cge-category-item, .cge-subcategory-item {
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.cge-category-item__name, .cge-subcategory-item__name {
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Handle the icon + text combo inside name */
+.cge-category-item__name {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+
+/* 2. Top Bar (ExplorerContentBar) Responsiveness */
+@media (max-width: 1000px) {
+  .cge-content-bar {
+    gap: 0.75rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  .cge-search-wrap {
+    min-width: 150px !important;
+    flex: 1 !important;
+  }
+
+  /* Compact View Tabs */
+  .cge-view-tab {
+    padding: 0 0.6rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .cge-sort-select {
+    min-width: 100px !important;
+    padding-right: 1.5rem !important;
+  }
+}
+
+@media (max-width: 850px) {
+  /* Collapse labels in stat pills */
+  .cge-stat__label {
+    font-size: 0.55rem !important;
+    transform: scale(0.9);
+  }
+  
+  .cge-stat {
+    min-width: 48px !important;
+    gap: 0 !important;
+  }
+}
+
+@media (max-width: 650px) {
+  .cge-page__top-bar {
+    position: relative !important;
+  }
+  
+  .cge-content-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    height: auto !important;
+  }
+  
+  .cge-content-bar__left {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+  }
+  
+  .cge-content-bar__right {
+    justify-content: center !important;
+    padding-top: 0.5rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .cge-content-stats {
+    width: 100% !important;
+    justify-content: space-around !important;
+  }
+}
+
+/* 3. Sidebar width adjustments */
+@media (min-width: 701px) and (max-width: 1100px) {
+  .cge-sidebar {
+    width: clamp(180px, 20vw, 240px) !important;
+  }
+}
+
+/* 4. Fix category icons/counts alignment */
+.cge-category-item__count, .cge-subcategory-item__count {
+  margin-left: 0.5rem !important;
+  flex-shrink: 0 !important;
+}
+
+/* 5. Game List Row Responsiveness */
+@media (max-width: 900px) {
+    .cge-list-header, .cge-list-row {
+        grid-template-columns: 1fr 100px 70px 80px 40px !important;
+    }
+    .cge-list-header span:nth-child(5), /* Completeness Bar */
+    .cge-list-row > div:nth-child(5) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 750px) {
+    .cge-list-header, .cge-list-row {
+        grid-template-columns: 1fr 80px 60px 40px !important;
+    }
+    .cge-list-header span:nth-child(2), /* Category */
+    .cge-list-row > div:nth-child(2) {
+        display: none !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .cge-list-header {
+        display: none !important;
+    }
+    .cge-list-row {
+        grid-template-columns: 1fr 60px 40px !important;
+        padding: 0.75rem !important;
+    }
+    .cge-list-row__name {
+        font-size: 0.9rem !important;
+        white-space: normal !important;
+    }
 }

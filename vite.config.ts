@@ -17,12 +17,9 @@ const aiDomainExportSubpaths = ocentraExportSubpaths.filter(
 import { generateRegistryMapsPlugin } from './vite/plugins/generate-inspector-map'
 import { logsPlugin } from './vite/plugins/logs'
 import { openInEditorPlugin } from './vite/plugins/open-in-editor'
-import type { Plugin, PluginOption } from 'vite'
+import type { PluginOption } from 'vite'
 
-const isPreviewCli =
-  process.argv.includes('preview') || process.env.npm_lifecycle_event === 'preview'
-
-export default defineConfig(async ({ command, mode }) => {
+export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   Object.keys(env).forEach(key => {
     if (key.startsWith('VITE_')) {
@@ -61,12 +58,6 @@ export default defineConfig(async ({ command, mode }) => {
     logsPlugin(),
     openInEditorPlugin(),
   ]
-  if (command === 'serve' && !isPreviewCli) {
-    const { serveFromGameData, serveProcessedGames } = await import(
-      './packages/card-games/dist/server/serve-game-data.js'
-    )
-    plugins.push(serveFromGameData() as Plugin, serveProcessedGames() as Plugin)
-  }
 
   return {
   define: {
@@ -176,6 +167,10 @@ export default defineConfig(async ({ command, mode }) => {
     },
     proxy: {
       '/api/v1': {
+        target: `http://localhost:${process.env.WORKER_PORT || '8787'}`,
+        changeOrigin: true,
+      },
+      '/api/games': {
         target: `http://localhost:${process.env.WORKER_PORT || '8787'}`,
         changeOrigin: true,
       },

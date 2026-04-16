@@ -18,6 +18,9 @@ export function slicePathToR2Key(path: string): string | null {
   if (path === '/api/v1/slices/games' || path.endsWith('/slices/games')) {
     return AssetContentSlicePath.Games;
   }
+  if (path === '/api/v1/slices/catalog/index' || path.endsWith('/slices/catalog/index')) {
+    return AssetContentSlicePath.CatalogIndex;
+  }
   const gamePageMatch = path.match(/\/slices\/games\/([^/]+)\/page$/);
   if (gamePageMatch) {
     return AssetContentSlicePath.gamePage(decodeURIComponent(gamePageMatch[1]));
@@ -25,6 +28,10 @@ export function slicePathToR2Key(path: string): string | null {
   const gameEngineMatch = path.match(/\/slices\/games\/([^/]+)\/engine$/);
   if (gameEngineMatch) {
     return AssetContentSlicePath.gameEngine(decodeURIComponent(gameEngineMatch[1]));
+  }
+  const catalogGameMatch = path.match(/\/slices\/catalog\/games\/([^/]+)$/);
+  if (catalogGameMatch) {
+    return AssetContentSlicePath.catalogGame(decodeURIComponent(catalogGameMatch[1]));
   }
   return null;
 }

@@ -86,8 +86,12 @@ export function validateCorsOrigin(env: Env, requestOrigin: string | null): Resp
   // Check whitelist if configured
   if (env.CORS_ALLOWED_ORIGINS) {
     const allowedOrigins = env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim());
-    if (allowedOrigins.includes(requestOrigin)) {
-      return null; // Valid origin in whitelist
+    for (const allowed of allowedOrigins) {
+      if (allowed === requestOrigin) return null;
+      // Support suffix matching (e.g., .ocentra-games.pages.dev)
+      if (allowed.startsWith('.') && requestOrigin.endsWith(allowed)) {
+        return null;
+      }
     }
   }
 

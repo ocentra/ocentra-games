@@ -52,6 +52,6 @@ Single source of truth for the **card games catalog**: types, schemas, and valid
 
 ## Relationship to main app
 
-- Main app fetches `/api/games` from Vite plugins that query DuckDB.
+- The main app explorer now reads asset slices built from `packages/asset-editor/Resources` and served through the asset worker/R2 path.
 - `serveFromGameData` and `serveProcessedGames` are in this package (`src/server/serve-game-data.ts`). The temp data-explorer app lives in `packages/data-explorer` and uses them.
 - Types from this package can be imported by the main app for typed explorer data.

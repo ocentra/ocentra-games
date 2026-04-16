@@ -2,6 +2,7 @@ export type PlayerModeFilter = 'all' | 'singleplayer' | 'multiplayer';
 
 export interface GameSummary {
   slug: string;
+  guid?: string;
   file: string;
   name: string;
   quality: string;
@@ -19,6 +20,7 @@ export interface GameSummary {
   player_mode?: string | null;
   file_exists?: boolean;
   link_valid?: string;
+  source?: 'asset' | 'catalog';
 }
 
 export interface GameMetadata {
@@ -32,6 +34,7 @@ export interface GameMetadata {
 export interface GameDetail {
   filename: string;
   name: string;
+  guid: string | undefined;
   completeness: Record<string, boolean>;
   quality: string;
   overview?: unknown;
@@ -43,7 +46,7 @@ export interface GameDetail {
   ai?: unknown;
   sources?: unknown;
   pagat?: unknown;
-  source?: unknown;
+  source?: 'asset' | 'catalog';
   cursorFind?: unknown;
 }
 
@@ -53,8 +56,8 @@ export interface Game extends GameSummary {
   completenessPercent: number;
 }
 
-export type QualityFilter = 'all' | 'complete' | 'partial' | 'placeholder' | 'missing_json' | 'missing_name';
-export type SortBy = 'name' | 'category' | 'completeness';
+export type QualityFilter = 'all' | 'available' | 'complete' | 'partial' | 'placeholder' | 'missing_json' | 'missing_name';
+export type SortBy = 'name' | 'category' | 'completeness' | 'available';
 export type ViewMode = 'grid' | 'list' | 'alphabet';
 
 export const SECTIONS = ['overview', 'history', 'setup', 'rules', 'strategy', 'variations', 'ai', 'sources'] as const;
@@ -81,7 +84,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export const QUALITY_EXPORT_LABEL: Record<string, string> = {
-  all: 'All', complete: 'Complete', partial: 'Partial',
+  all: 'All', available: 'Available Now', complete: 'Complete', partial: 'Partial',
   placeholder: 'Placeholder', missing_json: 'MissingJson', missing_name: 'MissingName',
 };
 

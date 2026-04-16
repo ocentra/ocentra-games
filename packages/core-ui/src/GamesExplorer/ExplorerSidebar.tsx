@@ -1,3 +1,4 @@
+import { useCallback, useRef, useState } from 'react';
 import type { CategoryWithSubs, PlayerModeFilter } from './types';
 import { CATEGORY_ICONS, PLAYER_MODE_LABELS } from './types';
 import './ExplorerSidebar.css';
@@ -23,6 +24,10 @@ export interface ExplorerSidebarProps {
   onToggleCollapse?: () => void;
 }
 
+const MIN_WIDTH = 200;
+const MAX_WIDTH = 450;
+const DEFAULT_WIDTH = 280;
+
 export function ExplorerSidebar({
   playerModeFilter = 'all',
   onPlayerModeChange,
@@ -38,22 +43,46 @@ export function ExplorerSidebar({
   onToggleCollapse,
 }: ExplorerSidebarProps) {
   const showPlayerMode = playerModeCounts.all > 0 && onPlayerModeChange;
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const dragState = useRef<{ startX: number; startW: number } | null>(null);
+
+  const onResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    dragState.current = { startX: e.clientX, startW: width };
+
+    const onMove = (ev: MouseEvent) => {
+      if (!dragState.current) return;
+      const delta = ev.clientX - dragState.current.startX;
+      setWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, dragState.current.startW + delta)));
+    };
+    const onUp = () => {
+      dragState.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }, [width]);
 
   return (
-    <aside className={`cge-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}>
-      <button
-        className="cge-sidebar__toggle"
-        onClick={onToggleCollapse}
-        title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-      >
-        <span className="cge-sidebar__toggle-icon">{isCollapsed ? '›' : '‹'}</span>
-      </button>
-
+    <aside
+      className={`cge-sidebar ${isCollapsed ? 'is-collapsed' : ''}`}
+      style={isCollapsed ? undefined : { width: `${width}px` }}
+    >
       <div className="cge-sidebar__inner">
         <div className="cge-panel cge-panel--grow">
           <div className="cge-panel__header">
             <span>📂</span>
             <h3>Categories</h3>
+            <button
+              type="button"
+              className="cge-sidebar__collapse-btn"
+              onClick={onToggleCollapse}
+              title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {isCollapsed ? '›' : '‹'}
+            </button>
           </div>
           <div className="cge-panel__content">
             {showPlayerMode && (
@@ -141,6 +170,29 @@ export function ExplorerSidebar({
           </div>
         </div>
       </div>
+
+      {/* Drag-to-resize handle */}
+      {!isCollapsed && (
+        <div
+          className="cge-sidebar__resizer"
+          onMouseDown={onResizeStart}
+          title="Drag to resize"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Collapsed state: show expand button */}
+      {isCollapsed && (
+        <button
+          type="button"
+          className="cge-sidebar__expand-btn"
+          onClick={onToggleCollapse}
+          title="Expand sidebar"
+          aria-label="Expand sidebar"
+        >
+          ›
+        </button>
+      )}
     </aside>
   );
 }

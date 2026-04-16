@@ -89,6 +89,31 @@ export async function handleAssetsRequest(
     return jsonResponse(env, { error: ErrorMessage.AssetsNotConfigured }, HttpStatus.ServiceUnavailable);
   }
 
+  // Handle Card Games API (Summary List and Individual Games)
+  if (path.startsWith(ApiEndpoint.CardGames.Base)) {
+    let r2Key: string;
+    if (path === ApiEndpoint.CardGames.Base) {
+      r2Key = 'card-games/games.json';
+    } else {
+      const slug = path.slice(ApiEndpoint.CardGames.Base.length + 1); // +1 for the slash
+      r2Key = `card-games/games/${slug}.json`;
+    }
+
+    const object = await env.ASSETS_BUCKET.get(r2Key);
+    if (!object) {
+      return jsonResponse(env, { error: ErrorMessage.AssetNotFound, r2Key }, HttpStatus.NotFound);
+    }
+
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    const cors = getCorsHeaders(env);
+    for (const [k, v] of Object.entries(cors)) {
+      headers.set(k, v);
+    }
+    return new Response(object.body, { headers });
+  }
+
   if (path === ApiEndpoint.Resources.Base) {
     return jsonResponse(env, { error: ErrorMessage.LegacyResourcesDisabled }, HttpStatus.NotFound);
   }

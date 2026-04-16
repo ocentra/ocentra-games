@@ -137,6 +137,7 @@ export const EndpointIds = {
   AdminDashboardData: 'admin.dashboardData' as EndpointId,
   AdminUserStatus: 'admin.userStatus' as EndpointId,
   HealthDetail: 'health.detail' as EndpointId,
+  CardGames: 'cardGames' as EndpointId,
 } as const;
 
 const exploreBase = '/explore';
@@ -326,8 +327,10 @@ export const ApiEndpoint = {
     EntryIndex: `${ApiPathPrefix}/slices/entry-index` as ApiPath,
     Home: `${ApiPathPrefix}/slices/home` as ApiPath,
     Games: `${ApiPathPrefix}/slices/games` as ApiPath,
+    CatalogIndex: `${ApiPathPrefix}/slices/catalog/index` as ApiPath,
     GamePage: (gameId: string): ApiPath => `${ApiPathPrefix}/slices/games/${encodeURIComponent(gameId)}/page` as ApiPath,
     GameEngine: (gameId: string): ApiPath => `${ApiPathPrefix}/slices/games/${encodeURIComponent(gameId)}/engine` as ApiPath,
+    CatalogGame: (slug: string): ApiPath => `${ApiPathPrefix}/slices/catalog/games/${encodeURIComponent(slug)}` as ApiPath,
   },
 
   Assets: {
@@ -622,6 +625,11 @@ export const ApiEndpoint = {
     Base: shopBase as ApiPath,
     Products: `${shopBase}/products` as ApiPath,
     ProductById: (id: string): ApiPath => `${shopBase}/products/${id}` as ApiPath,
+  },
+
+  CardGames: {
+    Base: `${ApiPathPrefix}/games` as ApiPath,
+    ById: (slug: string): ApiPath => `${ApiPathPrefix}/games/${encodeURIComponent(slug)}` as ApiPath,
   },
 
   HealthDetail: `${healthBase}/detailed` as ApiPath,

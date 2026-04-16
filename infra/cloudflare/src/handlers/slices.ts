@@ -17,12 +17,12 @@ function logWarn(message: string, stackTrace: StackTrace, data?: unknown) {
   log.logWarn(message, stackTrace, data);
 }
 
-function jsonResponse(env: Env, data: unknown, status: number): Response {
+function jsonResponse(env: Env, data: unknown, status: number, requestOrigin?: string): Response {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      ...getCorsHeaders(env),
+      ...getCorsHeaders(env, requestOrigin),
     },
   });
 }
@@ -34,36 +34,37 @@ function isSlicesPath(path: string): boolean {
 export async function handleSlicesRequest(
   request: Request,
   env: Env,
-  path: string
+  path: string,
+  requestOrigin?: string
 ): Promise<Response> {
   if (request.method !== HttpMethod.Get) {
-    return jsonResponse(env, { error: 'Method not allowed' }, HttpStatus.MethodNotAllowed);
+    return jsonResponse(env, { error: 'Method not allowed' }, HttpStatus.MethodNotAllowed, requestOrigin);
   }
 
   if (!env.ASSETS_BUCKET) {
-    return jsonResponse(env, { error: 'Assets bucket not configured' }, HttpStatus.ServiceUnavailable);
+    return jsonResponse(env, { error: 'Assets bucket not configured' }, HttpStatus.ServiceUnavailable, requestOrigin);
   }
 
   if (!isSlicesPath(path)) {
-    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound);
+    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound, requestOrigin);
   }
 
   const r2Key = slicePathToR2Key(path);
   if (!r2Key) {
     logWarn('[Slices] No R2 key for path', getStackTrace(), { path });
-    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound);
+    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound, requestOrigin);
   }
 
   const text = await readSliceText(env, r2Key);
   if (!text) {
-    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound);
+    return jsonResponse(env, { error: 'Not found' }, HttpStatus.NotFound, requestOrigin);
   }
 
   try {
     const data = JSON.parse(text) as unknown;
-    return jsonResponse(env, data, HttpStatus.Ok);
+    return jsonResponse(env, data, HttpStatus.Ok, requestOrigin);
   } catch (err) {
     logWarn('[Slices] Invalid JSON in slice', getStackTrace(), { r2Key, error: String(err) });
-    return jsonResponse(env, { error: 'Invalid slice data' }, HttpStatus.InternalServerError);
+    return jsonResponse(env, { error: 'Invalid slice data' }, HttpStatus.InternalServerError, requestOrigin);
   }
 }

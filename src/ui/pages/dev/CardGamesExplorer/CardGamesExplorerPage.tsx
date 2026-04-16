@@ -1,15 +1,12 @@
-import { useRef, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
 import { GameHeader } from '@ocentra/core-ui';
 import { AppFooter } from '@/ui/components/AppFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-
-import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
 import { useGamesData } from './hooks/useGamesData';
 import { useGamesFilter } from './hooks/useGamesFilter';
 import { useGameDetail } from './hooks/useGameDetail';
-
 import type { Game } from './types';
 import {
   ExplorerSidebar,
@@ -20,161 +17,209 @@ import {
 } from '@ocentra/core-ui/GamesExplorer';
 import { ExplorerControlBar } from './components/ExplorerControlBar';
 import { GameDetailOverlay } from './components/GameDetailOverlay';
+import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
+import OcentraTextImg from '@/Images/commons/OcentraText.png';
+import MlogoImg from '@/Images/commons/Mlogo.png';
+import GamesTextImg from '@/Images/commons/GamesText.png';
 
+import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
+
+const WELCOME_LOGOS = {
+  ocentraText: OcentraTextImg,
+  mlogo: MlogoImg,
+  gamesText: GamesTextImg,
+};
+
+import { ThreeBaseProvider } from '@/ui/components/Background/ThreeBaseContext';
 
 export function CardGamesExplorerPage() {
   const headerProps = useCoreUIHeaderProps();
   const navigate = useNavigate();
   const rotationRef = useRef<RotationControlAPI | null>(null);
 
-  /* ── Data ── */
-  const { games, metadata, loading, loadError, refresh } = useGamesData();
+  useEffect(() => {
+    document.documentElement.classList.add('home-page-active');
+    document.body.classList.add('home-page-active');
 
-  /* ── Filters / sorting / view ── */
+    const hide = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
+    if (hide) {
+      hide();
+    }
+
+    return () => {
+      document.documentElement.classList.remove('home-page-active');
+      document.body.classList.remove('home-page-active');
+    };
+  }, []);
+
+  const navItems = [
+    { name: 'Home', onClick: () => navigate('/') },
+    { name: 'Shop', onClick: () => navigate('/shop') },
+    { name: 'Social', onClick: () => navigate('/social') },
+    { name: 'Games', onClick: () => {} },
+    { name: 'Tournaments', onClick: () => navigate('/competition') },
+    { name: 'Leaderboard', onClick: () => navigate('/competition') },
+    { name: 'Profile', onClick: () => navigate('/player-hub') },
+  ];
+
+  const { games, metadata, loading, loadError, refresh } = useGamesData();
   const {
-    searchQuery, setSearchQuery,
-    playerModeFilter, setPlayerModeFilter,
+    searchQuery,
+    setSearchQuery,
+    playerModeFilter,
+    setPlayerModeFilter,
     playerModeCounts,
-    currentCategory, setCurrentCategory,
-    currentSubcategory, setCurrentSubcategory,
+    currentCategory,
+    setCurrentCategory,
+    currentSubcategory,
+    setCurrentSubcategory,
     categoryWithSubs,
     categoryExpanded,
     toggleCategoryExpanded,
-    currentLetter, setCurrentLetter,
-    sortBy, setSortBy,
-    currentView, setCurrentView,
+    currentLetter,
+    setCurrentLetter,
+    sortBy,
+    setSortBy,
+    currentView,
+    setCurrentView,
     sortedCategories,
     availableLetters,
+    qualityFilter,
+    setQualityFilter,
     filteredGames,
   } = useGamesFilter(games, metadata);
 
-  /* ── Detail overlay ── */
   const { selectedGame, gameDetail, detailLoading, openDetail, closeDetail } = useGameDetail();
-
-  /* ── Alphabet sub-layout ── */
   const [alphabetLayout, setAlphabetLayout] = useState<'grid' | 'list'>('grid');
-
-  /* ── Category map size for stats pill ── */
   const categoryMapSize = useMemo(
-    () => sortedCategories.filter(([k]) => k !== 'all').length,
+    () => sortedCategories.filter(([key]) => key !== 'all').length,
     [sortedCategories],
   );
-
-  /* ── Sidebar Expand/Collapse ── */
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
-  /* ── Render ── */
   const showList = currentView === 'list' || (currentView === 'alphabet' && alphabetLayout === 'list');
   const showGrid = currentView === 'grid' || (currentView === 'alphabet' && alphabetLayout === 'grid');
+  const availableCount = useMemo(() => games.filter(g => g.source === 'asset').length, [games]);
 
   return (
-    <div className="cge-page">
-      <DynamicBackground
-        controlRef={rotationRef}
-      />
+    <ThreeBaseProvider>
+      <div className="home-page cge-page">
+        <DynamicBackground controlRef={rotationRef} />
 
       <GameHeader
         {...headerProps}
-        variant="game"
-        gameName="Card Games Explorer"
-        tagline={loading ? 'Loading…' : `${games.length.toLocaleString()}+ card games from around the world`}
+        variant="welcome"
+        welcomeLogos={WELCOME_LOGOS}
+        tagline={loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`}
         onHomeClick={() => navigate('/')}
       />
 
-      {/* Row 1: Full-width Search + view tabs + stats */}
-      <div className="cge-page__top-bar">
-        <ExplorerContentBar
-          currentView={currentView}
-          onViewChange={setCurrentView}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          metadata={metadata}
-          categoryMapSize={categoryMapSize}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
+      <div className="nav-bar-container">
+        <NavigationBar
+          items={navItems}
+          height={40}
+          showArrows={true}
+          variant="default"
         />
       </div>
 
-      {/* Main shell — sidebar + content */}
-      <div className={`cge-page__body ${isSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}>
-        <ExplorerSidebar
-          playerModeFilter={playerModeFilter}
-          onPlayerModeChange={setPlayerModeFilter}
-          playerModeCounts={playerModeCounts}
-          currentCategory={currentCategory}
-          onCategoryChange={setCurrentCategory}
-          currentSubcategory={currentSubcategory}
-          onSubcategoryChange={setCurrentSubcategory}
-          categoryWithSubs={categoryWithSubs}
-          categoryExpanded={categoryExpanded}
-          onCategoryExpandToggle={toggleCategoryExpanded}
-          isCollapsed={isSidebarCollapsed}
-          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        />
+      <div className="scrollable-content-container">
+        <div className="home-content">
+            <div className="cge-page__top-bar">
+              <ExplorerContentBar
+                currentView={currentView}
+                onViewChange={setCurrentView}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                metadata={metadata}
+                categoryMapSize={categoryMapSize}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                qualityFilter={qualityFilter}
+                onQualityChange={setQualityFilter}
+                isSidebarCollapsed={isSidebarCollapsed}
+                onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                availableCount={availableCount}
+              />
+            </div>
 
-        <div className="cge-page__content">
-          {/* Row 2: Alphabet controls (alphabet view only) */}
-          <ExplorerControlBar
-            currentView={currentView}
-            availableLetters={availableLetters}
-            currentLetter={currentLetter}
-            onLetterChange={setCurrentLetter}
-            alphabetLayout={alphabetLayout}
-            onLayoutChange={setAlphabetLayout}
-          />
+          <div className={`cge-page__body ${isSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}>
+            <ExplorerSidebar
+              playerModeFilter={playerModeFilter}
+              onPlayerModeChange={setPlayerModeFilter}
+              playerModeCounts={playerModeCounts}
+              currentCategory={currentCategory}
+              onCategoryChange={setCurrentCategory}
+              currentSubcategory={currentSubcategory}
+              onSubcategoryChange={setCurrentSubcategory}
+              categoryWithSubs={categoryWithSubs}
+              categoryExpanded={categoryExpanded}
+              onCategoryExpandToggle={toggleCategoryExpanded}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            />
 
-          {/* Scrollable game area */}
-          <div className="cge-page__games-area">
-            {loading ? (
-              <div className="cge-page__state">
-                <div className="cge-spinner" />
-                <p>Loading games…</p>
+            <div className="cge-page__content">
+              <ExplorerControlBar
+                currentView={currentView}
+                availableLetters={availableLetters}
+                currentLetter={currentLetter}
+                onLetterChange={setCurrentLetter}
+                alphabetLayout={alphabetLayout}
+                onLayoutChange={setAlphabetLayout}
+              />
+
+              <div className="cge-page__games-area">
+                {loading ? (
+                  <div className="cge-page__state">
+                    <div className="cge-spinner" />
+                    <p>Loading games...</p>
+                  </div>
+                ) : loadError ? (
+                  <div className="cge-page__state cge-page__state--error">
+                    <p className="cge-page__error-msg">Failed to load games</p>
+                    <pre className="cge-page__error-pre">{loadError}</pre>
+                    <p className="cge-page__error-hint">
+                      Make sure the asset catalog is reachable.
+                    </p>
+                    <button type="button" className="cge-page__refresh-btn" onClick={refresh}>
+                      Retry
+                    </button>
+                  </div>
+                ) : filteredGames.length === 0 ? (
+                  <div className="cge-page__state">
+                    <div className="cge-page__empty-icon">🔍</div>
+                    <h3>No games found</h3>
+                    <p>Try adjusting your filters or search query.</p>
+                  </div>
+                ) : showList ? (
+                  <div className="cge-games-list">
+                    <GameListRowHeader />
+                    {filteredGames.map((game) => (
+                      <GameListRow
+                        key={`${game.file}-${game.name}`}
+                        game={game}
+                        onGameClick={(nextGame) => openDetail(nextGame as Game)}
+                      />
+                    ))}
+                  </div>
+                ) : showGrid ? (
+                  <div className="cge-games-grid">
+                    {filteredGames.map((game) => (
+                      <GameCard
+                        key={`${game.file}-${game.name}`}
+                        game={game}
+                        onGameClick={(nextGame) => openDetail(nextGame as Game)}
+                      />
+                    ))}
+                  </div>
+                ) : null}
               </div>
-            ) : loadError ? (
-              <div className="cge-page__state cge-page__state--error">
-                <p className="cge-page__error-msg">Failed to load games</p>
-                <pre className="cge-page__error-pre">{loadError}</pre>
-                <p className="cge-page__error-hint">
-                  Make sure <code>{LocalApiEndpoint.CardGames.Games}</code> is reachable.
-                </p>
-                <button type="button" className="cge-page__refresh-btn" onClick={refresh}>
-                  Retry
-                </button>
-              </div>
-            ) : filteredGames.length === 0 ? (
-              <div className="cge-page__state">
-                <div className="cge-page__empty-icon">🔍</div>
-                <h3>No games found</h3>
-                <p>Try adjusting your filters or search query.</p>
-              </div>
-            ) : showList ? (
-              <div className="cge-games-list">
-                <GameListRowHeader />
-                {filteredGames.map(game => (
-                  <GameListRow
-                    key={`${game.file}-${game.name}`}
-                    game={game}
-                    onGameClick={(g) => openDetail(g as Game)}
-                  />
-                ))}
-              </div>
-            ) : showGrid ? (
-              <div className="cge-games-grid">
-                {filteredGames.map(game => (
-                  <GameCard
-                    key={`${game.file}-${game.name}`}
-                    game={game}
-                    onGameClick={(g) => openDetail(g as Game)}
-                  />
-                ))}
-              </div>
-            ) : null}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Detail overlay */}
       {selectedGame && (
         <GameDetailOverlay
           game={selectedGame}
@@ -185,6 +230,7 @@ export function CardGamesExplorerPage() {
       )}
 
       <AppFooter />
-    </div>
+      </div>
+    </ThreeBaseProvider>
   );
 }

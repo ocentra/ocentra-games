@@ -94,16 +94,53 @@ async function getGameModeConstructor(assetType: string): Promise<GameModeConstr
     return cached;
   }
 
-  const deferred = new OperationDeferred<AssetTypeInfoLike>();
-  await EventBus.instance.publishAsync(new GetAssetTypeInfoEvent(assetType, deferred));
-  const result = await deferred.promise;
-  const constructor = result.isSuccess ? result.value?.constructor : undefined;
-  if (!constructor) {
+  // First try direct lookup in the registry (fastest and handles most cases in the browser)
+  // This avoids hanging if the event system isn't handled for this specific event type in the platform
+  import('@ocentra/asset-domain/registry/AssetTypeRegistry').then(Registry => {
+    const directCtor = Registry.get(assetType);
+    if (directCtor) {
+      log.logInfo(`[GameCatalogService] Resolved constructor directly for ${assetType}`, getStackTrace(), {}, LOG_GAME_CATALOG);
+      cachedConstructors.set(assetType, directCtor as unknown as GameModeConstructor);
+    }
+  }).catch(() => { /* Ignore import errors */ });
+
+  // Re-check cache after tiny async delay to allow the import/registry check if it was fast,
+  // but we still want to proceed with the event for backward compatibility / editor support
+  if (cachedConstructors.has(assetType)) return cachedConstructors.get(assetType)!;
+
+  try {
+    const deferred = new OperationDeferred<AssetTypeInfoLike>();
+    // We race the event with a timeout to prevent absolute hanging in the platform
+    const EVENT_TIMEOUT_MS = 500;
+    
+    await EventBus.instance.publishAsync(new GetAssetTypeInfoEvent(assetType, deferred));
+    
+    // Check registry one more time before committing to the await (now that import might be done)
+    const Registry = await import('@ocentra/asset-domain/registry/AssetTypeRegistry');
+    const directCtor = Registry.get(assetType);
+    if (directCtor) {
+      const ctor = directCtor as unknown as GameModeConstructor;
+      cachedConstructors.set(assetType, ctor);
+      return ctor;
+    }
+
+    const result = await Promise.race([
+      deferred.promise,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), EVENT_TIMEOUT_MS))
+    ]);
+
+    if (!result || !result.isSuccess || !result.value?.constructor) {
+      log.logWarn(`[GameCatalogService] Constructor resolution for ${assetType} timed out or failed via event`, getStackTrace(), {}, LOG_GAME_CATALOG);
+      return null;
+    }
+
+    const constructor = result.value.constructor;
+    cachedConstructors.set(assetType, constructor);
+    return constructor;
+  } catch (err) {
+    log.logError(`[GameCatalogService] Exception in getGameModeConstructor for ${assetType}`, getStackTrace(), err, LOG_GAME_CATALOG);
     return null;
   }
-
-  cachedConstructors.set(assetType, constructor);
-  return constructor;
 }
 
 async function getComingSoonTeasers(): Promise<ComingSoonTeaser[]> {
@@ -218,7 +255,9 @@ function buildCatalogEntryFromEntry(entry: AssetResourceEntry<GameMode>, home: G
     deck: home.deck ?? null,
     playersDisplay: home.playersDisplay ?? null,
     playerMode: null,
-    quality: home.quality ?? null,
+    quality: home.quality || 'placeholder',
+    completeness: home.completeness ?? undefined,
+    description: home.description || home.shortDescription || undefined,
   };
 }
 
@@ -260,18 +299,31 @@ export async function getGameCatalogEntries(): Promise<GameCatalogEntry[]> {
   }
 
   const entryIndex = await getEntryIndex();
-  if (entryIndex?.games?.length) {
+  if (entryIndex?.games !== undefined) {
     return cacheCatalogEntries(entryIndex.games);
   }
 
+  log.logWarn('[GameCatalogService] entryIndex.games is undefined! Falling back to heavy recursive fetch of all game modes.', getStackTrace(), undefined, LOG_GAME_CATALOG);
+
   const entries = await getGameModeEntries();
-  const catalogEntries = await Promise.all(
-    entries.map(async (entry) => {
-      const gameMode = await loadGameModeByEntry(entry);
-      const home = await gameMode?.getHome();
-      return home ? buildCatalogEntryFromEntry(entry, home) : null;
-    })
-  );
+  const catalogEntries: Array<GameCatalogEntry | null> = [];
+
+  const BATCH_SIZE = 5;
+  for (let i = 0; i < entries.length; i += BATCH_SIZE) {
+    const batch = entries.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(
+      batch.map(async (entry) => {
+        try {
+          const gameMode = await loadGameModeByEntry(entry);
+          const home = await gameMode?.getHome();
+          return home ? buildCatalogEntryFromEntry(entry, home) : null;
+        } catch {
+           return null;
+        }
+      })
+    );
+    catalogEntries.push(...batchResults);
+  }
 
   return cacheCatalogEntries(catalogEntries.filter((entry): entry is GameCatalogEntry => entry !== null));
 }

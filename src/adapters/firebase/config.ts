@@ -59,7 +59,7 @@ let storage: FirebaseStorage | null = null;
 let functions: Functions | null = null;
 
 class FirebaseInitializer {
-  static executionOrder = 10;
+  static executionOrder = -10001;
 
   static async getInstance(): Promise<void> {
     if (app) {
@@ -72,36 +72,44 @@ class FirebaseInitializer {
       return;
     }
 
-  try {
-    const firebaseConfig = {
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-      appId: import.meta.env.VITE_FIREBASE_APP_ID
-    };
+    try {
+      const firebaseConfig = {
+        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+        authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+        appId: import.meta.env.VITE_FIREBASE_APP_ID
+      };
 
-    logInfo('Initializing Firebase app...', undefined, LOG_FIREBASE_INIT);
+      logInfo('Initializing Firebase app...', undefined, LOG_FIREBASE_INIT);
 
-    app = initializeApp(firebaseConfig);
-    
-    auth = getAuth(app);
-    db = getFirestore(app);
-    functions = getFunctions(app);
-    
-    if (import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) {
-      storage = getStorage(app);
+      app = initializeApp(firebaseConfig);
+      
+      auth = getAuth(app);
+      db = getFirestore(app);
+      functions = getFunctions(app);
+      
+      if (import.meta.env.VITE_FIREBASE_STORAGE_BUCKET) {
+        storage = getStorage(app);
+      }
+      
+      // Wait for the initial authentication state to be resolved
+      // This prevents UI from briefly showing as unauthenticated or flaky names
+      logInfo('Waiting for auth state resolution...', undefined, LOG_FIREBASE_INIT);
+      await Promise.race([
+        waitForAuthResolution(3000), // Wait up to 3s for auth
+        new Promise(resolve => setTimeout(resolve, 3100)) // Safety timeout
+      ]);
+
+      logInfo('✅ Firebase initialized successfully', undefined, LOG_FIREBASE_INIT);
+      logInfo('Auth, Firestore, and Functions services ready', undefined, LOG_FIREBASE_INIT);
+    } catch (error) {
+      logError('❌ Failed to initialize Firebase:', error);
+      app = null;
+      auth = null;
+      db = null;
     }
-    
-    logInfo('✅ Firebase initialized successfully', undefined, LOG_FIREBASE_INIT);
-    logInfo('Auth, Firestore, and Functions services ready', undefined, LOG_FIREBASE_INIT);
-  } catch (error) {
-    logError('❌ Failed to initialize Firebase:', error);
-    app = null;
-    auth = null;
-    db = null;
-  }
   }
 }
 
@@ -113,8 +121,13 @@ if (hasFirebaseConfig) {
   );
 }
 
-export function waitForAuthResolution(): Promise<void> {
-  if (!auth) return Promise.resolve();
+export async function waitForAuthResolution(timeoutMs = 5000): Promise<void> {
+  if (auth) return;
+  const start = Date.now();
+  while (!auth && Date.now() - start < timeoutMs) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  if (!auth) return;
   return new Promise<void>((resolve) => {
     const unsubscribe = onAuthStateChanged(auth!, () => {
       unsubscribe();
