@@ -109,7 +109,8 @@ export function validateCorsOrigin(env: Env, requestOrigin: string | null): Resp
     status: HttpStatus.Forbidden,
     headers: {
       [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      // Don't set CORS headers for rejected origins
+      // Include wildcard CORS header so browsers can read the error response body
+      [HttpHeader.AccessControlAllowOrigin]: CorsOrigin.Wildcard,
     }
   });
 }
@@ -143,11 +144,23 @@ export function getCorsHeaders(env: Env | undefined, requestOrigin?: string): Re
   if (isProduction) {
     if (!requestOrigin || requestOrigin.trim() === '') {
       origin = null;
-    } else if (requestOrigin !== allowedOrigin) {
+    } else if (requestOrigin === allowedOrigin) {
+      origin = requestOrigin;
+    } else if (env.CORS_ALLOWED_ORIGINS) {
+      const allowedOrigins = env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim());
+      const isAllowed = allowedOrigins.some(allowed =>
+        allowed === requestOrigin ||
+        (allowed.startsWith('.') && requestOrigin.endsWith(allowed))
+      );
+      if (isAllowed) {
+        origin = requestOrigin;
+      } else {
+        logWarn(`${ErrorMessage.CorsOriginMismatch}: ${requestOrigin} not allowed, using configured origin ${allowedOrigin}`, getStackTrace(), undefined, LOG_CORS_WARNINGS);
+        origin = null;
+      }
+    } else {
       logWarn(`${ErrorMessage.CorsOriginMismatch}: ${requestOrigin} not allowed, using configured origin ${allowedOrigin}`, getStackTrace(), undefined, LOG_CORS_WARNINGS);
       origin = null;
-    } else {
-      origin = requestOrigin;
     }
   } else if (!isProduction && allowedOrigin === CorsOrigin.Wildcard) {
     if (requestOrigin) {
