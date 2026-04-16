@@ -48,8 +48,8 @@ jobs:
         run: npm run build
         env:
           VITE_MAIN_ASSET_TARGET_DEFAULT: "real-cloud"
-          VITE_MAIN_REAL_CLAIM_STORAGE_URL: "https://claim-storage.ocentraai.workers.dev"
-          VITE_MAIN_REAL_ASSETS_PUBLIC_URL: "https://claim-storage.ocentraai.workers.dev/api/v1/assets"
+          VITE_MAIN_REAL_CLAIM_STORAGE_URL: ${{ inputs.branch == 'production' && 'https://claim-storage.ocentraai.workers.dev' || 'https://claim-storage-dev.ocentraai.workers.dev' }}
+          VITE_MAIN_REAL_ASSETS_PUBLIC_URL: ${{ inputs.branch == 'production' && 'https://claim-storage.ocentraai.workers.dev/api/v1/assets' || 'https://claim-storage-dev.ocentraai.workers.dev/api/v1/assets' }}
           VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
           VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
           VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
