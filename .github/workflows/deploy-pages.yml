@@ -49,15 +49,28 @@ jobs:
       - uses: ./.github/actions/setup-ci
 
       - name: Build project
-        run: npm run build
+        shell: bash
+        run: |
+          # Safely trim any sneaky newlines or spaces from secrets
+          CLEAN_DEV_URL=$(echo "${{ secrets.CLAIM_STORAGE_WORKER_URL_DEV }}" | xargs)
+          CLEAN_PROD_URL=$(echo "${{ secrets.CLAIM_STORAGE_WORKER_URL_PROD }}" | xargs)
+          
+          if [ "${{ inputs.branch }}" == "production" ]; then
+            export VITE_MAIN_REAL_CLAIM_STORAGE_URL="$CLEAN_PROD_URL"
+            export VITE_MAIN_REAL_ASSETS_PUBLIC_URL="$CLEAN_PROD_URL/api/v1/assets"
+          else
+            export VITE_MAIN_REAL_CLAIM_STORAGE_URL="$CLEAN_DEV_URL"
+            export VITE_MAIN_REAL_ASSETS_PUBLIC_URL="$CLEAN_DEV_URL/api/v1/assets"
+          fi
+          
+          npm run build
         env:
+          # Keep existing env vars, but note that the URLs above take precedence via export
           VITE_MAIN_ASSET_TARGET_DEFAULT: "real-cloud"
-          VITE_MAIN_REAL_CLAIM_STORAGE_URL: ${{ inputs.branch == 'production' && secrets.CLAIM_STORAGE_WORKER_URL_PROD || secrets.CLAIM_STORAGE_WORKER_URL_DEV }}
-          VITE_MAIN_REAL_ASSETS_PUBLIC_URL: ${{ inputs.branch == 'production' && format('{0}/api/v1/assets', secrets.CLAIM_STORAGE_WORKER_URL_PROD) || format('{0}/api/v1/assets', secrets.CLAIM_STORAGE_WORKER_URL_DEV) }}
           VITE_R2_WORKER_URL: ${{ secrets.VITE_R2_WORKER_URL }}
           VITE_R2_BUCKET_NAME: ${{ secrets.VITE_R2_BUCKET_NAME }}
           VITE_LOGS_WORKER_URL: ${{ secrets.VITE_LOGS_WORKER_URL }}
-          VITE_LOGS_API_KEY: ${{ secrets.LOGS_API_KEY }}
+          VITE_LOGS_API_KEY: ${{ secrets.VITE_LOGS_API_KEY }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
