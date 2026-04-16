@@ -257,9 +257,9 @@ persist = true
 ENVIRONMENT = "development"
 FIREBASE_PROJECT_ID = "claim-b020c"
 BUCKET_NAME = "claim-matches-test"  # Test bucket name for safety checks
-# Development: Allow all origins (*) for local testing (localhost, etc.)
-# Production: Must use specific origin (https://game.ocentra.ca)
-CORS_ORIGIN = "*"  # Allows localhost:5173, localhost:3000, etc. for local dev
+# Development: Only Pages main branch alias can call dev worker
+# Local dev uses local wrangler (not this cloud worker), so * is not needed
+CORS_ORIGIN = "https://main.ocentra-games.pages.dev"
 # Rate limiting: Higher limit for testing (1000/hour to avoid test failures)
 RATE_LIMIT_MATCHES_PER_HOUR = "1000"
 # Signed URL secret for testing (required for signed URL tests)
