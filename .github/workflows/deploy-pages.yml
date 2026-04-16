@@ -56,6 +56,7 @@ jobs:
           CLEAN_PROD_URL=$(echo "${{ secrets.CLAIM_STORAGE_WORKER_URL_PROD }}" | xargs)
           
           CLEAN_LOGS_URL=$(echo "${{ secrets.VITE_LOGS_WORKER_URL }}" | xargs)
+          CLEAN_LOGS_KEY=$(echo "${{ secrets.LOGS_BRIDGE_API_KEY }}" | xargs)
            
           if [ "${{ inputs.branch }}" == "production" ]; then
             export VITE_CLAIM_STORAGE_URL="$CLEAN_PROD_URL"
@@ -70,12 +71,12 @@ jobs:
           fi
           
           export VITE_LOGS_WORKER_URL="$CLEAN_LOGS_URL"
+          export VITE_LOGS_API_KEY="$CLEAN_LOGS_KEY"
           
           npm run build
         env:
-          # Keep existing env vars, but note that the URLs above take precedence via export
+          # Keep existing env vars, but note that the URLs/Keys above take precedence via export
           VITE_MAIN_ASSET_TARGET_DEFAULT: "real-cloud"
-          VITE_LOGS_API_KEY: ${{ secrets.VITE_LOGS_API_KEY }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
