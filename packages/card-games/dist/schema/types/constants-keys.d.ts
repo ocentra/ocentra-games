@@ -1,2 +1,0 @@
-export declare const CONSTANTS_KEYS: readonly ["ante", "optimal_players", "max_players", "min_players", "stock_buy_fee", "low_threshold", "challenge_penalty", "market_size", "buy_rounds", "final_hand_size", "trick_count", "target_score", "hand_size", "kitty_size", "widow_size", "buy_limit", "round_limit", "min_bet", "max_raise", "pot_limit", "deck_count", "joker_count", "barrel_limit", "rospisat_penalty", "zero_penalty"];
-export type ConstantsKey = (typeof CONSTANTS_KEYS)[number];

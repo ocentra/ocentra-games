@@ -1,2 +1,0 @@
-export declare const TAGS_VALUES: readonly ["social", "fast-paced", "gambling", "traditional", "trick-taking", "melding", "shedding", "fishing", "banking", "solitaire", "climbing", "vying", "matching", "bluffing", "cooperative", "team", "draw-and-discard", "market-mechanics", "high-low", "trump", "no-trump", "bidding", "auction", "partnership", "domino", "tile", "rummy", "poker", "poker-variant", "war", "patience", "betting", "strategy", "stud"];
-export type Tag = (typeof TAGS_VALUES)[number];
