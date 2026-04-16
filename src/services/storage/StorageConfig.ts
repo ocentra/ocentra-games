@@ -85,13 +85,13 @@ export function getStorageConfig(): StorageConfig {
     return undefined;
   };
 
-  const r2WorkerUrl = getEnv('VITE_R2_WORKER_URL') || '';
+  const r2WorkerUrl = (getEnv('VITE_R2_WORKER_URL') || '').trim();
   const assetTargetKey = getActiveMainAppAssetTarget();
   const assetTarget = getMainAppAssetTargetDetails(assetTargetKey);
-  let claimStorageUrl = assetTarget.workerUrl || getEnv('VITE_CLAIM_STORAGE_URL') || getEnv('VITE_ASSETS_WORKER_URL') || r2WorkerUrl;
+  let claimStorageUrl = assetTarget.workerUrl || (getEnv('VITE_CLAIM_STORAGE_URL') || getEnv('VITE_ASSETS_WORKER_URL') || r2WorkerUrl).trim();
   let assetsPublicUrl =
     assetTarget.assetsPublicUrl ||
-    getEnv('VITE_ASSETS_PUBLIC_URL') ||
+    (getEnv('VITE_ASSETS_PUBLIC_URL') || '').trim() ||
     (claimStorageUrl ? `${claimStorageUrl.replace(/\/$/, '')}/api/v1/assets` : '');
 
   if (!assetsPublicUrl && assetTarget.key === MainAppAssetTarget.LocalDev && isLocalHost()) {

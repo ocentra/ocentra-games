@@ -38,7 +38,7 @@ export function getProxiedImageUrl(
     return imageUrl;
   }
 
-  const proxyBaseUrl = workerUrl || import.meta.env.VITE_R2_WORKER_URL;
+  const proxyBaseUrl = (workerUrl || import.meta.env.VITE_R2_WORKER_URL || '').trim();
 
   if (!proxyBaseUrl) {
     logWarn('VITE_R2_WORKER_URL not configured, using original image URL (may have CORS issues)');
