@@ -142,6 +142,18 @@ Because the preflight succeeded, `ci-gate.yml` concurrently boots 4 isolated nod
 - `npm run deploy` (`deploy-worker.yml` pushes backend to edge)
 - `wrangler pages deploy` (`deploy-pages.yml` pushes Vite dist to Pages)
 
+**Dev/Prod Stack Isolation:**
+
+| Git Branch | Worker Deployed | Pages Built Against | Pages URL |
+|-----------|----------------|--------------------|-----------|
+| `main` | `claim-storage-dev` | `CLAIM_STORAGE_WORKER_URL_DEV` (secret) | `main.ocentra-games.pages.dev` |
+| `production` | `claim-storage` | `CLAIM_STORAGE_WORKER_URL_PROD` (secret) | `ocentra-games.pages.dev` / `game.ocentra.ca` |
+
+**CORS Policy:**
+- Dev worker: only accepts requests from `https://main.ocentra-games.pages.dev`
+- Prod worker: accepts `https://game.ocentra.ca` + `https://ocentra-games.pages.dev`
+- Local dev uses local `wrangler dev` — does not call the cloud dev worker
+
 ---
 
 ## Emergency Hotfixes & Bypasses 🚑
