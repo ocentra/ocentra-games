@@ -3,9 +3,10 @@ import './GameFooter.css';
 
 export interface GameFooterProps {
   appVersion?: string;
+  rightContent?: React.ReactNode;
 }
 
-export const GameFooter: React.FC<GameFooterProps> = ({ appVersion }) => {
+export const GameFooter: React.FC<GameFooterProps> = ({ appVersion, rightContent }) => {
   return (
     <footer className="game-footer">
       <div className="footer-content">
@@ -23,6 +24,7 @@ export const GameFooter: React.FC<GameFooterProps> = ({ appVersion }) => {
             <span className="footer-version"> [ alpha v{appVersion} ]</span>
           )}
         </span>
+        {rightContent && <div className="footer-right-content">{rightContent}</div>}
       </div>
     </footer>
   );

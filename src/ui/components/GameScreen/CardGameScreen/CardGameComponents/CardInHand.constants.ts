@@ -1,3 +1,5 @@
+import CardBack from '@/Images/BgCards/BackCard.png';
+
 export const CARD_IN_HAND_DEFAULTS = {
   CARD_COUNT: 13,
   MIN_CARD_COUNT: 3,
@@ -13,7 +15,7 @@ export const CARD_IN_HAND_DEFAULTS = {
   MAX_CARD_SCALE: 1,
   REFERENCE_WIDTH: 1700,
   Z_INDEX_BASE: 101,
-  CARD_IMAGE: undefined,
+  CARD_IMAGE: CardBack,
   USE_DOME_RADIUS: false,
 } as const;
   

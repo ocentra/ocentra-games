@@ -1,16 +1,26 @@
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
 import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
-import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
 import { CardGameMechanics } from '@ocentra/game-asset-domain/game/gameMechanics/CardGameMechanics';
-import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
-import type { CardIdentity } from '@ocentra/game-domain/deck/cardIdentity';
+import { toMechanicsSpec } from '@ocentra/game-asset-domain/game/gameMechanics/MechanicsTranslator';
+import type { Layout } from '@ocentra/game-asset-domain/ui/layout/Layout';
+import type { CardGameLayout } from '@ocentra/game-asset-domain/ui/layout/CardGameLayout';
 import type { IDeckProvider } from '@ocentra/game-domain/interfaces/IDeckProvider';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
 import { Suit, type Card, type CardValue, type GameState, type Player } from '@ocentra/game-domain/types/game';
-import { getGameMode } from '@/adapters/assets/GameCatalogService';
+import { getGameModeEntries } from '@/adapters/assets/GameCatalogService';
+import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
+import {
+  loadCardGameLayoutDocument,
+  resolveLayoutPreset,
+  type NormalizedCardGameLayoutDocument,
+} from '@/ui/layout/cardGameLayoutAsset';
+import type { LayoutPreset } from '@/ui/layout/tableLayoutTypes';
+import { getLocalPilotStatus } from './localPilotCatalog';
+import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 
-const SUPPORTED_PILOT_FAMILIES = new Set(['claim', 'briscola', 'three-card-brag']);
+const SUPPORTED_PILOT_FAMILY = 'claim';
+const ASSET_LOAD_TIMEOUT_MS = 10000;
 
 const FRENCH_CARD_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] as CardValue[];
 const ITALIAN_BRISCOLA_VALUES = [2, 3, 4, 5, 6, 7, 11, 12, 13, 14] as CardValue[];
@@ -28,13 +38,20 @@ interface ParsedIdentifier {
   guid: AssetGUIDType | null;
 }
 
-interface PlayableCardGameMode extends GameMode {
+type AssetReference = {
+  guid: string;
+  assetType: string;
   displayName?: string;
+  path?: string;
+};
+
+interface LoadedPlayableGameMode {
+  gameId: string;
+  displayName: string;
   minPlayers: number;
   maxPlayers: number;
-  mechanicsAsset: AssetResourceEntry<CardGameMechanics>;
-  deckAsset?: AssetResourceEntry<Deck> | null;
-  getDeckAsset?: () => Promise<Deck | null>;
+  mechanicsAsset: AssetResourceEntry<CardGameMechanics> | CardGameMechanics;
+  layoutAsset?: AssetResourceEntry<Layout> | AssetResourceEntry<CardGameLayout> | CardGameLayout;
 }
 
 class StaticDeckProvider implements IDeckProvider {
@@ -112,9 +129,12 @@ export interface LocalPlayableGameBundle {
   displayName: string;
   familyKernel: string;
   playerCount: number;
-  gameMode: PlayableCardGameMode;
+  deckSize: number;
+  gameMode: LoadedPlayableGameMode;
   mechanics: CardGameMechanics;
   spec: MechanicsSpec;
+  layoutDocument: NormalizedCardGameLayoutDocument;
+  layoutPreset: LayoutPreset;
   createDeckProvider: (seed: number) => IDeckProvider;
 }
 
@@ -125,16 +145,41 @@ export interface LocalPlayableGameLoadResult {
 
 export async function loadLocalPlayableGame(identifier: string): Promise<LocalPlayableGameLoadResult> {
   const parsed = parseIdentifier(identifier);
-  const loaded = await getGameMode(parsed.slug) ?? (parsed.guid ? await getGameMode(parsed.guid) : null);
-  if (!loaded) {
+  const readiness = getLocalPilotStatus(parsed.slug);
+  if (!readiness.isReady) {
+    return {
+      bundle: null,
+      error: readiness.message,
+    };
+  }
+
+  const gameModeEntry = await withTimeout(
+    resolveGameModeEntry(parsed.slug, parsed.guid),
+    `Game "${parsed.slug}" timed out resolving the game mode entry.`,
+  );
+  if (!gameModeEntry) {
     return {
       bundle: null,
       error: `Game "${parsed.slug}" could not be loaded.`,
     };
   }
 
-  const gameMode = loaded as PlayableCardGameMode;
-  const mechanics = await gameMode.mechanicsAsset.load(CardGameMechanics);
+  const gameModeDocument = await withTimeout(
+    loadPlayableGameModeDocument(gameModeEntry.guid, parsed.slug),
+    `Game "${parsed.slug}" timed out loading the game mode asset.`,
+  );
+  if (!gameModeDocument) {
+    return {
+      bundle: null,
+      error: `Game "${parsed.slug}" could not be loaded.`,
+    };
+  }
+
+  const gameMode = gameModeDocument;
+  const mechanics = await withTimeout(
+    resolveMechanicsAsset(gameMode.mechanicsAsset),
+    `Game "${parsed.slug}" timed out loading the mechanics asset.`,
+  );
   if (!mechanics) {
     return {
       bundle: null,
@@ -142,20 +187,45 @@ export async function loadLocalPlayableGame(identifier: string): Promise<LocalPl
     };
   }
 
-  if (!SUPPORTED_PILOT_FAMILIES.has(mechanics.familyKernel)) {
+  if (mechanics.familyKernel !== SUPPORTED_PILOT_FAMILY) {
     return {
       bundle: null,
-      error: `Local play is currently enabled for Claim, Briscola, and Three Card Brag only. "${parsed.slug}" uses "${mechanics.familyKernel}".`,
+      error: `Claim is the only ready local pilot. "${parsed.slug}" uses "${mechanics.familyKernel}".`,
     };
   }
 
-  const runtimeDeck = await buildRuntimeDeck(gameMode, mechanics);
+  const runtimeDeck = buildRuntimeDeck(mechanics);
   const spec = toMechanicsSpec(mechanics);
   const playerCount = clamp(
     mechanics.playerConfig.optimalPlayers ?? mechanics.playerConfig.minPlayers,
     mechanics.playerConfig.minPlayers,
     mechanics.playerConfig.maxPlayers,
   );
+  const layoutDocument = await withTimeout(
+    loadCardGameLayoutDocument(gameMode.layoutAsset ?? null),
+    `Game "${parsed.slug}" timed out loading the layout asset.`,
+  );
+  if (!layoutDocument) {
+    return {
+      bundle: null,
+      error: `Game "${parsed.slug}" is missing a readable layout asset.`,
+    };
+  }
+
+  const layoutPreset = resolveLayoutPreset(layoutDocument, playerCount);
+  if (!layoutPreset) {
+    return {
+      bundle: null,
+      error: `Game "${parsed.slug}" does not define a layout preset for ${playerCount} seats.`,
+    };
+  }
+
+  if (layoutPreset.seats.length < playerCount) {
+    return {
+      bundle: null,
+      error: `Game "${parsed.slug}" layout preset for ${playerCount} seats only defines ${layoutPreset.seats.length} seat positions.`,
+    };
+  }
 
   return {
     bundle: {
@@ -163,9 +233,12 @@ export async function loadLocalPlayableGame(identifier: string): Promise<LocalPl
       displayName: gameMode.displayName || parsed.slug,
       familyKernel: mechanics.familyKernel,
       playerCount,
+      deckSize: runtimeDeck.length,
       gameMode,
       mechanics,
       spec,
+      layoutDocument,
+      layoutPreset,
       createDeckProvider: (seed: number) => new StaticDeckProvider(runtimeDeck, seed),
     },
     error: null,
@@ -215,10 +288,10 @@ export function describePlayer(player: Player, gameState: GameState | null): str
   if (player.declaredSuit) {
     details.push(`Declared: ${player.declaredSuit}`);
   }
-  if (gameState?.mechanicsContext?.foldedPlayerIds.includes(player.id)) {
+  if (gameState?.mechanicsContext?.foldedPlayerIds?.includes(player.id)) {
     details.push('Folded');
   }
-  if (gameState?.mechanicsContext?.revealedPlayerIds.includes(player.id)) {
+  if (gameState?.mechanicsContext?.revealedPlayerIds?.includes(player.id)) {
     details.push('Revealed');
   }
   return details;
@@ -236,52 +309,136 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-async function buildRuntimeDeck(gameMode: PlayableCardGameMode, mechanics: CardGameMechanics): Promise<Card[]> {
-  const deckAsset = gameMode.getDeckAsset ? await gameMode.getDeckAsset() : null;
-  if (deckAsset) {
-    const cards = await deckAsset.getAllCards();
-    const runtimeDeck = cards
-      .map((cardAsset) => toRuntimeCard(cardAsset.cardIdentity, cardAsset.getCardId()))
-      .filter((card): card is Card => card !== null);
-
-    if (runtimeDeck.length > 0) {
-      return runtimeDeck;
-    }
-  }
-
+function buildRuntimeDeck(mechanics: CardGameMechanics): Card[] {
   return createCanonicalDeck(mechanics);
 }
 
-function toRuntimeCard(cardIdentity: CardIdentity, cardId: string): Card | null {
-  if (cardIdentity.family === 'French' && 'suit' in cardIdentity && 'value' in cardIdentity) {
-    return {
-      id: cardId,
-      suit: cardIdentity.suit,
-      value: cardIdentity.value,
-    };
+async function withTimeout<T>(promise: Promise<T>, timeoutMessage: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, ASSET_LOAD_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
+function extractResourceReference(value: unknown): AssetReference | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
   }
 
-  const identityId = 'id' in cardIdentity ? cardIdentity.id : cardId;
-  const italianMatch = /^italian_(?<suit>[a-z]+)_(?<value>\d+)$/i.exec(identityId);
-  if (italianMatch?.groups) {
-    const runtimeSuit = ITALIAN_TO_RUNTIME_SUIT[italianMatch.groups.suit as keyof typeof ITALIAN_TO_RUNTIME_SUIT];
-    if (!runtimeSuit) {
+  const record = value as Record<string, unknown>;
+  const guid = typeof record.guid === 'string' ? record.guid : null;
+  const assetType = typeof record.assetType === 'string' ? record.assetType : null;
+  if (!guid || !assetType) {
+    return null;
+  }
+
+  return {
+    guid,
+    assetType,
+    displayName: typeof record.displayName === 'string' ? record.displayName : undefined,
+    path: typeof record.path === 'string' ? record.path : undefined,
+  };
+}
+
+async function resolveGameModeEntry(slug: string, guid: AssetGUIDType | null): Promise<{ guid: string; displayName: string } | null> {
+  const entries = await getGameModeEntries();
+  const entry = entries.find((candidate) => candidate.gameId === slug || candidate.guid === guid) ?? null;
+  if (!entry) {
+    return null;
+  }
+
+  return {
+    guid: entry.guid,
+    displayName: entry.displayName || slug,
+  };
+}
+
+async function loadPlayableGameModeDocument(guid: string, fallbackGameId: string): Promise<LoadedPlayableGameMode | null> {
+  const raw = await loadRawAssetDocumentByGuid(guid);
+  if (!raw) {
+    return null;
+  }
+
+  const system = raw.system && typeof raw.system === 'object' && !Array.isArray(raw.system)
+    ? (raw.system as Record<string, unknown>)
+    : {};
+  const data = raw.data && typeof raw.data === 'object' && !Array.isArray(raw.data)
+    ? (raw.data as Record<string, unknown>)
+    : {};
+
+  const mechanicsRef = extractResourceReference(data.mechanicsAsset);
+  const layoutRef = extractResourceReference(data.layoutAsset);
+  if (!mechanicsRef || !layoutRef) {
+    return null;
+  }
+
+  const mechanicsEntry = AssetResourceEntry.fromGuid(
+    mechanicsRef.guid,
+    asAssetType(mechanicsRef.assetType),
+    mechanicsRef.displayName ?? 'Mechanics',
+  ) as AssetResourceEntry<CardGameMechanics>;
+  if (mechanicsRef.path) {
+    mechanicsEntry.path = mechanicsRef.path;
+  }
+
+  const layoutEntry = AssetResourceEntry.fromGuid(
+    layoutRef.guid,
+    asAssetType(layoutRef.assetType),
+    layoutRef.displayName ?? 'Layout',
+  ) as AssetResourceEntry<CardGameLayout>;
+  if (layoutRef.path) {
+    layoutEntry.path = layoutRef.path;
+  }
+
+  return {
+    gameId: typeof system.gameId === 'string' ? system.gameId : fallbackGameId,
+    displayName: typeof system.displayName === 'string' && system.displayName ? system.displayName : fallbackGameId,
+    minPlayers: typeof data.minPlayers === 'number' ? data.minPlayers : 2,
+    maxPlayers: typeof data.maxPlayers === 'number' ? data.maxPlayers : 6,
+    mechanicsAsset: mechanicsEntry,
+    layoutAsset: layoutEntry,
+  };
+}
+
+function isAssetEntry<T>(value: unknown): value is AssetResourceEntry<T> {
+  return value instanceof AssetResourceEntry;
+}
+
+function isLoadedMechanicsAsset(value: unknown): value is CardGameMechanics {
+  return value instanceof CardGameMechanics;
+}
+
+async function resolveMechanicsAsset(
+  mechanicsAsset: LoadedPlayableGameMode['mechanicsAsset'],
+): Promise<CardGameMechanics | null> {
+  if (isLoadedMechanicsAsset(mechanicsAsset)) {
+    return mechanicsAsset;
+  }
+
+  if (isAssetEntry<CardGameMechanics>(mechanicsAsset)) {
+    const raw = await loadRawAssetDocumentByGuid(String(mechanicsAsset.guid));
+    if (!raw) {
       return null;
     }
-    return {
-      id: identityId,
-      suit: runtimeSuit,
-      value: Number(italianMatch.groups.value) as CardValue,
-    };
-  }
 
-  const frenchMatch = /^(?<value>\d+)_of_(?<suit>[a-z_]+)$/i.exec(cardId);
-  if (frenchMatch?.groups) {
-    return {
-      id: cardId,
-      suit: frenchMatch.groups.suit as Card['suit'],
-      value: Number(frenchMatch.groups.value) as CardValue,
-    };
+    const data = raw.data && typeof raw.data === 'object' && !Array.isArray(raw.data)
+      ? (raw.data as Record<string, unknown>)
+      : null;
+    if (!data) {
+      return null;
+    }
+
+    return Object.assign(new CardGameMechanics(), data) as CardGameMechanics;
   }
 
   return null;
@@ -305,95 +462,4 @@ function createCanonicalDeck(mechanics: CardGameMechanics): Card[] {
       value,
     })),
   );
-}
-
-function toMechanicsSpec(mechanics: CardGameMechanics): MechanicsSpec {
-  return {
-    familyKernel: mechanics.familyKernel,
-    kernelVersion: mechanics.kernelVersion,
-    playerConfig: {
-      playerMode: mechanics.playerConfig.playerMode,
-      minPlayers: mechanics.playerConfig.minPlayers,
-      maxPlayers: mechanics.playerConfig.maxPlayers,
-      optimalPlayers: mechanics.playerConfig.optimalPlayers ?? null,
-      dealerRotates: mechanics.playerConfig.dealerRotates,
-    },
-    phases: mechanics.phases.map((phase) => ({
-      id: phase.id,
-      label: phase.label,
-      actor: phase.actor,
-      legalActions: [...phase.legalActions],
-      nextPhase: phase.nextPhase,
-      isMandatory: phase.isMandatory,
-      loopIndex: phase.loopIndex ?? null,
-      totalLoops: phase.totalLoops ?? null,
-      conditionalNext: phase.conditionalNext.map((entry) => ({
-        condition: entry.condition,
-        nextPhase: entry.nextPhase,
-      })),
-      cardVisibilityChanges: { ...phase.cardVisibilityChanges },
-      notes: phase.notes,
-    })),
-    actions: { ...(mechanics.actions ?? {}) },
-    customActions: mechanics.customActions.map((action) => ({
-      id: action.id,
-      supported: action.supported,
-      description: action.description,
-      cost: action.cost,
-      constraints: action.constraints,
-      effectType: action.effectType,
-      effectHints: { ...action.effectHints },
-      isTerminating: action.isTerminating,
-    })),
-    zones: mechanics.zones.map((zone) => ({
-      id: zone.id,
-      type: zone.type,
-      owner: zone.owner,
-      visibility: zone.visibility,
-      capacity: zone.capacity ?? null,
-    })),
-    turnPolicy: {
-      direction: mechanics.turnPolicy.direction,
-      startsWith: mechanics.turnPolicy.startsWith,
-      timerSeconds: mechanics.turnPolicy.timerSeconds ?? null,
-    },
-    endConditions: mechanics.endConditions.map((condition) => ({
-      id: condition.id,
-      description: condition.description,
-      appliesToPhase: condition.appliesToPhase ?? null,
-    })),
-    cardVisibility: { ...(mechanics.cardVisibility ?? {}) },
-    drawConfig: mechanics.drawConfig ?? null,
-    discardConfig: mechanics.discardConfig ?? null,
-    deckType: mechanics.deckType,
-    suitSet: mechanics.suitSet,
-    rankSet: mechanics.rankSet,
-    initialHandSize: mechanics.initialHandSize,
-    trumpConfig: mechanics.trumpConfig ?? null,
-    meldConfig: mechanics.meldConfig ?? null,
-    trickConfig: mechanics.trickConfig ?? null,
-    declarationMechanism: mechanics.declarationMechanism ?? null,
-    handRanks: mechanics.handRanks ?? null,
-    buyCosts: mechanics.buyCosts ?? null,
-    marketConfig: mechanics.marketConfig ?? null,
-    specialCards: mechanics.specialCards ?? null,
-    shedding: mechanics.shedding ?? null,
-    fishingConfig: mechanics.fishingConfig ?? null,
-    patienceConfig: mechanics.patienceConfig ?? null,
-    bankingConfig: mechanics.bankingConfig ?? null,
-    roundConfig: mechanics.roundConfig ?? null,
-    constants: { ...(mechanics.constants ?? {}) },
-    finalHandSize: mechanics.finalHandSize,
-    deckCount: mechanics.deckCount,
-    implementationHints: mechanics.implementationHints
-      ? {
-          rngUsed: [...mechanics.implementationHints.rngUsed],
-          authoritativeServer: mechanics.implementationHints.authoritativeServer,
-          customLogicNeeded: [...mechanics.implementationHints.customLogicNeeded],
-        }
-      : undefined,
-    progression: [...(mechanics.progression ?? [])],
-    roles: [...(mechanics.roles ?? [])],
-    determinismNotes: mechanics.determinismNotes,
-  };
 }

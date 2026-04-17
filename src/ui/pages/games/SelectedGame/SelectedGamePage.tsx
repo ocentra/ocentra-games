@@ -13,8 +13,9 @@ import { GameCardDeckPreview } from '@/ui/components/GameInfo/GameCardDeckPrevie
 import { GameNotFound } from '@/ui/pages/games/NotFound/GameNotFound';
 import { isAssetGUID, type AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
 import { MultiplayerStorageKey } from '@/ui/pages/Matchmaking/types';
-import { AppScreenToken, buildGameMatchmakingPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
+import { AppScreenToken, buildCardGameTemplatePath, buildGameMatchmakingPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
 import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
+import { getLocalPilotStatus } from '@/ui/pages/games/CardGamePlay/localPilotCatalog';
 import './SelectedGamePage.css';
 
 interface SelectedGamePageProps {
@@ -146,10 +147,14 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   };
 
   const displayName = formatGameName(parsedGameName || gameId);
-  const localPilotSupported = ['claim', 'briscola', 'three-card-brag'].includes(parsedGameName);
+  const localPilotStatus = getLocalPilotStatus(parsedGameName || gameId);
 
   const handlePlayLocalPilot = () => {
     EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(parsedGameName)));
+  };
+
+  const handleOpenTemplate = () => {
+    EventBus.instance.publish(new ShowScreenEvent(buildCardGameTemplatePath()));
   };
 
   return (
@@ -166,7 +171,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       />
 
       <div className="generic-game-main">
-        {localPilotSupported && (
+        {localPilotStatus.isReady && (
           <section className="local-pilot-card">
             <div>
               <p className="local-pilot-card__eyebrow">Playable Pilot</p>
@@ -175,9 +180,23 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
                 Launch the minimum viable playable table for {displayName}. This runs locally with visible hands so you can validate the engine flow end to end.
               </p>
             </div>
-            <button type="button" className="local-pilot-card__button" onClick={handlePlayLocalPilot}>
-              Play Local Pilot
-            </button>
+            <div className="local-pilot-card__actions">
+              <button type="button" className="local-pilot-card__button" onClick={handlePlayLocalPilot}>
+                Play Local Pilot
+              </button>
+              <button type="button" className="local-pilot-card__button local-pilot-card__button--secondary" onClick={handleOpenTemplate}>
+                Open Card Game Template
+              </button>
+            </div>
+          </section>
+        )}
+        {localPilotStatus.isKnown && !localPilotStatus.isReady && (
+          <section className="local-pilot-card local-pilot-card--disabled">
+            <div>
+              <p className="local-pilot-card__eyebrow">Local Pilot</p>
+              <h2>Playable pilot not ready</h2>
+              <p>{localPilotStatus.message}</p>
+            </div>
           </section>
         )}
 

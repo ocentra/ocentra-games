@@ -40,6 +40,11 @@ type ResourceReference = {
   displayName?: string;
 };
 
+const DEFAULT_LAYOUT_STRUCTURE = {
+  type: 'custom',
+  sections: [],
+} as const;
+
 function inferGameId(path: string): string {
   const normalized = path.replace(/\\/g, '/');
   const segments = normalized.split('/').filter(Boolean);
@@ -63,13 +68,45 @@ function cloneRecord<T>(value: T): T {
   return JSON5.parse(JSON5.stringify(value)) as T;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function hasLegacyLayoutDocument(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return ['defaultPlayerCount', 'presets', 'gameplay', 'extensions'].some((key) => key in value);
+}
+
+function isLayoutStructure(value: unknown): value is Record<string, unknown> {
+  return isRecord(value) && typeof value.type === 'string' && Array.isArray(value.sections);
+}
+
+function getLayoutDocumentContainer(data: Record<string, unknown>): Record<string, unknown> {
+  if (hasLegacyLayoutDocument(data.layout)) {
+    return data.layout;
+  }
+  return data;
+}
+
+function getLayoutStructure(data: Record<string, unknown>): Record<string, unknown> {
+  if (isLayoutStructure(data.layout)) {
+    return cloneRecord(data.layout);
+  }
+
+  return cloneRecord(DEFAULT_LAYOUT_STRUCTURE);
+}
+
 function toLayoutDocument(root: Record<string, unknown>): LayoutAssetDocument {
   const data = getDataBlock(root);
+  const container = getLayoutDocumentContainer(data);
   return {
-    defaultPlayerCount: typeof data.defaultPlayerCount === 'number' ? data.defaultPlayerCount : 4,
-    presets: (data.presets && typeof data.presets === 'object' ? data.presets : {}) as Record<string, LayoutPreset>,
-    gameplay: (data.gameplay && typeof data.gameplay === 'object' ? data.gameplay : {}) as Record<string, unknown>,
-    extensions: (data.extensions && typeof data.extensions === 'object' ? data.extensions : {}) as Record<string, unknown>,
+    defaultPlayerCount: typeof container.defaultPlayerCount === 'number' ? container.defaultPlayerCount : 4,
+    presets: (container.presets && typeof container.presets === 'object' ? container.presets : {}) as Record<string, LayoutPreset>,
+    gameplay: (container.gameplay && typeof container.gameplay === 'object' ? container.gameplay : {}) as Record<string, unknown>,
+    extensions: (container.extensions && typeof container.extensions === 'object' ? container.extensions : {}) as Record<string, unknown>,
   };
 }
 
@@ -208,6 +245,7 @@ export async function saveLayoutAsset(
   nextData.presets = document.presets;
   nextData.gameplay = document.gameplay;
   nextData.extensions = document.extensions;
+  nextData.layout = getLayoutStructure(nextData);
   nextRoot.data = nextData;
 
   const content = JSON5.stringify(nextRoot, null, 2);

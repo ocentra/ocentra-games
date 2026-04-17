@@ -20,7 +20,7 @@ describe('LayoutAssetService', () => {
     EventBus.reset();
   });
 
-  function wireHarness() {
+  function wireHarness(options?: { legacyNestedLayout?: boolean }) {
     const gameModeEntry = AssetResourceEntry.fromGuid(
       'game-mode-guid',
       asAssetType('CardGameMode'),
@@ -53,19 +53,36 @@ describe('LayoutAssetService', () => {
         gameId: 'claim',
         treePath: 'Resources/GameMode/CardGames/claim/claimLayout.asset',
       },
-      data: {
-        defaultPlayerCount: 4,
-        presets: {
-          '4': {
-            table: { width: 960, height: 560, offsetX: 0, offsetY: 0, curvature: 0.88, feltInset: -8 },
-            seats: [
-              { id: 0, label: 'p1', position: { x: 0.5, y: 0.1 }, rotation: 0, scale: 0.5 },
-            ],
+      data: options?.legacyNestedLayout
+        ? {
+            layout: {
+              defaultPlayerCount: 4,
+              presets: {
+                '4': {
+                  table: { width: 960, height: 560, offsetX: 0, offsetY: 0, curvature: 0.88, feltInset: -8 },
+                  seats: [
+                    { id: 0, label: 'p1', position: { x: 0.5, y: 0.1 }, rotation: 0, scale: 0.5 },
+                  ],
+                },
+              },
+              gameplay: { mode: 'legacy' },
+              extensions: { theme: 'classic' },
+            },
+          }
+        : {
+            defaultPlayerCount: 4,
+            presets: {
+              '4': {
+                table: { width: 960, height: 560, offsetX: 0, offsetY: 0, curvature: 0.88, feltInset: -8 },
+                seats: [
+                  { id: 0, label: 'p1', position: { x: 0.5, y: 0.1 }, rotation: 0, scale: 0.5 },
+                ],
+              },
+            },
+            gameplay: { mode: 'standard' },
+            extensions: { theme: 'classic' },
+            layout: { type: 'custom', sections: [] },
           },
-        },
-        gameplay: { mode: 'standard' },
-        extensions: { theme: 'classic' },
-      },
     };
 
     let uploadedContent = '';
@@ -132,6 +149,17 @@ describe('LayoutAssetService', () => {
     expect(result.document.gameplay).toEqual({ mode: 'standard' });
   });
 
+  it('loads legacy nested layout documents and normalizes them for the editor', async () => {
+    wireHarness({ legacyNestedLayout: true });
+    const { loadLayoutAsset } = await import('@/adapters/layout/LayoutAssetService');
+
+    const result = await loadLayoutAsset('claim');
+
+    expect(result.document.defaultPlayerCount).toBe(4);
+    expect(result.document.presets['4']?.seats).toHaveLength(1);
+    expect(result.document.gameplay).toEqual({ mode: 'legacy' });
+  });
+
   it('saves updated layout documents back through UploadAssetEvent', async () => {
     const harness = wireHarness();
     const { loadLayoutAsset, saveLayoutAsset } = await import('@/adapters/layout/LayoutAssetService');
@@ -152,5 +180,6 @@ describe('LayoutAssetService', () => {
     expect(uploadedSystem.treePath).toBe('Resources/GameMode/CardGames/claim/claimLayout.asset');
     expect(uploadedData.defaultPlayerCount).toBe(6);
     expect(uploadedData.gameplay).toEqual({ mode: 'expanded' });
+    expect(uploadedData.layout).toEqual({ type: 'custom', sections: [] });
   });
 });

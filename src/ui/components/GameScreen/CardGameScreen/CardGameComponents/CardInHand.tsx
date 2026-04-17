@@ -30,6 +30,7 @@ interface CardInHandProps {
   anchorPoint?: AnchorPoint;
   position?: "absolute" | "fixed";
   zIndex?: number;
+  disableViewportScale?: boolean;
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -49,12 +50,16 @@ const CardInHand: React.FC<CardInHandProps> = ({
   anchorPoint,
   position = "fixed",
   zIndex = CARD_IN_HAND_DEFAULTS.Z_INDEX_BASE,
+  disableViewportScale = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLImageElement | null>>([]);
   const platformUI = useOptionalPlatformUI();
 
   const dimensions = useMemo(() => {
+    if (disableViewportScale) {
+      return { width: cardWidth, height: cardHeight };
+    }
     const viewportWidth = platformUI?.viewportWidth ?? (typeof window === 'undefined' ? null : window.innerWidth);
     if (!viewportWidth) {
       return { width: cardWidth, height: cardHeight };
@@ -69,7 +74,7 @@ const CardInHand: React.FC<CardInHandProps> = ({
       width: cardWidth * scale,
       height: cardHeight * scale,
     };
-  }, [cardHeight, cardWidth, platformUI?.viewportWidth]);
+  }, [cardHeight, cardWidth, disableViewportScale, platformUI?.viewportWidth]);
 
   const { effectiveArcStart, cards } = useMemo(() => {
     if (!anchorPoint) {

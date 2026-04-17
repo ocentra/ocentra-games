@@ -48,6 +48,48 @@ const createRuntimeUuid = (): string => {
   });
 };
 
+function cloneGameState(state: GameState): GameState {
+  const structuredCloneFn = (globalThis as typeof globalThis & {
+    structuredClone?: <T>(value: T) => T;
+  }).structuredClone;
+
+  if (typeof structuredCloneFn === 'function') {
+    return structuredCloneFn(state);
+  }
+
+  return {
+    ...state,
+    players: state.players.map((player) => ({
+      ...player,
+      hand: [...player.hand],
+      intentCard: player.intentCard ? { ...player.intentCard } : null,
+    })),
+    deck: [...state.deck],
+    floorCard: state.floorCard ? { ...state.floorCard } : null,
+    discardPile: [...state.discardPile],
+    startTime: new Date(state.startTime),
+    lastAction: new Date(state.lastAction),
+    mechanicsContext: state.mechanicsContext
+      ? {
+          ...state.mechanicsContext,
+          revealedPlayerIds: [...state.mechanicsContext.revealedPlayerIds],
+          tableCards: [...state.mechanicsContext.tableCards].map((entry) => ({
+            playerId: entry.playerId,
+            card: { ...entry.card },
+          })),
+          capturedCardsByPlayerId: Object.fromEntries(
+            Object.entries(state.mechanicsContext.capturedCardsByPlayerId).map(([playerId, cards]) => [
+              playerId,
+              cards.map((card) => ({ ...card })),
+            ]),
+          ),
+          foldedPlayerIds: [...state.mechanicsContext.foldedPlayerIds],
+          trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
+        }
+      : undefined,
+  };
+}
+
 export interface GameConfig {
   maxPlayers: number;
   aiDifficulty?: 'easy' | 'medium' | 'hard';
@@ -511,7 +553,7 @@ export class GameEngine {
   }
 
   getGameState(): GameState | null {
-    return this.gameState;
+    return this.gameState ? cloneGameState(this.gameState) : null;
   }
 
   subscribeToUpdates(callback: StateUpdateCallback): () => void {
@@ -521,8 +563,9 @@ export class GameEngine {
 
   private notifyStateUpdate(): void {
     if (this.gameState) {
+      const snapshot = cloneGameState(this.gameState);
       this.updateCallbacks.forEach((callback) =>
-        callback(this.gameState!)
+        callback(snapshot)
       );
     }
   }

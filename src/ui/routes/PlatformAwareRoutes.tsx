@@ -10,6 +10,9 @@ import { MainPlatformShell } from '@/ui/shell/MainPlatformShell';
 const GameScreenPage = React.lazy(() =>
   import('@/ui/pages/games/CardGamePlay/GameScreenPage').then((m) => ({ default: m.GameScreenPage }))
 );
+const LegacyGameScreen = React.lazy(() =>
+  import('@/ui/components/GameScreen/CardGameScreen/GameScreen').then((m) => ({ default: m.default }))
+);
 
 function GamePlayPage() {
   const { gameId } = useParams<{ gameId: string }>();
@@ -115,6 +118,20 @@ export function PlatformAwareRoutes() {
             </Suspense>
           }
         />
+      )}
+      {isDev && (
+        <>
+          <Route
+            path="/games/cardgame/template"
+            element={
+              <WalletProviderGate>
+                <Suspense fallback={<div>Loading card game template...</div>}>
+                  <LegacyGameScreen />
+                </Suspense>
+              </WalletProviderGate>
+            }
+          />
+        </>
       )}
       {isRouteEnabled(RouteFeature.DevPanel, platform, isDev) && (
         <Route

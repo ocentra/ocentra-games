@@ -59,6 +59,13 @@ export default defineConfig({
       use: { ...devices['Pixel 7'], navigationTimeout: 90000 },
     },
     {
+      name: 'card-game-play-e2e',
+      testMatch: /.*\/CardGamePlay\/__tests__\/e2e\/.*\.spec\.ts$/,
+      timeout: 120000,
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'], navigationTimeout: 90000 },
+    },
+    {
       name: 'db-mobile-e2e',
       testMatch: /.*\/bootstrap\/__tests__\/e2e\/.*\.spec\.ts$/,
       timeout: 180000,

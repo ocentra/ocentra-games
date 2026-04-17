@@ -1,13 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { GameHeader } from '@ocentra/core-ui';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
-import type { GameState, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
+import type { Card, GameState, Player, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
+import { GamePhase } from '@ocentra/game-domain/types/game';
 import { AppFooter } from '@/ui/components/AppFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
+import CenterTableSvg from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/CenterTableSvg';
+import type { CenterTableSVGProps } from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/CenterTableSvg';
 import GameBackground from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/GameBackground';
 import './GameScreenPage.css';
 import {
@@ -23,7 +27,108 @@ interface GameScreenPageProps {
   gameModeId: string;
 }
 
-const SUPPORTED_LOCAL_GAMES = new Set(['claim', 'briscola', 'three-card-brag']);
+function getSeatName(index: number): string {
+  return index === 0 ? 'You' : `Seat ${index + 1}`;
+}
+
+function formatCardShortLabel(card: Card): string {
+  const valueMap: Record<number, string> = {
+    14: 'A',
+    13: 'K',
+    12: 'Q',
+    11: 'J',
+  };
+  const suitMap: Record<string, string> = {
+    spades: 'SP',
+    hearts: 'HE',
+    diamonds: 'DI',
+    clubs: 'CL',
+  };
+
+  return `${valueMap[card.value] ?? String(card.value)} ${suitMap[card.suit] ?? card.suit.slice(0, 2).toUpperCase()}`;
+}
+
+function getWinningPlayers(players: Player[]): Player[] {
+  if (players.length === 0) {
+    return [];
+  }
+
+  const topScore = Math.max(...players.map((player) => player.score));
+  return players.filter((player) => player.score === topScore);
+}
+
+function cloneGameStateSnapshot(state: GameState | null): GameState | null {
+  if (!state) {
+    return null;
+  }
+
+  if (typeof structuredClone === 'function') {
+    return structuredClone(state) as GameState;
+  }
+
+  return {
+    ...state,
+    players: state.players.map((player) => ({
+      ...player,
+      hand: [...player.hand],
+      intentCard: player.intentCard ? { ...player.intentCard } : null,
+    })),
+    deck: [...state.deck],
+    floorCard: state.floorCard ? { ...state.floorCard } : null,
+    discardPile: [...state.discardPile],
+    startTime: new Date(state.startTime),
+    lastAction: new Date(state.lastAction),
+    mechanicsContext: state.mechanicsContext
+      ? {
+          ...state.mechanicsContext,
+          revealedPlayerIds: [...state.mechanicsContext.revealedPlayerIds],
+          tableCards: [...state.mechanicsContext.tableCards].map((entry) => ({
+            playerId: entry.playerId,
+            card: { ...entry.card },
+          })),
+          capturedCardsByPlayerId: Object.fromEntries(
+            Object.entries(state.mechanicsContext.capturedCardsByPlayerId).map(([playerId, cards]) => [
+              playerId,
+              cards.map((card) => ({ ...card })),
+            ]),
+          ),
+          foldedPlayerIds: [...state.mechanicsContext.foldedPlayerIds],
+          trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
+        }
+      : undefined,
+  };
+}
+
+function toCenterTableProps(
+  table: LocalPlayableGameBundle['layoutPreset']['table'],
+): Partial<CenterTableSVGProps> {
+  return {
+    width: table.width,
+    height: table.height,
+    offsetX: table.offsetX,
+    offsetY: table.offsetY,
+    curvature: table.curvature,
+    rimThickness: table.rimThickness,
+    rimColor: table.rimColor,
+    rimGlowColor: table.rimGlowColor,
+    rimGlowIntensity: table.rimGlowIntensity,
+    rimGlowSpread: table.rimGlowSpread,
+    rimGlowThickness: table.rimGlowThickness,
+    rimGlowBlendMode: table.rimGlowBlendMode as CSSProperties['mixBlendMode'] | undefined,
+    innerRimThickness: table.innerRimThickness,
+    innerRimColor: table.innerRimColor,
+    innerRimTexture: table.innerRimTexture,
+    innerRimTextureBlendMode: table.innerRimTextureBlendMode as CSSProperties['mixBlendMode'] | undefined,
+    innerRimTextureOpacity: table.innerRimTextureOpacity,
+    feltInner: table.feltInner,
+    feltOuter: table.feltOuter,
+    feltInset: table.feltInset,
+    emblemSize: table.emblemSize,
+    emblemInnerColor: table.emblemInnerColor,
+    emblemOuterColor: table.emblemOuterColor,
+    emblemBlendMode: table.emblemBlendMode as CSSProperties['mixBlendMode'] | undefined,
+  };
+}
 
 export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) => {
   const headerProps = useCoreUIHeaderProps();
@@ -33,7 +138,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
-  const [betAmount, setBetAmount] = useState(1);
   const [seed, setSeed] = useState(42);
   const [startingMatch, setStartingMatch] = useState(false);
   const engineRef = useRef<GameEngine | null>(null);
@@ -48,14 +152,26 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       setBundle(null);
       setGameState(null);
 
-      const result = await loadLocalPlayableGame(gameModeId);
-      if (cancelled) {
-        return;
-      }
+      try {
+        const result = await loadLocalPlayableGame(gameModeId);
+        if (cancelled) {
+          return;
+        }
 
-      setBundle(result.bundle);
-      setError(result.error);
-      setLoading(false);
+        setBundle(result.bundle);
+        setError(result.error);
+      } catch (loadError) {
+        if (cancelled) {
+          return;
+        }
+
+        setBundle(null);
+        setError(loadError instanceof Error ? loadError.message : String(loadError));
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
     };
 
     void load();
@@ -68,6 +184,11 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     };
   }, [gameModeId]);
 
+  useEffect(() => {
+    const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
+    hideLoading?.();
+  }, []);
+
   const currentPhase = useMemo(
     () => (bundle ? getCurrentMechanicsPhase(bundle.spec, gameState) : null),
     [bundle, gameState],
@@ -79,6 +200,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   );
 
   const currentPlayer = gameState ? gameState.players[gameState.currentPlayer] ?? null : null;
+  const isGameOver = gameState?.phase === GamePhase.GAME_END;
   const distinctDeclareSuits = useMemo(
     () => Array.from(new Set(currentPlayer?.hand.map((card) => card.suit) ?? [])),
     [currentPlayer],
@@ -88,10 +210,21 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     if (!gameState) {
       return [];
     }
+
     const revealed = new Set(gameState.mechanicsContext?.revealedPlayerIds ?? []);
     const folded = new Set(gameState.mechanicsContext?.foldedPlayerIds ?? []);
     return gameState.players.filter((player) => !revealed.has(player.id) && !folded.has(player.id));
   }, [gameState]);
+
+  const orderedSeats = useMemo(
+    () => [...(bundle?.layoutPreset.seats ?? [])].sort((left, right) => left.id - right.id),
+    [bundle?.layoutPreset.seats],
+  );
+  const centerTableProps = useMemo<Partial<CenterTableSVGProps>>(
+    () => (bundle ? toCenterTableProps(bundle.layoutPreset.table) : {}),
+    [bundle],
+  );
+  const winners = useMemo(() => (gameState ? getWinningPlayers(gameState.players) : []), [gameState]);
 
   const handleHome = () => {
     if (window.history && window.history.pushState) {
@@ -128,17 +261,17 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       for (let index = 0; index < bundle.playerCount; index += 1) {
         engine.addPlayer({
           id: `p${index + 1}`,
-          name: index === 0 ? 'You' : `Seat ${index + 1}`,
+          name: getSeatName(index),
         });
       }
 
-      unsubscribeRef.current = engine.subscribeToUpdates((nextState) => {
-        setGameState(nextState);
-      });
+        unsubscribeRef.current = engine.subscribeToUpdates((nextState) => {
+          setGameState(cloneGameStateSnapshot(nextState));
+        });
 
-      engineRef.current = engine;
-      await engine.startGame();
-      setGameState(engine.getGameState());
+        engineRef.current = engine;
+        await engine.startGame();
+        setGameState(cloneGameStateSnapshot(engine.getGameState()));
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : String(nextError));
     } finally {
@@ -165,23 +298,17 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       return;
     }
 
-    setError(null);
-    setSelectedCardId(null);
-    setGameState(engine.getGameState());
-  };
-
-  const handlePlayCard = (cardId: string) => {
-    if (!currentPlayer) {
-      return;
-    }
-    dispatchAction('play_card', currentPlayer.id, { cardId });
-  };
+      setError(null);
+      setSelectedCardId(null);
+      setGameState(cloneGameStateSnapshot(engine.getGameState()));
+    };
 
   const handlePickUp = () => {
     if (!currentPlayer || !selectedCardId) {
       setError('Select a card to discard after picking up the floor card.');
       return;
     }
+
     dispatchAction('pick_up', currentPlayer.id, { discardCardId: selectedCardId });
   };
 
@@ -189,6 +316,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     if (!currentPlayer) {
       return;
     }
+
     dispatchAction('declare', currentPlayer.id, { suit });
   };
 
@@ -196,6 +324,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     if (!currentPlayer) {
       return;
     }
+
     dispatchAction(type, currentPlayer.id);
   };
 
@@ -203,17 +332,55 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     dispatchAction('reveal_hand', playerId);
   };
 
-  const handleBet = () => {
-    if (!currentPlayer) {
-      return;
+  const renderSeat = (seatId: number, player: Player | null) => {
+    const seat = orderedSeats.find((entry) => entry.id === seatId);
+    if (!seat) {
+      return null;
     }
-    dispatchAction('bet', currentPlayer.id, { amount: betAmount });
-  };
 
-  const isSupportedLocalGame = useMemo(() => {
-    const candidate = bundle?.gameId || gameModeId.split(':')[0];
-    return SUPPORTED_LOCAL_GAMES.has(candidate);
-  }, [bundle?.gameId, gameModeId]);
+    const details = player ? describePlayer(player, gameState) : [];
+    const isActive = seatId === gameState?.currentPlayer;
+    const isPlaceholder = !player;
+
+    return (
+      <article
+        key={seat.id}
+        className={
+          isActive
+            ? 'playable-seat playable-seat--active'
+            : isPlaceholder
+              ? 'playable-seat playable-seat--placeholder'
+              : 'playable-seat'
+        }
+        style={{
+          left: `${seat.position.x * 100}%`,
+          top: `${seat.position.y * 100}%`,
+          transform: `translate(-50%, -50%) rotate(${seat.rotation ?? 0}deg) scale(${Math.max(0.82, (seat.scale ?? 0.5) * 1.6)})`,
+        }}
+      >
+        <header className="playable-seat__header">
+          <div>
+            <h3>{player?.name ?? getSeatName(seat.id)}</h3>
+            <p>{[isActive ? 'Current turn' : 'Waiting', ...details].filter(Boolean).join(' | ') || 'Waiting'}</p>
+          </div>
+          <span className="playable-seat__score">Score {player?.score ?? 0}</span>
+        </header>
+
+        <div className="playable-seat__cards">
+          {(player?.hand ?? []).map((card) => (
+            <span key={card.id} className="playable-seat__card">
+              {formatCardShortLabel(card)}
+            </span>
+          ))}
+          {(!player || player.hand.length === 0) && (
+            <span className="playable-seat__card playable-seat__card--muted">
+              {player ? 'No cards' : 'Seat reserved'}
+            </span>
+          )}
+        </div>
+      </article>
+    );
+  };
 
   return (
     <div className="playable-game-screen">
@@ -234,7 +401,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                   {bundle?.displayName || gameModeId}
                 </h1>
                 <p className="playable-game-shell__subtitle">
-                  Manual local session. All hands stay visible so you can drive every seat while validating the mechanics.
+                  Claim local pilot: seeded local runtime, visible hands, and layout-driven seating so you can validate the mechanics on a real table.
                 </p>
               </div>
 
@@ -242,6 +409,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                 <label className="playable-game-field">
                   <span>Seed</span>
                   <input
+                    data-testid="claim-pilot-seed"
                     type="number"
                     value={seed}
                     onChange={(event) => setSeed(Number(event.target.value) || 1)}
@@ -249,9 +417,10 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                 </label>
                 <button
                   type="button"
+                  data-testid="claim-pilot-start"
                   className="playable-game-button playable-game-button--primary"
                   onClick={() => void startMatch()}
-                  disabled={!bundle || startingMatch || !isSupportedLocalGame}
+                  disabled={!bundle || startingMatch}
                 >
                   {startingMatch ? 'Starting...' : gameState ? 'Restart Match' : 'Start Match'}
                 </button>
@@ -276,175 +445,173 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
               </div>
             )}
 
-            {!loading && bundle && !isSupportedLocalGame && (
-              <div className="playable-game-panel">
-                <p>Local pilot mode is currently limited to Claim, Briscola, and Three Card Brag.</p>
-              </div>
-            )}
-
-            {bundle && (
+            {!loading && bundle && (
               <>
-                <section className="playable-game-grid">
-                  <article className="playable-game-panel">
-                    <h2>Match State</h2>
-                    <dl className="playable-game-stats">
-                      <div>
-                        <dt>Family</dt>
-                        <dd>{bundle.familyKernel}</dd>
-                      </div>
-                      <div>
-                        <dt>Phase</dt>
-                        <dd>{currentPhase?.label || 'Not started'}</dd>
-                      </div>
-                      <div>
-                        <dt>Legacy Phase</dt>
-                        <dd>{gameState?.phase || 'n/a'}</dd>
-                      </div>
-                      <div>
-                        <dt>Round</dt>
-                        <dd>{gameState?.round || 0}</dd>
-                      </div>
-                      <div>
-                        <dt>Current Seat</dt>
-                        <dd>{currentPlayer?.name || 'n/a'}</dd>
-                      </div>
-                      <div>
-                        <dt>Legal Actions</dt>
-                        <dd>{legalActions.join(', ') || 'n/a'}</dd>
-                      </div>
-                    </dl>
-                  </article>
-
-                  <article className="playable-game-panel">
-                    <h2>Center Table</h2>
-                    <div className="playable-game-zones">
-                      <div className="playable-game-zone">
-                        <span>Floor / Trump</span>
-                        <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'None'}</strong>
-                      </div>
-                      <div className="playable-game-zone">
-                        <span>Trick</span>
-                        <strong>
-                          {gameState?.mechanicsContext?.tableCards.length
-                            ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardLabel(entry.card)}`).join(' | ')
-                            : 'Empty'}
-                        </strong>
-                      </div>
-                      <div className="playable-game-zone">
-                        <span>Pot</span>
-                        <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
-                      </div>
-                      <div className="playable-game-zone">
-                        <span>Deck</span>
-                        <strong>{gameState?.deck.length ?? 0}</strong>
-                      </div>
-                      <div className="playable-game-zone">
-                        <span>Discard</span>
-                        <strong>
-                          {gameState?.discardPile.length
-                            ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
-                            : 'Empty'}
-                        </strong>
-                      </div>
+                {isGameOver && (
+                  <section className="playable-game-panel playable-game-panel--gameover" data-testid="claim-pilot-game-over">
+                    <h2>Game Over</h2>
+                    <p>
+                      {winners.length > 1
+                        ? `Tie game between ${winners.map((player) => player.name).join(', ')}.`
+                        : `Winner: ${winners[0]?.name ?? 'Unknown'}.`}
+                    </p>
+                    <div className="playable-game-gameover__scores">
+                      {gameState.players
+                        .slice()
+                        .sort((left, right) => right.score - left.score)
+                        .map((player) => (
+                          <div key={player.id} className="playable-game-gameover__score">
+                            <strong>{player.name}</strong>
+                            <span>{player.score}</span>
+                          </div>
+                        ))}
                     </div>
-                  </article>
-                </section>
+                  </section>
+                )}
 
-                <section className="playable-game-panel">
-                  <h2>Players</h2>
-                  <div className="playable-game-players">
-                    {(gameState?.players ?? []).map((player, index) => (
-                      <article
-                        key={player.id}
-                        className={index === gameState?.currentPlayer ? 'playable-game-player playable-game-player--active' : 'playable-game-player'}
-                      >
-                        <header>
-                          <h3>{player.name}</h3>
-                          <span>Score {player.score}</span>
-                        </header>
-                        <p>{describePlayer(player, gameState).join(' · ') || 'No flags'}</p>
-                        <div className="playable-game-cards playable-game-cards--compact">
-                          {player.hand.map((card) => (
-                            <span key={card.id} className="playable-game-card-chip">
-                              {formatCardLabel(card)}
-                            </span>
-                          ))}
-                          {player.hand.length === 0 && <span className="playable-game-card-chip playable-game-card-chip--muted">No cards</span>}
-                        </div>
-                      </article>
-                    ))}
+                <section className="playable-table-stage" data-testid="claim-pilot-table">
+                  <CenterTableSvg
+                    {...centerTableProps}
+                    minScale={0.42}
+                    maxScale={0.92}
+                    responsivePaddingX={64}
+                    responsivePaddingY={72}
+                    containerClassName="playable-table-stage__table"
+                  />
+
+                  <div className="playable-table-stage__status">
+                    <span className="playable-table-stage__phase">{isGameOver ? 'Game Over' : currentPhase?.label || 'Ready to start'}</span>
+                    <span>Round {gameState?.round ?? 1}</span>
+                    <span>
+                      {isGameOver
+                        ? 'Final scores locked'
+                        : gameState
+                          ? `${currentPlayer?.name || 'Seat'} to act`
+                          : `${bundle.playerCount} seats staged`}
+                    </span>
                   </div>
+
+                  <div className="playable-table-stage__zones">
+                    <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
+                      <span>Deck</span>
+                      <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
+                    </div>
+                    <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
+                      <span>Floor Card</span>
+                      <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
+                    </div>
+                    <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
+                      <span>Discard</span>
+                      <strong>
+                        {gameState?.discardPile.length
+                          ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
+                          : 'Empty'}
+                      </strong>
+                    </div>
+                    <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
+                      <span>Pot</span>
+                      <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
+                    </div>
+                    <div className="playable-table-zone playable-table-zone--trick">
+                      <span>Table Cards</span>
+                      <strong>
+                        {gameState?.mechanicsContext?.tableCards?.length
+                          ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
+                          : 'None'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="playable-table-stage__seats">
+                    {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
+                  </div>
+
+                  {!gameState && (
+                    <div className="playable-table-stage__empty">
+                      <h2>Ready to deal Claim</h2>
+                      <p>
+                        The Claim layout asset positioned the seats. Start the seeded match to deal three cards to each player and reveal the floor card.
+                      </p>
+                    </div>
+                  )}
                 </section>
 
-                <section className="playable-game-grid playable-game-grid--actions">
+                <section className="playable-game-grid playable-game-grid--table">
                   <article className="playable-game-panel">
                     <h2>Current Hand</h2>
-                    <div className="playable-game-cards">
-                      {(currentPlayer?.hand ?? []).map((card) => {
-                        const canPlayCard = legalActions.includes('play_card');
-                        const isSelected = selectedCardId === card.id;
-                        return (
-                          <button
-                            key={card.id}
-                            type="button"
-                            className={isSelected ? 'playable-game-card playable-game-card--selected' : 'playable-game-card'}
-                            onClick={() => {
-                              if (canPlayCard) {
-                                handlePlayCard(card.id);
-                                return;
-                              }
-                              setSelectedCardId(card.id);
-                            }}
-                          >
-                            <span>{formatCardLabel(card)}</span>
-                            {!canPlayCard && <small>{isSelected ? 'Selected discard' : 'Select'}</small>}
-                          </button>
-                        );
-                      })}
-                      {!currentPlayer?.hand.length && <p>No active hand.</p>}
-                    </div>
+                    {gameState && currentPlayer ? (
+                      <>
+                        <p className="playable-game-panel__lede">
+                          {currentPlayer.name} is active.
+                          {currentPlayer.declaredSuit
+                            ? ` Declared suit: ${currentPlayer.declaredSuit}.`
+                            : ' Select a suit to declare or pick up the floor card.'}
+                        </p>
+                        <div className="playable-game-cards" data-testid="claim-pilot-current-hand">
+                          {currentPlayer.hand.map((card) => {
+                            const isSelected = selectedCardId === card.id;
+                            return (
+                              <button
+                                key={card.id}
+                                type="button"
+                                className={isSelected ? 'playable-game-card playable-game-card--selected' : 'playable-game-card'}
+                                onClick={() => setSelectedCardId(card.id)}
+                              >
+                                <span>{formatCardLabel(card)}</span>
+                                <small>{isSelected ? 'Selected discard' : 'Select discard'}</small>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <p className="playable-game-panel__lede">Start the match to deal visible hands and enable Claim actions.</p>
+                    )}
                   </article>
 
                   <article className="playable-game-panel">
                     <h2>Actions</h2>
                     <div className="playable-game-action-list">
+                      <dl className="playable-game-stats playable-game-stats--compact">
+                        <div>
+                          <dt>Family</dt>
+                          <dd>{bundle.familyKernel}</dd>
+                        </div>
+                        <div>
+                          <dt>Legacy Phase</dt>
+                          <dd>{gameState?.phase || 'n/a'}</dd>
+                        </div>
+                        <div>
+                          <dt>Legal Actions</dt>
+                          <dd>{legalActions.join(', ') || 'n/a'}</dd>
+                        </div>
+                      </dl>
+
                       {legalActions.includes('pass') && (
                         <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('pass')}>
                           Pass
                         </button>
                       )}
                       {legalActions.includes('pick_up') && (
-                        <button type="button" className="playable-game-button" onClick={handlePickUp}>
-                          Pick Up and Discard Selected
+                        <button
+                          type="button"
+                          className="playable-game-button"
+                          onClick={handlePickUp}
+                          disabled={!selectedCardId}
+                        >
+                          Pick Up And Discard Selected
                         </button>
                       )}
                       {legalActions.includes('call_showdown') && (
-                        <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('call_showdown')}>
-                          Call Showdown
-                        </button>
-                      )}
-                      {legalActions.includes('fold') && (
-                        <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('fold')}>
-                          Fold
-                        </button>
-                      )}
-                      {legalActions.includes('bet') && (
-                        <div className="playable-game-inline-action">
-                          <label className="playable-game-field">
-                            <span>Bet</span>
-                            <input
-                              type="number"
-                              min={1}
-                              value={betAmount}
-                              onChange={(event) => setBetAmount(Math.max(1, Number(event.target.value) || 1))}
-                            />
-                          </label>
-                          <button type="button" className="playable-game-button" onClick={handleBet}>
-                            Place Bet
+                        currentPlayer?.declaredSuit ? (
+                          <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('call_showdown')}>
+                            Call Showdown
                           </button>
-                        </div>
+                        ) : (
+                          <p>Declare a suit before calling showdown.</p>
+                        )
                       )}
-                      {legalActions.includes('declare') && (
+                      {legalActions.includes('declare') && currentPlayer?.declaredSuit === null && (
                         <div className="playable-game-inline-action playable-game-inline-action--wrap">
                           {distinctDeclareSuits.map((suit) => (
                             <button
@@ -470,19 +637,20 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                               Reveal {player.name}
                             </button>
                           ))}
-                          {revealablePlayers.length === 0 && <p>All remaining players have revealed.</p>}
+                          {revealablePlayers.length === 0 && <p>All remaining players have already revealed.</p>}
                         </div>
                       )}
-                      {!gameState && <p>Start a match to enable actions.</p>}
                     </div>
                   </article>
                 </section>
 
                 <section className="playable-game-panel">
-                  <h2>Engine Snapshot</h2>
-                  <pre className="playable-game-debug">
-                    {JSON.stringify(gameState, null, 2)}
-                  </pre>
+                  <details>
+                    <summary>Debug Snapshot</summary>
+                    <pre className="playable-game-debug">
+                      {JSON.stringify(gameState, null, 2)}
+                    </pre>
+                  </details>
                 </section>
               </>
             )}

@@ -47,7 +47,8 @@ type AssetTypeInfoLike = {
 
 let cachedEntries: AssetResourceEntry<GameMode>[] | null = null;
 let cachedCatalogEntries: GameCatalogEntry[] | null = null;
-const cachedGameModes = new Map<string, GameMode>();
+const cachedHydratedGameModes = new Map<string, GameMode>();
+const cachedShallowGameModes = new Map<string, GameMode>();
 const cachedConstructors = new Map<string, new () => GameMode>();
 const cachedPages = new Map<string, GamePage | null>();
 const cachedEngines = new Map<string, GameEngine | null>();
@@ -184,9 +185,35 @@ async function getFeatureBannerItems(): Promise<FeatureBannerItem[]> {
   }
 }
 
-async function loadGameModeByEntry(entry: AssetResourceEntry<GameMode>): Promise<GameMode | null> {
-  if (cachedGameModes.has(entry.guid)) {
-    return cachedGameModes.get(entry.guid) ?? null;
+async function loadGameModeByEntry(
+  entry: AssetResourceEntry<GameMode>,
+  options: { hydrateNestedAssets?: boolean } = {},
+): Promise<GameMode | null> {
+  const shouldHydrate = options.hydrateNestedAssets ?? true;
+  const hydratedCached =
+    cachedHydratedGameModes.get(entry.guid) ??
+    (entry.gameId ? cachedHydratedGameModes.get(String(entry.gameId)) : undefined);
+
+  if (hydratedCached) {
+    return hydratedCached;
+  }
+
+  const shallowCached =
+    cachedShallowGameModes.get(entry.guid) ??
+    (entry.gameId ? cachedShallowGameModes.get(String(entry.gameId)) : undefined);
+
+  if (!shouldHydrate && shallowCached) {
+    return shallowCached;
+  }
+
+  if (shouldHydrate && shallowCached) {
+    await shallowCached.loadNestedAssets();
+    shallowCached.onNestedAssetsLoaded();
+    cachedHydratedGameModes.set(entry.guid, shallowCached);
+    if (entry.gameId) {
+      cachedHydratedGameModes.set(String(entry.gameId), shallowCached);
+    }
+    return shallowCached;
   }
 
   const constructor = await getGameModeConstructor(entry.assetType as string);
@@ -200,11 +227,15 @@ async function loadGameModeByEntry(entry: AssetResourceEntry<GameMode>): Promise
       return null;
     }
 
-    await gameMode.loadNestedAssets();
-    gameMode.onNestedAssetsLoaded();
-    cachedGameModes.set(entry.guid, gameMode);
+    if (shouldHydrate) {
+      await gameMode.loadNestedAssets();
+      gameMode.onNestedAssetsLoaded();
+    }
+
+    const targetCache = shouldHydrate ? cachedHydratedGameModes : cachedShallowGameModes;
+    targetCache.set(entry.guid, gameMode);
     if (entry.gameId) {
-      cachedGameModes.set(String(entry.gameId), gameMode);
+      targetCache.set(String(entry.gameId), gameMode);
     }
     return gameMode;
   } catch (error) {
@@ -227,7 +258,8 @@ export function clearGameCatalogCache(): void {
   cachedCatalogEntries = null;
   cachedHomePageData = null;
   cachedConstructors.clear();
-  cachedGameModes.clear();
+  cachedHydratedGameModes.clear();
+  cachedShallowGameModes.clear();
   cachedPages.clear();
   cachedEngines.clear();
 }
@@ -275,7 +307,7 @@ export async function getGameModeEntries(): Promise<AssetResourceEntry<GameMode>
 }
 
 export async function getGameMode(idOrGuid: string): Promise<GameMode | null> {
-  const cached = cachedGameModes.get(idOrGuid);
+  const cached = cachedHydratedGameModes.get(idOrGuid);
   if (cached) {
     return cached;
   }
@@ -286,6 +318,25 @@ export async function getGameMode(idOrGuid: string): Promise<GameMode | null> {
   }
 
   return await loadGameModeByEntry(entry);
+}
+
+export async function getGameModeShallow(idOrGuid: string): Promise<GameMode | null> {
+  const hydrated = cachedHydratedGameModes.get(idOrGuid);
+  if (hydrated) {
+    return hydrated;
+  }
+
+  const shallow = cachedShallowGameModes.get(idOrGuid);
+  if (shallow) {
+    return shallow;
+  }
+
+  const entry = await getEntryByIdentifier(idOrGuid);
+  if (!entry) {
+    return null;
+  }
+
+  return await loadGameModeByEntry(entry, { hydrateNestedAssets: false });
 }
 
 export async function getGameCatalogEntries(): Promise<GameCatalogEntry[]> {

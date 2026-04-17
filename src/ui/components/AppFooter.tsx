@@ -2,4 +2,10 @@ import React from 'react';
 import { GameFooter } from '@ocentra/core-ui';
 import { APP_VERSION } from '@/constants/version';
 
-export const AppFooter: React.FC = () => <GameFooter appVersion={APP_VERSION} />;
+interface AppFooterProps {
+  rightContent?: React.ReactNode;
+}
+
+export const AppFooter: React.FC<AppFooterProps> = ({ rightContent }) => (
+  <GameFooter appVersion={APP_VERSION} rightContent={rightContent} />
+);

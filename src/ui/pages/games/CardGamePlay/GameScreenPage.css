@@ -14,15 +14,24 @@
 
 .playable-game-screen__content {
   flex: 1;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: calc(clamp(3.5rem, 7dvh, 4.5rem) + var(--space-2)) clamp(1rem, 2vw, 2rem) clamp(1rem, 2vw, 2rem);
 }
 
 .playable-game-shell {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 92rem;
+  max-width: 100rem;
   margin: 0 auto;
+}
+
+.playable-game-shell__header,
+.playable-game-panel,
+.playable-table-stage {
+  background: rgba(7, 17, 28, 0.78);
+  border: 1px solid rgba(226, 193, 109, 0.24);
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
 }
 
 .playable-game-shell__header {
@@ -30,11 +39,7 @@
   justify-content: space-between;
   gap: 1rem;
   align-items: flex-start;
-  background: rgba(7, 17, 28, 0.78);
-  border: 1px solid rgba(226, 193, 109, 0.28);
-  border-radius: 1rem;
   padding: 1rem 1.25rem;
-  backdrop-filter: blur(10px);
 }
 
 .playable-game-shell__eyebrow {
@@ -60,190 +65,6 @@
   display: flex;
   gap: 0.75rem;
   align-items: end;
-  flex-wrap: wrap;
-}
-
-.playable-game-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.playable-game-grid--actions {
-  align-items: start;
-}
-
-.playable-game-panel {
-  background: rgba(7, 17, 28, 0.78);
-  border: 1px solid rgba(226, 193, 109, 0.24);
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-  backdrop-filter: blur(10px);
-}
-
-.playable-game-panel--error {
-  border-color: rgba(244, 96, 96, 0.45);
-  color: #ffd5d5;
-}
-
-.playable-game-panel h2 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #d9b86a;
-}
-
-.playable-game-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin: 0;
-}
-
-.playable-game-stats div {
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-}
-
-.playable-game-stats dt {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(244, 241, 232, 0.62);
-}
-
-.playable-game-stats dd {
-  margin: 0.35rem 0 0;
-  font-size: 0.98rem;
-}
-
-.playable-game-zones {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.playable-game-zone {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-}
-
-.playable-game-zone span {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(244, 241, 232, 0.62);
-}
-
-.playable-game-players {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 0.75rem;
-}
-
-.playable-game-player {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.85rem;
-  padding: 0.85rem;
-}
-
-.playable-game-player--active {
-  border-color: rgba(226, 193, 109, 0.52);
-  box-shadow: 0 0 0 1px rgba(226, 193, 109, 0.22);
-}
-
-.playable-game-player header {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  align-items: baseline;
-}
-
-.playable-game-player h3 {
-  margin: 0;
-}
-
-.playable-game-player p {
-  margin: 0.45rem 0 0.75rem;
-  color: rgba(244, 241, 232, 0.72);
-}
-
-.playable-game-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.playable-game-cards--compact {
-  gap: 0.4rem;
-}
-
-.playable-game-card,
-.playable-game-card-chip {
-  border-radius: 0.9rem;
-  border: 1px solid rgba(226, 193, 109, 0.22);
-  background: linear-gradient(180deg, rgba(244, 241, 232, 0.14), rgba(244, 241, 232, 0.06));
-  color: #f9f5ec;
-  min-width: 5rem;
-}
-
-.playable-game-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
-  padding: 0.8rem 0.9rem;
-  cursor: pointer;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-}
-
-.playable-game-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(226, 193, 109, 0.5);
-}
-
-.playable-game-card--selected {
-  border-color: rgba(226, 193, 109, 0.72);
-  background: linear-gradient(180deg, rgba(226, 193, 109, 0.26), rgba(226, 193, 109, 0.12));
-}
-
-.playable-game-card small {
-  color: rgba(244, 241, 232, 0.72);
-}
-
-.playable-game-card-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.4rem 0.65rem;
-  font-size: 0.9rem;
-}
-
-.playable-game-card-chip--muted {
-  opacity: 0.72;
-}
-
-.playable-game-action-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.playable-game-inline-action {
-  display: flex;
-  gap: 0.75rem;
-  align-items: end;
-}
-
-.playable-game-inline-action--wrap {
   flex-wrap: wrap;
 }
 
@@ -292,15 +113,370 @@
   background: linear-gradient(180deg, rgba(226, 193, 109, 0.36), rgba(226, 193, 109, 0.18));
 }
 
+.playable-game-panel {
+  padding: 1rem 1.25rem;
+}
+
+.playable-game-panel--error {
+  border-color: rgba(244, 96, 96, 0.45);
+  color: #ffd5d5;
+}
+
+.playable-game-panel--gameover {
+  border-color: rgba(96, 244, 154, 0.42);
+  color: #ddffe9;
+}
+
+.playable-game-panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d9b86a;
+}
+
+.playable-game-panel__lede {
+  margin: 0 0 0.9rem;
+  color: rgba(244, 241, 232, 0.74);
+}
+
+.playable-table-stage {
+  position: relative;
+  min-height: clamp(34rem, 72vh, 56rem);
+  overflow: hidden;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.playable-table-stage__table {
+  inset: 0;
+}
+
+.playable-table-stage__status {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  transform: translateX(-50%);
+}
+
+.playable-table-stage__status span {
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(4, 11, 20, 0.78);
+  border: 1px solid rgba(226, 193, 109, 0.24);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.playable-table-stage__phase {
+  color: #f3cd79;
+}
+
+.playable-table-stage__zones,
+.playable-table-stage__seats {
+  position: absolute;
+  inset: 0;
+}
+
+.playable-table-zone {
+  position: absolute;
+  z-index: 3;
+  min-width: 8rem;
+  max-width: 12rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.95rem;
+  border: 1px solid rgba(226, 193, 109, 0.2);
+  background: rgba(4, 11, 20, 0.82);
+  text-align: center;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.28);
+}
+
+.playable-table-zone span {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 232, 0.64);
+}
+
+.playable-table-zone strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.playable-table-zone--deck {
+  left: 50%;
+  top: 50%;
+  transform: translate(-190%, -25%);
+}
+
+.playable-table-zone--floor {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -150%);
+}
+
+.playable-table-zone--discard {
+  left: 50%;
+  top: 50%;
+  transform: translate(90%, -25%);
+}
+
+.playable-table-zone--pot {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, 125%);
+}
+
+.playable-table-zone--trick {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -20%);
+  min-width: 12rem;
+  max-width: 18rem;
+}
+
+.playable-table-stage__empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(28rem, calc(100% - 2rem));
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  background: rgba(4, 11, 20, 0.82);
+  border: 1px solid rgba(226, 193, 109, 0.24);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.playable-table-stage__empty h2 {
+  margin: 0 0 0.6rem;
+}
+
+.playable-table-stage__empty p {
+  margin: 0;
+  color: rgba(244, 241, 232, 0.78);
+}
+
+.playable-seat {
+  position: absolute;
+  z-index: 4;
+  width: 13rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(10, 21, 34, 0.94), rgba(5, 12, 22, 0.92));
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.28);
+  transform-origin: center;
+}
+
+.playable-seat--active {
+  border-color: rgba(226, 193, 109, 0.52);
+  box-shadow: 0 0 0 1px rgba(226, 193, 109, 0.22), 0 1rem 2rem rgba(0, 0, 0, 0.28);
+}
+
+.playable-seat--placeholder {
+  opacity: 0.82;
+}
+
+.playable-seat__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.playable-seat__header h3 {
+  margin: 0;
+  font-size: 0.96rem;
+}
+
+.playable-seat__header p {
+  margin: 0.3rem 0 0;
+  font-size: 0.74rem;
+  color: rgba(244, 241, 232, 0.66);
+}
+
+.playable-seat__score {
+  font-size: 0.76rem;
+  color: #f3cd79;
+}
+
+.playable-seat__cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.playable-seat__card {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.3rem;
+  padding: 0.38rem 0.48rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(226, 193, 109, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.74rem;
+}
+
+.playable-seat__card--muted {
+  color: rgba(244, 241, 232, 0.6);
+}
+
+.playable-game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.playable-game-grid--table {
+  align-items: start;
+}
+
+.playable-game-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.playable-game-stats div {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+}
+
+.playable-game-stats dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(244, 241, 232, 0.62);
+}
+
+.playable-game-stats dd {
+  margin: 0.35rem 0 0;
+  font-size: 0.98rem;
+}
+
+.playable-game-stats--compact {
+  grid-template-columns: 1fr;
+}
+
+.playable-game-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.playable-game-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 6rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(226, 193, 109, 0.22);
+  background: linear-gradient(180deg, rgba(244, 241, 232, 0.14), rgba(244, 241, 232, 0.06));
+  color: #f9f5ec;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.playable-game-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(226, 193, 109, 0.5);
+}
+
+.playable-game-card--selected {
+  border-color: rgba(226, 193, 109, 0.72);
+  background: linear-gradient(180deg, rgba(226, 193, 109, 0.26), rgba(226, 193, 109, 0.12));
+}
+
+.playable-game-card small {
+  color: rgba(244, 241, 232, 0.72);
+}
+
+.playable-game-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.playable-game-inline-action {
+  display: flex;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.playable-game-inline-action--wrap {
+  flex-wrap: wrap;
+}
+
+.playable-game-gameover__scores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.playable-game-gameover__score {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(96, 244, 154, 0.18);
+}
+
+.playable-game-gameover__score strong {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.playable-game-gameover__score span {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.1rem;
+  color: #7ef0aa;
+}
+
+.playable-game-panel details summary {
+  cursor: pointer;
+  color: #d9b86a;
+  font-weight: 600;
+}
+
 .playable-game-debug {
-  max-height: 18rem;
+  max-height: 20rem;
   overflow: auto;
+  margin-top: 0.85rem;
   padding: 0.85rem;
   border-radius: 0.75rem;
   background: rgba(1, 7, 15, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #b7e3ff;
   font-size: 0.82rem;
+}
+
+@media (max-width: 1100px) {
+  .playable-seat {
+    width: 11rem;
+  }
+
+  .playable-table-zone--deck {
+    transform: translate(-175%, -15%);
+  }
+
+  .playable-table-zone--discard {
+    transform: translate(75%, -15%);
+  }
 }
 
 @media (max-width: 900px) {
@@ -310,9 +486,71 @@
     align-items: stretch;
   }
 
-  .playable-game-grid,
-  .playable-game-stats,
-  .playable-game-zones {
+  .playable-game-grid {
     grid-template-columns: 1fr;
+  }
+
+  .playable-table-stage {
+    min-height: 44rem;
+  }
+
+  .playable-table-stage__status {
+    position: static;
+    transform: none;
+    margin-bottom: 1rem;
+  }
+
+  .playable-table-zone {
+    min-width: 6rem;
+    max-width: 10rem;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .playable-seat {
+    width: 9.5rem;
+    padding: 0.65rem 0.7rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .playable-table-stage {
+    min-height: 46rem;
+  }
+
+  .playable-table-zone--deck {
+    left: 1rem;
+    top: auto;
+    bottom: 8rem;
+    transform: none;
+  }
+
+  .playable-table-zone--discard {
+    right: 1rem;
+    left: auto;
+    top: auto;
+    bottom: 8rem;
+    transform: none;
+  }
+
+  .playable-table-zone--floor {
+    top: 5rem;
+    transform: translateX(-50%);
+  }
+
+  .playable-table-zone--pot {
+    bottom: 2rem;
+    top: auto;
+    transform: translateX(-50%);
+  }
+
+  .playable-table-zone--trick {
+    top: 50%;
+    transform: translate(-50%, -10%);
+    width: min(16rem, calc(100% - 2rem));
+    max-width: none;
+  }
+
+  .playable-seat {
+    width: 8.4rem;
   }
 }

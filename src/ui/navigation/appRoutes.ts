@@ -111,6 +111,10 @@ export function buildGamePlayPath(gameId: string): string {
   return `${buildGamePath(gameId)}/${GameRouteSegment.Play}`;
 }
 
+export function buildCardGameTemplatePath(): string {
+  return '/games/cardgame/template';
+}
+
 export function parseAppRoute(pathname: string): AppRouteState {
   const segments = normalizePath(pathname);
 

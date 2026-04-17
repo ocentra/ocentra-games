@@ -3,13 +3,14 @@ import {
   sanitizePlayerUIOverrides,
   type SerializablePlayerUIKey,
 } from '@/ui/components/GameScreen/CardGameScreen/PlayerUI';
+import { toSerializedGameAssetFromLayoutSource } from '@/ui/layout/cardGameLayoutAsset';
 import type {
   SerializedGameAsset,
   SerializedLayoutPreset,
   SerializedSeatLayout,
 } from './gameUiTypes';
 import type { SeatLayout, TableShapeSettings } from '@ocentra/game-ui-types/tableLayoutTypes';
-import type { GameAsset, LayoutPreset, GameAssetGameplay } from './tableLayoutTypes';
+import type { GameAsset, LayoutPreset } from './tableLayoutTypes';
 import { getGameAsset, setGameAsset } from './tableLayoutStore';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -358,24 +359,7 @@ async function fetchSerializedAsset(gameId: string): Promise<FetchResult> {
     }
     
     const layoutData = serialize(asset) as Record<string, unknown>;
-    
-    if (layoutData.layout) {
-      return { serialized: layoutData as SerializedGameAsset, gameModeExists: true, layoutMissing: false };
-    }
-    
-    const defaultPlayerCount = typeof layoutData.defaultPlayerCount === 'number' 
-      ? layoutData.defaultPlayerCount 
-      : FALLBACK_DEFAULT_PLAYER_COUNT;
-    
-    const serialized: SerializedGameAsset = {
-      metadata: (layoutData.metadata as Record<string, unknown>) || { gameId, schemaVersion: 1 },
-      layout: {
-        defaultPlayerCount,
-        presets: (layoutData.presets as Record<string, SerializedLayoutPreset>) || {},
-      },
-      gameplay: layoutData.gameplay as GameAssetGameplay | undefined,
-      extensions: layoutData.extensions as Record<string, unknown> | undefined,
-    };
+    const serialized = toSerializedGameAssetFromLayoutSource(layoutData, gameId);
     return { serialized, gameModeExists: true, layoutMissing: false };
   } catch (error) {
     logWarn('[GameAsset] Error loading layout asset', { gameId, error }, LOG_ASSETS);
