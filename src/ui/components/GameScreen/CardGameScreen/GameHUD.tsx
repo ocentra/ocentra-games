@@ -1,7 +1,11 @@
-import { forwardRef } from "react";
+import { forwardRef, type ReactNode } from "react";
 import "./GameHUD.css";
 
-const GameHUD = forwardRef<HTMLDivElement>((_, ref) => {
+interface GameHUDProps {
+  children?: ReactNode;
+}
+
+const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children }, ref) => {
   return (
     <div className="hud" role="presentation">
       <div className="hud__wing hud__wing--left" />
@@ -9,6 +13,7 @@ const GameHUD = forwardRef<HTMLDivElement>((_, ref) => {
         <div className="hud__center-mask" />
       </div>
       <div className="hud__wing hud__wing--right" />
+      {children ? <div className="hud__overlay">{children}</div> : null}
     </div>
   );
 });
