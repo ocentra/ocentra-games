@@ -1,113 +1,14 @@
 import { forwardRef, useId, type CSSProperties } from "react";
+import HudButton from "./HudButton";
+import {
+  type ClampConfig,
+  type HudActionKey,
+  type HudArtworkControls,
+  type WingConfig,
+} from "./HudArtwork.types";
 import "./HudArtwork.css";
 
 const SHOW_HUD_DEBUG_GUIDES = false;
-
-type WingConfig = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  topRadius: number;
-};
-
-type ClampConfig = {
-  width: number;
-  height: number;
-  rightRadius: number;
-  goldTop: string;
-  goldMid: string;
-  goldBottom: string;
-};
-
-type EdgeGlowConfig = {
-  edgeColor: string;
-  edgeWidth: number;
-  glowColor: string;
-  glowWidth: number;
-  glowOpacity: number;
-};
-
-type DomeConfig = {
-  cx: number;
-  cy: number;
-  radius: number;
-  edgeColor: string;
-  edgeInnerColor: string;
-  edgeWidth: number;
-  glowColor: string;
-  glowWidth: number;
-  glowOpacity: number;
-};
-
-export interface HudArtworkControls {
-  hudOffsetX: number;
-  hudOffsetY: number;
-  overallScale: number;
-  width: number;
-  height: number;
-  leftWing: WingConfig;
-  rightWing: WingConfig;
-  clamp: ClampConfig;
-  wingStyle: EdgeGlowConfig;
-  dome: DomeConfig;
-  panelTop: string;
-  panelMid: string;
-  panelBottom: string;
-  panelGlassOpacity: number;
-}
-
-export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
-  hudOffsetX: 0,
-  hudOffsetY: -36,
-  overallScale: 1,
-  width: 880,
-  height: 360,
-  leftWing: {
-    x: 4,
-    y: 306,
-    width: 437,
-    height: 50,
-    topRadius: 20,
-  },
-  rightWing: {
-    x: 439,
-    y: 306,
-    width: 437,
-    height: 50,
-    topRadius: 20,
-  },
-  clamp: {
-    width: 11,
-    height: 35,
-    rightRadius: 18,
-    goldTop: "#fff6bc",
-    goldMid: "#d5a623",
-    goldBottom: "#7c5407",
-  },
-  wingStyle: {
-    edgeColor: "#22ff66",
-    edgeWidth: 1,
-    glowColor: "#00ff66",
-    glowWidth: 8,
-    glowOpacity: 0.34,
-  },
-  dome: {
-    cx: 432,
-    cy: 356,
-    radius: 110,
-    edgeColor: "#f0cb63",
-    edgeInnerColor: "#7f5610",
-    edgeWidth: 1,
-    glowColor: "#f0cb63",
-    glowWidth: 12,
-    glowOpacity: 0.22,
-  },
-  panelTop: "#0b1a10",
-  panelMid: "#050b07",
-  panelBottom: "#0a1c12",
-  panelGlassOpacity: 0.08,
-};
 
 interface HudArtworkProps {
   controls: HudArtworkControls;
@@ -221,6 +122,9 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const {
     width,
     height,
+    buttonScale,
+    buttonCount,
+    buttonLabels,
     leftWing,
     rightWing,
     clamp,
@@ -239,6 +143,27 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const leftClamp = leftClampPath(leftWing, clamp);
   const rightClamp = rightClampPath(rightWing, clamp);
   const domeClip = domeClipRect(width, dome.cy);
+  const activeButtonCount = Math.max(1, Math.min(6, Math.round(buttonCount)));
+  const activeButtonScale = Math.max(0.5, buttonScale);
+  const buttonWidth = Math.max(48, Math.min(Math.round(fitWidth * 0.082 * activeButtonScale), 110));
+  const buttonHeight = Math.round(buttonWidth * 0.28);
+  const buttonCenterY = ((leftWing.y + leftWing.height * 0.5) / height) * fitHeight;
+
+  const buttonsBase: Array<{ slot: HudActionKey; left: number; top: number }> = [
+    { slot: "A", left: ((leftWing.x + leftWing.width * 0.14) / width) * fitWidth, top: buttonCenterY },
+    { slot: "B", left: ((leftWing.x + leftWing.width * 0.46) / width) * fitWidth, top: buttonCenterY },
+    { slot: "C", left: ((leftWing.x + leftWing.width * 0.78) / width) * fitWidth, top: buttonCenterY },
+    { slot: "D", left: ((rightWing.x + rightWing.width * 0.22) / width) * fitWidth, top: buttonCenterY },
+    { slot: "E", left: ((rightWing.x + rightWing.width * 0.54) / width) * fitWidth, top: buttonCenterY },
+    { slot: "F", left: ((rightWing.x + rightWing.width * 0.86) / width) * fitWidth, top: buttonCenterY },
+  ];
+
+  const buttons = buttonsBase
+    .slice(0, activeButtonCount)
+    .map((button, index) => ({
+      ...button,
+      label: buttonLabels[index] ?? button.slot,
+    }));
 
   const artworkStyle: CSSProperties = {
     ['--hud-offset-x' as string]: `${controls.hudOffsetX}px`,
@@ -501,6 +426,28 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
           />
         </g>
       </svg>
+
+          <div className="hud-artwork__button-layer" aria-hidden="false">
+        {buttons.map((button) => (
+          <HudButton
+            key={button.slot}
+            label={button.label}
+            className="hud-artwork__action-button"
+            width={500 * activeButtonScale}
+            height={140 * activeButtonScale}
+            radius={58 * activeButtonScale}
+            fontSize={34 * activeButtonScale}
+            style={{
+              position: "absolute",
+              left: `${button.left}px`,
+              top: `${button.top}px`,
+              width: `${buttonWidth}px`,
+              height: `${buttonHeight}px`,
+            }}
+            onClick={() => undefined}
+          />
+        ))}
+      </div>
 
       <div ref={ref} className="hud-artwork__anchor" style={anchorStyle} />
     </div>

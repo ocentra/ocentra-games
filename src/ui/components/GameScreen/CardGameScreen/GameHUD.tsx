@@ -1,5 +1,6 @@
 import { forwardRef, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import HudArtwork, { type HudArtworkControls } from "./HudArtwork";
+import HudArtwork from "./HudArtwork";
+import { type HudArtworkControls } from "./HudArtwork.types";
 import "./GameHUD.css";
 
 interface GameHUDProps {

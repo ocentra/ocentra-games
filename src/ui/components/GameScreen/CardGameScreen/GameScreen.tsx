@@ -12,7 +12,7 @@ import CenterTableSvg from './CardGameComponents/CenterTableSvg';
 import PlayersOnTable from './PlayersOnTable';
 import './GameScreen.css';
 import { GameModeProvider } from '@/ui/gameMode/GameModeContext';
-import { DEFAULT_HUD_ARTWORK_CONTROLS, type HudArtworkControls } from './HudArtwork';
+import { DEFAULT_HUD_ARTWORK_CONTROLS, type HudArtworkControls } from './HudArtwork.types';
 
 type LayerKey = 'background' | 'header' | 'table' | 'seats' | 'cards' | 'hud' | 'tools' | 'footer';
 type HudWingConfig = HudArtworkControls['leftWing'];
@@ -1394,6 +1394,107 @@ export const GameScreen: React.FC = () => {
                   </label>
                 </div>
               </details>
+            </div>
+
+            <div className="game-screen__layers-panel-section">
+              <strong>HUD Buttons</strong>
+              <div className="game-screen__layers-panel-actions">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateHudControls((current) => ({
+                      ...current,
+                      buttonCount: 6,
+                      buttonScale: 1,
+                      buttonLabels: ["A", "B", "C", "D", "E", "F"],
+                    }))
+                  }
+                >
+                  Reset Buttons
+                </button>
+              </div>
+
+              <label className="game-screen__control">
+                <span>Button Scale {hudControls.buttonScale.toFixed(2)}x</span>
+                <input
+                  type="number"
+                  min={0.5}
+                  max={1.5}
+                  step={0.01}
+                  value={hudControls.buttonScale}
+                  onChange={(event) =>
+                    updateHudControls((current) => ({
+                      ...current,
+                      buttonScale: Number(event.target.value),
+                    }))
+                  }
+                />
+                <input
+                  type="range"
+                  min={0.5}
+                  max={1.5}
+                  step={0.01}
+                  value={hudControls.buttonScale}
+                  onChange={(event) =>
+                    updateHudControls((current) => ({
+                      ...current,
+                      buttonScale: Number(event.target.value),
+                    }))
+                  }
+                />
+              </label>
+
+              <label className="game-screen__control">
+                <span>Button Count {hudControls.buttonCount}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={6}
+                  step={1}
+                  value={hudControls.buttonCount}
+                  onChange={(event) =>
+                    updateHudControls((current) => ({
+                      ...current,
+                      buttonCount: Number(event.target.value),
+                    }))
+                  }
+                />
+                <input
+                  type="range"
+                  min={1}
+                  max={6}
+                  step={1}
+                  value={hudControls.buttonCount}
+                  onChange={(event) =>
+                    updateHudControls((current) => ({
+                      ...current,
+                      buttonCount: Number(event.target.value),
+                    }))
+                  }
+                />
+              </label>
+
+              <div className="game-screen__layers-panel-grid">
+                {["A", "B", "C", "D", "E", "F"].map((slot, index) => (
+                  <label key={slot} className="game-screen__layers-panel-field">
+                    <span>{slot} Label</span>
+                    <input
+                      type="text"
+                      value={hudControls.buttonLabels[index] ?? slot}
+                      onChange={(event) =>
+                        updateHudControls((current) => {
+                          const nextLabels = [...current.buttonLabels];
+                          nextLabels[index] = event.target.value;
+                          return {
+                            ...current,
+                            buttonLabels: nextLabels,
+                          };
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="game-screen__layers-panel-section">
