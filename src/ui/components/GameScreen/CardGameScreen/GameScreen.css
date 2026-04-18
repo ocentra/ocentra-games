@@ -158,7 +158,10 @@
   position: fixed;
   right: var(--space-4, 1rem);
   bottom: calc(var(--space-10, 2.5rem) + 3rem);
-  width: min(18rem, calc(100vw - 2rem));
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 7rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: grid;
   gap: 0.6rem;
   padding: 0.9rem 1rem;
@@ -202,6 +205,35 @@
   border-top: 1px solid rgba(141, 255, 176, 0.12);
 }
 
+.game-screen__layers-panel-group {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(141, 255, 176, 0.12);
+}
+
+.game-screen__layers-panel-group > summary {
+  cursor: pointer;
+  color: #d5ffe1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.game-screen__layers-panel-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.game-screen__layers-panel-group[open] > summary {
+  margin-bottom: 0.2rem;
+}
+
+.game-screen__layers-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
 .game-screen__layers-panel-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -213,6 +245,18 @@
   gap: 0.35rem;
   color: rgba(232, 255, 236, 0.92);
   font-size: 0.8rem;
+}
+
+.game-screen__layers-panel-field input[type='number'] {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.25rem 0.45rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(141, 255, 176, 0.18);
+  background: rgba(3, 18, 10, 0.85);
+  color: #eaffed;
+  font: inherit;
+  box-sizing: border-box;
 }
 
 .game-screen__layers-panel-field select,
