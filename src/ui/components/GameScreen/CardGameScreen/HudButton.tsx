@@ -211,8 +211,8 @@ export function HudButton({
     return () => window.clearTimeout(timeoutId);
   }, [clickFlash]);
 
-  const bodyX = 250;
-  const bodyY = 130;
+  const bodyX = 0;
+  const bodyY = 0;
   const bodyW = width;
   const bodyH = height;
   const centerX = bodyX + bodyW / 2;
@@ -235,6 +235,8 @@ export function HudButton({
   const floorGlowRx = Math.max(90, bodyW * 0.38);
   const floorGlowRx2 = Math.max(55, bodyW * 0.22);
   const floorGlowRx3 = Math.max(18, bodyW * 0.08);
+  const floorGlowY = bodyY + bodyH + Math.max(10, bodyH * 0.08);
+  const artYOffset = Math.max(6, Math.round(height * 0.04));
 
   const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * 0.72)));
   const labelLines = splitLabelIntoLines(label, maxCharsPerLine);
@@ -243,12 +245,12 @@ export function HudButton({
 
   const viewBox = useMemo(() => {
     const maxExpand = Math.max(hoverInsetExpand, clickInsetExpand);
-    const minX = Math.min(bodyX - 110, baseLeftX - 110 - maxExpand);
-    const minY = bodyY - 50;
-    const maxX = Math.max(bodyX + bodyW + 110, baseRightX + 110 + maxExpand);
-    const maxY = bodyY + bodyH + 50;
+    const minX = Math.min(-52, baseLeftX - 52 - maxExpand);
+    const minY = -24;
+    const maxX = Math.max(bodyW + 52, baseRightX + 52 + maxExpand);
+    const maxY = Math.max(bodyH + 56 + artYOffset, floorGlowY + 20 + artYOffset);
     return `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
-  }, [bodyW, bodyH, bodyX, bodyY, baseLeftX, baseRightX, hoverInsetExpand, clickInsetExpand]);
+  }, [artYOffset, bodyW, bodyH, baseLeftX, baseRightX, floorGlowY, hoverInsetExpand, clickInsetExpand]);
 
   const bodyFillId = `bodyFill-${uid}`;
   const sideFillId = `sideFill-${uid}`;
@@ -282,7 +284,7 @@ export function HudButton({
         ...style,
       }}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width="100%" height="100%" preserveAspectRatio="none">
         <defs>
           <filter id={glowStrongId} x="-40%" y="-50%" width="180%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur1" />
@@ -345,174 +347,178 @@ export function HudButton({
           </g>
         </defs>
 
-        <ellipse
-          cx={centerX}
-          cy={bodyY + bodyH + bodyH * 0.95}
-          rx={floorGlowRx}
-          ry={18}
-          fill={outerGlowColor}
-          opacity={clickFlash > 0 ? 0.36 : isHovered ? 0.33 : 0.3}
-          filter={`url(#${glowStrongId})`}
-        />
-        <ellipse
-          cx={centerX}
-          cy={bodyY + bodyH + bodyH * 0.97}
-          rx={floorGlowRx2}
-          ry={5}
-          fill={midGlowColor}
-          opacity={clickFlash > 0 ? 0.72 : isHovered ? 0.62 : 0.55}
-          filter={`url(#${glowStrongId})`}
-        />
-        <ellipse
-          cx={centerX}
-          cy={bodyY + bodyH + bodyH * 0.98}
-          rx={floorGlowRx3}
-          ry={2}
-          fill="#ffffff"
-          opacity={clickFlash > 0 ? 0.95 : 0.8}
-          filter={`url(#${glowWhiteId})`}
-        />
-
-        <rect
-          x={bodyX}
-          y={bodyY}
-          width={bodyW}
-          height={bodyH}
-          rx={radius}
-          fill="none"
-          stroke={outerGlowColor}
-          strokeWidth="16"
-          opacity={outerGlowOpacity}
-          filter={`url(#${glowStrongId})`}
-        />
-        <rect
-          x={bodyX}
-          y={bodyY}
-          width={bodyW}
-          height={bodyH}
-          rx={radius}
-          fill="none"
-          stroke={midGlowColor}
-          strokeWidth="8"
-          opacity={midGlowOpacityValue}
-          filter={`url(#${glowMidId})`}
-        />
-
-        <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
-          <SideBack x={baseLeftX} y={centerY} sideFillId={sideFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
-        </motion.g>
-        <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
-          <SideBack
-            x={baseRightX}
-            y={centerY}
-            mirrored
-            sideFillId={sideFillId}
-            glowId={glowMidId}
-            sideStroke={sideStroke}
-            sideGlow={sideGlow}
+        <g transform={`translate(0 ${artYOffset})`}>
+          <ellipse
+            cx={centerX}
+            cy={bodyY + bodyH + bodyH * 0.95}
+            rx={floorGlowRx}
+            ry={18}
+            fill={outerGlowColor}
+            opacity={clickFlash > 0 ? 0.36 : isHovered ? 0.33 : 0.3}
+            filter={`url(#${glowStrongId})`}
           />
-        </motion.g>
+          <ellipse
+            cx={centerX}
+            cy={bodyY + bodyH + bodyH * 0.97}
+            rx={floorGlowRx2}
+            ry={5}
+            fill={midGlowColor}
+            opacity={clickFlash > 0 ? 0.72 : isHovered ? 0.62 : 0.55}
+            filter={`url(#${glowStrongId})`}
+          />
+          <ellipse
+            cx={centerX}
+            cy={bodyY + bodyH + bodyH * 0.98}
+            rx={floorGlowRx3}
+            ry={2}
+            fill="#ffffff"
+            opacity={clickFlash > 0 ? 0.95 : 0.8}
+            filter={`url(#${glowWhiteId})`}
+          />
 
-        <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill={`url(#${bodyFillId})`} />
-        <rect
-          x={bodyX}
-          y={bodyY}
-          width={bodyW}
-          height={bodyH}
-          rx={radius}
-          fill="none"
-          stroke="#000000"
-          strokeWidth="8"
-          opacity="0.45"
-          filter={`url(#${softShadowId})`}
-        />
-        <motion.rect
-          x={bodyX}
-          y={bodyY}
-          width={bodyW}
-          height={bodyH}
-          rx={radius}
-          fill="none"
-          stroke={ringStroke}
-          strokeWidth="3"
-          filter={ringGlowFilter}
-          animate={{ opacity: clickFlash > 0 ? clickRingFlashOpacity : 1 }}
-          transition={{ duration: 0.18 }}
-        />
-        <rect
-          x={innerX}
-          y={innerY}
-          width={innerW}
-          height={innerH}
-          rx={innerR}
-          fill="none"
-          stroke={dotGlowColor}
-          strokeWidth="4.5"
-          strokeLinecap="round"
-          strokeDasharray={`0.1 ${dotGap}`}
-          opacity="0.95"
-          filter={`url(#${glowYellowId})`}
-        />
-        <rect
-          x={innerX}
-          y={innerY}
-          width={innerW}
-          height={innerH}
-          rx={innerR}
-          fill="none"
-          stroke={dotCoreColor}
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeDasharray={`0.1 ${dotGap}`}
-        />
+          <rect
+            x={bodyX}
+            y={bodyY}
+            width={bodyW}
+            height={bodyH}
+            rx={radius}
+            fill="none"
+            stroke={outerGlowColor}
+            strokeWidth="16"
+            opacity={outerGlowOpacity}
+            filter={`url(#${glowStrongId})`}
+          />
+          <rect
+            x={bodyX}
+            y={bodyY}
+            width={bodyW}
+            height={bodyH}
+            rx={radius}
+            fill="none"
+            stroke={midGlowColor}
+            strokeWidth="8"
+            opacity={midGlowOpacityValue}
+            filter={`url(#${glowMidId})`}
+          />
 
-        <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
-          <SideFront x={baseLeftX} y={centerY} frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
-          <motion.g animate={{ opacity: clampGlowOpacity }} transition={{ duration: 0.16 }}>
-            <g transform={`translate(${animatedLeftX} ${centerY})`}>
-              <use
-                href="#sideFrontShape"
-                fill={hoverClampGlowColor}
-                stroke={hoverClampGlowColor}
-                strokeWidth="2.5"
-                filter={`url(#${glowYellowId})`}
-              />
+          <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
+            <SideBack x={baseLeftX} y={centerY} sideFillId={sideFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
+          </motion.g>
+          <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
+            <SideBack
+              x={baseRightX}
+              y={centerY}
+              mirrored
+              sideFillId={sideFillId}
+              glowId={glowMidId}
+              sideStroke={sideStroke}
+              sideGlow={sideGlow}
+            />
+          </motion.g>
+
+          <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill={`url(#${bodyFillId})`} />
+          <rect
+            x={bodyX}
+            y={bodyY}
+            width={bodyW}
+            height={bodyH}
+            rx={radius}
+            fill="none"
+            stroke="#000000"
+            strokeWidth="8"
+            opacity="0.45"
+            filter={`url(#${softShadowId})`}
+          />
+          <rect
+            x={bodyX}
+            y={bodyY}
+            width={bodyW}
+            height={bodyH}
+            rx={radius}
+            fill="none"
+            stroke={ringStroke}
+            strokeWidth="3"
+            filter={ringGlowFilter}
+            style={{
+              opacity: clickFlash > 0 ? clickRingFlashOpacity : 1,
+              transition: "opacity 180ms ease",
+            }}
+          />
+          <rect
+            x={innerX}
+            y={innerY}
+            width={innerW}
+            height={innerH}
+            rx={innerR}
+            fill="none"
+            stroke={dotGlowColor}
+            strokeWidth="4.5"
+            strokeLinecap="round"
+            strokeDasharray={`0.1 ${dotGap}`}
+            opacity="0.95"
+            filter={`url(#${glowYellowId})`}
+          />
+          <rect
+            x={innerX}
+            y={innerY}
+            width={innerW}
+            height={innerH}
+            rx={innerR}
+            fill="none"
+            stroke={dotCoreColor}
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeDasharray={`0.1 ${dotGap}`}
+          />
+
+          <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
+            <SideFront x={baseLeftX} y={centerY} frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
+            <g style={{ opacity: clampGlowOpacity, transition: "opacity 160ms ease" }}>
+              <g transform={`translate(${animatedLeftX} ${centerY})`}>
+                <use
+                  href="#sideFrontShape"
+                  fill={hoverClampGlowColor}
+                  stroke={hoverClampGlowColor}
+                  strokeWidth="2.5"
+                  filter={`url(#${glowYellowId})`}
+                />
+              </g>
             </g>
           </motion.g>
-        </motion.g>
 
-        <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
-          <SideFront x={baseRightX} y={centerY} mirrored frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
-          <motion.g animate={{ opacity: clampGlowOpacity }} transition={{ duration: 0.16 }}>
-            <g transform={`translate(${animatedRightX} ${centerY}) scale(-1 1)`}>
-              <use
-                href="#sideFrontShape"
-                fill={hoverClampGlowColor}
-                stroke={hoverClampGlowColor}
-                strokeWidth="2.5"
-                filter={`url(#${glowYellowId})`}
-              />
+          <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
+            <SideFront x={baseRightX} y={centerY} mirrored frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
+            <g style={{ opacity: clampGlowOpacity, transition: "opacity 160ms ease" }}>
+              <g transform={`translate(${animatedRightX} ${centerY}) scale(-1 1)`}>
+                <use
+                  href="#sideFrontShape"
+                  fill={hoverClampGlowColor}
+                  stroke={hoverClampGlowColor}
+                  strokeWidth="2.5"
+                  filter={`url(#${glowYellowId})`}
+                />
+              </g>
             </g>
           </motion.g>
-        </motion.g>
 
-        <text
-          x={centerX}
-          y={textStartY}
-          textAnchor="middle"
-          fontSize={fontSize}
-          fontWeight="700"
-          letterSpacing="0.16em"
-          fill={textColor}
-          filter={`url(#${glowWhiteId})`}
-          style={{ userSelect: "none" }}
-        >
-          {labelLines.map((line, index) => (
-            <tspan key={`${line}-${index}`} x={centerX} dy={index === 0 ? 0 : lineHeight}>
-              {line}
-            </tspan>
-          ))}
-        </text>
+          <text
+            x={centerX}
+            y={textStartY}
+            textAnchor="middle"
+            fontSize={fontSize}
+            fontWeight="700"
+            letterSpacing="0.16em"
+            fill={textColor}
+            filter={`url(#${glowWhiteId})`}
+            style={{ userSelect: "none" }}
+          >
+            {labelLines.map((line, index) => (
+              <tspan key={`${line}-${index}`} x={centerX} dy={index === 0 ? 0 : lineHeight}>
+                {line}
+              </tspan>
+            ))}
+          </text>
+        </g>
       </svg>
     </button>
   );

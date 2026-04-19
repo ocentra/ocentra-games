@@ -18,6 +18,7 @@ const PlayersOnTable: React.FC = () => {
 
   const seats = layoutState.seats ?? [];
   const selectedSeatId = layoutState.selectedSeatId ?? null;
+  const playerUiDefaults = layoutState.asset?.layout.playerUiDefaults ?? {};
 
   const handleSeatSelect = useCallback((seatId: number | null) => {
     tableLayoutStore.setSelectedSeat(seatId);
@@ -38,6 +39,7 @@ const PlayersOnTable: React.FC = () => {
             seat={seat}
             selected={seat.id === selectedSeatId}
             onSelect={handleSeatSelect}
+            playerUiDefaults={playerUiDefaults}
           />
         ))}
     </div>
@@ -48,9 +50,10 @@ interface PlayerSeatContainerProps {
   seat: SeatLayout;
   onSelect: (seatId: number) => void;
   selected: boolean;
+  playerUiDefaults: Record<string, unknown>;
 }
 
-const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({ seat, onSelect, selected }) => {
+const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({ seat, onSelect, selected, playerUiDefaults }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -76,10 +79,9 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({ seat, onSelec
       aria-hidden="true"
       onClick={handleClick}
     >
-      <PlayerUI {...(seat.playerOverrides ?? {})} />
+      <PlayerUI {...playerUiDefaults} {...(seat.playerOverrides ?? {})} />
     </div>
   );
 };
 
 export default PlayersOnTable;
-

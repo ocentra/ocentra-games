@@ -2,8 +2,9 @@ import { forwardRef, useId, type CSSProperties } from "react";
 import HudButton from "./HudButton";
 import {
   type ClampConfig,
-  type HudActionKey,
   type HudArtworkControls,
+  type HudButtonControls,
+  type HudButtonVariantControls,
   type WingConfig,
 } from "./HudArtwork.types";
 import "./HudArtwork.css";
@@ -14,6 +15,7 @@ interface HudArtworkProps {
   controls: HudArtworkControls;
   fitWidth: number;
   fitHeight: number;
+  showButtonGuides?: boolean;
 }
 
 function leftWingPath(x: number, y: number, width: number, height: number, topRadius: number) {
@@ -111,7 +113,7 @@ function domeClipRect(width: number, cy: number) {
   return { x: 0, y: 0, width, height: cy };
 }
 
-const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight }, ref) => {
+const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false }, ref) => {
   const uid = useId().replace(/:/g, "");
   const wingGlowId = `${uid}-wingGlow`;
   const domeGlowId = `${uid}-domeGlow`;
@@ -125,6 +127,8 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
     buttonScale,
     buttonCount,
     buttonLabels,
+    button,
+    buttonVariants,
     leftWing,
     rightWing,
     clamp,
@@ -135,6 +139,8 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
     panelBottom,
     panelGlassOpacity,
   } = controls;
+  const buttonOffsetX = button.buttonOffsetX ?? 0;
+  const buttonOffsetY = button.buttonOffsetY ?? 0;
 
   const leftWingShape = leftWingPath(leftWing.x, leftWing.y, leftWing.width, leftWing.height, leftWing.topRadius);
   const rightWingShape = rightWingPath(rightWing.x, rightWing.y, rightWing.width, rightWing.height, rightWing.topRadius);
@@ -143,27 +149,82 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const leftClamp = leftClampPath(leftWing, clamp);
   const rightClamp = rightClampPath(rightWing, clamp);
   const domeClip = domeClipRect(width, dome.cy);
-  const activeButtonCount = Math.max(1, Math.min(6, Math.round(buttonCount)));
-  const activeButtonScale = Math.max(0.5, buttonScale);
-  const buttonWidth = Math.max(48, Math.min(Math.round(fitWidth * 0.082 * activeButtonScale), 110));
-  const buttonHeight = Math.round(buttonWidth * 0.28);
-  const buttonCenterY = ((leftWing.y + leftWing.height * 0.5) / height) * fitHeight;
+  const buttonRegionTop = (leftWing.y / height) * fitHeight;
+  const buttonRegionHeight = (leftWing.height / height) * fitHeight;
 
-  const buttonsBase: Array<{ slot: HudActionKey; left: number; top: number }> = [
-    { slot: "A", left: ((leftWing.x + leftWing.width * 0.14) / width) * fitWidth, top: buttonCenterY },
-    { slot: "B", left: ((leftWing.x + leftWing.width * 0.46) / width) * fitWidth, top: buttonCenterY },
-    { slot: "C", left: ((leftWing.x + leftWing.width * 0.78) / width) * fitWidth, top: buttonCenterY },
-    { slot: "D", left: ((rightWing.x + rightWing.width * 0.22) / width) * fitWidth, top: buttonCenterY },
-    { slot: "E", left: ((rightWing.x + rightWing.width * 0.54) / width) * fitWidth, top: buttonCenterY },
-    { slot: "F", left: ((rightWing.x + rightWing.width * 0.86) / width) * fitWidth, top: buttonCenterY },
-  ];
+  const leftAvailableLeft = ((leftWing.x + clamp.width) / width) * fitWidth;
+  const leftAvailableRight = ((dome.cx - dome.radius) / width) * fitWidth;
+  const leftAvailableWidth = Math.max(0, leftAvailableRight - leftAvailableLeft);
+  const rightAvailableLeft = ((dome.cx + dome.radius) / width) * fitWidth;
+  const rightAvailableRight = ((rightWing.x + rightWing.width - clamp.width) / width) * fitWidth;
+  const rightAvailableWidth = Math.max(0, rightAvailableRight - rightAvailableLeft);
+  const leftBankTop = buttonRegionTop;
+  const leftBankHeight = buttonRegionHeight;
+  const rightBankTop = buttonRegionTop;
+  const rightBankHeight = buttonRegionHeight;
+  const visibleButtonCount = Math.max(1, Math.min(6, Math.round(buttonCount)));
+  const visibleButtonLabels = buttonLabels.slice(0, visibleButtonCount);
+  const leftButtonCount = Math.min(3, Math.ceil(visibleButtonCount / 2));
+  const rightButtonCount = Math.max(0, visibleButtonCount - leftButtonCount);
+  const leftButtonLabels = visibleButtonLabels.slice(0, leftButtonCount);
+  const rightButtonLabels = visibleButtonLabels.slice(leftButtonCount, leftButtonCount + rightButtonCount);
+  const leftButtonSlotWidth = leftButtonLabels.length > 0 ? leftAvailableWidth / leftButtonLabels.length : 0;
+  const rightButtonSlotWidth = rightButtonLabels.length > 0 ? rightAvailableWidth / rightButtonLabels.length : 0;
+  const normalizedButtonScale = Math.max(0.5, Math.min(1.5, buttonScale));
 
-  const buttons = buttonsBase
-    .slice(0, activeButtonCount)
-    .map((button, index) => ({
+  const resolveButtonConfig = (index: number): HudButtonControls => {
+    const variant: HudButtonVariantControls = buttonVariants[index] ?? { linked: true, overrides: {} };
+    if (variant.linked) {
+      return button;
+    }
+
+    return {
       ...button,
-      label: buttonLabels[index] ?? button.slot,
-    }));
+      ...variant.overrides,
+    };
+  };
+
+  const createButtonMetrics = (buttonConfig: HudButtonControls, slotWidth: number, slotHeight: number) => {
+    const baseWidth = Math.max(1, buttonConfig.width);
+    const baseHeight = Math.max(1, buttonConfig.height);
+    const fitScale = Math.max(0.1, Math.min(slotWidth / baseWidth, slotHeight / baseHeight));
+    const scaledWidth = Math.max(1, Math.round(baseWidth * fitScale));
+    const scaledHeight = Math.max(1, Math.round(baseHeight * fitScale));
+    const scale = fitScale;
+
+    return {
+      width: scaledWidth,
+      height: scaledHeight,
+      radius: Math.max(0, Math.round(buttonConfig.radius * scale)),
+      sideInset: Math.max(0, Math.round(buttonConfig.sideInset * scale)),
+      dotInset: Math.max(0, Math.round(buttonConfig.dotInset * scale)),
+      dotGap: Math.max(1, Math.round(buttonConfig.dotGap * scale)),
+      textColor: buttonConfig.textColor,
+      fontSize: Math.max(8, Math.round(buttonConfig.fontSize * scale)),
+      bodyCenter: buttonConfig.bodyCenter,
+      bodyMid: buttonConfig.bodyMid,
+      bodyEdge: buttonConfig.bodyEdge,
+      ringColor: buttonConfig.ringColor,
+      outerGlowColor: buttonConfig.outerGlowColor,
+      midGlowColor: buttonConfig.midGlowColor,
+      dotGlowColor: buttonConfig.dotGlowColor,
+      dotCoreColor: buttonConfig.dotCoreColor,
+      sideFillTop: buttonConfig.sideFillTop,
+      sideFillMid: buttonConfig.sideFillMid,
+      sideFillBottom: buttonConfig.sideFillBottom,
+      sideStroke: buttonConfig.sideStroke,
+      sideGlow: buttonConfig.sideGlow,
+      frontFillTop: buttonConfig.frontFillTop,
+      frontFillMid: buttonConfig.frontFillMid,
+      frontFillBottom: buttonConfig.frontFillBottom,
+      hoverInsetExpand: Math.max(0, Math.round(buttonConfig.hoverInsetExpand * scale)),
+      hoverClampGlowColor: buttonConfig.hoverClampGlowColor,
+      hoverClampGlowOpacity: buttonConfig.hoverClampGlowOpacity,
+      clickInsetExpand: Math.max(0, Math.round(buttonConfig.clickInsetExpand * scale)),
+      clickRingFlashColor: buttonConfig.clickRingFlashColor,
+      clickRingFlashOpacity: buttonConfig.clickRingFlashOpacity,
+    };
+  };
 
   const artworkStyle: CSSProperties = {
     ['--hud-offset-x' as string]: `${controls.hudOffsetX}px`,
@@ -181,7 +242,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   };
 
   return (
-    <div className="hud-artwork" aria-hidden="true" style={artworkStyle}>
+    <div className="hud-artwork" aria-hidden="true" data-button-debug={showButtonGuides ? "true" : "false"} style={artworkStyle}>
       {SHOW_HUD_DEBUG_GUIDES ? <div className="hud-artwork__debug-frame" aria-hidden="true" /> : null}
       {SHOW_HUD_DEBUG_GUIDES ? (
         <div className="hud-artwork__debug-label" aria-hidden="true">
@@ -427,26 +488,71 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
         </g>
       </svg>
 
-          <div className="hud-artwork__button-layer" aria-hidden="false">
-        {buttons.map((button) => (
-          <HudButton
-            key={button.slot}
-            label={button.label}
-            className="hud-artwork__action-button"
-            width={500 * activeButtonScale}
-            height={140 * activeButtonScale}
-            radius={58 * activeButtonScale}
-            fontSize={34 * activeButtonScale}
-            style={{
-              position: "absolute",
-              left: `${button.left}px`,
-              top: `${button.top}px`,
-              width: `${buttonWidth}px`,
-              height: `${buttonHeight}px`,
-            }}
-            onClick={() => undefined}
-          />
-        ))}
+      <div
+        className="hud-artwork__button-bank hud-artwork__button-bank--left"
+        aria-hidden="true"
+        style={{
+          left: `${leftAvailableLeft}px`,
+          top: `${leftBankTop}px`,
+          width: `${leftAvailableWidth}px`,
+          height: `${leftBankHeight}px`,
+          transform: `translate(${buttonOffsetX}px, ${buttonOffsetY}px)`,
+        }}
+      >
+        {leftButtonLabels.map((label, index) => {
+          const configIndex = index;
+          const buttonConfig = resolveButtonConfig(configIndex);
+          return (
+            <HudButton
+              key={label || `left-${index}`}
+              label={label || `A${index + 1}`}
+              className="hud-artwork__action-button"
+              {...createButtonMetrics(buttonConfig, leftButtonSlotWidth, leftBankHeight)}
+              style={{
+                flex: "1 1 0",
+                minWidth: 0,
+                width: "auto",
+                height: "100%",
+                transform: `scale(${normalizedButtonScale})`,
+                transformOrigin: "center center",
+              }}
+              onClick={() => undefined}
+            />
+          );
+        })}
+      </div>
+      <div
+        className="hud-artwork__button-bank hud-artwork__button-bank--right"
+        aria-hidden="true"
+        style={{
+          left: `${rightAvailableRight}px`,
+          top: `${rightBankTop}px`,
+          width: `${rightAvailableWidth}px`,
+          height: `${rightBankHeight}px`,
+          transform: `translate(calc(-100% + ${buttonOffsetX}px), ${buttonOffsetY}px)`,
+        }}
+      >
+        {rightButtonLabels.map((label, index) => {
+          const configIndex = leftButtonLabels.length + index;
+          const buttonConfig = resolveButtonConfig(configIndex);
+          return (
+            <HudButton
+              key={label || `right-${index}`}
+              label={label || `B${index + 1}`}
+              className="hud-artwork__action-button"
+              {...createButtonMetrics(buttonConfig, rightButtonSlotWidth, rightBankHeight)}
+              style={{
+                flex: "1 1 0",
+                minWidth: 0,
+                width: "auto",
+                height: "100%",
+                transform: `scale(${normalizedButtonScale})`,
+                transformOrigin: "center center",
+              }}
+              onClick={() => undefined}
+            />
+          );
+        })}
       </div>
 
       <div ref={ref} className="hud-artwork__anchor" style={anchorStyle} />

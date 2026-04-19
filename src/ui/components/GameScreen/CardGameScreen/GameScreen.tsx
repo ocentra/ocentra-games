@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameHeader } from '@ocentra/core-ui';
 import { AppFooter } from '@/ui/components/AppFooter';
@@ -10,26 +10,23 @@ import GameHUD from './GameHUD';
 import CardInHand from './CardGameComponents/CardInHand';
 import CenterTableSvg from './CardGameComponents/CenterTableSvg';
 import PlayersOnTable from './PlayersOnTable';
+import HudButtonEditorModal from './HudButtonEditorModal';
 import './GameScreen.css';
 import { GameModeProvider } from '@/ui/gameMode/GameModeContext';
+import { setGameAsset, tableLayoutStore } from '@/ui/layout/tableLayoutStore';
+import type { TableLayoutState } from '@/ui/layout/tableLayoutTypes';
 import { DEFAULT_HUD_ARTWORK_CONTROLS, type HudArtworkControls } from './HudArtwork.types';
+import { PlayerUIConfig } from './PlayerUI';
+import type { TableShapeSettings } from '@ocentra/game-ui-types/tableLayoutTypes';
 
 type LayerKey = 'background' | 'header' | 'table' | 'seats' | 'cards' | 'hud' | 'tools' | 'footer';
 type HudWingConfig = HudArtworkControls['leftWing'];
 type HudClampConfig = HudArtworkControls['clamp'];
 type HudWingStyleConfig = HudArtworkControls['wingStyle'];
 type HudDomeConfig = HudArtworkControls['dome'];
+type HudButtonConfig = HudArtworkControls['button'];
+type HudButtonVariantConfig = HudArtworkControls['buttonVariants'][number];
 
-const LAYER_OPTIONS: Array<{ key: LayerKey; label: string }> = [
-  { key: 'background', label: 'Background' },
-  { key: 'header', label: 'Header' },
-  { key: 'table', label: 'Table' },
-  { key: 'seats', label: 'Seats' },
-  { key: 'cards', label: 'Cards' },
-  { key: 'hud', label: 'HUD' },
-  { key: 'tools', label: 'Tools' },
-  { key: 'footer', label: 'Footer' },
-];
 const DEFAULT_LAYER_VISIBILITY: Record<LayerKey, boolean> = {
   background: true,
   header: true,
@@ -40,36 +37,50 @@ const DEFAULT_LAYER_VISIBILITY: Record<LayerKey, boolean> = {
   tools: true,
   footer: true,
 };
+const DEFAULT_CARD_CONTROLS = {
+  cardCount: 13,
+  minCardCount: 3,
+  maxCardCount: 13,
+  radiusScale: 0.41,
+  radiusOffset: 0,
+  cardWidthScale: 0.38,
+  arcMin: 34,
+  arcMax: 149,
+  fanTilt: 0,
+  centerOffsetX: 0,
+  centerOffsetY: 0,
+  disableViewportScale: true,
+};
 
 export const GameScreen: React.FC = () => {
   const headerProps = useCoreUIHeaderProps();
   const navigate = useNavigate();
   const hudCenterRef = useRef<HTMLDivElement | null>(null);
   const [hudAnchor, setHudAnchor] = useState<{ x: number; y: number; radius: number } | null>(null);
-  const [showCardControls, setShowCardControls] = useState(false);
-  const [showLayerControls, setShowLayerControls] = useState(true);
   const [layerVisibility, setLayerVisibility] = useState<Record<LayerKey, boolean>>(DEFAULT_LAYER_VISIBILITY);
-  const [cardControls, setCardControls] = useState({
-    cardCount: 13,
-    radiusScale: 0.41,
-    cardWidthScale: 0.38,
-    arcMin: 34,
-    arcMax: 149,
-  });
+  const [cardControls, setCardControls] = useState({ ...DEFAULT_CARD_CONTROLS });
   const [cardVisualControls, setCardVisualControls] = useState({
     floatScale: 3,
   });
+  const tableLayoutState = useSyncExternalStore<TableLayoutState>(
+    tableLayoutStore.subscribe,
+    tableLayoutStore.getState,
+    tableLayoutStore.getState
+  );
   const [hudControls, setHudControls] = useState<HudArtworkControls>({ ...DEFAULT_HUD_ARTWORK_CONTROLS });
-  const [hudUndoStack, setHudUndoStack] = useState<HudArtworkControls[]>([]);
+  const hudUndoStackRef = useRef<HudArtworkControls[]>([]);
   const [lockWings, setLockWings] = useState(true);
-  const [hudCopyState, setHudCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
-  const hudCopyResetRef = useRef<number | null>(null);
+  const [buttonLayoutCopyState, setButtonLayoutCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const [showHudButtonGuides, setShowHudButtonGuides] = useState(false);
+  const [showHudButtonEditor, setShowHudButtonEditor] = useState(false);
+  const [hudButtonEditorTab, setHudButtonEditorTab] = useState(-1);
+  const buttonLayoutCopyResetRef = useRef<number | null>(null);
 
   const updateHudControls = useCallback(
     (updater: (current: HudArtworkControls) => HudArtworkControls) => {
       setHudControls((current) => {
         const next = updater(current);
-        setHudUndoStack((history) => [...history, current]);
+        hudUndoStackRef.current = [...hudUndoStackRef.current, current];
         return next;
       });
     },
@@ -77,15 +88,14 @@ export const GameScreen: React.FC = () => {
   );
 
   const undoHudControls = useCallback(() => {
-    setHudUndoStack((history) => {
-      if (history.length === 0) {
-        return history;
-      }
+    const history = hudUndoStackRef.current;
+    if (history.length === 0) {
+      return;
+    }
 
-      const previous = history[history.length - 1];
-      setHudControls(previous);
-      return history.slice(0, -1);
-    });
+    const previous = history[history.length - 1];
+    setHudControls(previous);
+    hudUndoStackRef.current = history.slice(0, -1);
   }, []);
 
   const copyHudControls = useCallback(async () => {
@@ -105,26 +115,148 @@ export const GameScreen: React.FC = () => {
         document.execCommand('copy');
         document.body.removeChild(textarea);
       }
+    } catch {
+      return;
+    }
+  }, [hudControls]);
 
-      setHudCopyState('copied');
-      if (hudCopyResetRef.current !== null) {
-        window.clearTimeout(hudCopyResetRef.current);
+  const copyButtonLayout = useCallback(async () => {
+    const payload = JSON.stringify(
+      {
+        buttonScale: hudControls.buttonScale,
+        buttonCount: hudControls.buttonCount,
+        buttonLabels: hudControls.buttonLabels,
+        button: hudControls.button,
+        buttonVariants: hudControls.buttonVariants,
+      },
+      null,
+      2,
+    );
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(payload);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = payload;
+        textarea.setAttribute('readonly', 'true');
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
       }
-      hudCopyResetRef.current = window.setTimeout(() => {
-        setHudCopyState('idle');
-        hudCopyResetRef.current = null;
+
+      setButtonLayoutCopyState('copied');
+      if (buttonLayoutCopyResetRef.current !== null) {
+        window.clearTimeout(buttonLayoutCopyResetRef.current);
+      }
+      buttonLayoutCopyResetRef.current = window.setTimeout(() => {
+        setButtonLayoutCopyState('idle');
+        buttonLayoutCopyResetRef.current = null;
       }, 1500);
     } catch {
-      setHudCopyState('failed');
-      if (hudCopyResetRef.current !== null) {
-        window.clearTimeout(hudCopyResetRef.current);
+      setButtonLayoutCopyState('failed');
+      if (buttonLayoutCopyResetRef.current !== null) {
+        window.clearTimeout(buttonLayoutCopyResetRef.current);
       }
-      hudCopyResetRef.current = window.setTimeout(() => {
-        setHudCopyState('idle');
-        hudCopyResetRef.current = null;
+      buttonLayoutCopyResetRef.current = window.setTimeout(() => {
+        setButtonLayoutCopyState('idle');
+        buttonLayoutCopyResetRef.current = null;
       }, 1500);
     }
   }, [hudControls]);
+
+  const resetButtons = useCallback(() => {
+    updateHudControls((current) => ({
+      ...current,
+      buttonCount: 6,
+      buttonScale: 1,
+      buttonLabels: ["A", "B", "C", "D", "E", "F"],
+      button: { ...DEFAULT_HUD_ARTWORK_CONTROLS.button },
+      buttonVariants: DEFAULT_HUD_ARTWORK_CONTROLS.buttonVariants.map((variant) => ({
+        linked: variant.linked,
+        overrides: { ...variant.overrides },
+      })),
+    }));
+  }, [updateHudControls]);
+
+  const resetTablePreset = useCallback(() => {
+    tableLayoutStore.applyPreset(tableLayoutState.playerCount);
+  }, [tableLayoutState.playerCount]);
+
+  const setTableShapeField = useCallback(
+    (field: keyof TableShapeSettings, value: number | string) => {
+      tableLayoutStore.setTable({
+        ...(tableLayoutState.table ?? {}),
+        [field]: value,
+      } as TableShapeSettings);
+    },
+    [tableLayoutState.table]
+  );
+
+  const setTableSeatField = useCallback(
+    (seatId: number, field: "label" | "x" | "y" | "rotation" | "scale", value: number | string) => {
+      tableLayoutStore.setSeats(
+        tableLayoutState.seats.map((seat) => {
+          if (seat.id !== seatId) {
+            return seat;
+          }
+
+          if (field === "label") {
+            return {
+              ...seat,
+              label: String(value),
+            };
+          }
+
+          if (field === "x" || field === "y") {
+            return {
+              ...seat,
+              position: {
+                ...seat.position,
+                [field]: Number(value),
+              },
+            };
+          }
+
+          return {
+            ...seat,
+            [field]: field === "scale" ? Number(value) : Number(value),
+          };
+        })
+      );
+    },
+    [tableLayoutState.seats]
+  );
+
+  const setPlayerUiDefaults = useCallback(
+    (updater: (current: Partial<PlayerUIConfig>) => Partial<PlayerUIConfig>) => {
+      const asset = tableLayoutState.asset;
+      if (!asset) {
+        return;
+      }
+
+      const nextDefaults = updater({ ...(asset.layout.playerUiDefaults ?? {}) });
+      setGameAsset({
+        ...asset,
+        layout: {
+          ...asset.layout,
+          playerUiDefaults: nextDefaults,
+        },
+      });
+    },
+    [tableLayoutState.asset]
+  );
+
+  const resetPlayerUiDefaults = useCallback(() => {
+    setPlayerUiDefaults(() => ({}));
+  }, [setPlayerUiDefaults]);
+
+  const setSelectedSeat = useCallback((seatId: number | null) => {
+    tableLayoutStore.setSelectedSeat(seatId);
+  }, []);
 
   const setHudWingControl = useCallback(
     (side: 'leftWing' | 'rightWing', field: keyof HudWingConfig, value: number) => {
@@ -223,6 +355,100 @@ export const GameScreen: React.FC = () => {
     }));
   }, [updateHudControls]);
 
+  const setHudButtonControl = useCallback((field: keyof HudButtonConfig, value: number | string) => {
+    updateHudControls((current) => ({
+      ...current,
+      button: {
+        ...current.button,
+        [field]: value,
+      },
+    }));
+  }, [updateHudControls]);
+
+  const setHudButtonScale = useCallback((value: number) => {
+    updateHudControls((current) => ({
+      ...current,
+      buttonScale: value,
+    }));
+  }, [updateHudControls]);
+
+  const setHudButtonCount = useCallback((value: number) => {
+    updateHudControls((current) => ({
+      ...current,
+      buttonCount: value,
+    }));
+  }, [updateHudControls]);
+
+  const setHudButtonVariantControl = useCallback(
+    (index: number, field: keyof HudButtonConfig, value: number | string) => {
+      updateHudControls((current) => {
+        const nextVariants = [...current.buttonVariants];
+        const currentVariant: HudButtonVariantConfig = nextVariants[index] ?? { linked: true, overrides: {} };
+        nextVariants[index] = {
+          linked: false,
+          overrides: {
+            ...currentVariant.overrides,
+            [field]: value,
+          },
+        };
+
+        return {
+          ...current,
+          buttonVariants: nextVariants,
+        };
+      });
+    },
+    [updateHudControls]
+  );
+
+  const setHudButtonVariantLink = useCallback(
+    (index: number, linked: boolean) => {
+      updateHudControls((current) => {
+        const nextVariants = [...current.buttonVariants];
+        const currentVariant: HudButtonVariantConfig = nextVariants[index] ?? { linked: true, overrides: {} };
+        nextVariants[index] = linked
+          ? { linked: true, overrides: {} }
+          : {
+              linked: false,
+              overrides: {
+                ...current.button,
+                ...currentVariant.overrides,
+              },
+            };
+
+        return {
+          ...current,
+          buttonVariants: nextVariants,
+        };
+      });
+    },
+    [updateHudControls]
+  );
+
+  const applyMasterButtonToAll = useCallback(() => {
+    updateHudControls((current) => ({
+      ...current,
+      buttonVariants: Array.from({ length: 6 }, () => ({
+        linked: true,
+        overrides: {},
+      })),
+    }));
+  }, [updateHudControls]);
+
+  const setHudButtonLabel = useCallback(
+    (index: number, value: string) => {
+      updateHudControls((current) => {
+        const nextLabels = [...current.buttonLabels];
+        nextLabels[index] = value;
+        return {
+          ...current,
+          buttonLabels: nextLabels,
+        };
+      });
+    },
+    [updateHudControls]
+  );
+
   const handleHomeClick = useCallback(() => {
     navigate(buildHomePath());
   }, [navigate]);
@@ -261,7 +487,7 @@ export const GameScreen: React.FC = () => {
 
     const cardWidth = Math.round(Math.max(30, Math.min(hudAnchor.radius * cardControls.cardWidthScale, 116)));
     const cardHeight = Math.round(cardWidth * 1.42);
-    const orbitRadius = Math.max(hudAnchor.radius * cardControls.radiusScale, 10);
+    const orbitRadius = Math.max(hudAnchor.radius * cardControls.radiusScale + cardControls.radiusOffset, 10);
 
     return {
       cardWidth,
@@ -270,8 +496,28 @@ export const GameScreen: React.FC = () => {
       minArc: cardControls.arcMin,
       maxArc: cardControls.arcMax,
       cardCount: cardControls.cardCount,
+      minCardCount: cardControls.minCardCount,
+      maxCardCount: cardControls.maxCardCount,
+      fanTilt: cardControls.fanTilt,
+      centerOffsetX: cardControls.centerOffsetX,
+      centerOffsetY: cardControls.centerOffsetY,
+      disableViewportScale: cardControls.disableViewportScale,
     };
-  }, [cardControls.arcMax, cardControls.arcMin, cardControls.cardCount, cardControls.cardWidthScale, cardControls.radiusScale, hudAnchor]);
+  }, [
+    cardControls.arcMax,
+    cardControls.arcMin,
+    cardControls.cardCount,
+    cardControls.cardWidthScale,
+    cardControls.centerOffsetX,
+    cardControls.centerOffsetY,
+    cardControls.disableViewportScale,
+    cardControls.fanTilt,
+    cardControls.maxCardCount,
+    cardControls.minCardCount,
+    cardControls.radiusOffset,
+    cardControls.radiusScale,
+    hudAnchor,
+  ]);
 
   useSolanaBridge();
 
@@ -287,12 +533,6 @@ export const GameScreen: React.FC = () => {
   useEffect(() => {
     const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
     hideLoading?.();
-  }, []);
-
-  useEffect(() => () => {
-    if (hudCopyResetRef.current !== null) {
-      window.clearTimeout(hudCopyResetRef.current);
-    }
   }, []);
 
   const layerClassName = (key: LayerKey) =>
@@ -337,7 +577,7 @@ export const GameScreen: React.FC = () => {
               className={`${layerClassName('hud')} game-screen__stage-layer game-screen__stage-layer--hud`}
               aria-hidden={!layerVisibility.hud}
             >
-              <GameHUD ref={hudCenterRef} controls={hudControls}>
+              <GameHUD ref={hudCenterRef} controls={hudControls} showButtonGuides={showHudButtonGuides}>
                 {layerVisibility.cards ? (
                   <CardInHand
                     position="fixed"
@@ -348,148 +588,19 @@ export const GameScreen: React.FC = () => {
                     minArc={handLayout?.minArc}
                     maxArc={handLayout?.maxArc}
                     cardCount={handLayout?.cardCount}
-                    disableViewportScale
+                    minCardCount={handLayout?.minCardCount}
+                    maxCardCount={handLayout?.maxCardCount}
+                    fanTilt={handLayout?.fanTilt}
+                    centerOffsetX={handLayout?.centerOffsetX}
+                    centerOffsetY={handLayout?.centerOffsetY}
+                    disableViewportScale={handLayout?.disableViewportScale ?? true}
                     zIndex={120}
                   />
                 ) : null}
               </GameHUD>
             </div>
 
-            <div
-              className={`${layerClassName('tools')} game-screen__stage-layer game-screen__stage-layer--tools`}
-              aria-hidden={!layerVisibility.tools}
-            >
-              {showCardControls && (
-                <aside className="game-screen__card-controls">
-                  <div className="game-screen__card-controls-header">
-                    <strong>Temp Card Controls</strong>
-                    <button type="button" onClick={() => setShowCardControls(false)}>
-                      Hide
-                    </button>
-                  </div>
-
-                  <label className="game-screen__control">
-                    <span>Card Count {cardControls.cardCount}</span>
-                    <input
-                      type="number"
-                      min={3}
-                      max={13}
-                      step={1}
-                      value={cardControls.cardCount}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, cardCount: Number(event.target.value) }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={3}
-                      max={13}
-                      step={1}
-                      value={cardControls.cardCount}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, cardCount: Number(event.target.value) }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__control">
-                    <span>Radius Scale {cardControls.radiusScale.toFixed(2)}</span>
-                    <input
-                      type="number"
-                      min={0.15}
-                      max={1.15}
-                      step={0.01}
-                      value={cardControls.radiusScale}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, radiusScale: Number(event.target.value) }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={0.15}
-                      max={1.15}
-                      step={0.01}
-                      value={cardControls.radiusScale}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, radiusScale: Number(event.target.value) }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__control">
-                    <span>Card Width Scale {cardControls.cardWidthScale.toFixed(2)}</span>
-                    <input
-                      type="number"
-                      min={0.28}
-                      max={0.6}
-                      step={0.01}
-                      value={cardControls.cardWidthScale}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, cardWidthScale: Number(event.target.value) }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={0.28}
-                      max={0.6}
-                      step={0.01}
-                      value={cardControls.cardWidthScale}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, cardWidthScale: Number(event.target.value) }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__control">
-                    <span>Min Arc {cardControls.arcMin} deg</span>
-                    <input
-                      type="number"
-                      min={20}
-                      max={90}
-                      step={1}
-                      value={cardControls.arcMin}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, arcMin: Number(event.target.value) }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={20}
-                      max={90}
-                      step={1}
-                      value={cardControls.arcMin}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, arcMin: Number(event.target.value) }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__control">
-                    <span>Max Arc {cardControls.arcMax} deg</span>
-                    <input
-                      type="number"
-                      min={90}
-                      max={170}
-                      step={1}
-                      value={cardControls.arcMax}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, arcMax: Number(event.target.value) }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={90}
-                      max={170}
-                      step={1}
-                      value={cardControls.arcMax}
-                      onChange={(event) =>
-                        setCardControls((current) => ({ ...current, arcMax: Number(event.target.value) }))
-                      }
-                    />
-                  </label>
-                </aside>
-              )}
-            </div>
+            <div className={`${layerClassName('tools')} game-screen__stage-layer game-screen__stage-layer--tools`} aria-hidden={!layerVisibility.tools} />
           </main>
 
           <div
@@ -499,1055 +610,78 @@ export const GameScreen: React.FC = () => {
             <AppFooter />
           </div>
         </div>
-
         <button
           type="button"
-          className="game-screen__layers-toggle"
-          onClick={() => setShowLayerControls((current) => !current)}
-          aria-label={showLayerControls ? 'Hide layer controls' : 'Show layer controls'}
+          className="game-screen__editor-launch"
+          onClick={() => setShowHudButtonEditor(true)}
         >
           Layers
         </button>
 
-        {showLayerControls && (
-          <aside className="game-screen__layers-panel">
-            <div className="game-screen__layers-panel-header">
-              <strong>Layer Split</strong>
-              <button type="button" onClick={() => setShowLayerControls(false)}>
-                Hide
-              </button>
-            </div>
-
-            <div className="game-screen__layers-panel-actions">
-              <button type="button" onClick={() => setLayerVisibility(DEFAULT_LAYER_VISIBILITY)}>
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setLayerVisibility({
-                    background: false,
-                    header: false,
-                    table: false,
-                    seats: false,
-                    cards: false,
-                    hud: false,
-                    tools: false,
-                    footer: false,
-                  })
-                }
-              >
-                Hide all
-              </button>
-            </div>
-
-            <div className="game-screen__layers-panel-section">
-              <strong>HUD Tuning</strong>
-              <div className="game-screen__layers-panel-actions">
-                <button type="button" onClick={undoHudControls} disabled={hudUndoStack.length === 0}>
-                  Undo
-                </button>
-                <button type="button" onClick={copyHudControls}>
-                  {hudCopyState === 'copied' ? 'Copied HUD' : hudCopyState === 'failed' ? 'Copy Failed' : 'Copy HUD'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateHudControls(() => ({ ...DEFAULT_HUD_ARTWORK_CONTROLS }))}
-                >
-                  Reset HUD
-                </button>
-              </div>
-
-              <details className="game-screen__layers-panel-group" open>
-                <summary>Overall</summary>
-                <div className="game-screen__layers-panel-grid">
-                  <label className="game-screen__layers-panel-field">
-                    <span>Overall X {hudControls.hudOffsetX}px</span>
-                    <input
-                      type="number"
-                      min={-320}
-                      max={320}
-                      step={1}
-                      value={hudControls.hudOffsetX}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          hudOffsetX: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={-320}
-                      max={320}
-                      step={1}
-                      value={hudControls.hudOffsetX}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          hudOffsetX: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Overall Y {hudControls.hudOffsetY}px</span>
-                    <input
-                      type="number"
-                      min={-180}
-                      max={180}
-                      step={1}
-                      value={hudControls.hudOffsetY}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          hudOffsetY: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={-180}
-                      max={180}
-                      step={1}
-                      value={hudControls.hudOffsetY}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          hudOffsetY: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Canvas Width {hudControls.width}px</span>
-                    <input
-                      type="number"
-                      min={720}
-                      max={1200}
-                      step={10}
-                      value={hudControls.width}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          width: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={720}
-                      max={1200}
-                      step={10}
-                      value={hudControls.width}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          width: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Canvas Height {hudControls.height}px</span>
-                    <input
-                      type="number"
-                      min={240}
-                      max={520}
-                      step={5}
-                      value={hudControls.height}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          height: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={240}
-                      max={520}
-                      step={5}
-                      value={hudControls.height}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          height: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Overall Scale {hudControls.overallScale.toFixed(2)}x</span>
-                    <input
-                      type="number"
-                      min={0.5}
-                      max={2}
-                      step={0.01}
-                      value={hudControls.overallScale}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          overallScale: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={0.5}
-                      max={2}
-                      step={0.01}
-                      value={hudControls.overallScale}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          overallScale: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-                </div>
-              </details>
-
-              <details className="game-screen__layers-panel-group" open>
-                <summary>Wings</summary>
-                <div className="game-screen__layers-panel-actions">
-                  <button type="button" onClick={toggleWingLock}>
-                    {lockWings ? 'Unlock Wings' : 'Lock Wings'}
-                  </button>
-                </div>
-
-                <div className="game-screen__layers-panel-grid">
-                  <label className="game-screen__layers-panel-field">
-                    <span>Left X {hudControls.leftWing.x}px</span>
-                    <input
-                      type="number"
-                      min={-240}
-                      max={520}
-                      step={1}
-                      value={hudControls.leftWing.x}
-                      onChange={(event) => setHudWingControl('leftWing', 'x', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={-240}
-                      max={520}
-                      step={1}
-                      value={hudControls.leftWing.x}
-                      onChange={(event) => setHudWingControl('leftWing', 'x', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Right X {hudControls.rightWing.x}px</span>
-                    <input
-                      type="number"
-                      min={-240}
-                      max={1120}
-                      step={1}
-                      value={hudControls.rightWing.x}
-                      onChange={(event) => setHudWingControl('rightWing', 'x', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={-240}
-                      max={1120}
-                      step={1}
-                      value={hudControls.rightWing.x}
-                      onChange={(event) => setHudWingControl('rightWing', 'x', Number(event.target.value))}
-                    />
-                  </label>
-                </div>
-
-                {lockWings ? (
-                  <div className="game-screen__layers-panel-grid">
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Y {hudControls.leftWing.y}px</span>
-                    <input
-                      type="number"
-                      min={120}
-                      max={320}
-                      step={1}
-                      value={hudControls.leftWing.y}
-                      onChange={(event) => setSharedWingControl('y', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={120}
-                        max={320}
-                        step={1}
-                        value={hudControls.leftWing.y}
-                        onChange={(event) => setSharedWingControl('y', Number(event.target.value))}
-                      />
-                    </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Width {hudControls.leftWing.width}px</span>
-                    <input
-                      type="number"
-                      min={240}
-                      max={620}
-                      step={1}
-                      value={hudControls.leftWing.width}
-                      onChange={(event) => setSharedWingControl('width', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={240}
-                        max={620}
-                        step={1}
-                        value={hudControls.leftWing.width}
-                        onChange={(event) => setSharedWingControl('width', Number(event.target.value))}
-                      />
-                    </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Height {hudControls.leftWing.height}px</span>
-                    <input
-                      type="number"
-                      min={60}
-                      max={220}
-                      step={1}
-                      value={hudControls.leftWing.height}
-                      onChange={(event) => setSharedWingControl('height', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={60}
-                        max={220}
-                        step={1}
-                        value={hudControls.leftWing.height}
-                        onChange={(event) => setSharedWingControl('height', Number(event.target.value))}
-                      />
-                    </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Top Radius {hudControls.leftWing.topRadius}px</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={80}
-                      step={1}
-                      value={hudControls.leftWing.topRadius}
-                      onChange={(event) => setSharedWingControl('topRadius', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                        max={80}
-                        step={1}
-                        value={hudControls.leftWing.topRadius}
-                        onChange={(event) => setSharedWingControl('topRadius', Number(event.target.value))}
-                      />
-                    </label>
-                  </div>
-                ) : (
-                  <>
-                    <div className="game-screen__layers-panel-grid">
-                    <label className="game-screen__layers-panel-field">
-                      <span>Left Y {hudControls.leftWing.y}px</span>
-                      <input
-                        type="number"
-                        min={120}
-                        max={320}
-                        step={1}
-                        value={hudControls.leftWing.y}
-                        onChange={(event) => setHudWingControl('leftWing', 'y', Number(event.target.value))}
-                      />
-                      <input
-                        type="range"
-                        min={120}
-                          max={320}
-                          step={1}
-                          value={hudControls.leftWing.y}
-                          onChange={(event) => setHudWingControl('leftWing', 'y', Number(event.target.value))}
-                        />
-                      </label>
-
-                    <label className="game-screen__layers-panel-field">
-                      <span>Left Width {hudControls.leftWing.width}px</span>
-                      <input
-                        type="number"
-                        min={240}
-                        max={620}
-                        step={1}
-                        value={hudControls.leftWing.width}
-                        onChange={(event) => setHudWingControl('leftWing', 'width', Number(event.target.value))}
-                      />
-                      <input
-                        type="range"
-                        min={240}
-                          max={620}
-                          step={1}
-                          value={hudControls.leftWing.width}
-                          onChange={(event) => setHudWingControl('leftWing', 'width', Number(event.target.value))}
-                        />
-                      </label>
-
-                    <label className="game-screen__layers-panel-field">
-                      <span>Left Height {hudControls.leftWing.height}px</span>
-                      <input
-                        type="number"
-                        min={60}
-                        max={220}
-                        step={1}
-                        value={hudControls.leftWing.height}
-                        onChange={(event) => setHudWingControl('leftWing', 'height', Number(event.target.value))}
-                      />
-                      <input
-                        type="range"
-                        min={60}
-                          max={220}
-                          step={1}
-                          value={hudControls.leftWing.height}
-                          onChange={(event) => setHudWingControl('leftWing', 'height', Number(event.target.value))}
-                        />
-                      </label>
-
-                    <label className="game-screen__layers-panel-field">
-                      <span>Left Top Radius {hudControls.leftWing.topRadius}px</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={80}
-                        step={1}
-                        value={hudControls.leftWing.topRadius}
-                        onChange={(event) => setHudWingControl('leftWing', 'topRadius', Number(event.target.value))}
-                      />
-                      <input
-                        type="range"
-                        min={0}
-                          max={80}
-                          step={1}
-                          value={hudControls.leftWing.topRadius}
-                          onChange={(event) => setHudWingControl('leftWing', 'topRadius', Number(event.target.value))}
-                        />
-                      </label>
-                    </div>
-
-                    <div className="game-screen__layers-panel-grid">
-                      <label className="game-screen__layers-panel-field">
-                        <span>Right Y {hudControls.rightWing.y}px</span>
-                        <input
-                          type="number"
-                          min={120}
-                          max={320}
-                          step={1}
-                          value={hudControls.rightWing.y}
-                          onChange={(event) => setHudWingControl('rightWing', 'y', Number(event.target.value))}
-                        />
-                        <input
-                          type="range"
-                          min={120}
-                          max={320}
-                          step={1}
-                          value={hudControls.rightWing.y}
-                          onChange={(event) => setHudWingControl('rightWing', 'y', Number(event.target.value))}
-                        />
-                      </label>
-
-                      <label className="game-screen__layers-panel-field">
-                        <span>Right Width {hudControls.rightWing.width}px</span>
-                        <input
-                          type="number"
-                          min={240}
-                          max={620}
-                          step={1}
-                          value={hudControls.rightWing.width}
-                          onChange={(event) => setHudWingControl('rightWing', 'width', Number(event.target.value))}
-                        />
-                        <input
-                          type="range"
-                          min={240}
-                          max={620}
-                          step={1}
-                          value={hudControls.rightWing.width}
-                          onChange={(event) => setHudWingControl('rightWing', 'width', Number(event.target.value))}
-                        />
-                      </label>
-
-                      <label className="game-screen__layers-panel-field">
-                        <span>Right Height {hudControls.rightWing.height}px</span>
-                        <input
-                          type="number"
-                          min={60}
-                          max={220}
-                          step={1}
-                          value={hudControls.rightWing.height}
-                          onChange={(event) => setHudWingControl('rightWing', 'height', Number(event.target.value))}
-                        />
-                        <input
-                          type="range"
-                          min={60}
-                          max={220}
-                          step={1}
-                          value={hudControls.rightWing.height}
-                          onChange={(event) => setHudWingControl('rightWing', 'height', Number(event.target.value))}
-                        />
-                      </label>
-
-                      <label className="game-screen__layers-panel-field">
-                        <span>Right Top Radius {hudControls.rightWing.topRadius}px</span>
-                        <input
-                          type="number"
-                          min={0}
-                          max={80}
-                          step={1}
-                          value={hudControls.rightWing.topRadius}
-                          onChange={(event) => setHudWingControl('rightWing', 'topRadius', Number(event.target.value))}
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={80}
-                          step={1}
-                          value={hudControls.rightWing.topRadius}
-                          onChange={(event) => setHudWingControl('rightWing', 'topRadius', Number(event.target.value))}
-                        />
-                      </label>
-                    </div>
-                  </>
-                )}
-              </details>
-
-              <details className="game-screen__layers-panel-group">
-                <summary>Dome</summary>
-                <div className="game-screen__layers-panel-grid">
-                  <label className="game-screen__layers-panel-field">
-                    <span>X {hudControls.dome.cx}px</span>
-                    <input
-                      type="number"
-                      min={160}
-                      max={760}
-                      step={1}
-                      value={hudControls.dome.cx}
-                      onChange={(event) => setHudDomeControl('cx', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={160}
-                      max={760}
-                      step={1}
-                      value={hudControls.dome.cx}
-                      onChange={(event) => setHudDomeControl('cx', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Y {hudControls.dome.cy}px</span>
-                    <input
-                      type="number"
-                      min={160}
-                      max={420}
-                      step={1}
-                      value={hudControls.dome.cy}
-                      onChange={(event) => setHudDomeControl('cy', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={160}
-                      max={420}
-                      step={1}
-                      value={hudControls.dome.cy}
-                      onChange={(event) => setHudDomeControl('cy', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Radius {hudControls.dome.radius}px</span>
-                    <input
-                      type="number"
-                      min={80}
-                      max={320}
-                      step={1}
-                      value={hudControls.dome.radius}
-                      onChange={(event) => setHudDomeControl('radius', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={80}
-                      max={320}
-                      step={1}
-                      value={hudControls.dome.radius}
-                      onChange={(event) => setHudDomeControl('radius', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Edge {hudControls.dome.edgeWidth}px</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={12}
-                      step={1}
-                      value={hudControls.dome.edgeWidth}
-                      onChange={(event) => setHudDomeControl('edgeWidth', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={1}
-                      max={12}
-                      step={1}
-                      value={hudControls.dome.edgeWidth}
-                      onChange={(event) => setHudDomeControl('edgeWidth', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Glow {hudControls.dome.glowWidth}px</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={28}
-                      step={1}
-                      value={hudControls.dome.glowWidth}
-                      onChange={(event) => setHudDomeControl('glowWidth', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={28}
-                      step={1}
-                      value={hudControls.dome.glowWidth}
-                      onChange={(event) => setHudDomeControl('glowWidth', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Glow Opacity {hudControls.dome.glowOpacity.toFixed(2)}</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={hudControls.dome.glowOpacity}
-                      onChange={(event) => setHudDomeControl('glowOpacity', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={hudControls.dome.glowOpacity}
-                      onChange={(event) => setHudDomeControl('glowOpacity', Number(event.target.value))}
-                    />
-                  </label>
-                </div>
-              </details>
-
-              <details className="game-screen__layers-panel-group">
-                <summary>Style</summary>
-                <div className="game-screen__layers-panel-grid">
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Width {hudControls.clamp.width}px</span>
-                    <input
-                      type="number"
-                      min={8}
-                      max={40}
-                      step={1}
-                      value={hudControls.clamp.width}
-                      onChange={(event) => setHudClampControl('width', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={8}
-                      max={40}
-                      step={1}
-                      value={hudControls.clamp.width}
-                      onChange={(event) => setHudClampControl('width', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Height {hudControls.clamp.height}px</span>
-                    <input
-                      type="number"
-                      min={40}
-                      max={120}
-                      step={1}
-                      value={hudControls.clamp.height}
-                      onChange={(event) => setHudClampControl('height', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={40}
-                      max={120}
-                      step={1}
-                      value={hudControls.clamp.height}
-                      onChange={(event) => setHudClampControl('height', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Radius {hudControls.clamp.rightRadius}px</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={30}
-                      step={1}
-                      value={hudControls.clamp.rightRadius}
-                      onChange={(event) => setHudClampControl('rightRadius', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={30}
-                      step={1}
-                      value={hudControls.clamp.rightRadius}
-                      onChange={(event) => setHudClampControl('rightRadius', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Glass Opacity {hudControls.panelGlassOpacity.toFixed(2)}</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={0.2}
-                      step={0.01}
-                      value={hudControls.panelGlassOpacity}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          panelGlassOpacity: Number(event.target.value),
-                        }))
-                      }
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={0.2}
-                      step={0.01}
-                      value={hudControls.panelGlassOpacity}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({
-                          ...current,
-                          panelGlassOpacity: Number(event.target.value),
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Edge {hudControls.wingStyle.edgeWidth}px</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={8}
-                      step={1}
-                      value={hudControls.wingStyle.edgeWidth}
-                      onChange={(event) => setHudWingStyleControl('edgeWidth', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={1}
-                      max={8}
-                      step={1}
-                      value={hudControls.wingStyle.edgeWidth}
-                      onChange={(event) => setHudWingStyleControl('edgeWidth', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Glow {hudControls.wingStyle.glowWidth}px</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={20}
-                      step={1}
-                      value={hudControls.wingStyle.glowWidth}
-                      onChange={(event) => setHudWingStyleControl('glowWidth', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={20}
-                      step={1}
-                      value={hudControls.wingStyle.glowWidth}
-                      onChange={(event) => setHudWingStyleControl('glowWidth', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Glow Opacity {hudControls.wingStyle.glowOpacity.toFixed(2)}</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={hudControls.wingStyle.glowOpacity}
-                      onChange={(event) => setHudWingStyleControl('glowOpacity', Number(event.target.value))}
-                    />
-                    <input
-                      type="range"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      value={hudControls.wingStyle.glowOpacity}
-                      onChange={(event) => setHudWingStyleControl('glowOpacity', Number(event.target.value))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Panel Top</span>
-                    <input
-                      type="color"
-                      value={hudControls.panelTop}
-                      onChange={(event) => updateHudControls((current) => ({ ...current, panelTop: event.target.value }))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Panel Mid</span>
-                    <input
-                      type="color"
-                      value={hudControls.panelMid}
-                      onChange={(event) => updateHudControls((current) => ({ ...current, panelMid: event.target.value }))}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Panel Bottom</span>
-                    <input
-                      type="color"
-                      value={hudControls.panelBottom}
-                      onChange={(event) =>
-                        updateHudControls((current) => ({ ...current, panelBottom: event.target.value }))
-                      }
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Edge Color</span>
-                    <input
-                      type="color"
-                      value={hudControls.wingStyle.edgeColor}
-                      onChange={(event) => setHudWingStyleControl('edgeColor', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Wing Glow Color</span>
-                    <input
-                      type="color"
-                      value={hudControls.wingStyle.glowColor}
-                      onChange={(event) => setHudWingStyleControl('glowColor', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Gold Top</span>
-                    <input
-                      type="color"
-                      value={hudControls.clamp.goldTop}
-                      onChange={(event) => setHudClampControl('goldTop', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Gold Mid</span>
-                    <input
-                      type="color"
-                      value={hudControls.clamp.goldMid}
-                      onChange={(event) => setHudClampControl('goldMid', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Clamp Gold Bottom</span>
-                    <input
-                      type="color"
-                      value={hudControls.clamp.goldBottom}
-                      onChange={(event) => setHudClampControl('goldBottom', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Dome Edge</span>
-                    <input
-                      type="color"
-                      value={hudControls.dome.edgeColor}
-                      onChange={(event) => setHudDomeControl('edgeColor', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Dome Inner</span>
-                    <input
-                      type="color"
-                      value={hudControls.dome.edgeInnerColor}
-                      onChange={(event) => setHudDomeControl('edgeInnerColor', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="game-screen__layers-panel-field">
-                    <span>Dome Glow Color</span>
-                    <input
-                      type="color"
-                      value={hudControls.dome.glowColor}
-                      onChange={(event) => setHudDomeControl('glowColor', event.target.value)}
-                    />
-                  </label>
-                </div>
-              </details>
-            </div>
-
-            <div className="game-screen__layers-panel-section">
-              <strong>HUD Buttons</strong>
-              <div className="game-screen__layers-panel-actions">
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateHudControls((current) => ({
-                      ...current,
-                      buttonCount: 6,
-                      buttonScale: 1,
-                      buttonLabels: ["A", "B", "C", "D", "E", "F"],
-                    }))
-                  }
-                >
-                  Reset Buttons
-                </button>
-              </div>
-
-              <label className="game-screen__control">
-                <span>Button Scale {hudControls.buttonScale.toFixed(2)}x</span>
-                <input
-                  type="number"
-                  min={0.5}
-                  max={1.5}
-                  step={0.01}
-                  value={hudControls.buttonScale}
-                  onChange={(event) =>
-                    updateHudControls((current) => ({
-                      ...current,
-                      buttonScale: Number(event.target.value),
-                    }))
-                  }
-                />
-                <input
-                  type="range"
-                  min={0.5}
-                  max={1.5}
-                  step={0.01}
-                  value={hudControls.buttonScale}
-                  onChange={(event) =>
-                    updateHudControls((current) => ({
-                      ...current,
-                      buttonScale: Number(event.target.value),
-                    }))
-                  }
-                />
-              </label>
-
-              <label className="game-screen__control">
-                <span>Button Count {hudControls.buttonCount}</span>
-                <input
-                  type="number"
-                  min={1}
-                  max={6}
-                  step={1}
-                  value={hudControls.buttonCount}
-                  onChange={(event) =>
-                    updateHudControls((current) => ({
-                      ...current,
-                      buttonCount: Number(event.target.value),
-                    }))
-                  }
-                />
-                <input
-                  type="range"
-                  min={1}
-                  max={6}
-                  step={1}
-                  value={hudControls.buttonCount}
-                  onChange={(event) =>
-                    updateHudControls((current) => ({
-                      ...current,
-                      buttonCount: Number(event.target.value),
-                    }))
-                  }
-                />
-              </label>
-
-              <div className="game-screen__layers-panel-grid">
-                {["A", "B", "C", "D", "E", "F"].map((slot, index) => (
-                  <label key={slot} className="game-screen__layers-panel-field">
-                    <span>{slot} Label</span>
-                    <input
-                      type="text"
-                      value={hudControls.buttonLabels[index] ?? slot}
-                      onChange={(event) =>
-                        updateHudControls((current) => {
-                          const nextLabels = [...current.buttonLabels];
-                          nextLabels[index] = event.target.value;
-                          return {
-                            ...current,
-                            buttonLabels: nextLabels,
-                          };
-                        })
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="game-screen__layers-panel-section">
-              <strong>Card Visuals</strong>
-              <label className="game-screen__layer-toggle">
-                <span>Float Scale {cardVisualControls.floatScale.toFixed(2)}</span>
-                <input
-                  type="number"
-                  min={0.25}
-                  max={8}
-                  step={0.25}
-                  value={cardVisualControls.floatScale}
-                  onChange={(event) =>
-                    setCardVisualControls((current) => ({ ...current, floatScale: Number(event.target.value) }))
-                  }
-                />
-                <input
-                  type="range"
-                  min={0.25}
-                  max={8}
-                  step={0.25}
-                  value={cardVisualControls.floatScale}
-                  onChange={(event) =>
-                    setCardVisualControls((current) => ({ ...current, floatScale: Number(event.target.value) }))
-                  }
-                />
-              </label>
-
-            </div>
-
-            <div className="game-screen__layers-panel-section">
-              <strong>Card Fan</strong>
-              <button
-                type="button"
-                className="game-screen__layers-panel-button"
-                onClick={() => setShowCardControls((current) => !current)}
-              >
-                {showCardControls ? 'Hide temp card controls' : 'Show temp card controls'}
-              </button>
-            </div>
-
-            {LAYER_OPTIONS.map((option) => (
-              <label key={option.key} className="game-screen__layer-toggle">
-                <input
-                  type="checkbox"
-                  checked={layerVisibility[option.key]}
-                  onChange={() => toggleLayer(option.key)}
-                />
-                <span>{option.label}</span>
-              </label>
-            ))}
-          </aside>
-        )}
+        <HudButtonEditorModal
+          open={showHudButtonEditor}
+          initialWorkspaceSection="layerSplit"
+          activeIndex={hudButtonEditorTab}
+          master={hudControls.button}
+          controls={hudControls}
+          buttonScale={hudControls.buttonScale}
+          buttonCount={hudControls.buttonCount}
+          buttonLabels={hudControls.buttonLabels}
+          buttonVariants={hudControls.buttonVariants}
+          buttonLayoutCopyState={buttonLayoutCopyState}
+          showButtonGuides={showHudButtonGuides}
+          layerVisibility={layerVisibility}
+          cardControls={cardControls}
+          cardVisualControls={cardVisualControls}
+          tableLayoutState={tableLayoutState}
+          lockWings={lockWings}
+          onClose={() => setShowHudButtonEditor(false)}
+          onSelectTab={setHudButtonEditorTab}
+          onChangeButtonScale={setHudButtonScale}
+          onChangeButtonCount={setHudButtonCount}
+          onToggleLayer={toggleLayer}
+          onResetLayerVisibility={() => setLayerVisibility(DEFAULT_LAYER_VISIBILITY)}
+          onHideAllLayers={() =>
+            setLayerVisibility({
+              background: false,
+              header: false,
+              table: false,
+              seats: false,
+              cards: false,
+              hud: false,
+              tools: false,
+              footer: false,
+            })
+          }
+          onUpdateHudControls={setHudControls}
+          onUndoHudControls={undoHudControls}
+          onCopyHudControls={copyHudControls}
+          onResetHudControls={() => setHudControls({ ...DEFAULT_HUD_ARTWORK_CONTROLS })}
+          onToggleWingLock={toggleWingLock}
+          onSetHudWingControl={setHudWingControl}
+          onSetSharedWingControl={setSharedWingControl}
+          onSetHudClampControl={setHudClampControl}
+          onSetHudWingStyleControl={setHudWingStyleControl}
+          onSetHudDomeControl={setHudDomeControl}
+          onSetCardControls={setCardControls}
+          onResetCardControls={() => setCardControls({ ...DEFAULT_CARD_CONTROLS })}
+          onSetCardVisualControls={setCardVisualControls}
+          onResetTablePreset={resetTablePreset}
+          onSetTableShapeField={setTableShapeField}
+          onSetPlayerCount={(value) => tableLayoutStore.setPlayerCount(value)}
+          onSetSeatField={setTableSeatField}
+          onSelectSeat={setSelectedSeat}
+          onSetPlayerUiDefaults={setPlayerUiDefaults}
+          onResetPlayerUiDefaults={resetPlayerUiDefaults}
+          onChangeMaster={setHudButtonControl}
+          onChangeVariant={setHudButtonVariantControl}
+          onToggleVariantLink={setHudButtonVariantLink}
+          onApplyMasterToAll={applyMasterButtonToAll}
+          onResetButtons={resetButtons}
+          onCopyButtonLayout={copyButtonLayout}
+          onSetLabel={setHudButtonLabel}
+          onToggleButtonGuides={() => setShowHudButtonGuides((current) => !current)}
+        />
       </div>
     </GameModeProvider>
   );

@@ -6,9 +6,10 @@ import "./GameHUD.css";
 interface GameHUDProps {
   children?: ReactNode;
   controls: HudArtworkControls;
+  showButtonGuides?: boolean;
 }
 
-const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls }, ref) => {
+const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, showButtonGuides = false }, ref) => {
   const hudHostRef = useRef<HTMLDivElement | null>(null);
   const [fitSize, setFitSize] = useState({ width: controls.width, height: controls.height });
 
@@ -57,7 +58,7 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls }
 
   return (
     <div className="hud" role="presentation" ref={hudHostRef}>
-      <HudArtwork ref={ref} controls={controls} fitWidth={fitSize.width} fitHeight={fitSize.height} />
+      <HudArtwork ref={ref} controls={controls} fitWidth={fitSize.width} fitHeight={fitSize.height} showButtonGuides={showButtonGuides} />
       {children ? <div className="hud__overlay">{children}</div> : null}
     </div>
   );

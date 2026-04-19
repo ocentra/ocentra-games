@@ -24,12 +24,16 @@ interface CardInHandProps {
   minArc?: number;
   maxArc?: number;
   radius?: number;
+  radiusOffset?: number;
   cardWidth?: number;
   cardHeight?: number;
   cardImage?: string;
   anchorPoint?: AnchorPoint;
   position?: "absolute" | "fixed";
   zIndex?: number;
+  fanTilt?: number;
+  centerOffsetX?: number;
+  centerOffsetY?: number;
   disableViewportScale?: boolean;
 }
 
@@ -44,12 +48,16 @@ const CardInHand: React.FC<CardInHandProps> = ({
   minArc = CARD_IN_HAND_DEFAULTS.MIN_ARC,
   maxArc = CARD_IN_HAND_DEFAULTS.MAX_ARC,
   radius = CARD_IN_HAND_DEFAULTS.RADIUS,
+  radiusOffset = 0,
   cardWidth = CARD_IN_HAND_DEFAULTS.CARD_WIDTH,
   cardHeight = CARD_IN_HAND_DEFAULTS.CARD_HEIGHT,
   cardImage = CARD_IN_HAND_DEFAULTS.CARD_IMAGE || DEFAULT_CARD_BACK_PATH,
   anchorPoint,
   position = "fixed",
   zIndex = CARD_IN_HAND_DEFAULTS.Z_INDEX_BASE,
+  fanTilt = 0,
+  centerOffsetX = 0,
+  centerOffsetY = 0,
   disableViewportScale = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -83,7 +91,7 @@ const CardInHand: React.FC<CardInHandProps> = ({
 
     const { x: centerX, y: centerY, radius: domeRadius } = anchorPoint;
     const baseRadius = CARD_IN_HAND_DEFAULTS.USE_DOME_RADIUS ? domeRadius : 0;
-    const fanRadius = baseRadius + radius;
+    const fanRadius = baseRadius + radius + radiusOffset;
 
     const clampedCount = clamp(cardCount, minCardCount, maxCardCount);
     const countRange = Math.max(maxCardCount - minCardCount, 1);
@@ -100,13 +108,13 @@ const CardInHand: React.FC<CardInHandProps> = ({
     const list = Array.from({ length: clampedCount }, (_, index) => {
       const angleDeg = start + step * index;
       const angleRad = (angleDeg * Math.PI) / 180;
-      const left = centerX + fanRadius * Math.sin(angleRad);
-      const top = centerY - fanRadius * Math.cos(angleRad);
-      return { left, top, rotation: angleDeg };
+      const left = centerX + centerOffsetX + fanRadius * Math.sin(angleRad);
+      const top = centerY + centerOffsetY - fanRadius * Math.cos(angleRad);
+      return { left, top, rotation: angleDeg + fanTilt };
     });
 
     return { effectiveArcStart: start, cards: list };
-  }, [anchorPoint, arcStart, arcEnd, cardCount, minCardCount, maxCardCount, minArc, maxArc, radius]);
+  }, [anchorPoint, arcStart, arcEnd, cardCount, minCardCount, maxCardCount, minArc, maxArc, radius, radiusOffset, fanTilt, centerOffsetX, centerOffsetY]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -130,7 +138,7 @@ const CardInHand: React.FC<CardInHandProps> = ({
       image.style.top = `${card.top}px`;
       image.style.width = `${dimensions.width}px`;
       image.style.height = `${dimensions.height}px`;
-      image.style.transform = `translate(-50%, -100%) rotate(${card.rotation}deg)`;
+        image.style.transform = `translate(-50%, -100%) rotate(${card.rotation}deg)`;
       image.style.transformOrigin = "50% 100%";
       image.style.zIndex = `${zIndex + index}`;
       image.draggable = false;
