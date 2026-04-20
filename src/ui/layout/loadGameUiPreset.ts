@@ -1,16 +1,11 @@
-import {
-  PLAYER_UI_SERIALIZABLE_FIELDS,
-  sanitizePlayerUIOverrides,
-  type SerializablePlayerUIKey,
-} from '@/ui/components/GameScreen/CardGameScreen/PlayerUI';
 import { toSerializedGameAssetFromLayoutSource } from '@/ui/layout/cardGameLayoutAsset';
-import type {
-  SerializedGameAsset,
-  SerializedLayoutPreset,
-  SerializedSeatLayout,
-} from './gameUiTypes';
-import type { SeatLayout, TableShapeSettings } from '@ocentra/game-ui-types/tableLayoutTypes';
-import type { GameAsset, LayoutPreset } from './tableLayoutTypes';
+import type { SerializedCardGameLayoutAsset } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import {
+  cloneCardGameLayoutDocument,
+  createDefaultCardGameLayoutAsset,
+  hydrateCardGameLayoutAsset,
+} from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import type { GameAsset } from './tableLayoutTypes';
 import { getGameAsset, setGameAsset } from './tableLayoutStore';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -51,254 +46,21 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled: b
 };
 
 log.register(import.meta.url);
-import { AssetSchemaVersion } from '@ocentra/asset-domain/constants/assets';
 
 let loadPromise: Promise<void> | null = null;
 let loadedGameId: string | null = null;
 
-const FALLBACK_DEFAULT_PLAYER_COUNT = 4;
-const DEFAULT_SEAT_SCALE = 0.5;
 const SHOULD_PERSIST_DEFAULT_ASSET =
   typeof import.meta !== 'undefined' &&
   import.meta.env?.DEV &&
   import.meta.env?.VITE_ENABLE_DEV_LAYOUT_SAVE !== 'false';
 
-const toPascalCase = (value: string): string =>
-  value
-    .split(/[^a-zA-Z0-9]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
-
-const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
-
-const cloneSeat = (seat: SeatLayout): SeatLayout => ({
-  ...seat,
-  position: { ...seat.position },
-  playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
-});
-
-const generateSeatRing = (count: number): SeatLayout[] => {
-  const seats: SeatLayout[] = [];
-  const radiusX = 0.38;
-  const radiusY = 0.34;
-  const angleStep = (2 * Math.PI) / count;
-  const baseAngle = Math.PI / 2;
-
-  for (let index = 0; index < count; index += 1) {
-    const angle = baseAngle + angleStep * index;
-    const x = 0.5 + Math.cos(angle) * radiusX;
-    const y = 0.5 + Math.sin(angle) * radiusY;
-    seats.push({
-      id: index,
-      label: `p${index + 1}`,
-      position: {
-        x: Number(clamp01(x).toFixed(4)),
-        y: Number(clamp01(y).toFixed(4)),
-      },
-      rotation: 0,
-      scale: DEFAULT_SEAT_SCALE,
-    });
-  }
-
-  return seats;
-};
-
-const defaultTableShape: TableShapeSettings = {
-  width: 960,
-  height: 560,
-  offsetX: 0,
-  offsetY: -78,
-  curvature: 0.88,
-  feltInset: -8,
-};
-
-const generateDefaultPreset = (count: number): LayoutPreset => ({
-  table: { ...defaultTableShape },
-  seats: generateSeatRing(count),
-});
-
 export const createDefaultGameAsset = (gameId: string): GameAsset => {
-  const now = new Date().toISOString();
-  const counts = Array.from({ length: 9 }, (_, index) => index + 2);
-  const presets = Object.fromEntries(counts.map((count) => [String(count), generateDefaultPreset(count)]));
-
-  return {
-    metadata: {
-      gameId,
-      schemaVersion: AssetSchemaVersion.V1,
-      displayName: toPascalCase(gameId) || gameId,
-      createdAt: now,
-      updatedAt: now,
-    },
-    layout: {
-      defaultPlayerCount: FALLBACK_DEFAULT_PLAYER_COUNT,
-      presets,
-      playerUiDefaults: undefined,
-      views: undefined,
-    },
-    gameplay: {},
-    extensions: {},
-  };
-};
-
-const normalizeSeat = (input: SerializedSeatLayout | undefined, fallback?: SeatLayout): SeatLayout => {
-  const fallbackSeat = fallback ? cloneSeat(fallback) : undefined;
-  const id = Number.isFinite(input?.id) ? Number(input?.id) : fallbackSeat?.id ?? 0;
-  const position = {
-    x: clamp01(
-      Number.isFinite(input?.position?.x) ? Number(input?.position?.x) : fallbackSeat?.position?.x ?? 0.5,
-    ),
-    y: clamp01(
-      Number.isFinite(input?.position?.y) ? Number(input?.position?.y) : fallbackSeat?.position?.y ?? 0.5,
-    ),
-  };
-
-  const seat: SeatLayout = {
-    id,
-    label: input?.label ?? fallbackSeat?.label ?? `p${id + 1}`,
-    position: {
-      x: Number(position.x.toFixed(4)),
-      y: Number(position.y.toFixed(4)),
-    },
-    rotation: Number.isFinite(input?.rotation)
-      ? Number(input?.rotation)
-      : fallbackSeat?.rotation ?? 0,
-    ...(Number.isFinite(input?.scale)
-      ? { scale: Number(input?.scale) }
-      : fallbackSeat?.scale !== undefined
-        ? { scale: fallbackSeat.scale }
-        : { scale: DEFAULT_SEAT_SCALE }),
-  };
-
-  const overrides: Partial<Record<SerializablePlayerUIKey, number>> = {};
-  PLAYER_UI_SERIALIZABLE_FIELDS.forEach((field: { key: string }) => {
-    const normalizedKey = field.key as SerializablePlayerUIKey;
-    const inputValue = input?.[normalizedKey];
-    const incomingValue = typeof inputValue === 'number' ? Number(inputValue) : undefined;
-    const fallbackOverrideValue = fallbackSeat?.playerOverrides?.[normalizedKey];
-    const fallbackValue = typeof fallbackOverrideValue === 'number' ? Number(fallbackOverrideValue) : undefined;
-    const resolved = incomingValue ?? fallbackValue;
-    if (resolved !== undefined && Number.isFinite(resolved)) {
-      overrides[normalizedKey] = resolved;
-    }
-  });
-
-  const sanitizedOverrides = sanitizePlayerUIOverrides(overrides);
-  if (sanitizedOverrides) {
-    seat.playerOverrides = sanitizedOverrides;
-  }
-
-  return seat;
-};
-
-const normalizePreset = (
-  preset: SerializedLayoutPreset | undefined,
-  fallback: LayoutPreset,
-): LayoutPreset => {
-  if (!preset) {
-    return {
-      table: { ...(fallback.table ?? {}) },
-      seats: fallback.seats.map((seat) => cloneSeat(seat)),
-    };
-  }
-
-  const fallbackSeatsById = new Map<number, SeatLayout>();
-  fallback.seats.forEach((seat) => {
-    fallbackSeatsById.set(seat.id, seat);
-  });
-
-  const seats: SeatLayout[] = [];
-  const serializedSeats = preset.seats ?? [];
-
-  serializedSeats.forEach((seatInput) => {
-    const fallbackSeat = fallbackSeatsById.get(seatInput.id);
-    const normalizedSeat = normalizeSeat(seatInput, fallbackSeat);
-    seats.push(normalizedSeat);
-    fallbackSeatsById.delete(normalizedSeat.id);
-  });
-
-  if (seats.length === 0) {
-    seats.push(...fallback.seats.map((seat) => cloneSeat(seat)));
-  } else {
-    fallbackSeatsById.forEach((seat) => {
-      seats.push(cloneSeat(seat));
-    });
-  }
-
-  seats.sort((a, b) => a.id - b.id);
-
-  return {
-    table: {
-      ...(fallback.table ?? {}),
-      ...(preset.table ?? {}),
-    },
-    seats,
-  };
-};
-
-const hydrateSerializedAsset = (serialized: SerializedGameAsset | null, gameId: string): GameAsset => {
-  const fallbackAsset = createDefaultGameAsset(gameId);
-  if (!serialized) {
-    return fallbackAsset;
-  }
-
-  const metadata = {
-    ...fallbackAsset.metadata,
-    ...serialized.metadata,
-    gameId: serialized.metadata?.gameId ?? fallbackAsset.metadata.gameId,
-    schemaVersion: serialized.metadata?.schemaVersion ?? fallbackAsset.metadata.schemaVersion,
-    updatedAt: serialized.metadata?.updatedAt ?? fallbackAsset.metadata.updatedAt ?? new Date().toISOString(),
-    createdAt: serialized.metadata?.createdAt ?? fallbackAsset.metadata.createdAt ?? new Date().toISOString(),
-  };
-
-  const sourcePresets = serialized.layout?.presets ?? {};
-  const presetEntries = new Set<string>([...Object.keys(fallbackAsset.layout.presets), ...Object.keys(sourcePresets)]);
-
-  const presets = Object.fromEntries(
-    Array.from(presetEntries).map((countKey) => {
-      const numericCount = Number.parseInt(countKey, 10);
-      const fallbackPreset =
-        fallbackAsset.layout.presets[countKey] ?? generateDefaultPreset(Number.isNaN(numericCount) ? 2 : numericCount);
-      const serializedPreset = sourcePresets[countKey];
-      return [countKey, normalizePreset(serializedPreset, fallbackPreset)];
-    }),
-  );
-
-  const playerUiDefaults = serialized.layout?.playerUiDefaults
-    ? {
-        ...(fallbackAsset.layout.playerUiDefaults ?? {}),
-        ...serialized.layout.playerUiDefaults,
-      }
-    : fallbackAsset.layout.playerUiDefaults;
-
-  const views = serialized.layout?.views
-    ? Object.fromEntries(
-        Object.entries(serialized.layout.views).map(([viewId, presetInput]) => {
-          const fallbackView =
-            fallbackAsset.layout.views?.[viewId] ??
-            generateDefaultPreset(fallbackAsset.layout.defaultPlayerCount ?? FALLBACK_DEFAULT_PLAYER_COUNT);
-          return [viewId, normalizePreset(presetInput, fallbackView)];
-        }),
-      )
-    : fallbackAsset.layout.views;
-
-  return {
-    metadata,
-    layout: {
-      defaultPlayerCount:
-        serialized.layout?.defaultPlayerCount ?? fallbackAsset.layout.defaultPlayerCount ?? FALLBACK_DEFAULT_PLAYER_COUNT,
-      presets,
-      playerUiDefaults,
-      views,
-    },
-    gameplay: serialized.gameplay ?? fallbackAsset.gameplay,
-    extensions: serialized.extensions ?? fallbackAsset.extensions,
-  };
+  return createDefaultCardGameLayoutAsset(gameId);
 };
 
 type FetchResult = {
-  serialized: SerializedGameAsset | null;
+  serialized: SerializedCardGameLayoutAsset | null;
   gameModeExists: boolean;
   layoutMissing: boolean;
 };
@@ -385,7 +147,7 @@ export async function ensureGameAssetLoaded(gameId: string): Promise<void> {
       }
 
       const wasLayoutMissing = result.layoutMissing;
-      const asset = hydrateSerializedAsset(result.serialized, result.serialized?.metadata?.gameId ?? gameId);
+      const asset = hydrateCardGameLayoutAsset(result.serialized, result.serialized?.metadata?.gameId ?? gameId);
       setGameAsset(asset);
       loadedGameId = asset.metadata.gameId;
       
@@ -436,7 +198,11 @@ export async function persistGameAsset(asset: GameAsset): Promise<void> {
       throw new Error(`Failed to load layout asset instance: ${guidString}`);
     }
 
-    Object.assign(layoutInstance, asset);
+    const layoutRecord = layoutInstance as unknown as Record<string, unknown>;
+    Object.assign(layoutRecord, cloneCardGameLayoutDocument(asset.layout));
+    layoutRecord.metadata = { ...asset.metadata };
+    layoutRecord.gameplay = { ...asset.gameplay };
+    layoutRecord.extensions = { ...asset.extensions };
 
     await layoutInstance.saveChanges();
     logInfo(`[GameAsset] Saved layout asset: ${asset.metadata.gameId}`, undefined, LOG_ASSETS);

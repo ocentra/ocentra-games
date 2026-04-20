@@ -1,0 +1,145 @@
+.hud-artwork {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: var(--hud-fit-width, 100%);
+  height: var(--hud-fit-height, 100%);
+  transform: translate(calc(-50% + var(--hud-offset-x, 0px)), var(--hud-offset-y, 0px))
+    scale(var(--hud-overall-scale, 1));
+  transform-origin: center bottom;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hud-artwork__debug-frame {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(0, 255, 102, 0.92);
+  border-radius: 1rem;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 0 1.25rem rgba(0, 255, 102, 0.28),
+    0 0 2.5rem rgba(0, 255, 102, 0.14);
+  background: rgba(0, 255, 102, 0.04);
+  z-index: 0;
+}
+
+.hud-artwork__debug-label {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.5rem;
+  z-index: 1;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(0, 255, 102, 0.7);
+  border-radius: 999px;
+  background: rgba(2, 10, 5, 0.86);
+  color: #39ff7a;
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 0.5rem rgba(0, 255, 102, 0.35);
+}
+
+.hud-artwork__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  image-rendering: auto;
+}
+
+.hud-artwork__button-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hud-artwork__button-bank {
+  position: absolute;
+  display: flex;
+  gap: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hud-artwork__button-bank--right {
+  flex-direction: row-reverse;
+  transform: translateX(-100%);
+}
+
+.hud-artwork__action-button {
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.hud-artwork[data-button-debug="true"] .hud-artwork__action-button {
+  outline: 2px solid rgba(255, 75, 75, 0.95);
+  outline-offset: -2px;
+  background: rgba(255, 75, 75, 0.03);
+}
+
+.hud-artwork__action-button--debug {
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 88, 88, 0.95);
+  background:
+    linear-gradient(180deg, rgba(35, 7, 53, 0.96) 0%, rgba(14, 2, 24, 0.98) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 0.9rem rgba(255, 88, 88, 0.28),
+    0 0 1.8rem rgba(120, 35, 210, 0.22);
+  color: #fff5ff;
+  font-size: clamp(0.85rem, 1vw, 1.1rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+.hud-artwork__action-button:focus-visible {
+  outline: none;
+}
+
+.hud-artwork__action-button-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hud-artwork__action-button-svg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hud-artwork__action-button-label {
+  position: relative;
+  z-index: 1;
+  color: #fff4ff;
+  font-size: clamp(0.55rem, 0.75vw, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-shadow:
+    0 0 0.3rem rgba(255, 255, 255, 0.3),
+    0 0 0.75rem rgba(180, 32, 255, 0.55);
+  pointer-events: none;
+}
+
+.hud-artwork__anchor {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}

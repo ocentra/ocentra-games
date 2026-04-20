@@ -9,9 +9,10 @@ const log = AssetEditorLogger.instance
 log.register(import.meta.url)
 
 export const ASSET_SELECTION_CHANNEL = 'ocentra-asset-editor-selection'
+export const CARD_GAME_LAYOUT_DRAFT_CHANNEL = 'ocentra-card-game-layout-draft'
 
 export function getStandalonePanelUrl(
-  panel: 'preview' | 'inspector',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas',
   assetPath: string,
   locked?: boolean
 ): string {
@@ -24,7 +25,7 @@ export function getStandalonePanelUrl(
 }
 
 export async function createPanelWindow(
-  panel: 'preview' | 'inspector',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas',
   assetPath: string,
   title?: string,
   locked?: boolean
@@ -34,11 +35,26 @@ export async function createPanelWindow(
   const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
   const url = getStandalonePanelUrl(panel, assetPath, locked)
   const label = `panel-${panel}-${Date.now()}`
-  const size = panel === 'preview' ? { width: 1100, height: 720 } : { width: 420, height: 720 }
+  const size =
+    panel === 'preview'
+      ? { width: 1100, height: 720 }
+      : panel === 'design-studio'
+        ? { width: 1600, height: 1000 }
+        : panel === 'preview-canvas'
+          ? { width: 1280, height: 900 }
+          : { width: 420, height: 720 }
 
   const webview = new WebviewWindow(label, {
     url,
-    title: title ?? `${panel === 'preview' ? 'Preview' : 'Inspector'}: ${assetPath.split('/').pop() ?? assetPath}`,
+    title:
+      title ??
+      `${panel === 'preview'
+        ? 'Preview'
+        : panel === 'design-studio'
+          ? 'Design Studio'
+          : panel === 'preview-canvas'
+            ? 'Preview Canvas'
+            : 'Inspector'}: ${assetPath.split('/').pop() ?? assetPath}`,
     width: size.width,
     height: size.height,
     resizable: true,

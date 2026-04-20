@@ -5,25 +5,19 @@ import type { AssetEntry } from '@ocentra/boundary-domain/types/asset-entry';
 import type { IResourceEntry } from '@ocentra/boundary-domain/types/resource-entry';
 import type { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
-import type { SeatLayout, TableShapeSettings } from '@ocentra/game-ui-types/tableLayoutTypes';
+import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
 import { GetGameModeEntriesEvent } from '@ocentra/eventing-domain/events/assets/GetGameModeEntriesEvent';
 import { GetResourceByGuidEvent } from '@ocentra/eventing-domain/events/assets/GetResourceByGuidEvent';
 import { UploadAssetEvent } from '@ocentra/eventing-domain/events/assets/UploadAssetEvent';
 import { AssetLoader } from '@/adapters/assets/AssetLoader';
+import {
+  cloneCardGameLayoutDocument,
+  normalizeCardGameLayoutDocument,
+} from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 
-export interface LayoutPreset {
-  table: TableShapeSettings;
-  seats: SeatLayout[];
-}
-
-export interface LayoutAssetDocument {
-  defaultPlayerCount: number;
-  presets: Record<string, LayoutPreset>;
-  gameplay: Record<string, unknown>;
-  extensions: Record<string, unknown>;
-}
+export type LayoutAssetDocument = CardGameLayoutDocument;
 
 export interface LoadedLayoutAsset {
   gameId: string;
@@ -72,23 +66,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-function hasLegacyLayoutDocument(value: unknown): value is Record<string, unknown> {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return ['defaultPlayerCount', 'presets', 'gameplay', 'extensions'].some((key) => key in value);
-}
-
 function isLayoutStructure(value: unknown): value is Record<string, unknown> {
   return isRecord(value) && typeof value.type === 'string' && Array.isArray(value.sections);
-}
-
-function getLayoutDocumentContainer(data: Record<string, unknown>): Record<string, unknown> {
-  if (hasLegacyLayoutDocument(data.layout)) {
-    return data.layout;
-  }
-  return data;
 }
 
 function getLayoutStructure(data: Record<string, unknown>): Record<string, unknown> {
@@ -101,13 +80,8 @@ function getLayoutStructure(data: Record<string, unknown>): Record<string, unkno
 
 function toLayoutDocument(root: Record<string, unknown>): LayoutAssetDocument {
   const data = getDataBlock(root);
-  const container = getLayoutDocumentContainer(data);
-  return {
-    defaultPlayerCount: typeof container.defaultPlayerCount === 'number' ? container.defaultPlayerCount : 4,
-    presets: (container.presets && typeof container.presets === 'object' ? container.presets : {}) as Record<string, LayoutPreset>,
-    gameplay: (container.gameplay && typeof container.gameplay === 'object' ? container.gameplay : {}) as Record<string, unknown>,
-    extensions: (container.extensions && typeof container.extensions === 'object' ? container.extensions : {}) as Record<string, unknown>,
-  };
+  const container = isRecord(data.layout) ? data.layout : data;
+  return normalizeCardGameLayoutDocument(container);
 }
 
 function getLayoutReference(gameModeRoot: Record<string, unknown>): ResourceReference | null {
@@ -200,7 +174,7 @@ export async function loadLayoutAsset(gameId: string): Promise<LoadedLayoutAsset
 
 export function buildLoadedLayoutAssetFromRaw(
   assetPath: string,
-  assetRoot: Record<string, unknown>
+  assetRoot: Record<string, unknown>,
 ): LoadedLayoutAsset {
   const system = getSystemBlock(assetRoot);
   const guid = typeof system.guid === 'string' ? system.guid : '';
@@ -227,7 +201,7 @@ export function buildLoadedLayoutAssetFromRaw(
 
 export async function saveLayoutAsset(
   asset: LoadedLayoutAsset,
-  document: LayoutAssetDocument
+  document: LayoutAssetDocument,
 ): Promise<LoadedLayoutAsset> {
   const nextRoot = cloneRecord(asset.raw);
   const nextSystem = getSystemBlock(nextRoot);
@@ -243,6 +217,11 @@ export async function saveLayoutAsset(
 
   nextData.defaultPlayerCount = document.defaultPlayerCount;
   nextData.presets = document.presets;
+  nextData.playerUiDefaults = document.playerUiDefaults;
+  nextData.hud = document.hud;
+  nextData.cardFan = document.cardFan;
+  nextData.cardVisuals = document.cardVisuals;
+  nextData.views = document.views;
   nextData.gameplay = document.gameplay;
   nextData.extensions = document.extensions;
   nextData.layout = getLayoutStructure(nextData);
@@ -262,8 +241,8 @@ export async function saveLayoutAsset(
         mimeType: MimeTypes.Json,
         fileSize: content.length,
       },
-      deferred
-    )
+      deferred,
+    ),
   );
 
   const result = await deferred.promise;
@@ -275,6 +254,6 @@ export async function saveLayoutAsset(
     ...asset,
     path: result.value.path || asset.path,
     raw: nextRoot,
-    document: cloneRecord(document),
+    document: cloneCardGameLayoutDocument(document),
   };
 }

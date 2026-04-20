@@ -427,6 +427,11 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
   "CardGameLayout": {
     "defaultPlayerCount": "Number",
     "presets": "Record<string, LayoutPreset>",
+    "playerUiDefaults": "CardGameLayoutDocument['playerUiDefaults']",
+    "hud": "CardGameLayoutDocument['hud']",
+    "cardFan": "CardGameLayoutDocument['cardFan']",
+    "cardVisuals": "CardGameLayoutDocument['cardVisuals']",
+    "views": "Record<string, LayoutPreset>",
     "gameplay": "Record<string, unknown>",
     "extensions": "Record<string, unknown>"
   },

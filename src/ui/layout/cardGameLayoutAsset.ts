@@ -1,20 +1,24 @@
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
-import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
+import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
-import type { SerializedGameAsset, SerializedLayoutPreset } from './gameUiTypes';
-import type { LayoutPreset } from './tableLayoutTypes';
-
-const DEFAULT_PLAYER_COUNT = 4;
-const DEFAULT_LAYOUT_STRUCTURE = {
-  type: 'custom',
-  sections: [],
-} as const;
+import {
+  cloneCardGameLayoutDocument,
+  hydrateCardGameLayoutAsset,
+  normalizeCardGameLayoutDocument,
+  resolveLayoutPreset as resolveLayoutPresetDomain,
+  type SerializedCardGameLayoutAsset,
+} from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 
 type LooseRecord = Record<string, unknown>;
 
 export interface NormalizedCardGameLayoutDocument {
   defaultPlayerCount: number;
   presets: Record<string, LayoutPreset>;
+  playerUiDefaults: CardGameLayoutDocument['playerUiDefaults'];
+  hud: CardGameLayoutDocument['hud'];
+  cardFan: CardGameLayoutDocument['cardFan'];
+  cardVisuals: CardGameLayoutDocument['cardVisuals'];
+  views: Record<string, LayoutPreset>;
   gameplay: Record<string, unknown>;
   extensions: Record<string, unknown>;
   layoutStructure: LooseRecord;
@@ -28,29 +32,18 @@ function cloneRecord<T>(value: T): T {
   if (typeof structuredClone === 'function') {
     return structuredClone(value);
   }
-
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-function cloneSeat(seat: SeatLayout): SeatLayout {
-  return {
-    ...seat,
-    position: { ...seat.position },
-    playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
-  };
-}
-
-function clonePreset(preset: SerializedLayoutPreset | LayoutPreset | undefined): LayoutPreset | null {
-  if (!preset) {
-    return null;
+function getLayoutStructure(data: LooseRecord): LooseRecord {
+  const nestedLayout = data.layout;
+  if (isRecord(nestedLayout) && typeof nestedLayout.type === 'string' && Array.isArray(nestedLayout.sections)) {
+    return cloneRecord(nestedLayout);
   }
 
-  const table = isRecord(preset.table) ? { ...preset.table } : {};
-  const seats = Array.isArray(preset.seats) ? preset.seats.map((seat) => cloneSeat(seat as SeatLayout)) : [];
-
   return {
-    table,
-    seats,
+    type: 'custom',
+    sections: [],
   };
 }
 
@@ -61,69 +54,20 @@ function getRootData(source: LooseRecord): LooseRecord {
   return source;
 }
 
-function getLayoutDocumentContainer(data: LooseRecord): LooseRecord {
-  const nestedLayout = data.layout;
-  if (isRecord(nestedLayout) && hasLayoutDocumentFields(nestedLayout)) {
-    return nestedLayout;
-  }
-  return data;
-}
-
-function hasLayoutDocumentFields(value: unknown): value is LooseRecord {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return [
-    'defaultPlayerCount',
-    'presets',
-    'playerUiDefaults',
-    'views',
-    'gameplay',
-    'extensions',
-  ].some((key) => key in value);
-}
-
-function getLayoutStructure(data: LooseRecord): LooseRecord {
-  const nestedLayout = data.layout;
-  if (
-    isRecord(nestedLayout) &&
-    typeof nestedLayout.type === 'string' &&
-    Array.isArray(nestedLayout.sections)
-  ) {
-    return cloneRecord(nestedLayout);
-  }
-
-  return cloneRecord(DEFAULT_LAYOUT_STRUCTURE);
-}
-
 export function readCardGameLayoutDocument(source: LooseRecord): NormalizedCardGameLayoutDocument {
   const data = getRootData(source);
-  const container = getLayoutDocumentContainer(data);
-  const presetsSource = isRecord(container.presets)
-    ? (container.presets as Record<string, SerializedLayoutPreset | LayoutPreset>)
-    : {};
+  const normalized = normalizeCardGameLayoutDocument(data);
 
   return {
-    defaultPlayerCount:
-      typeof container.defaultPlayerCount === 'number'
-        ? container.defaultPlayerCount
-        : DEFAULT_PLAYER_COUNT,
-    presets: Object.fromEntries(
-      Object.entries(presetsSource)
-        .map(([key, preset]) => [key, clonePreset(preset)])
-        .filter((entry): entry is [string, LayoutPreset] => entry[1] !== null),
-    ),
-    gameplay: isRecord(container.gameplay)
-      ? cloneRecord(container.gameplay)
-      : isRecord(data.gameplay)
-        ? cloneRecord(data.gameplay)
-        : {},
-    extensions: isRecord(container.extensions)
-      ? cloneRecord(container.extensions)
-      : isRecord(data.extensions)
-        ? cloneRecord(data.extensions)
-        : {},
+    defaultPlayerCount: normalized.defaultPlayerCount,
+    presets: cloneRecord(normalized.presets),
+    playerUiDefaults: cloneRecord(normalized.playerUiDefaults),
+    hud: cloneRecord(normalized.hud),
+    cardFan: cloneRecord(normalized.cardFan),
+    cardVisuals: cloneRecord(normalized.cardVisuals),
+    views: cloneRecord(normalized.views),
+    gameplay: cloneRecord(normalized.gameplay),
+    extensions: cloneRecord(normalized.extensions),
     layoutStructure: getLayoutStructure(data),
   };
 }
@@ -131,40 +75,60 @@ export function readCardGameLayoutDocument(source: LooseRecord): NormalizedCardG
 export function toSerializedGameAssetFromLayoutSource(
   source: LooseRecord,
   gameId: string,
-): SerializedGameAsset {
+): SerializedCardGameLayoutAsset {
   const document = readCardGameLayoutDocument(source);
   const metadataSource = isRecord(source.metadata) ? source.metadata : {};
 
+  const asset = hydrateCardGameLayoutAsset(
+    {
+      metadata: {
+        ...metadataSource,
+        gameId: typeof metadataSource.gameId === 'string' ? metadataSource.gameId : gameId,
+        schemaVersion: typeof metadataSource.schemaVersion === 'number' ? metadataSource.schemaVersion : 1,
+      },
+      layout: {
+        defaultPlayerCount: document.defaultPlayerCount,
+        presets: document.presets,
+        playerUiDefaults: document.playerUiDefaults,
+        hud: document.hud,
+        cardFan: document.cardFan,
+        cardVisuals: document.cardVisuals,
+        views: document.views,
+        gameplay: document.gameplay,
+        extensions: document.extensions,
+      },
+      gameplay: document.gameplay,
+      extensions: document.extensions,
+    },
+    gameId,
+  );
+
   return {
-    metadata: {
-      ...metadataSource,
-      gameId: typeof metadataSource.gameId === 'string' ? metadataSource.gameId : gameId,
-      schemaVersion: typeof metadataSource.schemaVersion === 'number' ? metadataSource.schemaVersion : 1,
-    },
-    layout: {
-      defaultPlayerCount: document.defaultPlayerCount,
-      presets: cloneRecord(document.presets),
-    },
-    gameplay: cloneRecord(document.gameplay),
-    extensions: cloneRecord(document.extensions),
+    metadata: asset.metadata,
+    layout: cloneCardGameLayoutDocument(asset.layout),
+    gameplay: cloneRecord(asset.gameplay),
+    extensions: cloneRecord(asset.extensions),
   };
 }
 
 export function resolveLayoutPreset(
   document: NormalizedCardGameLayoutDocument,
   playerCount: number,
-): LayoutPreset | null {
-  const exact = document.presets[String(playerCount)];
-  if (exact) {
-    return clonePreset(exact);
-  }
-
-  const fallback = document.presets[String(document.defaultPlayerCount)];
-  if (fallback) {
-    return clonePreset(fallback);
-  }
-
-  return null;
+): LayoutPreset {
+  return resolveLayoutPresetDomain(
+    {
+      defaultPlayerCount: document.defaultPlayerCount,
+      presets: document.presets,
+      playerUiDefaults: document.playerUiDefaults,
+      hud: document.hud,
+      cardFan: document.cardFan,
+      cardVisuals: document.cardVisuals,
+      views: document.views,
+      gameplay: document.gameplay,
+      extensions: document.extensions,
+    },
+    playerCount,
+  );
 }
 
 function isInlineLayoutSource(value: unknown): value is LooseRecord {
@@ -172,12 +136,8 @@ function isInlineLayoutSource(value: unknown): value is LooseRecord {
     return false;
   }
 
-  if (hasLayoutDocumentFields(value)) {
-    return true;
-  }
-
   const nestedData = Reflect.get(value, 'data');
-  return isRecord(nestedData);
+  return isRecord(nestedData) || 'defaultPlayerCount' in value || 'presets' in value || 'layout' in value;
 }
 
 export async function loadCardGameLayoutDocument(

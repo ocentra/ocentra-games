@@ -400,7 +400,7 @@ export const assetTypeMap: Record<string, AssetTypeMetadata> = {
     "importPath": "@ocentra/game-asset-domain/ui/layout/CardGameLayout",
     "assetType": "CardGameLayout",
     "displayName": "Card Game Layout",
-    "icon": "🃏",
+    "icon": "🎏",
     "category": "UI",
     "commonType": "Assets"
   },

@@ -11,43 +11,52 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
 import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
-import type { TableShapeSettings, SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
+import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import { cloneCardGameLayoutDocument, createDefaultCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 
-export interface LayoutPreset {
-  table: TableShapeSettings;
-  seats: SeatLayout[];
-}
+const DEFAULT_DOCUMENT = createDefaultCardGameLayoutDocument();
 
 @serializableClass({
   schemaVersion: 1,
   assetType: 'CardGameLayout',
   displayName: 'Card Game Layout',
-  icon: '🃏',
+  icon: '🎏',
   category: AssetTypeCategory.UI,
 })
 export class CardGameLayout extends Layout {
   static override schemaVersion = 1;
   static override readonly requiresInspector = true;
 
-
   static override createTemplate(): Record<string, unknown> {
-    return {
-      defaultPlayerCount: 4,
-      presets: {},
-    };
+    return cloneCardGameLayoutDocument(DEFAULT_DOCUMENT) as unknown as Record<string, unknown>;
   }
 
   @serializable({ label: 'Default Player Count' })
-  defaultPlayerCount: number = 4;
+  defaultPlayerCount: number = DEFAULT_DOCUMENT.defaultPlayerCount;
 
   @serializable({ label: 'Layout Presets' })
-  presets: Record<string, LayoutPreset> = {};
+  presets: Record<string, LayoutPreset> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).presets;
+
+  @serializable({ label: 'Player UI Defaults' })
+  playerUiDefaults: CardGameLayoutDocument['playerUiDefaults'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).playerUiDefaults;
+
+  @serializable({ label: 'HUD' })
+  hud: CardGameLayoutDocument['hud'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).hud;
+
+  @serializable({ label: 'Card Fan' })
+  cardFan: CardGameLayoutDocument['cardFan'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardFan;
+
+  @serializable({ label: 'Card Visuals' })
+  cardVisuals: CardGameLayoutDocument['cardVisuals'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardVisuals;
+
+  @serializable({ label: 'Views' })
+  views: Record<string, LayoutPreset> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).views;
 
   @serializable({ label: 'Gameplay' })
-  gameplay: Record<string, unknown> = {};
+  gameplay: Record<string, unknown> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).gameplay;
 
   @serializable({ label: 'Extensions' })
-  extensions: Record<string, unknown> = {};
+  extensions: Record<string, unknown> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).extensions;
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
     const deferred = new OperationDeferred<string>();
@@ -75,12 +84,7 @@ export class CardGameLayout extends Layout {
       }
     }
     const assetId = `${context.gameId}-layout`;
-    const data: Record<string, unknown> = {
-      defaultPlayerCount: 4,
-      presets: {},
-      gameplay: {},
-      extensions: {},
-    };
+    const data = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT) as unknown as Record<string, unknown>;
 
     return {
       assetId,
@@ -90,5 +94,3 @@ export class CardGameLayout extends Layout {
     };
   }
 }
-
-
