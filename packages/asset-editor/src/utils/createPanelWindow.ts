@@ -1,5 +1,6 @@
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger'
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace'
+export { CARD_GAME_LAYOUT_DRAFT_CHANNEL } from '@ocentra/game-layout-domain/draftChannel'
 
 export function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
@@ -9,7 +10,6 @@ const log = AssetEditorLogger.instance
 log.register(import.meta.url)
 
 export const ASSET_SELECTION_CHANNEL = 'ocentra-asset-editor-selection'
-export const CARD_GAME_LAYOUT_DRAFT_CHANNEL = 'ocentra-card-game-layout-draft'
 
 export function getStandalonePanelUrl(
   panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas',
