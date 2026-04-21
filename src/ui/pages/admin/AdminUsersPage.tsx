@@ -103,6 +103,9 @@ export const AdminUsersPage: React.FC = () => {
       alert('Access Denied: Admin privileges required');
       navigate(buildHomePath());
     }
+
+    const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
+    hideLoading?.();
   }, [isAdmin, user, navigate]);
 
   const loadAdminDashboardData = useCallback(async () => {

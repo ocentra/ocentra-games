@@ -10,9 +10,9 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
-import CenterTableSvg from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/CenterTableSvg';
-import type { CenterTableSVGProps } from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/CenterTableSvg';
-import GameBackground from '@/ui/components/GameScreen/CardGameScreen/CardGameComponents/GameBackground';
+import CenterTableSvg from '@ocentra/card-game-ui/scene/CenterTableSvg';
+import type { CenterTableSVGProps } from '@ocentra/card-game-ui/scene/CenterTableSvg';
+import GameBackground from '@ocentra/card-game-ui/scene/GameBackground';
 import './GameScreenPage.css';
 import {
   describePlayer,

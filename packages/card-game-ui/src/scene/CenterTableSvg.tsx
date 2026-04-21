@@ -1,8 +1,8 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import type { CSSProperties } from 'react';
-import { cardGameMlogoImageUrl as MlogoImg } from '@ocentra/app-assets';
+import { cardGameMlogoImageUrl as MlogoImg } from '@ocentra/app-assets/cardgame';
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
-import type { TableLayoutState } from '@ocentra/game-layout-domain/tableLayoutStore';
+import type { TableLayoutState } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './CenterTableSvg.css';
 
 function extractAlphaFromRgba(color: string | undefined): number {

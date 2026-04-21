@@ -29,6 +29,7 @@ export interface ContextMenuState {
   x: number;
   y: number;
   id: string;
+  path?: string;
   guid?: string;
   hash?: string;
   isFolder: boolean;
@@ -51,4 +52,6 @@ export interface ResourceTreeProps {
   onDeleteAsset?: (id: string) => void;
   onCreateAsset?: (folderOrOptions?: string | CreateDialogOptions, maybeOptions?: CreateDialogOptions) => void;
   onRefreshRequested?: boolean;
+  rootPath?: string;
+  rootLabel?: string;
 }

@@ -25,6 +25,8 @@ export const ResourceTree: React.FC<ResourceTreeProps> = ({
   onDeleteAsset,
   onCreateAsset,
   onRefreshRequested,
+  rootPath,
+  rootLabel,
 }) => {
   const {
     nodes,
@@ -38,6 +40,8 @@ export const ResourceTree: React.FC<ResourceTreeProps> = ({
     loadSyncStatus,
   } = useResourceTree({
     pageSize: 100,
+    rootPath,
+    rootLabel,
   });
 
   const containerRef = useRef<HTMLDivElement>(null);

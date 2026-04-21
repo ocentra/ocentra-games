@@ -93,6 +93,8 @@ export default defineConfig(async ({ mode }) => {
     exclude: [
       ...aiDomainExportSubpaths,
       '@ocentra/endpoint-domain/constants/cloudflare',
+      '@ocentra/card-games',
+      '@ocentra/card-games/schema/zod/game-schema',
       '@ocentra/api-domain/httpClient',
       '@ocentra/api-domain/createApiClient',
       '@huggingface/transformers',
@@ -100,9 +102,12 @@ export default defineConfig(async ({ mode }) => {
     ],
     include: [
       ...ocentraExportSubpaths.filter(
-        (specifier) => specifier === '@ocentra/ai-domain' || !specifier.startsWith('@ocentra/ai-domain/')
+        (specifier) => 
+          (specifier === '@ocentra/ai-domain' || !specifier.startsWith('@ocentra/ai-domain/')) &&
+          !specifier.startsWith('@ocentra/card-games')
       ),
       'three',
+      'framer-motion',
       'zustand',
       'three-stdlib',
       '@huggingface/transformers',

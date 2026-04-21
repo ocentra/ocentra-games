@@ -13,8 +13,11 @@ import {
   saveLayoutAsset,
   type LayoutAssetDocument,
 } from '@/adapters/layout/LayoutAssetService';
-import { CardGameDesignStudioWorkbench } from '@ocentra/card-game-ui/CardGameDesignStudioWorkbench';
-import { CardGamePreviewSurface } from '@ocentra/card-game-ui/CardGamePreviewSurface';
+import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
+import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
+import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import './StandalonePanelPage.css';
 
 type StandalonePanel =
@@ -171,14 +174,22 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
 
   return (
     <div className="standalone-panel-page standalone-panel-page--card-game">
-      <CardGameDesignStudioWorkbench
-        document={document}
-        title={loadedAsset.displayName}
-        onChange={handleChange}
-        onSave={handleSave}
-        onOpenPreviewCanvas={handleOpenPreviewCanvas}
-      />
-      {status ? <div className="standalone-panel-page__status">{status}</div> : null}
+      <div className="card-game-layout-preview__toolbar" style={{ borderBottom: '1px solid var(--border-subtle)', padding: '0.5rem 1rem' }}>
+         <button type="button" className="card-game-layout-preview__button" onClick={handleSave}>
+           Save Layout
+         </button>
+         <button type="button" className="card-game-layout-preview__button" onClick={handleOpenPreviewCanvas}>
+           Open Canvas
+         </button>
+         {status ? <span className="card-game-layout-preview__status" style={{ marginLeft: '1rem', color: 'var(--text-dim)' }}>{status}</span> : null}
+      </div>
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <CardGameDesignStudio
+          embedded
+          document={document}
+          onChange={handleChange}
+        />
+      </div>
     </div>
   );
 };
@@ -187,6 +198,7 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
   assetPath,
   assetData,
 }) => {
+  const headProps = useCoreUIHeaderProps();
   const loadedAsset = useMemo(
     () => buildLoadedLayoutAssetFromRaw(assetPath, assetData as Record<string, unknown>),
     [assetData, assetPath],
@@ -212,9 +224,27 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
     };
   }, [assetPath]);
 
+  // Handle header props mapping (handle string|null vs string difference)
+  const headerProps: GameHeaderProps = {
+    user: headProps.user ? {
+      uid: headProps.user.uid,
+      email: headProps.user.email ?? '',
+      displayName: headProps.user.displayName ?? 'Editor',
+      photoURL: headProps.user.photoURL ?? undefined,
+      isAdmin: headProps.user.isAdmin,
+    } : null,
+    onLogout: headProps.onLogout,
+    getImageUrl: headProps.getImageUrl,
+  };
+
   return (
     <div className="standalone-panel-page standalone-panel-page--card-game-preview">
-      <CardGamePreviewSurface document={document} />
+      <CardGameTemplatePage 
+        document={document as unknown as CardGameLayoutDocument} 
+        headerProps={headerProps}
+        footerVersion="1.0.0-dev"
+        embedded={false}
+      />
     </div>
   );
 };

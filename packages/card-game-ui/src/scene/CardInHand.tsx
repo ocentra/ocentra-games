@@ -1,14 +1,9 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import "./CardInHand.css";
+import React, { useEffect, useMemo, useRef } from 'react';
+import './CardInHand.css';
 
-import { CARD_IN_HAND_DEFAULTS } from "./CardInHand.constants";
+import { CARD_IN_HAND_DEFAULTS } from './CardInHand.constants';
 
-// No more hardcoded imports! Path resolved at runtime (Unity-like asset system)
-// This prevents eager loading of assets when just showing welcome screen
-// Path will be resolved through AssetLoader middleware in dev, or R2 in production
-const DEFAULT_CARD_BACK_PATH = '/Resources/GameMode/CardGames/Images/Extras/BackCard.png';
-
-interface AnchorPoint {
+export interface AnchorPoint {
   x: number;
   y: number;
   radius: number;
@@ -28,7 +23,7 @@ interface CardInHandProps {
   cardHeight?: number;
   cardImage?: string;
   anchorPoint?: AnchorPoint;
-  position?: "absolute" | "fixed";
+  position?: 'absolute' | 'fixed';
   zIndex?: number;
   viewportWidth?: number;
   viewportHeight?: number;
@@ -52,9 +47,9 @@ const CardInHand: React.FC<CardInHandProps> = ({
   radiusOffset = 0,
   cardWidth = CARD_IN_HAND_DEFAULTS.CARD_WIDTH,
   cardHeight = CARD_IN_HAND_DEFAULTS.CARD_HEIGHT,
-  cardImage = CARD_IN_HAND_DEFAULTS.CARD_IMAGE || DEFAULT_CARD_BACK_PATH,
+  cardImage = CARD_IN_HAND_DEFAULTS.CARD_IMAGE,
   anchorPoint,
-  position = "absolute",
+  position = 'absolute',
   zIndex = CARD_IN_HAND_DEFAULTS.Z_INDEX_BASE,
   viewportWidth,
   viewportHeight,
@@ -65,26 +60,37 @@ const CardInHand: React.FC<CardInHandProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Array<HTMLImageElement | null>>([]);
+
   const dimensions = useMemo(() => {
     if (disableViewportScale) {
       return { width: cardWidth, height: cardHeight };
     }
-    const resolvedViewportWidth =
-      viewportWidth ?? (typeof window === 'undefined' ? null : window.innerWidth);
-    if (!resolvedViewportWidth) {
+
+    const resolvedViewportWidth = viewportWidth ?? (typeof window === 'undefined' ? null : window.innerWidth);
+    const resolvedViewportHeight = viewportHeight ?? (typeof window === 'undefined' ? null : window.innerHeight);
+    if (!resolvedViewportWidth || !resolvedViewportHeight) {
       return { width: cardWidth, height: cardHeight };
     }
+
     const baseWidth = CARD_IN_HAND_DEFAULTS.REFERENCE_WIDTH || resolvedViewportWidth;
-    const scale = clamp(
+    const widthScale = clamp(
       resolvedViewportWidth / baseWidth,
       CARD_IN_HAND_DEFAULTS.MIN_CARD_SCALE,
-      CARD_IN_HAND_DEFAULTS.MAX_CARD_SCALE
+      CARD_IN_HAND_DEFAULTS.MAX_CARD_SCALE,
     );
+    const referenceAspect = cardHeight / Math.max(1, cardWidth);
+    const heightScale = clamp(
+      resolvedViewportHeight / (baseWidth * referenceAspect),
+      CARD_IN_HAND_DEFAULTS.MIN_CARD_SCALE,
+      CARD_IN_HAND_DEFAULTS.MAX_CARD_SCALE,
+    );
+
+    const scale = Math.min(widthScale, heightScale);
     return {
       width: cardWidth * scale,
       height: cardHeight * scale,
     };
-  }, [cardHeight, cardWidth, disableViewportScale, viewportWidth]);
+  }, [cardHeight, cardWidth, disableViewportScale, viewportHeight, viewportWidth]);
 
   const { effectiveArcStart, cards } = useMemo(() => {
     if (!anchorPoint) {
@@ -116,17 +122,17 @@ const CardInHand: React.FC<CardInHandProps> = ({
     });
 
     return { effectiveArcStart: start, cards: list };
-  }, [anchorPoint, arcStart, arcEnd, cardCount, minCardCount, maxCardCount, minArc, maxArc, radius, radiusOffset, fanTilt, centerOffsetX, centerOffsetY]);
+  }, [anchorPoint, arcEnd, arcStart, cardCount, centerOffsetX, centerOffsetY, fanTilt, maxArc, maxCardCount, minArc, minCardCount, radius, radiusOffset]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     container.style.position = position;
-    container.style.top = "0";
-    container.style.left = "0";
-    container.style.width = "100%";
-    container.style.height = "100%";
-    container.style.pointerEvents = "none";
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.pointerEvents = 'none';
     container.style.zIndex = `${zIndex}`;
   }, [position, zIndex]);
 
@@ -140,12 +146,12 @@ const CardInHand: React.FC<CardInHandProps> = ({
       image.style.top = `${card.top}px`;
       image.style.width = `${dimensions.width}px`;
       image.style.height = `${dimensions.height}px`;
-        image.style.transform = `translate(-50%, -100%) rotate(${card.rotation}deg)`;
-      image.style.transformOrigin = "50% 100%";
+      image.style.transform = `translate(-50%, -100%) rotate(${card.rotation}deg)`;
+      image.style.transformOrigin = '50% 100%';
       image.style.zIndex = `${zIndex + index}`;
       image.draggable = false;
     });
-  }, [cards, position, dimensions.width, dimensions.height, zIndex]);
+  }, [cards, dimensions.height, dimensions.width, position, zIndex]);
 
   if (!anchorPoint || cards.length === 0) return null;
 

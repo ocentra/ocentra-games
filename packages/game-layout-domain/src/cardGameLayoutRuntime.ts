@@ -71,12 +71,12 @@ export interface SerializedCardGameLayoutAsset {
   extensions?: Record<string, unknown>;
 }
 
-const DEFAULT_PLAYER_COUNT = 4;
-const MIN_PLAYER_COUNT = 2;
-const MAX_PLAYER_COUNT = 10;
-const DEFAULT_SEAT_SCALE = 0.5;
+export const DEFAULT_PLAYER_COUNT = 4;
+export const MIN_PLAYER_COUNT = 2;
+export const MAX_PLAYER_COUNT = 10;
+export const DEFAULT_SEAT_SCALE = 0.5;
 
-const DEFAULT_TABLE_SHAPE: TableShapeSettings = {
+export const DEFAULT_TABLE_SHAPE: TableShapeSettings = {
   width: 960,
   height: 560,
   offsetX: 0,
@@ -85,7 +85,7 @@ const DEFAULT_TABLE_SHAPE: TableShapeSettings = {
   feltInset: -8,
 };
 
-const DEFAULT_PLAYER_UI_DEFAULTS: PlayerUiDefaults = {
+export const DEFAULT_PLAYER_UI_DEFAULTS: PlayerUiDefaults = {
   baseArcRotation: 0,
   infoBoxAngle: 180,
   infoBoxRotation: 0,
@@ -96,7 +96,7 @@ const DEFAULT_PLAYER_UI_DEFAULTS: PlayerUiDefaults = {
   overallScale: 1,
 };
 
-const DEFAULT_HUD_BUTTON_CONTROLS: HudButtonControls = {
+export const DEFAULT_HUD_BUTTON_CONTROLS: HudButtonControls = {
   buttonOffsetX: 0,
   buttonOffsetY: 12,
   width: 649,
@@ -131,7 +131,7 @@ const DEFAULT_HUD_BUTTON_CONTROLS: HudButtonControls = {
   clickRingFlashOpacity: 0.95,
 };
 
-const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
+export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   hudOffsetX: 0,
   hudOffsetY: -36,
   overallScale: 1,
@@ -191,7 +191,7 @@ const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   panelGlassOpacity: 0.08,
 };
 
-const DEFAULT_CARD_FAN_CONTROLS: CardFanControls = {
+export const DEFAULT_CARD_FAN_CONTROLS: CardFanControls = {
   cardCount: 13,
   minCardCount: 3,
   maxCardCount: 13,
@@ -206,7 +206,7 @@ const DEFAULT_CARD_FAN_CONTROLS: CardFanControls = {
   disableViewportScale: true,
 };
 
-const DEFAULT_CARD_VISUAL_CONTROLS: CardVisualControls = {
+export const DEFAULT_CARD_VISUAL_CONTROLS: CardVisualControls = {
   floatScale: 3,
 };
 

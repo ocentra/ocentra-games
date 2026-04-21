@@ -11,7 +11,7 @@ const GameScreenPage = React.lazy(() =>
   import('@/ui/pages/games/CardGamePlay/GameScreenPage').then((m) => ({ default: m.GameScreenPage }))
 );
 const CardGameTemplateScreen = React.lazy(() =>
-  import('@/ui/components/GameScreen/CardGameScreen/GameScreen').then((m) => ({ default: m.GameScreen }))
+  import('@/ui/components/GameScreen/CardGameScreen/CardGamePreviewHarness').then((m) => ({ default: m.CardGamePreviewHarness }))
 );
 
 function GamePlayPage() {

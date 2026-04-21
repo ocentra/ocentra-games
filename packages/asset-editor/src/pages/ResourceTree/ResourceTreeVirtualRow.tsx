@@ -156,6 +156,7 @@ export const ResourceTreeVirtualRow: React.FC<VirtualRowProps> = React.memo(({
       x: e.clientX, 
       y: e.clientY, 
       id: node.id,
+      path: node.path,
       guid: node.guid,
       hash: node.hash,
       isFolder: isFolder(node) 
@@ -198,11 +199,10 @@ export const ResourceTreeVirtualRow: React.FC<VirtualRowProps> = React.memo(({
     }
     if (isFolder(node)) {
       e.dataTransfer.setData('text/folder-id', node.id);
-      if (node.id.startsWith('folder:')) {
-        const folderPath = node.id.replace('folder:', '');
-        const fullPath = `Resources/${folderPath}`;
-        e.dataTransfer.setData('text/asset-path', fullPath);
-        e.dataTransfer.setData('text/plain', fullPath);
+      const folderPath = node.path ?? (node.id.startsWith('folder:') ? `Resources/${node.id.replace('folder:', '')}` : null);
+      if (folderPath) {
+        e.dataTransfer.setData('text/asset-path', folderPath);
+        e.dataTransfer.setData('text/plain', folderPath);
       }
     }
     e.dataTransfer.effectAllowed = 'copy';

@@ -29,12 +29,23 @@ export async function createPanelWindow(
   assetPath: string,
   title?: string,
   locked?: boolean
-): Promise<void> {
+): Promise<import('@tauri-apps/api/webviewWindow').WebviewWindow | undefined> {
   if (!isTauri()) return
 
-  const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow')
+  const { WebviewWindow, getAllWebviewWindows } = await import('@tauri-apps/api/webviewWindow')
   const url = getStandalonePanelUrl(panel, assetPath, locked)
-  const label = `panel-${panel}-${Date.now()}`
+  const label = panel === 'preview-canvas' ? 'preview-canvas-standalone' : `panel-${panel}-${Date.now()}`
+  
+  // Prevent duplicate canvas windows
+  const windows = await getAllWebviewWindows();
+  const existing = windows.find((w: import('@tauri-apps/api/webviewWindow').WebviewWindow) => w.label === label);
+  if (existing) {
+    await existing.show();
+    await existing.unminimize();
+    await existing.setFocus();
+    return existing;
+  }
+
   const size =
     panel === 'preview'
       ? { width: 1100, height: 720 }
@@ -64,4 +75,6 @@ export async function createPanelWindow(
   webview.once('tauri://error', (e) => {
     log.logError('[createPanelWindow] Failed to create window', getStackTrace(), { error: e })
   })
+  
+  return webview;
 }

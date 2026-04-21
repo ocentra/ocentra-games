@@ -31,6 +31,8 @@ export const ResourceTreeContextMenu: React.FC<ResourceTreeContextMenuProps> = (
   onClose,
   handleKeyDown,
 }) => {
+  const targetFolder = contextMenu.path ?? contextMenu.id;
+
   const handleSyncAsset = async (assetPath: string) => {
     try {
       const normalizedPath = assetPath.replace(/^\/+/, '').replace(/^Resources\//, '');
@@ -56,10 +58,10 @@ export const ResourceTreeContextMenu: React.FC<ResourceTreeContextMenuProps> = (
 
     try {
       const uploadDeferred = new OperationDeferred<{ uploaded: number; files: Array<{ filename: string; path: string }> }>();
-      await EventBus.instance.publishAsync(new UploadFilesEvent(Array.from(files), contextMenu.id, uploadDeferred));
+      await EventBus.instance.publishAsync(new UploadFilesEvent(Array.from(files), targetFolder, uploadDeferred));
       const result = await uploadDeferred.promise;
       if (result.isSuccess) {
-        await onRefreshFolder(contextMenu.id);
+        await onRefreshFolder(targetFolder);
       }
     } catch {
       void 0;
@@ -116,23 +118,23 @@ export const ResourceTreeContextMenu: React.FC<ResourceTreeContextMenuProps> = (
                       mode: CreateDialogMode.GameSpecificAsset,
                       gameIdFromContext: detectedGameId,
                       category: AssetTypeCategory.Game,
-                      defaultPath: contextMenu.id,
+                      defaultPath: targetFolder,
                     }
                   : {
                       mode: CreateDialogMode.SingleAsset,
-                      defaultPath: contextMenu.id,
+                      defaultPath: targetFolder,
                     };
 
                 return (
                   <div
                     className="resource-tree__context-menu__item"
                     onClick={() => {
-                      onCreateAsset(contextMenu.id, options);
+                      onCreateAsset(targetFolder, options);
                       onClose();
                     }}
                     onKeyDown={(e) =>
                       handleKeyDown(e, () => {
-                        onCreateAsset(contextMenu.id, options);
+                        onCreateAsset(targetFolder, options);
                         onClose();
                       })
                     }

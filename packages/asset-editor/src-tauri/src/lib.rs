@@ -59,9 +59,11 @@ pub fn run() {
         })
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
-                let _ = window.app_handle().save_window_state(StateFlags::all());
-                window.hide().unwrap();
-                api.prevent_close();
+                if window.label() == "main" {
+                    let _ = window.app_handle().save_window_state(StateFlags::all());
+                    (window as &tauri::Window).hide().unwrap();
+                    api.prevent_close();
+                }
             }
         })
         .invoke_handler(tauri::generate_handler![

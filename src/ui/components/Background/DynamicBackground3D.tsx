@@ -3,50 +3,52 @@ import { useThreeBase } from '@/ui/components/Background/ThreeBaseContext';
 import * as THREE from 'three';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import CardSpadeFilled from '@/Images/BgCards/Fullcard/256/CardSpadeFilled.png';
-import CardSpadeHollow from '@/Images/BgCards/Fullcard/256/CardSpadeHollow.png';
-import CardHeartFilled from '@/Images/BgCards/Fullcard/256/CardHeartFilled.png';
-import CardHeartHollow from '@/Images/BgCards/Fullcard/256/CardHeartHollow.png';
-import CardDiamondFilled from '@/Images/BgCards/Fullcard/256/CardDiamondFilled.png';
-import CardDiamondHollow from '@/Images/BgCards/Fullcard/256/CardDiamondHollow.png';
-import CardClubFilled from '@/Images/BgCards/Fullcard/256/CardClubFilled.png';
-import CardClubHollow from '@/Images/BgCards/Fullcard/256/CardClubHollow.png';
-import SpadeFilled from '@/Images/BgCards/WithoutCircles/256/SpadeFilled.png';
-import SpadeHollow from '@/Images/BgCards/WithoutCircles/256/SpadeHollow.png';
-import HeartFilled from '@/Images/BgCards/WithoutCircles/256/HeartFilled.png';
-import HeartHollow from '@/Images/BgCards/WithoutCircles/256/HeartHollow.png';
-import DiamondFilled from '@/Images/BgCards/WithoutCircles/256/DiamondFilled.png';
-import DiamondHollow from '@/Images/BgCards/WithoutCircles/256/DiamondHollow.png';
-import ClubFilled from '@/Images/BgCards/WithoutCircles/256/ClubFilled.png';
-import ClubHollow from '@/Images/BgCards/WithoutCircles/256/ClubHollow.png';
-import SpadeWithCirclesFilled from '@/Images/BgCards/with circles/256/SpadeWithCirclesFilled.png';
-import SpadeWithCirclesHollow from '@/Images/BgCards/with circles/256/SpadeWithCirclesHollow.png';
-import HeartWithCirclesFilled from '@/Images/BgCards/with circles/256/HeartWithCirclesFilled.png';
-import HeartWithCirclesHollow from '@/Images/BgCards/with circles/256/HeartWithCirclesHollow.png';
-import DiamondWithCirclesFilled from '@/Images/BgCards/with circles/256/DiamondWithCirclesFilled.png';
-import DiamondWithCirclesHollow from '@/Images/BgCards/with circles/256/DiamondWithCirclesHollow.png';
-import ClubWithCirclesFilled from '@/Images/BgCards/with circles/256/ClubWithCirclesFilled.png';
-import ClubWithCirclesHollow from '@/Images/BgCards/with circles/256/ClubWithCirclesHollow.png';
+import {
+  cardGame256SpadeFilledImageUrl,
+  cardGame256SpadeHollowImageUrl,
+  cardGame256HeartFilledImageUrl,
+  cardGame256HeartHollowImageUrl,
+  cardGame256DiamondFilledImageUrl,
+  cardGame256DiamondHollowImageUrl,
+  cardGame256ClubFilledImageUrl,
+  cardGame256ClubHollowImageUrl,
+  cardGameWOCSpadeFilledImageUrl,
+  cardGameWOCSpadeHollowImageUrl,
+  cardGameWOCHeartFilledImageUrl,
+  cardGameWOCHeartHollowImageUrl,
+  cardGameWOCDiamondFilledImageUrl,
+  cardGameWOCDiamondHollowImageUrl,
+  cardGameWOCClubFilledImageUrl,
+  cardGameWOCClubHollowImageUrl,
+  cardGameSpadeWithCirclesFilledImageUrl,
+  cardGameSpadeWithCirclesHollowImageUrl,
+  cardGameHeartWithCirclesFilledImageUrl,
+  cardGameHeartWithCirclesHollowImageUrl,
+  cardGameDiamondWithCirclesFilledImageUrl,
+  cardGameDiamondWithCirclesHollowImageUrl,
+  cardGameClubWithCirclesFilledImageUrl,
+  cardGameClubWithCirclesHollowImageUrl,
+} from '@ocentra/app-assets/cardgame';
 import './DynamicBackground3D.css';
 
 const CARD_ASSETS = {
   Fullcard: {
-    Spade: { filled: CardSpadeFilled, hollow: CardSpadeHollow },
-    Heart: { filled: CardHeartFilled, hollow: CardHeartHollow },
-    Diamond: { filled: CardDiamondFilled, hollow: CardDiamondHollow },
-    Club: { filled: CardClubFilled, hollow: CardClubHollow },
+    Spade: { filled: cardGame256SpadeFilledImageUrl, hollow: cardGame256SpadeHollowImageUrl },
+    Heart: { filled: cardGame256HeartFilledImageUrl, hollow: cardGame256HeartHollowImageUrl },
+    Diamond: { filled: cardGame256DiamondFilledImageUrl, hollow: cardGame256DiamondHollowImageUrl },
+    Club: { filled: cardGame256ClubFilledImageUrl, hollow: cardGame256ClubHollowImageUrl },
   },
   WithoutCircles: {
-    Spade: { filled: SpadeFilled, hollow: SpadeHollow },
-    Heart: { filled: HeartFilled, hollow: HeartHollow },
-    Diamond: { filled: DiamondFilled, hollow: DiamondHollow },
-    Club: { filled: ClubFilled, hollow: ClubHollow },
+    Spade: { filled: cardGameWOCSpadeFilledImageUrl, hollow: cardGameWOCSpadeHollowImageUrl },
+    Heart: { filled: cardGameWOCHeartFilledImageUrl, hollow: cardGameWOCHeartHollowImageUrl },
+    Diamond: { filled: cardGameWOCDiamondFilledImageUrl, hollow: cardGameWOCDiamondHollowImageUrl },
+    Club: { filled: cardGameWOCClubFilledImageUrl, hollow: cardGameWOCClubHollowImageUrl },
   },
   WithCircles: {
-    Spade: { filled: SpadeWithCirclesFilled, hollow: SpadeWithCirclesHollow },
-    Heart: { filled: HeartWithCirclesFilled, hollow: HeartWithCirclesHollow },
-    Diamond: { filled: DiamondWithCirclesFilled, hollow: DiamondWithCirclesHollow },
-    Club: { filled: ClubWithCirclesFilled, hollow: ClubWithCirclesHollow },
+    Spade: { filled: cardGameSpadeWithCirclesFilledImageUrl, hollow: cardGameSpadeWithCirclesHollowImageUrl },
+    Heart: { filled: cardGameHeartWithCirclesFilledImageUrl, hollow: cardGameHeartWithCirclesHollowImageUrl },
+    Diamond: { filled: cardGameDiamondWithCirclesFilledImageUrl, hollow: cardGameDiamondWithCirclesHollowImageUrl },
+    Club: { filled: cardGameClubWithCirclesFilledImageUrl, hollow: cardGameClubWithCirclesHollowImageUrl },
   },
 } as const;
 

@@ -5,9 +5,7 @@ import { solanaImageUrl } from '@ocentra/app-assets/commons';
 import { FeaturedGameCarousel, ComingSoonCarousel } from '@ocentra/core-ui';
 import type { ExploreGameSummary } from '@ocentra/core-ui';
 import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSection';
-import OcentraTextImg from '@/Images/commons/OcentraText.png';
-import MlogoImg from '@/Images/commons/Mlogo.png';
-import GamesTextImg from '@/Images/commons/GamesText.png';
+import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
 import { GameHeader } from '@ocentra/core-ui';
 import { AppFooter } from '@/ui/components/AppFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
@@ -61,7 +59,7 @@ interface HomeScreenSharedProps {
   onLogoutClick?: () => void;
 }
 
-const WELCOME_LOGOS = { ocentraText: OcentraTextImg, mlogo: MlogoImg, gamesText: GamesTextImg };
+const WELCOME_LOGOS = { ocentraText: ocentraTextImageUrl, mlogo: mlogoImageUrl, gamesText: gamesTextImageUrl };
 
 function toExploreGameSummary(g: GameCatalogEntry): ExploreGameSummary {
   return {

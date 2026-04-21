@@ -18,17 +18,15 @@ import {
 import { ExplorerControlBar } from './components/ExplorerControlBar';
 import { GameDetailOverlay } from './components/GameDetailOverlay';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
-import OcentraTextImg from '@/Images/commons/OcentraText.png';
-import MlogoImg from '@/Images/commons/Mlogo.png';
-import GamesTextImg from '@/Images/commons/GamesText.png';
+import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
 
 import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
 
 const WELCOME_LOGOS = {
-  ocentraText: OcentraTextImg,
-  mlogo: MlogoImg,
-  gamesText: GamesTextImg,
+  ocentraText: ocentraTextImageUrl,
+  mlogo: mlogoImageUrl,
+  gamesText: gamesTextImageUrl,
 };
 
 import { ThreeBaseProvider } from '@/ui/components/Background/ThreeBaseContext';

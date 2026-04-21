@@ -71,13 +71,25 @@ const LockIcon: React.FC<{ locked: boolean }> = ({ locked }) => (
   </svg>
 )
 
+const GAMES_ROOT_PATH = 'GameMode/CardGames/Games';
+
+function createResourceTab(view: 'all' | 'games') {
+  return {
+    id: view === 'games' ? 'games' : 'resources',
+    panelKind: view === 'games' ? 'games' : 'resources',
+    resourceView: view,
+    baseTab: true,
+    closable: false,
+  } as WorkspaceTabBase;
+}
+
 const defaultLayout = {
   dockbox: {
     mode: 'horizontal' as const,
     children: [
       {
         size: 25,
-        tabs: [{ id: 'resources', panelKind: 'resources', baseTab: true, closable: false }],
+        tabs: [createResourceTab('games'), createResourceTab('all')],
       },
       {
         size: 50,
@@ -120,25 +132,61 @@ const DockPanelLoading: React.FC<{ label: string }> = ({ label }) => (
   </div>
 );
 
+function ensureGamesTabInLayout(layout: LayoutData): LayoutData {
+  const cloned = JSON.parse(JSON.stringify(layout)) as LayoutData;
+
+  const visit = (value: unknown): void => {
+    if (!value || typeof value !== 'object') {
+      return;
+    }
+
+    const panel = value as { tabs?: Array<Record<string, unknown>> };
+    if (Array.isArray(panel.tabs)) {
+      const hasResourcesTab = panel.tabs.some((tab) => tab?.id === 'resources' || tab?.panelKind === 'resources');
+      const hasGamesTab = panel.tabs.some((tab) => tab?.id === 'games' || tab?.panelKind === 'games');
+      if (hasResourcesTab && !hasGamesTab) {
+        const resourcesIndex = panel.tabs.findIndex((tab) => tab?.id === 'resources' || tab?.panelKind === 'resources');
+        const insertIndex = resourcesIndex >= 0 ? resourcesIndex + 1 : panel.tabs.length;
+        panel.tabs.splice(insertIndex, 0, createResourceTab('games') as unknown as Record<string, unknown>);
+        (panel as { activeId?: string }).activeId = 'games';
+      }
+      if (hasResourcesTab && hasGamesTab) {
+        (panel as { activeId?: string }).activeId = 'games';
+      }
+    }
+
+    for (const child of Object.values(value as Record<string, unknown>)) {
+      visit(child);
+    }
+  };
+
+  visit(cloned);
+  return cloned;
+}
+
 function loadSavedLayout(): LayoutData | undefined {
   try {
     const raw = localStorage.getItem(LAYOUT_KEY);
-    return raw ? (JSON.parse(raw) as unknown as LayoutData) : undefined;
+    return raw ? ensureGamesTabInLayout(JSON.parse(raw) as unknown as LayoutData) : undefined;
   } catch {
     return undefined;
   }
 }
 
-const ResourcesPanel: React.FC = () => {
+const ResourcesPanel: React.FC<{ view: 'all' | 'games' }> = ({ view }) => {
   const { selectedAsset, refreshTreeTrigger, onAssetSelect, onDeleteAsset, onCreateAsset } = useEditorState();
+  const rootPath = view === 'games' ? GAMES_ROOT_PATH : undefined;
+  const rootLabel = view === 'games' ? 'Games' : undefined;
   return (
-    <Suspense fallback={<DockPanelLoading label="resources" />}>
+    <Suspense fallback={<DockPanelLoading label={view === 'games' ? 'games' : 'resources'} />}>
       <LazyResourceTree
-        key={refreshTreeTrigger}
+        key={`${view}:${refreshTreeTrigger}`}
         selectedAsset={selectedAsset}
         onAssetSelect={onAssetSelect}
         onDeleteAsset={onDeleteAsset}
         onCreateAsset={onCreateAsset}
+        rootPath={rootPath}
+        rootLabel={rootLabel}
       />
     </Suspense>
   );
@@ -244,7 +292,15 @@ function buildLoadTab(
   return (data: TabData): TabData => {
     const tab = data as WorkspaceTabData
     const panelKind = tab.panelKind ?? (
-      data.id === 'resources' ? 'resources' : data.id === 'preview' ? 'preview' : data.id === 'inspector' ? 'inspector' : undefined
+      data.id === 'resources'
+        ? 'resources'
+        : data.id === 'games'
+          ? 'games'
+          : data.id === 'preview'
+            ? 'preview'
+            : data.id === 'inspector'
+              ? 'inspector'
+              : undefined
     )
 
     switch (panelKind) {
@@ -252,9 +308,19 @@ function buildLoadTab(
         return {
           ...tab,
           panelKind: 'resources',
+          resourceView: tab.resourceView ?? 'all',
           group: 'resources',
           title: 'Resources',
-          content: <ResourcesPanel />,
+          content: <ResourcesPanel view={tab.resourceView === 'games' ? 'games' : 'all'} />,
+        }
+      case 'games':
+        return {
+          ...tab,
+          panelKind: 'games',
+          resourceView: 'games',
+          group: 'resources',
+          title: 'Games',
+          content: <ResourcesPanel view="games" />,
         }
       case 'preview': {
         const label = typeof tab.title === 'string' ? tab.title : getWorkspaceTabTitle('preview', tab.lockedSnapshot)
@@ -413,7 +479,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     const dock = dockRef.current
     if (!dock) return
     const kind = (panel as WorkspaceTabData).panelKind ?? panel.group
-    const targetId = kind === 'preview' ? 'preview' : kind === 'inspector' ? 'inspector' : kind === 'resources' ? 'resources' : null
+    const targetId = kind === 'preview' ? 'preview' : kind === 'inspector' ? 'inspector' : kind === 'resources' || kind === 'games' ? 'resources' : null
     if (!targetId) return
     const target = dock.find(targetId)
     if (target && 'tabs' in target) {
@@ -783,6 +849,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
           instanceId: workspaceTab.instanceId,
           baseTab: workspaceTab.baseTab,
           lockedSnapshot: cloneLockedSnapshot(workspaceTab.lockedSnapshot ?? null),
+          resourceView: workspaceTab.resourceView,
         }
         return saved
       }}

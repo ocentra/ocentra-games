@@ -24,6 +24,7 @@ function resolveInspectorModulePath(inspectorPath: string): string | null {
   if (!inspectorPath.startsWith('@/')) {
     return null;
   }
+  
   const normalized = inspectorPath.replace('@/', '/src/');
   const candidates = [
     `${normalized}.tsx`,

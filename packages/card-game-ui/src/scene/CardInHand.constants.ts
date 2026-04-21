@@ -1,4 +1,4 @@
-import { cardGameBackCardImageUrl as CardBack } from '@ocentra/app-assets';
+import { cardGameBackCardImageUrl as CardBack } from '@ocentra/app-assets/cardgame';
 
 export const CARD_IN_HAND_DEFAULTS = {
   CARD_COUNT: 13,

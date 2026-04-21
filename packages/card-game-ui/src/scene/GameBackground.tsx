@@ -18,11 +18,12 @@ import {
   cardGameHeartWithCirclesHollowImageUrl as HeartWithCirclesHollow,
   cardGameSpadeWithCirclesFilledImageUrl as SpadeWithCirclesFilled,
   cardGameSpadeWithCirclesHollowImageUrl as SpadeWithCirclesHollow,
-} from '@ocentra/app-assets';
+} from '@ocentra/app-assets/cardgame';
 import BackgroundCardPair from './BackgroundCardPair';
 
 interface GameBackgroundProps {
   floatScale?: number;
+  position?: 'fixed' | 'absolute';
 }
 
 const BACKGROUND_TILE_IMAGE = CardBg;
@@ -172,6 +173,7 @@ const PAIRS = [
 
 const GameBackground: React.FC<GameBackgroundProps> = ({
   floatScale = 1,
+  position = 'fixed',
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -201,7 +203,10 @@ const GameBackground: React.FC<GameBackgroundProps> = ({
   }, []);
 
   return (
-    <div className="game-background" ref={ref}>
+    <div
+      className={position === 'absolute' ? 'game-background game-background--absolute' : 'game-background'}
+      ref={ref}
+    >
       <div className="game-background__texture" />
       <div className="game-background__pairs">
         {PAIRS.map((pair) => (

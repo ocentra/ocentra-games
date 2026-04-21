@@ -1,24 +1,26 @@
 import React, { useEffect, useMemo } from 'react';
 import type { RotationControlAPI } from '@/ui/components/Background/DynamicBackground3D';
-import SpadeFilled from '@/Images/BgCards/WithoutCircles/256/SpadeFilled.png';
-import SpadeHollow from '@/Images/BgCards/WithoutCircles/256/SpadeHollow.png';
-import HeartFilled from '@/Images/BgCards/WithoutCircles/256/HeartFilled.png';
-import HeartHollow from '@/Images/BgCards/WithoutCircles/256/HeartHollow.png';
-import DiamondFilled from '@/Images/BgCards/WithoutCircles/256/DiamondFilled.png';
-import DiamondHollow from '@/Images/BgCards/WithoutCircles/256/DiamondHollow.png';
-import ClubFilled from '@/Images/BgCards/WithoutCircles/256/ClubFilled.png';
-import ClubHollow from '@/Images/BgCards/WithoutCircles/256/ClubHollow.png';
+import {
+  cardGameWOCSpadeFilledImageUrl,
+  cardGameWOCSpadeHollowImageUrl,
+  cardGameWOCHeartFilledImageUrl,
+  cardGameWOCHeartHollowImageUrl,
+  cardGameWOCDiamondFilledImageUrl,
+  cardGameWOCDiamondHollowImageUrl,
+  cardGameWOCClubFilledImageUrl,
+  cardGameWOCClubHollowImageUrl,
+} from '@ocentra/app-assets/cardgame';
 import './DynamicBackground2DFallback.css';
 
 const FALLBACK_CARDS = [
-  { src: SpadeFilled },
-  { src: SpadeHollow },
-  { src: HeartFilled },
-  { src: HeartHollow },
-  { src: DiamondFilled },
-  { src: DiamondHollow },
-  { src: ClubFilled },
-  { src: ClubHollow },
+  { src: cardGameWOCSpadeFilledImageUrl },
+  { src: cardGameWOCSpadeHollowImageUrl },
+  { src: cardGameWOCHeartFilledImageUrl },
+  { src: cardGameWOCHeartHollowImageUrl },
+  { src: cardGameWOCDiamondFilledImageUrl },
+  { src: cardGameWOCDiamondHollowImageUrl },
+  { src: cardGameWOCClubFilledImageUrl },
+  { src: cardGameWOCClubHollowImageUrl },
 ] as const;
 
 const FALLBACK_CARD_COUNT = 48;

@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import './WalletSelector.css';
-import PhantomImg from '@/Images/Auth/phantom.png';
-import MetaMaskImg from '@/Images/Auth/metamask.png';
-import CoinbaseImg from '@/Images/Auth/coinbase.png';
+import {
+  authCoinbaseImageUrl,
+  authMetaMaskImageUrl,
+  authPhantomImageUrl,
+} from '@ocentra/app-assets/auth';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -67,7 +69,7 @@ const ALL_WALLETS: WalletOption[] = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: PhantomImg,
+    icon: authPhantomImageUrl,
     chain: 'solana',
     provider: 'phantom',
     description: 'Most popular Solana wallet',
@@ -75,7 +77,7 @@ const ALL_WALLETS: WalletOption[] = [
   {
     id: 'metamask',
     name: 'MetaMask',
-    icon: MetaMaskImg,
+    icon: authMetaMaskImageUrl,
     chain: 'ethereum',
     provider: 'metamask',
     description: 'Most popular Ethereum wallet',
@@ -83,7 +85,7 @@ const ALL_WALLETS: WalletOption[] = [
   {
     id: 'coinbase',
     name: 'Coinbase Wallet',
-    icon: CoinbaseImg,
+    icon: authCoinbaseImageUrl,
     chain: 'ethereum',
     provider: 'coinbase',
     description: 'Multi-chain wallet (Solana + Ethereum)',

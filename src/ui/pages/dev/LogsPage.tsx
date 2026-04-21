@@ -118,6 +118,10 @@ export const LogsPage: React.FC = () => {
 
   useEffect(() => {
     fetchLogs();
+    
+    // Dismiss loading screen if direct navigations land here
+    const hide = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
+    hide?.();
   }, [fetchLogs]);
 
   useEffect(() => {

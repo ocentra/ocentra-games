@@ -1,9 +1,13 @@
 .card-game-preview-surface {
-  display: flex;
+  position: relative;
+  display: block;
   width: 100%;
   height: 100%;
   min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
   color: #e5eefc;
+  background: #050814;
 }
 
 .card-game-preview-surface__stage {
@@ -11,72 +15,50 @@
   width: 100%;
   height: 100%;
   min-height: 0;
+  overflow: hidden;
 }
 
-.card-game-preview-surface__table {
+.card-game-preview-surface__scene {
+  position: relative;
   width: 100%;
   height: 100%;
-  display: block;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.card-game-preview-surface__overlay {
+.card-game-preview-surface__layer {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-game-preview-surface__seat-label {
-  fill: #f8fafc;
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.card-game-preview-surface__hud {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 24px;
-}
-
-.card-game-preview-surface__hud-rail {
-  height: 76px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(23, 37, 84, 0.9), rgba(12, 19, 49, 0.8));
-  border: 1px solid rgba(148, 163, 184, 0.35);
-}
-
-.card-game-preview-surface__hud-buttons {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.card-game-preview-surface__hud-button {
-  min-width: 40px;
-  padding: 8px 10px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.82);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  text-align: center;
-  font-weight: 700;
-}
-
-.card-game-preview-surface__fan {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 120px;
+  pointer-events: none;
 }
 
-.card-game-preview-surface__fan-card {
-  width: 58px;
-  height: 84px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #f8fafc, #cbd5e1);
-  border: 1px solid rgba(15, 23, 42, 0.3);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.4);
-  position: relative;
+.card-game-preview-surface__layer--background {
+  z-index: 0;
+}
+
+.card-game-preview-surface__layer--table {
+  z-index: 10;
+}
+
+.card-game-preview-surface__layer--seats {
+  z-index: 20;
+}
+
+.card-game-preview-surface__layer--hud {
+  z-index: 40;
+}
+
+.card-game-preview-surface .game-background {
+  pointer-events: none;
+}
+
+.card-game-preview-surface .hud {
+  pointer-events: none;
+}
+
+.card-game-preview-surface .hud__overlay {
+  pointer-events: none;
 }

@@ -20,16 +20,23 @@ log.register(import.meta.url);
 
 const LOG_TREE_BUILDER = false;
 
-export function buildTreeFromPaths(resources: ResourceEntry[]): {
-  rootNode: FlatNode;
-  allNodes: Map<string, FlatNode>;
-} {
-  const allNodes = new Map<string, FlatNode>();
-  const foldersByPath = new Map<string, FlatNode>();
+export interface BuildTreeFromPathsOptions {
+  rootPath?: string;
+  rootLabel?: string;
+}
 
-  const rootNode: FlatNode = {
-    name: 'Resources',
+function normalizeResourcePath(rawPath: string): string {
+  return rawPath
+    .replace(/^\/+/, '')
+    .replace(/^Resources\//, '')
+    .replace(/\/+$/, '');
+}
+
+function createRootNode(name: string, path: string): FlatNode {
+  return {
+    name,
     id: 'root',
+    path,
     isFolder: true,
     depth: 0,
     isExpanded: true,
@@ -37,12 +44,51 @@ export function buildTreeFromPaths(resources: ResourceEntry[]): {
     children: [],
     parent: null,
   };
+}
+
+function cloneSubtreeNode(node: FlatNode, parent: string | null, depthOffset: number): FlatNode {
+  return {
+    ...node,
+    parent,
+    depth: Math.max(0, node.depth - depthOffset),
+    children: [],
+  };
+}
+
+export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTreeFromPathsOptions = {}): {
+  rootNode: FlatNode;
+  allNodes: Map<string, FlatNode>;
+} {
+  const normalizedRootPath = options.rootPath ? normalizeResourcePath(options.rootPath) : undefined;
+  const rootLabel = options.rootLabel ?? (normalizedRootPath ? normalizedRootPath.split('/').pop() ?? 'Resources' : 'Resources');
+  const filteredResources = normalizedRootPath
+    ? resources.filter((resource) => {
+        if (!resource.path) {
+          return false;
+        }
+
+        const cleanPath = normalizeResourcePath(resource.path);
+        return cleanPath === normalizedRootPath || cleanPath.startsWith(`${normalizedRootPath}/`);
+      })
+    : resources;
+
+  if (normalizedRootPath && filteredResources.length === 0) {
+    const rootPath = `Resources/${normalizedRootPath}`;
+    const rootNode = createRootNode(rootLabel, rootPath);
+    const allNodes = new Map<string, FlatNode>([['root', rootNode]]);
+    return { rootNode, allNodes };
+  }
+
+  const allNodes = new Map<string, FlatNode>();
+  const foldersByPath = new Map<string, FlatNode>();
+
+  const rootNode = createRootNode('Resources', 'Resources');
   allNodes.set('root', rootNode);
 
-  for (const resource of resources) {
+  for (const resource of filteredResources) {
     if (!resource.path) continue;
 
-    const cleanPath = resource.path.replace(/^Resources\//, '');
+    const cleanPath = normalizeResourcePath(resource.path);
     const segments = cleanPath.split('/');
 
     let currentPath = '';
@@ -58,6 +104,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[]): {
         const folderNode: FlatNode = {
           name: segment,
           id: folderId,
+          path: `Resources/${currentPath}`,
           isFolder: true,
           depth: currentDepth,
           isExpanded: false,
@@ -80,10 +127,10 @@ export function buildTreeFromPaths(resources: ResourceEntry[]): {
     }
   }
 
-  for (const resource of resources) {
+  for (const resource of filteredResources) {
     if (!resource.path) continue;
 
-    const cleanPath = resource.path.replace(/^Resources\//, '');
+    const cleanPath = normalizeResourcePath(resource.path);
     const segments = cleanPath.split('/');
     const folderPath = segments.slice(0, -1).join('/');
     const fileName = segments[segments.length - 1];
@@ -254,5 +301,51 @@ export function buildTreeFromPaths(resources: ResourceEntry[]): {
     }, LOG_TREE_BUILDER);
   }
 
-  return { rootNode, allNodes };
+  if (!normalizedRootPath) {
+    return { rootNode, allNodes };
+  }
+
+  const targetFolderId = `folder:${normalizedRootPath}`;
+  const targetNode = allNodes.get(targetFolderId);
+
+  if (!targetNode) {
+    const rootPath = `Resources/${normalizedRootPath}`;
+    const filteredRoot = createRootNode(rootLabel, rootPath);
+    const filteredNodes = new Map<string, FlatNode>([['root', filteredRoot]]);
+    return { rootNode: filteredRoot, allNodes: filteredNodes };
+  }
+
+  const subtreeNodes = new Map<string, FlatNode>();
+  const rootPath = `Resources/${normalizedRootPath}`;
+  const filteredRoot = createRootNode(rootLabel, rootPath);
+  subtreeNodes.set('root', filteredRoot);
+
+  const depthOffset = targetNode.depth;
+
+  const cloneChildren = (sourceNodeId: string, parentId: string): void => {
+    const sourceNode = allNodes.get(sourceNodeId);
+    if (!sourceNode) {
+      return;
+    }
+
+    const cloned = cloneSubtreeNode(sourceNode, parentId, depthOffset);
+    subtreeNodes.set(cloned.id, cloned);
+
+    if (sourceNode.children.length > 0) {
+      cloned.children = [...sourceNode.children];
+      for (const childId of sourceNode.children) {
+        cloneChildren(childId, cloned.id);
+      }
+    }
+  };
+
+  filteredRoot.children = [...targetNode.children];
+  for (const childId of targetNode.children) {
+    cloneChildren(childId, 'root');
+  }
+
+  return {
+    rootNode: filteredRoot,
+    allNodes: subtreeNodes,
+  };
 }

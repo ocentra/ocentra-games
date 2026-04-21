@@ -27,15 +27,55 @@ async function getResourcesForTree(): Promise<ResourceEntry[]> {
   return getDiskResourceEntries();
 }
 
+function normalizeFolderIdentifier(folderId: string): string {
+  return folderId
+    .replace(/^\/+/, '')
+    .replace(/^Resources\//, '')
+    .replace(/^folder:/, '')
+    .trim();
+}
+
+function matchesFolderIdentifier(node: FlatNode, folderId: string): boolean {
+  const normalizedIdentifier = normalizeFolderIdentifier(folderId);
+  const normalizedNodePath = node.path ? normalizeFolderIdentifier(node.path) : '';
+  const normalizedNodeId = node.id.replace(/^folder:/, '');
+
+  return node.id === folderId
+    || node.id === `folder:${normalizedIdentifier}`
+    || normalizedNodeId === normalizedIdentifier
+    || normalizedNodePath === normalizedIdentifier
+    || node.path === folderId;
+}
+
+function resolveFolderNode(nodes: ReadonlyMap<string, FlatNode>, folderId: string): FlatNode | undefined {
+  const direct = nodes.get(folderId) ?? nodes.get(`folder:${normalizeFolderIdentifier(folderId)}`);
+  if (direct && isFolder(direct)) {
+    return direct;
+  }
+
+  for (const node of nodes.values()) {
+    if (!isFolder(node)) {
+      continue;
+    }
+    if (matchesFolderIdentifier(node, folderId)) {
+      return node;
+    }
+  }
+
+  return undefined;
+}
+
 interface UseResourceTreeOptions {
   pageSize?: number;
+  rootPath?: string;
+  rootLabel?: string;
 }
 
 interface SyncStatus {
   status: string;
 }
 
-export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
+export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseResourceTreeOptions) {
   const [state, dispatch] = useReducer(treeReducer, '', createInitialState);
 
   const [syncStatus, setSyncStatus] = useState<Record<string, SyncStatus>>({});
@@ -53,7 +93,7 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
       try {
         let allResources: ResourceEntry[];
         if (isTauri() && parentId.startsWith('folder:')) {
-          const folderPath = parentId.replace(/^folder:/, '');
+          const folderPath = normalizeFolderIdentifier(parentId);
           const indexEntries = await getResourcesInFolder(folderPath);
           allResources = indexEntries
             .filter((e) => {
@@ -72,9 +112,12 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
           allResources = await getResourcesForTree();
         }
 
-        const { allNodes: allNodesMap } = buildTreeFromPaths(allResources);
+        const { allNodes: allNodesMap } = buildTreeFromPaths(allResources, {
+          rootPath,
+          rootLabel,
+        });
 
-        const parentNode = allNodesMap.get(parentId);
+        const parentNode = resolveFolderNode(allNodesMap, parentId);
         if (!parentNode) {
           log.logWarn('[useResourceTree] Parent node not found in tree', getStackTrace(), { parentId });
           return { nodes: [], hasMore: false };
@@ -112,7 +155,7 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
         return { nodes: [], hasMore: false };
       }
     },
-    [pageSize]
+    [pageSize, rootPath, rootLabel]
   );
 
   const initTree = useCallback(async (preserveExpandedFolderIds?: string[]) => {
@@ -121,52 +164,44 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
     }
 
     initRef.current = true;
-    dispatch({ type: 'INIT_START', rootPath: 'root' });
+    dispatch({ type: 'INIT_START', rootPath: rootPath ?? 'root' });
 
     try {
       const resourcesFromSource = await getResourcesForTree();
-      if (!resourcesFromSource || resourcesFromSource.length === 0) {
-        dispatch({
-          type: 'INIT_SUCCESS', rootNode: {
-            name: 'Resources',
-            id: 'root',
-            isFolder: true,
-            depth: 0,
-            isExpanded: false,
-            isLoaded: true,
-            children: [],
-            parent: null,
-          }, children: [], hasMore: false, cursor: undefined
-        });
-        initRef.current = false;
-        return;
-      }
-
       const resources = resourcesFromSource;
 
-      const { rootNode, allNodes } = buildTreeFromPaths(resources);
+      const { rootNode, allNodes } = buildTreeFromPaths(resources, {
+        rootPath,
+        rootLabel,
+      });
 
-      const assetCatalogNode: FlatNode = {
-        name: 'Asset Catalog',
-        id: 'virtual:AssetCatalog',
-        resourceType: ResourceEntryType.AssetResourceEntry,
-        displayName: 'Asset Catalog',
-        isFolder: false,
-        depth: 1,
-        isExpanded: false,
-        isLoaded: true,
-        children: [],
-        parent: 'root',
-      };
-      allNodes.set('virtual:AssetCatalog', assetCatalogNode);
+      if (!rootPath) {
+        const assetCatalogNode: FlatNode = {
+          name: 'Asset Catalog',
+          id: 'virtual:AssetCatalog',
+          resourceType: ResourceEntryType.AssetResourceEntry,
+          displayName: 'Asset Catalog',
+          isFolder: false,
+          depth: 1,
+          isExpanded: false,
+          isLoaded: true,
+          children: [],
+          parent: 'root',
+        };
+        allNodes.set('virtual:AssetCatalog', assetCatalogNode);
+      }
 
       const allNodesArray = Array.from(allNodes.values());
       const rootChildren = allNodesArray.filter(node => node.parent === 'root' && node.id !== 'root');
 
       rootNode.isExpanded = true;
       rootNode.isLoaded = true;
-      const otherRootChildren = rootChildren.filter(c => c.id !== 'virtual:AssetCatalog').map(c => c.id);
-      rootNode.children = ['virtual:AssetCatalog', ...otherRootChildren];
+      const otherRootChildren = rootPath
+        ? rootChildren.map(c => c.id)
+        : rootChildren.filter(c => c.id !== 'virtual:AssetCatalog').map(c => c.id);
+      rootNode.children = rootPath
+        ? [...otherRootChildren]
+        : ['virtual:AssetCatalog', ...otherRootChildren];
 
       dispatch({
         type: 'INIT_SUCCESS',
@@ -185,44 +220,50 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
       dispatch({ type: 'INIT_ERROR' });
       initRef.current = false;
     }
-  }, []);
+  }, [rootPath, rootLabel]);
 
   const loadFolder = useCallback(
     async (folderId: string, append: boolean = false) => {
-      const activeLoad = activeLoads.current.get(folderId);
+      const resolvedFolder = resolveFolderNode(state.nodes, folderId);
+      if (!resolvedFolder) {
+        return;
+      }
+
+      const resolvedFolderId = resolvedFolder.id;
+      const activeLoad = activeLoads.current.get(resolvedFolderId);
       if (activeLoad) {
         return activeLoad;
       }
 
-      const folderState = state.folderStates.get(folderId);
+      const folderState = state.folderStates.get(resolvedFolderId);
       const offset = append && folderState ? folderState.offset : 0;
       const cursor = append && folderState ? folderState.cursor : undefined;
 
-      dispatch({ type: 'LOAD_FOLDER_START', path: folderId });
+      dispatch({ type: 'LOAD_FOLDER_START', path: resolvedFolderId });
 
       const loadPromise = (async () => {
         try {
-          const result = await fetchChildren(folderId, offset, cursor);
+          const result = await fetchChildren(resolvedFolderId, offset, cursor);
 
           dispatch({
             type: 'LOAD_FOLDER_SUCCESS',
-            path: folderId,
+            path: resolvedFolderId,
             children: result.nodes,
             hasMore: result.hasMore,
             cursor: result.cursor,
             append,
           });
         } catch {
-          dispatch({ type: 'LOAD_FOLDER_ERROR', path: folderId });
+          dispatch({ type: 'LOAD_FOLDER_ERROR', path: resolvedFolderId });
         } finally {
-          activeLoads.current.delete(folderId);
+          activeLoads.current.delete(resolvedFolderId);
         }
       })();
 
-      activeLoads.current.set(folderId, loadPromise);
+      activeLoads.current.set(resolvedFolderId, loadPromise);
       return loadPromise;
     },
-    [state.folderStates, fetchChildren]
+    [state.folderStates, state.nodes, fetchChildren]
   );
 
   const toggleExpand = useCallback(
@@ -248,50 +289,62 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
 
   const loadMore = useCallback(
     async (folderId: string) => {
-      const folderState = state.folderStates.get(folderId);
+      const resolvedFolder = resolveFolderNode(state.nodes, folderId);
+      if (!resolvedFolder) {
+        return;
+      }
+
+      const resolvedFolderId = resolvedFolder.id;
+      const folderState = state.folderStates.get(resolvedFolderId);
 
       if (!folderState || !folderState.hasMore || folderState.isLoading) {
         return;
       }
 
-      dispatch({ type: 'LOAD_MORE_START', path: folderId });
+      dispatch({ type: 'LOAD_MORE_START', path: resolvedFolderId });
 
       try {
-        const result = await fetchChildren(folderId, folderState.offset, folderState.cursor);
+        const result = await fetchChildren(resolvedFolderId, folderState.offset, folderState.cursor);
 
         dispatch({
           type: 'LOAD_MORE_SUCCESS',
-          path: folderId,
+          path: resolvedFolderId,
           children: result.nodes,
           hasMore: result.hasMore,
           cursor: result.cursor,
         });
       } catch {
-        dispatch({ type: 'LOAD_FOLDER_ERROR', path: folderId });
+        dispatch({ type: 'LOAD_FOLDER_ERROR', path: resolvedFolderId });
       }
     },
-    [state.folderStates, fetchChildren]
+    [state.folderStates, state.nodes, fetchChildren]
   );
 
   const refreshFolder = useCallback(
     async (folderId: string) => {
-      dispatch({ type: 'REFRESH_FOLDER_START', path: folderId });
+      const resolvedFolder = resolveFolderNode(state.nodes, folderId);
+      if (!resolvedFolder) {
+        return;
+      }
+
+      const resolvedFolderId = resolvedFolder.id;
+      dispatch({ type: 'REFRESH_FOLDER_START', path: resolvedFolderId });
 
       try {
-        const result = await fetchChildren(folderId, 0);
+        const result = await fetchChildren(resolvedFolderId, 0);
 
         dispatch({
           type: 'REFRESH_FOLDER_SUCCESS',
-          path: folderId,
+          path: resolvedFolderId,
           children: result.nodes,
           hasMore: result.hasMore,
           cursor: result.cursor,
         });
       } catch {
-        dispatch({ type: 'LOAD_FOLDER_ERROR', path: folderId });
+        dispatch({ type: 'LOAD_FOLDER_ERROR', path: resolvedFolderId });
       }
     },
-    [fetchChildren]
+    [state.nodes, fetchChildren]
   );
 
   const loadSyncStatus = useCallback(async (retryCount = 0) => {
@@ -361,52 +414,15 @@ export function useResourceTree({ pageSize = 100 }: UseResourceTreeOptions) {
   useEffect(() => {
     const handleGetTreeFolderContent = async (event: GetTreeFolderContentEvent): Promise<void> => {
       try {
-        let folderId = event.folderId;
         const nodes = nodesRef.current;
-        let folderNode = nodes.get(folderId);
+        const folderNode = resolveFolderNode(nodes, event.folderId);
 
         if (!folderNode) {
-          let normalizedPath = folderId;
-          
-          if (normalizedPath.startsWith('Resources/')) {
-            normalizedPath = normalizedPath.replace(/^Resources\//, '');
-          }
-          
-          const folderIdWithPrefix = normalizedPath.startsWith('folder:') ? normalizedPath : `folder:${normalizedPath}`;
-          
-          folderNode = nodes.get(folderIdWithPrefix);
-          
-          if (folderNode) {
-            folderId = folderIdWithPrefix;
-          } else {
-            const allNodes = Array.from(nodes.values());
-            const normalizedPathNoPrefix = normalizedPath.replace(/^folder:/, '');
-            
-            const matchingNode = allNodes.find(node => {
-              if (!isFolder(node)) return false;
-              
-              const nodePath = node.id.replace(/^folder:/, '');
-              
-              if (node.id === folderId || node.id === folderIdWithPrefix) return true;
-              if (nodePath === normalizedPathNoPrefix) return true;
-              if (nodePath.endsWith(normalizedPathNoPrefix) || normalizedPathNoPrefix.endsWith(nodePath)) return true;
-              
-              return false;
-            });
-            
-            if (matchingNode) {
-              folderNode = matchingNode;
-              folderId = matchingNode.id;
-            }
-          }
-        }
-
-        if (!folderNode) {
-          const normalizedRequested = event.folderId.replace(/^Resources\//, '').replace(/^folder:/, '');
+          const normalizedRequested = normalizeFolderIdentifier(event.folderId);
 
           if (isTauri()) {
             try {
-              const entries = await getResourcesInFolder(normalizedRequested.startsWith('folder:') ? normalizedRequested : `folder:${normalizedRequested}`);
+              const entries = await getResourcesInFolder(normalizedRequested);
               const prefix = normalizedRequested ? `Resources/${normalizedRequested.replace(/\/$/, '')}/` : 'Resources/';
               const directChildren = entries
                 .filter((e) => {

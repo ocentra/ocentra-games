@@ -65,8 +65,15 @@ test.describe('Asset Editor — Phase 5 panel verification (P5-26–P5-33)', () 
   test('Resources, Preview, and Inspector panel titles are present', async ({ page }) => {
     await waitForTreeReady(page);
     await expect(page.getByRole('tab', { name: 'Resources' }).first()).toBeVisible({ timeout: 5000 });
+    await expect(page.getByRole('tab', { name: 'Games' }).first()).toBeVisible({ timeout: 5000 });
     await expect(page.getByRole('tab', { name: 'Preview' }).first()).toBeVisible({ timeout: 5000 });
     await expect(page.getByRole('tab', { name: 'Inspector' }).first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test('Games tab shows the Games subtree without drilling through GameMode', async ({ page }) => {
+    await waitForTreeReady(page);
+    await page.getByRole('tab', { name: 'Games' }).click();
+    await expect(page.locator('.resource-tree')).toContainText(/Claim|briscola|three-card-brag/i, { timeout: 10000 });
   });
 
   test('P5-29: Create asset dialog opens from Resources context menu', async ({ page }) => {

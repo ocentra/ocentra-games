@@ -11,7 +11,7 @@ const LazyThreeBaseProvider = React.lazy(() =>
 const LazyDynamicBackground = React.lazy(() =>
   import('@/ui/components/Background/DynamicBackground').then((m) => ({ default: m.DynamicBackground }))
 );
-import { AssetLoadingScreen } from '@/ui/components/Loading/AssetLoadingScreen';
+
 import { PlatformDesktopAssetWarmupBanner } from '@/ui/components/Loading/PlatformDesktopAssetWarmupBanner';
 import { ErrorScreen } from '@/ui/components/Error/ErrorScreen';
 import { AuthScreen } from '@/ui/components/Auth/AuthScreen';
@@ -23,12 +23,10 @@ import { ErrorScreenTitle } from '@/constants/ui';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 
-const workOngameScene = false;
+
 const DISABLE_BACKGROUND_3D = false;
 
-const GameScreen = React.lazy(() =>
-  import('@/ui/components/GameScreen/CardGameScreen/GameScreen').then(m => ({ default: m.default }))
-);
+
 
 const AuthenticatedApp: React.FC = () => {
   const location = useLocation();
@@ -148,13 +146,7 @@ const AuthenticatedApp: React.FC = () => {
 };
 
 const MainApp: React.FC = () => {
-  if (workOngameScene) {
-    return (
-      <Suspense fallback={<AssetLoadingScreen message="Loading game..." />}>
-        <GameScreen />
-      </Suspense>
-    );
-  }
+
 
   return (
     <Suspense fallback={<div className="app main-app-container" />}>

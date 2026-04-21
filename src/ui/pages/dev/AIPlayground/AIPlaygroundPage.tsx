@@ -10,6 +10,12 @@ import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace'
 import '../AIPlaygroundPage.css'
 
+import LoginDialog from '@/ui/components/Auth/LoginDialog'
+import { ModelSelector } from './ModelSelector'
+import { ChatPanel } from './ChatPanel'
+import { GameRulesTestPanel } from './GameRulesTestPanel'
+import { MetricsPanel } from './MetricsPanel'
+
 const log = MainAppLogger.instance
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
   if (typeof dataOrEnabled === 'boolean') {
@@ -27,11 +33,8 @@ const logWarn = (message: string, dataOrEnabled?: unknown | boolean, enabled?: b
 }
 
 log.register(import.meta.url)
-import LoginDialog from '@/ui/components/Auth/LoginDialog'
-import { ModelSelector } from './ModelSelector'
-import { ChatPanel } from './ChatPanel'
-import { GameRulesTestPanel } from './GameRulesTestPanel'
-import { MetricsPanel } from './MetricsPanel'
+
+
 
 /**
  * AIPlaygroundPage
@@ -85,9 +88,13 @@ export const AIPlaygroundPage: React.FC = () => {
       logWarn('[AIPlaygroundPage] Access denied - admin only', { 
         data: { email: user.email, isAdmin: user.isAdmin } 
       })
-    } else if (isAdmin) {
+    }
+    if (isAdmin) {
       logInfo('[AIPlaygroundPage] Admin access granted', { data: { email: user?.email } })
     }
+
+    const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
+    hideLoading?.();
   }, [isAdmin, user, isDevAuthBypassEnabled])
 
   if (!hasPlaygroundAccess) {

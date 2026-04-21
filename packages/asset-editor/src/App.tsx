@@ -7,6 +7,7 @@ import { WindowControls } from '@/components/WindowControls';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
+import '@ocentra/core-ui/tokens.css';
 import './styles/editor.css';
 
 const appLog = AssetEditorLogger.instance;

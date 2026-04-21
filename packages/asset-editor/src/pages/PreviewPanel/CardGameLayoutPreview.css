@@ -1,91 +1,204 @@
 .card-game-layout-preview {
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  padding: 0.25rem 0 0;
+  padding: 0.25rem 0.5rem 0.5rem;
   color: #e2e8f0;
   background: transparent;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.preview-panel__content--preview {
-  padding: 0;
+.card-game-layout-preview__header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 8px;
+  margin-bottom: 0.25rem;
 }
 
-.card-game-layout-preview__frame {
-  position: relative;
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 1rem;
-  overflow: hidden;
-  background: rgba(5, 9, 19, 0.92);
-}
-
-.card-game-layout-preview__frame--preview {
-  border: 1px solid rgba(34, 197, 94, 0.42);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(34, 197, 94, 0.16),
-    0 0 22px rgba(34, 197, 94, 0.1);
-}
-
-.card-game-layout-preview__frame--controls {
-  border: 1px solid rgba(234, 179, 8, 0.42);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(234, 179, 8, 0.14),
-    0 0 22px rgba(234, 179, 8, 0.08);
-}
-
-.card-game-layout-preview__frame-label {
-  position: absolute;
-  top: 0.9rem;
-  left: 1rem;
-  z-index: 1;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
+.card-game-layout-preview__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary-main);
   text-transform: uppercase;
-  color: rgba(248, 250, 252, 0.88);
-}
-
-.card-game-layout-preview__frame-surface {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.08), transparent 38%),
-    linear-gradient(180deg, rgba(17, 24, 39, 0.7), rgba(2, 6, 23, 0.92));
+  letter-spacing: 0.05em;
 }
 
 .card-game-layout-preview__toolbar {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
-  padding: 0 0 0.1rem;
-  min-height: 0;
+  align-items: center;
 }
 
-.card-game-layout-preview__button {
-  min-height: 1.8rem;
-  padding: 0 0.85rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.55rem;
-  background: rgba(15, 23, 42, 0.94);
-  color: #f8fafc;
-  font-size: 0.8rem;
+.card-game-layout-preview__toggle {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-game-layout-preview__toggle button {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.card-game-layout-preview__toggle button.active {
+  background: var(--color-primary-main);
+  color: black;
   font-weight: 700;
-  line-height: 1;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
-.card-game-layout-preview__frame--preview {
+.card-game-layout-preview__container {
+  flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.card-game-layout-preview__frame--controls {
-  min-height: 0;
+.card-game-layout-preview__viewport-box {
+  flex: 1 1 55%;
+  min-height: 320px;
+  border: 1px solid rgba(141, 255, 176, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(5, 12, 8, 0.95);
+  position: relative;
 }
+
+.card-game-layout-preview__controls-box {
+  flex: 0 1 45%;
+  min-height: 280px;
+  border: 1px solid rgba(141, 255, 176, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(4, 10, 6, 0.9);
+}
+
+.card-game-layout-preview__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  width: 100%;
+}
+
+.card-game-layout-preview__raw {
+  height: 100%;
+  background: #020617;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.card-game-layout-preview-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-main);
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.card-game-layout-preview__toolbar button {
+  background: rgba(141, 255, 176, 0.05);
+  border: 1px solid rgba(141, 255, 176, 0.2);
+  color: #e9fff0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.card-game-layout-preview__toolbar button:hover {
+  background: rgba(141, 255, 176, 0.1);
+}
+
+.card-game-layout-preview__toolbar button.primary {
+  background: linear-gradient(180deg, #bbf7d0 0%, #4ade80 100%);
+  color: #052e16;
+  border: none;
+  box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+}
+
+/* Internal fix for Design Studio in this context */
+.design-studio--embedded .game-screen__hud-button-modal-tabs {
+  padding: 0.25rem 0.5rem 0;
+}
+
+.design-studio--embedded .game-screen__hud-button-modal-content {
+  padding: 0.5rem 0.75rem 1.25rem;
+}
+
+.card-game-layout-preview__viewport-placeholder {
+  flex: 1 1 55%;
+  min-height: 320px;
+  border: 2px dashed rgba(141, 255, 176, 0.2);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(141, 255, 176, 0.02);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 1rem;
+}
+
+.card-game-layout-preview__viewport-placeholder:hover {
+  background: rgba(141, 255, 176, 0.05);
+  border-color: rgba(141, 255, 176, 0.4);
+}
+
+.card-game-layout-preview__viewport-placeholder h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-primary-main);
+  opacity: 0.8;
+}
+
+.card-game-layout-preview__viewport-placeholder p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.card-game-layout-preview__return-btn {
+  background: rgba(141, 255, 176, 0.1);
+  border: 1px solid rgba(141, 255, 176, 0.3);
+  color: #e9fff0;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* Detached State Styles */
+.card-game-layout-preview--torn-off .card-game-layout-preview__controls-box {
+  flex: 1;
+}
+
+.card-game-layout-preview--torn-off .card-game-layout-preview__container {
+  height: 100%;
+}
+

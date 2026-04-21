@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import './PlayerUI.css';
 import { defaultAvatarImageUrl } from '@ocentra/app-assets/avatars';
 import { serializable, getSerializableFields, type SerializableField } from '@ocentra/asset-domain/serialization/decorators';
-import { serialize, deserialize } from '@ocentra/asset-domain/Serializable';
 
 export class PlayerUIConfig {
   static readonly schemaVersion = 1;
@@ -90,13 +89,36 @@ export const PLAYER_UI_SERIALIZABLE_KEYS: readonly SerializablePlayerUIKey[] = [
   'infoBoxRotation',
 ] as const;
 
-export const PLAYER_UI_SERIALIZABLE_FIELDS: ReadonlyArray<SerializableField> = PLAYER_UI_SERIALIZABLE_KEYS.map((key) => {
-  const field = PlayerUIConfig.SERIALIZABLE_FIELDS.find((item) => item.key === key);
-  if (!field) {
-    throw new Error(`Serializable metadata missing for PlayerUIConfig.${key}`);
+const PLAYER_UI_SERIALIZABLE_FIELD_FALLBACKS: ReadonlyArray<SerializableField> = [
+  {
+    key: 'baseArcRotation',
+    options: { label: 'Arc rot°', min: 0, max: 360, step: 1, inputType: 'angle', group: 'arc' },
+    defaultValue: new PlayerUIConfig().baseArcRotation,
+  },
+  {
+    key: 'infoBoxAngle',
+    options: { label: 'Info angle°', min: 0, max: 360, step: 1, inputType: 'angle', group: 'infoBox' },
+    defaultValue: new PlayerUIConfig().infoBoxAngle,
+  },
+  {
+    key: 'infoBoxRotation',
+    options: { label: 'Info rot°', min: 0, max: 360, step: 1, inputType: 'angle', group: 'infoBox' },
+    defaultValue: new PlayerUIConfig().infoBoxRotation,
+  },
+];
+
+function resolveSerializableFields(): ReadonlyArray<SerializableField> {
+  const decoratedFields = getSerializableFields(PlayerUIConfig);
+  const decoratedKeys = new Set(decoratedFields.map((field) => field.key));
+
+  if (PLAYER_UI_SERIALIZABLE_KEYS.every((key) => decoratedKeys.has(key))) {
+    return decoratedFields.filter((field) => PLAYER_UI_SERIALIZABLE_KEYS.includes(field.key as SerializablePlayerUIKey));
   }
-  return field;
-});
+
+  return PLAYER_UI_SERIALIZABLE_FIELD_FALLBACKS;
+}
+
+export const PLAYER_UI_SERIALIZABLE_FIELDS: ReadonlyArray<SerializableField> = resolveSerializableFields();
 
 const SERIALIZABLE_FIELD_KEYS = new Set<string>(PLAYER_UI_SERIALIZABLE_KEYS);
 
@@ -588,7 +610,23 @@ const PlayerUI: PlayerUIComponent = (props) => {
 PlayerUI.DEFAULTS = PlayerUIConfig.DEFAULTS;
 PlayerUI.SERIALIZABLE_FIELDS = PLAYER_UI_SERIALIZABLE_FIELDS;
 PlayerUI.sanitizeOverrides = sanitizePlayerUIOverrides;
-PlayerUI.serializeConfig = (config: PlayerUIConfig) => serialize(config);
-PlayerUI.deserializeConfig = (json: Record<string, unknown>) => deserialize(PlayerUIConfig, json);
+PlayerUI.serializeConfig = (config: PlayerUIConfig) => ({
+  baseArcRotation: config.baseArcRotation,
+  infoBoxAngle: config.infoBoxAngle,
+  infoBoxRotation: config.infoBoxRotation,
+});
+PlayerUI.deserializeConfig = (json: Record<string, unknown>) => {
+  const config = new PlayerUIConfig();
+  if (typeof json.baseArcRotation === 'number' && Number.isFinite(json.baseArcRotation)) {
+    config.baseArcRotation = json.baseArcRotation;
+  }
+  if (typeof json.infoBoxAngle === 'number' && Number.isFinite(json.infoBoxAngle)) {
+    config.infoBoxAngle = json.infoBoxAngle;
+  }
+  if (typeof json.infoBoxRotation === 'number' && Number.isFinite(json.infoBoxRotation)) {
+    config.infoBoxRotation = json.infoBoxRotation;
+  }
+  return config;
+};
 
 export default PlayerUI;

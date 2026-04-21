@@ -3,7 +3,7 @@ import PlayerUI from './PlayerUI';
 import './PlayersOnTable.css';
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
-import type { TableLayoutState } from '@ocentra/game-layout-domain/tableLayoutStore';
+import type { TableLayoutState } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 
 const PlayersOnTable: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);

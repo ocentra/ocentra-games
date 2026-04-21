@@ -58,8 +58,6 @@ function renderRoot(node: ReactNode): void {
   }
 
   root ??= createRoot(rootElement);
-  hasRendered = true;
-  root.render(node);
   if (typeof window !== 'undefined') {
     (globalThis as unknown as Record<string, unknown>).__hideAppLoading = () => {
       const loader = document.getElementById('app-loading');
@@ -75,6 +73,8 @@ function renderRoot(node: ReactNode): void {
       }
     };
   }
+  hasRendered = true;
+  root.render(node);
   if (typeof window !== 'undefined') {
     window.requestAnimationFrame(() => {
       pushBoot('first rAF after render');

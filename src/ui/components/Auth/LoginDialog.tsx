@@ -1,36 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './LoginDialog.css';
-import FacebookImg from '@/Images/Auth/facebook.png';
-import GoogleImg from '@/Images/Auth/google.png';
-import AnnonImg from '@/Images/Auth/annon.png';
-import PhantomImg from '@/Images/Auth/phantom.png';
-import MetaMaskImg from '@/Images/Auth/metamask.png';
-import CoinbaseImg from '@/Images/Auth/coinbase.png';
-import Avatar1 from '@/Images/Avatars/1.png';
-import Avatar2 from '@/Images/Avatars/2.png';
-import Avatar3 from '@/Images/Avatars/3.png';
-import Avatar4 from '@/Images/Avatars/4.png';
-import Avatar5 from '@/Images/Avatars/5.png';
-import Avatar6 from '@/Images/Avatars/6.png';
-import Avatar7 from '@/Images/Avatars/7.png';
-import Avatar8 from '@/Images/Avatars/8.png';
-import Avatar9 from '@/Images/Avatars/9.png';
-import Avatar10 from '@/Images/Avatars/10.png';
-import Avatar11 from '@/Images/Avatars/11.png';
-import Avatar12 from '@/Images/Avatars/12.png';
-import Avatar13 from '@/Images/Avatars/13.png';
-import Avatar14 from '@/Images/Avatars/14.png';
-import Avatar15 from '@/Images/Avatars/15.png';
-import Avatar16 from '@/Images/Avatars/16.png';
-import Avatar17 from '@/Images/Avatars/17.png';
-import Avatar18 from '@/Images/Avatars/18.png';
-import MlogoImg from '@/Images/commons/Mlogo.png';
+import {
+  authAnnonImageUrl,
+  authFacebookImageUrl,
+  authGoogleImageUrl,
+  authPhantomImageUrl,
+  authMetaMaskImageUrl,
+  authCoinbaseImageUrl,
+} from '@ocentra/app-assets/auth';
+import { avatarImageById } from '@ocentra/app-assets/avatars';
+import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 
 const AuthImages = {
-  Social: { facebook: FacebookImg, google: GoogleImg, guest: AnnonImg },
-  Wallets: { phantom: PhantomImg, metamask: MetaMaskImg, coinbase: CoinbaseImg },
+  Social: { facebook: authFacebookImageUrl, google: authGoogleImageUrl, guest: authAnnonImageUrl },
+  Wallets: { phantom: authPhantomImageUrl, metamask: authMetaMaskImageUrl, coinbase: authCoinbaseImageUrl },
 } as const;
-const AvatarImages = { 1: Avatar1, 2: Avatar2, 3: Avatar3, 4: Avatar4, 5: Avatar5, 6: Avatar6, 7: Avatar7, 8: Avatar8, 9: Avatar9, 10: Avatar10, 11: Avatar11, 12: Avatar12, 13: Avatar13, 14: Avatar14, 15: Avatar15, 16: Avatar16, 17: Avatar17, 18: Avatar18 } as const;
+const AvatarImages = avatarImageById;
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { AppFooter } from '@/ui/components/AppFooter';
@@ -357,7 +342,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
     <div className="login-dialog-overlay">
       {/* Logo and Branding - Outside dialog */}
       <div className="login-logo-section">
-                  <img src={MlogoImg} alt="Ocentra Logo" className="login-logo" />
+                  <img src={mlogoImageUrl} alt="Ocentra Logo" className="login-logo" />
         <h2 className="login-brand-text">Ocentra AI</h2>
         </div>
 

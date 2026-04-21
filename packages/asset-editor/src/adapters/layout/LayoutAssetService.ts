@@ -5,7 +5,7 @@ import type { AssetEntry } from '@ocentra/boundary-domain/types/asset-entry';
 import type { IResourceEntry } from '@ocentra/boundary-domain/types/resource-entry';
 import type { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
-import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
 import { GetGameModeEntriesEvent } from '@ocentra/eventing-domain/events/assets/GetGameModeEntriesEvent';
