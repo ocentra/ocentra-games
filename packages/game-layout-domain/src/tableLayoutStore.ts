@@ -193,11 +193,15 @@ export const tableLayoutStore = {
     }
     const preset = gameAsset.layout.presets[String(clamped)];
     const effectivePreset = preset ?? createLayoutPreset(clamped);
+    const nextSeats = cloneSeats(effectivePreset.seats ?? []);
+    const preservedSeatId = state.selectedSeatId !== null && nextSeats.some((seat) => seat.id === state.selectedSeatId)
+      ? state.selectedSeatId
+      : selectSeatId(effectivePreset.seats ?? []);
     state = {
       playerCount: clamped,
       table: { ...(effectivePreset.table ?? {}) },
-      seats: cloneSeats(effectivePreset.seats ?? []),
-      selectedSeatId: selectSeatId(effectivePreset.seats ?? []),
+      seats: nextSeats,
+      selectedSeatId: preservedSeatId,
       isEditorVisible: state.isEditorVisible,
       gameId: currentGameId,
       asset: gameAsset,

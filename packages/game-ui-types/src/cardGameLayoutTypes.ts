@@ -88,6 +88,18 @@ export interface HudButtonVariantControls {
   overrides: Partial<HudButtonControls>;
 }
 
+export type CardGameLayerKey =
+  | 'background'
+  | 'header'
+  | 'table'
+  | 'seats'
+  | 'cards'
+  | 'hud'
+  | 'tools'
+  | 'footer';
+
+export type CardGameLayerVisibility = Partial<Record<CardGameLayerKey, boolean>>;
+
 export interface HudArtworkControls {
   hudOffsetX: number;
   hudOffsetY: number;
@@ -108,6 +120,7 @@ export interface HudArtworkControls {
   panelMid: string;
   panelBottom: string;
   panelGlassOpacity: number;
+  layerVisibility?: CardGameLayerVisibility;
 }
 
 export interface CardFanControls {

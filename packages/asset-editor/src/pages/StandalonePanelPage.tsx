@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PreviewPanel } from '@/pages/PreviewPanel/PreviewPanel';
 import { InspectorPanel } from '@/pages/InspectorPanel/InspectorPanel';
 import { loadAssetFromNetwork } from '@/pages/MainPage/loadAssetFromNetwork';
@@ -10,6 +10,8 @@ import {
 import type { AssetData } from '@/types/assets';
 import {
   buildLoadedLayoutAssetFromRaw,
+  loadLayoutPlayerRange,
+  type LayoutPlayerRange,
   saveLayoutAsset,
   type LayoutAssetDocument,
 } from '@/adapters/layout/LayoutAssetService';
@@ -18,6 +20,9 @@ import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
+import { cloneCardGameLayoutDocument, createLayoutPreset } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
 import './StandalonePanelPage.css';
 
 type StandalonePanel =
@@ -25,6 +30,270 @@ type StandalonePanel =
   | 'inspector'
   | 'design-studio'
   | 'preview-canvas';
+
+interface PreviewCanvasToolsProps {
+  playerCount: number;
+  minPlayerCount: number;
+  maxPlayerCount: number;
+  showHandles: boolean;
+  currentTable: {
+    width?: number;
+    height?: number;
+    offsetX?: number;
+    offsetY?: number;
+    curvature?: number;
+  };
+  onPlayerCountChange: (count: number) => void;
+  onShowHandlesChange: (value: boolean) => void;
+  onCopyPreset: (sourceCount: number) => void;
+  onTableChange: (field: 'width' | 'height' | 'offsetX' | 'offsetY' | 'curvature', value: number) => void;
+}
+
+type PreviewCanvasToolTab = 'preset' | 'table' | 'view';
+
+const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
+  playerCount,
+  minPlayerCount,
+  maxPlayerCount,
+  showHandles,
+  currentTable,
+  onPlayerCountChange,
+  onShowHandlesChange,
+  onCopyPreset,
+  onTableChange,
+}) => {
+  const counts = useMemo(
+    () => Array.from({ length: maxPlayerCount - minPlayerCount + 1 }, (_, index) => minPlayerCount + index),
+    [maxPlayerCount, minPlayerCount],
+  );
+  const sourceCounts = useMemo(
+    () => counts.filter((count) => count !== playerCount),
+    [counts, playerCount],
+  );
+  const [copySourceCount, setCopySourceCount] = useState<number>(
+    Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1)),
+  );
+  const [position, setPosition] = useState({ x: 24, y: 96 });
+  const [collapsed, setCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState<PreviewCanvasToolTab>('preset');
+  const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    setCopySourceCount((current) => {
+      const fallback = Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1));
+      if (current === playerCount) {
+        return fallback === playerCount ? minPlayerCount : fallback;
+      }
+      return Math.max(minPlayerCount, Math.min(maxPlayerCount, current));
+    });
+  }, [maxPlayerCount, minPlayerCount, playerCount]);
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!dragOffsetRef.current) {
+        return;
+      }
+
+      setPosition({
+        x: Math.max(8, event.clientX - dragOffsetRef.current.x),
+        y: Math.max(8, event.clientY - dragOffsetRef.current.y),
+      });
+    };
+
+    const handlePointerUp = () => {
+      dragOffsetRef.current = null;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+    };
+  }, []);
+
+  const handleDragStart = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    dragOffsetRef.current = {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    };
+  }, []);
+
+  const handleCopy = useCallback(() => {
+    if (copySourceCount !== playerCount) {
+      onCopyPreset(copySourceCount);
+    }
+  }, [copySourceCount, onCopyPreset, playerCount]);
+
+  return (
+    <div
+      className={collapsed ? 'preview-canvas-tools preview-canvas-tools--collapsed' : 'preview-canvas-tools'}
+      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+    >
+      <div className="preview-canvas-tools__titlebar" onPointerDown={handleDragStart}>
+        <div className="preview-canvas-tools__titlecopy">
+          <strong>Layout Tools</strong>
+          <span>{playerCount} players</span>
+        </div>
+        <div className="preview-canvas-tools__titleactions" onPointerDown={(event) => event.stopPropagation()}>
+          <button
+            type="button"
+            className="preview-canvas-tools__icon"
+            onClick={() => setCollapsed((current) => !current)}
+            aria-label={collapsed ? 'Expand layout tools' : 'Collapse layout tools'}
+          >
+            {collapsed ? 'Open' : 'Hide'}
+          </button>
+        </div>
+      </div>
+
+      {collapsed ? (
+        <div className="preview-canvas-tools__compact">
+          <button
+            type="button"
+            className="preview-canvas-tools__chip preview-canvas-tools__chip--active"
+            onClick={() => setCollapsed(false)}
+          >
+            {playerCount}P
+          </button>
+          <label className="preview-canvas-tools__toggle preview-canvas-tools__toggle--compact">
+            <input type="checkbox" checked={showHandles} onChange={(event) => onShowHandlesChange(event.target.checked)} />
+            <span>Handles</span>
+          </label>
+        </div>
+      ) : (
+        <>
+          <div className="preview-canvas-tools__tabs">
+            <button
+              type="button"
+              className={activeTab === 'preset' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
+              onClick={() => setActiveTab('preset')}
+            >
+              Preset
+            </button>
+            <button
+              type="button"
+              className={activeTab === 'table' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
+              onClick={() => setActiveTab('table')}
+            >
+              Table
+            </button>
+            <button
+              type="button"
+              className={activeTab === 'view' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
+              onClick={() => setActiveTab('view')}
+            >
+              View
+            </button>
+          </div>
+
+          {activeTab === 'preset' ? (
+            <>
+              <div className="preview-canvas-tools__section">
+                <div className="preview-canvas-tools__row">
+                  <span>Player count</span>
+                  <strong>{playerCount}</strong>
+                </div>
+                <input
+                  className="preview-canvas-tools__range"
+                  type="range"
+                  min={minPlayerCount}
+                  max={maxPlayerCount}
+                  step={1}
+                  value={playerCount}
+                  onChange={(event) => onPlayerCountChange(Number(event.target.value))}
+                />
+                <div className="preview-canvas-tools__chips">
+                  {counts.map((count) => (
+                    <button
+                      key={count}
+                      type="button"
+                      className={count === playerCount ? 'preview-canvas-tools__chip preview-canvas-tools__chip--active' : 'preview-canvas-tools__chip'}
+                      onClick={() => onPlayerCountChange(count)}
+                    >
+                      {count}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="preview-canvas-tools__section">
+                <div className="preview-canvas-tools__row">
+                  <span>Copy preset</span>
+                </div>
+                <div className="preview-canvas-tools__inline">
+                  <select
+                    className="preview-canvas-tools__select"
+                    value={sourceCounts.includes(copySourceCount) ? copySourceCount : (sourceCounts[0] ?? playerCount)}
+                    onChange={(event) => setCopySourceCount(Number(event.target.value))}
+                    disabled={sourceCounts.length === 0}
+                  >
+                    {sourceCounts.map((count) => (
+                      <option key={count} value={count}>
+                        From {count} players
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="preview-canvas-tools__action"
+                    onClick={handleCopy}
+                    disabled={sourceCounts.length === 0}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {activeTab === 'table' ? (
+            <div className="preview-canvas-tools__section">
+              <div className="preview-canvas-tools__row">
+                <span>Table shape</span>
+              </div>
+              <label className="preview-canvas-tools__field">
+                <span>Width</span>
+                <input type="range" min={400} max={1800} step={1} value={currentTable.width ?? 960} onChange={(event) => onTableChange('width', Number(event.target.value))} />
+              </label>
+              <label className="preview-canvas-tools__field">
+                <span>Height</span>
+                <input type="range" min={200} max={1000} step={1} value={currentTable.height ?? 560} onChange={(event) => onTableChange('height', Number(event.target.value))} />
+              </label>
+              <label className="preview-canvas-tools__field">
+                <span>Offset X</span>
+                <input type="range" min={-400} max={400} step={1} value={currentTable.offsetX ?? 0} onChange={(event) => onTableChange('offsetX', Number(event.target.value))} />
+              </label>
+              <label className="preview-canvas-tools__field">
+                <span>Offset Y</span>
+                <input type="range" min={-400} max={400} step={1} value={currentTable.offsetY ?? 0} onChange={(event) => onTableChange('offsetY', Number(event.target.value))} />
+              </label>
+              <label className="preview-canvas-tools__field">
+                <span>Curvature</span>
+                <input type="range" min={0} max={1} step={0.01} value={currentTable.curvature ?? 0.88} onChange={(event) => onTableChange('curvature', Number(event.target.value))} />
+              </label>
+            </div>
+          ) : null}
+
+          {activeTab === 'view' ? (
+            <div className="preview-canvas-tools__section">
+              <label className="preview-canvas-tools__toggle">
+                <input type="checkbox" checked={showHandles} onChange={(event) => onShowHandlesChange(event.target.checked)} />
+                <span>Show drag handles</span>
+              </label>
+              <p className="preview-canvas-tools__hint">
+                Use this window for seat positioning. The editor preview stays clean and read-only.
+              </p>
+            </div>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+};
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -120,20 +389,48 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
+  const [activePlayerCount, setActivePlayerCount] = useState<number>(loadedAsset.document.defaultPlayerCount);
+  const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     setDocument(loadedAsset.document);
+    setActivePlayerCount(loadedAsset.document.defaultPlayerCount);
+    setPlayerRange(null);
     setStatus(null);
   }, [loadedAsset]);
 
   useEffect(() => {
+    let cancelled = false;
+    const loadRange = async () => {
+      try {
+        const range = await loadLayoutPlayerRange(loadedAsset.gameId);
+        if (!cancelled) {
+          setPlayerRange(range);
+        }
+      } catch {
+        if (!cancelled) {
+          setPlayerRange(null);
+        }
+      }
+    };
+
+    void loadRange();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadedAsset.gameId]);
+
+  useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
-    const handler = (event: MessageEvent<{ assetPath?: string; document?: LayoutAssetDocument }>) => {
+    const handler = (event: MessageEvent<CardGameLayoutDraftMessage>) => {
       if (event.data?.assetPath !== assetPath || !event.data.document) {
         return;
       }
       setDocument(event.data.document);
+      if (typeof event.data.playerCount === 'number') {
+        setActivePlayerCount(event.data.playerCount);
+      }
     };
     channel.addEventListener('message', handler);
     return () => {
@@ -142,19 +439,25 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     };
   }, [assetPath]);
 
-  const broadcast = useCallback((nextDocument: LayoutAssetDocument) => {
+  const broadcast = useCallback((nextDocument: LayoutAssetDocument, playerCount: number) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     channel.postMessage({
       assetPath,
       document: nextDocument,
+      playerCount,
     });
     channel.close();
   }, [assetPath]);
 
   const handleChange = useCallback((nextDocument: LayoutAssetDocument) => {
     setDocument(nextDocument);
-    broadcast(nextDocument);
-  }, [broadcast]);
+    broadcast(nextDocument, activePlayerCount);
+  }, [activePlayerCount, broadcast]);
+
+  const handleActivePlayerCountChange = useCallback((count: number) => {
+    setActivePlayerCount(count);
+    broadcast(document, count);
+  }, [broadcast, document]);
 
   const handleSave = useCallback(async () => {
     setStatus('Saving...');
@@ -162,11 +465,11 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
       const saved = await saveLayoutAsset(loadedAsset, document);
       setDocument(saved.document);
       setStatus('Saved');
-      broadcast(saved.document);
+      broadcast(saved.document, activePlayerCount);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to save layout');
     }
-  }, [broadcast, document, loadedAsset]);
+  }, [activePlayerCount, broadcast, document, loadedAsset]);
 
   const handleOpenPreviewCanvas = useCallback(() => {
     void createPanelWindow('preview-canvas', assetPath, loadedAsset.displayName, true);
@@ -188,15 +491,24 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
           embedded
           document={document}
           onChange={handleChange}
+          activePlayerCount={activePlayerCount}
+          onActivePlayerCountChange={handleActivePlayerCountChange}
+          minPlayerCount={playerRange?.minPlayers}
+          maxPlayerCount={playerRange?.maxPlayers}
         />
       </div>
     </div>
   );
 };
 
-const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: AssetData }> = ({
+const StandaloneCardGamePreviewCanvas: React.FC<{
+  assetPath: string;
+  assetData: AssetData;
+  hideTools?: boolean;
+}> = ({
   assetPath,
   assetData,
+  hideTools,
 }) => {
   const headProps = useCoreUIHeaderProps();
   const loadedAsset = useMemo(
@@ -204,18 +516,47 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
+  const [playerCount, setPlayerCount] = useState<number>(loadedAsset.document.defaultPlayerCount);
+  const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
+  const [showHandles, setShowHandles] = useState(true);
 
   useEffect(() => {
     setDocument(loadedAsset.document);
+    setPlayerCount(loadedAsset.document.defaultPlayerCount);
+    setPlayerRange(null);
   }, [loadedAsset]);
 
   useEffect(() => {
+    let cancelled = false;
+    const loadRange = async () => {
+      try {
+        const range = await loadLayoutPlayerRange(loadedAsset.gameId);
+        if (!cancelled) {
+          setPlayerRange(range);
+        }
+      } catch {
+        if (!cancelled) {
+          setPlayerRange(null);
+        }
+      }
+    };
+
+    void loadRange();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadedAsset.gameId]);
+
+  useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
-    const handler = (event: MessageEvent<{ assetPath?: string; document?: LayoutAssetDocument }>) => {
+    const handler = (event: MessageEvent<CardGameLayoutDraftMessage>) => {
       if (event.data?.assetPath !== assetPath || !event.data.document) {
         return;
       }
       setDocument(event.data.document);
+      if (typeof event.data.playerCount === 'number') {
+        setPlayerCount(event.data.playerCount);
+      }
     };
     channel.addEventListener('message', handler);
     return () => {
@@ -223,6 +564,76 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
       channel.close();
     };
   }, [assetPath]);
+
+  const broadcast = useCallback((nextDocument: LayoutAssetDocument, nextPlayerCount: number) => {
+    const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
+    channel.postMessage({
+      assetPath,
+      document: nextDocument,
+      playerCount: nextPlayerCount,
+    } satisfies CardGameLayoutDraftMessage);
+    channel.close();
+  }, [assetPath]);
+
+  const activePreset = useMemo(
+    () => document.presets[String(playerCount)] ?? createLayoutPreset(playerCount),
+    [document.presets, playerCount],
+  );
+
+  const updateActivePreset = useCallback((
+    updater: (nextDocument: LayoutAssetDocument, preset: LayoutAssetDocument['presets'][string]) => void,
+    nextPlayerCount = playerCount,
+  ) => {
+    setDocument((current) => {
+      const next = cloneCardGameLayoutDocument(current);
+      const key = String(nextPlayerCount);
+      if (!next.presets[key]) {
+        next.presets[key] = createLayoutPreset(nextPlayerCount);
+      }
+      updater(next, next.presets[key]);
+      broadcast(next, nextPlayerCount);
+      return next;
+    });
+  }, [broadcast, playerCount]);
+
+  const handleSeatsChange = useCallback((seats: SeatLayout[]) => {
+    updateActivePreset((_next, preset) => {
+        preset.seats = seats.map((seat) => ({
+          ...seat,
+          position: { ...seat.position },
+          playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
+        }));
+    });
+  }, [updateActivePreset]);
+
+  const handlePlayerCountChange = useCallback((nextPlayerCount: number) => {
+    setPlayerCount(nextPlayerCount);
+    broadcast(document, nextPlayerCount);
+  }, [broadcast, document]);
+
+  const handleCopyPreset = useCallback((sourceCount: number) => {
+    updateActivePreset((next, preset) => {
+      const sourcePreset = next.presets[String(sourceCount)] ?? createLayoutPreset(sourceCount);
+      preset.table = { ...sourcePreset.table };
+      preset.seats = sourcePreset.seats.map((seat) => ({
+        ...seat,
+        position: { ...seat.position },
+        playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
+      }));
+    });
+  }, [updateActivePreset]);
+
+  const handleTableChange = useCallback((
+    field: 'width' | 'height' | 'offsetX' | 'offsetY' | 'curvature',
+    value: number,
+  ) => {
+    updateActivePreset((_next, preset) => {
+      preset.table = {
+        ...preset.table,
+        [field]: value,
+      };
+    });
+  }, [updateActivePreset]);
 
   // Handle header props mapping (handle string|null vs string difference)
   const headerProps: GameHeaderProps = {
@@ -239,31 +650,53 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
 
   return (
     <div className="standalone-panel-page standalone-panel-page--card-game-preview">
+      {!hideTools && (
+        <PreviewCanvasTools
+          playerCount={playerCount}
+          minPlayerCount={playerRange?.minPlayers ?? 2}
+          maxPlayerCount={playerRange?.maxPlayers ?? 10}
+          showHandles={showHandles}
+          currentTable={activePreset.table}
+          onPlayerCountChange={handlePlayerCountChange}
+          onShowHandlesChange={setShowHandles}
+          onCopyPreset={handleCopyPreset}
+          onTableChange={handleTableChange}
+        />
+      )}
       <CardGameTemplatePage
         document={document as unknown as CardGameLayoutDocument}
+        playerCount={playerCount}
         headerProps={headerProps}
         footerVersion="1.0.0-dev"
         onHomeClick={() => {}}
         embedded={false}
+        editableSeats={showHandles}
+        onSeatsChange={handleSeatsChange}
       />
     </div>
   );
 };
 
 export const StandalonePanelPage: React.FC = () => {
-  const [params, setParams] = useState<{ panel: StandalonePanel; assetPath: string; locked: boolean } | null>(null);
+  const [params, setParams] = useState<{
+    panel: StandalonePanel;
+    assetPath: string;
+    locked: boolean;
+    hideTools: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const search = new URLSearchParams(window.location.search);
     const panel = search.get('standalone');
     const assetPath = search.get('assetPath');
     const locked = search.get('locked') === 'true';
+    const hideTools = search.get('hideTools') === 'true';
     if (
       panel &&
       assetPath &&
       (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas')
     ) {
-      setParams({ panel, assetPath, locked });
+      setParams({ panel, assetPath, locked, hideTools });
     } else {
       setParams(null);
     }
@@ -308,7 +741,7 @@ export const StandalonePanelPage: React.FC = () => {
     }
     return params.panel === 'design-studio'
       ? <StandaloneCardGameDesignStudio assetPath={params.assetPath} assetData={assetData} />
-      : <StandaloneCardGamePreviewCanvas assetPath={params.assetPath} assetData={assetData} />;
+      : <StandaloneCardGamePreviewCanvas assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} />;
   }
 
   return (

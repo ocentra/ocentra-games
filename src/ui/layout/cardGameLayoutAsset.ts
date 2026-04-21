@@ -1,6 +1,7 @@
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
+import { getGameModeEntries } from '@/adapters/assets/GameCatalogService';
 import {
   cloneCardGameLayoutDocument,
   hydrateCardGameLayoutAsset,
@@ -52,6 +53,14 @@ function getRootData(source: LooseRecord): LooseRecord {
     return source.data;
   }
   return source;
+}
+
+function extractGuid(value: unknown): string | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  return typeof value.guid === 'string' && value.guid.length > 0 ? value.guid : null;
 }
 
 export function readCardGameLayoutDocument(source: LooseRecord): NormalizedCardGameLayoutDocument {
@@ -161,4 +170,30 @@ export async function loadCardGameLayoutDocument(
   }
 
   return null;
+}
+
+export async function loadSavedCardGameLayoutDocument(gameId: string): Promise<NormalizedCardGameLayoutDocument | null> {
+  const entries = await getGameModeEntries();
+  const entry = entries.find((candidate) => candidate.gameId === gameId);
+  if (!entry) {
+    return null;
+  }
+
+  const gameModeRoot = await loadRawAssetDocumentByGuid(String(entry.guid));
+  if (!isRecord(gameModeRoot)) {
+    return null;
+  }
+
+  const gameModeData = getRootData(gameModeRoot);
+  const layoutGuid = extractGuid(gameModeData.layoutAsset);
+  if (!layoutGuid) {
+    return null;
+  }
+
+  const layoutRoot = await loadRawAssetDocumentByGuid(layoutGuid);
+  if (!isRecord(layoutRoot)) {
+    return null;
+  }
+
+  return readCardGameLayoutDocument(layoutRoot);
 }

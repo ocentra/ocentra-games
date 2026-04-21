@@ -1,6 +1,7 @@
 import type {
   CardFanControls,
   CardGameLayoutDocument,
+  CardGameLayerVisibility,
   CardVisualControls,
   HudArtworkControls,
   HudButtonControls,
@@ -189,6 +190,16 @@ export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   panelMid: '#050b07',
   panelBottom: '#0a1c12',
   panelGlassOpacity: 0.08,
+  layerVisibility: {
+    background: true,
+    header: true,
+    table: true,
+    seats: true,
+    cards: true,
+    hud: true,
+    tools: true,
+    footer: true,
+  },
 };
 
 export const DEFAULT_CARD_FAN_CONTROLS: CardFanControls = {
@@ -243,6 +254,7 @@ const cloneHud = (hud: HudArtworkControls): HudArtworkControls => ({
   clamp: { ...hud.clamp },
   wingStyle: { ...hud.wingStyle },
   dome: { ...hud.dome },
+  layerVisibility: hud.layerVisibility ? { ...hud.layerVisibility } : undefined,
 });
 
 const cloneCardFan = (cardFan: CardFanControls): CardFanControls => ({
@@ -408,6 +420,14 @@ const normalizePlayerUiDefaults = (
   ...(source ?? {}),
 });
 
+const normalizeLayerVisibility = (
+  source: CardGameLayerVisibility | undefined,
+  fallback: CardGameLayerVisibility | undefined,
+): CardGameLayerVisibility => ({
+  ...(fallback ?? {}),
+  ...(source ?? {}),
+});
+
 const normalizeHud = (
   source: Partial<HudArtworkControls> | undefined,
   fallback: HudArtworkControls,
@@ -456,6 +476,7 @@ const normalizeHud = (
       ...fallback.dome,
       ...(source.dome ?? {}),
     },
+    layerVisibility: normalizeLayerVisibility(source.layerVisibility, fallback.layerVisibility),
   };
 };
 

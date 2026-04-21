@@ -40,6 +40,7 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
   }, []);
 
   const floatScale = pageProps.document?.cardVisuals?.floatScale ?? 1;
+  const showHostBackground = pageProps.document?.hud.layerVisibility?.background !== false;
 
   return (
     <div
@@ -52,7 +53,7 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
       }}
     >
       {/* Background renders at host level — fills the entire container including letterbox strips */}
-      <GameBackground floatScale={floatScale} position="absolute" />
+      {showHostBackground ? <GameBackground floatScale={floatScale} position="absolute" /> : null}
 
       {/* Scaled 1920×1080 game canvas — background suppressed here since host covers it */}
       <div

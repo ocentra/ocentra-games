@@ -37,6 +37,18 @@ export type DomeConfig = {
 
 export type HudActionKey = "A" | "B" | "C" | "D" | "E" | "F";
 
+export type CardGameLayerKey =
+  | 'background'
+  | 'header'
+  | 'table'
+  | 'seats'
+  | 'cards'
+  | 'hud'
+  | 'tools'
+  | 'footer';
+
+export type CardGameLayerVisibility = Partial<Record<CardGameLayerKey, boolean>>;
+
 export interface HudButtonControls {
   buttonOffsetX: number;
   buttonOffsetY: number;
@@ -97,6 +109,7 @@ export interface HudArtworkControls {
   panelMid: string;
   panelBottom: string;
   panelGlassOpacity: number;
+  layerVisibility?: CardGameLayerVisibility;
 }
 
 export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
@@ -190,4 +203,14 @@ export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   panelMid: "#050b07",
   panelBottom: "#0a1c12",
   panelGlassOpacity: 0.08,
+  layerVisibility: {
+    background: true,
+    header: true,
+    table: true,
+    seats: true,
+    cards: true,
+    hud: true,
+    tools: true,
+    footer: true,
+  },
 };

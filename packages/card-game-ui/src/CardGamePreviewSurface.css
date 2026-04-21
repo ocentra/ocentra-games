@@ -7,7 +7,6 @@
   overflow: hidden;
   isolation: isolate;
   color: #e5eefc;
-  background: #050814;
 }
 
 .card-game-preview-surface__stage {
@@ -24,6 +23,28 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
+}
+
+.card-game-preview-surface__arena {
+  position: absolute;
+  z-index: 0;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.card-game-preview-surface__arena-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.card-game-preview-surface__arena-layer--seats,
+.card-game-preview-surface__arena-layer--overlay {
+  pointer-events: auto;
+}
+
+.card-game-preview-surface__arena-layer--overlay {
+  z-index: 30;
 }
 
 .card-game-preview-surface__layer {
@@ -49,6 +70,19 @@
 
 .card-game-preview-surface__layer--hud {
   z-index: 40;
+}
+
+.card-game-preview-surface__layer--overlay {
+  z-index: 60;
+  display: block;
+  pointer-events: none;
+}
+
+.card-game-preview-surface__overlay-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
 }
 
 .card-game-preview-surface .game-background {

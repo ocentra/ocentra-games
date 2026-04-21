@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type { CSSProperties } from 'react';
 import { GameHeader } from '@ocentra/core-ui';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import type { Card, GameState, Player, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
@@ -10,9 +9,8 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
-import CenterTableSvg from '@ocentra/card-game-ui/scene/CenterTableSvg';
-import type { CenterTableSVGProps } from '@ocentra/card-game-ui/scene/CenterTableSvg';
 import GameBackground from '@ocentra/card-game-ui/scene/GameBackground';
+import { CardGamePreviewSurface } from '@ocentra/card-game-ui/CardGamePreviewSurface';
 import './GameScreenPage.css';
 import {
   describePlayer,
@@ -96,37 +94,6 @@ function cloneGameStateSnapshot(state: GameState | null): GameState | null {
           trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
         }
       : undefined,
-  };
-}
-
-function toCenterTableProps(
-  table: LocalPlayableGameBundle['layoutPreset']['table'],
-): Partial<CenterTableSVGProps> {
-  return {
-    width: table.width,
-    height: table.height,
-    offsetX: table.offsetX,
-    offsetY: table.offsetY,
-    curvature: table.curvature,
-    rimThickness: table.rimThickness,
-    rimColor: table.rimColor,
-    rimGlowColor: table.rimGlowColor,
-    rimGlowIntensity: table.rimGlowIntensity,
-    rimGlowSpread: table.rimGlowSpread,
-    rimGlowThickness: table.rimGlowThickness,
-    rimGlowBlendMode: table.rimGlowBlendMode as CSSProperties['mixBlendMode'] | undefined,
-    innerRimThickness: table.innerRimThickness,
-    innerRimColor: table.innerRimColor,
-    innerRimTexture: table.innerRimTexture,
-    innerRimTextureBlendMode: table.innerRimTextureBlendMode as CSSProperties['mixBlendMode'] | undefined,
-    innerRimTextureOpacity: table.innerRimTextureOpacity,
-    feltInner: table.feltInner,
-    feltOuter: table.feltOuter,
-    feltInset: table.feltInset,
-    emblemSize: table.emblemSize,
-    emblemInnerColor: table.emblemInnerColor,
-    emblemOuterColor: table.emblemOuterColor,
-    emblemBlendMode: table.emblemBlendMode as CSSProperties['mixBlendMode'] | undefined,
   };
 }
 
@@ -219,10 +186,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const orderedSeats = useMemo(
     () => [...(bundle?.layoutPreset.seats ?? [])].sort((left, right) => left.id - right.id),
     [bundle?.layoutPreset.seats],
-  );
-  const centerTableProps = useMemo<Partial<CenterTableSVGProps>>(
-    () => (bundle ? toCenterTableProps(bundle.layoutPreset.table) : {}),
-    [bundle],
   );
   const winners = useMemo(() => (gameState ? getWinningPlayers(gameState.players) : []), [gameState]);
 
@@ -355,7 +318,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         style={{
           left: `${seat.position.x * 100}%`,
           top: `${seat.position.y * 100}%`,
-          transform: `translate(-50%, -50%) rotate(${seat.rotation ?? 0}deg) scale(${Math.max(0.82, (seat.scale ?? 0.5) * 1.6)})`,
+          transform: `translate(-50%, -50%) rotate(${seat.rotation ?? 0}deg) scale(${seat.scale ?? 1})`,
         }}
       >
         <header className="playable-seat__header">
@@ -384,13 +347,17 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
   return (
     <div className="playable-game-screen">
-      <GameBackground />
+      {bundle?.layoutDocument.hud.layerVisibility?.background !== false ? (
+        <GameBackground floatScale={bundle?.layoutDocument.cardVisuals.floatScale ?? 1} />
+      ) : null}
 
       <div className="playable-game-screen__layer">
-        <GameHeader
-          {...headerProps}
-          onHomeClick={handleHome}
-        />
+        {bundle?.layoutDocument.hud.layerVisibility?.header !== false ? (
+          <GameHeader
+            {...headerProps}
+            onHomeClick={handleHome}
+          />
+        ) : null}
 
         <main className="playable-game-screen__content">
           <section className="playable-game-shell">
@@ -470,70 +437,73 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                 )}
 
                 <section className="playable-table-stage" data-testid="claim-pilot-table">
-                  <CenterTableSvg
-                    {...centerTableProps}
-                    minScale={0.42}
-                    maxScale={0.92}
-                    responsivePaddingX={64}
-                    responsivePaddingY={72}
-                    containerClassName="playable-table-stage__table"
+                  <CardGamePreviewSurface
+                    document={bundle.layoutDocument}
+                    playerCount={bundle.playerCount}
+                    className="playable-table-stage__template"
+                    showBackground={false}
+                    showSeatWidgets={false}
+                    arenaOverlay={(
+                      <>
+                        <div className="playable-table-stage__zones">
+                          <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
+                            <span>Deck</span>
+                            <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
+                          </div>
+                          <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
+                            <span>Floor Card</span>
+                            <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
+                          </div>
+                          <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
+                            <span>Discard</span>
+                            <strong>
+                              {gameState?.discardPile.length
+                                ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
+                                : 'Empty'}
+                            </strong>
+                          </div>
+                          <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
+                            <span>Pot</span>
+                            <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
+                          </div>
+                          <div className="playable-table-zone playable-table-zone--trick">
+                            <span>Table Cards</span>
+                            <strong>
+                              {gameState?.mechanicsContext?.tableCards?.length
+                                ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
+                                : 'None'}
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="playable-table-stage__seats">
+                          {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
+                        </div>
+
+                        {!gameState ? (
+                          <div className="playable-table-stage__empty">
+                            <h2>Ready to deal Claim</h2>
+                            <p>
+                              The Claim layout asset positioned the seats. Start the seeded match to deal three cards to each player and reveal the floor card.
+                            </p>
+                          </div>
+                        ) : null}
+                      </>
+                    )}
+                    stageOverlay={(
+                      <div className="playable-table-stage__status">
+                        <span className="playable-table-stage__phase">{isGameOver ? 'Game Over' : currentPhase?.label || 'Ready to start'}</span>
+                        <span>Round {gameState?.round ?? 1}</span>
+                        <span>
+                          {isGameOver
+                            ? 'Final scores locked'
+                            : gameState
+                              ? `${currentPlayer?.name || 'Seat'} to act`
+                              : `${bundle.playerCount} seats staged`}
+                        </span>
+                      </div>
+                    )}
                   />
-
-                  <div className="playable-table-stage__status">
-                    <span className="playable-table-stage__phase">{isGameOver ? 'Game Over' : currentPhase?.label || 'Ready to start'}</span>
-                    <span>Round {gameState?.round ?? 1}</span>
-                    <span>
-                      {isGameOver
-                        ? 'Final scores locked'
-                        : gameState
-                          ? `${currentPlayer?.name || 'Seat'} to act`
-                          : `${bundle.playerCount} seats staged`}
-                    </span>
-                  </div>
-
-                  <div className="playable-table-stage__zones">
-                    <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
-                      <span>Deck</span>
-                      <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
-                    </div>
-                    <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
-                      <span>Floor Card</span>
-                      <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
-                    </div>
-                    <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
-                      <span>Discard</span>
-                      <strong>
-                        {gameState?.discardPile.length
-                          ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
-                          : 'Empty'}
-                      </strong>
-                    </div>
-                    <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
-                      <span>Pot</span>
-                      <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
-                    </div>
-                    <div className="playable-table-zone playable-table-zone--trick">
-                      <span>Table Cards</span>
-                      <strong>
-                        {gameState?.mechanicsContext?.tableCards?.length
-                          ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
-                          : 'None'}
-                      </strong>
-                    </div>
-                  </div>
-
-                  <div className="playable-table-stage__seats">
-                    {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
-                  </div>
-
-                  {!gameState && (
-                    <div className="playable-table-stage__empty">
-                      <h2>Ready to deal Claim</h2>
-                      <p>
-                        The Claim layout asset positioned the seats. Start the seeded match to deal three cards to each player and reveal the floor card.
-                      </p>
-                    </div>
-                  )}
                 </section>
 
                 <section className="playable-game-grid playable-game-grid--table">
@@ -656,8 +626,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
             )}
           </section>
         </main>
-
-        <AppFooter />
+        {bundle?.layoutDocument.hud.layerVisibility?.footer !== false ? <AppFooter /> : null}
       </div>
     </div>
   );

@@ -7,9 +7,11 @@ interface GameHUDProps {
   children?: ReactNode;
   controls: HudArtworkControls;
   showButtonGuides?: boolean;
+  scaleFactor?: number;
+  showArtwork?: boolean;
 }
 
-const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, showButtonGuides = false }, ref) => {
+const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, showButtonGuides = false, scaleFactor = 1, showArtwork = true }, ref) => {
   const hudHostRef = useRef<HTMLDivElement | null>(null);
   const [fitSize, setFitSize] = useState({ width: controls.width, height: controls.height });
 
@@ -25,8 +27,11 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, 
         return;
       }
 
-      const availableWidth = rect.width * 0.98;
-      const availableHeight = rect.height * 0.94;
+      const unscaledWidth = rect.width / scaleFactor;
+      const unscaledHeight = rect.height / scaleFactor;
+
+      const availableWidth = unscaledWidth * 0.98;
+      const availableHeight = unscaledHeight * 0.94;
       const overallScale = Math.max(0.1, controls.overallScale);
       const scale = Math.min(availableWidth / controls.width, availableHeight / controls.height) / overallScale;
 
@@ -54,11 +59,15 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, 
       observer.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [controls.height, controls.overallScale, controls.width]);
+  }, [controls.height, controls.overallScale, controls.width, scaleFactor]);
 
   return (
     <div className="hud" role="presentation" ref={hudHostRef}>
-      <HudArtwork ref={ref} controls={controls} fitWidth={fitSize.width} fitHeight={fitSize.height} showButtonGuides={showButtonGuides} />
+      {showArtwork ? (
+        <HudArtwork ref={ref} controls={controls} fitWidth={fitSize.width} fitHeight={fitSize.height} showButtonGuides={showButtonGuides} />
+      ) : (
+        <div ref={ref} style={{ position: 'absolute', inset: 0 }} />
+      )}
       {children ? <div className="hud__overlay">{children}</div> : null}
     </div>
   );

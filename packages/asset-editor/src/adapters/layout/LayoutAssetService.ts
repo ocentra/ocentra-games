@@ -34,6 +34,12 @@ type ResourceReference = {
   displayName?: string;
 };
 
+export interface LayoutPlayerRange {
+  minPlayers: number;
+  maxPlayers: number;
+  optimalPlayers: number | null;
+}
+
 const DEFAULT_LAYOUT_STRUCTURE = {
   type: 'custom',
   sections: [],
@@ -100,6 +106,67 @@ function getLayoutReference(gameModeRoot: Record<string, unknown>): ResourceRefe
     path: typeof ref.path === 'string' ? ref.path : undefined,
     displayName: typeof ref.displayName === 'string' ? ref.displayName : undefined,
   };
+}
+
+function getMechanicsReference(gameModeRoot: Record<string, unknown>): ResourceReference | null {
+  const data = getDataBlock(gameModeRoot);
+  const mechanicsAsset = data.mechanicsAsset;
+  if (!mechanicsAsset || typeof mechanicsAsset !== 'object') {
+    return null;
+  }
+  const ref = mechanicsAsset as Record<string, unknown>;
+  const guid = typeof ref.guid === 'string' ? ref.guid : undefined;
+  if (!guid) {
+    return null;
+  }
+  return {
+    guid,
+    path: typeof ref.path === 'string' ? ref.path : undefined,
+    displayName: typeof ref.displayName === 'string' ? ref.displayName : undefined,
+  };
+}
+
+function clampPlayerCountRange(minPlayers: number, maxPlayers: number): LayoutPlayerRange {
+  const clampedMin = Math.max(2, Math.min(10, Math.round(minPlayers)));
+  const clampedMax = Math.max(clampedMin, Math.min(10, Math.round(maxPlayers)));
+  return {
+    minPlayers: clampedMin,
+    maxPlayers: clampedMax,
+    optimalPlayers: null,
+  };
+}
+
+function readMechanicsPlayerRange(root: Record<string, unknown>): LayoutPlayerRange | null {
+  const data = getDataBlock(root);
+  const playerConfig = data.playerConfig;
+  if (!playerConfig || typeof playerConfig !== 'object' || Array.isArray(playerConfig)) {
+    return null;
+  }
+
+  const config = playerConfig as Record<string, unknown>;
+  const minPlayers = typeof config.minPlayers === 'number' ? config.minPlayers : null;
+  const maxPlayers = typeof config.maxPlayers === 'number' ? config.maxPlayers : null;
+  if (minPlayers === null || maxPlayers === null) {
+    return null;
+  }
+
+  const range = clampPlayerCountRange(minPlayers, maxPlayers);
+  return {
+    ...range,
+    optimalPlayers: typeof config.optimalPlayers === 'number'
+      ? Math.max(range.minPlayers, Math.min(range.maxPlayers, Math.round(config.optimalPlayers)))
+      : null,
+  };
+}
+
+function readGameModePlayerRange(root: Record<string, unknown>): LayoutPlayerRange | null {
+  const data = getDataBlock(root);
+  const minPlayers = typeof data.minPlayers === 'number' ? data.minPlayers : null;
+  const maxPlayers = typeof data.maxPlayers === 'number' ? data.maxPlayers : null;
+  if (minPlayers === null || maxPlayers === null) {
+    return null;
+  }
+  return clampPlayerCountRange(minPlayers, maxPlayers);
 }
 
 async function getGameModeEntry(gameId: string): Promise<AssetResourceEntry<GameMode>> {
@@ -170,6 +237,31 @@ export async function loadLayoutAsset(gameId: string): Promise<LoadedLayoutAsset
     raw: layoutRoot,
     document: toLayoutDocument(layoutRoot),
   };
+}
+
+export async function loadLayoutPlayerRange(gameId: string): Promise<LayoutPlayerRange | null> {
+  const gameModeEntry = await getGameModeEntry(gameId);
+  const loader = AssetLoader.getInstance();
+  const gameModeResponse = await loader.loadAssetByGuid(gameModeEntry.guid);
+  const gameModeParsed = JSON5.parse(await gameModeResponse.text()) as unknown;
+  const gameModeResult = LayoutAssetRootSchema.safeParse(gameModeParsed);
+  if (!gameModeResult.success) {
+    throw new Error(`Game mode asset validation failed for ${gameId}: ${gameModeResult.error.message}`);
+  }
+
+  const gameModeRoot = gameModeResult.data as Record<string, unknown>;
+  const mechanicsReference = getMechanicsReference(gameModeRoot);
+  if (mechanicsReference?.guid) {
+    const mechanicsResponse = await loader.loadAssetByGuid(mechanicsReference.guid);
+    const mechanicsParsed = JSON5.parse(await mechanicsResponse.text()) as unknown;
+    const mechanicsRoot = isRecord(mechanicsParsed) ? (mechanicsParsed as Record<string, unknown>) : null;
+    const mechanicsRange = mechanicsRoot ? readMechanicsPlayerRange(mechanicsRoot) : null;
+    if (mechanicsRange) {
+      return mechanicsRange;
+    }
+  }
+
+  return readGameModePlayerRange(gameModeRoot);
 }
 
 export function buildLoadedLayoutAssetFromRaw(

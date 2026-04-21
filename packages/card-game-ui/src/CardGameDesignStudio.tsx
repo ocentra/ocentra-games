@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, type ReactNode } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import type {
   CardGameLayoutDocument,
 } from "@ocentra/game-ui-types/cardGameLayoutTypes";
@@ -17,6 +17,7 @@ import {
   cloneCardGameLayoutDocument,
   createLayoutPreset,
 } from "@ocentra/game-layout-domain/cardGameLayoutRuntime";
+import { tableLayoutStore } from "@ocentra/game-layout-domain/tableLayoutStore";
 
 export type WorkspaceSectionKey = "layerSplit" | "hudTuning" | "hudButtons" | "table" | "cardVisuals" | "cardInHand";
 type EditorSectionKey = "layout" | "geometry" | "effects" | "colors";
@@ -29,6 +30,8 @@ export interface CardGameDesignStudioProps {
   initialWorkspaceSection?: WorkspaceSectionKey;
   activePlayerCount?: number;
   onActivePlayerCountChange?: (count: number) => void;
+  minPlayerCount?: number;
+  maxPlayerCount?: number;
   embedded?: boolean;
 }
 
@@ -155,12 +158,16 @@ function TabButton({ active, compact = false, children, onClick }: TabButtonProp
 
 function PlayerCountSelector({
   value,
+  min,
+  max,
   onChange,
 }: {
   value: number;
+  min: number;
+  max: number;
   onChange: (count: number) => void;
 }) {
-  const counts = Array.from({ length: MAX_PLAYER_COUNT - MIN_PLAYER_COUNT + 1 }, (_, i) => i + MIN_PLAYER_COUNT);
+  const counts = Array.from({ length: max - min + 1 }, (_, i) => i + min);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.5rem 0.75rem', borderBottom: '1px solid rgba(141, 255, 176, 0.1)', flexWrap: 'wrap' }}>
       <span style={{ fontSize: '0.75rem', color: 'rgba(220,255,230,0.7)', flexShrink: 0 }}>Player count:</span>
@@ -189,7 +196,16 @@ function PlayerCountSelector({
 }
 
 export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props) => {
-  const { document, onChange, initialWorkspaceSection, activePlayerCount, onActivePlayerCountChange, embedded = false } = props;
+  const {
+    document,
+    onChange,
+    initialWorkspaceSection,
+    activePlayerCount,
+    onActivePlayerCountChange,
+    minPlayerCount = MIN_PLAYER_COUNT,
+    maxPlayerCount = MAX_PLAYER_COUNT,
+    embedded = false,
+  } = props;
 
   const [workspaceSection, setWorkspaceSection] = useState<WorkspaceSectionKey>(initialWorkspaceSection ?? "hudButtons");
   const [activeSection, setActiveSection] = useState<EditorSectionKey>("layout");
@@ -198,15 +214,23 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
   const [internalPlayerCount, setInternalPlayerCount] = useState<number>(
     activePlayerCount ?? document.defaultPlayerCount,
   );
-  const [selectedSeatId, setSelectedSeatId] = useState<number | null>(null);
-
-  const resolvedPlayerCount = activePlayerCount ?? internalPlayerCount;
+  const boundedMinPlayerCount = Math.max(MIN_PLAYER_COUNT, Math.min(MAX_PLAYER_COUNT, minPlayerCount));
+  const boundedMaxPlayerCount = Math.max(boundedMinPlayerCount, Math.min(MAX_PLAYER_COUNT, maxPlayerCount));
+  const resolvedPlayerCount = Math.max(
+    boundedMinPlayerCount,
+    Math.min(boundedMaxPlayerCount, activePlayerCount ?? internalPlayerCount),
+  );
+  const selectedSeatId = useSyncExternalStore(
+    tableLayoutStore.subscribe,
+    () => tableLayoutStore.getState().selectedSeatId,
+    () => tableLayoutStore.getState().selectedSeatId,
+  );
 
   const handlePlayerCountChange = useCallback((count: number) => {
-    setInternalPlayerCount(count);
-    setSelectedSeatId(null);
-    onActivePlayerCountChange?.(count);
-  }, [onActivePlayerCountChange]);
+    const nextCount = Math.max(boundedMinPlayerCount, Math.min(boundedMaxPlayerCount, count));
+    setInternalPlayerCount(nextCount);
+    onActivePlayerCountChange?.(nextCount);
+  }, [boundedMaxPlayerCount, boundedMinPlayerCount, onActivePlayerCountChange]);
 
   const activePreset = useMemo(
     () => document.presets[String(resolvedPlayerCount)] ?? createLayoutPreset(resolvedPlayerCount),
@@ -250,6 +274,43 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     () => selectedSeatId !== null ? activePreset.seats.find(s => s.id === selectedSeatId) ?? null : null,
     [activePreset.seats, selectedSeatId],
   );
+
+  useEffect(() => {
+    if (selectedSeatId !== null && activePreset.seats.some((seat) => seat.id === selectedSeatId)) {
+      return;
+    }
+    tableLayoutStore.setSelectedSeat(activePreset.seats[0]?.id ?? null);
+  }, [activePreset.seats, selectedSeatId]);
+
+  const handleSeatSelection = useCallback((seatId: number | null) => {
+    tableLayoutStore.setSelectedSeat(seatId);
+  }, []);
+
+  const handleResetSeatRing = useCallback(() => {
+    updateDoc((draft) => {
+      const preset = ensurePreset(draft);
+      const freshPreset = createLayoutPreset(resolvedPlayerCount);
+      preset.seats = freshPreset.seats;
+    });
+    tableLayoutStore.setSelectedSeat(0);
+  }, [ensurePreset, resolvedPlayerCount, updateDoc]);
+
+  const handleResetSelectedSeat = useCallback(() => {
+    if (!selectedSeat) {
+      return;
+    }
+
+    const freshSeat = createLayoutPreset(resolvedPlayerCount).seats.find((seat) => seat.id === selectedSeat.id);
+    if (!freshSeat) {
+      return;
+    }
+
+    updateSeat(selectedSeat.id, (seat) => {
+      seat.position = { ...freshSeat.position };
+      seat.rotation = freshSeat.rotation;
+      seat.scale = freshSeat.scale;
+    });
+  }, [resolvedPlayerCount, selectedSeat, updateSeat]);
 
   const renderHudButtons = () => (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -332,7 +393,12 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
 
   const renderTableWorkspace = () => (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <PlayerCountSelector value={resolvedPlayerCount} onChange={handlePlayerCountChange} />
+      <PlayerCountSelector
+        value={resolvedPlayerCount}
+        min={boundedMinPlayerCount}
+        max={boundedMaxPlayerCount}
+        onChange={handlePlayerCountChange}
+      />
       <div className="game-screen__hud-button-modal-tabs">
         {TABLE_SECTIONS.map(s => (
           <TabButton key={s.key} compact active={activeTableSection === s.key} onClick={() => setActiveTableSection(s.key)}>
@@ -367,12 +433,34 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         {activeTableSection === "seats" && (
           <>
             <Section title={`Seats — ${resolvedPlayerCount} players`}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                <div style={{ color: 'rgba(220,255,230,0.45)', fontSize: '0.72rem' }}>
+                  Pick a preset count, then click a seat chip here or click a seat on the preview canvas.
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="game-screen__hud-button-modal-tab game-screen__hud-button-modal-tab--compact"
+                    onClick={handleResetSelectedSeat}
+                    disabled={!selectedSeat}
+                  >
+                    Reset Selected
+                  </button>
+                  <button
+                    type="button"
+                    className="game-screen__hud-button-modal-tab game-screen__hud-button-modal-tab--compact"
+                    onClick={handleResetSeatRing}
+                  >
+                    Regenerate Ring
+                  </button>
+                </div>
+              </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.75rem' }}>
                 {activePreset.seats.map(seat => (
                   <button
                     key={seat.id}
                     type="button"
-                    onClick={() => setSelectedSeatId(seat.id === selectedSeatId ? null : seat.id)}
+                    onClick={() => handleSeatSelection(seat.id === selectedSeatId ? null : seat.id)}
                     style={{
                       padding: '3px 9px',
                       borderRadius: '5px',
@@ -462,7 +550,7 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
                   <button
                     key={seat.id}
                     type="button"
-                    onClick={() => setSelectedSeatId(seat.id === selectedSeatId ? null : seat.id)}
+                    onClick={() => handleSeatSelection(seat.id === selectedSeatId ? null : seat.id)}
                     style={{
                       padding: '3px 9px',
                       borderRadius: '5px',
