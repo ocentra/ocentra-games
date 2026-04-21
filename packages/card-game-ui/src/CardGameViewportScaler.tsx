@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
+import GameBackground from './scene/GameBackground';
 import { CardGameTemplatePage, type CardGameTemplatePageProps } from './CardGameTemplatePage';
 
 const BASE_WIDTH = 1920;
@@ -38,6 +39,8 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
     return () => window.removeEventListener('resize', measure);
   }, []);
 
+  const floatScale = pageProps.document?.cardVisuals?.floatScale ?? 1;
+
   return (
     <div
       ref={hostRef}
@@ -46,9 +49,12 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
         position: 'absolute',
         inset: 0,
         overflow: 'hidden',
-        background: '#050814',
       }}
     >
+      {/* Background renders at host level — fills the entire container including letterbox strips */}
+      <GameBackground floatScale={floatScale} position="absolute" />
+
+      {/* Scaled 1920×1080 game canvas — background suppressed here since host covers it */}
       <div
         style={{
           position: 'absolute',
@@ -58,9 +64,10 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
           top: '50%',
           transformOrigin: 'center center',
           transform: `translate(-50%, -50%) scale(${scale})`,
+          zIndex: 1,
         }}
       >
-        <CardGameTemplatePage {...pageProps} embedded />
+        <CardGameTemplatePage {...pageProps} embedded showBackground={false} scaleFactor={scale} />
       </div>
     </div>
   );

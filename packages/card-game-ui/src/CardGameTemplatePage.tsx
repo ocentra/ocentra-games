@@ -36,6 +36,8 @@ export interface CardGameTemplatePageProps {
   embedded?: boolean;
   document?: CardGameLayoutDocument;
   playerCount?: number;
+  showBackground?: boolean;
+  scaleFactor?: number;
 }
 
 export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
@@ -45,6 +47,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   embedded = false,
   document: docProp,
   playerCount: playerCountProp,
+  showBackground = true,
+  scaleFactor = 1,
 }) => {
   const [draftDoc, setDraftDoc] = useState<CardGameLayoutDocument | null>(null);
   const [showHudButtonEditor, setShowHudButtonEditor] = useState(false);
@@ -114,6 +118,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
             document={activeDoc}
             playerCount={resolvedPlayerCount}
             className="game-screen__canvas-surface"
+            showBackground={showBackground}
+            scaleFactor={scaleFactor}
           />
         </main>
 

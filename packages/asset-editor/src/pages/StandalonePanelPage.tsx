@@ -14,7 +14,7 @@ import {
   type LayoutAssetDocument,
 } from '@/adapters/layout/LayoutAssetService';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
-import { CardGameViewportScaler } from '@ocentra/card-game-ui/CardGameViewportScaler';
+import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
@@ -239,11 +239,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{ assetPath: string; assetData: 
 
   return (
     <div className="standalone-panel-page standalone-panel-page--card-game-preview">
-      <CardGameViewportScaler
+      <CardGameTemplatePage
         document={document as unknown as CardGameLayoutDocument}
         headerProps={headerProps}
         footerVersion="1.0.0-dev"
         onHomeClick={() => {}}
+        embedded={false}
       />
     </div>
   );

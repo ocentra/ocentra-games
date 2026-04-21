@@ -16,6 +16,8 @@ export interface CardGamePreviewSurfaceProps {
   document: CardGameLayoutDocument;
   playerCount?: number;
   className?: string;
+  showBackground?: boolean;
+  scaleFactor?: number;
 }
 
 function createPreviewAsset(document: CardGameLayoutDocument): CardGameLayoutAsset {
@@ -50,6 +52,8 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   document,
   playerCount,
   className,
+  showBackground = true,
+  scaleFactor = 1,
 }) => {
   const resolvedPlayerCount = playerCount ?? document.defaultPlayerCount;
   const surfaceRef = useRef<HTMLDivElement | null>(null);
@@ -80,17 +84,22 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
     }
 
     setHudAnchor({
-      x: rect.left - surfaceRect.left + rect.width / 2,
-      y: rect.top - surfaceRect.top + rect.height / 2,
-      radius: rect.width / 2,
+      x: (rect.left - surfaceRect.left + rect.width / 2) / scaleFactor,
+      y: (rect.top - surfaceRect.top + rect.height / 2) / scaleFactor,
+      radius: (rect.width / 2) / scaleFactor,
     });
-  }, []);
+  }, [scaleFactor]);
 
   useEffect(() => {
     measureHudAnchor();
     window.addEventListener('resize', measureHudAnchor);
     return () => window.removeEventListener('resize', measureHudAnchor);
   }, [measureHudAnchor, document.hud, resolvedPlayerCount]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(measureHudAnchor);
+    return () => cancelAnimationFrame(id);
+  }, [measureHudAnchor, scaleFactor]);
 
   const handLayout = useMemo(() => {
     if (!hudAnchor) {
@@ -104,7 +113,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
     <div ref={surfaceRef} className={`card-game-preview-surface${className ? ` ${className}` : ''}`}>
       <div className="card-game-preview-surface__stage">
         <div className="card-game-preview-surface__layer card-game-preview-surface__layer--background">
-          <GameBackground floatScale={floatScale} position="absolute" />
+          {showBackground && <GameBackground floatScale={floatScale} position="absolute" />}
         </div>
 
         <main className="card-game-preview-surface__scene" aria-label="Card game template preview">
