@@ -1,5 +1,5 @@
 import "./HudButtonEditorModal.css";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CardGameDesignStudio, type CardGameDesignStudioProps } from "./CardGameDesignStudio";
 
 export type HudButtonEditorModalProps = CardGameDesignStudioProps & {
@@ -10,14 +10,13 @@ export type HudButtonEditorModalProps = CardGameDesignStudioProps & {
 export function HudButtonEditorModal(props: HudButtonEditorModalProps) {
   const { open, onClose } = props;
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const [modalPosition, setModalPosition] = useState({ x: 24, y: 24 });
+  const [modalPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? (window.innerWidth - 832) / 2 : 24,
+    y: typeof window !== 'undefined' ? (window.innerHeight - 468) / 2 : 24
+  }));
+
   const [modalSize] = useState({ width: 832, height: 468 });
   const [isDragging] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setModalPosition({ x: (window.innerWidth - 832) / 2, y: (window.innerHeight - 468) / 2 });
-  }, [open]);
 
   if (!open) return null;
 

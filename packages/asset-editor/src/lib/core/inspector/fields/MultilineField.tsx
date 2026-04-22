@@ -1,28 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './MultilineField.css';
 
+
 interface MultilineFieldProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
   readOnly?: boolean;
-}
-
-export function isMultiline(value: string, fieldName?: string): boolean {
-  const multilineFieldNames = [
-    'description', 'description', 'rules', 'tips', 'content', 'text', 
-    'message', 'note', 'comment', 'bonusRules', 'exampleHands'
-  ];
-  
-  if (fieldName && multilineFieldNames.some(name => fieldName.toLowerCase().includes(name))) {
-    return true;
-  }
-  
-  return value.includes('\n') || 
-         value.length > 80 || 
-         value.includes('\n-') || 
-         value.includes('\n*') ||
-         value.split('\n').length > 1;
 }
 
 export const MultilineField: React.FC<MultilineFieldProps> = ({
@@ -35,9 +19,11 @@ export const MultilineField: React.FC<MultilineFieldProps> = ({
   const [editedValue, setEditedValue] = useState(value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
     setEditedValue(value);
-  }, [value]);
+  }
 
   useEffect(() => {
     if (isPopupOpen && textareaRef.current) {
@@ -194,3 +180,4 @@ export const MultilineField: React.FC<MultilineFieldProps> = ({
   );
 };
 
+export default MultilineField;

@@ -62,8 +62,24 @@ export default defineConfig({
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(appVersion),
   },
+  esbuild: {
+    keepNames: true,
+  },
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [
+          ['@babel/plugin-proposal-decorators', { legacy: true }],
+          ['@babel/plugin-transform-class-properties', { loose: true }],
+          ['@babel/plugin-transform-class-static-block', { loose: true }],
+        ],
+      },
+      // Ensure Babel also processes files in linked packages
+      include: [
+        /\.[tj]sx?$/,
+        /packages\/.*\/src\/.*\.[tj]sx?$/
+      ],
+    }),
     tsconfigPaths(),
     {
       name: 'asset-editor-logs',
@@ -163,6 +179,14 @@ export default defineConfig({
       },
     },
   ],
+  optimizeDeps: {
+    exclude: [
+      '@ocentra/card-game-ui',
+      '@ocentra/game-layout-domain',
+      '@ocentra/game-ui-types',
+      '@ocentra/core-ui',
+    ],
+  },
   server: {
     port: parseInt(process.env.PORT ?? process.env.VITE_PORT ?? '5174', 10),
     watch: {

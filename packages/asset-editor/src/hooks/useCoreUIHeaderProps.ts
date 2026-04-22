@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { getProxiedImageUrl, shouldProxyImage } from '@utils/imageProxy';
 
 export function useCoreUIHeaderProps() {

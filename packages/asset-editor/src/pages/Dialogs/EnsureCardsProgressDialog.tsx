@@ -43,17 +43,31 @@ export const EnsureCardsProgressDialog: React.FC<EnsureCardsProgressDialogProps>
   const [createdCount, setCreatedCount] = useState(0);
 
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const isStartedRef = useRef(false);
+  const [isStarted, setIsStarted] = useState(false);
+
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setIsStarted(false);
+      setStage(EnsureStage.Idle);
+      setError(null);
+    } else {
+      setIsStarted(false);
+      setStage(EnsureStage.Idle);
+      setError(null);
+    }
+  }
 
   const isProcessing = stage === EnsureStage.Checking || stage === EnsureStage.Creating || stage === EnsureStage.Updating;
   const isComplete = stage === EnsureStage.Complete;
   const hasError = stage === EnsureStage.Error;
 
   useEffect(() => {
-    if (!isOpen || !assetGuid || isStartedRef.current) return;
+    if (!isOpen || !assetGuid || isStarted) return;
 
     const runReconciliation = async () => {
-      isStartedRef.current = true;
+      setIsStarted(true);
       setStage(EnsureStage.Checking);
       setMessage('Loading deck...');
       setError(null);
@@ -101,17 +115,9 @@ export const EnsureCardsProgressDialog: React.FC<EnsureCardsProgressDialogProps>
       }
     };
 
-    void runReconciliation();
-  }, [isOpen, assetGuid, onComplete]);
+    void Promise.resolve().then(() => runReconciliation());
+  }, [isOpen, assetGuid, onComplete, isStarted]);
 
-  // Reset logic when dialog closes
-  useEffect(() => {
-    if (!isOpen) {
-      isStartedRef.current = false;
-      setStage(EnsureStage.Idle);
-      setError(null);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;

@@ -1,16 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { GameHeader } from '@ocentra/core-ui';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import type { Card, GameState, Player, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
 import { GamePhase } from '@ocentra/game-domain/types/game';
-import { AppFooter } from '@/ui/components/AppFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
-import GameBackground from '@ocentra/card-game-ui/scene/GameBackground';
-import { CardGamePreviewSurface } from '@ocentra/card-game-ui/CardGamePreviewSurface';
+import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import type { HudArtworkControls } from '@ocentra/card-game-ui/scene/HudArtwork.types';
+import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './GameScreenPage.css';
 import {
   describePlayer,
@@ -24,6 +23,14 @@ import {
 interface GameScreenPageProps {
   gameModeId: string;
 }
+
+interface HudActionDescriptor {
+  label: string;
+  onClick: () => void;
+}
+
+const LOCAL_PILOT_PLAYER_COUNT = 2;
+const AUTO_START_COUNTDOWN_SECONDS = 3;
 
 function getSeatName(index: number): string {
   return index === 0 ? 'You' : `Seat ${index + 1}`;
@@ -104,11 +111,12 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [seed, setSeed] = useState(42);
   const [startingMatch, setStartingMatch] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
+  const autoStartArmedRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -120,13 +128,15 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       setGameState(null);
 
       try {
-        const result = await loadLocalPlayableGame(gameModeId);
+        const result = await loadLocalPlayableGame(gameModeId, LOCAL_PILOT_PLAYER_COUNT);
         if (cancelled) {
           return;
         }
 
         setBundle(result.bundle);
         setError(result.error);
+        setCountdown(result.bundle ? AUTO_START_COUNTDOWN_SECONDS : null);
+        autoStartArmedRef.current = false;
       } catch (loadError) {
         if (cancelled) {
           return;
@@ -134,6 +144,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
         setBundle(null);
         setError(loadError instanceof Error ? loadError.message : String(loadError));
+        setCountdown(null);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -197,7 +208,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     navigate(buildHomePath());
   };
 
-  const startMatch = async () => {
+  const startMatch = useCallback(async () => {
     if (!bundle) {
       return;
     }
@@ -210,8 +221,8 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     });
 
     setStartingMatch(true);
+    setCountdown(null);
     setError(null);
-    setSelectedCardId(null);
 
     try {
       await engine.initializeGame({
@@ -228,21 +239,21 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         });
       }
 
-        unsubscribeRef.current = engine.subscribeToUpdates((nextState) => {
-          setGameState(cloneGameStateSnapshot(nextState));
-        });
+      unsubscribeRef.current = engine.subscribeToUpdates((nextState) => {
+        setGameState(cloneGameStateSnapshot(nextState));
+      });
 
-        engineRef.current = engine;
-        await engine.startGame();
-        setGameState(cloneGameStateSnapshot(engine.getGameState()));
+      engineRef.current = engine;
+      await engine.startGame();
+      setGameState(cloneGameStateSnapshot(engine.getGameState()));
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : String(nextError));
     } finally {
       setStartingMatch(false);
     }
-  };
+  }, [bundle, seed]);
 
-  const dispatchAction = (type: PlayerActionTypeValue, playerId: string, data?: unknown) => {
+  const dispatchAction = useCallback((type: PlayerActionTypeValue, playerId: string, data?: unknown) => {
     const engine = engineRef.current;
     const state = engine?.getGameState();
     if (!engine || !state) {
@@ -261,39 +272,140 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       return;
     }
 
-      setError(null);
-      setSelectedCardId(null);
-      setGameState(cloneGameStateSnapshot(engine.getGameState()));
-    };
+    setError(null);
+    setGameState(cloneGameStateSnapshot(engine.getGameState()));
+  }, []);
 
-  const handlePickUp = () => {
-    if (!currentPlayer || !selectedCardId) {
-      setError('Select a card to discard after picking up the floor card.');
-      return;
-    }
-
-    dispatchAction('pick_up', currentPlayer.id, { discardCardId: selectedCardId });
-  };
-
-  const handleDeclare = (suit: string) => {
+  const handleDeclare = useCallback((suit: string) => {
     if (!currentPlayer) {
       return;
     }
 
     dispatchAction('declare', currentPlayer.id, { suit });
-  };
+  }, [currentPlayer, dispatchAction]);
 
-  const handleSimpleAction = (type: PlayerActionTypeValue) => {
+  const handleSimpleAction = useCallback((type: PlayerActionTypeValue) => {
     if (!currentPlayer) {
       return;
     }
 
     dispatchAction(type, currentPlayer.id);
-  };
+  }, [currentPlayer, dispatchAction]);
 
-  const handleReveal = (playerId: string) => {
+  const handleReveal = useCallback((playerId: string) => {
     dispatchAction('reveal_hand', playerId);
-  };
+  }, [dispatchAction]);
+
+  useEffect(() => {
+    if (loading || error || !bundle || gameState || startingMatch || autoStartArmedRef.current) {
+      return;
+    }
+
+    autoStartArmedRef.current = true;
+    setCountdown(AUTO_START_COUNTDOWN_SECONDS);
+
+    const intervalId = window.setInterval(() => {
+      setCountdown((current) => {
+        if (current === null) {
+          return null;
+        }
+        if (current <= 1) {
+          window.clearInterval(intervalId);
+          void startMatch();
+          return 0;
+        }
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [bundle, error, gameState, loading, startMatch, startingMatch]);
+
+  const hudActions = useMemo<HudActionDescriptor[]>(() => {
+    if (!bundle || !gameState || !currentPlayer) {
+      return [];
+    }
+
+    const actions: HudActionDescriptor[] = [];
+
+    if (legalActions.includes('declare') && currentPlayer.declaredSuit === null) {
+      distinctDeclareSuits.forEach((suit) => {
+        actions.push({
+          label: `Declare ${suit.slice(0, 3).toUpperCase()}`,
+          onClick: () => handleDeclare(suit),
+        });
+      });
+    }
+
+    if (legalActions.includes('pick_up')) {
+      currentPlayer.hand.forEach((card) => {
+        actions.push({
+          label: `Pick ${formatCardShortLabel(card)}`,
+          onClick: () => dispatchAction('pick_up', currentPlayer.id, { discardCardId: card.id }),
+        });
+      });
+    }
+
+    if (legalActions.includes('call_showdown')) {
+      actions.push({
+        label: 'Showdown',
+        onClick: () => handleSimpleAction('call_showdown'),
+      });
+    }
+
+    if (legalActions.includes('reveal_hand')) {
+      revealablePlayers.forEach((player) => {
+        actions.push({
+          label: `Reveal ${player.name}`,
+          onClick: () => handleReveal(player.id),
+        });
+      });
+    }
+
+    if (legalActions.includes('pass')) {
+      actions.push({
+        label: 'Pass',
+        onClick: () => handleSimpleAction('pass'),
+      });
+    }
+
+    return actions.slice(0, 6);
+  }, [
+    bundle,
+    currentPlayer,
+    dispatchAction,
+    distinctDeclareSuits,
+    gameState,
+    handleDeclare,
+    handleReveal,
+    handleSimpleAction,
+    legalActions,
+    revealablePlayers,
+  ]);
+
+  const runtimeHudControls = useMemo<HudArtworkControls | undefined>(() => {
+    if (!bundle) {
+      return undefined;
+    }
+
+    const nextDocument = cloneCardGameLayoutDocument(bundle.layoutDocument);
+    const nextLabels = Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '');
+    nextDocument.hud.buttonLabels = nextLabels;
+    nextDocument.hud.buttonCount = Math.max(1, Math.min(6, hudActions.length || 1));
+    return nextDocument.hud;
+  }, [bundle, hudActions]);
+
+  const handleHudButtonClick = useCallback((index: number) => {
+    hudActions[index]?.onClick();
+  }, [hudActions]);
+
+  useEffect(() => {
+    if (gameState || startingMatch) {
+      setCountdown(null);
+    }
+  }, [gameState, startingMatch]);
 
   const renderSeat = (seatId: number, player: Player | null) => {
     const seat = orderedSeats.find((entry) => entry.id === seatId);
@@ -347,287 +459,149 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
   return (
     <div className="playable-game-screen">
-      {bundle?.layoutDocument.hud.layerVisibility?.background !== false ? (
-        <GameBackground floatScale={bundle?.layoutDocument.cardVisuals.floatScale ?? 1} />
-      ) : null}
+      <CardGameTemplatePage
+        document={bundle?.layoutDocument}
+        playerCount={bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT}
+        headerProps={headerProps}
+        footerVersion="1.0.0-dev"
+        onHomeClick={handleHome}
+        hudControlsOverride={runtimeHudControls}
+        onHudButtonClick={(index) => handleHudButtonClick(index)}
+        arenaOverlay={bundle ? (
+          <div className="playable-table-stage" data-testid="claim-pilot-table">
+            <div className="playable-table-stage__zones">
+              <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
+                <span>Deck</span>
+                <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
+              </div>
+              <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
+                <span>Floor Card</span>
+                <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
+              </div>
+              <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
+                <span>Discard</span>
+                <strong>
+                  {gameState?.discardPile.length
+                    ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
+                    : 'Empty'}
+                </strong>
+              </div>
+              <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
+                <span>Pot</span>
+                <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
+              </div>
+              <div className="playable-table-zone playable-table-zone--trick">
+                <span>Table Cards</span>
+                <strong>
+                  {gameState?.mechanicsContext?.tableCards?.length
+                    ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
+                    : 'None'}
+                </strong>
+              </div>
+            </div>
 
-      <div className="playable-game-screen__layer">
-        {bundle?.layoutDocument.hud.layerVisibility?.header !== false ? (
-          <GameHeader
-            {...headerProps}
-            onHomeClick={handleHome}
-          />
-        ) : null}
+            <div className="playable-table-stage__seats">
+              {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
+            </div>
 
-        <main className="playable-game-screen__content">
-          <section className="playable-game-shell">
-            <header className="playable-game-shell__header">
-              <div>
-                <p className="playable-game-shell__eyebrow">Local Pilot</p>
-                <h1 className="playable-game-shell__title">
-                  {bundle?.displayName || gameModeId}
-                </h1>
-                <p className="playable-game-shell__subtitle">
-                  Claim local pilot: seeded local runtime, visible hands, and layout-driven seating so you can validate the mechanics on a real table.
+            {!gameState ? (
+              <div className="playable-table-stage__empty">
+                <h2>Starting local pilot</h2>
+                <p>
+                  {loading
+                    ? 'Loading Claim assets...'
+                    : countdown && countdown > 0
+                      ? `Dealing a 2-player test table in ${countdown}...`
+                  : 'Preparing the first deal.'}
                 </p>
               </div>
+            ) : null}
+          </div>
+        ) : null}
+        stageOverlay={(
+          <>
+            <div className="playable-template-status">
+              <span className="playable-template-status__item playable-template-status__item--accent">
+                {isGameOver ? 'Game Over' : currentPhase?.label || (loading ? 'Loading' : 'Standby')}
+              </span>
+              <span className="playable-template-status__item">2P Local Pilot</span>
+              <span className="playable-template-status__item">Round {gameState?.round ?? 1}</span>
+              <span className="playable-template-status__item">
+                {startingMatch
+                  ? 'Dealing...'
+                  : gameState
+                    ? `${currentPlayer?.name || 'Seat'} to act`
+                    : countdown && countdown > 0
+                      ? `Starting in ${countdown}`
+                      : 'Booting table'}
+              </span>
+            </div>
 
-              <div className="playable-game-shell__controls">
-                <label className="playable-game-field">
-                  <span>Seed</span>
-                  <input
-                    data-testid="claim-pilot-seed"
-                    type="number"
-                    value={seed}
-                    onChange={(event) => setSeed(Number(event.target.value) || 1)}
-                  />
-                </label>
+            <aside className="playable-pilot-panel">
+              <div className="playable-pilot-panel__header">
+                <div>
+                  <p className="playable-pilot-panel__eyebrow">Local Pilot</p>
+                  <h2>{bundle?.displayName || gameModeId}</h2>
+                </div>
                 <button
                   type="button"
-                  data-testid="claim-pilot-start"
-                  className="playable-game-button playable-game-button--primary"
-                  onClick={() => void startMatch()}
+                  className="playable-pilot-panel__restart"
+                  onClick={() => {
+                    autoStartArmedRef.current = true;
+                    setCountdown(null);
+                    void startMatch();
+                  }}
                   disabled={!bundle || startingMatch}
                 >
-                  {startingMatch ? 'Starting...' : gameState ? 'Restart Match' : 'Start Match'}
+                  {startingMatch ? 'Starting...' : gameState ? 'Redeal' : 'Start Now'}
                 </button>
               </div>
-            </header>
 
-            {loading && (
-              <div className="playable-game-panel">
-                <p>Loading game assets...</p>
+              <label className="playable-pilot-panel__field">
+                <span>Seed</span>
+                <input
+                  data-testid="claim-pilot-seed"
+                  type="number"
+                  value={seed}
+                  onChange={(event) => setSeed(Number(event.target.value) || 1)}
+                />
+              </label>
+
+              {error ? (
+                <div className="playable-pilot-panel__error">
+                  {error}
+                </div>
+              ) : null}
+
+              {isGameOver ? (
+                <div className="playable-pilot-panel__section">
+                  <strong>Result</strong>
+                  <p>
+                    {winners.length > 1
+                      ? `Tie game between ${winners.map((player) => player.name).join(', ')}.`
+                      : `Winner: ${winners[0]?.name ?? 'Unknown'}.`}
+                  </p>
+                </div>
+              ) : null}
+
+              <div className="playable-pilot-panel__section">
+                <strong>Current Hand</strong>
+                <div className="playable-pilot-panel__cards" data-testid="claim-pilot-current-hand">
+                  {currentPlayer?.hand.length ? currentPlayer.hand.map((card) => (
+                    <span key={card.id} className="playable-pilot-panel__card">
+                      {formatCardLabel(card)}
+                    </span>
+                  )) : (
+                    <span className="playable-pilot-panel__chip playable-pilot-panel__chip--muted">
+                      {loading ? 'Loading...' : 'Waiting for first deal'}
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
-
-            {!loading && error && (
-              <div className="playable-game-panel playable-game-panel--error">
-                <pre>{error}</pre>
-              </div>
-            )}
-
-            {!loading && !bundle && !error && (
-              <div className="playable-game-panel">
-                <p>Game bundle could not be loaded.</p>
-              </div>
-            )}
-
-            {!loading && bundle && (
-              <>
-                {isGameOver && (
-                  <section className="playable-game-panel playable-game-panel--gameover" data-testid="claim-pilot-game-over">
-                    <h2>Game Over</h2>
-                    <p>
-                      {winners.length > 1
-                        ? `Tie game between ${winners.map((player) => player.name).join(', ')}.`
-                        : `Winner: ${winners[0]?.name ?? 'Unknown'}.`}
-                    </p>
-                    <div className="playable-game-gameover__scores">
-                      {gameState.players
-                        .slice()
-                        .sort((left, right) => right.score - left.score)
-                        .map((player) => (
-                          <div key={player.id} className="playable-game-gameover__score">
-                            <strong>{player.name}</strong>
-                            <span>{player.score}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </section>
-                )}
-
-                <section className="playable-table-stage" data-testid="claim-pilot-table">
-                  <CardGamePreviewSurface
-                    document={bundle.layoutDocument}
-                    playerCount={bundle.playerCount}
-                    className="playable-table-stage__template"
-                    showBackground={false}
-                    showSeatWidgets={false}
-                    arenaOverlay={(
-                      <>
-                        <div className="playable-table-stage__zones">
-                          <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
-                            <span>Deck</span>
-                            <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
-                          </div>
-                          <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
-                            <span>Floor Card</span>
-                            <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
-                          </div>
-                          <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
-                            <span>Discard</span>
-                            <strong>
-                              {gameState?.discardPile.length
-                                ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
-                                : 'Empty'}
-                            </strong>
-                          </div>
-                          <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
-                            <span>Pot</span>
-                            <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
-                          </div>
-                          <div className="playable-table-zone playable-table-zone--trick">
-                            <span>Table Cards</span>
-                            <strong>
-                              {gameState?.mechanicsContext?.tableCards?.length
-                                ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
-                                : 'None'}
-                            </strong>
-                          </div>
-                        </div>
-
-                        <div className="playable-table-stage__seats">
-                          {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
-                        </div>
-
-                        {!gameState ? (
-                          <div className="playable-table-stage__empty">
-                            <h2>Ready to deal Claim</h2>
-                            <p>
-                              The Claim layout asset positioned the seats. Start the seeded match to deal three cards to each player and reveal the floor card.
-                            </p>
-                          </div>
-                        ) : null}
-                      </>
-                    )}
-                    stageOverlay={(
-                      <div className="playable-table-stage__status">
-                        <span className="playable-table-stage__phase">{isGameOver ? 'Game Over' : currentPhase?.label || 'Ready to start'}</span>
-                        <span>Round {gameState?.round ?? 1}</span>
-                        <span>
-                          {isGameOver
-                            ? 'Final scores locked'
-                            : gameState
-                              ? `${currentPlayer?.name || 'Seat'} to act`
-                              : `${bundle.playerCount} seats staged`}
-                        </span>
-                      </div>
-                    )}
-                  />
-                </section>
-
-                <section className="playable-game-grid playable-game-grid--table">
-                  <article className="playable-game-panel">
-                    <h2>Current Hand</h2>
-                    {gameState && currentPlayer ? (
-                      <>
-                        <p className="playable-game-panel__lede">
-                          {currentPlayer.name} is active.
-                          {currentPlayer.declaredSuit
-                            ? ` Declared suit: ${currentPlayer.declaredSuit}.`
-                            : ' Select a suit to declare or pick up the floor card.'}
-                        </p>
-                        <div className="playable-game-cards" data-testid="claim-pilot-current-hand">
-                          {currentPlayer.hand.map((card) => {
-                            const isSelected = selectedCardId === card.id;
-                            return (
-                              <button
-                                key={card.id}
-                                type="button"
-                                className={isSelected ? 'playable-game-card playable-game-card--selected' : 'playable-game-card'}
-                                onClick={() => setSelectedCardId(card.id)}
-                              >
-                                <span>{formatCardLabel(card)}</span>
-                                <small>{isSelected ? 'Selected discard' : 'Select discard'}</small>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </>
-                    ) : (
-                      <p className="playable-game-panel__lede">Start the match to deal visible hands and enable Claim actions.</p>
-                    )}
-                  </article>
-
-                  <article className="playable-game-panel">
-                    <h2>Actions</h2>
-                    <div className="playable-game-action-list">
-                      <dl className="playable-game-stats playable-game-stats--compact">
-                        <div>
-                          <dt>Family</dt>
-                          <dd>{bundle.familyKernel}</dd>
-                        </div>
-                        <div>
-                          <dt>Legacy Phase</dt>
-                          <dd>{gameState?.phase || 'n/a'}</dd>
-                        </div>
-                        <div>
-                          <dt>Legal Actions</dt>
-                          <dd>{legalActions.join(', ') || 'n/a'}</dd>
-                        </div>
-                      </dl>
-
-                      {legalActions.includes('pass') && (
-                        <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('pass')}>
-                          Pass
-                        </button>
-                      )}
-                      {legalActions.includes('pick_up') && (
-                        <button
-                          type="button"
-                          className="playable-game-button"
-                          onClick={handlePickUp}
-                          disabled={!selectedCardId}
-                        >
-                          Pick Up And Discard Selected
-                        </button>
-                      )}
-                      {legalActions.includes('call_showdown') && (
-                        currentPlayer?.declaredSuit ? (
-                          <button type="button" className="playable-game-button" onClick={() => handleSimpleAction('call_showdown')}>
-                            Call Showdown
-                          </button>
-                        ) : (
-                          <p>Declare a suit before calling showdown.</p>
-                        )
-                      )}
-                      {legalActions.includes('declare') && currentPlayer?.declaredSuit === null && (
-                        <div className="playable-game-inline-action playable-game-inline-action--wrap">
-                          {distinctDeclareSuits.map((suit) => (
-                            <button
-                              key={suit}
-                              type="button"
-                              className="playable-game-button"
-                              onClick={() => handleDeclare(suit)}
-                            >
-                              Declare {suit}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {legalActions.includes('reveal_hand') && (
-                        <div className="playable-game-inline-action playable-game-inline-action--wrap">
-                          {revealablePlayers.map((player) => (
-                            <button
-                              key={player.id}
-                              type="button"
-                              className="playable-game-button"
-                              onClick={() => handleReveal(player.id)}
-                            >
-                              Reveal {player.name}
-                            </button>
-                          ))}
-                          {revealablePlayers.length === 0 && <p>All remaining players have already revealed.</p>}
-                        </div>
-                      )}
-                    </div>
-                  </article>
-                </section>
-
-                <section className="playable-game-panel">
-                  <details>
-                    <summary>Debug Snapshot</summary>
-                    <pre className="playable-game-debug">
-                      {JSON.stringify(gameState, null, 2)}
-                    </pre>
-                  </details>
-                </section>
-              </>
-            )}
-          </section>
-        </main>
-        {bundle?.layoutDocument.hud.layerVisibility?.footer !== false ? <AppFooter /> : null}
-      </div>
+            </aside>
+          </>
+        )}
+      />
     </div>
   );
 };

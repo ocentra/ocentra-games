@@ -1,50 +1,51 @@
 {
-  "name": "@ocentra/app-core",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Shared app bootstrap: ServiceRegistry, path utils.",
-  "exports": {
-    "./ServiceRegistry": {
-      "import": "./dist/ServiceRegistry.js",
-      "types": "./dist/ServiceRegistry.d.ts"
-    },
-    "./path": {
-      "import": "./dist/path.js",
-      "types": "./dist/path.d.ts"
-    },
-    "./guid": {
-      "import": "./dist/guid.js",
-      "types": "./dist/guid.d.ts"
-    },
-    "./timeout": {
-      "import": "./dist/timeout.js",
-      "types": "./dist/timeout.d.ts"
-    },
-    "./UniqueList": {
-      "import": "./dist/UniqueList.js",
-      "types": "./dist/UniqueList.d.ts"
-    },
-    "./platform": {
-      "import": "./dist/platform.js",
-      "types": "./dist/platform.d.ts"
-    }
-  },
-  "scripts": {
-    "build": "tsc && node ../../scripts/fix-esm-imports.mjs",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint --cache src && tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
-  },
-  "dependencies": {
-    "@ocentra/asset-domain": "file:../asset-domain"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "eslint": "^9.15.0",
-    "globals": "^15.12.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0",
-    "vitest": "^2.0.0"
-  }
+    "name":  "@ocentra/app-core",
+    "version":  "1.0.0",
+    "type":  "module",
+    "description":  "Shared app bootstrap: ServiceRegistry, path utils.",
+    "exports":  {
+                    "./ServiceRegistry":  {
+                                              "import":  "./dist/ServiceRegistry.js",
+                                              "types":  "./dist/ServiceRegistry.d.ts"
+                                          },
+                    "./path":  {
+                                   "import":  "./dist/path.js",
+                                   "types":  "./dist/path.d.ts"
+                               },
+                    "./guid":  {
+                                   "import":  "./dist/guid.js",
+                                   "types":  "./dist/guid.d.ts"
+                               },
+                    "./timeout":  {
+                                      "import":  "./dist/timeout.js",
+                                      "types":  "./dist/timeout.d.ts"
+                                  },
+                    "./UniqueList":  {
+                                         "import":  "./dist/UniqueList.js",
+                                         "types":  "./dist/UniqueList.d.ts"
+                                     },
+                    "./platform":  {
+                                       "import":  "./dist/platform.js",
+                                       "types":  "./dist/platform.d.ts"
+                                   }
+                },
+    "scripts":  {
+                    "build":  "tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs",
+                    "type-check":  "tsc --noEmit",
+                    "lint":  "node -e \"const cmd = process.env.TURBO_HASH ? \u0027npm run lint:exec\u0027 : \u0027npx turbo run lint:exec --filter=@ocentra/app-core\u0027; require(\u0027child_process\u0027).spawnSync(cmd.split(\u0027 \u0027)[0], cmd.split(\u0027 \u0027).slice(1), { stdio: \u0027inherit\u0027, shell: true });\"",
+                    "test":  "vitest run",
+                    "test:watch":  "vitest",
+                    "lint:exec":  "eslint --cache src \u0026\u0026 tsc --noEmit"
+                },
+    "dependencies":  {
+                         "@ocentra/asset-domain":  "file:../asset-domain"
+                     },
+    "devDependencies":  {
+                            "@eslint/js":  "^9.15.0",
+                            "eslint":  "^9.15.0",
+                            "globals":  "^15.12.0",
+                            "typescript":  "^6.0.2",
+                            "typescript-eslint":  "^8.58.0",
+                            "vitest":  "^2.0.0"
+                        }
 }

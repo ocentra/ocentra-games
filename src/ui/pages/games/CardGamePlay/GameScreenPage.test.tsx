@@ -1,7 +1,8 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GamePhase, Suit, type Card, type GameState, type Player } from '@ocentra/game-domain/types/game';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
+import { normalizeCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { GameScreenPage } from './GameScreenPage';
 
 const mockNavigate = vi.fn();
@@ -14,6 +15,12 @@ const processPlayerActionMock = vi.fn(() => ({ isValid: true, errors: [] }));
 
 let currentState: GameState;
 let subscribers: Array<(state: GameState) => void> = [];
+
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
@@ -89,9 +96,7 @@ function createClaimBundle() {
     },
     seats: [
       { id: 0, label: 'p1', position: { x: 0.5, y: 0.84 }, rotation: 0, scale: 0.5 },
-      { id: 1, label: 'p2', position: { x: 0.12, y: 0.5 }, rotation: 0, scale: 0.5 },
-      { id: 2, label: 'p3', position: { x: 0.5, y: 0.16 }, rotation: 0, scale: 0.5 },
-      { id: 3, label: 'p4', position: { x: 0.88, y: 0.5 }, rotation: 0, scale: 0.5 },
+      { id: 1, label: 'p2', position: { x: 0.5, y: 0.16 }, rotation: 0, scale: 0.5 },
     ],
   };
 
@@ -100,9 +105,9 @@ function createClaimBundle() {
     kernelVersion: '1.0.0',
     playerConfig: {
       playerMode: 'multiplayer',
-      minPlayers: 4,
-      maxPlayers: 4,
-      optimalPlayers: 4,
+      minPlayers: 2,
+      maxPlayers: 2,
+      optimalPlayers: 2,
       dealerRotates: true,
     },
     phases: [
@@ -143,18 +148,17 @@ function createClaimBundle() {
     gameId: 'claim',
     displayName: 'Claim',
     familyKernel: 'claim',
-    playerCount: 4,
+    playerCount: 2,
     deckSize: 52,
     gameMode: {} as never,
     mechanics: {} as never,
     spec,
-    layoutDocument: {
-      defaultPlayerCount: 4,
-      presets: { '4': layoutPreset },
+    layoutDocument: normalizeCardGameLayoutDocument({
+      defaultPlayerCount: 2,
+      presets: { '2': layoutPreset },
       gameplay: {},
       extensions: {},
-      layoutStructure: { type: 'custom', sections: [] },
-    },
+    }),
     layoutPreset,
     createDeckProvider: vi.fn(() => ({
       createStandardDeck: async () => [],
@@ -179,8 +183,6 @@ function createActiveClaimState(): GameState {
         Suit.HEARTS,
       ),
       createPlayer('p2', 'Seat 2', [createCard('7_of_clubs', Suit.CLUBS, 7)], 1),
-      createPlayer('p3', 'Seat 3', [createCard('12_of_diamonds', Suit.DIAMONDS, 12)], 0),
-      createPlayer('p4', 'Seat 4', [createCard('9_of_hearts', Suit.HEARTS, 9)], 0),
     ],
     currentPlayer: 0,
     phase: GamePhase.PLAYER_ACTION,
@@ -206,6 +208,7 @@ function createActiveClaimState(): GameState {
 }
 
 beforeEach(() => {
+  vi.stubGlobal('ResizeObserver', ResizeObserverMock);
   subscribers = [];
   currentState = createActiveClaimState();
   mockNavigate.mockReset();
@@ -235,6 +238,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
   vi.clearAllMocks();
 });
 
@@ -252,7 +257,7 @@ describe('GameScreenPage', () => {
     ).toBeTruthy();
   });
 
-  it('renders a staged Claim table before the match starts', async () => {
+  it('renders the staged Claim table and countdown before the first deal', async () => {
     loadLocalPlayableGameMock.mockResolvedValue({
       bundle: createClaimBundle(),
       error: null,
@@ -260,13 +265,14 @@ describe('GameScreenPage', () => {
 
     render(<GameScreenPage gameModeId="claim" />);
 
-    expect(await screen.findByRole('button', { name: /start match/i })).toBeTruthy();
-    expect(screen.getByTestId('claim-pilot-table')).toBeTruthy();
-    expect(screen.getByText(/Ready to deal Claim/i)).toBeTruthy();
-    expect(screen.getByText(/4 seats staged/i)).toBeTruthy();
+    expect(await screen.findByTestId('claim-pilot-table')).toBeTruthy();
+    expect(screen.getByText(/Starting local pilot/i)).toBeTruthy();
+    expect(screen.getByText(/Starting in 3/i)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /start match/i })).toBeNull();
   });
 
-  it('starts the Claim match and renders active hand and actions', async () => {
+  it('auto-starts the Claim match and renders the live template table state', async () => {
+    vi.useFakeTimers();
     loadLocalPlayableGameMock.mockResolvedValue({
       bundle: createClaimBundle(),
       error: null,
@@ -274,27 +280,16 @@ describe('GameScreenPage', () => {
 
     render(<GameScreenPage gameModeId="claim" />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /start match/i }));
-
-    await waitFor(() => {
-      expect(screen.getByTestId('claim-pilot-current-hand')).toBeTruthy();
+    await act(async () => {
+      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(3100);
+      await Promise.resolve();
     });
 
-    expect(screen.getByText(/Current turn \| Declared: hearts/i)).toBeTruthy();
-    expect(screen.getByText('A Hearts')).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-current-hand')).toBeTruthy();
     expect(screen.getByText('Deck')).toBeTruthy();
     expect(screen.getByText('Floor Card')).toBeTruthy();
     expect(screen.getByText('Pot')).toBeTruthy();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
-
-    expect(processPlayerActionMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: 'pass',
-        playerId: 'p1',
-      }),
-    );
-    expect(addPlayerMock).toHaveBeenCalledTimes(4);
-    expect(loadMechanicsSpecMock).toHaveBeenCalledTimes(1);
+    expect(processPlayerActionMock).not.toHaveBeenCalled();
   });
 });

@@ -5,15 +5,23 @@ const hookDir = join(process.cwd(), '.git', 'hooks');
 const hookPath = join(hookDir, 'pre-commit');
 
 const hookScript = `#!/bin/sh
-# GitHub Desktop / Windows space-in-path fix
-# Direct script execution to avoid npm shell wrapper issues on some Windows setups
+# Security scan for secrets
 node scripts/security/scan-staged-secrets.mjs
-status=$?
-if [ $status -ne 0 ]; then
-  echo ""
-  echo "[security] Pre-commit hook rejected this commit."
+if [ $? -ne 0 ]; then
+  echo "[security] Pre-commit hook rejected this commit due to secret detection."
+  exit 1
 fi
-exit $status
+
+# Deep Lint and Type Check via Turbo
+echo "[lint] Running deep check..."
+npm run lint
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "[lint] Pre-commit hook rejected this commit due to errors."
+  exit 1
+fi
+
+exit 0
 `;
 
 mkdirSync(hookDir, { recursive: true });

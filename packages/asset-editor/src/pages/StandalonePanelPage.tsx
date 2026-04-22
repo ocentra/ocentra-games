@@ -15,13 +15,22 @@ import {
   saveLayoutAsset,
   type LayoutAssetDocument,
 } from '@/adapters/layout/LayoutAssetService';
+import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
+import {
+  readStoredLayoutEditorPlayerCount,
+  writeStoredLayoutEditorPlayerCount,
+} from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
-import { cloneCardGameLayoutDocument, createLayoutPreset } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import {
+  cloneCardGameLayoutDocument,
+  createLayoutPreset,
+  seedLayoutPresetFromSource,
+} from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
 import './StandalonePanelPage.css';
 
@@ -51,6 +60,20 @@ interface PreviewCanvasToolsProps {
 
 type PreviewCanvasToolTab = 'preset' | 'table' | 'view';
 
+function resolveCopySourceCount(
+  requestedCount: number,
+  playerCount: number,
+  minPlayerCount: number,
+  maxPlayerCount: number,
+): number {
+  const clampedRequested = Math.max(minPlayerCount, Math.min(maxPlayerCount, requestedCount));
+  const fallback = Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1));
+  if (clampedRequested !== playerCount) {
+    return clampedRequested;
+  }
+  return fallback === playerCount ? minPlayerCount : fallback;
+}
+
 const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
   playerCount,
   minPlayerCount,
@@ -77,16 +100,10 @@ const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<PreviewCanvasToolTab>('preset');
   const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
-
-  useEffect(() => {
-    setCopySourceCount((current) => {
-      const fallback = Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1));
-      if (current === playerCount) {
-        return fallback === playerCount ? minPlayerCount : fallback;
-      }
-      return Math.max(minPlayerCount, Math.min(maxPlayerCount, current));
-    });
-  }, [maxPlayerCount, minPlayerCount, playerCount]);
+  const resolvedCopySourceCount = useMemo(
+    () => resolveCopySourceCount(copySourceCount, playerCount, minPlayerCount, maxPlayerCount),
+    [copySourceCount, maxPlayerCount, minPlayerCount, playerCount],
+  );
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
@@ -123,10 +140,10 @@ const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
   }, []);
 
   const handleCopy = useCallback(() => {
-    if (copySourceCount !== playerCount) {
-      onCopyPreset(copySourceCount);
+    if (resolvedCopySourceCount !== playerCount) {
+      onCopyPreset(resolvedCopySourceCount);
     }
-  }, [copySourceCount, onCopyPreset, playerCount]);
+  }, [onCopyPreset, playerCount, resolvedCopySourceCount]);
 
   return (
     <div
@@ -227,7 +244,7 @@ const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
                 <div className="preview-canvas-tools__inline">
                   <select
                     className="preview-canvas-tools__select"
-                    value={sourceCounts.includes(copySourceCount) ? copySourceCount : (sourceCounts[0] ?? playerCount)}
+                    value={sourceCounts.includes(resolvedCopySourceCount) ? resolvedCopySourceCount : (sourceCounts[0] ?? playerCount)}
                     onChange={(event) => setCopySourceCount(Number(event.target.value))}
                     disabled={sourceCounts.length === 0}
                   >
@@ -303,9 +320,6 @@ function useStandaloneAsset(assetPath: string | null) {
 
   useEffect(() => {
     if (!assetPath) {
-      setAssetData(null);
-      setAssetRawContent(null);
-      setError(null);
       return;
     }
     loadAssetFromNetwork(
@@ -318,7 +332,12 @@ function useStandaloneAsset(assetPath: string | null) {
     );
   }, [assetPath]);
 
-  return { assetData, assetRawContent, isLoading, error };
+  return {
+    assetData: assetPath ? assetData : null,
+    assetRawContent: assetPath ? assetRawContent : null,
+    isLoading: assetPath ? isLoading : false,
+    error: assetPath ? error : null,
+  };
 }
 
 function isInspectable(assetPath: string, assetData: AssetData | null): boolean {
@@ -389,16 +408,11 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
-  const [activePlayerCount, setActivePlayerCount] = useState<number>(loadedAsset.document.defaultPlayerCount);
+  const [activePlayerCount, setActivePlayerCount] = useState<number>(
+    () => readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount),
+  );
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [status, setStatus] = useState<string | null>(null);
-
-  useEffect(() => {
-    setDocument(loadedAsset.document);
-    setActivePlayerCount(loadedAsset.document.defaultPlayerCount);
-    setPlayerRange(null);
-    setStatus(null);
-  }, [loadedAsset]);
 
   useEffect(() => {
     let cancelled = false;
@@ -420,6 +434,10 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
       cancelled = true;
     };
   }, [loadedAsset.gameId]);
+
+  useEffect(() => {
+    writeStoredLayoutEditorPlayerCount(assetPath, activePlayerCount);
+  }, [activePlayerCount, assetPath]);
 
   useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
@@ -464,8 +482,13 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     try {
       const saved = await saveLayoutAsset(loadedAsset, document);
       setDocument(saved.document);
-      setStatus('Saved');
       broadcast(saved.document, activePlayerCount);
+      try {
+        const syncResult = await syncSavedLayoutAssetToR2();
+        setStatus(syncResult.message);
+      } catch (syncError) {
+        setStatus(`Saved locally; ${syncError instanceof Error ? syncError.message : 'sync failed'}`);
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to save layout');
     }
@@ -516,15 +539,11 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
-  const [playerCount, setPlayerCount] = useState<number>(loadedAsset.document.defaultPlayerCount);
+  const [playerCount, setPlayerCount] = useState<number>(
+    () => readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount),
+  );
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [showHandles, setShowHandles] = useState(true);
-
-  useEffect(() => {
-    setDocument(loadedAsset.document);
-    setPlayerCount(loadedAsset.document.defaultPlayerCount);
-    setPlayerRange(null);
-  }, [loadedAsset]);
 
   useEffect(() => {
     let cancelled = false;
@@ -546,6 +565,11 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
       cancelled = true;
     };
   }, [loadedAsset.gameId]);
+
+  useEffect(() => {
+    writeStoredLayoutEditorPlayerCount(assetPath, playerCount);
+  }, [assetPath, playerCount]);
+
 
   useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
@@ -606,22 +630,33 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     });
   }, [updateActivePreset]);
 
+  const minPlayerCount = playerRange?.minPlayers ?? 2;
   const handlePlayerCountChange = useCallback((nextPlayerCount: number) => {
+    setDocument((current) => {
+      const next = cloneCardGameLayoutDocument(current);
+      const key = String(nextPlayerCount);
+      if (!next.presets[key]) {
+        const sourceCount = next.presets[String(playerCount)] ? playerCount : Math.max(minPlayerCount, nextPlayerCount - 1);
+        next.presets[key] = seedLayoutPresetFromSource(next.presets[String(sourceCount)] ?? null, nextPlayerCount);
+      }
+      broadcast(next, nextPlayerCount);
+      return next;
+    });
     setPlayerCount(nextPlayerCount);
-    broadcast(document, nextPlayerCount);
-  }, [broadcast, document]);
+  }, [broadcast, minPlayerCount, playerCount]);
 
   const handleCopyPreset = useCallback((sourceCount: number) => {
     updateActivePreset((next, preset) => {
-      const sourcePreset = next.presets[String(sourceCount)] ?? createLayoutPreset(sourceCount);
-      preset.table = { ...sourcePreset.table };
-      preset.seats = sourcePreset.seats.map((seat) => ({
+      const sourcePreset = next.presets[String(sourceCount)] ?? null;
+      const seededPreset = seedLayoutPresetFromSource(sourcePreset, playerCount);
+      preset.table = { ...seededPreset.table };
+      preset.seats = seededPreset.seats.map((seat) => ({
         ...seat,
         position: { ...seat.position },
         playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
       }));
     });
-  }, [updateActivePreset]);
+  }, [playerCount, updateActivePreset]);
 
   const handleTableChange = useCallback((
     field: 'width' | 'height' | 'offsetX' | 'offsetY' | 'curvature',
@@ -683,11 +718,9 @@ export const StandalonePanelPage: React.FC = () => {
     assetPath: string;
     locked: boolean;
     hideTools: boolean;
-  } | null>(null);
-
-  useEffect(() => {
+  } | null>(() => {
     const search = new URLSearchParams(window.location.search);
-    const panel = search.get('standalone');
+    const panel = search.get('standalone') as StandalonePanel;
     const assetPath = search.get('assetPath');
     const locked = search.get('locked') === 'true';
     const hideTools = search.get('hideTools') === 'true';
@@ -696,14 +729,16 @@ export const StandalonePanelPage: React.FC = () => {
       assetPath &&
       (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas')
     ) {
-      setParams({ panel, assetPath, locked, hideTools });
-    } else {
-      setParams(null);
+      return { panel, assetPath, locked, hideTools };
     }
-  }, []);
+    return null;
+  });
 
+
+  const isLocked = params?.locked;
+  const hasParams = !!params;
   useEffect(() => {
-    if (!params || params.locked) return;
+    if (!hasParams || isLocked) return;
     const channel = new BroadcastChannel(ASSET_SELECTION_CHANNEL);
     const handler = (event: MessageEvent<{ assetPath: string }>) => {
       const next = event.data?.assetPath;
@@ -711,8 +746,11 @@ export const StandalonePanelPage: React.FC = () => {
       setParams((current) => (current ? { ...current, assetPath: next } : current));
     };
     channel.addEventListener('message', handler);
-    return () => channel.close();
-  }, [params?.locked]);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+    };
+  }, [hasParams, isLocked]);
 
   const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(params?.assetPath ?? null);
 
@@ -740,8 +778,8 @@ export const StandalonePanelPage: React.FC = () => {
       );
     }
     return params.panel === 'design-studio'
-      ? <StandaloneCardGameDesignStudio assetPath={params.assetPath} assetData={assetData} />
-      : <StandaloneCardGamePreviewCanvas assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} />;
+      ? <StandaloneCardGameDesignStudio key={`design-studio:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} />
+      : <StandaloneCardGamePreviewCanvas key={`preview-canvas:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} />;
   }
 
   return (

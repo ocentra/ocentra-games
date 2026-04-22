@@ -61,12 +61,9 @@ export function useResolveImageUrl(data: {
 } {
   const [map, setMap] = useState<Record<string, string>>({});
   const subscriberIdRef = useRef<string>(createGuid());
+
   const hashes = useMemo(() => extractHashes(data), [
-    JSON.stringify((data.featured ?? []).map(g => g.guid)),
-    JSON.stringify((data.recommended ?? []).map(g => g.guid)),
-    JSON.stringify((data.comingSoon ?? []).map(t => t.id)),
-    JSON.stringify((data.availableNow ?? []).map(g => g.guid)),
-    JSON.stringify((data.featureBannerItems ?? []).map(item => item.imageHash)),
+    data,
   ]);
 
   useEffect(() => {
@@ -104,17 +101,9 @@ export function useResolveImageUrl(data: {
     [map]
   );
 
-  const prefetchHashes = useCallback((hashes: ImageHash[]) => {
-    const valid = hashes.filter((h) => typeof h === 'string' && isImageHash(h));
-    if (valid.length === 0) return;
-    EventBus.instance.publish(
-      new ImageBatchLoadRequestEvent(
-        valid.map((h) => ({ hash: h, variant: ImageVariant.Full, priority: ImageLoadPriority.HIGH })),
-        subscriberIdRef.current,
-        false
-      )
-    );
-  }, []);
-
-  return { resolveImageUrl, ImageLoaders: null, prefetchHashes };
+  return {
+    resolveImageUrl,
+    ImageLoaders: null,
+    prefetchHashes: () => {},
+  };
 }

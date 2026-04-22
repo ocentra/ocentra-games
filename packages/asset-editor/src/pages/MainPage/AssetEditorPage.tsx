@@ -2,7 +2,7 @@ import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { BaseHeader } from '@ocentra/core-ui/Header/BaseHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';

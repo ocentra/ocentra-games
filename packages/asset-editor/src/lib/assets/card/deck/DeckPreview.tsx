@@ -263,7 +263,7 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({ assetId, assetInstance
 
   if (isLoading) {
     return (
-      <div className="preview-panel">
+      <div className="preview-panel__content">
         <div className="preview-panel__placeholder">
           <div className="preview-panel__loading">
             <div className="preview-panel__spinner"></div>
@@ -275,27 +275,25 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({ assetId, assetInstance
   }
 
   return (
-    <div className="preview-panel">
-      <div className="preview-panel__content preview-panel__content--deck">
-        <div className="deck-preview">
-          <div className="deck-preview__header">
-            <h2 className="deck-preview__title">{assetId}</h2>
-            <p className="deck-preview__subtitle">
-              {loadedCards.length} card{loadedCards.length !== 1 ? 's' : ''} in deck
-            </p>
-          </div>
-          <DeckPreviewMatrix cards={loadedCards} suitOrder={suitOrder} rankOrder={rankOrder} cardRanking={cardRanking} />
-          {backCardHash && (
-            <div className="deck-preview__back-cards">
-              <div className="deck-preview__back-cards-header">
-                <h3 className="deck-preview__back-cards-title">Back Card</h3>
-              </div>
-              <div className="deck-preview__back-cards-grid">
-                <BackCardCell hash={backCardHash} />
-              </div>
-            </div>
-          )}
+    <div className="preview-panel__content preview-panel__content--deck">
+      <div className="deck-preview">
+        <div className="deck-preview__header">
+          <h2 className="deck-preview__title">{assetId}</h2>
+          <p className="deck-preview__subtitle">
+            {loadedCards.length} card{loadedCards.length !== 1 ? 's' : ''} in deck
+          </p>
         </div>
+        <DeckPreviewMatrix cards={loadedCards} suitOrder={suitOrder} rankOrder={rankOrder} cardRanking={cardRanking} />
+        {backCardHash && (
+          <div className="deck-preview__back-cards">
+            <div className="deck-preview__back-cards-header">
+              <h3 className="deck-preview__back-cards-title">Back Card</h3>
+            </div>
+            <div className="deck-preview__back-cards-grid">
+              <BackCardCell hash={backCardHash} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

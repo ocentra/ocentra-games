@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { AssetSyncStatus as AssetSyncStatusValue } from '@ocentra/asset-domain/constants/sync';
@@ -38,9 +38,12 @@ export const BaseInspector: React.FC<BaseInspectorProps> = ({
   const [isAssetIdentityExpanded, setIsAssetIdentityExpanded] = useState(true);
   const [cloudCheckState, setCloudCheckState] = useState<{ checked: boolean; synced: boolean; url?: string } | null>(null);
   
-  useEffect(() => {
+  const [prevAssetPath, setPrevAssetPath] = useState(assetPath);
+  if (assetPath !== prevAssetPath) {
+    setPrevAssetPath(assetPath);
     setCloudCheckState(null);
-  }, [assetPath]);
+  }
+
   
   const getStatusBadgeClass = (status?: string) => {
     switch (status) {

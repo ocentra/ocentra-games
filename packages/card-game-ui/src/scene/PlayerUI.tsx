@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useMemo } from 'react';
+import React, { useMemo, useId } from 'react';
 import './PlayerUI.css';
 import { defaultAvatarImageUrl } from '@ocentra/app-assets/avatars';
 import { serializable, getSerializableFields, type SerializableField } from '@ocentra/asset-domain/serialization/decorators';
@@ -348,7 +348,8 @@ const PlayerUI: PlayerUIComponent = (props) => {
     [infoBoxRotation, infoBoxCenterX, infoBoxCenterY]
   );
 
-  const labelPathId = useMemo(() => `labelPath-${Math.random().toString(36).slice(2, 9)}`, []);
+  const baseId = useId();
+  const labelPathId = useMemo(() => `labelPath-${baseId.replace(/:/g, '')}`, [baseId]);
   
   // Create the arc path for the base arc
   const baseArcPath = useMemo(() => {

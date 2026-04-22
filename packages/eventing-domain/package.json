@@ -850,11 +850,12 @@
     "pretest": "cd ../.. && npm run build:domains",
     "build": "npm run generate:event-types && tsc && tsc-alias && node scripts/fix-dist-aliases.mjs && node ../../scripts/fix-esm-imports.mjs",
     "type-check": "tsc --noEmit",
-    "lint": "npm run generate:event-types && eslint --cache src scripts && tsc --noEmit",
+    "lint": "node -e \"const cmd = process.env.TURBO_HASH ? 'npm run lint:exec' : 'npx turbo run lint:exec --filter=@ocentra/eventing-domain'; require('child_process').spawnSync(cmd.split(' ')[0], cmd.split(' ').slice(1), { stdio: 'inherit', shell: true });\"",
     "lint:eslint": "eslint --cache src scripts",
     "lint:fix": "eslint --cache src scripts --fix",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "lint:exec": "npm run generate:event-types && eslint --cache src scripts && tsc --noEmit"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

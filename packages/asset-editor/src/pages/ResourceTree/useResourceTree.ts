@@ -347,31 +347,32 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
     [state.nodes, fetchChildren]
   );
 
-  const loadSyncStatus = useCallback(async (retryCount = 0) => {
-    try {
-      const deferred = new OperationDeferred<AssetSyncStatus>();
-      await EventBus.instance.publishAsync(new GetSyncStatusEvent(deferred));
-      const result = await deferred.promise;
-      if (result.isSuccess && result.value) {
-        const status = result.value;
-        const mappedStatus: Record<string, SyncStatus> = {};
-        if (status.assets) {
-          for (const [key, assetStatus] of Object.entries(status.assets)) {
-            mappedStatus[key] = {
-              status: assetStatus.status,
-            };
+  const loadSyncStatus = useCallback(async () => {
+    const run = async (retryCount: number) => {
+      try {
+        const deferred = new OperationDeferred<AssetSyncStatus>();
+        await EventBus.instance.publishAsync(new GetSyncStatusEvent(deferred));
+        const result = await deferred.promise;
+        if (result.isSuccess && result.value) {
+          const status = result.value;
+          const mappedStatus: Record<string, SyncStatus> = {};
+          if (status.assets) {
+            for (const [key, assetStatus] of Object.entries(status.assets)) {
+              mappedStatus[key] = {
+                status: assetStatus.status,
+              };
+            }
           }
+          setSyncStatus(mappedStatus);
         }
-        setSyncStatus(mappedStatus);
+      } catch {
+        if (retryCount < 3) {
+          const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+          setTimeout(() => void run(retryCount + 1), delay);
+        }
       }
-    } catch {
-      if (retryCount < 3) {
-        const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
-        setTimeout(() => loadSyncStatus(retryCount + 1), delay);
-      } else {
-        void 0;
-      }
-    }
+    };
+    await run(0);
   }, []);
 
   const refreshTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -382,19 +383,21 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
     }
 
     refreshTimeoutRef.current = setTimeout(async () => {
-      const expandedIds = Array.from(nodesRef.current.values())
+      const expandedIds = Array.from(state.nodes.values())
         .filter(n => isFolder(n) && n.isExpanded)
         .map(n => n.id);
       log.logInfo('[useResourceTree] Batch registration complete, refreshing tree (preserving expanded)', getStackTrace(), { expandedCount: expandedIds.length });
       await initTree(expandedIds);
       refreshTimeoutRef.current = null;
     }, 1000);
-  }, [initTree]);
+  }, [initTree, state.nodes]);
 
   useEffect(() => {
     initTree();
     loadSyncStatus();
+  }, [initTree, loadSyncStatus]);
 
+  useEffect(() => {
     EventBus.instance.subscribeAsync(ResourceRegisteredEvent, handleResourceRegistered);
 
     return () => {
@@ -403,19 +406,15 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
       }
       EventBus.instance.unsubscribeAsync(ResourceRegisteredEvent, handleResourceRegistered);
     };
-  }, [initTree, loadSyncStatus, handleResourceRegistered]);
+  }, [handleResourceRegistered]);
 
-  // Ref to access current nodes in event handler
-  const nodesRef = useRef(state.nodes);
-  useEffect(() => {
-    nodesRef.current = state.nodes;
-  }, [state.nodes]);
+  // The handleGetTreeFolderContent needs to be re-subscribed when nodes change
+  // so it always has the latest view of the tree.
+  const handleGetTreeFolderContent = useCallback(async (event: GetTreeFolderContentEvent): Promise<void> => {
+    try {
+      const nodes = state.nodes;
+      const folderNode = resolveFolderNode(nodes, event.folderId);
 
-  useEffect(() => {
-    const handleGetTreeFolderContent = async (event: GetTreeFolderContentEvent): Promise<void> => {
-      try {
-        const nodes = nodesRef.current;
-        const folderNode = resolveFolderNode(nodes, event.folderId);
 
         if (!folderNode) {
           const normalizedRequested = normalizeFolderIdentifier(event.folderId);
@@ -486,14 +485,17 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
       } catch (error) {
         event.deferred.resolve(OperationResult.failure(error instanceof Error ? error.message : 'Unknown error'));
       }
-    };
+    },
+    [state.nodes]
+  );
 
+  useEffect(() => {
     EventBus.instance.subscribeAsync(GetTreeFolderContentEvent, handleGetTreeFolderContent);
 
     return () => {
       EventBus.instance.unsubscribeAsync(GetTreeFolderContentEvent, handleGetTreeFolderContent);
     };
-  }, []); // Empty dependency array, uses ref for state access
+  }, [handleGetTreeFolderContent]); // Re-subscribe when handler changes (due to nodes update)
 
 
   return {

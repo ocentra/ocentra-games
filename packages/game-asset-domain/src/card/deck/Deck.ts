@@ -428,57 +428,58 @@ export class Deck extends ScriptableObject {
       }, LOG_DECK);
     }
 
-    const results = await Promise.all(
-      expectedIdentities.map(async (cardId, index) => {
-        onProgress?.(index + 1, expectedIdentities.length, cardId, 'checking');
+    const results: Array<{ cardId: string; ref: AssetResourceEntry<Card>; status: 'existing' | 'recovered' | 'created' }> = [];
+    
+    for (let index = 0; index < expectedIdentities.length; index++) {
+      const cardId = expectedIdentities[index];
+      onProgress?.(index + 1, expectedIdentities.length, cardId, 'checking');
 
-        let existingRef = templateRefs.find(ref => {
-          if (ref.variant === cardId) return true;
-          if (ref.displayName === cardId) return true;
-          return false;
+      let existingRef = templateRefs.find(ref => {
+        if (ref.variant === cardId) return true;
+        if (ref.displayName === cardId) return true;
+        return false;
+      });
+      let status: 'existing' | 'recovered' | 'created' = 'existing';
+
+      if (!existingRef) {
+        const existingCard = await this.checkCardExists(cardId);
+        if (existingCard) {
+          existingRef = await AssetResourceEntryFactory.fromAssetWithAssetRegistry<Card>(existingCard);
+          status = 'recovered';
+        }
+      }
+
+      if (!existingRef) {
+        onProgress?.(index + 1, expectedIdentities.length, cardId, 'creating');
+        status = 'created';
+        const suitName = cardId.split('_of_')[1];
+        const suit = this.getSuitFromName(suitName);
+        const rank = this.getRankFromId(cardId, cardRanking);
+
+        const card = CardFactory.create({
+          suit,
+          rank: rank as CardValue,
+          imageHash: '' as ImageHash,
+          cardRanking: this.cardRankingAsset,
         });
-        let status: 'existing' | 'recovered' | 'created' = 'existing';
 
-        if (!existingRef) {
-          const existingCard = await this.checkCardExists(cardId);
-          if (existingCard) {
-            existingRef = await AssetResourceEntryFactory.fromAssetWithAssetRegistry<Card>(existingCard);
-            status = 'recovered';
-          }
-        }
-
-        if (!existingRef) {
-          onProgress?.(index + 1, expectedIdentities.length, cardId, 'creating');
-          status = 'created';
-          const suitName = cardId.split('_of_')[1];
-          const suit = this.getSuitFromName(suitName);
-          const rank = this.getRankFromId(cardId, cardRanking);
-
-          const card = CardFactory.create({
+        if (LOG_DECK) {
+          log.logInfo(`[Deck] Creating missing card: ${cardId}`, getStackTrace(), {
+            folder: cardFolder,
             suit,
-            rank: rank as CardValue,
-            imageHash: '' as ImageHash,
-            cardRanking: this.cardRankingAsset,
-          });
-
-          if (LOG_DECK) {
-            log.logInfo(`[Deck] Creating missing card: ${cardId}`, getStackTrace(), {
-              folder: cardFolder,
-              suit,
-              rank
-            }, LOG_DECK, BATCH_KEY_CREATING_CARD);
-          }
-
-          Card.parentPathForSave = cardFolder;
-          await card.saveChanges();
-          Card.parentPathForSave = null;
-
-          existingRef = await AssetResourceEntryFactory.fromAssetWithAssetRegistry<Card>(card);
+            rank
+          }, LOG_DECK, BATCH_KEY_CREATING_CARD);
         }
 
-        return { cardId, ref: existingRef, status };
-      })
-    );
+        Card.parentPathForSave = cardFolder;
+        await card.saveChanges();
+        Card.parentPathForSave = null;
+
+        existingRef = await AssetResourceEntryFactory.fromAssetWithAssetRegistry<Card>(card);
+      }
+
+      results.push({ cardId, ref: existingRef!, status });
+    }
 
     const reconciledTemplates: AssetResourceEntry<Card>[] = [];
     const reconciledByCardId = new Map<string, AssetResourceEntry<Card>>();

@@ -67,15 +67,31 @@ export async function readAsset(path: string): Promise<Response> {
 export async function loadAsset(identifier: {
   guid?: string
   path?: string
+  hash?: string
 }): Promise<Response> {
-  const { guid, path } = identifier
+  const { guid, path, hash } = identifier
+
+  let resolvedPath = path
+  if (hash && !resolvedPath) {
+    try {
+      const entry = await getResourceByHashDb(hash)
+      if (entry) {
+        resolvedPath = entry.path
+      }
+    } catch {
+      // Ignore DB errors and try hash directly
+    }
+  }
+
   const input = guid
-    ? { guid, path: null }
-    : path
-      ? { guid: null, path: normalizeResourcePath(path) }
-      : null
+    ? { guid, path: null, hash: null }
+    : resolvedPath
+      ? { guid: null, path: normalizeResourcePath(resolvedPath), hash: null }
+      : hash
+        ? { guid: null, path: null, hash }
+        : null
   if (!input) {
-    throw new Error('loadAsset: exactly one of guid or path required')
+    throw new Error('loadAsset: exactly one of guid, path or hash required')
   }
   const bytes = await invoke<number[]>('load_asset', { input })
   const contentType = path ? inferMimeType(path) : 'application/json'

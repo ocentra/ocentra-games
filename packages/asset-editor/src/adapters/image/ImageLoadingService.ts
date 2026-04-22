@@ -18,15 +18,14 @@ import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogge
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { ServiceRegistry } from '@ocentra/app-core/ServiceRegistry';
 import type { MetaData } from '@ocentra/eventing-domain/types/meta';
-import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import { type ImageHash, type AssetIdentifier, tryAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { ResourceRequest } from '@ocentra/boundary-domain/types/resource-request';
 
-const validateIdentifier = (input: string): ImageHash | null => {
-  if (isImageHash(input)) {
-    return input;
-  }
-  return null;
+const validateIdentifier = (input: string): ImageIdentifier | null => {
+  return tryAssetIdentifier(input) as ImageIdentifier | null;
 };
+
+type ImageIdentifier = AssetIdentifier | ImageHash;
 
 const LOG_IMAGE = import.meta.env.VITE_ASSET_EDITOR_LOG_IMAGES === 'true';
 
@@ -89,7 +88,7 @@ interface ImageState {
 }
 
 interface QueuedFetch {
-  hash: ImageHash;
+  hash: ImageIdentifier;
   variant: ImageVariant;
   priority: number;
   resolve: () => void;
@@ -135,11 +134,11 @@ export class ImageLoadingService {
   private readonly activeFetches = new Map<string, Promise<{ blob: Blob; etag?: string; contentType?: string }>>();
   private readonly activeFetchControllers = new Map<string, AbortController>();
 
-  private getVariantKey(hash: ImageHash, variant: ImageVariant): string {
+  private getVariantKey(hash: ImageIdentifier, variant: ImageVariant): string {
     return `${hash}:${variant}`;
   }
 
-  static getVariantKeyStatic(hash: ImageHash, variant: ImageVariant): string {
+  static getVariantKeyStatic(hash: ImageIdentifier, variant: ImageVariant): string {
     return `${hash}:${variant}`;
   }
   private readonly maxConcurrentFetches = TIMEOUTS.MAX_CONCURRENT_FETCHES;
@@ -212,7 +211,7 @@ export class ImageLoadingService {
     return this.initPromise;
   }
 
-  static getLoadedImageUrl(hash: ImageHash, variant: ImageVariant = ImageVariant.Full): string | null {
+  static getLoadedImageUrl(hash: ImageIdentifier, variant: ImageVariant = ImageVariant.Full): string | null {
     if (!this.instance) {
       return null;
     }
@@ -290,7 +289,7 @@ export class ImageLoadingService {
     this.debounceTimers.set(hash, timer);
   }
 
-  private processLoadRequest(hash: ImageHash, subscriberId: string, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): void {
+  private processLoadRequest(hash: ImageIdentifier, subscriberId: string, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): void {
     const variantKey = this.getVariantKey(hash, variant);
     let imageState = this.imageStates.get(variantKey);
 
@@ -318,12 +317,12 @@ export class ImageLoadingService {
       if (this.pendingBatchRequests.has(subscriberId)) {
         EventBus.instance.publish(
           new ImageBatchLoadedEvent(
-            [{ hash, variant, blobUrl: imageState.blobUrl, source: 'memory', error: null }],
+            [{ hash: hash as unknown as ImageHash, variant, blobUrl: imageState.blobUrl, source: 'memory', error: null }],
             subscriberId
           )
         );
       } else {
-        EventBus.instance.publish(new ImageLoadedEvent(hash, variant, imageState.blobUrl, 'memory'));
+        EventBus.instance.publish(new ImageLoadedEvent(hash as unknown as ImageHash, variant, imageState.blobUrl, 'memory'));
       }
       return;
     }
@@ -364,7 +363,7 @@ export class ImageLoadingService {
     }
 
     const results: ImageBatchResult[] = [];
-    const requestsToQueue: Array<{ hash: ImageHash; variant: ImageVariant; priority: number }> = [];
+    const requestsToQueue: Array<{ hash: ImageIdentifier; variant: ImageVariant; priority: number }> = [];
     const subscriberIdentifiers = this.pendingBatchRequests.get(event.subscriberId) || new Set<string>();
     this.pendingBatchRequests.set(event.subscriberId, subscriberIdentifiers);
 
@@ -383,7 +382,7 @@ export class ImageLoadingService {
 
       if (imageState?.state === 'loaded' && imageState.blobUrl && imageState.variant === request.variant) {
         results.push({
-          hash,
+          hash: hash as unknown as ImageHash,
           variant: request.variant,
           blobUrl: imageState.blobUrl,
           source: 'memory',
@@ -425,7 +424,7 @@ export class ImageLoadingService {
             }
 
             results.push({
-              hash,
+              hash: hash as unknown as ImageHash,
               variant: request.variant,
               blobUrl,
               source: 'indexeddb',
@@ -480,7 +479,7 @@ export class ImageLoadingService {
             if (updatedImageState?.state === 'loaded' && updatedImageState.blobUrl && updatedImageState.variant === variant) {
               EventBus.instance.publish(
                 new ImageBatchLoadedEvent(
-                  [{ hash, variant, blobUrl: updatedImageState.blobUrl, source: 'network', error: null }],
+                  [{ hash: hash as unknown as ImageHash, variant, blobUrl: updatedImageState.blobUrl, source: 'network', error: null }],
                   event.subscriberId
                 )
               );
@@ -492,7 +491,7 @@ export class ImageLoadingService {
 
       if (imageState.state === 'failed' && imageState.retryCount >= TIMEOUTS.RETRY_MAX_ATTEMPTS) {
         results.push({
-          hash,
+          hash: hash as unknown as ImageHash,
           variant,
           blobUrl: null,
           source: null,
@@ -512,7 +511,7 @@ export class ImageLoadingService {
         if (updatedImageState?.state === 'loaded' && updatedImageState.blobUrl && updatedImageState.variant === variant) {
           EventBus.instance.publish(
             new ImageBatchLoadedEvent(
-              [{ hash, variant, blobUrl: updatedImageState.blobUrl, source: 'network', error: null }],
+              [{ hash: hash as unknown as ImageHash, variant, blobUrl: updatedImageState.blobUrl, source: 'network', error: null }],
               event.subscriberId
             )
           );
@@ -523,7 +522,7 @@ export class ImageLoadingService {
         logError(`Failed to load image: ${hash}`, { error });
         EventBus.instance.publish(
           new ImageBatchLoadedEvent(
-            [{ hash, variant, blobUrl: null, source: null, error: error instanceof Error ? error.message : String(error) }],
+            [{ hash: hash as unknown as ImageHash, variant, blobUrl: null, source: null, error: error instanceof Error ? error.message : String(error) }],
             event.subscriberId
           )
         );
@@ -577,7 +576,7 @@ export class ImageLoadingService {
     }
   }
 
-  private cancelFetchIfNoSubscribers(hash: ImageHash, variant: ImageVariant): void {
+  private cancelFetchIfNoSubscribers(hash: ImageIdentifier, variant: ImageVariant): void {
     const variantKey = this.getVariantKey(hash, variant);
     const imageState = this.imageStates.get(variantKey);
     if (!imageState || imageState.subscribers.size > 0) {
@@ -659,7 +658,7 @@ export class ImageLoadingService {
     }
   }
 
-  private async startLoading(hash: ImageHash, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): Promise<void> {
+  private async startLoading(hash: ImageIdentifier, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): Promise<void> {
     const variantKey = this.getVariantKey(hash, variant);
     const imageState = this.imageStates.get(variantKey);
     if (!imageState) {
@@ -689,7 +688,7 @@ export class ImageLoadingService {
     }
   }
 
-  private async loadImage(hash: ImageHash, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): Promise<void> {
+  private async loadImage(hash: ImageIdentifier, priority: number, variant: ImageVariant = ImageVariant.Full, meta?: MetaData): Promise<void> {
     const existingFetch = this.activeFetches.get(`${hash}:${variant}`);
     if (existingFetch) {
       try {
@@ -746,7 +745,7 @@ export class ImageLoadingService {
                   const iconHash = await this.imageCache.calculateImageHash(iconBlob);
                   const validatedIconHash = validateIdentifier(iconHash);
                   if (validatedIconHash) {
-                    await this.imageCache.cacheImage(validatedIconHash, iconBlob, ImageVariant.Icon, undefined, undefined, ProcessingState.Processed, hash);
+                    await this.imageCache.cacheImage(validatedIconHash, iconBlob, ImageVariant.Icon, undefined, undefined, ProcessingState.Processed, hash as string);
                   }
                   return;
                 } catch (processError) {
@@ -763,7 +762,7 @@ export class ImageLoadingService {
     await this.queueFetch(hash, priority, variant);
   }
 
-  private updateQueuePriority(hash: ImageHash, variant: ImageVariant, newPriority: number): void {
+  private updateQueuePriority(hash: ImageIdentifier, variant: ImageVariant, newPriority: number): void {
     const queueIndex = this.fetchQueue.findIndex(item => item.hash === hash && item.variant === variant);
     if (queueIndex !== -1) {
       const item = this.fetchQueue[queueIndex];
@@ -780,7 +779,7 @@ export class ImageLoadingService {
     }
   }
 
-  private isCurrentlyProcessing(hash: ImageHash, variant: ImageVariant): boolean {
+  private isCurrentlyProcessing(hash: ImageIdentifier, variant: ImageVariant): boolean {
     const variantKey = this.getVariantKey(hash, variant);
     const imageState = this.imageStates.get(variantKey);
     if (!imageState) return false;
@@ -793,7 +792,7 @@ export class ImageLoadingService {
     return !!activeFetch;
   }
 
-  private async queueFetch(hash: ImageHash, priority: number, variant: ImageVariant = ImageVariant.Full): Promise<void> {
+  private async queueFetch(hash: ImageIdentifier, priority: number, variant: ImageVariant = ImageVariant.Full): Promise<void> {
     return new Promise((resolve) => {
       const queueIndex = this.fetchQueue.findIndex(item => item.hash === hash && item.variant === variant);
       if (queueIndex !== -1) {
@@ -919,7 +918,7 @@ export class ImageLoadingService {
   }
 
   private async performFetchWithRetry(
-    hash: ImageHash,
+    hash: ImageIdentifier,
     variant: ImageVariant,
     signal?: AbortSignal
   ): Promise<{ blob: Blob; etag?: string; contentType?: string }> {
@@ -973,7 +972,7 @@ export class ImageLoadingService {
   }
 
   private async performFetch(
-    hash: ImageHash,
+    hash: ImageIdentifier,
     variant: ImageVariant,
     signal?: AbortSignal
   ): Promise<{ blob: Blob; etag?: string; contentType?: string }> {
@@ -1034,9 +1033,9 @@ export class ImageLoadingService {
         try {
           processedBlob = await this.processIcon(fullBlob);
           const iconHash = await this.imageCache.calculateImageHash(processedBlob);
-            const validatedIconHash = validateIdentifier(iconHash);
+          const validatedIconHash = validateIdentifier(iconHash);
           if (validatedIconHash) {
-            await this.imageCache.cacheImage(validatedIconHash, processedBlob, ImageVariant.Icon, etag, contentType, ProcessingState.Processed, hash);
+            await this.imageCache.cacheImage(validatedIconHash, processedBlob, ImageVariant.Icon, etag, contentType, ProcessingState.Processed, hash as string);
           }
         } catch (processError) {
           logError(`Failed to process icon: ${hash}`, { error: processError });
@@ -1046,7 +1045,7 @@ export class ImageLoadingService {
           const fullHash = await this.imageCache.calculateImageHash(fullBlob);
           const validatedFullHash = validateIdentifier(fullHash);
           if (validatedFullHash) {
-            await this.imageCache.cacheImage(validatedFullHash, fullBlob, ImageVariant.Full, etag, contentType, ProcessingState.Processed, hash);
+            await this.imageCache.cacheImage(validatedFullHash, fullBlob, ImageVariant.Full, etag, contentType, ProcessingState.Processed, hash as string);
           }
         }
 
@@ -1075,7 +1074,7 @@ export class ImageLoadingService {
     this.metrics.averageFetchTime = sum / this.metrics.fetchTimes.length;
   }
 
-  private setLoaded(hash: ImageHash, variant: ImageVariant, blobUrl: string, source: 'memory' | 'indexeddb' | 'network'): void {
+  private setLoaded(hash: ImageIdentifier, variant: ImageVariant, blobUrl: string, source: 'memory' | 'indexeddb' | 'network'): void {
     const variantKey = this.getVariantKey(hash, variant);
     const imageState = this.imageStates.get(variantKey);
     if (!imageState) {
@@ -1098,14 +1097,14 @@ export class ImageLoadingService {
             batchSubscribers.set(subscriberId, []);
           }
           batchSubscribers.get(subscriberId)!.push({
-            hash,
+            hash: hash as unknown as ImageHash,
             variant,
             blobUrl,
             source: source as 'memory' | 'indexeddb' | 'network',
             error: null,
           });
         } else {
-          EventBus.instance.publish(new ImageLoadedEvent(hash, variant, blobUrl, source));
+          EventBus.instance.publish(new ImageLoadedEvent(hash as unknown as ImageHash, variant, blobUrl, source));
         }
       }
 
@@ -1115,7 +1114,7 @@ export class ImageLoadingService {
     }
   }
 
-  private setFailed(hash: ImageHash, variant: ImageVariant, error: string): void {
+  private setFailed(hash: ImageIdentifier, variant: ImageVariant, error: string): void {
     const variantKey = this.getVariantKey(hash, variant);
     const imageState = this.imageStates.get(variantKey);
     if (!imageState) {
@@ -1135,14 +1134,14 @@ export class ImageLoadingService {
             batchSubscribers.set(subscriberId, []);
           }
           batchSubscribers.get(subscriberId)!.push({
-            hash,
+            hash: hash as unknown as ImageHash,
             variant,
             blobUrl: null,
             source: null,
             error: error,
           });
         } else {
-          EventBus.instance.publish(new ImageLoadFailedEvent(hash, variant, error, canRetry));
+          EventBus.instance.publish(new ImageLoadFailedEvent(hash as unknown as ImageHash, variant, error, canRetry));
         }
       }
 

@@ -8,10 +8,20 @@ import {
   loadLayoutPlayerRange,
   type LayoutPlayerRange,
   saveLayoutAsset,
-  type LoadedLayoutAsset,
 } from '@/adapters/layout/LayoutAssetService';
+import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
 import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import {
+  readStoredLayoutEditorPlayerCount,
+  writeStoredLayoutEditorPlayerCount,
+} from '@/utils/layoutEditorPreferences';
 import './CardGameLayoutPreview.css';
+
+const log = AssetEditorLogger.instance;
+log.register(import.meta.url);
+
 
 interface CardGameLayoutPreviewProps {
   assetPath: string;
@@ -24,35 +34,36 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   assetData,
   onAssetUpdate,
 }) => {
-
-  const [isPreviewTornOff, setIsPreviewTornOff] = useState(false);
-  const [document, setDocument] = useState<LayoutAssetDocument | null>(null);
-  const [loadedAsset, setLoadedAsset] = useState<LoadedLayoutAsset | null>(null);
-  const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
-  const [activePlayerCount, setActivePlayerCount] = useState<number | null>(null);
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
-  const externalWindowRef = useRef<import('@tauri-apps/api/webviewWindow').WebviewWindow | null | undefined>(null);
-
-  useEffect(() => {
+  const loadedAsset = useMemo(() => {
+    if (!assetData || !assetPath) return null;
     try {
-      const nextLoadedAsset = buildLoadedLayoutAssetFromRaw(assetPath, assetData as Record<string, unknown>);
-      setLoadedAsset(nextLoadedAsset);
-      setDocument(nextLoadedAsset.document);
-      setActivePlayerCount(nextLoadedAsset.document.defaultPlayerCount);
-      setPlayerRange(null);
-      setSaveStatus(null);
-    } catch {
-      setLoadedAsset(null);
-      setDocument(null);
-      setPlayerRange(null);
-      setActivePlayerCount(null);
-      setSaveStatus('Layout asset could not be loaded');
+      return buildLoadedLayoutAssetFromRaw(assetPath, assetData as Record<string, unknown>);
+    } catch (err) {
+      log.logError('Layout asset could not be loaded', getStackTrace(), { err, assetPath });
+      return null;
     }
   }, [assetData, assetPath]);
 
+  const [isPreviewTornOff, setIsPreviewTornOff] = useState(false);
+  const [document, setDocument] = useState<LayoutAssetDocument | null>(loadedAsset?.document ?? null);
+  const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
+  const [saveStatus, setSaveStatus] = useState<string | null>(loadedAsset ? null : 'Layout asset could not be loaded');
+  const externalWindowRef = useRef<import('@tauri-apps/api/webviewWindow').WebviewWindow | null | undefined>(null);
+  const [activePlayerCount, setActivePlayerCount] = useState<number | null>(
+    loadedAsset
+      ? readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount)
+      : null,
+  );
+
+  useEffect(() => {
+    if (typeof activePlayerCount === 'number') {
+      writeStoredLayoutEditorPlayerCount(assetPath, activePlayerCount);
+    }
+  }, [activePlayerCount, assetPath]);
+
+
   useEffect(() => {
     if (!loadedAsset?.gameId) {
-      setPlayerRange(null);
       return;
     }
 
@@ -154,11 +165,16 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
     setSaveStatus('Saving...');
     try {
       const saved = await saveLayoutAsset(loadedAsset, document);
-      setLoadedAsset(saved);
       setDocument(saved.document);
+
       onAssetUpdate?.(saved.raw as AssetData);
-      setSaveStatus('Saved');
       broadcastDraft(saved.document, activePlayerCount);
+      try {
+        const syncResult = await syncSavedLayoutAssetToR2();
+        setSaveStatus(syncResult.message);
+      } catch (syncError) {
+        setSaveStatus(`Saved locally; ${syncError instanceof Error ? syncError.message : 'sync failed'}`);
+      }
     } catch (error) {
       setSaveStatus(error instanceof Error ? error.message : 'Failed to save layout');
     }

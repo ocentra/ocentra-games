@@ -1,37 +1,38 @@
 {
-  "name": "@ocentra/game-layout-domain",
-  "version": "1.0.0",
-  "type": "module",
-  "exports": {
-    "./cardGameLayoutRuntime": {
-      "import": "./dist/cardGameLayoutRuntime.js",
-      "types": "./dist/cardGameLayoutRuntime.d.ts"
-    },
-    "./tableLayoutStore": {
-      "import": "./dist/tableLayoutStore.js",
-      "types": "./dist/tableLayoutStore.d.ts"
-    },
-    "./draftChannel": {
-      "import": "./dist/draftChannel.js",
-      "types": "./dist/draftChannel.d.ts"
-    }
-  },
-  "scripts": {
-    "build": "tsc && node ../../scripts/fix-esm-imports.mjs",
-    "type-check": "tsc --noEmit",
-    "test": "vitest run",
-    "lint": "eslint --cache src && tsc --noEmit",
-    "lint:eslint": "eslint --cache src",
-    "lint:fix": "eslint --cache src --fix"
-  },
-  "dependencies": {
-    "@ocentra/game-ui-types": "file:../game-ui-types"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "eslint": "^9.15.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0",
-    "vitest": "^2.0.0"
-  }
+    "name":  "@ocentra/game-layout-domain",
+    "version":  "1.0.0",
+    "type":  "module",
+    "exports":  {
+                    "./cardGameLayoutRuntime":  {
+                                                    "import":  "./dist/cardGameLayoutRuntime.js",
+                                                    "types":  "./dist/cardGameLayoutRuntime.d.ts"
+                                                },
+                    "./tableLayoutStore":  {
+                                               "import":  "./dist/tableLayoutStore.js",
+                                               "types":  "./dist/tableLayoutStore.d.ts"
+                                           },
+                    "./draftChannel":  {
+                                           "import":  "./dist/draftChannel.js",
+                                           "types":  "./dist/draftChannel.d.ts"
+                                       }
+                },
+    "scripts":  {
+                    "build":  "tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs",
+                    "type-check":  "tsc --noEmit",
+                    "test":  "vitest run",
+                    "lint":  "node -e \"const cmd = process.env.TURBO_HASH ? \u0027npm run lint:exec\u0027 : \u0027npx turbo run lint:exec --filter=@ocentra/game-layout-domain\u0027; require(\u0027child_process\u0027).spawnSync(cmd.split(\u0027 \u0027)[0], cmd.split(\u0027 \u0027).slice(1), { stdio: \u0027inherit\u0027, shell: true });\"",
+                    "lint:eslint":  "eslint --cache src",
+                    "lint:fix":  "eslint --cache src --fix",
+                    "lint:exec":  "eslint --cache src \u0026\u0026 tsc --noEmit"
+                },
+    "dependencies":  {
+                         "@ocentra/game-ui-types":  "file:../game-ui-types"
+                     },
+    "devDependencies":  {
+                            "@eslint/js":  "^9.15.0",
+                            "eslint":  "^9.15.0",
+                            "typescript":  "^6.0.2",
+                            "typescript-eslint":  "^8.58.0",
+                            "vitest":  "^2.0.0"
+                        }
 }

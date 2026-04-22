@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
@@ -8,6 +8,7 @@ import type { IResourceEntry } from '@ocentra/boundary-domain/types/resource-ent
 import type { InspectorComponent } from '@/lib/core/inspector/types';
 import { toAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import { InspectorGroup } from '@/lib/core/inspector/components/InspectorGroup';
+
 import './ExportIndexInspector.css';
 
 const LOG_EXPORT_INDEX = false;
@@ -31,15 +32,18 @@ export const ExportIndexInspector: InspectorComponent<Record<string, unknown>> =
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
 
-  const dataObj = (data && typeof data === 'object')
-    ? data as Record<string, unknown>
-    : ({} as Record<string, unknown>);
+  const assetData = useMemo(() => {
+    const dataObj = (data && typeof data === 'object')
+      ? data as Record<string, unknown>
+      : ({} as Record<string, unknown>);
 
-  const assetData = ('data' in dataObj && typeof dataObj.data === 'object' && dataObj.data !== null)
-    ? (dataObj.data as Record<string, unknown>)
-    : dataObj;
+    return ('data' in dataObj && typeof dataObj.data === 'object' && dataObj.data !== null)
+      ? (dataObj.data as Record<string, unknown>)
+      : dataObj;
+  }, [data]);
 
-  const rawResources = Array.isArray(assetData.resources) ? assetData.resources : [];
+
+  const rawResources = useMemo(() => (Array.isArray(assetData.resources) ? assetData.resources : []), [assetData.resources]);
 
   const slices = useMemo(() => {
     const cardGameModes = rawResources.filter((item: unknown) => {
@@ -71,7 +75,7 @@ export const ExportIndexInspector: InspectorComponent<Record<string, unknown>> =
     };
   }, [rawResources]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadMetadata = async () => {
       if (rawResources.length === 0) return;
 
@@ -114,7 +118,7 @@ export const ExportIndexInspector: InspectorComponent<Record<string, unknown>> =
     };
 
     void loadMetadata();
-  }, [rawResources.length]);
+  }, [rawResources]);
 
   const getResourceIdentifier = (item: unknown): string | null => {
     if (typeof item === 'string') return item;
@@ -490,3 +494,6 @@ export const ExportIndexInspector: InspectorComponent<Record<string, unknown>> =
     </div>
   );
 };
+
+export default ExportIndexInspector;
+

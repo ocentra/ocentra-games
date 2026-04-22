@@ -10,7 +10,7 @@ export type AssetPath = string & { readonly __brand: 'AssetPath' };
 export type ModelPath = string & { readonly __brand: 'ModelPath' };
 export type QuantPath = string & { readonly __brand: 'QuantPath' };
 
-export type AssetIdentifier = AssetGUIDType | AssetHash | AssetChecksum;
+export type AssetIdentifier = AssetGUIDType | AssetHash | AssetChecksum | ImageHash;
 
 const HASH_REGEX = /^[a-f0-9]{64}$/i;
 const CHECKSUM_REGEX = /^[a-f0-9]{32,64}$/i;
@@ -41,12 +41,15 @@ export function isAssetChecksum(value: string): value is AssetChecksum {
 }
 
 export function isAssetIdentifier(value: string): value is AssetIdentifier {
-  return isAssetGUID(value) || isAssetHash(value) || isAssetChecksum(value);
+  return isAssetGUID(value) || isAssetHash(value) || isAssetChecksum(value) || isImageHash(value);
 }
 
 export function toAssetIdentifier(value: string): AssetIdentifier {
   if (isAssetGUID(value)) {
     return value as AssetGUIDType;
+  }
+  if (isImageHash(value)) {
+    return value as ImageHash;
   }
   if (isAssetHash(value)) {
     return value as AssetHash;

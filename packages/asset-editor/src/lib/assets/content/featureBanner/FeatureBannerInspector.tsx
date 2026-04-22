@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { FeatureBannerItem } from '@ocentra/game-asset-domain/content/featureBanner/FeatureBanner';
 import type { InspectorComponent } from '@/lib/core/inspector/types';
 import { isImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -24,9 +24,12 @@ export const FeatureBannerInspector: InspectorComponent<Record<string, unknown>>
     imageHash: '',
   });
 
-  useEffect(() => {
+  const [prevItemsData, setPrevItemsData] = useState(itemsData);
+  if (itemsData !== prevItemsData) {
+    setPrevItemsData(itemsData);
     setItems(itemsData);
-  }, [itemsData]);
+  }
+
 
   const handleFieldChange = (field: string, value: unknown) => {
     if (onFieldChange) {

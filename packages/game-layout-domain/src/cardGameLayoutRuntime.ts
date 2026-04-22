@@ -221,7 +221,11 @@ export const DEFAULT_CARD_VISUAL_CONTROLS: CardVisualControls = {
   floatScale: 3,
 };
 
-const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+/**
+ * Clamps a coordinate value to a reasonable range that allows movement
+ * outside the central 1000x1000 arena into the widescreen 'dead zones'.
+ */
+const clampCoordinate = (value: number) => Math.max(-0.5, Math.min(1.5, value));
 
 const clone = <T>(value: T): T => {
   if (typeof structuredClone === 'function') {
@@ -240,6 +244,36 @@ const clonePreset = (preset: LayoutPreset): LayoutPreset => ({
   table: { ...preset.table },
   seats: preset.seats.map((seat) => cloneSeat(seat)),
 });
+
+export const seedLayoutPresetFromSource = (
+  sourcePreset: LayoutPreset | null | undefined,
+  targetCount: number,
+): LayoutPreset => {
+  const targetPreset = createLayoutPreset(targetCount);
+  if (!sourcePreset) {
+    return targetPreset;
+  }
+
+  const sourceSeatsById = new Map(sourcePreset.seats.map((seat) => [seat.id, seat]));
+  return {
+    table: { ...targetPreset.table, ...sourcePreset.table },
+    seats: targetPreset.seats.map((seat) => {
+      const sourceSeat = sourceSeatsById.get(seat.id);
+      if (!sourceSeat) {
+        return cloneSeat(seat);
+      }
+
+      return {
+        ...seat,
+        label: sourceSeat.label ?? seat.label,
+        position: { ...sourceSeat.position },
+        rotation: sourceSeat.rotation,
+        scale: sourceSeat.scale,
+        playerOverrides: sourceSeat.playerOverrides ? { ...sourceSeat.playerOverrides } : undefined,
+      };
+    }),
+  };
+};
 
 const cloneHud = (hud: HudArtworkControls): HudArtworkControls => ({
   ...hud,
@@ -287,8 +321,8 @@ export const generateSeatRing = (count: number): SeatLayout[] => {
       id: index,
       label: `p${index + 1}`,
       position: {
-        x: Number(clamp01(x).toFixed(4)),
-        y: Number(clamp01(y).toFixed(4)),
+        x: Number(clampCoordinate(x).toFixed(4)),
+        y: Number(clampCoordinate(y).toFixed(4)),
       },
       rotation: 0,
       scale: DEFAULT_SEAT_SCALE,
@@ -324,10 +358,10 @@ const normalizeSeat = (input: SerializedSeatLayout | undefined, fallback?: SeatL
   const fallbackSeat = fallback ? cloneSeat(fallback) : undefined;
   const id = Number.isFinite(input?.id) ? Number(input?.id) : fallbackSeat?.id ?? 0;
   const position = {
-    x: clamp01(
+    x: clampCoordinate(
       Number.isFinite(input?.position?.x) ? Number(input?.position?.x) : fallbackSeat?.position?.x ?? 0.5,
     ),
-    y: clamp01(
+    y: clampCoordinate(
       Number.isFinite(input?.position?.y) ? Number(input?.position?.y) : fallbackSeat?.position?.y ?? 0.5,
     ),
   };
@@ -617,8 +651,8 @@ export const adjustSeatsForTableChange = (
     return {
       ...cloneSeat(seat),
       position: {
-        x: clamp01(scaledX),
-        y: clamp01(scaledY),
+        x: clampCoordinate(scaledX),
+        y: clampCoordinate(scaledY),
       },
     };
   });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { WindowControls } from '@/components/WindowControls';
 import './LoginScreen.css';
 

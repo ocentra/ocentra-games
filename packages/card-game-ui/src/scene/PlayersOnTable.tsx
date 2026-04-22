@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import PlayerUI from './PlayerUI';
 import './PlayersOnTable.css';
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
@@ -11,6 +11,17 @@ interface PlayersOnTableProps {
   onSeatsChange?: (seats: SeatLayout[]) => void;
 }
 
+interface AlignmentGuides {
+  x: number | null;
+  y: number | null;
+}
+
+const AXIS_SNAP_DISTANCE = 0.0125;
+
+function clampUnit(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
 const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
   editableSeats = false,
   showLocalSeat = false,
@@ -18,13 +29,15 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dragSeatIdRef = useRef<number | null>(null);
+  const [dragSeatId, setDragSeatId] = useState<number | null>(null);
+  const [alignmentGuides, setAlignmentGuides] = useState<AlignmentGuides>({ x: null, y: null });
   const layoutState = useSyncExternalStore<TableLayoutState>(
     tableLayoutStore.subscribe,
     tableLayoutStore.getState,
     tableLayoutStore.getState
   );
 
-  const seats = layoutState.seats ?? [];
+  const seats = useMemo(() => layoutState.seats ?? [], [layoutState.seats]);
   const selectedSeatId = layoutState.selectedSeatId ?? null;
   const playerUiDefaults = layoutState.asset?.layout.playerUiDefaults ?? {};
   const visibleSeats = useMemo(
@@ -46,8 +59,35 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
       return;
     }
 
-    const nextX = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    const nextY = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+    const rawX = clampUnit((clientX - rect.left) / rect.width);
+    const rawY = clampUnit((clientY - rect.top) / rect.height);
+    const otherSeats = seats.filter((seat) => seat.id !== dragSeatIdRef.current);
+    const snapXTarget = otherSeats.reduce<SeatLayout | null>((closest, seat) => {
+      if (Math.abs(seat.position.x - rawX) > AXIS_SNAP_DISTANCE) {
+        return closest;
+      }
+      if (!closest) {
+        return seat;
+      }
+      return Math.abs(seat.position.x - rawX) < Math.abs((closest.position?.x ?? 0) - rawX) ? seat : closest;
+    }, null);
+    const snapYTarget = otherSeats.reduce<SeatLayout | null>((closest, seat) => {
+      if (Math.abs(seat.position.y - rawY) > AXIS_SNAP_DISTANCE) {
+        return closest;
+      }
+      if (!closest) {
+        return seat;
+      }
+      return Math.abs(seat.position.y - rawY) < Math.abs((closest.position?.y ?? 0) - rawY) ? seat : closest;
+    }, null);
+    const nextX = snapXTarget ? snapXTarget.position.x : rawX;
+    const nextY = snapYTarget ? snapYTarget.position.y : rawY;
+
+    setAlignmentGuides({
+      x: snapXTarget ? nextX : null,
+      y: snapYTarget ? nextY : null,
+    });
+
     const nextSeats = seats.map((seat) => (
       seat.id === dragSeatIdRef.current
         ? {
@@ -75,6 +115,8 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
 
     const handlePointerUp = () => {
       dragSeatIdRef.current = null;
+      setDragSeatId(null);
+      setAlignmentGuides({ x: null, y: null });
     };
 
     window.addEventListener('pointermove', handlePointerMove);
@@ -92,24 +134,38 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
       return;
     }
     dragSeatIdRef.current = seatId;
+    setDragSeatId(seatId);
     tableLayoutStore.setSelectedSeat(seatId);
     updateSeatPositionFromPointer(clientX, clientY);
   }, [editableSeats, updateSeatPositionFromPointer]);
 
   return (
     <div className={editableSeats ? 'players-on-table players-on-table--interactive' : 'players-on-table'} ref={containerRef}>
+      {editableSeats && alignmentGuides.x !== null ? (
+        <div
+          className="players-on-table__guide players-on-table__guide--vertical"
+          style={{ left: `${alignmentGuides.x * 100}%` }}
+        />
+      ) : null}
+      {editableSeats && alignmentGuides.y !== null ? (
+        <div
+          className="players-on-table__guide players-on-table__guide--horizontal"
+          style={{ top: `${alignmentGuides.y * 100}%` }}
+        />
+      ) : null}
       {visibleSeats.map((seat: SeatLayout, index: number) => (
-          <PlayerSeatContainer
-            key={seat.id ?? `seat-${index}`}
-            seat={seat}
-            selected={seat.id === selectedSeatId}
-            onSelect={handleSeatSelect}
-            onDragStart={handleSeatDragStart}
-            playerUiDefaults={playerUiDefaults}
-            editable={editableSeats}
-            isLocalSeat={seat.id === 0}
-          />
-        ))}
+        <PlayerSeatContainer
+          key={seat.id ?? `seat-${index}`}
+          seat={seat}
+          selected={seat.id === selectedSeatId}
+          dragging={seat.id === dragSeatId}
+          onSelect={handleSeatSelect}
+          onDragStart={handleSeatDragStart}
+          playerUiDefaults={playerUiDefaults}
+          editable={editableSeats}
+          isLocalSeat={seat.id === 0}
+        />
+      ))}
     </div>
   );
 };
@@ -119,6 +175,7 @@ interface PlayerSeatContainerProps {
   onSelect: (seatId: number) => void;
   onDragStart: (seatId: number, clientX: number, clientY: number) => void;
   selected: boolean;
+  dragging: boolean;
   playerUiDefaults: Record<string, unknown>;
   editable: boolean;
   isLocalSeat: boolean;
@@ -129,6 +186,7 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
   onSelect,
   onDragStart,
   selected,
+  dragging,
   playerUiDefaults,
   editable,
   isLocalSeat,
@@ -169,8 +227,10 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
     'player-seat',
     selected ? 'player-seat--selected' : '',
     editable ? 'player-seat--editable' : '',
+    dragging ? 'player-seat--dragging' : '',
     isLocalSeat ? 'player-seat--local' : '',
   ].filter(Boolean).join(' ');
+  const coordinateLabel = `X ${seat.position.x.toFixed(3)} | Y ${seat.position.y.toFixed(3)}`;
   return (
     <div
       ref={ref}
@@ -187,6 +247,9 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
         <div className="player-seat__handle-wrap">
           <div className="player-seat__handle player-seat__handle--label">{seat.label ?? `P${seat.id + 1}`}</div>
           <div className="player-seat__handle player-seat__handle--drag">Drag</div>
+          {selected || dragging ? (
+            <div className="player-seat__handle player-seat__handle--coords">{coordinateLabel}</div>
+          ) : null}
         </div>
       ) : null}
     </div>

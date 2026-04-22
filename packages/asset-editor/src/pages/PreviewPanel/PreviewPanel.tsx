@@ -131,13 +131,15 @@ const GameInfoPreview: React.FC<{
         });
         const result = await Promise.race([getSelectedGamePageInfosDeferred.promise, timeout]);
 
-        if (result.isSuccess && result.value) {
-          const s = Array.isArray(result.value.sections) ? (result.value.sections as PageSection[]) : [];
-          setSections(s);
+        if (result.isSuccess && result.value && Array.isArray(result.value.sections) && result.value.sections.length > 0) {
+          setSections(result.value.sections as PageSection[]);
         } else {
           const inlineSections = Array.isArray(data?.sections) ? (data?.sections as PageSection[]) : [];
           if (inlineSections.length > 0) {
             setSections(inlineSections);
+          } else if (result.isSuccess) {
+            // If event succeeded but returned nothing, and no inline sections, show generic error
+            setError('No sections available in this GameInfo asset');
           } else {
             setError(result.errorMessage || 'Failed to load game info');
           }
@@ -279,18 +281,6 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const assetType = system?.assetType || assetData.metadata?.assetType || 'Unknown';
   const assetId = system?.displayName || assetData.metadata?.assetId || 'Unknown';
 
-  const hasImageHash = assetData.data && typeof assetData.data === 'object' &&
-    ((assetData.data as { imageHash?: string; hash?: string })?.imageHash ||
-      (assetData.data as { imageHash?: string; hash?: string })?.hash);
-
-  if (hasImageHash) {
-    const data = assetData.data as { imageHash?: string; hash?: string } | undefined;
-    const system = assetData.system as { guid?: string } | undefined;
-    const imageGuidOrHash = data?.imageHash || data?.hash || system?.guid || null;
-    const meta = (assetData as { _meta?: MetaData })._meta;
-    return <ImagePreview imageGuidOrHash={imageGuidOrHash} assetId={assetId} meta={meta} />;
-  }
-
   const isNonAssetFile = assetType === ASSET_TYPE.TextAsset;
 
   if (viewMode === 'raw' && assetType !== PREVIEW_ASSET_TYPE.assetCatalog) {
@@ -410,6 +400,36 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       );
     }
 
+    // Generic Image Preview for assets that are images or have image hash but no specific preview
+    const hasImageHash = assetData.data && typeof assetData.data === 'object' &&
+      ((assetData.data as { imageHash?: string; hash?: string })?.imageHash ||
+        (assetData.data as { imageHash?: string; hash?: string })?.hash);
+
+    if (hasImageHash || assetType === 'Image') {
+      const data = assetData.data as { imageHash?: string; hash?: string } | undefined;
+      const system = assetData.system as { guid?: string } | undefined;
+      const imageGuidOrHash = data?.imageHash || data?.hash || system?.guid || null;
+      const meta = (assetData as { _meta?: MetaData })._meta;
+      return (
+        <div className="preview-panel">
+          <PreviewPanelHeader
+            assetId={assetId}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            navigationHistory={navigationHistory}
+            onBack={onBack}
+            onNavigateToAsset={onNavigateToAsset}
+            isNonAssetFile={false}
+          />
+          <ImagePreview
+            imageGuidOrHash={imageGuidOrHash}
+            assetId={assetId}
+            meta={meta}
+          />
+        </div>
+      );
+    }
+
     if (assetType === PREVIEW_ASSET_TYPE.cardRanking) {
       return (
         <div className="preview-panel">
@@ -515,6 +535,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           <div className="preview-panel__content preview-panel__content--preview">
             <Suspense fallback={<PreviewPanelLoading message="Loading layout preview..." />}>
               <LazyCardGameLayoutPreview
+                key={`card-game-layout-preview:${assetPath}`}
                 assetPath={assetPath}
                 assetData={assetData}
                 onAssetUpdate={onAssetUpdate}

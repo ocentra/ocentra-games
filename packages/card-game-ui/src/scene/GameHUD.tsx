@@ -9,9 +9,10 @@ interface GameHUDProps {
   showButtonGuides?: boolean;
   scaleFactor?: number;
   showArtwork?: boolean;
+  onButtonClick?: (index: number, label: string) => void;
 }
 
-const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, showButtonGuides = false, scaleFactor = 1, showArtwork = true }, ref) => {
+const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, showButtonGuides = false, scaleFactor = 1, showArtwork = true, onButtonClick }, ref) => {
   const hudHostRef = useRef<HTMLDivElement | null>(null);
   const [fitSize, setFitSize] = useState({ width: controls.width, height: controls.height });
 
@@ -64,7 +65,14 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ children, controls, 
   return (
     <div className="hud" role="presentation" ref={hudHostRef}>
       {showArtwork ? (
-        <HudArtwork ref={ref} controls={controls} fitWidth={fitSize.width} fitHeight={fitSize.height} showButtonGuides={showButtonGuides} />
+        <HudArtwork
+          ref={ref}
+          controls={controls}
+          fitWidth={fitSize.width}
+          fitHeight={fitSize.height}
+          showButtonGuides={showButtonGuides}
+          onButtonClick={onButtonClick}
+        />
       ) : (
         <div ref={ref} style={{ position: 'absolute', inset: 0 }} />
       )}

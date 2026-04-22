@@ -71,54 +71,52 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ assetId, assetInstance
   };
 
   return (
-    <div className="preview-panel">
-      <div className="preview-panel__content preview-panel__content--card">
-        <div className="card-preview">
-          <div className="card-preview__header">
-            <h2 className="card-preview__title">{assetId}</h2>
-            <p className="card-preview__subtitle">
-              {getRankLabel(rank)} of {suit}
-            </p>
-          </div>
+    <div className="preview-panel__content preview-panel__content--card">
+      <div className="card-preview">
+        <div className="card-preview__header">
+          <h2 className="card-preview__title">{assetId}</h2>
+          <p className="card-preview__subtitle">
+            {getRankLabel(rank)} of {suit}
+          </p>
+        </div>
 
-          <div className="card-preview__card">
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={`${getRankLabel(rank)} of ${suit}`}
-                className="card-preview__card-image"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            ) : (
-              <div className="card-preview__card-placeholder">
-                <div className="card-preview__card-placeholder-symbol">
-                  <div className="card-preview__card-placeholder-rank">{getRankLabel(rank)}</div>
-                  <div className="card-preview__card-placeholder-suit">{getSuitSymbol(suit)}</div>
-                </div>
-                <div className="card-preview__card-placeholder-text">No image</div>
-                <div className="card-preview__card-placeholder-symbol-text">{getCardSymbol()}</div>
+        <div className="card-preview__card">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={`${getRankLabel(rank)} of ${suit}`}
+              className="card-preview__card-image"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="card-preview__card-placeholder">
+              <div className="card-preview__card-placeholder-symbol">
+                <div className="card-preview__card-placeholder-rank">{getRankLabel(rank)}</div>
+                <div className="card-preview__card-placeholder-suit">{getSuitSymbol(suit)}</div>
               </div>
-            )}
-          </div>
+              <div className="card-preview__card-placeholder-text">No image</div>
+              <div className="card-preview__card-placeholder-symbol-text">{getCardSymbol()}</div>
+            </div>
+          )}
+        </div>
 
-          <div className="card-preview__info">
-            <div className="card-preview__info-row">
-              <span className="card-preview__info-label">Suit:</span>
-              <span className="card-preview__info-value">{suit}</span>
-            </div>
-            <div className="card-preview__info-row">
-              <span className="card-preview__info-label">Rank:</span>
-              <span className="card-preview__info-value">{getRankLabel(rank)}</span>
-            </div>
-            {imageHash && (
-              <div className="card-preview__info-row">
-                <span className="card-preview__info-label">Image Hash:</span>
-                <span className="card-preview__info-value card-preview__info-value--hash">{imageHash}</span>
-              </div>
-            )}
+        <div className="card-preview__info">
+          <div className="card-preview__info-row">
+            <span className="card-preview__info-label">Suit:</span>
+            <span className="card-preview__info-value">{suit}</span>
           </div>
+          <div className="card-preview__info-row">
+            <span className="card-preview__info-label">Rank:</span>
+            <span className="card-preview__info-value">{getRankLabel(rank)}</span>
+          </div>
+          {imageHash && (
+            <div className="card-preview__info-row">
+              <span className="card-preview__info-label">Image Hash:</span>
+              <span className="card-preview__info-value card-preview__info-value--hash">{imageHash}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

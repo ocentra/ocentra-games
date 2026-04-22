@@ -5,6 +5,7 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
 import { GetAssetTypeInfoEvent } from '@ocentra/eventing-domain/events/assets/GetAssetTypeInfoEvent';
 import { AssetGUID } from '@ocentra/asset-domain/AssetGUID';
+import { isMultiline } from '../utils/fieldUtils';
 import { getSerializableFields, getRequiredFields, type SerializableField, type SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
 import type { ValidationError } from '@ocentra/asset-domain/validation/types';
 import { createInspectorLogger } from '@/lib/core/inspector/utils/logger';
@@ -15,7 +16,8 @@ import { Field } from '@/lib/core/inspector/fields/Field';
 import { SelectField } from '@/lib/core/inspector/fields/SelectField';
 import { ImageUploadField } from '@/lib/core/inspector/fields/ImageUploadField';
 import { AssetGuidReferenceField } from '@/lib/core/inspector/fields/AssetGuidReferenceField';
-import { MultilineField, isMultiline } from '@/lib/core/inspector/fields/MultilineField';
+import { MultilineField } from '@/lib/core/inspector/fields/MultilineField';
+
 
 import type { CreateGameModeOptions } from '@/lib/core/inspector/types';
 import type { AssetIdentifier, ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -66,30 +68,39 @@ export const GenericInspector: React.FC<GenericInspectorProps> = ({
     return new Set(required.map(f => f.key));
   }, [data]);
 
-  // Validate on mount and when data changes
-  useEffect(() => {
+  const [prevData, setPrevData] = useState(data);
+  const [prevAssetType, setPrevAssetType] = useState(assetType);
+  const [prevPrefix, setPrevPrefix] = useState(prefix);
+
+  if (data !== prevData) {
+    setPrevData(data);
     if (!data || typeof data !== 'object' || !('getValidationErrors' in data)) {
       setValidationErrors(new Map());
-      return;
-    }
-
-    try {
-      const result = (data as { getValidationErrors: () => { errors: ValidationError[] } }).getValidationErrors();
-      const errorMap = new Map<string, string>();
-      for (const error of result.errors) {
-        errorMap.set(error.field, error.message);
+    } else {
+      try {
+        const result = (data as { getValidationErrors: () => { errors: ValidationError[] } }).getValidationErrors();
+        const errorMap = new Map<string, string>();
+        for (const error of result.errors) {
+          errorMap.set(error.field, error.message);
+        }
+        setValidationErrors(errorMap);
+      } catch {
+        setValidationErrors(new Map());
       }
-      setValidationErrors(errorMap);
-    } catch {
-      setValidationErrors(new Map());
     }
-  }, [data]);
+  }
 
-  useEffect(() => {
+  if (assetType !== prevAssetType || prefix !== prevPrefix) {
+    setPrevAssetType(assetType);
+    setPrevPrefix(prefix);
     if (!assetType || prefix) {
       setFieldMetadata(null);
-      return;
     }
+  }
+
+
+  useEffect(() => {
+    if (!assetType || prefix) return;
 
     const loadFieldMetadata = async () => {
       const getAssetTypeInfoDeferred = new OperationDeferred<AssetTypeInfo | null>();
@@ -122,6 +133,7 @@ export const GenericInspector: React.FC<GenericInspectorProps> = ({
 
     loadFieldMetadata();
   }, [assetType, prefix]);
+
 
   if (data === null || data === undefined) {
     return <div className="inspector-panel__field-value-readonly">null</div>;

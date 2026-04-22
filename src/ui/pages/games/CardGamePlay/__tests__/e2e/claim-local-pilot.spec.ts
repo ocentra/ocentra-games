@@ -19,10 +19,6 @@ test.describe('Claim local pilot', () => {
     await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByRole('button', { name: 'Start Match' })).toBeVisible({ timeout: 20000 });
-
-    await page.getByRole('button', { name: 'Start Match' }).click();
-
     await expect(page.getByTestId('claim-pilot-current-hand')).toBeVisible({ timeout: 20000 });
     await expect(page.getByTestId('claim-pilot-floor-zone')).not.toContainText('Waiting for deal');
     await expect(page.getByRole('button', { name: 'Pass' })).toBeVisible();
@@ -44,8 +40,6 @@ test.describe('Claim local pilot', () => {
     await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
 
     await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
-    await page.getByRole('button', { name: 'Start Match' }).click();
-
     await expect(page.getByTestId('claim-pilot-current-hand')).toBeVisible({ timeout: 20000 });
 
     const declareButtons = page.getByRole('button', { name: /^Declare / });

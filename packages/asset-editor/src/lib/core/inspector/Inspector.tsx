@@ -26,7 +26,10 @@ export function Inspector<T>(props: Parameters<typeof InspectorService.resolveIn
   const propsRef = useRef(props);
   const lastKeyRef = useRef<string>('');
 
-  propsRef.current = props;
+  React.useLayoutEffect(() => {
+    propsRef.current = props;
+  });
+
 
   const dataKey = useMemo(() => {
     try {

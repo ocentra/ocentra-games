@@ -70,7 +70,7 @@ export class Resources {
     return `${identifier}:${type}`;
   }
 
-  static clearCache(identifier?: ImageHash | AssetGUIDType): void {
+  static clearCache(identifier?: AssetIdentifier): void {
     if (identifier) {
       const key = String(identifier);
       this.cache.clear(this.cacheKey(key, 'text'));
@@ -82,9 +82,7 @@ export class Resources {
     this.cache.clear();
   }
 
-  static getUrl(identifier: ImageHash): Promise<AssetURL>;
-  static getUrl(identifier: AssetGUIDType): Promise<AssetURL>;
-  static getUrl(identifier: ImageHash | AssetGUIDType): Promise<AssetURL> {
+  static getUrl(identifier: AssetIdentifier): Promise<AssetURL> {
     const loader = this.getLoader();
     if (isAssetGUID(identifier)) {
       return Promise.resolve(loader.resolveAssetUrlByGuid(identifier)).then(url => url as AssetURL);
@@ -221,9 +219,7 @@ export class Resources {
     }
   }
 
-  static async loadTexture(identifier: ImageHash): Promise<AssetURL>;
-  static async loadTexture(identifier: AssetGUIDType): Promise<AssetURL>;
-  static async loadTexture(identifier: ImageHash | AssetGUIDType): Promise<AssetURL> {
+  static async loadTexture(identifier: AssetIdentifier): Promise<AssetURL> {
     if (isAssetGUID(identifier)) {
       return this.getUrl(identifier as AssetGUIDType);
     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { AssetData } from '@/types/assets';
 import './CardGameMechanicsPreview.css';
 
@@ -466,11 +466,11 @@ export const CardGameMechanicsPreview: React.FC<CardGameMechanicsPreviewProps> =
   const graph = useMemo(() => buildGraphModel(model.phases), [model.phases]);
   const [selectedPhaseId, setSelectedPhaseId] = useState<string>(model.phases[0]?.id ?? '');
 
-  useEffect(() => {
-    if (!selectedPhaseId || !model.phaseIdSet.has(selectedPhaseId)) {
-      setSelectedPhaseId(model.phases[0]?.id ?? '');
-    }
-  }, [model.phaseIdSet, model.phases, selectedPhaseId]);
+  // Synchronize selectedPhaseId during render phase
+  if (selectedPhaseId && !model.phaseIdSet.has(selectedPhaseId)) {
+    setSelectedPhaseId(model.phases[0]?.id ?? '');
+  }
+
 
   const selectedPhaseIndex = model.phases.findIndex((phase) => phase.id === selectedPhaseId);
   const selectedPhase = selectedPhaseIndex >= 0 ? model.phases[selectedPhaseIndex] : null;

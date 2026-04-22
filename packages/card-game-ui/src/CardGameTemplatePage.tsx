@@ -8,6 +8,8 @@ import { CardGamePreviewSurface } from './CardGamePreviewSurface';
 import { DEFAULT_HUD_ARTWORK_CONTROLS } from './scene/HudArtwork.types';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
+import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import type { HudArtworkControls } from './scene/HudArtwork.types';
 import './CardGameTemplatePage.css';
 
 export interface CardGameTemplatePageProps {
@@ -21,6 +23,9 @@ export interface CardGameTemplatePageProps {
   scaleFactor?: number;
   editableSeats?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
+  assetPath?: string;
+  hudControlsOverride?: HudArtworkControls;
+  onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
 }
@@ -36,6 +41,9 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   scaleFactor = 1,
   editableSeats = false,
   onSeatsChange,
+  assetPath,
+  hudControlsOverride,
+  onHudButtonClick,
   arenaOverlay,
   stageOverlay,
 }) => {
@@ -88,7 +96,6 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     views: {},
     gameplay: {},
     extensions: {},
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
   const activeDoc = doc ?? fallbackDoc;
@@ -96,6 +103,35 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   const showHeader = layerVisibility.header !== false;
   const showFooter = layerVisibility.footer !== false;
   const showTools = layerVisibility.tools !== false;
+
+  const broadcastUpdate = useCallback((nextDoc: CardGameLayoutDocument, nextPlayerCount: number) => {
+    const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
+    channel.postMessage({
+      assetPath,
+      document: nextDoc,
+      playerCount: nextPlayerCount,
+    });
+    channel.close();
+  }, [assetPath]);
+
+  const handleDocChange = useCallback((nextDoc: CardGameLayoutDocument) => {
+    setDraftDoc(nextDoc);
+    broadcastUpdate(nextDoc, resolvedPlayerCount);
+  }, [broadcastUpdate, resolvedPlayerCount]);
+
+  const handleSeatsChange = useCallback((nextSeats: SeatLayout[]) => {
+    const nextDoc = cloneCardGameLayoutDocument(activeDoc);
+    const presetKey = String(resolvedPlayerCount);
+    if (!nextDoc.presets[presetKey]) {
+      nextDoc.presets[presetKey] = {
+        table: { ...activeDoc.presets[presetKey]?.table },
+        seats: [],
+      };
+    }
+    nextDoc.presets[presetKey].seats = nextSeats;
+    handleDocChange(nextDoc);
+    onSeatsChange?.(nextSeats);
+  }, [activeDoc, handleDocChange, resolvedPlayerCount, onSeatsChange]);
 
   return (
     <div className={embedded ? 'game-screen game-screen--embedded' : 'game-screen'}>
@@ -112,7 +148,9 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
             showBackground={showBackground}
             scaleFactor={scaleFactor}
             editableSeats={editableSeats}
-            onSeatsChange={onSeatsChange}
+            onSeatsChange={handleSeatsChange}
+            hudControlsOverride={hudControlsOverride}
+            onHudButtonClick={onHudButtonClick}
             arenaOverlay={arenaOverlay}
             stageOverlay={stageOverlay}
           />
@@ -137,7 +175,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
         open={showHudButtonEditor}
         onClose={() => setShowHudButtonEditor(false)}
         document={activeDoc}
-        onChange={() => {}}
+        onChange={handleDocChange}
         initialWorkspaceSection="layerSplit"
       />
     </div>

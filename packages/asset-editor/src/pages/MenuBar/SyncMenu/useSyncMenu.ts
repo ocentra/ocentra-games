@@ -26,20 +26,24 @@ export function useSyncMenu() {
   const availableTargets = getAvailableAssetEditorSyncTargets();
 
   const loadSyncStatus = useCallback(async (retryCount = 0) => {
-    try {
-      const deferred = new OperationDeferred<AssetSyncStatus>();
-      await EventBus.instance.publishAsync(new GetSyncStatusEvent(deferred));
-      const result = await deferred.promise;
-      if (result.isSuccess && result.value) {
-        setSyncStatus(result.value);
+    const attemptLoad = async (count: number) => {
+      try {
+        const deferred = new OperationDeferred<AssetSyncStatus>();
+        await EventBus.instance.publishAsync(new GetSyncStatusEvent(deferred));
+        const result = await deferred.promise;
+        if (result.isSuccess && result.value) {
+          setSyncStatus(result.value);
+        }
+      } catch {
+        if (count < 3) {
+          const delay = Math.min(1000 * Math.pow(2, count), 5000);
+          setTimeout(() => void attemptLoad(count + 1), delay);
+        }
       }
-    } catch {
-      if (retryCount < 3) {
-        const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
-        setTimeout(() => loadSyncStatus(retryCount + 1), delay);
-      }
-    }
+    };
+    void attemptLoad(retryCount);
   }, []);
+
 
   useEffect(() => {
     const initialDelay = setTimeout(() => {

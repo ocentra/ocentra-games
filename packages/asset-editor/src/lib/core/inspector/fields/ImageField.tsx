@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useImageUrl } from '@/hooks/useImageUrl';
 import type { AssetIdentifier, ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { isImageHash, isAssetHash } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -31,9 +31,12 @@ export const ImageField: React.FC<ImageFieldProps> = ({
 
   const { imageUrl } = useImageUrl(value);
 
-  useEffect(() => {
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
     setHasError(false);
-  }, [value]);
+  }
+
 
   const handleThumbnailClick = () => {
     if (onNavigateToAsset && value) {

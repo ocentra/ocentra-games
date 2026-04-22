@@ -14,9 +14,13 @@ export function usePreviewPanel({
 }: UsePreviewPanelProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('preview');
 
-  useEffect(() => {
+  // Reset viewMode when assetPath changes during render phase
+  const [prevAssetPath, setPrevAssetPath] = useState(assetPath);
+  if (assetPath !== prevAssetPath) {
+    setPrevAssetPath(assetPath);
     setViewMode('preview');
-  }, [assetPath]);
+  }
+
 
   useEffect(() => {
     if (!onNavigateToAsset) return;

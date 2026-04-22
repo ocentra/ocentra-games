@@ -77,7 +77,9 @@ export const ScanAssetsDialog: React.FC<ScanAssetsDialogProps> = ({
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const handleScan = useCallback(async () => {
+    await Promise.resolve(); // Break synchronous execution to avoid cascading renders
     const scanStart = performance.now();
+
     log.logInfo('[ScanAssetsDialog] SCAN START', getStackTrace());
 
     try {
@@ -267,14 +269,23 @@ export const ScanAssetsDialog: React.FC<ScanAssetsDialogProps> = ({
     }
   }, [onScanComplete]);
 
-  useEffect(() => {
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setProgress({ stage: ScanStage.Idle, message: '' });
       setResults(null);
       setError(null);
-      handleScan();
+    }
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      void Promise.resolve().then(() => handleScan());
     }
   }, [isOpen, handleScan]);
+
+
 
   useEffect(() => {
     if (!isOpen) return;

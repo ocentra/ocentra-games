@@ -83,7 +83,31 @@ export function indexEntryToResourceEntry(
   return r
 }
 
+let cachedEntriesPromise: Promise<ResourceEntry[]> | null = null;
+let lastScanTime = 0;
+const CACHE_TTL = 2000; // 2 seconds
+
 export async function getDiskResourceEntries(): Promise<ResourceEntry[]> {
+  const now = Date.now();
+  if (cachedEntriesPromise && (now - lastScanTime < CACHE_TTL)) {
+    return cachedEntriesPromise;
+  }
+
+  cachedEntriesPromise = (async () => {
+    try {
+      const entries = await _getDiskResourceEntriesInternal();
+      lastScanTime = Date.now();
+      return entries;
+    } catch (error) {
+      cachedEntriesPromise = null;
+      throw error;
+    }
+  })();
+
+  return cachedEntriesPromise;
+}
+
+async function _getDiskResourceEntriesInternal(): Promise<ResourceEntry[]> {
   if (isTauri()) {
     const loadFromTauri = async (): Promise<ResourceEntry[]> => {
       const entries = await getDiskResourceEntriesFromTauri()

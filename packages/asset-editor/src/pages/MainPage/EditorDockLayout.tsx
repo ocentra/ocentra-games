@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import DockLayout, { addHandlers, removeHandlers, DragState, addDragStateListener, removeDragStateListener } from 'rc-dock';
 import type { DockContext, LayoutData, PanelData, TabData, TabGroup } from 'rc-dock';
@@ -70,6 +71,38 @@ const LockIcon: React.FC<{ locked: boolean }> = ({ locked }) => (
     )}
   </svg>
 )
+
+interface TabTitleProps {
+  tab: WorkspaceTabData;
+  toggleTabLockRef: React.RefObject<(tab: WorkspaceTabData | undefined) => void>;
+  closeTabRef: React.RefObject<(tab: WorkspaceTabData) => void>;
+  label: string;
+}
+
+const TabTitle: React.FC<TabTitleProps> = ({ tab, toggleTabLockRef, closeTabRef, label }) => {
+  const canClose = tab.closable !== false && !tab.baseTab;
+  return (
+    <span
+      className="dock-tab-with-lock"
+      title={canClose ? 'Right-click to close tab' : undefined}
+      onContextMenu={canClose ? (e) => { e.preventDefault(); closeTabRef.current?.(tab) } : undefined}
+    >
+      <span className="dock-tab-label">{label}</span>
+      <button
+        type="button"
+        className="dock-tab-lock-btn"
+        onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggleTabLockRef.current?.(tab) }}
+        onPointerDown={(e) => e.stopPropagation()}
+        title={tab.lockedSnapshot ? 'Unlock' : 'Lock to current asset'}
+        aria-label={tab.lockedSnapshot ? 'Unlock' : 'Lock'}
+      >
+        <LockIcon locked={Boolean(tab.lockedSnapshot)} />
+      </button>
+    </span>
+  );
+};
+
+
 
 const GAMES_ROOT_PATH = 'GameMode/CardGames/Games';
 
@@ -286,8 +319,8 @@ const InspectorPanelConnector: React.FC<{ tab: WorkspaceTabData }> = ({ tab }) =
 };
 
 function buildLoadTab(
-  toggleTabLock: (tab: WorkspaceTabData | undefined) => void,
-  closeTab: (tab: WorkspaceTabData) => void
+  toggleTabLockRef: React.RefObject<(tab: WorkspaceTabData | undefined) => void>,
+  closeTabRef: React.RefObject<(tab: WorkspaceTabData) => void>
 ): (data: TabData) => TabData {
   return (data: TabData): TabData => {
     const tab = data as WorkspaceTabData
@@ -324,59 +357,21 @@ function buildLoadTab(
         }
       case 'preview': {
         const label = typeof tab.title === 'string' ? tab.title : getWorkspaceTabTitle('preview', tab.lockedSnapshot)
-        const canClose = tab.closable !== false && !tab.baseTab
         return {
           ...tab,
           panelKind: 'preview',
           group: 'preview',
-          title: (
-            <span
-              className="dock-tab-with-lock"
-              title={canClose ? 'Right-click to close tab' : undefined}
-              onContextMenu={canClose ? (e) => { e.preventDefault(); closeTab(tab) } : undefined}
-            >
-              <span className="dock-tab-label">{label}</span>
-              <button
-                type="button"
-                className="dock-tab-lock-btn"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggleTabLock(tab) }}
-                onPointerDown={(e) => e.stopPropagation()}
-                title={tab.lockedSnapshot ? 'Unlock' : 'Lock to current asset'}
-                aria-label={tab.lockedSnapshot ? 'Unlock' : 'Lock'}
-              >
-                <LockIcon locked={Boolean(tab.lockedSnapshot)} />
-              </button>
-            </span>
-          ),
+          title: <TabTitle tab={tab} toggleTabLockRef={toggleTabLockRef} closeTabRef={closeTabRef} label={label} />,
           content: <PreviewPanelConnector tab={tab} />,
         }
       }
       case 'inspector': {
         const label = typeof tab.title === 'string' ? tab.title : getWorkspaceTabTitle('inspector', tab.lockedSnapshot)
-        const canClose = tab.closable !== false && !tab.baseTab
         return {
           ...tab,
           panelKind: 'inspector',
           group: 'inspector',
-          title: (
-            <span
-              className="dock-tab-with-lock"
-              title={canClose ? 'Right-click to close tab' : undefined}
-              onContextMenu={canClose ? (e) => { e.preventDefault(); closeTab(tab) } : undefined}
-            >
-              <span className="dock-tab-label">{label}</span>
-              <button
-                type="button"
-                className="dock-tab-lock-btn"
-                onClick={(e) => { e.stopPropagation(); e.preventDefault(); toggleTabLock(tab) }}
-                onPointerDown={(e) => e.stopPropagation()}
-                title={tab.lockedSnapshot ? 'Unlock' : 'Lock to current asset'}
-                aria-label={tab.lockedSnapshot ? 'Unlock' : 'Lock'}
-              >
-                <LockIcon locked={Boolean(tab.lockedSnapshot)} />
-              </button>
-            </span>
-          ),
+          title: <TabTitle tab={tab} toggleTabLockRef={toggleTabLockRef} closeTabRef={closeTabRef} label={label} />,
           content: <InspectorPanelConnector tab={tab} />,
         }
       }
@@ -386,6 +381,7 @@ function buildLoadTab(
   }
 }
 
+
 export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   const {
     assetPath,
@@ -393,7 +389,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     assetRawContent,
     assetError,
   } = useEditorState();
-  const savedLayout = useRef(loadSavedLayout()).current;
+  const [savedLayout] = useState(() => loadSavedLayout());
   const dockRef = useRef<DockLayout | null>(null);
 
   const getCurrentSnapshot = useCallback((): LockedAssetSnapshot | null => {
@@ -416,26 +412,38 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     }
   }, [assetData, assetError, assetPath, assetRawContent]);
 
-  const loadTabRef = useRef<(d: TabData) => TabData>(() => ({} as TabData))
-
   const toggleTabLock = useCallback((tab: WorkspaceTabData | undefined) => {
-    if (!tab?.id) return
-    const nextSnapshot = tab.lockedSnapshot ? null : getCurrentSnapshot()
+    if (!tab?.id) return;
+    const nextSnapshot = tab.lockedSnapshot ? null : getCurrentSnapshot();
     const updatedTab: WorkspaceTabData = {
       ...tab,
       lockedSnapshot: cloneLockedSnapshot(nextSnapshot),
       title: getWorkspaceTabTitle(tab.panelKind ?? 'preview', nextSnapshot),
-    }
-    dockRef.current?.updateTab(tab.id, loadTabRef.current(updatedTab), true)
-  }, [getCurrentSnapshot])
+    };
+    dockRef.current?.updateTab(tab.id, updatedTab, true);
+  }, [getCurrentSnapshot]);
 
   const closeTab = useCallback((tab: WorkspaceTabData) => {
-    if (!tab?.id || tab.baseTab || tab.closable === false) return
-    dockRef.current?.dockMove(tab, null, 'remove')
-  }, [])
+    if (!tab?.id || tab.baseTab || tab.closable === false) return;
+    dockRef.current?.dockMove(tab, null, 'remove');
+  }, []);
 
-  const loadTabFn = useMemo(() => buildLoadTab(toggleTabLock, closeTab), [toggleTabLock, closeTab])
-  loadTabRef.current = loadTabFn
+  const toggleTabLockRef = useRef(toggleTabLock);
+  const closeTabRef = useRef(closeTab);
+  useEffect(() => {
+    toggleTabLockRef.current = toggleTabLock;
+    closeTabRef.current = closeTab;
+  }, [toggleTabLock, closeTab]);
+
+  const loadTabFn = useCallback((data: TabData) => {
+    return buildLoadTab(toggleTabLockRef, closeTabRef)(data);
+  }, []);
+
+
+
+
+
+
 
   const createPanelTab = useCallback((kind: 'preview' | 'inspector') => {
     const id = makeWorkspaceTabId(kind)
@@ -788,7 +796,8 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   }, [assetPath])
 
   useEffect(() => {
-    if (!isTauri() || !fallbackDropRef.current || !dockRef.current) return
+    const fallbackNode = fallbackDropRef.current;
+    if (!isTauri() || !fallbackNode || !dockRef.current) return;
 
     const isOverDockZone = (x: number, y: number): boolean => {
       const elements = document.elementsFromPoint(x, y)
@@ -827,9 +836,10 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
         onDragLeaveT: () => {},
       }),
     }
-    addHandlers(fallbackDropRef.current, handler)
-    return () => { if (fallbackDropRef.current) removeHandlers(fallbackDropRef.current) }
+    addHandlers(fallbackNode, handler)
+    return () => { removeHandlers(fallbackNode) }
   }, [assetPath])
+
 
   const hideInspector = !isInspectableSelection(assetPath ?? null, assetData);
 

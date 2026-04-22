@@ -23,10 +23,18 @@ export function ProfilePictureModal({
   const [isSaving, setIsSaving] = useState(false);
   const [avatars, setAvatars] = useState<AvatarInfo[]>([]);
   const [isLoadingAvatars, setIsLoadingAvatars] = useState(false);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setIsLoadingAvatars(true);
+    }
+  }
 
   useEffect(() => {
     if (isOpen) {
-      setIsLoadingAvatars(true);
       getAvatars()
         .then((loaded) => {
           setAvatars(loaded);
@@ -38,6 +46,7 @@ export function ProfilePictureModal({
         });
     }
   }, [isOpen, getAvatars]);
+
 
   if (!isOpen) return null;
 

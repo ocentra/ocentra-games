@@ -76,6 +76,16 @@ function isLayoutStructure(value: unknown): value is Record<string, unknown> {
   return isRecord(value) && typeof value.type === 'string' && Array.isArray(value.sections);
 }
 
+function isSerializedLayoutDocument(value: unknown): value is Record<string, unknown> {
+  return isRecord(value) && (
+    'defaultPlayerCount' in value ||
+    'presets' in value ||
+    'hud' in value ||
+    'cardFan' in value ||
+    'cardVisuals' in value
+  );
+}
+
 function getLayoutStructure(data: Record<string, unknown>): Record<string, unknown> {
   if (isLayoutStructure(data.layout)) {
     return cloneRecord(data.layout);
@@ -86,7 +96,9 @@ function getLayoutStructure(data: Record<string, unknown>): Record<string, unkno
 
 function toLayoutDocument(root: Record<string, unknown>): LayoutAssetDocument {
   const data = getDataBlock(root);
-  const container = isRecord(data.layout) ? data.layout : data;
+  const container = isSerializedLayoutDocument(data.layout) && !isLayoutStructure(data.layout)
+    ? data.layout
+    : data;
   return normalizeCardGameLayoutDocument(container);
 }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { ImageList } from '@ocentra/game-asset-domain/content/imageList/ImageList';
 import type { ImageListEntry } from '@ocentra/game-asset-domain/content/imageList/ImageList';
 import type { InspectorComponent } from '@/lib/core/inspector/types';
@@ -28,9 +28,12 @@ export const ImageListInspector: InspectorComponent<ImageList | Record<string, u
     weight: 0,
   });
 
-  useEffect(() => {
+  const [prevImagesData, setPrevImagesData] = useState(imagesData);
+  if (imagesData !== prevImagesData) {
+    setPrevImagesData(imagesData);
     setImages(imagesData);
-  }, [imagesData]);
+  }
+
 
   const handleFieldChange = (field: string, value: unknown) => {
     if (onFieldChange) {

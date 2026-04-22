@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import './EnsureCardsProgressDialog.css';
@@ -34,17 +34,37 @@ export const ImageAssignmentProgressDialog: React.FC<ImageAssignmentProgressDial
   const [updatedCount, setUpdatedCount] = useState(0);
   const [warnings, setWarnings] = useState<string[]>([]);
 
-  const isStartedRef = useRef(false);
+  const [isStarted, setIsStarted] = useState(false);
+
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setIsStarted(false);
+      setStage(AssignmentStage.Idle);
+      setMessage('');
+      setError(null);
+      setUpdatedCount(0);
+      setWarnings([]);
+    } else {
+      setIsStarted(false);
+      setStage(AssignmentStage.Idle);
+      setError(null);
+      setMessage('');
+      setUpdatedCount(0);
+      setWarnings([]);
+    }
+  }
 
   const isProcessing = stage === AssignmentStage.Processing;
   const isComplete = stage === AssignmentStage.Complete;
   const hasError = stage === AssignmentStage.Error;
 
   useEffect(() => {
-    if (!isOpen || isStartedRef.current) return;
+    if (!isOpen || isStarted) return;
 
     const runAssignment = async () => {
-      isStartedRef.current = true;
+      setIsStarted(true);
       setStage(AssignmentStage.Processing);
       setMessage('Processing images...');
       setError(null);
@@ -67,19 +87,10 @@ export const ImageAssignmentProgressDialog: React.FC<ImageAssignmentProgressDial
       }
     };
 
-    void runAssignment();
-  }, [isOpen, onStart, onComplete]);
+    void Promise.resolve().then(() => runAssignment());
+  }, [isOpen, onStart, onComplete, isStarted]);
 
-  useEffect(() => {
-    if (!isOpen) {
-      isStartedRef.current = false;
-      setStage(AssignmentStage.Idle);
-      setError(null);
-      setMessage('');
-      setUpdatedCount(0);
-      setWarnings([]);
-    }
-  }, [isOpen]);
+
 
   useEffect(() => {
     if (!isOpen) return;

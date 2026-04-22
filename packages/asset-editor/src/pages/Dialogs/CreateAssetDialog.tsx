@@ -155,12 +155,13 @@ export const CreateAssetDialog: React.FC<CreateAssetDialogProps> = ({
                     setCopyFromTemplate(null);
                 }
             })();
-        } else {
-            setCopyFromTemplate(null);
         }
     }, [isOpen, isGameMode, copyFromGame, gameModeCategory]);
 
-    useEffect(() => {
+
+    const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+    if (isOpen !== prevIsOpen) {
+        setPrevIsOpen(isOpen);
         if (isOpen) {
             const defaultType = defaultAssetType ?? (mode === CreateDialogMode.FullGameSet
                 ? (allTypes.find(t => t.assetType === 'CardGameMode')?.assetType ?? '')
@@ -172,8 +173,12 @@ export const CreateAssetDialog: React.FC<CreateAssetDialogProps> = ({
             setSelectedCategory(defaultCategory || 'All');
             setCopyFromGame('');
             setCopyFromTemplate(null);
+        } else {
+            setCopyFromTemplate(null);
         }
-    }, [isOpen, defaultPath, defaultCategory, defaultAssetType, mode, allTypes]);
+    }
+
+
 
     useEffect(() => {
         if (!isOpen) return;

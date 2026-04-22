@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { PageSection } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 import { ContentBlockRenderer } from './ContentBlockRenderer';
 import { GameInfoCSSClasses } from '@/ui/components/GameInfo/constants';
@@ -12,30 +12,33 @@ export const GameInfoTabs: React.FC<GameInfoTabsProps> = ({ sections }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [activePage, setActivePage] = useState(0);
 
-  // Recalculate totalPages whenever sections or activeTab changes
   const totalPages = sections[activeTab]?.pages?.length || 0;
 
-  // Reset activePage if the number of pages in the current section changes
-  useEffect(() => {
-    if (activePage >= totalPages) {
-      setActivePage(0);
-    }
-  }, [activeTab, totalPages, activePage]);
+  const [prevActiveTab, setPrevActiveTab] = useState(activeTab);
 
-  useEffect(() => {
-    const currentSection = sections[activeTab];
-    if (!currentSection?.pages) return;
-    
-    const firstPageWithContent = currentSection.pages.findIndex(page => 
+  // Reset page when tab changes
+  if (activeTab !== prevActiveTab) {
+    setPrevActiveTab(activeTab);
+    setActivePage(0);
+  }
+
+  // Auto-skip empty first page if another page has content (Render-phase sync)
+  const currentSection = sections[activeTab];
+  if (activePage === 0 && currentSection?.pages && !currentSection.pages[0]?.content?.length) {
+    const firstPageWithContent = currentSection.pages.findIndex(page =>
       page?.content && Array.isArray(page.content) && page.content.length > 0
     );
-    
-    if (firstPageWithContent >= 0 && activePage === 0 && !currentSection.pages[0]?.content?.length) {
+    if (firstPageWithContent > 0) {
       setActivePage(firstPageWithContent);
     }
-  }, [activeTab, sections, activePage]);
+  }
 
-  const currentSection = sections[activeTab];
+  // Reset activePage if it's out of bounds for the current section
+  if (activePage >= totalPages && totalPages > 0) {
+    setActivePage(0);
+  }
+
+
   const pages = currentSection?.pages || [];
   const currentPage = pages[activePage];
 

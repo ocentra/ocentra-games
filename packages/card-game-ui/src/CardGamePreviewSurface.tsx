@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type { HudArtworkControls } from './scene/HudArtwork.types';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import {
   cloneCardGameLayoutDocument,
@@ -24,6 +25,8 @@ export interface CardGamePreviewSurfaceProps {
   showHandPreview?: boolean;
   editableSeats?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
+  hudControlsOverride?: HudArtworkControls;
+  onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
 }
@@ -69,6 +72,8 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   showHandPreview = true,
   editableSeats = false,
   onSeatsChange,
+  hudControlsOverride,
+  onHudButtonClick,
   arenaOverlay,
   stageOverlay,
 }) => {
@@ -85,6 +90,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
 
   const previewAsset = useMemo(() => createPreviewAsset(document), [document]);
   const floatScale = document.cardVisuals.floatScale;
+  const resolvedHudControls = hudControlsOverride ?? document.hud;
 
   useEffect(() => {
     setGameAsset(previewAsset);
@@ -155,7 +161,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
     return resolveHandLayout(hudAnchor.radius, document.cardFan);
   }, [document.cardFan, hudAnchor]);
 
-  const layerVisibility = document.hud.layerVisibility ?? {};
+  const layerVisibility = resolvedHudControls.layerVisibility ?? {};
   const showBackgroundLayer = showBackground && layerVisibility.background !== false;
   const showTableLayer = layerVisibility.table !== false;
   const showSeatsLayer = showSeatWidgets && layerVisibility.seats !== false;
@@ -229,10 +235,11 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
             {shouldRenderHudHost ? (
               <GameHUD
                 ref={hudCenterRef}
-                controls={document.hud}
+                controls={resolvedHudControls}
                 showButtonGuides={false}
                 scaleFactor={scaleFactor}
                 showArtwork={showHudLayer}
+                onButtonClick={onHudButtonClick}
               >
                 {showCardsLayer && hudAnchor && handLayout ? (
                   <CardInHand
@@ -241,8 +248,8 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                     radius={handLayout.orbitRadius}
                     cardWidth={handLayout.cardWidth}
                     cardHeight={handLayout.cardHeight}
-                    minArc={document.cardFan.minCardCount}
-                    maxArc={document.cardFan.maxCardCount}
+                    minArc={document.cardFan.arcMin}
+                    maxArc={document.cardFan.arcMax}
                     cardCount={document.cardFan.cardCount}
                     minCardCount={document.cardFan.minCardCount}
                     maxCardCount={document.cardFan.maxCardCount}

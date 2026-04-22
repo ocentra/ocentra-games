@@ -32,6 +32,7 @@ export const CardGamePreviewHarness: React.FC = () => {
   const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const gameId = searchParams.get('gameId')?.trim() || 'claim';
   const layoutGuid = searchParams.get('layoutGuid')?.trim() || null;
+  const assetPath = searchParams.get('assetPath')?.trim() || undefined;
 
   const defaultDoc = useMemo<CardGameLayoutDocument>(
     () => normalizeCardGameLayoutDocument({}),
@@ -133,6 +134,8 @@ export const CardGamePreviewHarness: React.FC = () => {
       playerCount={resolvedPlayerCount}
       headerProps={headerProps}
       footerVersion={footerVersion}
+      editableSeats={true}
+      assetPath={assetPath}
       onHomeClick={() => {
         window.location.href = '/';
       }}

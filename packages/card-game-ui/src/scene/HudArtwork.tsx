@@ -16,6 +16,7 @@ interface HudArtworkProps {
   fitWidth: number;
   fitHeight: number;
   showButtonGuides?: boolean;
+  onButtonClick?: (index: number, label: string) => void;
 }
 
 function leftWingPath(x: number, y: number, width: number, height: number, topRadius: number) {
@@ -113,7 +114,7 @@ function domeClipRect(width: number, cy: number) {
   return { x: 0, y: 0, width, height: cy };
 }
 
-const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false }, ref) => {
+const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, onButtonClick }, ref) => {
   const uid = useId().replace(/:/g, "");
   const wingGlowId = `${uid}-wingGlow`;
   const domeGlowId = `${uid}-domeGlow`;
@@ -163,7 +164,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const rightBankTop = buttonRegionTop;
   const rightBankHeight = buttonRegionHeight;
   const visibleButtonCount = Math.max(1, Math.min(6, Math.round(buttonCount)));
-  const visibleButtonLabels = buttonLabels.slice(0, visibleButtonCount);
+  const visibleButtonLabels = Array.from({ length: visibleButtonCount }, (_, i) => buttonLabels[i] || "");
   const leftButtonCount = Math.min(3, Math.ceil(visibleButtonCount / 2));
   const rightButtonCount = Math.max(0, visibleButtonCount - leftButtonCount);
   const leftButtonLabels = visibleButtonLabels.slice(0, leftButtonCount);
@@ -516,7 +517,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
                 transform: `scale(${normalizedButtonScale})`,
                 transformOrigin: "center center",
               }}
-              onClick={() => undefined}
+              onClick={() => onButtonClick?.(configIndex, label || `A${index + 1}`)}
             />
           );
         })}
@@ -549,7 +550,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
                 transform: `scale(${normalizedButtonScale})`,
                 transformOrigin: "center center",
               }}
-              onClick={() => undefined}
+              onClick={() => onButtonClick?.(configIndex, label || `B${index + 1}`)}
             />
           );
         })}

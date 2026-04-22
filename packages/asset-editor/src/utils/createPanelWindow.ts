@@ -34,7 +34,7 @@ export async function createPanelWindow(
 
   const { WebviewWindow, getAllWebviewWindows } = await import('@tauri-apps/api/webviewWindow')
   const url = getStandalonePanelUrl(panel, assetPath, locked)
-  const label = panel === 'preview-canvas' ? 'preview-canvas-standalone' : `panel-${panel}-${Date.now()}`
+  const label = panel === 'preview-canvas' ? 'preview-canvas-standalone' : `panel-${panel}`
   
   // Prevent duplicate canvas windows
   const windows = await getAllWebviewWindows();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CardGameMode } from '@ocentra/game-asset-domain/gameMode/cardGameMode/CardGameMode';
 import { AssetGuidReferenceField } from '@/lib/core/inspector/fields/AssetGuidReferenceField';
 import { Field } from '@/lib/core/inspector/fields/Field';
@@ -27,27 +27,31 @@ const ResourceEntryItem: React.FC<ResourceEntryItemProps & { itemData?: unknown 
   const [resource, setResource] = useState<ResourceEntry | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
+  const [prevIsExpanded, setPrevIsExpanded] = useState(isExpanded);
+  const [prevItemData, setPrevItemData] = useState(itemData);
+
+  if (isExpanded !== prevIsExpanded || itemData !== prevItemData) {
+    setPrevIsExpanded(isExpanded);
+    setPrevItemData(itemData);
+    
     if (!isExpanded) {
       setResource(null);
-      return;
-    }
-
-    if (itemData instanceof AssetResourceEntry || itemData instanceof ImageResourceEntry || itemData instanceof FileResourceEntry) {
-      setResource(itemData);
-      return;
-    }
-
-    if (typeof itemData === 'object' && itemData !== null) {
-      const obj = itemData as Record<string, unknown>;
-      if ('guid' in obj || 'hash' in obj || 'checksum' in obj) {
-        setResource(itemData as ResourceEntry);
-        return;
+    } else {
+      if (itemData instanceof AssetResourceEntry || itemData instanceof ImageResourceEntry || itemData instanceof FileResourceEntry) {
+        setResource(itemData);
+      } else if (typeof itemData === 'object' && itemData !== null) {
+        const obj = itemData as Record<string, unknown>;
+        if ('guid' in obj || 'hash' in obj || 'checksum' in obj) {
+          setResource(itemData as ResourceEntry);
+        } else {
+          setResource(null);
+        }
+      } else {
+        setResource(null);
       }
     }
+  }
 
-    setResource(null);
-  }, [isExpanded, itemData]);
 
   const resourceType = resource instanceof AssetResourceEntry ? 'Asset' : resource instanceof ImageResourceEntry ? 'Image' : resource instanceof FileResourceEntry ? 'File' : 'Unknown';
 

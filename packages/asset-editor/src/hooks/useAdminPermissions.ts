@@ -1,4 +1,4 @@
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 
 export interface AdminPermissions {
   isAdmin: boolean;

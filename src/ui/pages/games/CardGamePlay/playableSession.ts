@@ -143,7 +143,10 @@ export interface LocalPlayableGameLoadResult {
   error: string | null;
 }
 
-export async function loadLocalPlayableGame(identifier: string): Promise<LocalPlayableGameLoadResult> {
+export async function loadLocalPlayableGame(
+  identifier: string,
+  preferredPlayerCount?: number,
+): Promise<LocalPlayableGameLoadResult> {
   const parsed = parseIdentifier(identifier);
   const readiness = getLocalPilotStatus(parsed.slug);
   if (!readiness.isReady) {
@@ -197,7 +200,7 @@ export async function loadLocalPlayableGame(identifier: string): Promise<LocalPl
   const runtimeDeck = buildRuntimeDeck(mechanics);
   const spec = toMechanicsSpec(mechanics);
   const playerCount = clamp(
-    mechanics.playerConfig.optimalPlayers ?? mechanics.playerConfig.minPlayers,
+    preferredPlayerCount ?? mechanics.playerConfig.optimalPlayers ?? mechanics.playerConfig.minPlayers,
     mechanics.playerConfig.minPlayers,
     mechanics.playerConfig.maxPlayers,
   );

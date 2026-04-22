@@ -11,16 +11,23 @@ interface InspectorImagePreviewProps {
 
 export const InspectorImagePreview: React.FC<InspectorImagePreviewProps> = ({ imageHash, assetId }) => {
   const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(!!imageHash);
+  const [prevImageHash, setPrevImageHash] = React.useState(imageHash);
+
+  if (imageHash !== prevImageHash) {
+    setPrevImageHash(imageHash);
+    setImageUrl(null);
+    setIsLoading(!!imageHash);
+  }
 
   React.useEffect(() => {
     if (!imageHash) {
-      setImageUrl(null);
-      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
+
+
+
     const loadImage = async () => {
       try {
         const imageCache = EditorImageCache.getInstance();

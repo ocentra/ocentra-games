@@ -1,4 +1,4 @@
-import { useMemo, useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore, useId } from 'react';
 import type { CSSProperties } from 'react';
 import { cardGameMlogoImageUrl as MlogoImg } from '@ocentra/app-assets/cardgame';
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
@@ -420,8 +420,8 @@ export default function CenterTableSVG(props: CenterTableSVGProps) {
     [layoutState.table, props]
   );
 
-  const p = resolveProps(mergedProps);
-  const { width, height, minScale, maxScale, responsivePaddingX, responsivePaddingY } = p;
+  const p = useMemo(() => resolveProps(mergedProps), [mergedProps]);
+  const { width, height } = p;
   const resolvedViewportWidth =
     p.viewportWidth ??
     (typeof window === 'undefined' ? width : window.innerWidth || document.documentElement.clientWidth);
@@ -429,13 +429,13 @@ export default function CenterTableSVG(props: CenterTableSVGProps) {
     p.viewportHeight ??
     (typeof window === 'undefined' ? height : window.innerHeight || document.documentElement.clientHeight);
   const scale = useMemo(() => {
-    const availableWidth = resolvedViewportWidth - responsivePaddingX * 2;
-    const availableHeight = resolvedViewportHeight - responsivePaddingY * 2;
-    const safeAvailableWidth = Math.max(availableWidth, minScale * width);
-    const safeAvailableHeight = Math.max(availableHeight, minScale * height);
-    const rawScale = Math.min(safeAvailableWidth / width, safeAvailableHeight / height, maxScale);
-    return Math.max(minScale, Math.min(rawScale, maxScale));
-  }, [height, maxScale, minScale, responsivePaddingX, responsivePaddingY, resolvedViewportHeight, resolvedViewportWidth, width]);
+    const availableWidth = resolvedViewportWidth - p.responsivePaddingX * 2;
+    const availableHeight = resolvedViewportHeight - p.responsivePaddingY * 2;
+    const safeAvailableWidth = Math.max(availableWidth, p.minScale * p.width);
+    const safeAvailableHeight = Math.max(availableHeight, p.minScale * p.height);
+    const rawScale = Math.min(safeAvailableWidth / p.width, safeAvailableHeight / p.height, p.maxScale);
+    return Math.max(p.minScale, Math.min(rawScale, p.maxScale));
+  }, [p, resolvedViewportHeight, resolvedViewportWidth]);
 
   const vw = 1000;
   const vh = Math.round(vw * (p.height / p.width));
@@ -498,18 +498,10 @@ export default function CenterTableSVG(props: CenterTableSVGProps) {
 
   const innerRimGradient = useMemo(() => parseLinearGradient(p.innerRimTexture), [p.innerRimTexture]);
   const innerRimGradientSignature = innerRimGradient?.source ?? '';
-  const innerRimGradientId = useMemo(
-    () => (innerRimGradientSignature ? `ct-inner-grad-${Math.random().toString(36).slice(2, 9)}` : ''),
-    [innerRimGradientSignature]
-  );
-  const emblemGradientId = useMemo(
-    () => `ct-emblem-grad-${Math.random().toString(36).slice(2, 9)}`,
-    []
-  );
-  const emblemClipId = useMemo(
-    () => `ct-emblem-clip-${Math.random().toString(36).slice(2, 9)}`,
-    []
-  );
+  const baseId = useId();
+  const innerRimGradientId = innerRimGradientSignature ? `ct-inner-grad-${baseId}` : '';
+  const emblemGradientId = `ct-emblem-grad-${baseId}`;
+  const emblemClipId = `ct-emblem-clip-${baseId}`;
   const emblemImageHref = p.emblemImageHref;
   const shouldShowImage = p.showEmblemImage && Boolean(emblemImageHref);
   const emblemGroupStyle = p.emblemBlendMode ? { mixBlendMode: p.emblemBlendMode } : undefined;

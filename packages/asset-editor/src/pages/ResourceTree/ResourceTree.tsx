@@ -81,12 +81,19 @@ export const ResourceTree: React.FC<ResourceTreeProps> = ({
     return allNodes;
   }, [nodes]);
 
+  const getScrollElement = useCallback(() => containerRef.current, []);
+  const estimateSize = useCallback(() => ROW_HEIGHT, []);
+
+  // @tanstack/react-virtual's useVirtualizer returns functions that are not compatible with 
+  // strict React Compiler memoization rules. This is an external library limitation.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: nodeList.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => ROW_HEIGHT,
+    getScrollElement,
+    estimateSize,
     overscan: OVERSCAN,
   });
+
 
   const totalSize = nodeList.length * ROW_HEIGHT;
   

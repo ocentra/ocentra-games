@@ -11,7 +11,7 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { EditorImageCache } from '@/lib/cache/EditorImageCache';
 import { ImageVariant } from '@/lib/cache/editorImageTypes';
 import { Resources } from '@ocentra/asset-domain/resources/Resources';
-import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import { isImageHash, type ImageHash, type AssetIdentifier, toAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { MetaData } from '@ocentra/eventing-domain/types/meta';
 
 const LOG_IMAGE_SELECTION = false;
@@ -34,17 +34,31 @@ export interface UseImageUrlOptions {
 }
 
 export function useImageUrl(
-  identifier: ImageHash | null,
+  identifier: string | null,
   options?: UseImageUrlOptions
 ): UseImageUrlResult {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const subscriberIdRef = useRef<string>(createGuid());
-  const currentIdentifierRef = useRef<ImageHash | null>(null);
-  const mountTimeRef = useRef<number>(Date.now());
+  const currentIdentifierRef = useRef<AssetIdentifier | null>(null);
+  const mountTimeRef = useRef<number>(0);
   const imageUrlRef = useRef<string | null>(null);
   const isLoadingRef = useRef(false);
+
+  // Render-phase sync
+  const [prevIdentifier, setPrevIdentifier] = useState(identifier);
+  if (identifier !== prevIdentifier) {
+    setPrevIdentifier(identifier);
+    const isValidId = identifier && (isImageHash(identifier) || identifier.length === 36);
+    if (!identifier || !isValidId) {
+      setImageUrl(null);
+      setIsLoading(false);
+      setError(identifier && !isValidId ? new Error(`Invalid Image Identifier: ${identifier}`) : null);
+    }
+  }
+
+
 
   useEffect(() => {
     imageUrlRef.current = imageUrl;
@@ -77,25 +91,22 @@ export function useImageUrl(
     if (!identifier || !enabled) {
       if (currentIdentifierRef.current) {
         EventBus.instance.publish(
-          new ImageUnsubscribeEvent(currentIdentifierRef.current, subscriberIdRef.current)
+          new ImageUnsubscribeEvent(currentIdentifierRef.current as unknown as ImageHash, subscriberIdRef.current)
         );
         currentIdentifierRef.current = null;
       }
       if (!identifier) {
-        setImageUrl(null);
-        setIsLoading(false);
-        setError(null);
+        // Handled by render-phase sync
       }
+
       return;
     }
 
-    if (!isImageHash(identifier)) {
-      log.logError('[useImageUrl] Invalid ImageHash provided', getStackTrace(), { identifier });
-      setImageUrl(null);
-      setIsLoading(false);
-      setError(new Error(`Invalid ImageHash: ${identifier}`));
+    if (!(isImageHash(identifier) || identifier.length === 36)) {
+      // Handled by render-phase sync
       return;
     }
+
 
     if (currentIdentifierRef.current === identifier) {
       return;
@@ -103,11 +114,11 @@ export function useImageUrl(
 
     if (currentIdentifierRef.current && currentIdentifierRef.current !== identifier) {
       EventBus.instance.publish(
-        new ImageUnsubscribeEvent(currentIdentifierRef.current, subscriberIdRef.current)
+        new ImageUnsubscribeEvent(currentIdentifierRef.current as unknown as ImageHash, subscriberIdRef.current)
       );
     }
 
-    currentIdentifierRef.current = identifier;
+    currentIdentifierRef.current = toAssetIdentifier(identifier);
     setIsLoading(true);
     setError(null);
     setImageUrl(null);
@@ -132,7 +143,7 @@ export function useImageUrl(
         setIsLoading(false);
         (async () => {
           try {
-            const urlResult = Resources.getUrl(identifier);
+            const urlResult = Resources.getUrl(toAssetIdentifier(identifier));
             const fallbackUrl = typeof urlResult === 'string' ? urlResult : await urlResult;
             if (currentIdentifierRef.current === identifier) {
               setImageUrl(fallbackUrl);
@@ -148,7 +159,7 @@ export function useImageUrl(
 
     const handleBatchLoaded = (event: ImageBatchLoadedEvent) => {
       if (event.subscriberId !== subscriberId) return;
-      const result = event.results.find(r => r.hash === identifier && r.variant === variant);
+      const result = event.results.find(r => r.hash === toAssetIdentifier(identifier) && r.variant === variant);
       if (result && currentIdentifierRef.current === identifier) {
         isLoadingRef.current = false;
         if (result.error) {
@@ -156,7 +167,7 @@ export function useImageUrl(
           setIsLoading(false);
           (async () => {
             try {
-              const fallbackUrl = Resources.getUrl(identifier);
+              const fallbackUrl = Resources.getUrl(toAssetIdentifier(identifier));
               const url = typeof fallbackUrl === 'string' ? fallbackUrl : await fallbackUrl;
               if (currentIdentifierRef.current === identifier) {
                 setImageUrl(url);
@@ -200,7 +211,7 @@ export function useImageUrl(
             cached = await imageCache.getCachedImageByHash(options.meta.imageHash, variant);
           }
         } else {
-          cached = await imageCache.getCachedImageByHash(identifier, variant);
+          cached = await imageCache.getCachedImageByHash(identifier as unknown as ImageHash, variant);
         }
         
         if (cached && cached.blob && currentIdentifierRef.current === identifier && isLoadingRef.current) {
@@ -217,7 +228,7 @@ export function useImageUrl(
       
       if (currentIdentifierRef.current === identifier && isLoadingRef.current) {
         EventBus.instance.publish(
-          new ImageLoadRequestEvent(identifier, subscriberId, priority, variant, options?.meta)
+          new ImageLoadRequestEvent(toAssetIdentifier(identifier) as unknown as ImageHash, subscriberId, priority, variant, options?.meta)
         );
       }
     };
@@ -225,7 +236,7 @@ export function useImageUrl(
     const retryTimeoutId = setTimeout(checkCacheAndRetry, 50);
 
     EventBus.instance.publish(
-      new ImageLoadRequestEvent(identifier, subscriberId, priority, variant, options?.meta)
+      new ImageLoadRequestEvent(toAssetIdentifier(identifier) as unknown as ImageHash, subscriberId, priority, variant, options?.meta)
     );
 
     return () => {
@@ -235,7 +246,7 @@ export function useImageUrl(
       EventBus.instance.unsubscribe(ImageBatchLoadedEvent, handleBatchLoaded);
       if (currentIdentifierRef.current === identifier) {
         EventBus.instance.publish(
-          new ImageUnsubscribeEvent(identifier, subscriberId)
+          new ImageUnsubscribeEvent(toAssetIdentifier(identifier) as unknown as ImageHash, subscriberId)
         );
         currentIdentifierRef.current = null;
       }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 import { useBehaviour } from './useBehaviour';
 import type { ReactBehaviour } from '../ReactBehaviour';
 
@@ -19,12 +19,16 @@ export const useBehaviourState = <
   options?: UseBehaviourStateOptions
 ): S => {
   const behaviour = useBehaviour(factory, context, options);
-  const [state, setState] = useState(() => selector(behaviour));
 
-  useEffect(() => {
-    setState(selector(behaviour));
-    return behaviour.__subscribeState(setState, selector);
+  // useSyncExternalStore requires a stable subscribe function for the current behaviour
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    return behaviour.__subscribe(onStoreChange);
+  }, [behaviour]);
+
+  // getSnapshot must return the current state
+  const getSnapshot = useCallback(() => {
+    return selector(behaviour);
   }, [behaviour, selector]);
 
-  return state;
+  return useSyncExternalStore(subscribe, getSnapshot);
 };

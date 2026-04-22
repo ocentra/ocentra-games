@@ -16,6 +16,7 @@ import {
   DEFAULT_CARD_VISUAL_CONTROLS,
   cloneCardGameLayoutDocument,
   createLayoutPreset,
+  seedLayoutPresetFromSource,
 } from "@ocentra/game-layout-domain/cardGameLayoutRuntime";
 import { tableLayoutStore } from "@ocentra/game-layout-domain/tableLayoutStore";
 
@@ -125,6 +126,54 @@ function ColorField({ label, value, disabled, onChange, onReset }: ColorFieldPro
   );
 }
 
+interface CheckboxFieldProps {
+  label: string;
+  value: boolean;
+  disabled?: boolean;
+  onChange: (next: boolean) => void;
+}
+
+function CheckboxField({ label, value, disabled, onChange }: CheckboxFieldProps) {
+  return (
+    <div className="game-screen__hud-button-field">
+      <label className="game-screen__hud-button-field-line" style={{ cursor: 'pointer' }}>
+        <span className="game-screen__hud-button-field-label">{label}</span>
+        <input 
+          type="checkbox" 
+          checked={value} 
+          disabled={disabled} 
+          onChange={(e) => onChange(e.target.checked)} 
+        />
+      </label>
+    </div>
+  );
+}
+
+interface TextFieldProps {
+  label: string;
+  value: string;
+  disabled?: boolean;
+  onChange: (next: string) => void;
+}
+
+function TextField({ label, value, disabled, onChange }: TextFieldProps) {
+  return (
+    <div className="game-screen__hud-button-field">
+      <div className="game-screen__hud-button-field-line">
+        <span className="game-screen__hud-button-field-label">{label}</span>
+        <input 
+          className="game-screen__hud-button-field-number" 
+          style={{ flex: 1, textAlign: 'left', padding: '0 8px' }}
+          type="text" 
+          value={value} 
+          disabled={disabled} 
+          onChange={(e) => onChange(e.target.value)} 
+        />
+      </div>
+    </div>
+  );
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="game-screen__hud-button-section">
@@ -226,12 +275,6 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     () => tableLayoutStore.getState().selectedSeatId,
   );
 
-  const handlePlayerCountChange = useCallback((count: number) => {
-    const nextCount = Math.max(boundedMinPlayerCount, Math.min(boundedMaxPlayerCount, count));
-    setInternalPlayerCount(nextCount);
-    onActivePlayerCountChange?.(nextCount);
-  }, [boundedMaxPlayerCount, boundedMinPlayerCount, onActivePlayerCountChange]);
-
   const activePreset = useMemo(
     () => document.presets[String(resolvedPlayerCount)] ?? createLayoutPreset(resolvedPlayerCount),
     [document, resolvedPlayerCount],
@@ -243,9 +286,24 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     onChange(next);
   }, [document, onChange]);
 
+  const handlePlayerCountChange = useCallback((count: number) => {
+    const nextCount = Math.max(boundedMinPlayerCount, Math.min(boundedMaxPlayerCount, count));
+    const targetKey = String(nextCount);
+    if (!document.presets[targetKey]) {
+      const sourcePreset =
+        document.presets[String(resolvedPlayerCount)] ??
+        document.presets[String(Math.max(boundedMinPlayerCount, nextCount - 1))] ??
+        null;
+      updateDoc((draft) => {
+        draft.presets[targetKey] = seedLayoutPresetFromSource(sourcePreset, nextCount);
+      });
+    }
+    setInternalPlayerCount(nextCount);
+    onActivePlayerCountChange?.(nextCount);
+  }, [boundedMaxPlayerCount, boundedMinPlayerCount, document.presets, onActivePlayerCountChange, resolvedPlayerCount, updateDoc]);
+
   const updateHud = useCallback((updater: (hud: HudArtworkControls) => void) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updateDoc(d => updater(d.hud as any));
+    updateDoc(d => updater(d.hud));
   }, [updateDoc]);
 
   const ensurePreset = useCallback((draft: CardGameLayoutDocument) => {
@@ -264,8 +322,7 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     });
   }, [updateDoc, ensurePreset]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const hud = document.hud as any;
+  const hud = document.hud;
   const variant = activeIndex >= 0 ? hud.buttonVariants?.[activeIndex] ?? { linked: true, overrides: {} } : null;
   const master = hud.button as HudButtonControls;
   const effective = activeIndex >= 0 && variant && !variant.linked ? { ...master, ...variant.overrides } : master;
@@ -322,6 +379,10 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
             </TabButton>
           ))}
           <div className="game-screen__hud-button-modal-drag-space" />
+          <TabButton compact active={activeIndex === -1} onClick={() => setActiveIndex(-1)}>
+            Master
+          </TabButton>
+          <div style={{ width: '4px' }} />
           {HUD_BUTTON_SLOTS.map((slot, index) => (
             <TabButton key={slot} compact active={activeIndex === index} onClick={() => setActiveIndex(index)}>
               {(hud.buttonLabels?.[index]) || slot}
@@ -330,10 +391,35 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         </div>
       </div>
       <div className="game-screen__hud-button-modal-content">
+        {activeIndex >= 0 && (
+          <div style={{ padding: '0.5rem 1rem', borderBottom: '1px solid rgba(141, 255, 176, 0.1)' }}>
+            <CheckboxField 
+              label="Linked to Master" 
+              value={variant?.linked ?? true} 
+              onChange={(v) => updateHud(h => {
+                if (!h.buttonVariants[activeIndex]) h.buttonVariants[activeIndex] = { linked: true, overrides: {} };
+                h.buttonVariants[activeIndex].linked = v;
+                if (v) h.buttonVariants[activeIndex].overrides = {};
+              })} 
+            />
+          </div>
+        )}
         {activeSection === "layout" && (
           <Section title="Layout Configuration">
             <NumberField label="Button Scale" value={hud.buttonScale ?? 1} min={0.5} max={1.5} step={0.01} onChange={(v) => updateHud(h => { h.buttonScale = v; })} onReset={() => updateHud(h => { h.buttonScale = DEFAULT_HUD_ARTWORK_CONTROLS.buttonScale; })} />
             <NumberField label="Button Count" value={hud.buttonCount ?? 6} min={1} max={6} step={1} onChange={(v) => updateHud(h => { h.buttonCount = v; })} onReset={() => updateHud(h => { h.buttonCount = DEFAULT_HUD_ARTWORK_CONTROLS.buttonCount; })} />
+            {activeIndex >= 0 && (
+              <TextField 
+                label={`Button ${HUD_BUTTON_SLOTS[activeIndex]} Label`} 
+                value={hud.buttonLabels?.[activeIndex] ?? ""} 
+                onChange={(v) => updateHud(h => {
+                  const next = [...(h.buttonLabels || [])];
+                  while (next.length <= activeIndex) next.push("");
+                  next[activeIndex] = v;
+                  h.buttonLabels = next;
+                })} 
+              />
+            )}
             <NumberField label="Offset X" value={master.buttonOffsetX} min={-320} max={320} step={1} onChange={(v) => updateHud(h => { h.button.buttonOffsetX = v; })} onReset={() => updateHud(h => { h.button.buttonOffsetX = DEFAULT_HUD_BUTTON_CONTROLS.buttonOffsetX; })} />
             <NumberField label="Offset Y" value={master.buttonOffsetY} min={-180} max={180} step={1} onChange={(v) => updateHud(h => { h.button.buttonOffsetY = v; })} onReset={() => updateHud(h => { h.button.buttonOffsetY = DEFAULT_HUD_BUTTON_CONTROLS.buttonOffsetY; })} />
           </Section>
@@ -341,19 +427,19 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         {activeSection === "geometry" && (
           <Section title="Button Geometry">
             {(["width", "height", "radius", "sideInset", "dotInset", "dotGap", "fontSize"] as const).map(f => (
-              <NumberField key={f} label={f} value={(effective as any)[f]} min={0} max={900} step={1} onReset={() => updateHud(h => {
-                const val = (DEFAULT_HUD_BUTTON_CONTROLS as any)[f];
-                if (activeIndex < 0) (h.button as any)[f] = val;
+              <NumberField key={f} label={f} value={effective[f]} min={0} max={900} step={1} disabled={activeIndex >= 0 && (variant?.linked ?? true)} onReset={() => updateHud(h => {
+                const val = DEFAULT_HUD_BUTTON_CONTROLS[f];
+                if (activeIndex < 0) h.button[f] = val as never;
                 else {
                   if (!h.buttonVariants[activeIndex]) h.buttonVariants[activeIndex] = { linked: false, overrides: {} };
-                  (h.buttonVariants[activeIndex].overrides as any)[f] = val;
+                  h.buttonVariants[activeIndex].overrides[f] = val as never;
                 }
               })} onChange={(v) => updateHud(h => {
-                if (activeIndex < 0) (h.button as any)[f] = v;
+                if (activeIndex < 0) h.button[f] = v as never;
                 else {
                   if (!h.buttonVariants[activeIndex]) h.buttonVariants[activeIndex] = { linked: false, overrides: {} };
                   h.buttonVariants[activeIndex].linked = false;
-                  (h.buttonVariants[activeIndex].overrides as any)[f] = v;
+                  h.buttonVariants[activeIndex].overrides[f] = v as never;
                 }
               })} />
             ))}
@@ -362,12 +448,12 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         {activeSection === "effects" && (
           <Section title="Visual Effects">
             {(["hoverInsetExpand", "hoverClampGlowOpacity", "clickInsetExpand", "clickRingFlashOpacity"] as const).map(f => (
-              <NumberField key={f} label={f} value={(effective as any)[f]} min={0} max={1} step={0.01} onChange={(v) => updateHud(h => {
-                if (activeIndex < 0) (h.button as any)[f] = v;
+              <NumberField key={f} label={f} value={effective[f]} min={0} max={1} step={0.01} disabled={activeIndex >= 0 && (variant?.linked ?? true)} onChange={(v) => updateHud(h => {
+                if (activeIndex < 0) h.button[f] = v as never;
                 else {
                   if (!h.buttonVariants[activeIndex]) h.buttonVariants[activeIndex] = { linked: false, overrides: {} };
                   h.buttonVariants[activeIndex].linked = false;
-                  (h.buttonVariants[activeIndex].overrides as any)[f] = v;
+                  h.buttonVariants[activeIndex].overrides[f] = v as never;
                 }
               })} />
             ))}
@@ -376,12 +462,12 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         {activeSection === "colors" && (
           <Section title="Colours & Styling">
             {(["textColor", "ringColor", "outerGlowColor", "midGlowColor", "dotGlowColor", "dotCoreColor"] as const).map(f => (
-              <ColorField key={f} label={f} value={(effective as any)[f]} onChange={(v) => updateHud(h => {
-                if (activeIndex < 0) (h.button as any)[f] = v;
+              <ColorField key={f} label={f} value={effective[f] as string} disabled={activeIndex >= 0 && (variant?.linked ?? true)} onChange={(v) => updateHud(h => {
+                if (activeIndex < 0) h.button[f] = v as never;
                 else {
                   if (!h.buttonVariants[activeIndex]) h.buttonVariants[activeIndex] = { linked: false, overrides: {} };
                   h.buttonVariants[activeIndex].linked = false;
-                  (h.buttonVariants[activeIndex].overrides as any)[f] = v;
+                  h.buttonVariants[activeIndex].overrides[f] = v as never;
                 }
               })} />
             ))}
@@ -479,16 +565,21 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
               </div>
               {selectedSeat ? (
                 <>
+                  <TextField 
+                    label="Seat Label" 
+                    value={selectedSeat.label ?? ""} 
+                    onChange={(v) => updateSeat(selectedSeat.id, s => { s.label = v; })} 
+                  />
                   <NumberField
                     label={`Seat ${selectedSeat.label ?? selectedSeat.id + 1} — X (0–1)`}
                     value={selectedSeat.position.x}
-                    min={0} max={1} step={0.001}
+                    min={-0.5} max={1.5} step={0.001}
                     onChange={(v) => updateSeat(selectedSeat.id, s => { s.position.x = Math.round(v * 10000) / 10000; })}
                   />
                   <NumberField
                     label={`Seat ${selectedSeat.label ?? selectedSeat.id + 1} — Y (0–1)`}
                     value={selectedSeat.position.y}
-                    min={0} max={1} step={0.001}
+                    min={-0.5} max={1.5} step={0.001}
                     onChange={(v) => updateSeat(selectedSeat.id, s => { s.position.y = Math.round(v * 10000) / 10000; })}
                   />
                   <NumberField
@@ -652,10 +743,10 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
               <div className="game-screen__hud-button-label-grid">
                 {LAYER_OPTIONS.map(o => (
                   <label key={o.key} className="game-screen__hud-button-label-line" style={{ cursor: 'pointer' }}>
-                    <input type="checkbox" checked={((document.hud as any).layerVisibility?.[o.key]) ?? true} onChange={() => updateHud(h => {
-                      const next = { ...((h as any).layerVisibility || {}) };
+                    <input type="checkbox" checked={(document.hud.layerVisibility?.[o.key]) ?? true} onChange={() => updateHud(h => {
+                      const next = { ...(h.layerVisibility || {}) };
                       next[o.key] = !(next[o.key] ?? true);
-                      (h as any).layerVisibility = next;
+                      h.layerVisibility = next;
                     })} />
                     <span className="game-screen__hud-button-field-label">{o.label}</span>
                   </label>
@@ -690,13 +781,18 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         {workspaceSection === "cardInHand" && (
           <div className="game-screen__hud-button-modal-content">
             <Section title="Card Fan Layout">
+              <NumberField label="Card Count" value={document.cardFan.cardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.cardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.cardCount = DEFAULT_CARD_FAN_CONTROLS.cardCount; })} />
+              <NumberField label="Min Cards" value={document.cardFan.minCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.minCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.minCardCount = DEFAULT_CARD_FAN_CONTROLS.minCardCount; })} />
+              <NumberField label="Max Cards" value={document.cardFan.maxCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.maxCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.maxCardCount = DEFAULT_CARD_FAN_CONTROLS.maxCardCount; })} />
               <NumberField label="Orbit Radius" value={document.cardFan.radiusScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.radiusScale = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusScale = DEFAULT_CARD_FAN_CONTROLS.radiusScale; })} />
+              <NumberField label="Radius Offset" value={document.cardFan.radiusOffset} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.radiusOffset = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusOffset = DEFAULT_CARD_FAN_CONTROLS.radiusOffset; })} />
               <NumberField label="Width Scale" value={document.cardFan.cardWidthScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.cardWidthScale = v; })} onReset={() => updateDoc(d => { d.cardFan.cardWidthScale = DEFAULT_CARD_FAN_CONTROLS.cardWidthScale; })} />
               <NumberField label="Arc Min" value={document.cardFan.arcMin} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMin = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMin = DEFAULT_CARD_FAN_CONTROLS.arcMin; })} />
               <NumberField label="Arc Max" value={document.cardFan.arcMax} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMax = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMax = DEFAULT_CARD_FAN_CONTROLS.arcMax; })} />
               <NumberField label="Fan Tilt" value={document.cardFan.fanTilt} min={-90} max={90} step={1} onChange={(v) => updateDoc(d => { d.cardFan.fanTilt = v; })} onReset={() => updateDoc(d => { d.cardFan.fanTilt = DEFAULT_CARD_FAN_CONTROLS.fanTilt; })} />
               <NumberField label="Offset X" value={document.cardFan.centerOffsetX} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetX = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetX = DEFAULT_CARD_FAN_CONTROLS.centerOffsetX; })} />
               <NumberField label="Offset Y" value={document.cardFan.centerOffsetY} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetY = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetY = DEFAULT_CARD_FAN_CONTROLS.centerOffsetY; })} />
+              <CheckboxField label="Disable Viewport Scale" value={document.cardFan.disableViewportScale} onChange={(v) => updateDoc(d => { d.cardFan.disableViewportScale = v; })} />
             </Section>
           </div>
         )}

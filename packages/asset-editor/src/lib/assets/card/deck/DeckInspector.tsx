@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
@@ -58,13 +58,8 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   const perfStartRef = useRef<number | null>(null);
   const perfMarkersRef = useRef<Record<string, number>>({});
 
-  if (LOG_DECK_PERF && perfStartRef.current === null) {
-    perfStartRef.current = performance.now();
-    perfMarkersRef.current = { init: perfStartRef.current };
-    log.logInfo('[DeckInspector] Performance: Component initialized', getStackTrace(), {
-      timestamp: perfStartRef.current,
-    });
-  }
+  // Performance logging moved to useEffect if needed
+
 
   const dataObj = (data && typeof data === 'object')
     ? data as Record<string, unknown>
@@ -78,14 +73,8 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   const guidFromData = (dataObj.guid as string) || null;
   const assetGuid = guidFromSystem || guidFromData || null;
 
-  if (LOG_DECK_PERF && perfStartRef.current) {
-    const now = performance.now();
-    perfMarkersRef.current.dataParsed = now;
-    log.logInfo('[DeckInspector] Performance: Data parsed', getStackTrace(), {
-      elapsed: (now - perfStartRef.current).toFixed(2) + 'ms',
-      timestamp: now,
-    });
-  }
+  // Performance logging moved to useEffect if needed
+
 
   const assetData = ('data' in dataObj && typeof dataObj.data === 'object' && dataObj.data !== null)
     ? (dataObj.data as Record<string, unknown>)
@@ -112,7 +101,7 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   }
 
   const name = (assetData.name || '') as string;
-  const cardTemplatesData = extractDeckTemplateRefs(assetData.cardTemplates, assetData.cardComposition) as AssetResourceEntry<Card>[];
+  const cardTemplatesData = useMemo(() => extractDeckTemplateRefs(assetData.cardTemplates, assetData.cardComposition) as AssetResourceEntry<Card>[], [assetData.cardTemplates, assetData.cardComposition]);
   const backCardHashData = (assetData.backCardHash || '') as ImageHash;
   const imageSourceFolderPathData = (assetData.imageSourceFolderPath || 'Resources/GameMode/CardGames/Images') as string;
   const cardOutputPathData = (assetData.cardOutputPath || '') as string;
@@ -147,17 +136,18 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   const cardFolderInputRef = useRef<HTMLInputElement>(null);
   const backCardFolderInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const updatedCardTemplates = extractDeckTemplateRefs(assetData.cardTemplates, assetData.cardComposition) as AssetResourceEntry<Card>[];
-    const updatedBackCardHash = (assetData.backCardHash || '') as ImageHash;
+  const [prevCardTemplatesData, setPrevCardTemplatesData] = useState(cardTemplatesData);
+  if (cardTemplatesData !== prevCardTemplatesData) {
+    setPrevCardTemplatesData(cardTemplatesData);
+    setCardTemplates(cardTemplatesData);
+  }
 
-    if (updatedCardTemplates !== cardTemplates) {
-      setCardTemplates(updatedCardTemplates);
-    }
-    if (updatedBackCardHash !== backCardHash) {
-      setBackCardHash(updatedBackCardHash);
-    }
-  }, [assetData.cardTemplates, assetData.cardComposition, assetData.backCardHash, cardTemplates, backCardHash]);
+  const [prevBackCardHashData, setPrevBackCardHashData] = useState(backCardHashData);
+  if (backCardHashData !== prevBackCardHashData) {
+    setPrevBackCardHashData(backCardHashData);
+    setBackCardHash(backCardHashData);
+  }
+
 
   useEffect(() => {
     const loadDeckPath = async () => {
@@ -250,9 +240,11 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
       const guid = AssetGUID.from(assetGuid!);
       const deckInstance = await ScriptableObject.loadByGuid(Deck, guid);
       if (deckInstance) {
-        setCardTemplates([...deckInstance.cardTemplates]);
+        const refreshedTemplates = extractDeckTemplateRefs(deckInstance.cardTemplates, deckInstance.cardComposition) as AssetResourceEntry<Card>[];
+        setCardTemplates(refreshedTemplates);
         if (onFieldChange) {
           onFieldChange('cardTemplates', deckInstance.cardTemplates);
+          onFieldChange('cardComposition', deckInstance.cardComposition);
         }
       }
     } catch (err) {
@@ -272,12 +264,14 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
       const guid = AssetGUID.from(assetGuid!);
       const deckInstance = await ScriptableObject.loadByGuid(Deck, guid);
       if (deckInstance) {
-        setCardTemplates([...deckInstance.cardTemplates]);
+        const refreshedTemplates = extractDeckTemplateRefs(deckInstance.cardTemplates, deckInstance.cardComposition) as AssetResourceEntry<Card>[];
+        setCardTemplates(refreshedTemplates);
         setBackCardHash(deckInstance.backCardHash);
         setPopulationWarnings(results.warnings);
         setDummyState({});
         if (onFieldChange) {
           onFieldChange('cardTemplates', deckInstance.cardTemplates);
+          onFieldChange('cardComposition', deckInstance.cardComposition);
           onFieldChange('backCardHash', deckInstance.backCardHash);
         }
       }
@@ -466,9 +460,9 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
     if (assetGuid && cardTemplates.length > 0) {
       loadCards();
     } else if (cardTemplates.length === 0) {
-      setLoadedCards([]);
       hasLoadedRef.current = true;
     }
+
 
     return () => {
       isCancelled = true;

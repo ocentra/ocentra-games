@@ -10,6 +10,7 @@ import { assetTypeMap } from '@/lib/core/registry/assetTypeMap.generated';
 import type { AssetIdentifier, AssetGUIDType, GameId, ImageHash, AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
 import { tryAssetIdentifier, isAssetGUID, tryGameId, isImageHash, isAssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { AssetCategory } from '@ocentra/asset-domain/constants/assets';
+import { isMultiline } from '@/lib/core/inspector/utils/fieldUtils';
 import './AssetSummaryPreview.css';
 
 interface AssetSummaryPreviewProps {
@@ -28,11 +29,6 @@ interface Field {
 
 const isGuid = (value: unknown): value is string => {
   return typeof value === 'string' && AssetGUID.isValid(value);
-};
-
-const isMultilineText = (value: unknown): boolean => {
-  if (typeof value !== 'string') return false;
-  return value.length > 100 || value.includes('\n');
 };
 
 const detectFieldType = (key: string, value: unknown): Field['type'] => {
@@ -55,7 +51,7 @@ const detectFieldType = (key: string, value: unknown): Field['type'] => {
     if (!isChecksumField && isActualImageHash) {
       return 'image';
     }
-    if (isMultilineText(value)) return 'multiline';
+    if (isMultiline(value, key)) return 'multiline';
     return 'text';
   }
   return 'text';
@@ -492,3 +488,4 @@ export const AssetSummaryPreview: React.FC<AssetSummaryPreviewProps> = ({ assetD
   );
 };
 
+export default AssetSummaryPreview;

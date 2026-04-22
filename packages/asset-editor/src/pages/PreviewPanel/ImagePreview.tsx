@@ -48,52 +48,37 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({ imageGuidOrHash, ass
 
   if (isLoading) {
     return (
-      <div className="preview-panel">
-        <div className="preview-panel__header">
-          <h3>Preview</h3>
-        </div>
-        <div className="preview-panel__content preview-panel__content--image">
-          <div className="preview-panel__placeholder">Loading image...</div>
-        </div>
+      <div className="preview-panel__content preview-panel__content--image">
+        <div className="preview-panel__placeholder">Loading image...</div>
       </div>
     );
   }
 
   if (!imageUrl) {
     return (
-      <div className="preview-panel">
-        <div className="preview-panel__header">
-          <h3>Preview</h3>
-        </div>
-        <div className="preview-panel__content preview-panel__content--image">
-          <div className="preview-panel__placeholder">
-            <p>Failed to load image</p>
-          </div>
+      <div className="preview-panel__content preview-panel__content--image">
+        <div className="preview-panel__placeholder">
+          <p>Failed to load image</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="preview-panel">
-      <div className="preview-panel__header">
-        <h3>Preview</h3>
-      </div>
-      <div className="preview-panel__content preview-panel__content--image">
-        <div className="preview-panel__image-container">
-          <img
-            src={imageUrl}
-            alt={assetId}
-            className="preview-panel__image"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-              const container = (e.target as HTMLImageElement).parentElement;
-              if (container) {
-                container.innerHTML = `<div class="preview-panel__placeholder"><p>Failed to load image</p></div>`;
-              }
-            }}
-          />
-        </div>
+    <div className="preview-panel__content preview-panel__content--image">
+      <div className="preview-panel__image-container">
+        <img
+          src={imageUrl}
+          alt={assetId}
+          className="preview-panel__image"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+            const container = (e.target as HTMLImageElement).parentElement;
+            if (container) {
+              container.innerHTML = `<div class="preview-panel__placeholder"><p>Failed to load image</p></div>`;
+            }
+          }}
+        />
       </div>
     </div>
   );

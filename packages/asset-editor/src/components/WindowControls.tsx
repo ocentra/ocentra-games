@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 
 const MinIcon = () => (
@@ -26,17 +26,16 @@ const CloseIcon = () => (
 );
 
 export const WindowControls: React.FC = () => {
-  const [isTauri, setIsTauri] = useState(false);
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   const [isMaximized, setIsMaximized] = useState(false);
 
-  useEffect(() => {
-    setIsTauri(!!(typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window));
-  }, []);
-
-  useEffect(() => {
-    if (!isTauri) return;
-    void getCurrentWindow().isMaximized().then(setIsMaximized);
-  }, [isTauri]);
+  // Initial check for maximized state
+  useState(() => {
+    if (isTauri) {
+      void getCurrentWindow().isMaximized().then(setIsMaximized);
+    }
+    return null;
+  });
 
   const handleMinimize = useCallback(() => {
     if (isTauri) getCurrentWindow().minimize();

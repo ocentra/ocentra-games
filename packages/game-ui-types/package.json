@@ -1,29 +1,30 @@
 {
-  "name": "@ocentra/game-ui-types",
-  "version": "1.0.0",
-  "type": "module",
-  "description": "Shared UI types for card game layouts: TableShapeSettings, SeatLayout, etc.",
-  "exports": {
-    "./tableLayoutTypes": {
-      "import": "./dist/tableLayoutTypes.js",
-      "types": "./dist/tableLayoutTypes.d.ts"
-    },
-    "./cardGameLayoutTypes": {
-      "import": "./dist/cardGameLayoutTypes.js",
-      "types": "./dist/cardGameLayoutTypes.d.ts"
-    }
-  },
-  "scripts": {
-    "build": "tsc && node ../../scripts/fix-esm-imports.mjs",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint --cache src && tsc --noEmit",
-    "lint:eslint": "eslint --cache src",
-    "lint:fix": "eslint --cache src --fix"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.15.0",
-    "eslint": "^9.15.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0"
-  }
+    "name":  "@ocentra/game-ui-types",
+    "version":  "1.0.0",
+    "type":  "module",
+    "description":  "Shared UI types for card game layouts: TableShapeSettings, SeatLayout, etc.",
+    "exports":  {
+                    "./tableLayoutTypes":  {
+                                               "import":  "./dist/tableLayoutTypes.js",
+                                               "types":  "./dist/tableLayoutTypes.d.ts"
+                                           },
+                    "./cardGameLayoutTypes":  {
+                                                  "import":  "./dist/cardGameLayoutTypes.js",
+                                                  "types":  "./dist/cardGameLayoutTypes.d.ts"
+                                              }
+                },
+    "scripts":  {
+                    "build":  "tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs",
+                    "type-check":  "tsc --noEmit",
+                    "lint":  "node -e \"const cmd = process.env.TURBO_HASH ? \u0027npm run lint:exec\u0027 : \u0027npx turbo run lint:exec --filter=@ocentra/game-ui-types\u0027; require(\u0027child_process\u0027).spawnSync(cmd.split(\u0027 \u0027)[0], cmd.split(\u0027 \u0027).slice(1), { stdio: \u0027inherit\u0027, shell: true });\"",
+                    "lint:eslint":  "eslint --cache src",
+                    "lint:fix":  "eslint --cache src --fix",
+                    "lint:exec":  "eslint --cache src \u0026\u0026 tsc --noEmit"
+                },
+    "devDependencies":  {
+                            "@eslint/js":  "^9.15.0",
+                            "eslint":  "^9.15.0",
+                            "typescript":  "^6.0.2",
+                            "typescript-eslint":  "^8.58.0"
+                        }
 }

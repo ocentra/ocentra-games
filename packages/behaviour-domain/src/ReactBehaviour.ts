@@ -116,6 +116,14 @@ export abstract class ReactBehaviour<TContext = undefined> {
     }
   }
 
+  __subscribe(onStoreChange: () => void): () => void {
+    const watcher = () => onStoreChange();
+    this.stateWatchers.add(watcher);
+    return () => {
+      this.stateWatchers.delete(watcher);
+    };
+  }
+
   __subscribeState<S>(
     setState: (value: S) => void,
     selector: (behaviour: this) => S

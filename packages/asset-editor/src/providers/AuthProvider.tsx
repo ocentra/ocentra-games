@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -15,6 +15,7 @@ import { signInWithGoogleNative } from '@/adapters/auth/GoogleOAuthTauri';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
+import type { EditorUser } from '@/types/auth';
 
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -33,28 +34,11 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled: b
   }
 };
 
-export const LOG_AUTH_LOADING = true;
+const LOG_AUTH_LOADING = true;
 
-export interface EditorUser {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-  isAdmin: boolean;
-}
+import { AuthContext } from './AuthContext';
 
-interface AuthContextType {
-  user: EditorUser | null;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  isLoading: boolean;
-  isFirebaseConfigured: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
-}
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 async function fetchIsAdmin(firebaseUser: FirebaseUser): Promise<boolean> {
   if (!db) return false;
@@ -97,21 +81,27 @@ function safeLog(fn: () => void): void {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const e2eBypassAuth = isE2EBypassAuthEnabled();
   const [user, setUser] = useState<EditorUser | null>(e2eBypassAuth ? E2E_BYPASS_USER : null);
-  const [isLoading, setIsLoading] = useState(!e2eBypassAuth);
+  const [isLoading, setIsLoading] = useState(() => {
+    if (e2eBypassAuth) return false;
+    if (!auth) return false;
+    return true;
+  });
   const timedOutRef = React.useRef(false);
 
+  // Sync E2E bypass user during render if enabled
+  if (e2eBypassAuth && user?.uid !== E2E_BYPASS_USER.uid) {
+    setUser(E2E_BYPASS_USER);
+    if (isLoading) setIsLoading(false);
+  }
+
   useEffect(() => {
-    if (e2eBypassAuth) {
-      setUser(E2E_BYPASS_USER);
-      setIsLoading(false);
+    if (e2eBypassAuth || !auth) {
+      if (!auth && !e2eBypassAuth) {
+        safeLog(() => logInfo('[Auth] AuthProvider mount, Firebase not configured', undefined, LOG_AUTH_LOADING));
+      }
       return;
     }
 
-    if (!auth) {
-      safeLog(() => logInfo('[Auth] AuthProvider mount, Firebase not configured', undefined, LOG_AUTH_LOADING));
-      setIsLoading(false);
-      return;
-    }
     safeLog(() => logInfo('[Auth] AuthProvider mount, subscribing to onAuthStateChanged', { timeoutMs: AUTH_LOADING_TIMEOUT_MS }, LOG_AUTH_LOADING));
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       safeLog(() => logInfo('[Auth] onAuthStateChanged fired', { hasUser: !!firebaseUser, uid: firebaseUser?.uid ?? null }, LOG_AUTH_LOADING));
@@ -210,10 +200,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth(): AuthContextType {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
-  return ctx;
 }

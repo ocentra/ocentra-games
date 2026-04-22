@@ -236,12 +236,13 @@ function buildDeterminismNotes(game: Game): string {
 function buildMoveValidityConditions(game: Game): Record<string, string> {
   const conditions: Record<string, string> = {};
   for (const [actionId, action] of Object.entries(game.engine.playerActions)) {
-    if (action.supported) {
-      conditions[actionId] = action.constraints;
+    const actionTyped = action as { supported: boolean; constraints?: string; reason?: string };
+    if (actionTyped.supported) {
+      conditions[actionId] = actionTyped.constraints ?? '';
       continue;
     }
-    if (action.reason) {
-      conditions[actionId] = action.reason;
+    if (actionTyped.reason) {
+      conditions[actionId] = actionTyped.reason;
     }
   }
   return conditions;
@@ -368,7 +369,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         basic: game.strategy.basic ?? '',
         intermediate: game.strategy.intermediate ?? '',
         advanced: game.strategy.advanced ?? '',
-        tips: game.strategy.tips.map((tip) => ({
+        tips: game.strategy.tips.map((tip: string) => ({
           title: 'Tip',
           description: tip,
         })),

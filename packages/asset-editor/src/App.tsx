@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { LoginScreen } from '@/components/LoginScreen';
 import { AssetEditorPage } from '@/pages/MainPage/AssetEditorPage';
 import { StandalonePanelPage } from '@/pages/StandalonePanelPage';
