@@ -93,7 +93,7 @@ export function createNdjsonDuckDbLogStorage(
     },
 
     async clearLogs(): Promise<number> {
-      deleteAppNdjsonFiles(scope, dbDir);
+      deleteAppNdjsonFiles(scope, undefined, dbDir);
       ingestState = createIngestState();
       return withDb((db) => db.clearLogs());
     },

@@ -80,7 +80,9 @@ export default defineConfig({
         /packages\/.*\/src\/.*\.[tj]sx?$/
       ],
     }),
-    tsconfigPaths(),
+    tsconfigPaths({
+      projects: ['./tsconfig.json', '../logging-domain/tsconfig.json', '../endpoint-domain/tsconfig.json']
+    }),
     {
       name: 'asset-editor-logs',
       configureServer(server) {

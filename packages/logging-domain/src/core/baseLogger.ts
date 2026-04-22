@@ -1,26 +1,27 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { LogSource } from '@/types/logSource';
-import type { StackFrame } from '@/types/stackFrame';
-import type { StackTrace } from '@/core/stackTrace';
-import type { BatchConfig } from '@/types/batchConfig';
-import type { BatchContext } from '@/types/batchContext';
-import type { InitPhaseConfig } from '@/types/initPhaseConfig';
-import type { InitPhaseOptions } from '@/types/initPhaseConfig';
-import type { LoggerConfig } from '@/types/loggerConfig';
-import type { RegistrationInfo } from '@/types/registrationInfo';
-import type { StructuredLogPayload } from '@/types/structuredLogPayload';
-import type { ILogStorage } from '@/storage/storageInterface';
-import type { PathResolver } from '@/core/pathResolver';
-import type { RequestContext } from '@/core/requestContextProvider';
-import type { BridgeEntry } from '@/transport/bridgeLogPayload';
-import { sendToBridge } from '@/transport/bridgeTransport';
-import { LogLevel as LogLevelConst } from '@/types/logLevel';
-import { CACHE_SIZE_LIMIT, DEFAULT_BATCH_CONFIG, DEFAULT_INIT_PHASE_CONFIG, DEFAULT_CONFIG, DEFAULT_BRIDGE_URL, UNKNOWN_FILE } from '@/core/constants';
-import { parseStackTrace } from '@/core/stackParser';
-import { formatMessage } from '@/core/messageFormatter';
-import { findRegisteredUserByFilePath, registerUser, unregisterUser, extractNameFromUrl } from '@/core/registrationManager';
-import { createBatchContext, addToBatch, flushBatchContext } from '@/core/batchManager';
-import { getStackTrace } from '@/core/stackTrace';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { BatchConfig } from '@ocentra/logging-domain/types/batchConfig';
+import type { BatchContext } from '@ocentra/logging-domain/types/batchContext';
+import type { InitPhaseConfig } from '@ocentra/logging-domain/types/initPhaseConfig';
+import type { InitPhaseOptions } from '@ocentra/logging-domain/types/initPhaseConfig';
+import type { LoggerConfig } from '@ocentra/logging-domain/types/loggerConfig';
+import type { RegistrationInfo } from '@ocentra/logging-domain/types/registrationInfo';
+import type { StructuredLogPayload } from '@ocentra/logging-domain/types/structuredLogPayload';
+import type { ILogStorage } from '@ocentra/logging-domain/storage/storageInterface';
+import type { PathResolver } from '@ocentra/logging-domain/core/pathResolver';
+import type { RequestContext } from '@ocentra/logging-domain/core/requestContextProvider';
+import { sendToBridge } from '@ocentra/logging-domain/transport/bridgeTransport';
+import type { ILogTransport } from '@ocentra/logging-domain/transport/logTransport';
+import type { BridgeEntry } from '@ocentra/logging-domain/transport/bridgeLogPayload';
+import { LogLevel as LogLevelConst } from '@ocentra/logging-domain/types/logLevel';
+import { CACHE_SIZE_LIMIT, DEFAULT_BATCH_CONFIG, DEFAULT_INIT_PHASE_CONFIG, DEFAULT_CONFIG, DEFAULT_BRIDGE_URL, UNKNOWN_FILE } from '@ocentra/logging-domain/core/constants';
+import { parseStackTrace } from '@ocentra/logging-domain/core/stackParser';
+import { formatMessage } from '@ocentra/logging-domain/core/messageFormatter';
+import { findRegisteredUserByFilePath, registerUser, unregisterUser, extractNameFromUrl } from '@ocentra/logging-domain/core/registrationManager';
+import { createBatchContext, addToBatch, flushBatchContext } from '@ocentra/logging-domain/core/batchManager';
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 export abstract class BaseLogger {
   protected config: Required<LoggerConfig>;
@@ -28,6 +29,7 @@ export abstract class BaseLogger {
   protected frameCache: Map<string, StackFrame> = new Map();
   protected batchContexts: Map<string, BatchContext> = new Map();
   protected readonly logQueue: Array<{ entries: BridgeEntry[]; endpoint: string }> = [];
+  protected transports: ILogTransport[] = [];
   protected static readonly CACHE_SIZE_LIMIT = CACHE_SIZE_LIMIT;
 
   protected static _isInitializing: boolean = false;
@@ -41,11 +43,17 @@ export abstract class BaseLogger {
     debug: 0,
   };
 
+  protected storage: ILogStorage | null;
+  protected pathResolver: PathResolver;
+
   protected constructor(
-    protected storage: ILogStorage | null,
-    protected pathResolver: PathResolver,
+    storage: ILogStorage | null,
+    pathResolver: PathResolver,
     config?: LoggerConfig
   ) {
+    this.storage = storage;
+    this.pathResolver = pathResolver;
+
     const mergedInitPhaseConfig = config?.initPhaseConfig
       ? { ...DEFAULT_INIT_PHASE_CONFIG, ...config.initPhaseConfig }
       : DEFAULT_INIT_PHASE_CONFIG;
@@ -88,6 +96,16 @@ export abstract class BaseLogger {
     if (config.initPhaseConfig) {
       BaseLogger._initPhaseConfig = mergedInitPhaseConfig;
     }
+  }
+
+  addTransport(transport: ILogTransport): void {
+    if (!this.transports.some(t => t.name === transport.name)) {
+      this.transports.push(transport);
+    }
+  }
+
+  removeTransport(name: string): void {
+    this.transports = this.transports.filter(t => t.name !== name);
   }
 
   getConfig(): Readonly<Required<LoggerConfig>> {
@@ -403,8 +421,20 @@ export abstract class BaseLogger {
   protected async emitToBridge(entries: BridgeEntry[]): Promise<void> {
     if (entries.length === 0) return;
     const endpoint = this.config.bridgeEndpoint ?? DEFAULT_BRIDGE_URL;
-    if (!endpoint) return;
-    await sendToBridge(entries, endpoint).catch(() => {});
+
+    // Default bridge transport if no other transports are registered
+    if (this.transports.length === 0) {
+      if (!endpoint) return;
+      await sendToBridge(entries, endpoint).catch(() => { });
+      return;
+    }
+
+    // Emit to all registered transports
+    await Promise.all(
+      this.transports.map(t => t.emit(entries, endpoint).catch(err => {
+        console.error(`[Logger] Transport ${t.name} failed:`, err);
+      }))
+    );
   }
 
   protected abstract storeLogEntry(

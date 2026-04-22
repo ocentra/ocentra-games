@@ -12,14 +12,15 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Deep Lint and Type Check via Turbo
-echo "[lint] Running deep check..."
-npm run lint
+# Deep Validation: Build, Lint and Type Check via Turbo
+echo "[validation] Running full build and type check..."
+npx turbo run build lint:exec type-check
 if [ $? -ne 0 ]; then
   echo ""
-  echo "[lint] Pre-commit hook rejected this commit due to errors."
+  echo "[validation] Pre-commit hook rejected this commit due to errors."
   exit 1
 fi
+
 
 exit 0
 `;

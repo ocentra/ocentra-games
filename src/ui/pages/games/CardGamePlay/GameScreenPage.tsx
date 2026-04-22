@@ -394,6 +394,11 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     const nextLabels = Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '');
     nextDocument.hud.buttonLabels = nextLabels;
     nextDocument.hud.buttonCount = Math.max(1, Math.min(6, hudActions.length || 1));
+    nextDocument.hud.layerVisibility = {
+      ...nextDocument.hud.layerVisibility,
+      table: false,
+      seats: false,
+    };
     return nextDocument.hud;
   }, [bundle, hudActions]);
 

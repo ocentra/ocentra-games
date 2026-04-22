@@ -1,11 +1,11 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { LogSource } from '@/types/logSource';
-import type { StackFrame } from '@/types/stackFrame';
-import type { StackTrace } from '@/core/stackTrace';
-import type { RequestContext } from '@/core/requestContextProvider';
-import type { RegistrationInfo } from '@/types/registrationInfo';
-import type { StructuredLogPayload, LogOriginValue } from '@/types/structuredLogPayload';
-import { LogOriginValue as LogOriginValueConst } from '@/types/structuredLogPayload';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { RequestContext } from '@ocentra/logging-domain/core/requestContextProvider';
+import type { RegistrationInfo } from '@ocentra/logging-domain/types/registrationInfo';
+import type { StructuredLogPayload, LogOriginValue } from '@ocentra/logging-domain/types/structuredLogPayload';
+import { LogOriginValue as LogOriginValueConst } from '@ocentra/logging-domain/types/structuredLogPayload';
 
 function suitePathToSuite(suitePath: string | undefined): string | undefined {
   if (!suitePath) return undefined;

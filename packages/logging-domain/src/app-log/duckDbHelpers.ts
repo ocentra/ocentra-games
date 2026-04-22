@@ -1,7 +1,13 @@
-import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
+// Helper to get Node modules safely in Vite/Browser environments
+function getNodeModule<T>(name: string): T | null {
+  if (typeof process === 'undefined' || !process.versions?.node) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(name);
+  } catch {
+    return null;
+  }
+}
 
 export type DuckDbConnection = {
   run: (sql: string, ...args: unknown[]) => unknown;
@@ -18,8 +24,13 @@ export type DuckDbDatabase = {
 export function loadDuckDb(): {
   Database: new (path: string, cb?: (err: Error | null) => void) => DuckDbDatabase;
 } {
+  const module = getNodeModule<typeof import('module')>('module');
+  if (!module) {
+    throw new Error('DuckDB helpers require Node.js environment.');
+  }
+  
   try {
-    const req = createRequire(import.meta.url);
+    const req = module.createRequire(import.meta.url);
     return req('duckdb') as {
       Database: new (path: string, cb?: (err: Error | null) => void) => DuckDbDatabase;
     };

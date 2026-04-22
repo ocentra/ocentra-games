@@ -182,11 +182,12 @@ async function _getDiskResourceEntriesInternal(): Promise<ResourceEntry[]> {
 
         if (!guid) continue
 
+        const checksum = await computeAssetHash(path)
         const entry = new AssetResourceEntry(assetType as never, guid as never)
         entry.path = path
         entry.displayName = displayName
         entry.fileSize = meta.size
-        entry.checksum = undefined
+        entry.checksum = asChecksum(checksum)
         entry.createdAt = nowTs()
         entry.updatedAt = nowTs()
         entry.lastScanAt = nowTs()

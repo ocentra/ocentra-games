@@ -1,7 +1,7 @@
-import type { LogEntry } from '@/types/logEntry';
-import type { LogQuery } from '@/types/logQuery';
-import type { LogStats } from '@/types/logStats';
-import { LogEntryField } from '@/types/logEntryFields';
+import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
+import type { LogQuery } from '@ocentra/logging-domain/types/logQuery';
+import type { LogStats } from '@ocentra/logging-domain/types/logStats';
+import { LogEntryField } from '@ocentra/logging-domain/types/logEntryFields';
 
 type LogEntryWithoutIdAndOrigin = Omit<LogEntry, typeof LogEntryField.Id | typeof LogEntryField.Origin>;
 

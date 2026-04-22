@@ -18,7 +18,7 @@ export const ASSET_EDITOR_LOG_PATHS = {
 } as const;
 
 export function wipeAssetEditorLogs(logDir: string): void {
-  deleteAppNdjsonFiles(SCOPE, logDir);
+  deleteAppNdjsonFiles(SCOPE, 0, logDir);
   const dbPath = getDefaultAppDbPath(SCOPE, logDir);
   for (const suffix of ['', '.wal', '.tmp']) {
     const p = dbPath + suffix;

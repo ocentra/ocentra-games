@@ -1,9 +1,7 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-import type { TestRun, TestLog, RunType, TestSuiteType, NdjsonLogEntry } from '@/test-log/types';
-import { asTestSuiteTypeOrNull, asLogOriginOrNull, NdjsonLineType, LogRealm } from '@/test-log/types';
-import { ndjsonEntryToTestLog } from '@/test-log/bridgeConvert';
+import type { TestRun, TestLog, RunType, TestSuiteType, NdjsonLogEntry } from './types';
+import { asTestSuiteTypeOrNull, asLogOriginOrNull, NdjsonLineType, LogRealm } from './types';
+import { ndjsonEntryToTestLog } from './bridgeConvert';
+import { DEFAULT_DB_DIR } from '../core/constants';
 import {
   loadDuckDb,
   runAsync,
@@ -14,27 +12,38 @@ import {
   type DuckDbDatabase,
 } from '../app-log/duckDbHelpers';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-function readNdjsonFile(filePath: string): NdjsonLogEntry[] {
-  if (!fs.existsSync(filePath)) return [];
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const lines = content.trim().split('\n').filter((line) => line.trim());
-  return lines.map((line) => JSON.parse(line) as NdjsonLogEntry);
+// Helper to get Node modules safely in Vite/Browser environments
+function getNodeModule<T>(name: string): T | null {
+  if (typeof process === 'undefined' || !process.versions?.node) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(name);
+  } catch {
+    return null;
+  }
 }
 
-export const DEFAULT_DB_DIR = path.resolve(__dirname, '../../db');
+const fs = getNodeModule<typeof import('fs')>('fs');
+const path = getNodeModule<typeof import('path')>('path');
+
+function readNdjsonFile(filePath: string): NdjsonLogEntry[] {
+  if (!fs || !fs.existsSync(filePath)) return [];
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.trim().split('\n').filter((line: string) => line.trim());
+  return lines.map((line: string) => JSON.parse(line) as NdjsonLogEntry);
+}
+
 export const DEFAULT_DB_FILENAME = 'log.duckdb';
 
 export const LOG_DB_DOMAIN_ENV = 'LOG_DB_DOMAIN';
 export const DEFAULT_DOMAIN: LogRealm = LogRealm.Cloudflare;
 
 export function getDefaultDbPath(domain?: string): string {
+  if (!fs || !path) return '';
   if (!fs.existsSync(DEFAULT_DB_DIR)) {
     fs.mkdirSync(DEFAULT_DB_DIR, { recursive: true });
   }
-  const effective = domain ?? process.env[LOG_DB_DOMAIN_ENV] ?? DEFAULT_DOMAIN;
+  const effective = domain ?? (typeof process !== 'undefined' ? process.env[LOG_DB_DOMAIN_ENV] : null) ?? DEFAULT_DOMAIN;
   const filename = `${effective}-log.duckdb`;
   return path.join(DEFAULT_DB_DIR, filename);
 }
@@ -192,9 +201,11 @@ export class TestLogDuckDb {
 
   static async create(options: TestLogDuckDbOptions | string): Promise<TestLogDuckDb> {
     const dbPath = typeof options === 'string' ? options : options.dbPath;
-    const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (fs && path) {
+      const dir = path.dirname(dbPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
     }
     const DuckDb = loadDuckDb();
     const db = await new Promise<DuckDbDatabase>((resolve, reject) => {
@@ -503,6 +514,7 @@ export class TestLogDuckDb {
     const conditions = ['run_id = ?'];
     const params: unknown[] = [runId];
     if (testFile != null && String(testFile).trim() !== '') {
+      if (!path) return [];
       const raw = String(testFile).trim();
       const normalized = raw.replace(/\\/g, '/');
       const candidates = Array.from(
@@ -759,14 +771,15 @@ export class TestLogDuckDb {
     const files: string[] =
       filePaths ??
       (() => {
+        if (!path || !fs) return [];
         const baseDirResolved = path.resolve(ndjsonBaseDir);
         const runTypeDir = path.join(baseDirResolved, runType);
         if (!fs.existsSync(runTypeDir)) return [];
         const out: string[] = [];
         function walkDir(dir: string): void {
-          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          const entries = fs!.readdirSync(dir, { withFileTypes: true });
           for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
+            const fullPath = path!.join(dir, entry.name);
             if (entry.isDirectory()) walkDir(fullPath);
             else if (entry.name.endsWith('.ndjson')) out.push(fullPath);
           }
@@ -790,6 +803,7 @@ export class TestLogDuckDb {
     >();
 
     for (const filePath of files) {
+      if (!path) continue;
       const ndjsonFileKey = path.basename(path.dirname(filePath));
       const ndjsonSuiteType = path.basename(path.dirname(path.dirname(filePath)));
       const entries = readNdjsonFile(filePath) as (NdjsonLogEntry & { type?: string; status?: string; duration_ms?: number; test_name?: string })[];
@@ -872,7 +886,7 @@ export class TestLogDuckDb {
     for (const log of allLogs) {
       const key = `${log.run_id}\0${log.test_id}`;
       if (runsByKey.has(key)) continue;
-      const testFile = log.suite_path ? path.basename(log.suite_path) : 'unknown.test.ts';
+      const testFile = log.suite_path && path ? path.basename(log.suite_path) : 'unknown.test.ts';
       runsByKey.set(key, {
         test_id: log.test_id,
         test_full_name: log.test_full_name,
@@ -901,7 +915,7 @@ export class TestLogDuckDb {
         const testFile =
           tr.test_file && String(tr.test_file).trim() !== ''
             ? String(tr.test_file).trim()
-            : tr.suite_path
+            : tr.suite_path && path
               ? path.basename(String(tr.suite_path))
               : 'unknown.test.ts';
         runsByKey.set(runKey, {
@@ -979,7 +993,7 @@ export class TestLogDuckDb {
     for (const log of logs) {
       const key = `${log.run_id}\0${log.test_id}`;
       if (runsByKey.has(key)) continue;
-      const testFile = log.suite_path ? path.basename(log.suite_path) : 'unknown.test.ts';
+      const testFile = log.suite_path && path ? path.basename(log.suite_path) : 'unknown.test.ts';
       runsByKey.set(key, {
         test_id: log.test_id,
         test_full_name: log.test_full_name,

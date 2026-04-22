@@ -21,7 +21,7 @@ import {
   writeStoredLayoutEditorPlayerCount,
 } from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
-import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import { CardGameTemplateViewport } from '@ocentra/card-game-ui/CardGameTemplateViewport';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
@@ -32,7 +32,13 @@ import {
   seedLayoutPresetFromSource,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
+import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import './StandalonePanelPage.css';
+const log = AssetEditorLogger.instance;
+log.register(import.meta.url);
+const logInfo = (message: string, data?: unknown) => log.logInfo(message, getStackTrace(), data);
+const logError = (message: string, error?: unknown) => log.logError(message, getStackTrace(), error);
 
 type StandalonePanel =
   | 'preview'
@@ -478,18 +484,26 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
   }, [broadcast, document]);
 
   const handleSave = useCallback(async () => {
+    logInfo('[StandalonePanelPage] handleSave started');
     setStatus('Saving...');
     try {
       const saved = await saveLayoutAsset(loadedAsset, document);
+      logInfo('[StandalonePanelPage] saveLayoutAsset completed', { path: saved.path });
+      
       setDocument(saved.document);
       broadcast(saved.document, activePlayerCount);
+      
       try {
-        const syncResult = await syncSavedLayoutAssetToR2();
+        logInfo('[handleSave] triggering targeted R2 sync', { path: saved.path });
+        const syncResult = await syncSavedLayoutAssetToR2(saved.path);
         setStatus(syncResult.message);
+        logInfo('[handleSave] targeted R2 sync complete', { syncResult });
       } catch (syncError) {
+        logError('[handleSave] targeted R2 sync failed', { syncError });
         setStatus(`Saved locally; ${syncError instanceof Error ? syncError.message : 'sync failed'}`);
       }
     } catch (error) {
+      logError('[StandalonePanelPage] saveLayoutAsset failed', error);
       setStatus(error instanceof Error ? error.message : 'Failed to save layout');
     }
   }, [activePlayerCount, broadcast, document, loadedAsset]);
@@ -698,7 +712,7 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
           onTableChange={handleTableChange}
         />
       )}
-      <CardGameTemplatePage
+      <CardGameTemplateViewport
         document={document as unknown as CardGameLayoutDocument}
         playerCount={playerCount}
         headerProps={headerProps}

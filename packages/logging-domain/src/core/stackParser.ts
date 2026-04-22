@@ -1,5 +1,5 @@
-import type { StackFrame } from '@/types/stackFrame';
-import { UNKNOWN_CONTEXT } from '@/core/constants';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
+import { UNKNOWN_CONTEXT } from '@ocentra/logging-domain/core/constants';
 
 export function parseStackFrame(
   line: string,

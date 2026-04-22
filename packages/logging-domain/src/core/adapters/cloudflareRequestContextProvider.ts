@@ -1,4 +1,4 @@
-import type { RequestContextProvider, RequestContext } from '@/core/requestContextProvider';
+import type { RequestContextProvider, RequestContext } from '@ocentra/logging-domain/core/requestContextProvider';
 
 export interface CloudflareRequestContextFunctions {
   getCurrentContext: () => RequestContext | null;

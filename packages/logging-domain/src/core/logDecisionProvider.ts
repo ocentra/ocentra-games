@@ -1,4 +1,4 @@
-import type { LogLevel } from '@/types/logLevel';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 
 export interface LogDecisionProvider {
   shouldLog(module: string, level: LogLevel, requestDebugModules?: string[]): boolean;

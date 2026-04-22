@@ -1,6 +1,6 @@
-import type { PathResolver } from '@/core/pathResolver';
-import type { LogSource } from '@/types/logSource';
-import { LogSourcePrefix } from '@/types/logSource';
+import type { PathResolver } from '@ocentra/logging-domain/core/pathResolver';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
+import { LogSourcePrefix } from '@ocentra/logging-domain/types/logSource';
 
 export interface CloudflarePathFunctions {
   getFilePathFromUrl: (url: string) => string;

@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { sanitizeTestNameForNdjson } from '@/test-log/ndjsonPaths';
-import { getDirPath, getDirPathWithRoot, refreshLogsTree, type LogsTreeScope } from '@/test-log/logsTree';
-import type { FileKey, NdjsonSummaryContent, TestName } from '@/test-log/ndjsonBrands';
+import { sanitizeTestNameForNdjson } from '@ocentra/logging-domain/test-log/ndjsonPaths';
+import { getDirPath, getDirPathWithRoot, refreshLogsTree, type LogsTreeScope } from '@ocentra/logging-domain/test-log/logsTree';
+import type { FileKey, NdjsonSummaryContent, TestName } from '@ocentra/logging-domain/test-log/ndjsonBrands';
 
 export function writeSummary(
   scope: LogsTreeScope,

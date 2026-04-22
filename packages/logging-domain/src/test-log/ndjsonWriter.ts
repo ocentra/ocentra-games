@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { TestLog, RunType, TestSuiteTypeValue, NdjsonLogEntry } from '@/test-log/types';
-import { NdjsonLineType } from '@/test-log/types';
-import { testLogToNdjsonEntry, ndjsonEntryToTestLog } from '@/test-log/bridgeConvert';
-import { wipeNdjsonScope, type WipeSuiteType } from '@/test-log/wipeNdjsonScope';
-import { writeLogEntry } from '@/test-log/ndjsonLogFileWriter';
-import { getFileKeyFromSuitePath } from '@/test-log/ndjsonPaths';
-import { asFileKey, asTestName } from '@/test-log/ndjsonBrands';
-import { LogRealm } from '@/test-log/types';
+import type { TestLog, RunType, TestSuiteTypeValue, NdjsonLogEntry } from '@ocentra/logging-domain/test-log/types';
+import { NdjsonLineType } from '@ocentra/logging-domain/test-log/types';
+import { testLogToNdjsonEntry, ndjsonEntryToTestLog } from '@ocentra/logging-domain/test-log/bridgeConvert';
+import { wipeNdjsonScope, type WipeSuiteType } from '@ocentra/logging-domain/test-log/wipeNdjsonScope';
+import { writeLogEntry } from '@ocentra/logging-domain/test-log/ndjsonLogFileWriter';
+import { getFileKeyFromSuitePath } from '@ocentra/logging-domain/test-log/ndjsonPaths';
+import { asFileKey, asTestName } from '@ocentra/logging-domain/test-log/ndjsonBrands';
+import { LogRealm } from '@ocentra/logging-domain/test-log/types';
 
 export interface NdjsonWriterOptions {
   /** Must be the default consumer dir (e.g. getDefaultNdjsonOutputDir() + '/cloudflare') so writes from writeLogEntry go to the same root. */

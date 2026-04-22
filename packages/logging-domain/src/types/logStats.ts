@@ -1,4 +1,4 @@
-import type { LogLevel } from '@/types/logLevel';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 
 export interface LogStats {
   total_logs: number;

@@ -1,6 +1,6 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { StackTrace } from '@/core/stackTrace';
-import type { RequestContext } from '@/core/requestContextProvider';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { RequestContext } from '@ocentra/logging-domain/core/requestContextProvider';
 
 export interface BatchEntry {
   message: string;

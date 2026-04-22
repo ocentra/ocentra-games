@@ -3,7 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { getDefaultDbPath, TestLogDuckDb, DEFAULT_DOMAIN } from '../src/test-log/testLogDuckDb';
+import { getDefaultDbPath, TestLogDuckDb, DEFAULT_DOMAIN, LOG_DB_DOMAIN_ENV } from '../src/test-log/testLogDuckDb';
 import { loadDuckDb } from '../src/app-log/duckDbHelpers';
 import { getChangedFiles, updateManifest, getManifestPath } from '../src/test-log/ingestManifest';
 import { RunType } from '../src/test-log/types';
@@ -19,7 +19,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
-const NDJSON_BASE = path.join(PACKAGE_ROOT, 'logs', 'cloudflare');
+function getNdjsonBase(domain: string): string {
+  return path.join(PACKAGE_ROOT, 'logs', domain);
+}
 
 const FLAG_NO_DELETE = '--no-delete';
 const ARG_DOMAIN = '--domain=';
@@ -58,7 +60,7 @@ function parseDomain(): string {
   for (const arg of process.argv) {
     if (arg.startsWith(ARG_DOMAIN)) return arg.slice(ARG_DOMAIN.length).trim() || DEFAULT_DOMAIN;
   }
-  return DEFAULT_DOMAIN;
+  return process.env[LOG_DB_DOMAIN_ENV] ?? DEFAULT_DOMAIN;
 }
 
 function parseScope(): { runType?: string; suiteType?: string } {
@@ -78,6 +80,7 @@ function parseScope(): { runType?: string; suiteType?: string } {
 async function main(): Promise<void> {
   const noDelete = process.argv.includes(FLAG_NO_DELETE);
   const domain = parseDomain();
+  const ndjsonBase = getNdjsonBase(domain);
   const scope = parseScope();
   const dbPath = getDefaultDbPath(domain);
   const manifestPath = getManifestPath(domain);
@@ -95,7 +98,7 @@ async function main(): Promise<void> {
   process.stdout.write(`  Domain: ${domain}\n`);
   process.stdout.write(`  DB: ${dbPath}\n`);
   process.stdout.write(`  Manifest: ${path.basename(manifestPath)}\n`);
-  process.stdout.write(`  NDJSON base: ${NDJSON_BASE}\n`);
+  process.stdout.write(`  NDJSON base: ${ndjsonBase}\n`);
   if (scope.runType) {
     process.stdout.write(`  Scope: run_type=${scope.runType}${scope.suiteType ? ` suite_type=${scope.suiteType}` : ''}\n`);
   }
@@ -127,7 +130,7 @@ async function main(): Promise<void> {
     process.stdout.write(`\n`);
 
     process.stdout.write(`[2/4] Discover run types\n`);
-    const discovered = discoverRunTypes(NDJSON_BASE);
+    const discovered = discoverRunTypes(ndjsonBase);
     const runTypes = scopedUpdate
       ? [scope.runType!]
       : discovered.filter((r) => VALID_RUN_TYPES.includes(r));
@@ -161,7 +164,7 @@ async function main(): Promise<void> {
       const pathsByRunType = new Map<string, string[]>();
       let totalScopedPaths = 0;
       for (const runType of runTypes) {
-        const paths = collectNdjsonPaths(NDJSON_BASE, runType, scope.suiteType);
+        const paths = collectNdjsonPaths(ndjsonBase, runType, scope.suiteType);
         pathsByRunType.set(runType, paths);
         totalScopedPaths += paths.length;
       }
@@ -183,7 +186,7 @@ async function main(): Promise<void> {
           }
           process.stdout.write(`  ${runType}: ingesting ${paths.length} ndjson files...\n`);
           const result = await db.ingestFromNdjson(
-            NDJSON_BASE,
+            ndjsonBase,
             runType as RunType,
             undefined,
             paths,
@@ -196,7 +199,7 @@ async function main(): Promise<void> {
       }
     } else if (noDelete) {
       for (const runType of runTypes) {
-        const logsDir = path.join(NDJSON_BASE, runType);
+        const logsDir = path.join(ndjsonBase, runType);
         const { newFiles, changedFiles } = getChangedFiles(logsDir, domain);
         const filesToIngest = [...newFiles, ...changedFiles];
         if (filesToIngest.length === 0) {
@@ -204,7 +207,7 @@ async function main(): Promise<void> {
           continue;
         }
         const result = await db.ingestFromNdjson(
-          NDJSON_BASE,
+          ndjsonBase,
           runType as RunType,
           undefined,
           filesToIngest
@@ -216,10 +219,10 @@ async function main(): Promise<void> {
       }
     } else {
       for (const runType of runTypes) {
-        const paths = collectNdjsonPaths(NDJSON_BASE, runType);
+        const paths = collectNdjsonPaths(ndjsonBase, runType);
         process.stdout.write(`  ${runType}: ingesting ${paths.length} ndjson files...\n`);
         const result = await db.ingestFromNdjson(
-          NDJSON_BASE,
+          ndjsonBase,
           runType as RunType,
           undefined,
           paths
@@ -235,8 +238,8 @@ async function main(): Promise<void> {
     if (!noDelete || (scopedUpdate && scopedIngestExecuted)) {
       for (const runType of runTypes) {
         const manifestDir = scope.suiteType
-          ? path.join(NDJSON_BASE, runType, scope.suiteType)
-          : path.join(NDJSON_BASE, runType);
+          ? path.join(ndjsonBase, runType, scope.suiteType)
+          : path.join(ndjsonBase, runType);
         updateManifest(manifestDir, domain);
       }
     } else if (scopedUpdate && !scopedIngestExecuted) {

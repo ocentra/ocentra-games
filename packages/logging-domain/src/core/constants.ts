@@ -1,7 +1,7 @@
-import type { BatchConfig } from '@/types/batchConfig';
-import type { InitPhaseConfig } from '@/types/initPhaseConfig';
-import type { LoggerConfig } from '@/types/loggerConfig';
-import { LogLevel } from '@/types/logLevel';
+import type { BatchConfig } from '@ocentra/logging-domain/types/batchConfig';
+import type { InitPhaseConfig } from '@ocentra/logging-domain/types/initPhaseConfig';
+import type { LoggerConfig } from '@ocentra/logging-domain/types/loggerConfig';
+import { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 
 export const CACHE_SIZE_LIMIT = 500;
 
@@ -40,3 +40,5 @@ export const DEFAULT_CONFIG: Required<LoggerConfig> = {
   bridgeEndpoint: PUBLIC_TUNNEL_BRIDGE_URL,
   bridgeConsumer: '',
 };
+
+export const DEFAULT_DB_DIR = 'db'; // Relative to package root or process CWD

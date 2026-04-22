@@ -1,9 +1,10 @@
-import type { RunType } from '@/test-log/types';
+import type { RunType } from '../test-log/types';
 
 export const LogConsumer = {
   Cloudflare: 'cloudflare',
   Main: 'main',
   Solana: 'solana',
+  AssetEditor: 'asset-editor',
 } as const;
 
 export type LogConsumer = (typeof LogConsumer)[keyof typeof LogConsumer];

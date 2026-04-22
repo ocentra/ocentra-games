@@ -275,9 +275,12 @@ export async function verifyAuth(
       return { userId: '', error: ErrorMessage.MissingAuthorizationHeaderOrToken };
     }
 
+    console.log(`[verifyAuth] token=${token ? (token.substring(0, 20) + '...') : 'null'} testMode=${env?.TEST_MODE}`);
+
     if (env?.TEST_MODE === QueryValue.True) {
       if (token.startsWith(TestTokenPrefix.Test)) {
         const testTokenMatch = token.match(new RegExp(`^${TestTokenPrefix.Test}([^:]+)(?::admin)?$`));
+        console.log(`[verifyAuth] testTokenMatch=${testTokenMatch ? 'match' : 'no-match'} userId=${testTokenMatch ? testTokenMatch[1] : 'n/a'}`);
         if (testTokenMatch) {
           const userId = testTokenMatch[1];
           return { userId };

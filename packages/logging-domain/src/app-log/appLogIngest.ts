@@ -1,6 +1,18 @@
-import * as fs from 'fs';
 import type { LogEntry } from '../types/logEntry';
 import { listAppNdjsonFiles } from './appNdjsonWriter';
+
+// Helper to get Node modules safely in Vite/Browser environments
+function getNodeModule<T>(name: string): T | null {
+  if (typeof process === 'undefined' || !process.versions?.node) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(name);
+  } catch {
+    return null;
+  }
+}
+
+const fs = getNodeModule<typeof import('fs')>('fs');
 
 export type FileProgress = { size: number; offset: number };
 export type IngestState = { files: Record<string, FileProgress> };
@@ -27,6 +39,8 @@ export function getNewEntries(
   state: IngestState,
   dbDir?: string
 ): { entries: LogEntry[]; updatedState: IngestState } {
+  if (!fs) return { entries: [], updatedState: state };
+
   const files = listAppNdjsonFiles(scope, dbDir);
   const entries: LogEntry[] = [];
   const updatedFiles: Record<string, FileProgress> = { ...state.files };
@@ -65,6 +79,8 @@ export function hasPendingEntries(
   state: IngestState,
   dbDir?: string
 ): boolean {
+  if (!fs) return false;
+
   const files = listAppNdjsonFiles(scope, dbDir);
   for (const filePath of files) {
     const stat = fs.statSync(filePath);

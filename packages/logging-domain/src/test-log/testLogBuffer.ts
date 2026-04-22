@@ -1,4 +1,4 @@
-import type { TestLog } from '@/test-log/types';
+import type { TestLog } from '@ocentra/logging-domain/test-log/types';
 
 interface SharedLogBuffer {
   logBuffer: Map<string, TestLog[]>;

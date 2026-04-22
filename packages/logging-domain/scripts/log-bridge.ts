@@ -191,7 +191,7 @@ function flushRun(runId: string): { written: number; errors: string[]; runType?:
   for (const [, { testName, runId: rId, runType, logs }] of byFile) {
     const suiteType = logs[0]?.suite_type || 'unit';
     const fileKeyRaw = getFileKeyFromSuitePath(logs[0]?.suite_path ?? '');
-    const scope = { consumer: LogRealm.Cloudflare, runType, suiteType };
+    const scope = { consumer: firstConsumer, runType, suiteType };
     const fileKey = asFileKey(fileKeyRaw);
     const name = asTestName(testName);
     try {

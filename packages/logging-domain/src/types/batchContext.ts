@@ -1,5 +1,5 @@
-import type { BatchConfig } from '@/types/batchConfig';
-import type { BatchEntry } from '@/types/batchEntry';
+import type { BatchConfig } from '@ocentra/logging-domain/types/batchConfig';
+import type { BatchEntry } from '@ocentra/logging-domain/types/batchEntry';
 
 export interface BatchContext {
   key: string;

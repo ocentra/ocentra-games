@@ -310,7 +310,7 @@ export function HudButton({
             </feMerge>
           </filter>
           <filter id={glowWhiteId} x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0.4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />

@@ -1,22 +1,22 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { LogSource } from '@/types/logSource';
-import type { StackFrame } from '@/types/stackFrame';
-import type { StackTrace } from '@/core/stackTrace';
-import type { ILogStorage } from '@/storage/storageInterface';
-import type { PathResolver } from '@/core/pathResolver';
-import type { RequestContextProvider } from '@/core/requestContextProvider';
-import type { LoggerConfig } from '@/types/loggerConfig';
-import type { RegistrationInfo } from '@/types/registrationInfo';
-import type { StructuredLogPayload } from '@/types/structuredLogPayload';
-import type { InternalLogEntry } from '@/types/internalLogEntry';
-import { LogLevel as LogLevelConst } from '@/types/logLevel';
-import { LogSourcePrefix } from '@/types/logSource';
-import { BaseLogger } from '@/core/baseLogger';
-import { buildStructuredLogPayload } from '@/core/buildStructuredLogPayload';
-import { redact, redactString } from '@/core/redact';
-import { LogConsumer, type BridgeEntry } from '@/transport/bridgeLogPayload';
-import { internalEntryToBridgeLog, sendToBridge } from '@/transport/bridgeTransport';
-import { DEFAULT_BRIDGE_URL } from '@/core/constants';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { ILogStorage } from '@ocentra/logging-domain/storage/storageInterface';
+import type { PathResolver } from '@ocentra/logging-domain/core/pathResolver';
+import type { RequestContextProvider } from '@ocentra/logging-domain/core/requestContextProvider';
+import type { LoggerConfig } from '@ocentra/logging-domain/types/loggerConfig';
+import type { RegistrationInfo } from '@ocentra/logging-domain/types/registrationInfo';
+import type { StructuredLogPayload } from '@ocentra/logging-domain/types/structuredLogPayload';
+import type { InternalLogEntry } from '@ocentra/logging-domain/types/internalLogEntry';
+import { LogLevel as LogLevelConst } from '@ocentra/logging-domain/types/logLevel';
+import { LogSourcePrefix } from '@ocentra/logging-domain/types/logSource';
+import { BaseLogger } from '@ocentra/logging-domain/core/baseLogger';
+import { buildStructuredLogPayload } from '@ocentra/logging-domain/core/buildStructuredLogPayload';
+import { redact, redactString } from '@ocentra/logging-domain/core/redact';
+import { LogConsumer, type BridgeEntry } from '@ocentra/logging-domain/transport/bridgeLogPayload';
+import { internalEntryToBridgeLog, sendToBridge } from '@ocentra/logging-domain/transport/bridgeTransport';
+import { DEFAULT_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 
 export class AssetEditorLogger extends BaseLogger {
   private static _instance: AssetEditorLogger | null = null;
@@ -364,16 +364,34 @@ export class AssetEditorLogger extends BaseLogger {
       existing.push(...item.entries);
       byEndpoint.set(item.endpoint, existing);
     }
+    
+    const allEntries: BridgeEntry[] = [];
+    for (const entries of byEndpoint.values()) {
+      allEntries.push(...entries);
+    }
+    
     this.logQueue.length = 0;
 
-    const sends: Promise<void>[] = [];
-    for (const [_endpoint, entries] of byEndpoint) {
-      const endpoint = _endpoint || this.config.bridgeEndpoint || DEFAULT_BRIDGE_URL;
-      if (endpoint) {
-        sends.push(sendToBridge(entries, endpoint).catch(() => {}));
+    // If no transports, fall back to bridge
+    if (this.transports.length === 0) {
+      const sends: Promise<void>[] = [];
+      for (const [_endpoint, entries] of byEndpoint) {
+        const endpoint = _endpoint || this.config.bridgeEndpoint || DEFAULT_BRIDGE_URL;
+        if (endpoint) {
+          sends.push(sendToBridge(entries, endpoint).catch(() => {}));
+        }
       }
+      await Promise.all(sends);
+      return;
     }
-    await Promise.all(sends);
+
+    // Emit to all registered transports
+    await Promise.all(
+      this.transports.map(t => t.emit(allEntries, this.config.bridgeEndpoint).catch((err: unknown) => {
+        console.error(`[Logger] Transport ${t.name} failed:`, err);
+      }))
+    );
+
   }
 
   protected getExcludePath(): string | undefined {
@@ -428,7 +446,9 @@ export class AssetEditorLogger extends BaseLogger {
         column: primaryFrame?.column,
       };
       const consumer =
-        this.config.bridgeConsumer === LogConsumer.Main || this.config.bridgeConsumer === LogConsumer.Solana
+        this.config.bridgeConsumer === LogConsumer.Main || 
+        this.config.bridgeConsumer === LogConsumer.Solana ||
+        this.config.bridgeConsumer === LogConsumer.AssetEditor
           ? this.config.bridgeConsumer
           : LogConsumer.Main;
       const bridgeLog = internalEntryToBridgeLog(entry, {

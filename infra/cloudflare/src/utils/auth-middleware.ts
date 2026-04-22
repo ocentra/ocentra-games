@@ -66,6 +66,8 @@ export async function requireAuth(
       env.DISABLE_AUTH === QueryValue.True
     );
 
+    console.log(`[requireAuth] path=${new URL(request.url).pathname} method=${request.method} env=${env.ENVIRONMENT} disableAuth=${env.DISABLE_AUTH} isDevWithAuthDisabled=${isDevWithAuthDisabled}`);
+
     if (isDevWithAuthDisabled) {
       logInfo(
         '[AdminAuthFlow:F] requireAuth bypassed in development',

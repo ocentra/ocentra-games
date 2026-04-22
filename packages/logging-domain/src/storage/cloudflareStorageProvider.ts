@@ -1,4 +1,4 @@
-import type { InternalLogEntry } from '@/types/internalLogEntry';
+import type { InternalLogEntry } from '@ocentra/logging-domain/types/internalLogEntry';
 
 export interface CloudflareStorageProvider {
   writeToAnalyticsEngine(entry: InternalLogEntry): void;

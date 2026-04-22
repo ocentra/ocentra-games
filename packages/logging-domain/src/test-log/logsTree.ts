@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { RunType, TestSuiteType } from '@/test-log/types';
-import { getDefaultNdjsonOutputDir } from '@/test-log/ndjsonPaths';
+import type { RunType, TestSuiteType } from '@ocentra/logging-domain/test-log/types';
+import { getDefaultNdjsonOutputDir } from '@ocentra/logging-domain/test-log/ndjsonPaths';
 
 const DELIMITER = '\0';
 

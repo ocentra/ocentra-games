@@ -1,5 +1,5 @@
-import type { RegistrationInfo } from '@/types/registrationInfo';
-import type { PathResolver } from '@/core/pathResolver';
+import type { RegistrationInfo } from '@ocentra/logging-domain/types/registrationInfo';
+import type { PathResolver } from '@ocentra/logging-domain/core/pathResolver';
 
 export function findRegisteredUserByFilePath(
   filePath: string | undefined,

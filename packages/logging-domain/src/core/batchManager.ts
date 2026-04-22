@@ -1,8 +1,8 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { BatchConfig } from '@/types/batchConfig';
-import type { BatchContext } from '@/types/batchContext';
-import type { StackTrace } from '@/core/stackTrace';
-import type { RequestContext } from '@/core/requestContextProvider';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { BatchConfig } from '@ocentra/logging-domain/types/batchConfig';
+import type { BatchContext } from '@ocentra/logging-domain/types/batchContext';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import type { RequestContext } from '@ocentra/logging-domain/core/requestContextProvider';
 
 export function createBatchContext(key: string, config: BatchConfig): BatchContext {
   return {

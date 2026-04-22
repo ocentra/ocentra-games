@@ -1,5 +1,5 @@
-import type { PathResolver } from '@/core/pathResolver';
-import type { LogSource } from '@/types/logSource';
+import type { PathResolver } from '@ocentra/logging-domain/core/pathResolver';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
 
 export interface MainAppPathFunctions {
   getFilePathFromUrl: (url: string) => string;
@@ -7,7 +7,12 @@ export interface MainAppPathFunctions {
 }
 
 export class MainAppPathResolver implements PathResolver {
-  constructor(private pathFunctions: MainAppPathFunctions) {}
+  private pathFunctions: MainAppPathFunctions;
+
+  constructor(pathFunctions: MainAppPathFunctions) {
+    this.pathFunctions = pathFunctions;
+  }
+
 
   getFilePathFromUrl(url: string): string {
     return this.pathFunctions.getFilePathFromUrl(url);

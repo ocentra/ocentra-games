@@ -1,16 +1,16 @@
-import type { ILogStorage } from '@/storage/storageInterface';
-import type { LogEntry } from '@/types/logEntry';
-import type { LogQuery } from '@/types/logQuery';
-import type { LogStats } from '@/types/logStats';
-import type { LogOrigin } from '@/types/logOrigin';
-import { AppLogDuckDb, getDefaultAppDbPath } from '@/app-log/appLogDuckDb';
-import { appendLogEntries, deleteAppNdjsonFiles } from '@/app-log/appNdjsonWriter';
+import type { ILogStorage } from '@ocentra/logging-domain/storage/storageInterface';
+import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
+import type { LogQuery } from '@ocentra/logging-domain/types/logQuery';
+import type { LogStats } from '@ocentra/logging-domain/types/logStats';
+import type { LogOrigin } from '@ocentra/logging-domain/types/logOrigin';
+import { AppLogDuckDb, getDefaultAppDbPath } from '@ocentra/logging-domain/app-log/appLogDuckDb';
+import { appendLogEntries, deleteAppNdjsonFiles } from '@ocentra/logging-domain/app-log/appNdjsonWriter';
 import {
   createIngestState,
   getNewEntries,
   hasPendingEntries,
   type IngestState,
-} from '@/app-log/appLogIngest';
+} from '@ocentra/logging-domain/app-log/appLogIngest';
 
 const DEFAULT_ORIGIN: LogOrigin = 'browser';
 
@@ -88,7 +88,7 @@ export function createAppLogStorage(
     },
 
     async clearLogs(): Promise<number> {
-      deleteAppNdjsonFiles(scope, dbDir);
+      deleteAppNdjsonFiles(scope, 0, dbDir);
       ingestState = createIngestState();
       return withDb((db) => db.clearLogs());
     },
@@ -108,7 +108,7 @@ export function createAppLogStorage(
 
   ingestTimer = setInterval(() => {
     if (!hasPendingEntries(scope, ingestState, dbDir)) return;
-    ingestPendingLines().catch(() => {});
+    ingestPendingLines().catch(() => { });
   }, ingestIntervalMs);
 
   return storage;

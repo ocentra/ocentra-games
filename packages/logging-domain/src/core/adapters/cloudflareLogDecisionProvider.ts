@@ -1,5 +1,5 @@
-import type { LogDecisionProvider } from '@/core/logDecisionProvider';
-import type { LogLevel } from '@/types/logLevel';
+import type { LogDecisionProvider } from '@ocentra/logging-domain/core/logDecisionProvider';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 
 export interface CloudflareLogDecisionFunctions {
   shouldLog: (module: string, level: string, requestDebugModules?: string[]) => boolean;

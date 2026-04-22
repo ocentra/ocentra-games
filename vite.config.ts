@@ -44,7 +44,9 @@ export default defineConfig(async ({ mode }) => {
       ...generateRegistryMapsPlugin(),
       enforce: 'pre' as const,
     },
-    tsconfigPaths(),
+    tsconfigPaths({
+      projects: ['./tsconfig.json', './packages/logging-domain/tsconfig.json', './packages/endpoint-domain/tsconfig.json']
+    }),
     react({
       babel: {
         plugins: [

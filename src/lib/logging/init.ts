@@ -3,8 +3,12 @@ import { MainAppPathResolver } from '@ocentra/logging-domain/core/adapters/mainA
 import type { ILogStorage } from '@ocentra/logging-domain/storage/storageInterface';
 import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogStats } from '@ocentra/logging-domain/types/logStats';
-import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 import { LogConsumer } from '@ocentra/logging-domain/transport/bridgeLogPayload';
+import { BridgeTransport } from '@ocentra/logging-domain/transport/bridgeTransport';
+import { TauriTransport } from '@ocentra/logging-domain/transport/tauriTransport';
+import { AnalyticsTransport } from '@ocentra/logging-domain/transport/analyticsTransport';
+import { deleteAppNdjsonFiles } from '@ocentra/logging-domain/app-log/appNdjsonWriter';
 import { getFilePathFromUrl, getSourceFromFilePath } from '@ocentra/app-core/path';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
@@ -68,18 +72,47 @@ export function initLogging(): void {
 
   const pathResolver = new MainAppPathResolver({
     getFilePathFromUrl,
-    getSourceFromFilePath: (fp) => getSourceFromFilePath(fp) as ReturnType<typeof getSourceFromFilePath>,
+    getSourceFromFilePath: (fp) => {
+      if (!fp) return 'unknown';
+      return getSourceFromFilePath(fp) as ReturnType<typeof getSourceFromFilePath>;
+    },
   });
 
   const requestContextProvider = createRequestContextProvider();
 
+  const bridgeEndpoint = typeof process !== 'undefined' && process.env?.TEST_LOG_SERVER_URL
+    ? process.env.TEST_LOG_SERVER_URL
+    : undefined;
+
   MainAppLogger.initLogger(eventBusStorage, pathResolver, {
     bridgeConsumer: LogConsumer.Main,
-    bridgeEndpoint: typeof process !== 'undefined' && process.env?.TEST_LOG_SERVER_URL
-      ? process.env.TEST_LOG_SERVER_URL
-      : undefined,
+    bridgeEndpoint,
     consoleEnabled: true,
   }, requestContextProvider);
+
+  // Clean up old logs based on platform
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  if (typeof process !== 'undefined' && process.versions?.node) {
+    const keepCount = isTauri ? 10 : 5; // More for desktop, less for dev/web
+    deleteAppNdjsonFiles('main', keepCount);
+  }
+
+  // Add platform-specific transports
+  if (isTauri) {
+    import('@tauri-apps/api/core').then(({ invoke }) => {
+      MainAppLogger.instance.addTransport(new TauriTransport(invoke));
+    }).catch(err => {
+      // eslint-disable-next-line no-console
+      console.error('[Logging] Failed to initialize Tauri transport:', err);
+    });
+  } else if (typeof import.meta !== 'undefined' && import.meta.env?.PROD) {
+    // For production Web, add Analytics
+    MainAppLogger.instance.addTransport(new AnalyticsTransport({ minLevel: LogLevel.Warn }));
+  } else if (bridgeEndpoint) {
+    // In dev/test if bridge is explicitly provided, ensure BridgeTransport is active
+    MainAppLogger.instance.addTransport(new BridgeTransport(bridgeEndpoint));
+  }
+
   setInterval(() => void flushBuffer(), FLUSH_INTERVAL_MS);
 }
 

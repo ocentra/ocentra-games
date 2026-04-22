@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import {
   loadDuckDb,
   runAsync,
@@ -13,7 +11,21 @@ import type { LogEntry } from '../types/logEntry';
 import type { LogQuery } from '../types/logQuery';
 import type { LogStats } from '../types/logStats';
 import { LogLevel } from '../types/logLevel';
-import { DEFAULT_DB_DIR } from '../test-log/testLogDuckDb';
+import { DEFAULT_DB_DIR } from '../core/constants';
+
+// Helper to get Node modules safely in Vite/Browser environments
+function getNodeModule<T>(name: string): T | null {
+  if (typeof process === 'undefined' || !process.versions?.node) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(name);
+  } catch {
+    return null;
+  }
+}
+
+const fs = getNodeModule<typeof import('fs')>('fs');
+const path = getNodeModule<typeof import('path')>('path');
 
 const APP_LOG_LEVELS = ['error', 'warn', 'info', 'debug', 'log'] as const;
 
@@ -93,9 +105,16 @@ function rowToLogEntry(r: Record<string, unknown>): LogEntry {
 }
 
 export function getDefaultAppDbPath(scope: string, dbDir?: string): string {
+  if (!path) return '';
   const dir = dbDir ?? DEFAULT_DB_DIR;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  if (fs && dir) {
+    if (!fs.existsSync(dir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (err) {
+        console.warn(`[AppLogDuckDb] Failed to create directory ${dir}:`, err);
+      }
+    }
   }
   return path.join(dir, `${scope}-log.duckdb`);
 }
@@ -103,18 +122,22 @@ export function getDefaultAppDbPath(scope: string, dbDir?: string): string {
 export class AppLogDuckDb {
   private db: DuckDbDatabase;
   private conn: DuckDbConnection;
-  private readonly dbPath: string;
-
-  private constructor(db: DuckDbDatabase, conn: DuckDbConnection, dbPath: string) {
+  private constructor(db: DuckDbDatabase, conn: DuckDbConnection) {
     this.db = db;
     this.conn = conn;
-    this.dbPath = dbPath;
   }
 
   static async create(dbPath: string): Promise<AppLogDuckDb> {
+    if (!path || !fs) {
+      throw new Error('AppLogDuckDb requires Node.js environment.');
+    }
     const dir = path.dirname(dbPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (dir && !fs.existsSync(dir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+      } catch (err) {
+        console.warn(`[AppLogDuckDb] Failed to create directory ${dir}:`, err);
+      }
     }
     const DuckDb = loadDuckDb();
     const db = await new Promise<DuckDbDatabase>((resolve, reject) => {
@@ -132,7 +155,7 @@ export class AppLogDuckDb {
     for (const stmt of statements) {
       await runAsync(conn, stmt + ';');
     }
-    return new AppLogDuckDb(db, conn, dbPath);
+    return new AppLogDuckDb(db, conn);
   }
 
   async insertBatch(entries: LogEntry[]): Promise<number> {

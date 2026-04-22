@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DEFAULT_DB_DIR, DEFAULT_DOMAIN, LOG_DB_DOMAIN_ENV } from '@/test-log/testLogDuckDb';
+import { DEFAULT_DB_DIR } from '@ocentra/logging-domain/core/constants';
+import { DEFAULT_DOMAIN, LOG_DB_DOMAIN_ENV } from '@ocentra/logging-domain/test-log/testLogDuckDb';
 
 type FileEntry = { size: number; mtime: number; hash: string };
 type Manifest = { files: Record<string, FileEntry>; lastIngest: number };

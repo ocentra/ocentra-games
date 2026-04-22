@@ -19,6 +19,8 @@ const diskResourceLoaderMocks = vi.hoisted(() => ({
   getDiskResourceEntries: vi.fn(),
 }));
 
+import type { StorageConfig } from '@/services/storage/StorageConfig';
+
 const sliceBuilderMocks = vi.hoisted(() => ({
   buildAppAssetSlicesFromDisk: vi.fn(),
 }));
@@ -45,6 +47,14 @@ vi.mock('@/adapters/assets/TauriAssetUrlResolver', () => ({
   getAssetUrlByGuidAsync: urlResolverMocks.getAssetUrlByGuidAsync,
   getAssetCandidateUrls: urlResolverMocks.getAssetCandidateUrls,
   setPreferredAssetUrl: urlResolverMocks.setPreferredAssetUrl,
+}));
+
+vi.mock('@/services/storage/StorageConfig', () => ({
+  getStorageConfig: vi.fn(() => ({
+    r2Assets: {
+      workerUrl: 'http://127.0.0.1:8787',
+    },
+  })),
 }));
 
 describe('NetworkRouter tauri path handling', () => {
@@ -187,22 +197,64 @@ describe('NetworkRouter sync flows', () => {
     const { NetworkRouter } = await import('@/adapters/network/NetworkRouter');
     await NetworkRouter.getInstance().syncToR2();
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/assets/Resources%2Ftest.asset'),
+      expect.stringContaining('/assets/Resources/test.asset'),
       expect.objectContaining({ method: 'PUT' })
     );
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/assets/index%2Fhome.json'),
+      expect.stringContaining('/assets/index/home.json'),
       expect.objectContaining({ method: 'PUT' })
     );
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it('syncFromR2: throws when cloud entry index fetch fails', async () => {
-    fetchMock.mockResolvedValueOnce({ ok: false, status: 503 });
+  it('syncAsset: sends Authorization header when targeting local dev', async () => {
     const { NetworkRouter } = await import('@/adapters/network/NetworkRouter');
-    await expect(NetworkRouter.getInstance().syncFromR2()).rejects.toThrow(
-      /SyncFromR2 failed to fetch cloud entry index/
+    tauriMocks.readAsset.mockResolvedValue(
+      new Response('asset-content', { 
+        status: 200, 
+        headers: { 'Content-Type': 'application/json' } 
+      })
+    );
+    fetchMock.mockResolvedValue({ ok: true });
+
+    const result = await NetworkRouter.getInstance().syncAsset('Resources/test.asset');
+
+    expect(result).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/api/v1/assets/resource/Resources/test.asset'),
+      expect.objectContaining({
+        method: 'PUT',
+        headers: expect.objectContaining({
+          'Authorization': 'Bearer test-token:asset-editor-dev:admin',
+        }),
+      })
     );
   });
 
+  it('syncAsset: does not send Authorization header for non-local URLs', async () => {
+    const { getStorageConfig } = await import('@/services/storage/StorageConfig');
+    vi.mocked(getStorageConfig).mockReturnValue({
+      r2Assets: { workerUrl: 'https://production-worker.com' }
+    } as unknown as StorageConfig);
+
+    const { NetworkRouter } = await import('@/adapters/network/NetworkRouter');
+    tauriMocks.readAsset.mockResolvedValue(
+      new Response('asset-content', { 
+        status: 200, 
+        headers: { 'Content-Type': 'application/json' } 
+      })
+    );
+    fetchMock.mockResolvedValue({ ok: true });
+
+    await NetworkRouter.getInstance().syncAsset('Resources/test.asset');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('production-worker.com'),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'Authorization': '',
+        }),
+      })
+    );
+  });
 });

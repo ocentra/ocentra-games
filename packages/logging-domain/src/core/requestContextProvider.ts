@@ -1,4 +1,4 @@
-import type { RunType } from '@/test-log/types';
+import type { RunType } from '@ocentra/logging-domain/test-log/types';
 
 export interface RequestContext {
   correlationId: string;

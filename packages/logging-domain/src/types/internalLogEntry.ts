@@ -1,5 +1,5 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { StackFrame } from '@/types/stackFrame';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
 
 export interface InternalLogEntry {
   level: LogLevel;

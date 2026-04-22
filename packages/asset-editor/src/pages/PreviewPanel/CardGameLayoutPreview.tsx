@@ -170,7 +170,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       onAssetUpdate?.(saved.raw as AssetData);
       broadcastDraft(saved.document, activePlayerCount);
       try {
-        const syncResult = await syncSavedLayoutAssetToR2();
+        const syncResult = await syncSavedLayoutAssetToR2(saved.path);
         setSaveStatus(syncResult.message);
       } catch (syncError) {
         setSaveStatus(`Saved locally; ${syncError instanceof Error ? syncError.message : 'sync failed'}`);

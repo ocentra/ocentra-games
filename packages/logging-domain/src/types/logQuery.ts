@@ -1,5 +1,5 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { LogSource } from '@/types/logSource';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
 
 export interface LogQuery {
   level?: LogLevel;

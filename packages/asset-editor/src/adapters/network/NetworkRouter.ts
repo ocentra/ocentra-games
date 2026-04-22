@@ -8,6 +8,7 @@ import { ScanAssetsEvent } from '@ocentra/eventing-domain/events/assets/ScanAsse
 import { DeleteAssetEvent } from '@ocentra/eventing-domain/events/assets/DeleteAssetEvent';
 import { GetSyncStatusEvent } from '@ocentra/eventing-domain/events/assets/GetSyncStatusEvent';
 import { SyncToR2Event } from '@ocentra/eventing-domain/events/assets/SyncToR2Event';
+import { SyncAssetEvent } from '@ocentra/eventing-domain/events/assets/SyncAssetEvent';
 import { SyncFromR2Event } from '@ocentra/eventing-domain/events/assets/SyncFromR2Event';
 import { ScanR2StatusEvent } from '@ocentra/eventing-domain/events/assets/ScanR2StatusEvent';
 import { GetGameTemplateEvent } from '@ocentra/eventing-domain/events/assets/GetGameTemplateEvent';
@@ -17,7 +18,7 @@ import type { UploadedFile } from '@ocentra/eventing-domain/events/assets/Upload
 import { BatchGetResourcesEvent } from '@ocentra/eventing-domain/events/assets/BatchGetResourcesEvent';
 import { NetworkRouterHandlerMarker } from '@ocentra/eventing-domain/interfaces/IEventHandler';
 import type { AssetEntry } from '@ocentra/boundary-domain/types/asset-entry';
-import type { ScanResponse } from '@ocentra/boundary-domain/types/scan-response';
+import type { ScanResponse, ImageEntry, FileEntry } from '@ocentra/boundary-domain/types/scan-response';
 import type { ResourceRequest } from '@ocentra/boundary-domain/types/resource-request';
 import type { AssetMetadata } from '@ocentra/boundary-domain/types/asset-metadata';
 import type { AssetSyncStatus } from '@/lib/core/inspector/types';
@@ -28,7 +29,6 @@ import {
 } from '@/adapters/assets/TauriAssetUrlResolver';
 import {
   deleteAsset as deleteLocalAsset,
-  getLocalIndexHash,
   readAsset,
   rebuildIndex,
   writeAsset,
@@ -38,6 +38,7 @@ import { getDiskResourceEntries } from '@/adapters/assets/diskResourceLoader';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { ImageResourceEntry } from '@ocentra/asset-domain/resourceEntry/ImageResourceEntry';
 import { FileResourceEntry } from '@ocentra/asset-domain/resourceEntry/FileResourceEntry';
+import { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry';
 import JSON5 from 'json5';
 import { AssetDocumentSchema } from '@/lib/validation/schemas';
 import { AssetContentSlicePath } from '@ocentra/game-asset-domain/constants/content-slices';
@@ -59,13 +60,6 @@ const logWarn = (message: string, data?: unknown) =>
 
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.svg', '.avif']);
 
-type CloudSyncDiff = {
-  cloudOnly: string[];
-  localNewer: string[];
-  cloudNewer: string[];
-  inSync: number;
-  cloudIndexHash?: string;
-};
 
 type ComputedUploadEntry = {
   resourcePath: string;
@@ -132,6 +126,21 @@ function sanitizeFileName(name: string): string {
     .replace(/\s+/g, '_');
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit & { timeout?: number } = {}): Promise<Response> {
+  const { timeout = 30000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function uploadSingleAssetToLocalWorker(
   resourcePath: string,
   contentBytes: Uint8Array,
@@ -141,7 +150,7 @@ async function uploadSingleAssetToLocalWorker(
   const pathForPut = normalizeResourcePath(resourcePath);
   const contentType =
     mimeType || (pathForPut.endsWith('.asset') ? 'application/json' : 'application/octet-stream');
-  const putRes = await fetch(`${base}/assets/${encodeURIComponent(pathForPut)}`, {
+  const putRes = await fetchWithTimeout(`${base}/assets/${encodeURIComponent(pathForPut)}`, {
     method: 'PUT',
     headers: { 'Content-Type': contentType },
     body: contentBytes as BodyInit,
@@ -151,7 +160,7 @@ async function uploadSingleAssetToLocalWorker(
   }
   const { uploads } = await buildAppAssetSlicesFromDisk();
   for (const slice of uploads) {
-    const sliceRes = await fetch(`${base}/assets/${encodeURIComponent(slice.key)}`, {
+    const sliceRes = await fetchWithTimeout(`${base}/assets/${encodeURIComponent(slice.key)}`, {
       method: 'PUT',
       headers: { 'Content-Type': slice.contentType },
       body: new TextDecoder().decode(slice.contentBytes),
@@ -160,7 +169,7 @@ async function uploadSingleAssetToLocalWorker(
       throw new Error(`PUT ${slice.key}: ${sliceRes.status}`);
     }
   }
-  const notifyRes = await fetch(`${base}/assets/notify-change`, { method: 'POST' });
+  const notifyRes = await fetchWithTimeout(`${base}/assets/notify-change`, { method: 'POST' });
   if (!notifyRes.ok) {
     throw new Error(`POST notify-change: ${notifyRes.status}`);
   }
@@ -193,6 +202,59 @@ async function runWithConcurrency<TInput, TOutput>(
   );
 
   return results;
+}
+
+function buildClientSyncDiff(
+  localEntries: ResourceEntry[],
+  cloudScan: ScanResponse
+): { 
+  localOnly: ResourceEntry[],
+  localNewer: ResourceEntry[],
+  inSync: number 
+} {
+  const cloudByGuid = new Map<string, AssetEntry>();
+  cloudScan.assets.forEach(a => cloudByGuid.set(a.guid, a));
+  
+  const cloudByHash = new Map<string, ImageEntry>();
+  cloudScan.images.forEach(i => cloudByHash.set(i.hash, i));
+  
+  const cloudByChecksum = new Map<string, FileEntry>();
+  cloudScan.files.forEach(f => cloudByChecksum.set(f.checksum, f));
+
+  const localOnly: ResourceEntry[] = [];
+  const localNewer: ResourceEntry[] = [];
+  let inSyncCount = 0;
+
+  for (const local of localEntries) {
+    let cloud: AssetEntry | ImageEntry | FileEntry | undefined;
+    
+    if (local instanceof AssetResourceEntry) {
+      cloud = cloudByGuid.get(local.guid);
+    } else if (local instanceof ImageResourceEntry) {
+      cloud = cloudByHash.get(local.hash);
+    } else if (local instanceof FileResourceEntry) {
+      if (local.checksum) {
+        cloud = cloudByChecksum.get(local.checksum as string);
+      }
+    }
+
+    if (!cloud) {
+      localOnly.push(local);
+    } else {
+      // Compare checksums if available
+      const localChecksum = local.checksum;
+      // ImageEntry uses 'hash' field for checksum, others use 'checksum'
+      const cloudChecksum = 'checksum' in cloud ? cloud.checksum : ('hash' in cloud ? cloud.hash : undefined);
+      
+      if (localChecksum && cloudChecksum && localChecksum !== cloudChecksum) {
+        localNewer.push(local);
+      } else {
+        inSyncCount++;
+      }
+    }
+  }
+
+  return { localOnly, localNewer, inSync: inSyncCount };
 }
 
 function getImageExtension(mimeType: string | undefined, fileName: string | undefined): string {
@@ -394,8 +456,28 @@ async function computeUploadEntry(
 export class NetworkRouter {
   private static instance: NetworkRouter | null = null;
   private static eventRegistrar = new EventRegistrar();
+  private static authToken: string | null = null;
 
   private constructor() {}
+
+  static setAuthToken(token: string | null): void {
+    NetworkRouter.authToken = token;
+  }
+
+  private static getAuthHeader(): string {
+    const workerBase = getWorkerApiBase();
+    const isLocal = workerBase.includes('127.0.0.1') || workerBase.includes('localhost');
+    
+    if (isLocal) {
+      return 'Bearer test-token:asset-editor-dev:admin';
+    }
+    
+    if (NetworkRouter.authToken) {
+      return `Bearer ${NetworkRouter.authToken}`;
+    }
+    
+    return '';
+  }
 
   static getInstance(): NetworkRouter {
     if (!NetworkRouter.instance) {
@@ -411,6 +493,7 @@ export class NetworkRouter {
     NetworkRouter.eventRegistrar.subscribeAsync(ScanAssetsEvent, NetworkRouter.onScanAssetsEvent);
     NetworkRouter.eventRegistrar.subscribeAsync(DeleteAssetEvent, NetworkRouter.onDeleteAssetEvent);
     NetworkRouter.eventRegistrar.subscribeAsync(GetSyncStatusEvent, NetworkRouter.onGetSyncStatusEvent);
+    NetworkRouter.eventRegistrar.subscribeAsync(SyncAssetEvent, NetworkRouter.onSyncAssetEvent);
     NetworkRouter.eventRegistrar.subscribeAsync(SyncToR2Event, NetworkRouter.onSyncToR2Event);
     NetworkRouter.eventRegistrar.subscribeAsync(SyncFromR2Event, NetworkRouter.onSyncFromR2Event);
     NetworkRouter.eventRegistrar.subscribeAsync(ScanR2StatusEvent, NetworkRouter.onScanR2StatusEvent);
@@ -511,6 +594,18 @@ export class NetworkRouter {
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Failed to sync to R2';
       logError('SyncToR2 failed', error);
+      if (!event.deferred.isSettled()) event.deferred.resolve(OperationResult.failure(msg));
+    }
+  }
+
+  private static async onSyncAssetEvent(event: SyncAssetEvent): Promise<void> {
+    if (event.targetHandler && (event.targetHandler as unknown) !== NetworkRouterHandlerMarker) return;
+    try {
+      await NetworkRouter.getInstance().syncAsset(event.assetPath);
+      if (!event.deferred.isSettled()) event.deferred.resolve(OperationResult.success(undefined));
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to sync asset to R2';
+      logError('SyncAsset failed', error);
       if (!event.deferred.isSettled()) event.deferred.resolve(OperationResult.failure(msg));
     }
   }
@@ -894,97 +989,195 @@ export class NetworkRouter {
 
   async getSyncStatus(): Promise<AssetSyncStatus> {
     try {
-      const localIndexHash = await getLocalIndexHash();
-      const res = await fetch(`${getWorkerApiBase()}/assets/sync/diff`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ localIndexHash }),
-      });
-      if (!res.ok) {
-        return {};
-      }
-      const diff = await res.json() as CloudSyncDiff;
-      const changed = diff.localNewer.length + diff.cloudNewer.length;
-      const totalAssets = diff.inSync + changed + diff.cloudOnly.length;
+      const diskResources = await getDiskResourceEntries();
+      const cloudScan = await this.scanAssets();
+      
+      const diff = buildClientSyncDiff(diskResources, cloudScan);
+      const totalAssets = diskResources.length;
+      
       return {
         totalAssets,
         synced: diff.inSync,
-        changed,
-        notInCloud: diff.localNewer.length,
+        changed: diff.localNewer.length,
+        notInCloud: diff.localOnly.length,
       };
-    } catch {
+    } catch (error) {
+      logError('getSyncStatus failed', { error: toErrorMessage(error) });
       return {};
     }
   }
 
+  async syncAsset(assetPath: string): Promise<boolean> {
+    const path = normalizeResourcePath(assetPath);
+    try {
+      const baseUrl = getWorkerApiBase().replace(/\/api\/v1$/, '');
+      const localResponse = await readAsset(path);
+      if (!localResponse.ok) {
+        throw new Error(`Failed to read local asset: ${path}`);
+      }
+      const contentType = localResponse.headers.get('Content-Type') || 'application/octet-stream';
+      const body = await localResponse.arrayBuffer();
+
+      const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
+      const url = `${baseUrl}/api/v1/assets/resource/${encodedPath}`;
+
+      const authHeader = NetworkRouter.getAuthHeader();
+      const uploadRes = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': contentType,
+          ...(authHeader ? { 'Authorization': authHeader } : {}),
+        },
+        body,
+        // Short timeout for single asset sync
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error(`Upload failed for ${path}: ${uploadRes.status}`);
+      }
+
+      logInfo(`Synced asset to R2: ${path}`);
+      return true;
+    } catch (error) {
+      logError('syncAsset failed', { path, error: toErrorMessage(error) });
+      return false;
+    }
+  }
+
   async syncToR2(): Promise<void> {
-    const diskResources = await getDiskResourceEntries();
+    logInfo('syncToR2 started (delta mode)');
+    
+    const [diskResources, cloudScan] = await Promise.all([
+      getDiskResourceEntries(),
+      this.scanAssets(),
+    ]);
+
     const uploadableResources = diskResources.filter((resource) => {
       const path = typeof resource.path === 'string' ? normalizeResourcePath(resource.path) : '';
       return path.length > 0 && path.toLowerCase() !== 'resources/assetregistry.asset';
     });
 
-    const uploaded = (
-      await runWithConcurrency(uploadableResources, SYNC_CONCURRENCY, async (resource) => {
-        const path = typeof resource.path === 'string' ? normalizeResourcePath(resource.path) : '';
-        try {
-          const localResponse = await readAsset(path);
-          if (!localResponse.ok) {
-            return 0;
-          }
-          const contentType =
-            (typeof resource.mimeType === 'string' && resource.mimeType) ||
-            localResponse.headers.get('Content-Type') ||
-            'application/octet-stream';
-          const body = await localResponse.arrayBuffer();
-          const uploadRes = await fetch(`${getWorkerApiBase()}/assets/${encodeURIComponent(path)}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': contentType },
-            body,
-          });
-          if (!uploadRes.ok) {
-            throw new Error(`Upload failed for ${path}: ${uploadRes.status}`);
-          }
-          return true;
-        } catch (error) {
-          logError('SyncToR2 upload failed for resource', {
-            path,
-            error: toErrorMessage(error),
-          });
-          return false;
-        }
-      })
-    ).filter(Boolean).length;
+    const diff = buildClientSyncDiff(uploadableResources, cloudScan);
+    const toUpload = [...diff.localOnly, ...diff.localNewer];
 
+    logInfo(`Delta sync analysis: ${toUpload.length} to upload (${diff.localOnly.length} new, ${diff.localNewer.length} changed), ${diff.inSync} already in sync`);
+
+    if (toUpload.length === 0) {
+      logInfo('Everything is already in sync with R2');
+    } else {
+      const uploaded = (
+        await runWithConcurrency(toUpload, SYNC_CONCURRENCY, async (resource, index) => {
+          const path = typeof resource.path === 'string' ? normalizeResourcePath(resource.path) : '';
+          if (index % 10 === 0) {
+            logInfo(`Syncing resource ${index}/${toUpload.length}: ${path}`);
+          }
+          try {
+            const localResponse = await readAsset(path);
+            if (!localResponse.ok) {
+              return 0;
+            }
+            const contentType =
+              (typeof resource.mimeType === 'string' && resource.mimeType) ||
+              localResponse.headers.get('Content-Type') ||
+              'application/octet-stream';
+            const body = await localResponse.arrayBuffer();
+            const baseUrl = getWorkerApiBase().replace(/\/api\/v1$/, '');
+            const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
+            const authHeader = NetworkRouter.getAuthHeader();
+            const uploadRes = await fetch(`${baseUrl}/api/v1/assets/${encodedPath}`, {
+              method: 'PUT',
+              headers: { 
+                'Content-Type': contentType,
+                ...(authHeader ? { 'Authorization': authHeader } : {}),
+              },
+              body,
+            });
+            if (!uploadRes.ok) {
+              throw new Error(`Upload failed for ${path}: ${uploadRes.status}`);
+            }
+            return true;
+          } catch (error) {
+            logError('SyncToR2 upload failed for resource', {
+              path,
+              error: toErrorMessage(error),
+            });
+            return false;
+          }
+        })
+      ).filter(Boolean).length;
+      
+      logInfo(`Uploaded ${uploaded} resources to R2`);
+    }
+
+    logInfo('Analyzing slices for delta sync...');
     const generatedSlices = await buildAppAssetSlicesFromDisk();
-    const uploadedSlices = (
-      await runWithConcurrency(generatedSlices.uploads, SYNC_CONCURRENCY, async (slice) => {
-        try {
-          const uploadRes = await fetch(`${getWorkerApiBase()}/assets/${encodeURIComponent(slice.key)}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': slice.contentType },
-            body: new TextDecoder().decode(slice.contentBytes),
-          });
-          if (!uploadRes.ok) {
-            throw new Error(`Upload failed for ${slice.key}: ${uploadRes.status}`);
-          }
-          return true;
-        } catch (error) {
-          logError('SyncToR2 upload failed for generated slice', {
-            key: slice.key,
-            error: toErrorMessage(error),
-          });
-          return false;
+    
+    const cloudFilesByPath = new Map<string, FileEntry>();
+    cloudScan.files.forEach(f => cloudFilesByPath.set(normalizeResourcePath(f.path), f));
+
+    const sliceUploads: typeof generatedSlices.uploads = [];
+    for (const slice of generatedSlices.uploads) {
+      const slicePath = normalizeResourcePath(slice.key);
+      const cloud = cloudFilesByPath.get(slicePath);
+      
+      if (!cloud) {
+        sliceUploads.push(slice);
+      } else {
+        const localHash = await sha256Hex(slice.contentBytes);
+        if (localHash !== cloud.checksum) {
+          sliceUploads.push(slice);
         }
-      })
-    ).filter(Boolean).length;
+      }
+    }
 
-    logInfo('SyncToR2 complete', { uploaded, uploadedSlices });
+    logInfo(`Delta sync for slices: ${sliceUploads.length} to upload, ${generatedSlices.uploads.length - sliceUploads.length} already in sync`);
+
+    if (sliceUploads.length > 0) {
+      const uploadedSlices = (
+        await runWithConcurrency(sliceUploads, SYNC_CONCURRENCY, async (slice, index) => {
+          if (index % 5 === 0) {
+            logInfo(`Syncing slice ${index}/${sliceUploads.length}: ${slice.key}`);
+          }
+          try {
+            const baseUrl = getWorkerApiBase().replace(/\/api\/v1$/, '');
+            const encodedPath = slice.key.split('/').map(p => encodeURIComponent(p)).join('/');
+            const authHeader = NetworkRouter.getAuthHeader();
+            const uploadRes = await fetch(`${baseUrl}/api/v1/assets/${encodedPath}`, {
+              method: 'PUT',
+              headers: { 
+                'Content-Type': slice.contentType,
+                ...(authHeader ? { 'Authorization': authHeader } : {}),
+              },
+              body: slice.contentBytes as BodyInit,
+            });
+            if (!uploadRes.ok) {
+              throw new Error(`Upload failed for ${slice.key}: ${uploadRes.status}`);
+            }
+            return true;
+          } catch (error) {
+            logError('SyncToR2 upload failed for generated slice', {
+              key: slice.key,
+              error: toErrorMessage(error),
+            });
+            return false;
+          }
+        })
+      ).filter(Boolean).length;
+      logInfo(`Uploaded ${uploadedSlices} slices to R2`);
+    } else {
+      logInfo('All slices are already in sync with R2');
+    }
+
+    logInfo('SyncToR2 complete');
   }
-
   async syncFromR2(): Promise<void> {
     const workerBase = getWorkerApiBase();
-    const entryIndexRes = await fetch(`${workerBase}/assets/${encodeURIComponent(AssetContentSlicePath.EntryIndex)}`);
+    const authHeader = NetworkRouter.getAuthHeader();
+    
+    const entryIndexRes = await fetchWithTimeout(`${workerBase}/assets/${encodeURIComponent(AssetContentSlicePath.EntryIndex)}`, {
+      headers: authHeader ? { 'Authorization': authHeader } : undefined
+    });
     if (!entryIndexRes.ok) {
       throw new Error(`SyncFromR2 failed to fetch cloud entry index: ${entryIndexRes.status}`);
     }
@@ -1016,7 +1209,9 @@ export class NetworkRouter {
         }
 
         try {
-          const assetRes = await fetch(requestUrl);
+          const assetRes = await fetchWithTimeout(requestUrl, {
+            headers: authHeader ? { 'Authorization': authHeader } : undefined
+          });
           if (!assetRes.ok) {
             return false;
           }

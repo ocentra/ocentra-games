@@ -6,11 +6,13 @@ import {
   signInWithCredential,
   GoogleAuthProvider,
   signOut,
+  onIdTokenChanged,
 } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from '@/firebase/config';
 import { isTauri } from '@/adapters/assets/TauriAssetAdapter';
+import { NetworkRouter } from '@/adapters/network/NetworkRouter';
 import { signInWithGoogleNative } from '@/adapters/auth/GoogleOAuthTauri';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -126,6 +128,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutId);
     };
   }, [e2eBypassAuth]);
+
+  useEffect(() => {
+    if (!auth) return;
+    
+    const unsubscribeToken = onIdTokenChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const token = await firebaseUser.getIdToken();
+          NetworkRouter.setAuthToken(token);
+        } catch (error) {
+          logError('[Auth] Failed to get ID token', error);
+          NetworkRouter.setAuthToken(null);
+        }
+      } else {
+        NetworkRouter.setAuthToken(null);
+      }
+    });
+    
+    return () => unsubscribeToken();
+  }, []);
 
   const login = async (email: string, password: string) => {
     if (e2eBypassAuth) {

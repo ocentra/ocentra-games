@@ -1,6 +1,7 @@
-import type { InternalLogEntry } from '@/types/internalLogEntry';
-import { LogLevel } from '@/types/logLevel';
-import { LogConsumer, type BridgeLogPayload, type BridgeEntry } from '@/transport/bridgeLogPayload';
+import type { InternalLogEntry } from '../types/internalLogEntry';
+import { LogLevel } from '../types/logLevel';
+import { LogConsumer, type BridgeLogPayload, type BridgeEntry } from './bridgeLogPayload';
+import type { ILogTransport } from './logTransport';
 
 export interface BridgeContext {
   consumer?: (typeof LogConsumer)[keyof typeof LogConsumer] | null;
@@ -14,6 +15,7 @@ const LOG_CONSUMER_VALUES: (typeof LogConsumer)[keyof typeof LogConsumer][] = [
   LogConsumer.Cloudflare,
   LogConsumer.Main,
   LogConsumer.Solana,
+  LogConsumer.AssetEditor,
 ];
 
 function levelToString(level: string): string {
@@ -269,4 +271,29 @@ export async function flushReporterQueue(): Promise<void> {
     sendReporterPayloadsToBridge(payloads, endpoint)
   );
   await Promise.all(sends);
+}
+
+/**
+ * Transport that sends logs to a remote bridge server via HTTP
+ */
+export class BridgeTransport implements ILogTransport {
+  readonly name = 'bridge';
+
+  private defaultEndpoint: string | undefined;
+
+  constructor(defaultEndpoint?: string) {
+    this.defaultEndpoint = defaultEndpoint;
+  }
+
+
+  async emit(entries: BridgeEntry[], endpoint?: string): Promise<void> {
+    const target = endpoint || this.defaultEndpoint;
+    if (!target) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[BridgeTransport] No endpoint provided, skipping emit');
+      }
+      return;
+    }
+    await sendToBridge(entries, target);
+  }
 }

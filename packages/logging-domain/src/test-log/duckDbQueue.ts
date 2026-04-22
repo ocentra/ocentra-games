@@ -1,6 +1,6 @@
-import type { TestLog, RunType } from '@/test-log/types';
-import { TestLogDuckDb, getDefaultDbPath, ingestFilesOnly, LOG_DB_DOMAIN_ENV } from '@/test-log/testLogDuckDb';
-import { getChangedFiles, updateManifest } from '@/test-log/ingestManifest';
+import type { TestLog, RunType } from '@ocentra/logging-domain/test-log/types';
+import { TestLogDuckDb, getDefaultDbPath, ingestFilesOnly, LOG_DB_DOMAIN_ENV } from '@ocentra/logging-domain/test-log/testLogDuckDb';
+import { getChangedFiles, updateManifest } from '@ocentra/logging-domain/test-log/ingestManifest';
 
 function getDomain(): string | undefined {
   return process.env[LOG_DB_DOMAIN_ENV];

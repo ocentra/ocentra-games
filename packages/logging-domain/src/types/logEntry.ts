@@ -1,7 +1,7 @@
-import type { LogLevel } from '@/types/logLevel';
-import type { LogSource } from '@/types/logSource';
-import type { LogOrigin } from '@/types/logOrigin';
-import type { StackFrame } from '@/types/stackFrame';
+import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import type { LogSource } from '@ocentra/logging-domain/types/logSource';
+import type { LogOrigin } from '@ocentra/logging-domain/types/logOrigin';
+import type { StackFrame } from '@ocentra/logging-domain/types/stackFrame';
 
 export interface LogEntry {
   id: string;

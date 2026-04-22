@@ -1,6 +1,6 @@
-import type { BridgeLogPayload } from '@/transport/bridgeLogPayload';
-import type { TestLog, NdjsonLogEntry, RunType, TestSuiteTypeValue, TestLogOrigin } from '@/test-log/types';
-import { TestLogOrigin as TestLogOriginConst } from '@/test-log/types';
+import type { BridgeLogPayload } from '@ocentra/logging-domain/transport/bridgeLogPayload';
+import type { TestLog, NdjsonLogEntry, RunType, TestSuiteTypeValue, TestLogOrigin } from '@ocentra/logging-domain/test-log/types';
+import { TestLogOrigin as TestLogOriginConst } from '@ocentra/logging-domain/test-log/types';
 
 function asLevel(v: string): 'error' | 'warn' | 'info' | 'debug' {
   const s = String(v).toLowerCase();
