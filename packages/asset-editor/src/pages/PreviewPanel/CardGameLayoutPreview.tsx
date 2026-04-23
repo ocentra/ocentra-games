@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
 import type { CardGameLayoutDocument as LayoutAssetDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
-import { createPanelWindow, CARD_GAME_LAYOUT_DRAFT_CHANNEL } from '@/utils/createPanelWindow';
+import { createPanelWindow } from '@/utils/createPanelWindow';
 import type { AssetData } from '@/types/assets';
 import {
   buildLoadedLayoutAssetFromRaw,
@@ -10,9 +10,11 @@ import {
   saveLayoutAsset,
 } from '@/adapters/layout/LayoutAssetService';
 import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
-import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL, type IsolationRequestMessage, type CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { isolationStore } from '@/services/IsolationStore';
 import {
   readStoredLayoutEditorPlayerCount,
   writeStoredLayoutEditorPlayerCount,
@@ -115,22 +117,69 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
 
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     const handler = (event: MessageEvent<CardGameLayoutDraftMessage>) => {
-      if (event.data?.assetPath !== assetPath || !event.data.document) {
+      if (event.data?.assetPath !== assetPath) {
         return;
       }
 
-      setDocument(event.data.document);
-      if (typeof event.data.playerCount === 'number') {
-        setActivePlayerCount(event.data.playerCount);
+      if (event.data.type === 'ISOLATED_UPDATE') {
+        const { componentType, config } = event.data;
+        setDocument(prev => {
+          if (!prev) return null;
+          const next = cloneCardGameLayoutDocument(prev);
+          
+          if (componentType === 'PlayerUI') {
+            next.playerUiDefaults = { ...next.playerUiDefaults, ...(config as Record<string, unknown>) };
+          } else if (componentType === 'HudArtwork') {
+            next.hud = { ...next.hud, ...(config as Record<string, unknown>) };
+          } else if (componentType === 'TableZone') {
+            const presetKey = String(activePlayerCount || prev.defaultPlayerCount);
+            if (next.presets[presetKey]) {
+              next.presets[presetKey].table = { ...next.presets[presetKey].table, ...(config as Record<string, unknown>) };
+            }
+          }
+          
+          onAssetUpdate?.(buildDraftAssetData(next));
+          return next;
+        });
+        return;
       }
-      onAssetUpdate?.(buildDraftAssetData(event.data.document));
+
+      if (event.data.document) {
+        setDocument(event.data.document);
+        if (typeof event.data.playerCount === 'number') {
+          setActivePlayerCount(event.data.playerCount);
+        }
+        onAssetUpdate?.(buildDraftAssetData(event.data.document));
+      }
     };
     channel.addEventListener('message', handler);
     return () => {
       channel.removeEventListener('message', handler);
       channel.close();
     };
-  }, [assetPath, buildDraftAssetData, document, onAssetUpdate]);
+  }, [assetPath, activePlayerCount, buildDraftAssetData, document, onAssetUpdate]);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(ISOLATION_REQUEST_CHANNEL);
+    const handler = (event: MessageEvent<IsolationRequestMessage>) => {
+      if (event.data?.assetPath !== assetPath) {
+        return;
+      }
+
+      const { type, label, config } = event.data;
+      isolationStore.isolateComponent(type, label, config);
+      
+      // Auto-open isolation hub if it's the first one
+      if (isolationStore.getState().items.length === 1) {
+        void createPanelWindow('isolation', assetPath, 'Isolation Hub', true);
+      }
+    };
+    channel.addEventListener('message', handler);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+    };
+  }, [assetPath]);
 
   const broadcastDraft = useCallback((nextDocument: LayoutAssetDocument, playerCount: number | null) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
@@ -181,7 +230,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   }, [activePlayerCount, broadcastDraft, document, loadedAsset, onAssetUpdate]);
 
   const handleOpenCanvas = useCallback(async () => {
-    const win = await createPanelWindow('preview-canvas', assetPath, (assetData.name as string) || 'Layout Preview', true);
+    const win = await createPanelWindow('preview-canvas', assetPath, (assetData.name as string) || 'Layout Preview', true, activePlayerCount ?? undefined);
     setIsPreviewTornOff(true);
     externalWindowRef.current = win;
 
@@ -191,7 +240,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
         externalWindowRef.current = null;
       });
     }
-  }, [assetPath, assetData.name]);
+  }, [assetPath, assetData.name, activePlayerCount]);
 
   const handleRecallPreview = useCallback(() => {
     if (externalWindowRef.current) {
@@ -201,51 +250,15 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   }, []);
 
 
-  const [viewportScale, setViewportScale] = useState(0.2);
-  const observerRef = useRef<ResizeObserver | null>(null);
-
-  const viewportBoxRef = useCallback((node: HTMLDivElement | null) => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    if (node) {
-      const measure = () => {
-        const width = node.clientWidth;
-        const height = node.clientHeight;
-        if (width > 0 && height > 0) {
-          setViewportScale(Math.min(width / 1920, height / 1080));
-        }
-      };
-
-      measure();
-      const observer = new ResizeObserver(measure);
-      observer.observe(node);
-      observerRef.current = observer;
-
-      // Ensure it settles
-      setTimeout(measure, 100);
-      setTimeout(measure, 500);
-    }
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, []);
-
   const previewUrl = useMemo(() => {
     const params = new URLSearchParams();
     params.set('standalone', 'preview-canvas');
     params.set('assetPath', assetPath);
     params.set('hideTools', 'true');
     params.set('locked', 'true');
+    if (activePlayerCount !== null) params.set('playerCount', String(activePlayerCount));
     return `/standalone-panel?${params.toString()}`;
-  }, [assetPath]);
+  }, [assetPath, activePlayerCount]);
 
   if (!document) {
     return (
@@ -270,6 +283,9 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
           ) : (
             <button type="button" onClick={handleOpenCanvas}>Open Canvas</button>
           )}
+          <button type="button" onClick={() => void createPanelWindow('isolation', assetPath, 'Isolation Hub', true)}>
+            Isolation Hub
+          </button>
           {saveStatus ? <span className="card-game-layout-preview__status">{saveStatus}</span> : null}
         </div>
       </div>
@@ -277,23 +293,15 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       <div className="card-game-layout-preview__container">
         <div className="card-game-layout-preview__content">
           {!isPreviewTornOff && (
-            <div ref={viewportBoxRef} className="card-game-layout-preview__viewport-box">
+            <div className="card-game-layout-preview__viewport-box" style={{ position: 'relative', width: '100%', height: '100%', minHeight: 0 }}>
               <iframe
                 src={previewUrl}
                 className="card-game-layout-preview__reflection-iframe"
                 style={{
-                  width: 1920,
-                  height: 1080,
-                  minWidth: 1920,
-                  minHeight: 1080,
-                  transform: `translate(-50%, -50%) scale(${viewportScale})`,
-                  transformOrigin: 'center center',
-                  position: 'absolute',
-                  left: '50%',
-                  top: '50%',
+                  width: '100%',
+                  height: '100%',
                   border: 'none',
-                  opacity: 1,
-                  transition: 'transform 0.2s ease-out, opacity 0.2s ease-in-out',
+                  display: 'block'
                 }}
                 title="Card Game Reflection Preview"
               />

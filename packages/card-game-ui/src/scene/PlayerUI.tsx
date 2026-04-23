@@ -81,7 +81,9 @@ export class PlayerUIConfig {
   }
 }
 
-export type PlayerUIProps = Partial<PlayerUIConfig>;
+export type PlayerUIProps = Partial<PlayerUIConfig> & {
+  onIsolate?: () => void;
+};
 export type SerializablePlayerUIKey = 'baseArcRotation' | 'infoBoxAngle' | 'infoBoxRotation';
 export const PLAYER_UI_SERIALIZABLE_KEYS: readonly SerializablePlayerUIKey[] = [
   'baseArcRotation',
@@ -148,7 +150,6 @@ type PlayerUIComponent = React.FC<PlayerUIProps> & {
   ) => Partial<Record<string, number>> | undefined;
 };
 
-// Helper function to convert polar coordinates to cartesian
 const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
   const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
   return {
@@ -157,7 +158,6 @@ const polarToCartesian = (centerX: number, centerY: number, radius: number, angl
   };
 };
 
-// Helper function to create an arc path
 const createArcPath = (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {
   const start = polarToCartesian(x, y, radius, endAngle);
   const end = polarToCartesian(x, y, radius, startAngle);
@@ -190,9 +190,9 @@ const createArcPathForText = (
 };
 
 const PlayerUI: PlayerUIComponent = (props) => {
-  const config = useMemo(() => Object.assign(new PlayerUIConfig(), props), [props]);
+  const { onIsolate, ...otherProps } = props;
+  const config = useMemo(() => Object.assign(new PlayerUIConfig(), otherProps), [otherProps]);
   const {
-    // Base Arc
     baseArcRadius,
     baseArcCenterX,
     baseArcCenterY,
@@ -201,7 +201,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
     baseArcEndAngle,
     baseArcRotation,
 
-    // Edge Ring
     edgeRingRadius,
     edgeRingStrokeWidth,
     edgeRingStrokeColor,
@@ -213,7 +212,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
     edgeRingGlowStdDeviation,
     edgeRingGlowOpacity,
 
-    // Label Text
     labelText,
     labelFontSize,
     labelColor,
@@ -225,7 +223,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
     labelStartOffset,
     labelMaxCharacters,
 
-    // Avatar Image
     avatarUrl,
     avatarImageScale,
     avatarBaseScale,
@@ -233,7 +230,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
     avatarVisible,
     avatarAlignOffset,
 
-    // Info Box
     infoBoxWidth,
     infoBoxHeight,
     infoBoxRadius,
@@ -251,7 +247,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
     infoBoxRadialDistance,
     infoBoxRotation,
 
-    // Canvas
     canvasWidth,
     canvasHeight,
     overallScale,
@@ -260,7 +255,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
   const scaledCanvasWidth = useMemo(() => canvasWidth * overallScale, [canvasWidth, overallScale]);
   const scaledCanvasHeight = useMemo(() => canvasHeight * overallScale, [canvasHeight, overallScale]);
 
-  // Calculate scaled values
   const scaledImageSize = useMemo(() => 170 * avatarImageScale, [avatarImageScale]);
   const scaledImageRadius = useMemo(() => scaledImageSize / 2, [scaledImageSize]);
   const scaledBaseRadius = useMemo(
@@ -351,16 +345,14 @@ const PlayerUI: PlayerUIComponent = (props) => {
   const baseId = useId();
   const labelPathId = useMemo(() => `labelPath-${baseId.replace(/:/g, '')}`, [baseId]);
   
-  // Create the arc path for the base arc
   const baseArcPath = useMemo(() => {
     if (baseArcEndAngle - baseArcStartAngle >= 360) {
-      return null; // Full circle
+      return null;
     }
     const arcPath = createArcPath(baseArcCenterX, baseArcCenterY, baseArcRadius, baseArcStartAngle, baseArcEndAngle);
     return arcPath + ` L ${baseArcCenterX} ${baseArcCenterY} Z`;
   }, [baseArcCenterX, baseArcCenterY, baseArcRadius, baseArcStartAngle, baseArcEndAngle]);
   
-  // Resolve filter ids for optional bevel/glow combos
   const edgeRingFilterId = useMemo(() => {
     if (edgeRingBevelEnabled && edgeRingGlowEnabled) return 'edgeRingBevelGlow';
     if (edgeRingBevelEnabled) return 'edgeRingBevel';
@@ -376,7 +368,17 @@ const PlayerUI: PlayerUIComponent = (props) => {
   }, [infoBoxBevelEnabled, infoBoxGlowEnabled]);
   
   return (
-    <div className="player-ui player-ui-container">
+    <div 
+      className="player-ui player-ui-container"
+      onContextMenu={(e) => {
+        if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+        if (onIsolate) {
+          e.preventDefault();
+          e.stopPropagation();
+          onIsolate();
+        }
+      }}
+    >
       <svg 
         className="player-ui-svg" 
         width={scaledCanvasWidth} 
@@ -384,7 +386,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
         viewBox={`0 0 ${canvasWidth} ${canvasHeight}`}
       >
         <defs>
-          {/* Edge ring filters */}
           <filter id="edgeRingBevel" x="-60%" y="-60%" width="220%" height="220%">
             <feGaussianBlur in="SourceAlpha" stdDeviation={edgeRingBevelBlur} result="alphaBlur"/>
             <feSpecularLighting
@@ -440,7 +441,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
             </feMerge>
           </filter>
 
-          {/* Info box filters */}
           <filter id="infoBoxBevel" x="-40%" y="-60%" width="180%" height="220%">
             <feGaussianBlur in="SourceAlpha" stdDeviation={infoBoxBevelBlur} result="alphaBlur"/>
             <feSpecularLighting
@@ -503,7 +503,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           <path id={labelPathId} d={labelPathD} fill="none"/>
         </defs>
         
-        {/* Base Arc */}
         <g
           className="base-arc-group"
           transform={`rotate(${baseArcRotation} ${baseArcCenterX} ${baseArcCenterY})`}
@@ -515,7 +514,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           )}
         </g>
         
-        {/* Edge Ring */}
         <circle 
           className="edge-ring"
           cx={baseArcCenterX} 
@@ -527,7 +525,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           filter={edgeRingFilterId ? `url(#${edgeRingFilterId})` : undefined}
         />
         
-        {/* Image Base */}
         <circle 
           className="image-base"
           cx={baseArcCenterX} 
@@ -536,7 +533,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           fill={avatarBaseColor} 
         />
         
-        {/* Image */}
         {avatarVisible && avatarUrl && (
           <image
             className="player-image"
@@ -550,7 +546,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           />
         )}
 
-        {/* Label Text */}
         {labelText && (
           <text
             className="player-banner-text"
@@ -572,7 +567,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
           </text>
         )}
 
-        {/* Bottom Info Box */}
         <g className="info-box-group" transform={infoBoxGroupTransform || undefined}>
           <rect
             className="info-box"
@@ -586,7 +580,6 @@ const PlayerUI: PlayerUIComponent = (props) => {
             filter={infoBoxFilterId ? `url(#${infoBoxFilterId})` : undefined}
           />
 
-          {/* Box Text */}
           {infoBoxText && (
             <text
               className="box-text"

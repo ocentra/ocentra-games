@@ -1,3 +1,4 @@
+export * from './constants/layout';
 export { GameFooter } from './Footer/GameFooter';
 export type { GameFooterProps } from './Footer/GameFooter';
 export { BaseHeader } from './Header/BaseHeader';

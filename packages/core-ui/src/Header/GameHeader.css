@@ -4,15 +4,21 @@
   top: 0;
   left: 0;
   right: 0;
-  height: clamp(3.5rem, 7dvh, 4.5rem);
+  height: 7%; /* Use % for simulation scaling; acts like vh when fixed */
+  min-height: 3.5rem !important;
+  max-height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-1) 0;
+  padding: 0;
   margin: 0;
   margin-bottom: var(--space-1);
   z-index: 1000;
   background: transparent;
+  container-type: inline-size;
+  container-name: header;
+  --vw: 1vw;
+  --vh: 1vh;
 }
 
 /* Welcome variant - centered circular logo */
@@ -138,12 +144,10 @@
   background: transparent;
 }
 
-/* Left child - empty space for game variant */
-.game-header--game .header-left {
-  flex: 1;
-  height: 40%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+/* Left child - Container for home and stripe */
+.header-left {
+  flex: 1 1 0%;
+  height: 100% !important; /* Force full header height globally */
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -152,15 +156,28 @@
   position: relative;
 }
 
+.header-left::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: clamp(0.25rem, 2dvh, 1.25rem);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: -1;
+}
+
 /* Home button in header */
 .header-home-button {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
-  background: rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  gap: 0.6rem;
+  padding: 0 1rem 0 0.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.95);
@@ -171,7 +188,8 @@
   font-family: inherit;
   margin-left: var(--space-1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  height: var(--control-h-sm);
+  height: 80% !important;
+  min-height: 2.75rem !important;
 }
 
 .header-home-button:hover {
@@ -181,10 +199,10 @@
 }
 
 .header-home-button .home-icon {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1;
-  width: 2.125rem;
-  height: 2.125rem;
+  height: 90% !important; /* Scale with button */
+  aspect-ratio: 1/1 !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -195,6 +213,9 @@
 .header-home-button .home-text {
   font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(0rem, calc(15 * var(--vw)), 6rem);
 }
 
 /* Logo Section */
@@ -238,7 +259,11 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg);
-  min-height: var(--control-h-sm);
+  height: 85% !important;
+  min-height: 2.2rem !important;
+  aspect-ratio: auto !important;
+  max-width: 40%;
+  flex-shrink: 1;
 }
 
 .header-center-content {
@@ -259,16 +284,30 @@
   white-space: nowrap;
 }
 
-/* Right child - half of parent, semi-transparent */
+/* Right child - Container for profile and stripe */
 .header-right {
-  flex: 1;
-  height: 40%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  flex: 1 1 0%;
+  height: 100% !important; /* Use full header height */
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding-right: 0;
+  position: relative;
+  min-width: 0;
+}
+
+.header-right::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: clamp(0.25rem, 2dvh, 1.25rem);
+  /* Match left stripe */
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: -1;
 }
 
 .game-title {
@@ -278,9 +317,9 @@
   margin: 0;
   padding: 0;
   letter-spacing: clamp(4px, 1vw, 8px);
-  text-shadow: 
-    2px 2px 4px rgba(0,0,0,0.3),
-    0 0 20px rgba(255,255,255,0.5);
+  text-shadow:
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(255, 255, 255, 0.5);
   line-height: 1;
   display: flex;
   align-items: center;
@@ -291,17 +330,17 @@
 .suit-red {
   font-size: clamp(0.8rem, 2vw, 1rem);
   color: #ef4444;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(239, 68, 68, 0.8),
-    1px 1px 2px rgba(0,0,0,0.3);
+    1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .suit-black {
   font-size: clamp(0.8rem, 2vw, 1rem);
   color: #1f2937;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(255, 255, 255, 0.3),
-    1px 1px 2px rgba(0,0,0,0.3);
+    1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* User profile section */
@@ -325,16 +364,16 @@
 .user-profile-compact {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
-  background: rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  gap: 0.6rem;
+  padding: 0 1rem 0 0.6rem;
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  transition: all 0.3s ease;
-  height: var(--control-h-sm);
+  height: 80% !important;
+  min-height: 2.75rem !important;
 }
 
 .user-profile-compact:hover {
@@ -344,16 +383,17 @@
 }
 
 .profile-avatar-compact {
-  width: 2.125rem;
-  height: 2.125rem;
+  height: 90% !important; /* Scale with button */
+  aspect-ratio: 1/1 !important;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
 }
 
 .profile-avatar-placeholder-compact {
-  width: 2.125rem;
-  height: 2.125rem;
+  height: 90% !important; /* Scale with button */
+  aspect-ratio: 1/1 !important;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   display: flex;
@@ -361,15 +401,16 @@
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
 }
 
 .profile-name-compact {
   color: white;
   font-weight: 500;
   font-size: var(--fs-00);
-  max-width: 7.5rem;
+  max-width: clamp(2rem, calc(15 * var(--vw)), 7rem);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -396,10 +437,13 @@
 }
 
 @keyframes admin-badge-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
   }
+
   50% {
     transform: scale(1.05);
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
@@ -438,6 +482,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -584,37 +629,43 @@
   .game-header--welcome .header-container--welcome {
     padding: 0 var(--space-2);
   }
-  
+
   .header-center {
     padding: 0 var(--space-2);
   }
-  
+
   .header-border-top,
   .header-border-bottom {
     width: 5rem;
   }
-  
+
   .game-title {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
+    font-size: clamp(0.9rem, 4vw, 1.1rem);
+    letter-spacing: 1px;
+    gap: 0.2rem;
   }
-  
+
+  .header-center {
+    padding: 0 var(--space-1);
+  }
+
+  .home-text,
   .profile-name-compact {
     display: none;
   }
-  
+
   .header-logo-section {
     gap: var(--space-1);
   }
-  
+
   .header-logo {
     height: 2rem;
   }
-  
+
   .header-brand-text {
     font-size: 0.9rem;
   }
-  
+
   .header-logo-unit {
     gap: var(--space-1);
     transform: translate(-50%, -50%) scale(0.85);
@@ -624,7 +675,7 @@
     width: 3.75rem;
     height: 3.75rem;
   }
-  
+
   .header-logo-circle-image {
     width: 100%;
     height: 100%;
@@ -638,7 +689,7 @@
   .header-text-right {
     margin-left: 0.3rem;
   }
-  
+
   .decoration-line {
     display: none;
   }
@@ -659,6 +710,48 @@
     max-height: 0.9375rem;
     height: 28%;
   }
+
+/* Container Queries for responsive behavior within simulation or narrow viewports */
+@container header (max-width: 1100px) {
+  .header-home-button .home-text,
+  .profile-name-compact,
+  .profile-arrow,
+  .header-tagline {
+    display: none !important;
+  }
+
+  .header-home-button,
+  .user-profile-compact {
+    padding: 0 !important;
+    aspect-ratio: 1/1 !important;
+    width: 2.75rem !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+  }
+
+  .header-home-button {
+    margin-left: var(--space-2);
+  }
+
+  .user-profile-section {
+    margin-right: var(--space-2);
+  }
+
+  .header-logo-unit {
+    gap: 0.4rem;
+  }
+
+  .header-text-image {
+    max-height: 1.25rem;
+  }
+}
+
+@container header (max-width: 600px) {
+  .header-text-left,
+  .header-text-right {
+    display: none !important;
+  }
+}
 
   .header-text-right {
     margin-left: 0.25rem;

@@ -2,6 +2,7 @@ import { forwardRef, type ReactNode, useRef } from "react";
 import HudArtwork from "./HudArtwork";
 import { type HudArtworkControls } from "./HudArtwork.types";
 import "./GameHUD.css";
+import { IsolationComponentType } from "@ocentra/game-layout-domain/isolation-types";
 
 interface GameHUDProps {
   children?: ReactNode;
@@ -9,6 +10,7 @@ interface GameHUDProps {
   showButtonGuides?: boolean;
   showArtwork?: boolean;
   onButtonClick?: (index: number, label: string) => void;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
 
 /**
@@ -21,7 +23,8 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({
   controls, 
   showButtonGuides = false, 
   showArtwork = true, 
-  onButtonClick
+  onButtonClick,
+  onIsolate
 }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +55,7 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({
           fitHeight={controls.height}
           showButtonGuides={showButtonGuides}
           onButtonClick={onButtonClick}
+          onIsolate={onIsolate}
         />
       ) : (
         <div ref={ref} style={{ position: 'absolute', inset: 0 }} />

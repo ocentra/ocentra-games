@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { GameHeader, type GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
-import { CARD_GAME_LAYOUT_DRAFT_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
-import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
+import type { CardGameLayoutDraftMessage, IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { HudButtonEditorModal } from './HudButtonEditorModal';
 import { CardGamePreviewSurface } from './CardGamePreviewSurface';
 import { DEFAULT_HUD_ARTWORK_CONTROLS } from './scene/HudArtwork.types';
@@ -10,6 +10,7 @@ import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayo
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { HudArtworkControls } from './scene/HudArtwork.types';
+import { LayoutClasses } from '@ocentra/core-ui';
 import './CardGameTemplatePage.css';
 
 export interface CardGameTemplatePageProps {
@@ -28,6 +29,7 @@ export interface CardGameTemplatePageProps {
   onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
+  showArenaGuide?: boolean;
 }
 
 export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
@@ -45,6 +47,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   onHudButtonClick,
   arenaOverlay,
   stageOverlay,
+  showArenaGuide = false,
 }) => {
   const [draftDoc, setDraftDoc] = useState<CardGameLayoutDocument | null>(null);
   const [draftPlayerCount, setDraftPlayerCount] = useState<number | null>(null);
@@ -133,6 +136,18 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     handleDocChange(nextDoc);
     onSeatsChange?.(nextSeats);
   }, [activeDoc, handleDocChange, resolvedPlayerCount, onSeatsChange]);
+  
+  const handleIsolate = useCallback((type: IsolationRequestMessage['type'], label: string, config: unknown) => {
+    const channel = new BroadcastChannel(ISOLATION_REQUEST_CHANNEL);
+    const message: IsolationRequestMessage = {
+      type,
+      label,
+      config,
+      assetPath: assetPath || 'unknown',
+    };
+    channel.postMessage(message);
+    channel.close();
+  }, [assetPath]);
 
   const shellRef = useRef<HTMLDivElement>(null);
   const [gameScale, setGameScale] = useState(1);
@@ -158,18 +173,24 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     return () => observer.disconnect();
   }, [activeDoc.hud.width]);
 
+  const isPortrait = activeDoc.hud.height > activeDoc.hud.width;
+
   return (
     <div 
       ref={shellRef}
-      className={`${embedded ? 'game-screen game-screen--embedded' : 'game-screen'}${showFooter ? ' game-screen--with-footer' : ''}`}
-      style={{ '--game-scale': gameScale } as React.CSSProperties}
+      className={`${embedded ? `${LayoutClasses.GAME_SCREEN} ${LayoutClasses.EMBEDDED}` : LayoutClasses.GAME_SCREEN}${showFooter ? ` ${LayoutClasses.WITH_FOOTER}` : ''}${isPortrait ? ' game-screen--portrait' : ''}`}
+      style={{ 
+        '--game-scale': gameScale,
+        '--sim-w': `${activeDoc.hud.width * gameScale}px`,
+        '--sim-h': `${activeDoc.hud.height * gameScale}px`
+      } as React.CSSProperties}
     >
-      <div className="game-screen__shell">
-        <div className={`game-screen__layer-item game-screen__layer-item--header game-screen__layer-item--chrome${showHeader ? '' : ' game-screen__layer-item--hidden'}`}>
+      <div className={LayoutClasses.SHELL}>
+        <div className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--header ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}${showHeader ? '' : ` ${LayoutClasses.HIDDEN}`}`}>
           <GameHeader {...headerProps} onHomeClick={handleHomeClick} />
         </div>
 
-        <main className="game-screen__stage" aria-label="Card game template stage">
+        <main className={LayoutClasses.STAGE} aria-label="Card game template stage">
           <CardGamePreviewSurface
             document={activeDoc}
             playerCount={resolvedPlayerCount}
@@ -181,10 +202,12 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
             onHudButtonClick={onHudButtonClick}
             arenaOverlay={arenaOverlay}
             stageOverlay={stageOverlay}
+            onIsolate={handleIsolate}
+            showArenaGuide={showArenaGuide}
           />
         </main>
 
-        <div className={`game-screen__layer-item game-screen__layer-item--footer game-screen__layer-item--chrome${showFooter ? '' : ' game-screen__layer-item--hidden'}`}>
+        <div className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--footer ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}${showFooter ? '' : ` ${LayoutClasses.HIDDEN}`}`}>
           <GameFooter appVersion={footerVersion} />
         </div>
       </div>

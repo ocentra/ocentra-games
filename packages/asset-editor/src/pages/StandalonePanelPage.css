@@ -6,169 +6,298 @@
   overflow: auto;
 }
 
-.standalone-panel-page--card-game-preview {
-  background: #050814;
-  overflow: hidden;
+.standalone-panel-page {
+  background: #02040a;
 }
 
-.preview-canvas-tools {
+/* CSS Overrides for Shared Template - Universal Targeting */
+.standalone-panel-page .game-screen,
+.standalone-panel-page .game-screen__shell,
+.standalone-panel-page .game-screen__stage,
+.standalone-panel-page .card-game-preview-surface,
+.standalone-panel-page .card-game-preview-surface__stage,
+.standalone-panel-page .card-game-preview-surface__scene,
+.standalone-panel-page .game-background,
+.standalone-panel-page .game-background__texture {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+}
+
+.standalone-panel-page .game-screen {
+  background: #080b18 !important; /* Base game color */
+}
+
+.standalone-panel-page .game-screen__stage {
+  z-index: 1 !important;
+}
+
+/* Ensure the background texture actually shows through */
+.standalone-panel-page .game-background__texture {
+  z-index: 0 !important;
+  background-color: #080b18 !important;
+}
+
+/* Header/Footer overlays */
+.standalone-panel-page .game-screen__layer-item--chrome {
+  display: contents !important;
+}
+
+.standalone-panel-page .game-header,
+.standalone-panel-page .game-footer {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 10 !important;
+  background: transparent !important;
+}
+
+.standalone-panel-page .game-header { top: 0 !important; }
+.standalone-panel-page .game-footer { bottom: 0 !important; }
+
+/* 
+   "Remove" the wrappers layout-wise while keeping the children.
+   display: contents makes the browser ignore the wrapper's box entirely.
+*/
+.standalone-panel-page--card-game-preview .game-screen__layer-item--chrome {
+  display: contents !important;
+}
+
+.standalone-panel-page--card-game-preview .game-header,
+.standalone-panel-page--card-game-preview .game-footer {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 10 !important;
+  background: transparent !important;
+}
+
+.standalone-panel-page--card-game-preview .game-header {
+  top: 0 !important;
+}
+
+.standalone-panel-page--card-game-preview .game-footer {
+  bottom: 0 !important;
+}
+
+/* Professional Menu Bar */
+.standalone-canvas-menu-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  background: #1e1e1e;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+  height: 38px;
+  box-sizing: border-box;
+  color: #ccc;
+  font-size: 13px;
+  user-select: none;
+}
+
+.standalone-canvas-menu-bar__logo {
+  font-weight: 700;
+  margin-right: 1.5rem;
+  color: #8affb0;
+  letter-spacing: -0.02em;
+}
+
+.standalone-canvas-menu-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 100%;
+}
+
+/* Dropdown Menus */
+.standalone-canvas-menu-bar__menu {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  cursor: default;
+}
+
+.standalone-canvas-menu-bar__menu:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.standalone-canvas-menu-bar__menu-label {
+  color: #ddd;
+}
+
+.standalone-canvas-menu-bar__menu-dropdown {
   position: absolute;
-  z-index: 400;
-  width: min(18rem, calc(100vw - 1rem));
-  padding: 0;
-  border-radius: 0.9rem;
-  border: 0.0625rem solid rgba(141, 255, 176, 0.24);
-  background: rgba(3, 18, 10, 0.92);
-  box-shadow: 0 0 0 0.0625rem rgba(0, 0, 0, 0.28), 0 1rem 2.4rem rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(12px);
-  overflow: hidden;
+  top: 100%;
+  left: 0;
+  background: #252525;
+  border: 1px solid #444;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  border-radius: 0 0 4px 4px;
+  min-width: 200px;
+  display: none;
+  z-index: 1000;
+  padding: 0.25rem 0;
 }
 
-.preview-canvas-tools--collapsed {
-  width: auto;
-  min-width: 0;
+.standalone-canvas-menu-bar__menu:hover .standalone-canvas-menu-bar__menu-dropdown {
+  display: block;
 }
 
-.preview-canvas-tools__titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.7rem 0.85rem;
-  border-bottom: 0.0625rem solid rgba(141, 255, 176, 0.16);
-  color: #eaffed;
-  cursor: move;
-}
-
-.preview-canvas-tools__titlecopy {
-  display: grid;
-  gap: 0.1rem;
-}
-
-.preview-canvas-tools__titlebar strong {
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.preview-canvas-tools__titlebar span {
-  color: rgba(234, 255, 237, 0.68);
-  font-size: 0.72rem;
-}
-
-.preview-canvas-tools__titleactions {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.preview-canvas-tools__icon,
-.preview-canvas-tools__tab,
-.preview-canvas-tools__chip,
-.preview-canvas-tools__action {
-  border: 0.0625rem solid rgba(141, 255, 176, 0.22);
-  background: rgba(141, 255, 176, 0.06);
-  color: #eaffed;
-  border-radius: 0.45rem;
-  padding: 0.35rem 0.55rem;
-  cursor: pointer;
-  font-size: 0.72rem;
-}
-
-.preview-canvas-tools__icon {
-  border-radius: 999px;
-  padding-inline: 0.7rem;
-}
-
-.preview-canvas-tools__tabs {
-  display: flex;
-  gap: 0.35rem;
-  padding: 0.65rem 0.85rem 0;
-}
-
-.preview-canvas-tools__tab {
-  flex: 1 1 0;
-  background: rgba(6, 24, 12, 0.88);
-}
-
-.preview-canvas-tools__tab--active,
-.preview-canvas-tools__chip--active {
-  background: rgba(74, 222, 128, 0.22);
-  border-color: rgba(74, 222, 128, 0.5);
-}
-
-.preview-canvas-tools__section {
-  display: grid;
-  gap: 0.55rem;
-  padding: 0.75rem 0.85rem;
-  border-top: 0.0625rem solid rgba(141, 255, 176, 0.08);
-}
-
-.preview-canvas-tools__compact {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 0.75rem 0.75rem;
-}
-
-.preview-canvas-tools__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  color: #eaffed;
-  font-size: 0.76rem;
-}
-
-.preview-canvas-tools__toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: #eaffed;
-  font-size: 0.76rem;
-}
-
-.preview-canvas-tools__toggle--compact {
-  padding: 0.2rem 0;
-}
-
-.preview-canvas-tools__range {
+.standalone-canvas-menu-bar__menu-item {
+  display: block;
   width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.4rem 1rem;
+  color: #ccc;
+  font-size: 12px;
+  cursor: pointer;
 }
 
-.preview-canvas-tools__chips {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
+.standalone-canvas-menu-bar__menu-item:hover {
+  background: #3a3a3a;
+  color: white;
 }
 
-.preview-canvas-tools__inline {
+.standalone-canvas-menu-bar__menu-item.is-active::before {
+  content: '✓';
+  position: absolute;
+  left: 6px;
+}
+
+.standalone-canvas-menu-bar__menu-separator {
+  height: 1px;
+  background: #444;
+  margin: 0.25rem 0.5rem;
+}
+
+/* Toolbar Fields */
+.standalone-canvas-menu-bar__field {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
-.preview-canvas-tools__select {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: 0.0625rem solid rgba(141, 255, 176, 0.18);
-  background: rgba(4, 20, 11, 0.82);
-  color: #eaffed;
-  border-radius: 0.45rem;
-  padding: 0.4rem 0.5rem;
+.standalone-canvas-menu-bar__label {
+  color: #888;
 }
 
-.preview-canvas-tools__field {
-  display: grid;
-  gap: 0.3rem;
-  color: rgba(234, 255, 237, 0.76);
-  font-size: 0.72rem;
+.standalone-canvas-menu-bar__select,
+.standalone-canvas-menu-bar__input {
+  background: #111;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 3px;
+  padding: 2px 4px;
+  outline: none;
+  font-size: 12px;
 }
 
-.preview-canvas-tools__hint {
-  margin: 0;
-  color: rgba(234, 255, 237, 0.62);
-  font-size: 0.72rem;
-  line-height: 1.35;
+.standalone-canvas-menu-bar__select:hover,
+.standalone-canvas-menu-bar__input:focus {
+  border-color: #666;
+}
+
+.standalone-canvas-menu-bar__separator {
+  width: 1px;
+  height: 16px;
+  background: #444;
+  margin: 0 0.5rem;
+}
+
+.standalone-canvas-menu-bar__orientation-btn {
+  background: #111;
+  border: 1px solid #444;
+  color: #888;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.standalone-canvas-menu-bar__orientation-btn:hover:not(:disabled) {
+  border-color: #666;
+  color: #eee;
+}
+
+.standalone-canvas-menu-bar__orientation-btn.is-active {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+}
+
+.standalone-canvas-menu-bar__orientation-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Custom resolution tools */
+.standalone-canvas-menu-bar__custom-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255,255,255,0.03);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.standalone-canvas-menu-bar__save {
+  background: #333;
+  border: 1px solid #444;
+  color: #ddd;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.standalone-canvas-menu-bar__save:hover {
+  background: #444;
+}
+
+/* Copy Tools */
+.standalone-canvas-menu-bar__copy-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.standalone-canvas-menu-bar__btn {
+  background: #333;
+  border: 1px solid #444;
+  color: #ddd;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.standalone-canvas-menu-bar__btn:hover {
+  background: #444;
+}
+
+/* Viewport Styles */
+.standalone-canvas-viewport__device-wrapper {
+  transform-origin: top left;
+  transition: transform 0.2s ease-out;
 }
 
 .standalone-panel-page--empty {
@@ -184,10 +313,4 @@
   justify-content: center;
   min-height: 200px;
   color: #94a3b8;
-}
-
-.standalone-inspector-placeholder {
-  padding: 16px;
-  color: #94a3b8;
-  font-size: 14px;
 }

@@ -8,15 +8,18 @@ import {
   type WingConfig,
 } from "./HudArtwork.types";
 import "./HudArtwork.css";
+import { IsolationComponentType } from "@ocentra/game-layout-domain/isolation-types";
 
 
-interface HudArtworkProps {
+export interface HudArtworkProps {
   controls: HudArtworkControls;
   fitWidth: number;
   fitHeight: number;
   showButtonGuides?: boolean;
   onButtonClick?: (index: number, label: string) => void;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
+
 
 function leftWingPath(x: number, y: number, width: number, height: number, topRadius: number) {
   const x2 = x + width;
@@ -41,6 +44,7 @@ function rightWingPath(x: number, y: number, width: number, height: number, topR
           L ${x2} ${y2}
           Z`;
 }
+
 
 function leftWingGlassPath(x: number, y: number, width: number, height: number, topRadius: number, inset = 2) {
   const ix = x + inset;
@@ -113,7 +117,7 @@ function domeClipRect(width: number, height: number) {
   return { x: 0, y: 0, width, height };
 }
 
-const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, onButtonClick }, ref) => {
+const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, onButtonClick, onIsolate }, ref) => {
   const uid = useId().replace(/:/g, "");
   const wingGlowId = `${uid}-wingGlow`;
   const domeGlowId = `${uid}-domeGlow`;
@@ -241,7 +245,6 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
     transformOrigin: 'center bottom',
     pointerEvents: 'none',
     overflow: 'visible',
-    // Keeping variables in case inner elements rely on them (though we removed most needs)
     ['--hud-offset-x' as string]: `${controls.hudOffsetX}px`,
     ['--hud-offset-y' as string]: `${controls.hudOffsetY}px`,
     ['--hud-fit-width' as string]: `${fitWidth}px`,
@@ -266,6 +269,14 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
       ) : null}
       <svg
         className="hud-artwork__svg"
+        onContextMenu={(e) => {
+          if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+          if (onIsolate) {
+            e.preventDefault();
+            e.stopPropagation();
+            onIsolate(IsolationComponentType.HudArtwork, 'Main HUD', controls);
+          }
+        }}
         viewBox={`0 0 ${width} ${height}`}
         width="100%"
         height="100%"
@@ -547,6 +558,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
                 transformOrigin: "center center",
               }}
               onClick={() => onButtonClick?.(configIndex, label || `A${index + 1}`)}
+              onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label || `A${index + 1}`, buttonConfig) : undefined}
             />
           );
         })}
@@ -580,6 +592,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
                 transformOrigin: "center center",
               }}
               onClick={() => onButtonClick?.(configIndex, label || `B${index + 1}`)}
+              onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label || `B${index + 1}`, buttonConfig) : undefined}
             />
           );
         })}

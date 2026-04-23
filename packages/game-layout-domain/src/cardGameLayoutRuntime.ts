@@ -7,6 +7,7 @@ import type {
   HudButtonControls,
   LayoutPreset,
   PlayerUiDefaults,
+  TableZone,
 } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { SeatLayout, SerializablePlayerUIKey, TableShapeSettings } from '@ocentra/game-ui-types/tableLayoutTypes';
 
@@ -53,6 +54,16 @@ export interface SerializedLayoutPreset {
   seats?: SerializedSeatLayout[];
 }
 
+export interface SerializedTableZone {
+  id?: string;
+  label?: string;
+  type?: string;
+  position?: { x?: number; y?: number };
+  scale?: number;
+  rotation?: number;
+  engineBinding?: string;
+}
+
 export interface SerializedCardGameLayoutDocument {
   defaultPlayerCount?: number;
   presets?: Record<string, SerializedLayoutPreset>;
@@ -61,6 +72,7 @@ export interface SerializedCardGameLayoutDocument {
   cardFan?: Partial<CardFanControls>;
   cardVisuals?: Partial<CardVisualControls>;
   views?: Record<string, SerializedLayoutPreset>;
+  zones?: SerializedTableZone[];
   gameplay?: Record<string, unknown>;
   extensions?: Record<string, unknown>;
 }
@@ -95,6 +107,8 @@ export const DEFAULT_PLAYER_UI_DEFAULTS: PlayerUiDefaults = {
   avatarBaseColor: 'rgba(240, 240, 240, 1)',
   infoBoxColor: 'rgba(0, 60, 120, 0.9)',
   overallScale: 1,
+  width: 400,
+  height: 300,
 };
 
 export const DEFAULT_HUD_BUTTON_CONTROLS: HudButtonControls = {
@@ -251,6 +265,11 @@ const clonePreset = (preset: LayoutPreset): LayoutPreset => ({
   seats: preset.seats.map((seat) => cloneSeat(seat)),
 });
 
+const cloneZone = (zone: TableZone): TableZone => ({
+  ...zone,
+  position: { ...zone.position },
+});
+
 export const seedLayoutPresetFromSource = (
   sourcePreset: LayoutPreset | null | undefined,
   targetCount: number,
@@ -355,6 +374,35 @@ export const createDefaultCardGameLayoutDocument = (): CardGameLayoutDocument =>
     cardFan: cloneCardFan(DEFAULT_CARD_FAN_CONTROLS),
     cardVisuals: cloneCardVisuals(DEFAULT_CARD_VISUAL_CONTROLS),
     views: {},
+    zones: [
+      {
+        id: 'deck',
+        label: 'Deck',
+        type: 'deck',
+        position: { x: 0.85, y: 0.5 },
+        scale: 1,
+        rotation: 0,
+        engineBinding: 'deck',
+      },
+      {
+        id: 'discard',
+        label: 'Discard',
+        type: 'list',
+        position: { x: 0.35, y: 0.5 },
+        scale: 1,
+        rotation: 0,
+        engineBinding: 'discardPile',
+      },
+      {
+        id: 'floor',
+        label: 'Floor',
+        type: 'card',
+        position: { x: 0.5, y: 0.5 },
+        scale: 1,
+        rotation: 0,
+        engineBinding: 'floorCard',
+      },
+    ],
     gameplay: {},
     extensions: {},
   };
@@ -404,6 +452,21 @@ const normalizeSeat = (input: SerializedSeatLayout | undefined, fallback?: SeatL
   }
 
   return seat;
+};
+
+const normalizeZone = (input: SerializedTableZone | undefined): TableZone => {
+  return {
+    id: input?.id ?? `zone-${Math.random().toString(36).slice(2, 9)}`,
+    label: input?.label ?? 'Zone',
+    type: (input?.type as 'deck' | 'pot' | 'card' | 'list') ?? 'card',
+    position: {
+      x: Number.isFinite(input?.position?.x) ? Number(input?.position?.x) : 0.5,
+      y: Number.isFinite(input?.position?.y) ? Number(input?.position?.y) : 0.5,
+    },
+    scale: Number.isFinite(input?.scale) ? Number(input?.scale) : 1,
+    rotation: Number.isFinite(input?.rotation) ? Number(input?.rotation) : 0,
+    engineBinding: input?.engineBinding,
+  };
 };
 
 export const normalizeLayoutPreset = (
@@ -600,6 +663,9 @@ export const normalizeCardGameLayoutDocument = (
       fallback.cardVisuals,
     ),
     views,
+    zones: Array.isArray(container.zones)
+      ? container.zones.map((z: SerializedTableZone) => normalizeZone(z))
+      : clone(fallback.zones),
     gameplay,
     extensions,
   };
@@ -676,6 +742,7 @@ export const cloneCardGameLayoutDocument = (document: CardGameLayoutDocument): C
   views: Object.fromEntries(
     Object.entries(document.views).map(([key, preset]) => [key, clonePreset(preset)]),
   ),
+  zones: document.zones?.map((zone) => cloneZone(zone)),
   gameplay: clone(document.gameplay),
   extensions: clone(document.extensions),
 });

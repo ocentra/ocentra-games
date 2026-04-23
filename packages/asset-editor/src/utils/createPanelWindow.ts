@@ -12,31 +12,33 @@ log.register(import.meta.url)
 export const ASSET_SELECTION_CHANNEL = 'ocentra-asset-editor-selection'
 
 export function getStandalonePanelUrl(
-  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation',
   assetPath: string,
-  locked?: boolean
+  locked?: boolean,
+  playerCount?: number
 ): string {
   const base = `${window.location.origin}${window.location.pathname || '/'}`
   const params = new URLSearchParams()
   params.set('standalone', panel)
   params.set('assetPath', assetPath)
   if (locked !== undefined) params.set('locked', String(locked))
+  if (playerCount !== undefined) params.set('playerCount', String(playerCount))
   return `${base}?${params.toString()}`
 }
 
 export async function createPanelWindow(
-  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation',
   assetPath: string,
   title?: string,
-  locked?: boolean
+  locked?: boolean,
+  playerCount?: number
 ): Promise<import('@tauri-apps/api/webviewWindow').WebviewWindow | undefined> {
   if (!isTauri()) return
 
   const { WebviewWindow, getAllWebviewWindows } = await import('@tauri-apps/api/webviewWindow')
-  const url = getStandalonePanelUrl(panel, assetPath, locked)
+  const url = getStandalonePanelUrl(panel, assetPath, locked, playerCount)
   const label = panel === 'preview-canvas' ? 'preview-canvas-standalone' : `panel-${panel}`
   
-  // Prevent duplicate canvas windows
   const windows = await getAllWebviewWindows();
   const existing = windows.find((w: import('@tauri-apps/api/webviewWindow').WebviewWindow) => w.label === label);
   if (existing) {
@@ -52,8 +54,10 @@ export async function createPanelWindow(
       : panel === 'design-studio'
         ? { width: 1600, height: 1000 }
         : panel === 'preview-canvas'
-          ? { width: 1280, height: 900 }
-          : { width: 420, height: 720 }
+          ? { width: 1600, height: 900 }
+          : panel === 'isolation'
+            ? { width: 900, height: 800 }
+            : { width: 420, height: 720 }
 
   const webview = new WebviewWindow(label, {
     url,
@@ -65,7 +69,9 @@ export async function createPanelWindow(
           ? 'Design Studio'
           : panel === 'preview-canvas'
             ? 'Preview Canvas'
-            : 'Inspector'}: ${assetPath.split('/').pop() ?? assetPath}`,
+            : panel === 'isolation'
+              ? 'Isolation Hub'
+              : 'Inspector'}: ${assetPath.split('/').pop() ?? assetPath}`,
     width: size.width,
     height: size.height,
     resizable: true,

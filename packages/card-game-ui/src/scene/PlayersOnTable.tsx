@@ -4,11 +4,13 @@ import './PlayersOnTable.css';
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import type { TableLayoutState } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import { IsolationComponentType } from '@ocentra/game-layout-domain/isolation-types';
 
 interface PlayersOnTableProps {
   editableSeats?: boolean;
   showLocalSeat?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
 
 interface AlignmentGuides {
@@ -26,6 +28,7 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
   editableSeats = false,
   showLocalSeat = false,
   onSeatsChange,
+  onIsolate,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dragSeatIdRef = useRef<number | null>(null);
@@ -139,6 +142,16 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
     updateSeatPositionFromPointer(clientX, clientY);
   }, [editableSeats, updateSeatPositionFromPointer]);
 
+  const handlePositionChange = useCallback((seatId: number, x: number, y: number) => {
+    const nextSeats = seats.map((seat) =>
+      seat.id === seatId
+        ? { ...seat, position: { x: Math.round(x * 10000) / 10000, y: Math.round(y * 10000) / 10000 } }
+        : seat
+    );
+    tableLayoutStore.setSeats(nextSeats);
+    onSeatsChange?.(nextSeats);
+  }, [onSeatsChange, seats]);
+
   return (
     <div className={editableSeats ? 'players-on-table players-on-table--interactive' : 'players-on-table'} ref={containerRef}>
       {editableSeats && alignmentGuides.x !== null ? (
@@ -164,6 +177,8 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
           playerUiDefaults={playerUiDefaults}
           editable={editableSeats}
           isLocalSeat={seat.id === 0}
+          onIsolate={onIsolate}
+          onPositionChange={editableSeats ? handlePositionChange : undefined}
         />
       ))}
     </div>
@@ -179,6 +194,8 @@ interface PlayerSeatContainerProps {
   playerUiDefaults: Record<string, unknown>;
   editable: boolean;
   isLocalSeat: boolean;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
+  onPositionChange?: (seatId: number, x: number, y: number) => void;
 }
 
 const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
@@ -190,6 +207,8 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
   playerUiDefaults,
   editable,
   isLocalSeat,
+  onIsolate,
+  onPositionChange,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -230,7 +249,6 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
     dragging ? 'player-seat--dragging' : '',
     isLocalSeat ? 'player-seat--local' : '',
   ].filter(Boolean).join(' ');
-  const coordinateLabel = `X ${seat.position.x.toFixed(3)} | Y ${seat.position.y.toFixed(3)}`;
   return (
     <div
       ref={ref}
@@ -242,13 +260,52 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
       onPointerUp={handlePointerUp}
     >
       {editable ? <div className="player-seat__editor-frame" /> : null}
-      <PlayerUI {...playerUiDefaults} {...(seat.playerOverrides ?? {})} />
+      <PlayerUI 
+        {...playerUiDefaults} 
+        {...(seat.playerOverrides ?? {})} 
+        onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.PlayerUI, seat.label ?? `Player ${seat.id + 1}`, { ...playerUiDefaults, ...(seat.playerOverrides ?? {}) }) : undefined}
+      />
       {editable ? (
-        <div className="player-seat__handle-wrap">
-          <div className="player-seat__handle player-seat__handle--label">{seat.label ?? `P${seat.id + 1}`}</div>
-          <div className="player-seat__handle player-seat__handle--drag">Drag</div>
+        <div className="player-seat__editor-controls">
+          <div className="player-seat__handle-wrap">
+            <div className="player-seat__handle player-seat__handle--label">{seat.label ?? `P${seat.id + 1}`}</div>
+            <div className="player-seat__handle player-seat__handle--drag">Drag</div>
+          </div>
           {selected || dragging ? (
-            <div className="player-seat__handle player-seat__handle--coords">{coordinateLabel}</div>
+            <div className="player-seat__coord-inputs" onPointerDown={(e) => e.stopPropagation()}>
+              <label className="player-seat__coord-field">
+                <span>X</span>
+                <input
+                  id={`seat-${seat.id}-x`}
+                  type="number"
+                  className="player-seat__coord-input"
+                  min={0}
+                  max={1}
+                  step={0.001}
+                  value={seat.position.x.toFixed(3)}
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value);
+                    if (Number.isFinite(v)) onPositionChange?.(seat.id, Math.max(0, Math.min(1, v)), seat.position.y);
+                  }}
+                />
+              </label>
+              <label className="player-seat__coord-field">
+                <span>Y</span>
+                <input
+                  id={`seat-${seat.id}-y`}
+                  type="number"
+                  className="player-seat__coord-input"
+                  min={0}
+                  max={1}
+                  step={0.001}
+                  value={seat.position.y.toFixed(3)}
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value);
+                    if (Number.isFinite(v)) onPositionChange?.(seat.id, seat.position.x, Math.max(0, Math.min(1, v)));
+                  }}
+                />
+              </label>
+            </div>
           ) : null}
         </div>
       ) : null}

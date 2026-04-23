@@ -9,6 +9,10 @@ export interface PlayerUiDefaults {
   avatarBaseColor: string;
   infoBoxColor: string;
   overallScale: number;
+  width: number;
+  height: number;
+  timerThickness?: number;
+  timerColor?: string;
 }
 
 export interface WingConfig {
@@ -153,6 +157,18 @@ export interface LayoutPreset {
   seats: SeatLayout[];
 }
 
+export type TableZoneType = 'deck' | 'pot' | 'card' | 'list';
+
+export interface TableZone {
+  id: string;
+  label: string;
+  type: TableZoneType;
+  position: { x: number; y: number };
+  scale?: number;
+  rotation?: number;
+  engineBinding?: string;
+}
+
 export interface CardGameLayoutDocument {
   defaultPlayerCount: number;
   presets: Record<string, LayoutPreset>;
@@ -161,6 +177,7 @@ export interface CardGameLayoutDocument {
   cardFan: CardFanControls;
   cardVisuals: CardVisualControls;
   views: Record<string, LayoutPreset>;
+  zones?: TableZone[];
   gameplay: Record<string, unknown>;
   extensions: Record<string, unknown>;
 }

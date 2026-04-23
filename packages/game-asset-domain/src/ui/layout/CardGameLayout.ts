@@ -52,6 +52,9 @@ export class CardGameLayout extends Layout {
   @serializable({ label: 'Views' })
   views: Record<string, LayoutPreset> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).views;
 
+  @serializable({ label: 'Zones' })
+  zones: CardGameLayoutDocument['zones'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).zones;
+
   @serializable({ label: 'Gameplay' })
   gameplay: Record<string, unknown> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).gameplay;
 

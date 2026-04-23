@@ -1,4 +1,5 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { PreviewPanel } from '@/pages/PreviewPanel/PreviewPanel';
 import { InspectorPanel } from '@/pages/InspectorPanel/InspectorPanel';
 import { loadAssetFromNetwork } from '@/pages/MainPage/loadAssetFromNetwork';
@@ -22,10 +23,10 @@ import {
 } from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import { HudButtonEditorModal } from '@ocentra/card-game-ui/HudButtonEditorModal';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
+import { type GameHeaderProps, LayoutClasses } from '@ocentra/core-ui';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
-import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import {
   cloneCardGameLayoutDocument,
   createLayoutPreset,
@@ -44,27 +45,39 @@ type StandalonePanel =
   | 'preview'
   | 'inspector'
   | 'design-studio'
-  | 'preview-canvas';
+  | 'preview-canvas'
+  | 'isolation';
 
-interface PreviewCanvasToolsProps {
+interface StandaloneCanvasMenuBarProps {
   playerCount: number;
   minPlayerCount: number;
   maxPlayerCount: number;
   showHandles: boolean;
-  currentTable: {
-    width?: number;
-    height?: number;
-    offsetX?: number;
-    offsetY?: number;
-    curvature?: number;
-  };
   onPlayerCountChange: (count: number) => void;
   onShowHandlesChange: (value: boolean) => void;
   onCopyPreset: (sourceCount: number) => void;
-  onTableChange: (field: 'width' | 'height' | 'offsetX' | 'offsetY' | 'curvature', value: number) => void;
+  showArenaGuide: boolean;
+  onShowArenaGuideChange: (value: boolean) => void;
+  resolution: string;
+  onResolutionChange: (value: string) => void;
+  showStudio: boolean;
+  onShowStudioChange: (value: boolean) => void;
+  isPortrait: boolean;
+  onIsPortraitChange: (value: boolean) => void;
+  customWidth: number;
+  onCustomWidthChange: (value: number) => void;
+  customHeight: number;
+  onCustomHeightChange: (value: number) => void;
+  resolutions: ResolutionOption[];
+  onAddCustomDevice: (name: string, width: number, height: number) => void;
+  onShowLayers: () => void;
 }
 
-type PreviewCanvasToolTab = 'preset' | 'table' | 'view';
+interface ResolutionOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
 
 function resolveCopySourceCount(
   requestedCount: number,
@@ -80,16 +93,29 @@ function resolveCopySourceCount(
   return fallback === playerCount ? minPlayerCount : fallback;
 }
 
-const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
+const StandaloneCanvasMenuBar: React.FC<StandaloneCanvasMenuBarProps> = ({
   playerCount,
   minPlayerCount,
   maxPlayerCount,
   showHandles,
-  currentTable,
   onPlayerCountChange,
   onShowHandlesChange,
   onCopyPreset,
-  onTableChange,
+  showArenaGuide,
+  onShowArenaGuideChange,
+  resolution,
+  onResolutionChange,
+  showStudio,
+  onShowStudioChange,
+  isPortrait,
+  onIsPortraitChange,
+  customWidth,
+  onCustomWidthChange,
+  customHeight,
+  onCustomHeightChange,
+  resolutions,
+  onAddCustomDevice,
+  onShowLayers,
 }) => {
   const counts = useMemo(
     () => Array.from({ length: maxPlayerCount - minPlayerCount + 1 }, (_, index) => minPlayerCount + index),
@@ -99,51 +125,15 @@ const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
     () => counts.filter((count) => count !== playerCount),
     [counts, playerCount],
   );
+  
   const [copySourceCount, setCopySourceCount] = useState<number>(
     Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1)),
   );
-  const [position, setPosition] = useState({ x: 24, y: 96 });
-  const [collapsed, setCollapsed] = useState(false);
-  const [activeTab, setActiveTab] = useState<PreviewCanvasToolTab>('preset');
-  const dragOffsetRef = useRef<{ x: number; y: number } | null>(null);
+  
   const resolvedCopySourceCount = useMemo(
     () => resolveCopySourceCount(copySourceCount, playerCount, minPlayerCount, maxPlayerCount),
     [copySourceCount, maxPlayerCount, minPlayerCount, playerCount],
   );
-
-  useEffect(() => {
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!dragOffsetRef.current) {
-        return;
-      }
-
-      setPosition({
-        x: Math.max(8, event.clientX - dragOffsetRef.current.x),
-        y: Math.max(8, event.clientY - dragOffsetRef.current.y),
-      });
-    };
-
-    const handlePointerUp = () => {
-      dragOffsetRef.current = null;
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
-    };
-  }, []);
-
-  const handleDragStart = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    dragOffsetRef.current = {
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
-    };
-  }, []);
 
   const handleCopy = useCallback(() => {
     if (resolvedCopySourceCount !== playerCount) {
@@ -151,169 +141,146 @@ const PreviewCanvasTools: React.FC<PreviewCanvasToolsProps> = ({
     }
   }, [onCopyPreset, playerCount, resolvedCopySourceCount]);
 
+
+
   return (
-    <div
-      className={collapsed ? 'preview-canvas-tools preview-canvas-tools--collapsed' : 'preview-canvas-tools'}
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
-    >
-      <div className="preview-canvas-tools__titlebar" onPointerDown={handleDragStart}>
-        <div className="preview-canvas-tools__titlecopy">
-          <strong>Layout Tools</strong>
-          <span>{playerCount} players</span>
+    <div className="standalone-canvas-menu-bar">
+      <div className="standalone-canvas-menu-bar__group">
+        <div className="standalone-canvas-menu-bar__logo">Layout Studio</div>
+        
+        <div className="standalone-canvas-menu-bar__menu">
+          <span className="standalone-canvas-menu-bar__menu-label">View</span>
+          <div className="standalone-canvas-menu-bar__menu-dropdown">
+            <button 
+              className={`standalone-canvas-menu-bar__menu-item ${showArenaGuide ? 'is-active' : ''}`}
+              onClick={() => onShowArenaGuideChange(!showArenaGuide)}
+            >
+              Show Arena Guide
+            </button>
+            <button 
+              className={`standalone-canvas-menu-bar__menu-item ${showHandles ? 'is-active' : ''}`}
+              onClick={() => onShowHandlesChange(!showHandles)}
+            >
+              Show Interaction Handles
+            </button>
+          </div>
         </div>
-        <div className="preview-canvas-tools__titleactions" onPointerDown={(event) => event.stopPropagation()}>
-          <button
-            type="button"
-            className="preview-canvas-tools__icon"
-            onClick={() => setCollapsed((current) => !current)}
-            aria-label={collapsed ? 'Expand layout tools' : 'Collapse layout tools'}
-          >
-            {collapsed ? 'Open' : 'Hide'}
-          </button>
+
+        <div className="standalone-canvas-menu-bar__menu">
+          <span className="standalone-canvas-menu-bar__menu-label">Window</span>
+          <div className="standalone-canvas-menu-bar__menu-dropdown">
+            <button 
+              className={`standalone-canvas-menu-bar__menu-item ${showStudio ? 'is-active' : ''}`}
+              onClick={() => onShowStudioChange(!showStudio)}
+            >
+              Design Studio (Inspector)
+            </button>
+            <button 
+              className="standalone-canvas-menu-bar__menu-item"
+              onClick={onShowLayers}
+            >
+              Layer Management...
+            </button>
+          </div>
         </div>
       </div>
 
-      {collapsed ? (
-        <div className="preview-canvas-tools__compact">
-          <button
-            type="button"
-            className="preview-canvas-tools__chip preview-canvas-tools__chip--active"
-            onClick={() => setCollapsed(false)}
+      <div className="standalone-canvas-menu-bar__group">
+        <label className="standalone-canvas-menu-bar__field">
+          <span className="standalone-canvas-menu-bar__label">Players</span>
+          <select 
+            className="standalone-canvas-menu-bar__select"
+            value={playerCount}
+            onChange={(e) => onPlayerCountChange(Number(e.target.value))}
           >
-            {playerCount}P
-          </button>
-          <label className="preview-canvas-tools__toggle preview-canvas-tools__toggle--compact">
-            <input type="checkbox" checked={showHandles} onChange={(event) => onShowHandlesChange(event.target.checked)} />
-            <span>Handles</span>
-          </label>
-        </div>
-      ) : (
-        <>
-          <div className="preview-canvas-tools__tabs">
-            <button
-              type="button"
-              className={activeTab === 'preset' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
-              onClick={() => setActiveTab('preset')}
+            {counts.map((count) => (
+              <option key={count} value={count}>
+                {count} Players
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="standalone-canvas-menu-bar__separator" />
+
+        <label className="standalone-canvas-menu-bar__field">
+          <span className="standalone-canvas-menu-bar__label">Viewport</span>
+          <select 
+            className="standalone-canvas-menu-bar__select"
+            value={resolution}
+            onChange={(e) => onResolutionChange(e.target.value)}
+          >
+            {resolutions.map((r, idx) => (
+              <option key={`${r.value}-${idx}`} value={r.value} disabled={r.disabled}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <button
+          type="button"
+          className={`standalone-canvas-menu-bar__orientation-btn ${isPortrait ? 'is-active' : ''}`}
+          onClick={() => onIsPortraitChange(!isPortrait)}
+          disabled={resolution === 'fit'}
+          title={isPortrait ? "Switch to Landscape" : "Switch to Portrait"}
+        >
+          {isPortrait ? 'Portrait ⭥' : 'Landscape ⭤'}
+        </button>
+        
+        {resolution === 'custom' && (
+          <div className="standalone-canvas-menu-bar__custom-group">
+            <input 
+              type="number" 
+              className="standalone-canvas-menu-bar__input" 
+              value={customWidth}
+              onChange={(e) => onCustomWidthChange(Number(e.target.value))}
+              placeholder="W"
+            />
+            <span className="standalone-canvas-menu-bar__x">×</span>
+            <input 
+              type="number" 
+              className="standalone-canvas-menu-bar__input" 
+              value={customHeight}
+              onChange={(e) => onCustomHeightChange(Number(e.target.value))}
+              placeholder="H"
+            />
+            <button 
+              className="standalone-canvas-menu-bar__save"
+              onClick={() => {
+                const name = prompt('Device Name:', 'Custom Mobile');
+                if (name) onAddCustomDevice(name, customWidth, customHeight);
+              }}
             >
-              Preset
-            </button>
-            <button
-              type="button"
-              className={activeTab === 'table' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
-              onClick={() => setActiveTab('table')}
-            >
-              Table
-            </button>
-            <button
-              type="button"
-              className={activeTab === 'view' ? 'preview-canvas-tools__tab preview-canvas-tools__tab--active' : 'preview-canvas-tools__tab'}
-              onClick={() => setActiveTab('view')}
-            >
-              View
+              Save
             </button>
           </div>
+        )}
+      </div>
 
-          {activeTab === 'preset' ? (
-            <>
-              <div className="preview-canvas-tools__section">
-                <div className="preview-canvas-tools__row">
-                  <span>Player count</span>
-                  <strong>{playerCount}</strong>
-                </div>
-                <input
-                  className="preview-canvas-tools__range"
-                  type="range"
-                  min={minPlayerCount}
-                  max={maxPlayerCount}
-                  step={1}
-                  value={playerCount}
-                  onChange={(event) => onPlayerCountChange(Number(event.target.value))}
-                />
-                <div className="preview-canvas-tools__chips">
-                  {counts.map((count) => (
-                    <button
-                      key={count}
-                      type="button"
-                      className={count === playerCount ? 'preview-canvas-tools__chip preview-canvas-tools__chip--active' : 'preview-canvas-tools__chip'}
-                      onClick={() => onPlayerCountChange(count)}
-                    >
-                      {count}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="preview-canvas-tools__section">
-                <div className="preview-canvas-tools__row">
-                  <span>Copy preset</span>
-                </div>
-                <div className="preview-canvas-tools__inline">
-                  <select
-                    className="preview-canvas-tools__select"
-                    value={sourceCounts.includes(resolvedCopySourceCount) ? resolvedCopySourceCount : (sourceCounts[0] ?? playerCount)}
-                    onChange={(event) => setCopySourceCount(Number(event.target.value))}
-                    disabled={sourceCounts.length === 0}
-                  >
-                    {sourceCounts.map((count) => (
-                      <option key={count} value={count}>
-                        From {count} players
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="preview-canvas-tools__action"
-                    onClick={handleCopy}
-                    disabled={sourceCounts.length === 0}
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : null}
-
-          {activeTab === 'table' ? (
-            <div className="preview-canvas-tools__section">
-              <div className="preview-canvas-tools__row">
-                <span>Table shape</span>
-              </div>
-              <label className="preview-canvas-tools__field">
-                <span>Width</span>
-                <input type="range" min={400} max={1800} step={1} value={currentTable.width ?? 960} onChange={(event) => onTableChange('width', Number(event.target.value))} />
-              </label>
-              <label className="preview-canvas-tools__field">
-                <span>Height</span>
-                <input type="range" min={200} max={1000} step={1} value={currentTable.height ?? 560} onChange={(event) => onTableChange('height', Number(event.target.value))} />
-              </label>
-              <label className="preview-canvas-tools__field">
-                <span>Offset X</span>
-                <input type="range" min={-400} max={400} step={1} value={currentTable.offsetX ?? 0} onChange={(event) => onTableChange('offsetX', Number(event.target.value))} />
-              </label>
-              <label className="preview-canvas-tools__field">
-                <span>Offset Y</span>
-                <input type="range" min={-400} max={400} step={1} value={currentTable.offsetY ?? 0} onChange={(event) => onTableChange('offsetY', Number(event.target.value))} />
-              </label>
-              <label className="preview-canvas-tools__field">
-                <span>Curvature</span>
-                <input type="range" min={0} max={1} step={0.01} value={currentTable.curvature ?? 0.88} onChange={(event) => onTableChange('curvature', Number(event.target.value))} />
-              </label>
-            </div>
-          ) : null}
-
-          {activeTab === 'view' ? (
-            <div className="preview-canvas-tools__section">
-              <label className="preview-canvas-tools__toggle">
-                <input type="checkbox" checked={showHandles} onChange={(event) => onShowHandlesChange(event.target.checked)} />
-                <span>Show drag handles</span>
-              </label>
-              <p className="preview-canvas-tools__hint">
-                Use this window for seat positioning. The editor preview stays clean and read-only.
-              </p>
-            </div>
-          ) : null}
-        </>
-      )}
+      <div className="standalone-canvas-menu-bar__group" style={{ marginLeft: 'auto' }}>
+        {sourceCounts.length > 0 && (
+          <div className="standalone-canvas-menu-bar__copy-group">
+            <select
+              className="standalone-canvas-menu-bar__select"
+              value={copySourceCount}
+              onChange={(e) => setCopySourceCount(Number(e.target.value))}
+            >
+              {sourceCounts.map((count) => (
+                <option key={count} value={count}>
+                  From {count}P
+                </option>
+              ))}
+            </select>
+            <button 
+              className="standalone-canvas-menu-bar__btn"
+              onClick={handleCopy}
+            >
+              Copy Layout
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -553,11 +520,37 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
-  const [playerCount, setPlayerCount] = useState<number>(
-    () => readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount),
-  );
+  const [playerCount, setPlayerCount] = useState<number>(() => {
+    const urlCount = new URLSearchParams(window.location.search).get('playerCount');
+    const fromUrl = urlCount !== null ? parseInt(urlCount, 10) : NaN;
+    const stored = readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount);
+    return Number.isFinite(fromUrl) ? fromUrl : stored;
+  });
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [showHandles, setShowHandles] = useState(true);
+  const [showArenaGuide, setShowArenaGuide] = useState(true);
+  const [resolution, setResolution] = useState('fit');
+  const [customWidth, setCustomWidth] = useState(1920);
+  const [customHeight, setCustomHeight] = useState(1080);
+  const [resolutions, setResolutions] = useState<ResolutionOption[]>([]);
+  const [isPortrait, setIsPortrait] = useState(false);
+  const [showStudio, setShowStudio] = useState(false);
+  const [showHudEditor, setShowHudEditor] = useState(false);
+
+  useEffect(() => {
+    fetch('/Resources/devices.json')
+      .then((res) => res.json())
+      .then((data) => setResolutions(data))
+      .catch((err) => {
+        logError('Failed to load devices.json', err);
+        // Fallback to minimal set if file fetch fails
+        setResolutions([
+          { label: 'Fit Window', value: 'fit' },
+          { label: 'Desktop Full HD (1920x1080)', value: '1920x1080' },
+          { label: 'Custom...', value: 'custom' },
+        ]);
+      });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -613,10 +606,10 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     channel.close();
   }, [assetPath]);
 
-  const activePreset = useMemo(
-    () => document.presets[String(playerCount)] ?? createLayoutPreset(playerCount),
-    [document.presets, playerCount],
-  );
+  const handleChange = useCallback((nextDocument: LayoutAssetDocument) => {
+    setDocument(nextDocument);
+    broadcast(nextDocument, playerCount);
+  }, [broadcast, playerCount]);
 
   const updateActivePreset = useCallback((
     updater: (nextDocument: LayoutAssetDocument, preset: LayoutAssetDocument['presets'][string]) => void,
@@ -634,15 +627,29 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     });
   }, [broadcast, playerCount]);
 
-  const handleSeatsChange = useCallback((seats: SeatLayout[]) => {
-    updateActivePreset((_next, preset) => {
-        preset.seats = seats.map((seat) => ({
-          ...seat,
-          position: { ...seat.position },
-          playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
-        }));
+
+  const handleAddCustomDevice = useCallback((name: string, width: number, height: number) => {
+    const newOption: ResolutionOption = { label: name, value: `${width}x${height}` };
+    setResolutions((current) => {
+      // Add before the custom entry if it exists, otherwise at the end
+      const customIdx = current.findIndex(r => r.value === 'custom');
+      const next = [...current];
+      if (customIdx !== -1) {
+        next.splice(customIdx, 0, newOption);
+      } else {
+        next.push(newOption);
+      }
+      
+      // Persist back to the JSON file using Tauri command
+      const content = new TextEncoder().encode(JSON.stringify(next, null, 2));
+      invoke('write_asset', { path: 'devices.json', content: Array.from(content) })
+        .then(() => logInfo('Persisted new device to devices.json'))
+        .catch((err) => logError('Failed to persist to devices.json', err));
+        
+      return next;
     });
-  }, [updateActivePreset]);
+    setResolution(`${width}x${height}`);
+  }, []);
 
   const minPlayerCount = playerRange?.minPlayers ?? 2;
   const handlePlayerCountChange = useCallback((nextPlayerCount: number) => {
@@ -672,18 +679,6 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     });
   }, [playerCount, updateActivePreset]);
 
-  const handleTableChange = useCallback((
-    field: 'width' | 'height' | 'offsetX' | 'offsetY' | 'curvature',
-    value: number,
-  ) => {
-    updateActivePreset((_next, preset) => {
-      preset.table = {
-        ...preset.table,
-        [field]: value,
-      };
-    });
-  }, [updateActivePreset]);
-
   // Handle header props mapping (handle string|null vs string difference)
   const headerProps: GameHeaderProps = {
     user: headProps.user ? {
@@ -697,34 +692,209 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     getImageUrl: headProps.getImageUrl,
   };
 
+  const getOrientedDimensions = useCallback((rawW: number, rawH: number) => {
+    let w = rawW;
+    let h = rawH;
+    if (isPortrait && w > h) {
+      [w, h] = [h, w];
+    } else if (!isPortrait && h > w) {
+      [w, h] = [h, w];
+    }
+    return { w, h };
+  }, [isPortrait]);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [boxDimensions, setBoxDimensions] = useState({ width: 0, height: 0 });
+
+  const aspectRatio = useMemo(() => {
+    if (resolution === 'fit') return 0;
+    
+    let rawW = 1920;
+    let rawH = 1080;
+
+    if (resolution === 'custom') {
+      rawW = customWidth;
+      rawH = customHeight;
+    } else {
+      // Extract numbers from strings like "iPhone SE (667x375)"
+      const matches = resolution.match(/(\d+)\D+(\d+)/);
+      if (matches) {
+        rawW = parseInt(matches[1]);
+        rawH = parseInt(matches[2]);
+      }
+    }
+
+    const { w, h } = getOrientedDimensions(rawW, rawH);
+    return w / h;
+  }, [resolution, customWidth, customHeight, getOrientedDimensions]);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      
+      // Increased padding for better "breathing room"
+      const padding = 120; // 60px each side
+      const availW = Math.max(100, rect.width - padding);
+      const availH = Math.max(100, rect.height - padding);
+      
+      if (aspectRatio === 0) {
+        setBoxDimensions({ width: availW, height: availH });
+        return;
+      }
+
+      const containerAspect = availW / availH;
+      
+      if (aspectRatio > containerAspect) {
+        // Target is wider than container -> limited by width
+        setBoxDimensions({
+          width: availW,
+          height: availW / aspectRatio
+        });
+      } else {
+        // Target is taller than container -> limited by height
+        setBoxDimensions({
+          width: availH * aspectRatio,
+          height: availH
+        });
+      }
+    };
+
+    updateDimensions();
+    const ro = new ResizeObserver(updateDimensions);
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [aspectRatio]);
+
   return (
-    <div className="standalone-panel-page standalone-panel-page--card-game-preview">
+    <div className={`standalone-panel-page ${LayoutClasses.EDITOR_PREVIEW}`} style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       {!hideTools && (
-        <PreviewCanvasTools
+        <StandaloneCanvasMenuBar
           playerCount={playerCount}
           minPlayerCount={playerRange?.minPlayers ?? 2}
           maxPlayerCount={playerRange?.maxPlayers ?? 10}
           showHandles={showHandles}
-          currentTable={activePreset.table}
           onPlayerCountChange={handlePlayerCountChange}
           onShowHandlesChange={setShowHandles}
           onCopyPreset={handleCopyPreset}
-          onTableChange={handleTableChange}
+          showArenaGuide={showArenaGuide}
+          onShowArenaGuideChange={setShowArenaGuide}
+          resolution={resolution}
+          onResolutionChange={setResolution}
+          showStudio={showStudio}
+          onShowStudioChange={setShowStudio}
+          isPortrait={isPortrait}
+          onIsPortraitChange={setIsPortrait}
+          customWidth={customWidth}
+          onCustomWidthChange={setCustomWidth}
+          customHeight={customHeight}
+          onCustomHeightChange={setCustomHeight}
+          resolutions={resolutions}
+          onAddCustomDevice={handleAddCustomDevice}
+          onShowLayers={() => setShowHudEditor(true)}
         />
       )}
-      <CardGameTemplatePage
-        document={document as unknown as CardGameLayoutDocument}
-        playerCount={playerCount}
-        headerProps={headerProps}
-        footerVersion="1.0.0-dev"
-        onHomeClick={() => {}}
-        embedded={false}
-        editableSeats={showHandles}
-        onSeatsChange={handleSeatsChange}
-      />
+      <div 
+        className="standalone-canvas-viewport"
+        style={{ 
+          display: 'flex', 
+          flex: 1, 
+          minHeight: 0, 
+          position: 'relative', 
+          padding: '40px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: '#02040a',
+          overflow: 'hidden'
+        }} 
+        ref={containerRef}
+      >
+        {/* Resolution & Orientation Label */}
+        <div style={{
+          position: 'absolute',
+          top: 'calc(50% - ' + (boxDimensions.height / 2 + 10) + 'px)',
+          left: 'calc(50% - ' + (boxDimensions.width / 2) + 'px)',
+          transform: 'translateY(-100%)',
+          paddingBottom: '6px',
+          fontSize: '11px',
+          fontWeight: '600',
+          color: '#4ade80',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          opacity: 0.8,
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap'
+        }}>
+          {(() => {
+            if (resolution === 'fit') return 'Auto Fit';
+            let displayRes = resolution;
+            if (resolution === 'custom') displayRes = `${customWidth}x${customHeight}`;
+            
+            // Extract numbers and swap if portrait
+            const matches = displayRes.match(/(\d+)\D+(\d+)/);
+            if (matches && isPortrait) {
+              const [_, w, h] = matches;
+              if (parseInt(w) > parseInt(h)) {
+                return `${h} × ${w}`;
+              }
+            }
+            return displayRes.replace(/[()]/g, '').replace('x', ' × ');
+          })()}
+          <span style={{ opacity: 0.6, marginLeft: '8px' }}>
+            [ {isPortrait ? 'portrait' : 'landscape'} ]
+          </span>
+        </div>
+        <div 
+          style={{ 
+            width: `${boxDimensions.width}px`,
+            height: `${boxDimensions.height}px`,
+            border: '2px solid #4ade80',
+            boxShadow: '0 0 40px rgba(74, 222, 128, 0.15)',
+            borderRadius: '4px',
+            background: '#050814',
+            position: 'relative',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          <CardGameTemplatePage
+            embedded
+            document={document as unknown as CardGameLayoutDocument}
+            playerCount={playerCount}
+            headerProps={headerProps}
+            footerVersion="Editor"
+            showArenaGuide={showArenaGuide}
+            assetPath={assetPath}
+          />
+        </div>
+      </div>
+
+      <Suspense fallback={null}>
+        {showHudEditor && (
+          <HudButtonEditorModal
+            open={showHudEditor}
+            onClose={() => setShowHudEditor(false)}
+            document={document as unknown as CardGameLayoutDocument}
+            onChange={handleChange}
+            initialWorkspaceSection="layerSplit"
+          />
+        )}
+      </Suspense>
+
+      {/* 
+        Temporarily disabled for step-by-step refinement:
+        - CardGameTemplatePage
+        - CardGameDesignStudio
+      */}
     </div>
   );
 };
+
+const LazyIsolationHubPage = React.lazy(async () => {
+  const m = await import('./IsolationHub/IsolationHubPage');
+  return { default: m.IsolationHubPage };
+});
 
 export const StandalonePanelPage: React.FC = () => {
   const [params, setParams] = useState<{
@@ -741,7 +911,7 @@ export const StandalonePanelPage: React.FC = () => {
     if (
       panel &&
       assetPath &&
-      (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas')
+      (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas' || panel === 'isolation')
     ) {
       return { panel, assetPath, locked, hideTools };
     }
@@ -794,6 +964,14 @@ export const StandalonePanelPage: React.FC = () => {
     return params.panel === 'design-studio'
       ? <StandaloneCardGameDesignStudio key={`design-studio:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} />
       : <StandaloneCardGamePreviewCanvas key={`preview-canvas:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} />;
+  }
+
+  if (params.panel === 'isolation') {
+    return (
+      <Suspense fallback={<div className="standalone-panel-page__loading">Loading Isolation Hub…</div>}>
+        <LazyIsolationHubPage />
+      </Suspense>
+    );
   }
 
   return (

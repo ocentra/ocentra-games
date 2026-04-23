@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
-type HudButtonProps = {
+export type HudButtonProps = {
   label?: string;
   width?: number;
   height?: number;
@@ -39,6 +39,7 @@ type HudButtonProps = {
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
+  onIsolate?: () => void;
 };
 
 function clamp(n: number, min: number, max: number) {
@@ -199,6 +200,7 @@ export function HudButton({
   className,
   style,
   onClick,
+  onIsolate,
 }: HudButtonProps) {
   const uid = useId().replace(/:/g, "");
   const [isHovered, setIsHovered] = useState(false);
@@ -243,14 +245,13 @@ export function HudButton({
   const charWidthFactor = 0.62;
   const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * charWidthFactor)));
   const labelLines = splitLabelIntoLines(label, maxCharsPerLine);
-  
-  // Dynamic font scaling for long lines
+
   const longestLineLen = Math.max(...labelLines.map(l => l.length));
-  const maxLineW = bodyW * 0.88; // Target width (88% of body)
-  const autoFontSize = longestLineLen > 0 
+  const maxLineW = bodyW * 0.88;
+  const autoFontSize = longestLineLen > 0
     ? Math.min(fontSize, maxLineW / (longestLineLen * charWidthFactor))
     : fontSize;
-  
+
   const effectiveFontSize = Math.max(24, autoFontSize);
   const lineHeight = effectiveFontSize * 1.08;
   const textStartY = labelLines.length > 1 ? centerY - lineHeight * 0.38 : centerY + effectiveFontSize * 0.35;
@@ -286,6 +287,14 @@ export function HudButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseDown={() => setClickFlash((current) => current + 1)}
+      onContextMenu={(e) => {
+        if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+        if (onIsolate) {
+          e.preventDefault();
+          e.stopPropagation();
+          onIsolate();
+        }
+      }}
       className={className}
       style={{
         background: "transparent",

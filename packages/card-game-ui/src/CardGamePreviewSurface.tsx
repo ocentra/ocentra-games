@@ -8,6 +8,7 @@ import {
   type TableLayoutState,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { setGameAsset, tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
+import { IsolationComponentType } from '@ocentra/game-layout-domain/isolation-types';
 import CardInHand from './scene/CardInHand';
 import CenterTableSvg from './scene/CenterTableSvg';
 import GameBackground from './scene/GameBackground';
@@ -28,6 +29,8 @@ export interface CardGamePreviewSurfaceProps {
   onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
+  showArenaGuide?: boolean;
 }
 
 const TABLE_ARENA_WIDTH = 1000;
@@ -53,8 +56,6 @@ function resolveHandLayout(
   anchorRadius: number,
   cardFan: CardGameLayoutDocument['cardFan'],
 ) {
-  // Use a base width calculation that works well with HUD-relative scaling.
-  // We don't cap it as strictly here because the HUD itself provides the boundary.
   const cardWidth = Math.round(Math.max(30, anchorRadius * cardFan.cardWidthScale));
   return {
     cardWidth,
@@ -76,6 +77,8 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   onHudButtonClick,
   arenaOverlay,
   stageOverlay,
+  onIsolate,
+  showArenaGuide = false,
 }) => {
   const resolvedPlayerCount = playerCount ?? document.defaultPlayerCount;
   const surfaceRef = useRef<HTMLDivElement | null>(null);
@@ -163,6 +166,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                   maxScale={1}
                   responsivePaddingX={0}
                   responsivePaddingY={0}
+                  onIsolate={onIsolate}
                 />
               ) : null}
             </div>
@@ -173,6 +177,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                   editableSeats={editableSeats}
                   showLocalSeat={editableSeats}
                   onSeatsChange={onSeatsChange}
+                  onIsolate={onIsolate}
                 />
               ) : null}
             </div>
@@ -184,6 +189,9 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                 </div>
               </div>
             ) : null}
+            {showArenaGuide ? (
+              <div className="card-game-preview-surface__arena-guide" aria-hidden="true" />
+            ) : null}
           </div>
 
           <div className="card-game-preview-surface__layer card-game-preview-surface__layer--hud">
@@ -193,6 +201,7 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                 showButtonGuides={false}
                 showArtwork={showHudLayer}
                 onButtonClick={onHudButtonClick}
+                onIsolate={onIsolate}
               >
                 {showCardsLayer && handLayout ? (
                   <CardInHand

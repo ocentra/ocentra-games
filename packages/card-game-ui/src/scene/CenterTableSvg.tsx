@@ -4,6 +4,7 @@ import { cardGameMlogoImageUrl as MlogoImg } from '@ocentra/app-assets/cardgame'
 import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
 import type { TableLayoutState } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './CenterTableSvg.css';
+import { IsolationComponentType } from '@ocentra/game-layout-domain/isolation-types';
 
 function extractAlphaFromRgba(color: string | undefined): number {
   if (!color) return 1;
@@ -206,6 +207,7 @@ export interface CenterTableSVGProps {
 
   className?: string;
   containerClassName?: string;
+  onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
 
 interface ResolvedCenterTableSvgProps {
@@ -252,7 +254,6 @@ interface ResolvedCenterTableSvgProps {
 }
 
 const RESOLVED_DEFAULTS: ResolvedCenterTableSvgProps = {
-  // Layout & positioning
   width: 900,
   height: 512,
   offsetX: 0,
@@ -266,11 +267,7 @@ const RESOLVED_DEFAULTS: ResolvedCenterTableSvgProps = {
   maxScale: 1,
   responsivePaddingX: 10,
   responsivePaddingY: 10,
-
-  // Overall table geometry
   curvature: 0.7,
-
-  // Outer rim (gold metal)
   rimThickness: 3,
   rimColor: 'rgb(244, 197, 66)',
   rimGlowColor: 'rgb(66, 244, 125)',
@@ -279,34 +276,22 @@ const RESOLVED_DEFAULTS: ResolvedCenterTableSvgProps = {
   rimInnerGap: 1,
   rimGlowThickness: 5,
   rimGlowBlendMode: 'screen',
-
-  // Inner rim (wood / secondary ring)
   innerRimThickness: 75,
   innerRimColor: 'rgba(3, 199, 45, 0.27)',
   innerRimTexture: 'linear-gradient(145deg, rgb(0, 255, 98) 0%, rgb(0, 34, 54) 100%)',
   innerRimTextureBlendMode: 'screen',
   innerRimTextureOpacity: 0.75,
-
-  // Felt surface colors
   feltInner: 'rgba(0,170,91,0.18)',
   feltOuter: 'rgba(0,70,40,0.56)',
   feltInset: -3,
-
-
-
-  // Emblem (center logo) tint
   emblemInnerColor: 'rgb(0, 0, 0)',
   emblemOuterColor: 'rgba(98,255,0,0.74)',
   emblemBlendMode: 'screen',
   emblemSize: 0.5,
   emblemStyle: 'glass',
-
-  // Emblem image defaults
   emblemImageHref: MlogoImg,
   emblemImageAlt: 'M logo emblem',
   showEmblemImage: true,
-
-  // CSS class hooks
   className: '',
   containerClassName: 'center-table',
 };
@@ -536,6 +521,14 @@ export default function CenterTableSVG(props: CenterTableSVGProps) {
       <svg
         width={p.width}
         height={p.height}
+        onContextMenu={(e) => {
+          if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
+          if (props.onIsolate) {
+            e.preventDefault();
+            e.stopPropagation();
+            props.onIsolate(IsolationComponentType.TableZone, 'Main Table', p);
+          }
+        }}
         viewBox={`0 0 ${vw} ${vh}`}
         preserveAspectRatio="xMidYMid meet"
         className={`center-table-svg ${p.className || ''}`}
