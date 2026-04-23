@@ -40,7 +40,6 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 export function validateCorsOrigin(env: Env, requestOrigin: string | null): Response | null {
   const isProduction = env.ENVIRONMENT === Environment.Production;
   if (!isProduction) {
-    // Development mode: allow all origins (permissive)
     return null;
   }
 
@@ -61,7 +60,6 @@ export function validateCorsOrigin(env: Env, requestOrigin: string | null): Resp
     });
   }
 
-  // In production, Origin header is required for CORS requests
   if (!requestOrigin || requestOrigin.trim() === '') {
     logWarn('CORS validation failed: Missing Origin header in production', getStackTrace(), {
       allowedOrigin,
@@ -78,24 +76,20 @@ export function validateCorsOrigin(env: Env, requestOrigin: string | null): Resp
     });
   }
 
-  // Check exact match first
   if (requestOrigin === allowedOrigin) {
-    return null; // Valid origin
+    return null;
   }
 
-  // Check whitelist if configured
   if (env.CORS_ALLOWED_ORIGINS) {
     const allowedOrigins = env.CORS_ALLOWED_ORIGINS.split(',').map(o => o.trim());
     for (const allowed of allowedOrigins) {
       if (allowed === requestOrigin) return null;
-      // Support suffix matching (e.g., .ocentra-games.pages.dev)
       if (allowed.startsWith('.') && requestOrigin.endsWith(allowed)) {
         return null;
       }
     }
   }
 
-  // Reject invalid origin in production
   logWarn('CORS validation failed: Origin not allowed in production', getStackTrace(), {
     requestOrigin,
     allowedOrigin,
@@ -109,7 +103,6 @@ export function validateCorsOrigin(env: Env, requestOrigin: string | null): Resp
     status: HttpStatus.Forbidden,
     headers: {
       [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-      // Include wildcard CORS header so browsers can read the error response body
       [HttpHeader.AccessControlAllowOrigin]: CorsOrigin.Wildcard,
     }
   });
@@ -201,6 +194,10 @@ export function getCorsHeaders(env: Env | undefined, requestOrigin?: string): Re
 
   if (origin !== null) {
     headers[HttpHeader.AccessControlAllowOrigin] = origin;
+  }
+
+  if (!isProduction) {
+    headers[HttpHeader.AccessControlAllowPrivateNetwork] = QueryValue.True;
   }
 
   return headers;

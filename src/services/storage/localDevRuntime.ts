@@ -14,6 +14,9 @@ function getLocalDevWorkerHost(): string {
 }
 
 export function getLocalDevWorkerBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/local/api`;
+  }
   return `http://${getLocalDevWorkerHost()}:${LOCAL_DEV_WORKER_PORT}`;
 }
 
