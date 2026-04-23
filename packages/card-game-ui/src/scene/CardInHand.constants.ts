@@ -17,5 +17,6 @@ export const CARD_IN_HAND_DEFAULTS = {
   Z_INDEX_BASE: 101,
   CARD_IMAGE: CardBack,
   USE_DOME_RADIUS: false,
+  OVERALL_SCALE: 1.0,
 } as const;
   

@@ -9,7 +9,6 @@ import {
 } from "./HudArtwork.types";
 import "./HudArtwork.css";
 
-const SHOW_HUD_DEBUG_GUIDES = false;
 
 interface HudArtworkProps {
   controls: HudArtworkControls;
@@ -110,8 +109,8 @@ function rightClampPath(wing: WingConfig, clamp: ClampConfig) {
           Z`;
 }
 
-function domeClipRect(width: number, cy: number) {
-  return { x: 0, y: 0, width, height: cy };
+function domeClipRect(width: number, height: number) {
+  return { x: 0, y: 0, width, height };
 }
 
 const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, onButtonClick }, ref) => {
@@ -149,20 +148,24 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const rightWingGlass = rightWingGlassPath(rightWing.x, rightWing.y, rightWing.width, rightWing.height, rightWing.topRadius, 2);
   const leftClamp = leftClampPath(leftWing, clamp);
   const rightClamp = rightClampPath(rightWing, clamp);
-  const domeClip = domeClipRect(width, dome.cy);
-  const buttonRegionTop = (leftWing.y / height) * fitHeight;
-  const buttonRegionHeight = (leftWing.height / height) * fitHeight;
+  const domeClip = domeClipRect(width, height);
+
+  const domeLeft = dome.cx - dome.width / 2;
+  const domeRight = dome.cx + dome.width / 2;
+  const domeTop = dome.cy - dome.height / 2;
 
   const leftAvailableLeft = ((leftWing.x + clamp.width) / width) * fitWidth;
-  const leftAvailableRight = ((dome.cx - dome.radius) / width) * fitWidth;
+  const leftAvailableRight = (domeLeft / width) * fitWidth;
   const leftAvailableWidth = Math.max(0, leftAvailableRight - leftAvailableLeft);
-  const rightAvailableLeft = ((dome.cx + dome.radius) / width) * fitWidth;
+  
+  const rightAvailableLeft = (domeRight / width) * fitWidth;
   const rightAvailableRight = ((rightWing.x + rightWing.width - clamp.width) / width) * fitWidth;
   const rightAvailableWidth = Math.max(0, rightAvailableRight - rightAvailableLeft);
-  const leftBankTop = buttonRegionTop;
-  const leftBankHeight = buttonRegionHeight;
-  const rightBankTop = buttonRegionTop;
-  const rightBankHeight = buttonRegionHeight;
+
+  const leftBankTop = (leftWing.y / height) * fitHeight;
+  const leftBankHeight = (leftWing.height / height) * fitHeight;
+  const rightBankTop = (rightWing.y / height) * fitHeight;
+  const rightBankHeight = (rightWing.height / height) * fitHeight;
   const visibleButtonCount = Math.max(1, Math.min(6, Math.round(buttonCount)));
   const visibleButtonLabels = Array.from({ length: visibleButtonCount }, (_, i) => buttonLabels[i] || "");
   const leftButtonCount = Math.min(3, Math.ceil(visibleButtonCount / 2));
@@ -196,6 +199,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
     return {
       width: scaledWidth,
       height: scaledHeight,
+      bodyHeight: buttonConfig.bodyHeight !== undefined ? Math.max(1, Math.round(buttonConfig.bodyHeight * scale)) : undefined,
       radius: Math.max(0, Math.round(buttonConfig.radius * scale)),
       sideInset: Math.max(0, Math.round(buttonConfig.sideInset * scale)),
       dotInset: Math.max(0, Math.round(buttonConfig.dotInset * scale)),
@@ -228,6 +232,16 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   };
 
   const artworkStyle: CSSProperties = {
+    position: 'absolute',
+    left: '50%',
+    bottom: 0,
+    width: `${fitWidth}px`,
+    height: `${fitHeight}px`,
+    transform: `translate(calc(-50% + ${controls.hudOffsetX}px), ${controls.hudOffsetY}px) scale(${controls.overallScale})`,
+    transformOrigin: 'center bottom',
+    pointerEvents: 'none',
+    overflow: 'visible',
+    // Keeping variables in case inner elements rely on them (though we removed most needs)
     ['--hud-offset-x' as string]: `${controls.hudOffsetX}px`,
     ['--hud-offset-y' as string]: `${controls.hudOffsetY}px`,
     ['--hud-fit-width' as string]: `${fitWidth}px`,
@@ -236,16 +250,16 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   };
 
   const anchorStyle: CSSProperties = {
-    left: `${((dome.cx - dome.radius) / width) * 100}%`,
-    top: `${((dome.cy - dome.radius) / height) * 100}%`,
-    width: `${((dome.radius * 2) / width) * 100}%`,
-    height: `${((dome.radius * 2) / height) * 100}%`,
+    left: `${(domeLeft / width) * 100}%`,
+    top: `${(domeTop / height) * 100}%`,
+    width: `${(dome.width / width) * 100}%`,
+    height: `${(dome.height / height) * 100}%`,
   };
 
   return (
     <div className="hud-artwork" aria-hidden="true" data-button-debug={showButtonGuides ? "true" : "false"} style={artworkStyle}>
-      {SHOW_HUD_DEBUG_GUIDES ? <div className="hud-artwork__debug-frame" aria-hidden="true" /> : null}
-      {SHOW_HUD_DEBUG_GUIDES ? (
+      {controls.showDebugGuides ? <div className="hud-artwork__debug-frame" aria-hidden="true" /> : null}
+      {controls.showDebugGuides ? (
         <div className="hud-artwork__debug-label" aria-hidden="true">
           {fitWidth} x {fitHeight}
         </div>
@@ -327,7 +341,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
           </clipPath>
         </defs>
 
-        {SHOW_HUD_DEBUG_GUIDES ? (
+        {controls.showDebugGuides ? (
           <rect
             x="0"
             y="0"
@@ -438,10 +452,13 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
         </g>
 
         <g id="CenterDome">
-          <circle
-            cx={dome.cx}
-            cy={dome.cy}
-            r={dome.radius}
+          <rect
+            x={domeLeft}
+            y={domeTop}
+            width={dome.width}
+            height={dome.height}
+            rx={dome.topRadius}
+            ry={dome.topRadius}
             fill="none"
             stroke={dome.glowColor}
             strokeWidth={dome.glowWidth}
@@ -450,36 +467,48 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
             clipPath={`url(#${domeClipId})`}
           />
 
-          <circle
-            cx={dome.cx}
-            cy={dome.cy}
-            r={dome.radius}
+          <rect
+            x={domeLeft}
+            y={domeTop}
+            width={dome.width}
+            height={dome.height}
+            rx={dome.topRadius}
+            ry={dome.topRadius}
             fill={`url(#${uid}-domeFill)`}
             clipPath={`url(#${domeClipId})`}
           />
 
-          <circle
-            cx={dome.cx}
-            cy={dome.cy}
-            r={Math.max(0, dome.radius - 8)}
+          <rect
+            x={domeLeft}
+            y={domeTop}
+            width={dome.width}
+            height={dome.height}
+            rx={dome.topRadius}
+            ry={dome.topRadius}
             fill={`url(#${uid}-domeSheen)`}
             clipPath={`url(#${domeClipId})`}
           />
 
-          <circle
-            cx={dome.cx}
-            cy={dome.cy}
-            r={dome.radius}
+          <rect
+            x={domeLeft}
+            y={domeTop}
+            width={dome.width}
+            height={dome.height}
+            rx={dome.topRadius}
+            ry={dome.topRadius}
             fill="none"
             stroke={dome.edgeColor}
             strokeWidth={dome.edgeWidth}
             clipPath={`url(#${domeClipId})`}
           />
 
-          <circle
-            cx={dome.cx}
-            cy={dome.cy}
-            r={Math.max(0, dome.radius - 8)}
+          <rect
+            x={domeLeft + 4}
+            y={domeTop + 4}
+            width={Math.max(0, dome.width - 8)}
+            height={Math.max(0, dome.height - 8)}
+            rx={Math.max(0, dome.topRadius - 4)}
+            ry={Math.max(0, dome.topRadius - 4)}
             fill="none"
             stroke={dome.edgeInnerColor}
             strokeWidth={Math.max(1, dome.edgeWidth / 2)}

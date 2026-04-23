@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import type { HudArtworkControls } from '@ocentra/card-game-ui/scene/HudArtwork.types';
+import PlayerUI from '@ocentra/card-game-ui/scene/PlayerUI';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './GameScreenPage.css';
 import {
@@ -394,10 +395,12 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     const nextLabels = Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '');
     nextDocument.hud.buttonLabels = nextLabels;
     nextDocument.hud.buttonCount = Math.max(1, Math.min(6, hudActions.length || 1));
+    nextDocument.hud.showDebugGuides = false;
     nextDocument.hud.layerVisibility = {
       ...nextDocument.hud.layerVisibility,
-      table: false,
+      table: true,
       seats: false,
+      tools: false,
     };
     return nextDocument.hud;
   }, [bundle, hudActions]);
@@ -423,42 +426,42 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     const isPlaceholder = !player;
 
     return (
-      <article
+      <div
         key={seat.id}
         className={
           isActive
-            ? 'playable-seat playable-seat--active'
+            ? 'playable-seat-container playable-seat-container--active'
             : isPlaceholder
-              ? 'playable-seat playable-seat--placeholder'
-              : 'playable-seat'
+              ? 'playable-seat-container playable-seat-container--placeholder'
+              : 'playable-seat-container'
         }
         style={{
+          position: 'absolute',
           left: `${seat.position.x * 100}%`,
           top: `${seat.position.y * 100}%`,
-          transform: `translate(-50%, -50%) rotate(${seat.rotation ?? 0}deg) scale(${seat.scale ?? 1})`,
+          transform: `translate(-50%, -50%) scale(${seat.scale ?? 1})`,
+          zIndex: 4,
+          pointerEvents: 'auto'
         }}
       >
-        <header className="playable-seat__header">
-          <div>
-            <h3>{player?.name ?? getSeatName(seat.id)}</h3>
-            <p>{[isActive ? 'Current turn' : 'Waiting', ...details].filter(Boolean).join(' | ') || 'Waiting'}</p>
-          </div>
-          <span className="playable-seat__score">Score {player?.score ?? 0}</span>
-        </header>
-
-        <div className="playable-seat__cards">
+        <PlayerUI
+          labelText={player?.name ?? getSeatName(seat.id)}
+          infoBoxText={[isActive ? 'Turn' : '', ...details].filter(Boolean).join(' | ')}
+          baseArcRotation={seat.rotation ?? 0}
+          infoBoxAngle={180}
+          infoBoxRotation={0}
+          canvasWidth={400}
+          canvasHeight={400}
+          overallScale={0.48}
+        />
+        <div className="playable-seat-cards-overlay">
           {(player?.hand ?? []).map((card) => (
-            <span key={card.id} className="playable-seat__card">
+            <span key={card.id} className="playable-seat-card-token">
               {formatCardShortLabel(card)}
             </span>
           ))}
-          {(!player || player.hand.length === 0) && (
-            <span className="playable-seat__card playable-seat__card--muted">
-              {player ? 'No cards' : 'Seat reserved'}
-            </span>
-          )}
         </div>
-      </article>
+      </div>
     );
   };
 
@@ -473,35 +476,47 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         hudControlsOverride={runtimeHudControls}
         onHudButtonClick={(index) => handleHudButtonClick(index)}
         arenaOverlay={bundle ? (
-          <div className="playable-table-stage" data-testid="claim-pilot-table">
-            <div className="playable-table-stage__zones">
-              <div className="playable-table-zone playable-table-zone--deck" data-testid="claim-pilot-deck-zone">
-                <span>Deck</span>
-                <strong>{gameState?.deck.length ?? bundle.deckSize}</strong>
+          <>
+            <div className="playable-table-center" data-testid="claim-pilot-table">
+              <div className="playable-table-row">
+                <div className="playable-table-item playable-table-item--deck" data-testid="claim-pilot-deck-zone">
+                  <span className="playable-table-item__label">Deck</span>
+                  <span className="playable-table-item__value">{gameState?.deck.length ?? bundle.deckSize}</span>
+                </div>
+                <div className="playable-table-item playable-table-item--floor" data-testid="claim-pilot-floor-zone">
+                  <span className="playable-table-item__label">Floor Card</span>
+                  <span className="playable-table-item__value playable-table-item__value--accent">
+                    {gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting'}
+                  </span>
+                </div>
+                <div className="playable-table-item playable-table-item--discard" data-testid="claim-pilot-discard-zone">
+                  <span className="playable-table-item__label">Discard</span>
+                  <span className="playable-table-item__value">
+                    {gameState?.discardPile.length
+                      ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
+                      : 'Empty'}
+                  </span>
+                </div>
               </div>
-              <div className="playable-table-zone playable-table-zone--floor" data-testid="claim-pilot-floor-zone">
-                <span>Floor Card</span>
-                <strong>{gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting for deal'}</strong>
-              </div>
-              <div className="playable-table-zone playable-table-zone--discard" data-testid="claim-pilot-discard-zone">
-                <span>Discard</span>
-                <strong>
-                  {gameState?.discardPile.length
-                    ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
-                    : 'Empty'}
-                </strong>
-              </div>
-              <div className="playable-table-zone playable-table-zone--pot" data-testid="claim-pilot-pot-zone">
-                <span>Pot</span>
-                <strong>{gameState?.mechanicsContext?.roundPot ?? 0}</strong>
-              </div>
-              <div className="playable-table-zone playable-table-zone--trick">
-                <span>Table Cards</span>
-                <strong>
-                  {gameState?.mechanicsContext?.tableCards?.length
-                    ? gameState.mechanicsContext.tableCards.map((entry) => `${entry.playerId}: ${formatCardShortLabel(entry.card)}`).join(' | ')
-                    : 'None'}
-                </strong>
+
+              <div className="playable-table-row">
+                <div className="playable-table-item playable-table-item--pot" data-testid="claim-pilot-pot-zone">
+                  <span className="playable-table-item__label">Pot</span>
+                  <span className="playable-table-item__value">{gameState?.mechanicsContext?.roundPot ?? 0}</span>
+                </div>
+                <div className="playable-table-item playable-table-item--trick">
+                  <span className="playable-table-item__label">Table Cards</span>
+                  <div className="playable-table-item__cards">
+                    {gameState?.mechanicsContext?.tableCards?.length
+                      ? gameState.mechanicsContext.tableCards.map((entry) => (
+                        <div key={entry.playerId} className="playable-table-trick-card">
+                          <span className="playable-table-trick-card__id">{entry.playerId}</span>
+                          <span className="playable-table-trick-card__val">{formatCardShortLabel(entry.card)}</span>
+                        </div>
+                      ))
+                      : <span className="playable-table-item__value">None</span>}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -521,7 +536,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                 </p>
               </div>
             ) : null}
-          </div>
+          </>
         ) : null}
         stageOverlay={(
           <>

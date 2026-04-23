@@ -26,7 +26,9 @@ export type EdgeGlowConfig = {
 export type DomeConfig = {
   cx: number;
   cy: number;
-  radius: number;
+  width: number;
+  height: number;
+  topRadius: number;
   edgeColor: string;
   edgeInnerColor: string;
   edgeWidth: number;
@@ -54,6 +56,7 @@ export interface HudButtonControls {
   buttonOffsetY: number;
   width: number;
   height: number;
+  bodyHeight?: number;
   radius: number;
   sideInset: number;
   dotInset: number;
@@ -109,29 +112,32 @@ export interface HudArtworkControls {
   panelMid: string;
   panelBottom: string;
   panelGlassOpacity: number;
+  showDebugGuides?: boolean;
+  linkedWings?: boolean;
   layerVisibility?: CardGameLayerVisibility;
 }
 
 export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   hudOffsetX: 0,
-  hudOffsetY: -36,
+  hudOffsetY: 0,
   overallScale: 1,
-  width: 880,
-  height: 360,
+  width: 1920,
+  height: 250,
   buttonScale: 1,
   buttonCount: 6,
   buttonLabels: ["A", "B", "C", "D", "E", "F"],
   button: {
     buttonOffsetX: 0,
-    buttonOffsetY: 12,
+    buttonOffsetY: 6,
     width: 649,
-    height: 260,
-    radius: 58,
+    height: 218,
+    bodyHeight: 218,
+    radius: 109,
     sideInset: 0,
     dotInset: 20,
     dotGap: 15,
     textColor: "#fff7ff",
-    fontSize: 34,
+    fontSize: 72,
     bodyCenter: "#2b064a",
     bodyMid: "#17002a",
     bodyEdge: "#0a0013",
@@ -161,16 +167,16 @@ export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
   })),
   leftWing: {
     x: 4,
-    y: 306,
-    width: 437,
-    height: 50,
+    y: 174,
+    width: 957,
+    height: 76,
     topRadius: 20,
   },
   rightWing: {
-    x: 439,
-    y: 306,
-    width: 437,
-    height: 50,
+    x: 959,
+    y: 174,
+    width: 957,
+    height: 76,
     topRadius: 20,
   },
   clamp: {
@@ -189,9 +195,11 @@ export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
     glowOpacity: 0.34,
   },
   dome: {
-    cx: 432,
-    cy: 356,
-    radius: 110,
+    cx: 952,
+    cy: 251,
+    width: 500,
+    height: 500,
+    topRadius: 300,
     edgeColor: "#f0cb63",
     edgeInnerColor: "#7f5610",
     edgeWidth: 1,
@@ -213,4 +221,6 @@ export const DEFAULT_HUD_ARTWORK_CONTROLS: HudArtworkControls = {
     tools: true,
     footer: true,
   },
+  showDebugGuides: true,
+  linkedWings: true,
 };

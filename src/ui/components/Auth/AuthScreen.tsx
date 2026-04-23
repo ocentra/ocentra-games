@@ -106,6 +106,9 @@ export function AuthScreen({
   }, [navigate])
 
   if (isAuthenticated && user) {
+    if (route.kind === 'template') {
+      return null;
+    }
     if (route.kind === 'settings') {
       return (
         <Suspense fallback={<RouteFallback />}>

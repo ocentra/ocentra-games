@@ -21,7 +21,7 @@ import {
   writeStoredLayoutEditorPlayerCount,
 } from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
-import { CardGameTemplateViewport } from '@ocentra/card-game-ui/CardGameTemplateViewport';
+import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
@@ -712,7 +712,7 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
           onTableChange={handleTableChange}
         />
       )}
-      <CardGameTemplateViewport
+      <CardGameTemplatePage
         document={document as unknown as CardGameLayoutDocument}
         playerCount={playerCount}
         headerProps={headerProps}

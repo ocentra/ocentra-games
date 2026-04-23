@@ -22,6 +22,7 @@ export type AppRouteState =
   | { kind: 'matchmaking'; gameId?: string }
   | { kind: 'lobby'; gameId?: string }
   | { kind: 'game'; gameId: string }
+  | { kind: 'template' }
   | { kind: 'legacy'; token: string };
 
 const AppRoutePrefix = {
@@ -133,6 +134,9 @@ export function parseAppRoute(pathname: string): AppRouteState {
     }
     if (third === AppScreenToken.Lobby) {
       return { kind: 'lobby', gameId: second };
+    }
+    if (second === 'cardgame' && third === 'template') {
+      return { kind: 'template' };
     }
     return { kind: 'game', gameId: second };
   }

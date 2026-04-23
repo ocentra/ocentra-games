@@ -20,7 +20,7 @@ import {
 } from "@ocentra/game-layout-domain/cardGameLayoutRuntime";
 import { tableLayoutStore } from "@ocentra/game-layout-domain/tableLayoutStore";
 
-export type WorkspaceSectionKey = "layerSplit" | "hudTuning" | "hudButtons" | "table" | "cardVisuals" | "cardInHand";
+export type WorkspaceSectionKey = "layerSplit" | "hudTuning" | "table" | "cardVisuals";
 type EditorSectionKey = "layout" | "geometry" | "effects" | "colors";
 type TableSectionKey = "shape" | "seats" | "playerUi";
 type LayerKey = "background" | "header" | "table" | "seats" | "cards" | "hud" | "tools" | "footer";
@@ -38,11 +38,9 @@ export interface CardGameDesignStudioProps {
 
 const WORKSPACE_TABS: Array<{ key: WorkspaceSectionKey; label: string }> = [
   { key: "layerSplit", label: "Layer Split" },
-  { key: "hudTuning", label: "HUD Tuning" },
-  { key: "hudButtons", label: "HUD Button Editor" },
+  { key: "hudTuning", label: "HUD System" },
   { key: "table", label: "Table" },
   { key: "cardVisuals", label: "Card Visuals" },
-  { key: "cardInHand", label: "Card in Hand" },
 ];
 
 const HUD_BUTTON_SECTIONS: Array<{ key: EditorSectionKey; label: string }> = [
@@ -256,9 +254,12 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     embedded = false,
   } = props;
 
-  const [workspaceSection, setWorkspaceSection] = useState<WorkspaceSectionKey>(initialWorkspaceSection ?? "hudButtons");
+  const [workspaceSection, setWorkspaceSection] = useState<WorkspaceSectionKey>(initialWorkspaceSection ?? "hudTuning");
   const [activeSection, setActiveSection] = useState<EditorSectionKey>("layout");
   const [activeTableSection, setActiveTableSection] = useState<TableSectionKey>("shape");
+  const [hudTuningSection, setHudTuningSection] = useState<"base" | "wings" | "dome" | "styles" | "buttons" | "cardInHand">("base");
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [internalPlayerCount, setInternalPlayerCount] = useState<number>(
     activePlayerCount ?? document.defaultPlayerCount,
@@ -279,6 +280,20 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
     () => document.presets[String(resolvedPlayerCount)] ?? createLayoutPreset(resolvedPlayerCount),
     [document, resolvedPlayerCount],
   );
+
+  useEffect(() => {
+    if (confirmReset) {
+      const t = setTimeout(() => setConfirmReset(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [confirmReset]);
+
+  useEffect(() => {
+    if (copySuccess) {
+      const t = setTimeout(() => setCopySuccess(false), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [copySuccess]);
 
   const updateDoc = useCallback((updater: (draft: CardGameLayoutDocument) => void) => {
     const next = cloneCardGameLayoutDocument(document);
@@ -426,8 +441,8 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         )}
         {activeSection === "geometry" && (
           <Section title="Button Geometry">
-            {(["width", "height", "radius", "sideInset", "dotInset", "dotGap", "fontSize"] as const).map(f => (
-              <NumberField key={f} label={f} value={effective[f]} min={0} max={900} step={1} disabled={activeIndex >= 0 && (variant?.linked ?? true)} onReset={() => updateHud(h => {
+            {(["width", "height", "bodyHeight", "radius", "sideInset", "dotInset", "dotGap", "fontSize"] as const).map(f => (
+              <NumberField key={f} label={f} value={effective[f] ?? (f === "bodyHeight" ? effective.height : 0)} min={0} max={1500} step={1} disabled={activeIndex >= 0 && (variant?.linked ?? true)} onReset={() => updateHud(h => {
                 const val = DEFAULT_HUD_BUTTON_CONTROLS[f];
                 if (activeIndex < 0) h.button[f] = val as never;
                 else {
@@ -736,7 +751,6 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         ))}
       </div>
       <main style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-        {workspaceSection === "hudButtons" && renderHudButtons()}
         {workspaceSection === "layerSplit" && (
           <div className="game-screen__hud-button-modal-content">
             <Section title="Layer Visibility Controls">
@@ -757,17 +771,251 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
         )}
         {workspaceSection === "hudTuning" && (
           <div className="game-screen__hud-button-modal-content">
-            <Section title="HUD Base Art Styling">
-              <NumberField label="HUD Width" value={hud.width} min={400} max={1800} step={1} onChange={(v) => updateHud(h => { h.width = v; })} onReset={() => updateHud(h => { h.width = DEFAULT_HUD_ARTWORK_CONTROLS.width; })} />
-              <NumberField label="HUD Height" value={hud.height} min={100} max={600} step={1} onChange={(v) => updateHud(h => { h.height = v; })} onReset={() => updateHud(h => { h.height = DEFAULT_HUD_ARTWORK_CONTROLS.height; })} />
-              <NumberField label="Offset X" value={hud.hudOffsetX} min={-400} max={400} step={1} onChange={(v) => updateHud(h => { h.hudOffsetX = v; })} onReset={() => updateHud(h => { h.hudOffsetX = DEFAULT_HUD_ARTWORK_CONTROLS.hudOffsetX; })} />
-              <NumberField label="Offset Y" value={hud.hudOffsetY} min={-400} max={400} step={1} onChange={(v) => updateHud(h => { h.hudOffsetY = v; })} onReset={() => updateHud(h => { h.hudOffsetY = DEFAULT_HUD_ARTWORK_CONTROLS.hudOffsetY; })} />
-              <NumberField label="Overall Scale" value={hud.overallScale} min={0.2} max={2.0} step={0.01} onChange={(v) => updateHud(h => { h.overallScale = v; })} onReset={() => updateHud(h => { h.overallScale = DEFAULT_HUD_ARTWORK_CONTROLS.overallScale; })} />
-              <ColorField label="Panel Top" value={hud.panelTop} onChange={(v) => updateHud(h => { h.panelTop = v; })} onReset={() => updateHud(h => { h.panelTop = DEFAULT_HUD_ARTWORK_CONTROLS.panelTop; })} />
-              <ColorField label="Panel Mid" value={hud.panelMid} onChange={(v) => updateHud(h => { h.panelMid = v; })} onReset={() => updateHud(h => { h.panelMid = DEFAULT_HUD_ARTWORK_CONTROLS.panelMid; })} />
-              <ColorField label="Panel Bottom" value={hud.panelBottom} onChange={(v) => updateHud(h => { h.panelBottom = v; })} onReset={() => updateHud(h => { h.panelBottom = DEFAULT_HUD_ARTWORK_CONTROLS.panelBottom; })} />
-              <NumberField label="Glass Opacity" value={hud.panelGlassOpacity} min={0} max={1} step={0.01} onChange={(v) => updateHud(h => { h.panelGlassOpacity = v; })} onReset={() => updateHud(h => { h.panelGlassOpacity = DEFAULT_HUD_ARTWORK_CONTROLS.panelGlassOpacity; })} />
-            </Section>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(141,255,176,0.1)' }}>
+              {(["base", "wings", "dome", "styles", "buttons", "cardInHand"] as const).map(tab => {
+                const label = tab === "cardInHand" ? "Card Fan" : tab.charAt(0).toUpperCase() + tab.slice(1);
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    className={`game-screen__hud-button-modal-tab ${hudTuningSection === tab ? "game-screen__hud-button-modal-tab--active" : ""}`}
+                    onClick={() => setHudTuningSection(tab)}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {hudTuningSection === "base" && (
+              <Section title="HUD Base Art Styling">
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', width: '100%' }}>
+                  <button
+                    type="button"
+                    style={{ 
+                      flex: 1,
+                      padding: '8px 16px',
+                      backgroundColor: confirmReset ? 'rgba(255, 0, 0, 0.4)' : 'rgba(255, 50, 50, 0.15)',
+                      border: confirmReset ? '1px solid rgba(255, 0, 0, 0.8)' : '1px solid rgba(255, 100, 100, 0.4)', 
+                      borderRadius: '4px',
+                      color: confirmReset ? '#ffffff' : '#ffaaaa', 
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      textAlign: 'center',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      if (!confirmReset) e.currentTarget.style.backgroundColor = 'rgba(255, 50, 50, 0.25)';
+                    }}
+                    onMouseOut={(e) => {
+                      if (!confirmReset) e.currentTarget.style.backgroundColor = 'rgba(255, 50, 50, 0.15)';
+                    }}
+                    onClick={() => {
+                      if (confirmReset) {
+                        updateHud(h => {
+                          Object.assign(h, JSON.parse(JSON.stringify(DEFAULT_HUD_ARTWORK_CONTROLS)));
+                        });
+                        setConfirmReset(false);
+                      } else {
+                        setConfirmReset(true);
+                      }
+                    }}
+                  >
+                    {confirmReset ? "Are you sure? Click again." : "Reset Defaults"}
+                  </button>
+                  <button
+                    type="button"
+                    style={{ 
+                      flex: 1,
+                      padding: '8px 16px',
+                      backgroundColor: 'rgba(50, 150, 255, 0.15)',
+                      border: '1px solid rgba(100, 200, 255, 0.4)', 
+                      borderRadius: '4px',
+                      color: '#aaddff', 
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      textAlign: 'center',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(50, 150, 255, 0.25)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(50, 150, 255, 0.15)';
+                    }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(JSON.stringify({
+                        hudArtwork: hud,
+                        cardFan: document.cardFan
+                      }, null, 2));
+                      setCopySuccess(true);
+                    }}
+                  >
+                    {copySuccess ? "Copied!" : "Copy HUD JSON"}
+                  </button>
+                </div>
+                <CheckboxField label="Show Alignment Guides" value={hud.showDebugGuides ?? false} onChange={(v) => updateHud(h => { h.showDebugGuides = v; })} />
+                <NumberField label="HUD Width" value={hud.width} min={400} max={2500} step={1} onChange={(v) => updateHud(h => { 
+                  const diff = v - h.width;
+                  h.width = v;
+                  h.dome.cx += diff / 2;
+                  h.leftWing.width += diff / 2;
+                  h.rightWing.x += diff / 2;
+                  h.rightWing.width += diff / 2;
+                })} onReset={() => updateHud(h => { 
+                  const diff = DEFAULT_HUD_ARTWORK_CONTROLS.width - h.width;
+                  h.width = DEFAULT_HUD_ARTWORK_CONTROLS.width;
+                  h.dome.cx += diff / 2;
+                  h.leftWing.width += diff / 2;
+                  h.rightWing.x += diff / 2;
+                  h.rightWing.width += diff / 2;
+                })} />
+                <NumberField label="HUD Height" value={hud.height} min={100} max={600} step={1} onChange={(v) => updateHud(h => { h.height = v; })} onReset={() => updateHud(h => { h.height = DEFAULT_HUD_ARTWORK_CONTROLS.height; })} />
+                <NumberField label="Offset X" value={hud.hudOffsetX} min={-400} max={400} step={1} onChange={(v) => updateHud(h => { h.hudOffsetX = v; })} onReset={() => updateHud(h => { h.hudOffsetX = DEFAULT_HUD_ARTWORK_CONTROLS.hudOffsetX; })} />
+                <NumberField label="Offset Y" value={hud.hudOffsetY} min={-400} max={400} step={1} onChange={(v) => updateHud(h => { h.hudOffsetY = v; })} onReset={() => updateHud(h => { h.hudOffsetY = DEFAULT_HUD_ARTWORK_CONTROLS.hudOffsetY; })} />
+                <NumberField label="Overall Scale" value={hud.overallScale} min={0.2} max={2.0} step={0.01} onChange={(v) => updateHud(h => { h.overallScale = v; })} onReset={() => updateHud(h => { h.overallScale = DEFAULT_HUD_ARTWORK_CONTROLS.overallScale; })} />
+              </Section>
+            )}
+
+            {hudTuningSection === "wings" && (
+              <Section title="HUD Wing Geometry">
+                <CheckboxField 
+                  label="Link Left & Right Wings" 
+                  value={hud.linkedWings ?? true} 
+                  onChange={(v) => updateHud(h => {
+                    h.linkedWings = v;
+                    if (v) {
+                      h.rightWing.width = h.leftWing.width;
+                      h.rightWing.height = h.leftWing.height;
+                      h.rightWing.y = h.leftWing.y;
+                      h.rightWing.topRadius = h.leftWing.topRadius;
+                      h.rightWing.x = h.width / 2 - 1; 
+                    }
+                  })} 
+                />
+                
+                {hud.linkedWings ?? true ? (
+                  <>
+                    <NumberField label="Wing Width" value={hud.leftWing.width} min={10} max={1500} step={1} 
+                      onChange={(v) => updateHud(h => { 
+                        h.leftWing.width = v; 
+                        h.rightWing.width = v;
+                        h.rightWing.x = h.width / 2 - 1;
+                      })} 
+                      onReset={() => updateHud(h => { 
+                        h.leftWing.width = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.width;
+                        h.rightWing.width = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.width;
+                        h.rightWing.x = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.x;
+                      })}
+                    />
+                    <NumberField label="Wing Height" value={hud.leftWing.height} min={10} max={400} step={1} 
+                      onChange={(v) => updateHud(h => { 
+                        h.leftWing.height = v; 
+                        h.rightWing.height = v; 
+                      })} 
+                      onReset={() => updateHud(h => { 
+                        h.leftWing.height = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.height;
+                        h.rightWing.height = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.height;
+                      })}
+                    />
+                    <NumberField label="Wing Y Position" value={hud.leftWing.y} min={0} max={400} step={1} 
+                      onChange={(v) => updateHud(h => { 
+                        h.leftWing.y = v; 
+                        h.rightWing.y = v; 
+                      })} 
+                      onReset={() => updateHud(h => { 
+                        h.leftWing.y = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.y;
+                        h.rightWing.y = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.y;
+                      })}
+                    />
+                    <NumberField label="Top Radius" value={hud.leftWing.topRadius} min={0} max={100} step={1} 
+                      onChange={(v) => updateHud(h => { 
+                        h.leftWing.topRadius = v; 
+                        h.rightWing.topRadius = v; 
+                      })} 
+                      onReset={() => updateHud(h => { 
+                        h.leftWing.topRadius = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.topRadius;
+                        h.rightWing.topRadius = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.topRadius;
+                      })}
+                    />
+                  </>
+                ) : (
+                  <div style={{ gridColumn: '1 / -1', width: '100%', display: 'flex', flexDirection: 'row', gap: '0.75rem' }}>
+                    <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem', background: 'rgba(255,255,255,0.02)', minWidth: 0 }}>
+                      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.75rem', fontSize: '0.75rem', color: '#4ade80', fontWeight: 'bold', letterSpacing: '0.05em' }}>LEFT WING</div>
+                      <NumberField label="Width" value={hud.leftWing.width} min={10} max={1500} step={1} onChange={(v) => updateHud(h => { h.leftWing.width = v; })} onReset={() => updateHud(h => { h.leftWing.width = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.width; })} />
+                      <NumberField label="Height" value={hud.leftWing.height} min={10} max={400} step={1} onChange={(v) => updateHud(h => { h.leftWing.height = v; })} onReset={() => updateHud(h => { h.leftWing.height = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.height; })} />
+                      <NumberField label="X Pos" value={hud.leftWing.x} min={-400} max={2500} step={1} onChange={(v) => updateHud(h => { h.leftWing.x = v; })} onReset={() => updateHud(h => { h.leftWing.x = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.x; })} />
+                      <NumberField label="Y Pos" value={hud.leftWing.y} min={0} max={400} step={1} onChange={(v) => updateHud(h => { h.leftWing.y = v; })} onReset={() => updateHud(h => { h.leftWing.y = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.y; })} />
+                      <NumberField label="Radius" value={hud.leftWing.topRadius} min={0} max={100} step={1} onChange={(v) => updateHud(h => { h.leftWing.topRadius = v; })} onReset={() => updateHud(h => { h.leftWing.topRadius = DEFAULT_HUD_ARTWORK_CONTROLS.leftWing.topRadius; })} />
+                    </div>
+                    
+                    <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem', background: 'rgba(255,255,255,0.02)', minWidth: 0 }}>
+                      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem', marginBottom: '0.75rem', fontSize: '0.75rem', color: '#4ade80', fontWeight: 'bold', letterSpacing: '0.05em' }}>RIGHT WING</div>
+                      <NumberField label="Width" value={hud.rightWing.width} min={10} max={1500} step={1} onChange={(v) => updateHud(h => { h.rightWing.width = v; })} onReset={() => updateHud(h => { h.rightWing.width = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.width; })} />
+                      <NumberField label="Height" value={hud.rightWing.height} min={10} max={400} step={1} onChange={(v) => updateHud(h => { h.rightWing.height = v; })} onReset={() => updateHud(h => { h.rightWing.height = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.height; })} />
+                      <NumberField label="X Pos" value={hud.rightWing.x} min={-400} max={2500} step={1} onChange={(v) => updateHud(h => { h.rightWing.x = v; })} onReset={() => updateHud(h => { h.rightWing.x = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.x; })} />
+                      <NumberField label="Y Pos" value={hud.rightWing.y} min={0} max={400} step={1} onChange={(v) => updateHud(h => { h.rightWing.y = v; })} onReset={() => updateHud(h => { h.rightWing.y = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.y; })} />
+                      <NumberField label="Radius" value={hud.rightWing.topRadius} min={0} max={100} step={1} onChange={(v) => updateHud(h => { h.rightWing.topRadius = v; })} onReset={() => updateHud(h => { h.rightWing.topRadius = DEFAULT_HUD_ARTWORK_CONTROLS.rightWing.topRadius; })} />
+                    </div>
+                  </div>
+                )}
+              </Section>
+            )}
+
+            {hudTuningSection === "dome" && (
+              <Section title="Center Dome Geometry (Center-Pivot)">
+                <NumberField label="Dome Width" value={hud.dome.width} min={10} max={1500} step={1} onChange={(v) => updateHud(h => { h.dome.width = v; })} onReset={() => updateHud(h => { h.dome.width = DEFAULT_HUD_ARTWORK_CONTROLS.dome.width; })} />
+                <NumberField label="Dome Height" value={hud.dome.height} min={10} max={600} step={1} onChange={(v) => updateHud(h => { h.dome.height = v; })} onReset={() => updateHud(h => { h.dome.height = DEFAULT_HUD_ARTWORK_CONTROLS.dome.height; })} />
+                <NumberField label="Center X" value={hud.dome.cx} min={0} max={880} step={1} onChange={(v) => updateHud(h => { h.dome.cx = v; })} onReset={() => updateHud(h => { h.dome.cx = DEFAULT_HUD_ARTWORK_CONTROLS.dome.cx; })} />
+                <NumberField label="Center Y" value={hud.dome.cy} min={0} max={360} step={1} onChange={(v) => updateHud(h => { h.dome.cy = v; })} onReset={() => updateHud(h => { h.dome.cy = DEFAULT_HUD_ARTWORK_CONTROLS.dome.cy; })} />
+                <NumberField label="Dome Top Radius" value={hud.dome.topRadius} min={0} max={300} step={1} onChange={(v) => updateHud(h => { h.dome.topRadius = v; })} onReset={() => updateHud(h => { h.dome.topRadius = DEFAULT_HUD_ARTWORK_CONTROLS.dome.topRadius; })} />
+              </Section>
+            )}
+
+            {hudTuningSection === "styles" && (
+              <>
+                <Section title="Colors & Fills">
+                  <ColorField label="Panel Top" value={hud.panelTop} onChange={(v) => updateHud(h => { h.panelTop = v; })} onReset={() => updateHud(h => { h.panelTop = DEFAULT_HUD_ARTWORK_CONTROLS.panelTop; })} />
+                  <ColorField label="Panel Mid" value={hud.panelMid} onChange={(v) => updateHud(h => { h.panelMid = v; })} onReset={() => updateHud(h => { h.panelMid = DEFAULT_HUD_ARTWORK_CONTROLS.panelMid; })} />
+                  <ColorField label="Panel Bottom" value={hud.panelBottom} onChange={(v) => updateHud(h => { h.panelBottom = v; })} onReset={() => updateHud(h => { h.panelBottom = DEFAULT_HUD_ARTWORK_CONTROLS.panelBottom; })} />
+                  <NumberField label="Glass Opacity" value={hud.panelGlassOpacity} min={0} max={1} step={0.01} onChange={(v) => updateHud(h => { h.panelGlassOpacity = v; })} onReset={() => updateHud(h => { h.panelGlassOpacity = DEFAULT_HUD_ARTWORK_CONTROLS.panelGlassOpacity; })} />
+                </Section>
+                <Section title="Wing & Clamp Styling">
+                  <ColorField label="Edge Color" value={hud.wingStyle.edgeColor} onChange={(v) => updateHud(h => { h.wingStyle.edgeColor = v; })} onReset={() => updateHud(h => { h.wingStyle.edgeColor = DEFAULT_HUD_ARTWORK_CONTROLS.wingStyle.edgeColor; })} />
+                  <NumberField label="Edge Width" value={hud.wingStyle.edgeWidth} min={0} max={10} step={0.5} onChange={(v) => updateHud(h => { h.wingStyle.edgeWidth = v; })} onReset={() => updateHud(h => { h.wingStyle.edgeWidth = DEFAULT_HUD_ARTWORK_CONTROLS.wingStyle.edgeWidth; })} />
+                  <ColorField label="Glow Color" value={hud.wingStyle.glowColor} onChange={(v) => updateHud(h => { h.wingStyle.glowColor = v; })} onReset={() => updateHud(h => { h.wingStyle.glowColor = DEFAULT_HUD_ARTWORK_CONTROLS.wingStyle.glowColor; })} />
+                  <NumberField label="Glow Width" value={hud.wingStyle.glowWidth} min={0} max={40} step={1} onChange={(v) => updateHud(h => { h.wingStyle.glowWidth = v; })} onReset={() => updateHud(h => { h.wingStyle.glowWidth = DEFAULT_HUD_ARTWORK_CONTROLS.wingStyle.glowWidth; })} />
+                  <NumberField label="Glow Opacity" value={hud.wingStyle.glowOpacity} min={0} max={1} step={0.01} onChange={(v) => updateHud(h => { h.wingStyle.glowOpacity = v; })} onReset={() => updateHud(h => { h.wingStyle.glowOpacity = DEFAULT_HUD_ARTWORK_CONTROLS.wingStyle.glowOpacity; })} />
+                </Section>
+                <Section title="Dome Styling">
+                  <ColorField label="Dome Edge" value={hud.dome.edgeColor} onChange={(v) => updateHud(h => { h.dome.edgeColor = v; })} onReset={() => updateHud(h => { h.dome.edgeColor = DEFAULT_HUD_ARTWORK_CONTROLS.dome.edgeColor; })} />
+                  <NumberField label="Dome Glow Opacity" value={hud.dome.glowOpacity} min={0} max={1} step={0.01} onChange={(v) => updateHud(h => { h.dome.glowOpacity = v; })} onReset={() => updateHud(h => { h.dome.glowOpacity = DEFAULT_HUD_ARTWORK_CONTROLS.dome.glowOpacity; })} />
+                </Section>
+              </>
+            )}
+
+            {hudTuningSection === "buttons" && renderHudButtons()}
+
+            {hudTuningSection === "cardInHand" && (
+              <Section title="Card Fan Layout">
+                <NumberField label="Card Count" value={document.cardFan.cardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.cardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.cardCount = DEFAULT_CARD_FAN_CONTROLS.cardCount; })} />
+                <NumberField label="Min Cards" value={document.cardFan.minCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.minCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.minCardCount = DEFAULT_CARD_FAN_CONTROLS.minCardCount; })} />
+                <NumberField label="Max Cards" value={document.cardFan.maxCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.maxCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.maxCardCount = DEFAULT_CARD_FAN_CONTROLS.maxCardCount; })} />
+                <NumberField label="Overall Scale" value={document.cardFan.overallScale ?? 1.0} min={0.1} max={2.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.overallScale = v; })} onReset={() => updateDoc(d => { d.cardFan.overallScale = DEFAULT_CARD_FAN_CONTROLS.overallScale; })} />
+                <NumberField label="Orbit Radius" value={document.cardFan.radiusScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.radiusScale = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusScale = DEFAULT_CARD_FAN_CONTROLS.radiusScale; })} />
+                <NumberField label="Radius Offset" value={document.cardFan.radiusOffset} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.radiusOffset = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusOffset = DEFAULT_CARD_FAN_CONTROLS.radiusOffset; })} />
+                <NumberField label="Width Scale" value={document.cardFan.cardWidthScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.cardWidthScale = v; })} onReset={() => updateDoc(d => { d.cardFan.cardWidthScale = DEFAULT_CARD_FAN_CONTROLS.cardWidthScale; })} />
+                <NumberField label="Arc Min" value={document.cardFan.arcMin} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMin = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMin = DEFAULT_CARD_FAN_CONTROLS.arcMin; })} />
+                <NumberField label="Arc Max" value={document.cardFan.arcMax} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMax = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMax = DEFAULT_CARD_FAN_CONTROLS.arcMax; })} />
+                <NumberField label="Fan Tilt" value={document.cardFan.fanTilt} min={-90} max={90} step={1} onChange={(v) => updateDoc(d => { d.cardFan.fanTilt = v; })} onReset={() => updateDoc(d => { d.cardFan.fanTilt = DEFAULT_CARD_FAN_CONTROLS.fanTilt; })} />
+                <NumberField label="Offset X" value={document.cardFan.centerOffsetX} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetX = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetX = DEFAULT_CARD_FAN_CONTROLS.centerOffsetX; })} />
+                <NumberField label="Offset Y" value={document.cardFan.centerOffsetY} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetY = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetY = DEFAULT_CARD_FAN_CONTROLS.centerOffsetY; })} />
+                <CheckboxField label="Disable Viewport Scale" value={document.cardFan.disableViewportScale} onChange={(v) => updateDoc(d => { d.cardFan.disableViewportScale = v; })} />
+              </Section>
+            )}
           </div>
         )}
         {workspaceSection === "table" && renderTableWorkspace()}
@@ -775,24 +1023,6 @@ export const CardGameDesignStudio: React.FC<CardGameDesignStudioProps> = (props)
           <div className="game-screen__hud-button-modal-content">
             <Section title="Card Graphics">
               <NumberField label="Float Scale" value={document.cardVisuals.floatScale ?? 1} min={0.5} max={3.0} step={0.1} onChange={(v) => updateDoc(d => { d.cardVisuals.floatScale = v; })} onReset={() => updateDoc(d => { d.cardVisuals.floatScale = DEFAULT_CARD_VISUAL_CONTROLS.floatScale; })} />
-            </Section>
-          </div>
-        )}
-        {workspaceSection === "cardInHand" && (
-          <div className="game-screen__hud-button-modal-content">
-            <Section title="Card Fan Layout">
-              <NumberField label="Card Count" value={document.cardFan.cardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.cardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.cardCount = DEFAULT_CARD_FAN_CONTROLS.cardCount; })} />
-              <NumberField label="Min Cards" value={document.cardFan.minCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.minCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.minCardCount = DEFAULT_CARD_FAN_CONTROLS.minCardCount; })} />
-              <NumberField label="Max Cards" value={document.cardFan.maxCardCount} min={1} max={20} step={1} onChange={(v) => updateDoc(d => { d.cardFan.maxCardCount = v; })} onReset={() => updateDoc(d => { d.cardFan.maxCardCount = DEFAULT_CARD_FAN_CONTROLS.maxCardCount; })} />
-              <NumberField label="Orbit Radius" value={document.cardFan.radiusScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.radiusScale = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusScale = DEFAULT_CARD_FAN_CONTROLS.radiusScale; })} />
-              <NumberField label="Radius Offset" value={document.cardFan.radiusOffset} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.radiusOffset = v; })} onReset={() => updateDoc(d => { d.cardFan.radiusOffset = DEFAULT_CARD_FAN_CONTROLS.radiusOffset; })} />
-              <NumberField label="Width Scale" value={document.cardFan.cardWidthScale} min={0.1} max={1.0} step={0.01} onChange={(v) => updateDoc(d => { d.cardFan.cardWidthScale = v; })} onReset={() => updateDoc(d => { d.cardFan.cardWidthScale = DEFAULT_CARD_FAN_CONTROLS.cardWidthScale; })} />
-              <NumberField label="Arc Min" value={document.cardFan.arcMin} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMin = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMin = DEFAULT_CARD_FAN_CONTROLS.arcMin; })} />
-              <NumberField label="Arc Max" value={document.cardFan.arcMax} min={0} max={180} step={1} onChange={(v) => updateDoc(d => { d.cardFan.arcMax = v; })} onReset={() => updateDoc(d => { d.cardFan.arcMax = DEFAULT_CARD_FAN_CONTROLS.arcMax; })} />
-              <NumberField label="Fan Tilt" value={document.cardFan.fanTilt} min={-90} max={90} step={1} onChange={(v) => updateDoc(d => { d.cardFan.fanTilt = v; })} onReset={() => updateDoc(d => { d.cardFan.fanTilt = DEFAULT_CARD_FAN_CONTROLS.fanTilt; })} />
-              <NumberField label="Offset X" value={document.cardFan.centerOffsetX} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetX = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetX = DEFAULT_CARD_FAN_CONTROLS.centerOffsetX; })} />
-              <NumberField label="Offset Y" value={document.cardFan.centerOffsetY} min={-200} max={200} step={1} onChange={(v) => updateDoc(d => { d.cardFan.centerOffsetY = v; })} onReset={() => updateDoc(d => { d.cardFan.centerOffsetY = DEFAULT_CARD_FAN_CONTROLS.centerOffsetY; })} />
-              <CheckboxField label="Disable Viewport Scale" value={document.cardFan.disableViewportScale} onChange={(v) => updateDoc(d => { d.cardFan.disableViewportScale = v; })} />
             </Section>
           </div>
         )}

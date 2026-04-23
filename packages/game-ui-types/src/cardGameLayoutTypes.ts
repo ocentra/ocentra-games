@@ -39,7 +39,9 @@ export interface EdgeGlowConfig {
 export interface DomeConfig {
   cx: number;
   cy: number;
-  radius: number;
+  width: number;
+  height: number;
+  topRadius: number;
   edgeColor: string;
   edgeInnerColor: string;
   edgeWidth: number;
@@ -53,6 +55,7 @@ export interface HudButtonControls {
   buttonOffsetY: number;
   width: number;
   height: number;
+  bodyHeight?: number;
   radius: number;
   sideInset: number;
   dotInset: number;
@@ -120,6 +123,8 @@ export interface HudArtworkControls {
   panelMid: string;
   panelBottom: string;
   panelGlassOpacity: number;
+  showDebugGuides?: boolean;
+  linkedWings?: boolean;
   layerVisibility?: CardGameLayerVisibility;
 }
 
@@ -136,6 +141,7 @@ export interface CardFanControls {
   centerOffsetX: number;
   centerOffsetY: number;
   disableViewportScale: boolean;
+  overallScale: number;
 }
 
 export interface CardVisualControls {

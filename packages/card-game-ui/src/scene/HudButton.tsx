@@ -5,6 +5,7 @@ type HudButtonProps = {
   label?: string;
   width?: number;
   height?: number;
+  bodyHeight?: number;
   radius?: number;
   leftX?: number;
   rightX?: number;
@@ -164,6 +165,7 @@ export function HudButton({
   label = "PLAY",
   width = 500,
   height = 140,
+  bodyHeight,
   radius = 58,
   leftX,
   rightX,
@@ -212,9 +214,9 @@ export function HudButton({
   }, [clickFlash]);
 
   const bodyX = 0;
-  const bodyY = 0;
   const bodyW = width;
-  const bodyH = height;
+  const bodyH = bodyHeight ?? height;
+  const bodyY = (height - bodyH) / 2;
   const centerX = bodyX + bodyW / 2;
   const centerY = bodyY + bodyH / 2;
 
@@ -238,10 +240,20 @@ export function HudButton({
   const floorGlowY = bodyY + bodyH + Math.max(10, bodyH * 0.08);
   const artYOffset = Math.max(6, Math.round(height * 0.04));
 
-  const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * 0.72)));
+  const charWidthFactor = 0.62;
+  const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * charWidthFactor)));
   const labelLines = splitLabelIntoLines(label, maxCharsPerLine);
-  const lineHeight = fontSize * 1.08;
-  const textStartY = labelLines.length > 1 ? centerY - lineHeight * 0.38 : centerY + fontSize * 0.35;
+  
+  // Dynamic font scaling for long lines
+  const longestLineLen = Math.max(...labelLines.map(l => l.length));
+  const maxLineW = bodyW * 0.88; // Target width (88% of body)
+  const autoFontSize = longestLineLen > 0 
+    ? Math.min(fontSize, maxLineW / (longestLineLen * charWidthFactor))
+    : fontSize;
+  
+  const effectiveFontSize = Math.max(24, autoFontSize);
+  const lineHeight = effectiveFontSize * 1.08;
+  const textStartY = labelLines.length > 1 ? centerY - lineHeight * 0.38 : centerY + effectiveFontSize * 0.35;
 
   const viewBox = useMemo(() => {
     const maxExpand = Math.max(hoverInsetExpand, clickInsetExpand);
@@ -505,7 +517,7 @@ export function HudButton({
             x={centerX}
             y={textStartY}
             textAnchor="middle"
-            fontSize={fontSize}
+            fontSize={effectiveFontSize}
             fontWeight="700"
             letterSpacing="0.16em"
             fill={textColor}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { HudArtworkControls } from './scene/HudArtwork.types';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
@@ -20,7 +20,6 @@ export interface CardGamePreviewSurfaceProps {
   playerCount?: number;
   className?: string;
   showBackground?: boolean;
-  scaleFactor?: number;
   showSeatWidgets?: boolean;
   showHandPreview?: boolean;
   editableSeats?: boolean;
@@ -54,7 +53,9 @@ function resolveHandLayout(
   anchorRadius: number,
   cardFan: CardGameLayoutDocument['cardFan'],
 ) {
-  const cardWidth = Math.round(Math.max(30, Math.min(anchorRadius * cardFan.cardWidthScale, 116)));
+  // Use a base width calculation that works well with HUD-relative scaling.
+  // We don't cap it as strictly here because the HUD itself provides the boundary.
+  const cardWidth = Math.round(Math.max(30, anchorRadius * cardFan.cardWidthScale));
   return {
     cardWidth,
     cardHeight: Math.round(cardWidth * 1.42),
@@ -67,7 +68,6 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   playerCount,
   className,
   showBackground = true,
-  scaleFactor = 1,
   showSeatWidgets = true,
   showHandPreview = true,
   editableSeats = false,
@@ -79,8 +79,6 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
 }) => {
   const resolvedPlayerCount = playerCount ?? document.defaultPlayerCount;
   const surfaceRef = useRef<HTMLDivElement | null>(null);
-  const hudCenterRef = useRef<HTMLDivElement | null>(null);
-  const [hudAnchor, setHudAnchor] = useState<{ x: number; y: number; radius: number } | null>(null);
   const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 });
   const layoutState = useSyncExternalStore<TableLayoutState>(
     tableLayoutStore.subscribe,
@@ -92,74 +90,23 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   const floatScale = document.cardVisuals.floatScale;
   const resolvedHudControls = hudControlsOverride ?? document.hud;
 
-  useEffect(() => {
+  React.useEffect(() => {
     setGameAsset(previewAsset);
     tableLayoutStore.applyPreset(resolvedPlayerCount);
   }, [previewAsset, resolvedPlayerCount]);
 
-  const measureHudAnchor = useCallback(() => {
-    const elem = hudCenterRef.current;
-    const surface = surfaceRef.current;
-    if (!elem || !surface) {
-      setHudAnchor(null);
-      return;
-    }
-
-    const rect = elem.getBoundingClientRect();
-    const surfaceRect = surface.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0 || surfaceRect.width <= 0 || surfaceRect.height <= 0) {
-      setHudAnchor(null);
-      return;
-    }
-
-    setHudAnchor({
-      x: (rect.left - surfaceRect.left + rect.width / 2) / scaleFactor,
-      y: (rect.top - surfaceRect.top + rect.height / 2) / scaleFactor,
-      radius: (rect.width / 2) / scaleFactor,
-    });
-  }, [scaleFactor]);
-
-  useEffect(() => {
-    measureHudAnchor();
-    window.addEventListener('resize', measureHudAnchor);
-    return () => window.removeEventListener('resize', measureHudAnchor);
-  }, [measureHudAnchor, document.hud, resolvedPlayerCount]);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(measureHudAnchor);
-    return () => cancelAnimationFrame(id);
-  }, [measureHudAnchor, scaleFactor]);
-
-  useEffect(() => {
-    const surface = surfaceRef.current;
-    if (!surface) {
-      return;
-    }
-
+  React.useEffect(() => {
     const measure = () => {
-      const rect = surface.getBoundingClientRect();
-      setSurfaceSize({
-        width: rect.width,
-        height: rect.height,
-      });
+      if (surfaceRef.current) {
+        const rect = surfaceRef.current.getBoundingClientRect();
+        setSurfaceSize({ width: rect.width, height: rect.height });
+      }
     };
-
     measure();
-
-    const observer = new ResizeObserver(() => {
-      measure();
-    });
-    observer.observe(surface);
+    const observer = new ResizeObserver(measure);
+    if (surfaceRef.current) observer.observe(surfaceRef.current);
     return () => observer.disconnect();
   }, []);
-
-  const handLayout = useMemo(() => {
-    if (!hudAnchor) {
-      return null;
-    }
-
-    return resolveHandLayout(hudAnchor.radius, document.cardFan);
-  }, [document.cardFan, hudAnchor]);
 
   const layerVisibility = resolvedHudControls.layerVisibility ?? {};
   const showBackgroundLayer = showBackground && layerVisibility.background !== false;
@@ -168,24 +115,32 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   const showCardsLayer = showHandPreview && layerVisibility.cards !== false;
   const showHudLayer = layerVisibility.hud !== false;
   const shouldRenderHudHost = showHudLayer || showCardsLayer;
-  const arenaPaddingX = Math.min(80, surfaceSize.width * 0.05);
-  const arenaPaddingTop = Math.min(84, surfaceSize.height * 0.08);
-  const arenaPaddingBottom = Math.min(220, surfaceSize.height * 0.24);
-  const availableArenaWidth = Math.max(0, surfaceSize.width - arenaPaddingX * 2);
-  const availableArenaHeight = Math.max(0, surfaceSize.height - arenaPaddingTop - arenaPaddingBottom);
-  const arenaScale = surfaceSize.width > 0 && surfaceSize.height > 0
-    ? Math.max(
-        0.2,
-        Math.min(availableArenaWidth / TABLE_ARENA_WIDTH, availableArenaHeight / TABLE_ARENA_HEIGHT),
-      )
-    : 1;
+
+  const physicalW = surfaceSize.width || 1920;
+  const physicalH = surfaceSize.height || 1080;
+  const projectionScale = Math.min(physicalW / 1920, physicalH / 1080) || 1;
+
   const arenaStyle = useMemo(() => ({
     width: `${TABLE_ARENA_WIDTH}px`,
     height: `${TABLE_ARENA_HEIGHT}px`,
-    left: `${arenaPaddingX + availableArenaWidth / 2}px`,
-    top: `${arenaPaddingTop + availableArenaHeight / 2}px`,
-    transform: `translate(-50%, -50%) scale(${arenaScale})`,
-  }), [arenaPaddingTop, arenaPaddingX, arenaScale, availableArenaHeight, availableArenaWidth]);
+    left: '50%',
+    top: '50%',
+    transform: `translate(-50%, -50%) scale(${projectionScale})`,
+  }), [projectionScale]);
+
+  const hudAnchor = useMemo(() => ({
+    x: resolvedHudControls.dome.cx,
+    y: resolvedHudControls.dome.cy,
+    radius: resolvedHudControls.dome.topRadius || (resolvedHudControls.dome.width / 2),
+    width: resolvedHudControls.dome.width,
+    height: resolvedHudControls.dome.height,
+    topRadius: resolvedHudControls.dome.topRadius,
+  }), [resolvedHudControls.dome]);
+
+  const handLayout = useMemo(() => {
+    return resolveHandLayout(hudAnchor.radius, document.cardFan);
+  }, [document.cardFan, hudAnchor.radius]);
+
   const currentTable = layoutState.table ?? {};
   const arenaTableWidth = currentTable.width ?? 960;
   const arenaTableHeight = currentTable.height ?? 560;
@@ -234,14 +189,12 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
           <div className="card-game-preview-surface__layer card-game-preview-surface__layer--hud">
             {shouldRenderHudHost ? (
               <GameHUD
-                ref={hudCenterRef}
                 controls={resolvedHudControls}
                 showButtonGuides={false}
-                scaleFactor={scaleFactor}
                 showArtwork={showHudLayer}
                 onButtonClick={onHudButtonClick}
               >
-                {showCardsLayer && hudAnchor && handLayout ? (
+                {showCardsLayer && handLayout ? (
                   <CardInHand
                     position="absolute"
                     anchorPoint={hudAnchor}
@@ -256,7 +209,8 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
                     fanTilt={document.cardFan.fanTilt}
                     centerOffsetX={document.cardFan.centerOffsetX}
                     centerOffsetY={document.cardFan.centerOffsetY}
-                    disableViewportScale={document.cardFan.disableViewportScale}
+                    disableViewportScale={true}
+                    overallScale={document.cardFan.overallScale}
                     zIndex={120}
                   />
                 ) : null}

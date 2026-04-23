@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { GameHeader, type GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import { CARD_GAME_LAYOUT_DRAFT_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
@@ -38,7 +38,6 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   document: docProp,
   playerCount: playerCountProp,
   showBackground = true,
-  scaleFactor = 1,
   editableSeats = false,
   onSeatsChange,
   assetPath,
@@ -91,6 +90,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
       centerOffsetX: 0,
       centerOffsetY: 0,
       disableViewportScale: true,
+      overallScale: 1.0,
     },
     cardVisuals: { floatScale: 1 },
     views: {},
@@ -99,7 +99,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   }), []);
 
   const activeDoc = doc ?? fallbackDoc;
-  const layerVisibility = activeDoc.hud.layerVisibility ?? {};
+  const resolvedHud = hudControlsOverride ?? activeDoc.hud;
+  const layerVisibility = resolvedHud.layerVisibility ?? {};
   const showHeader = layerVisibility.header !== false;
   const showFooter = layerVisibility.footer !== false;
   const showTools = layerVisibility.tools !== false;
@@ -133,8 +134,36 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     onSeatsChange?.(nextSeats);
   }, [activeDoc, handleDocChange, resolvedPlayerCount, onSeatsChange]);
 
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [gameScale, setGameScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const updateScale = () => {
+      if (!shellRef.current) return;
+      const width = shellRef.current.clientWidth;
+      if (width <= 0) return;
+      
+      const hudWidth = activeDoc.hud.width;
+      const scale = Math.min(1, (width * 0.98) / hudWidth);
+      setGameScale(scale);
+    };
+
+    updateScale();
+
+    const observer = new ResizeObserver(updateScale);
+    if (shellRef.current) {
+      observer.observe(shellRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [activeDoc.hud.width]);
+
   return (
-    <div className={embedded ? 'game-screen game-screen--embedded' : 'game-screen'}>
+    <div 
+      ref={shellRef}
+      className={`${embedded ? 'game-screen game-screen--embedded' : 'game-screen'}${showFooter ? ' game-screen--with-footer' : ''}`}
+      style={{ '--game-scale': gameScale } as React.CSSProperties}
+    >
       <div className="game-screen__shell">
         <div className={`game-screen__layer-item game-screen__layer-item--header game-screen__layer-item--chrome${showHeader ? '' : ' game-screen__layer-item--hidden'}`}>
           <GameHeader {...headerProps} onHomeClick={handleHomeClick} />
@@ -146,7 +175,6 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
             playerCount={resolvedPlayerCount}
             className="game-screen__canvas-surface"
             showBackground={showBackground}
-            scaleFactor={scaleFactor}
             editableSeats={editableSeats}
             onSeatsChange={handleSeatsChange}
             hudControlsOverride={hudControlsOverride}

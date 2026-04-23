@@ -61,6 +61,24 @@ export default defineConfig(async ({ mode }) => {
     openInEditorPlugin(),
   ]
 
+  const excludedOcentraPrefixes = [
+    '@ocentra/ai-domain',
+    '@ocentra/card-games',
+    '@ocentra/card-game-ui',
+    '@ocentra/game-layout-domain',
+    '@ocentra/game-ui-types',
+    '@ocentra/core-ui',
+    '@ocentra/asset-domain',
+    '@ocentra/app-core',
+    '@ocentra/boundary-domain',
+    '@ocentra/logging-domain',
+    '@ocentra/endpoint-domain',
+    '@ocentra/api-domain',
+    '@ocentra/eventing-domain',
+    '@ocentra/game-asset-domain',
+    '@ocentra/game-domain'
+  ];
+
   return {
   define: {
     global: 'globalThis',
@@ -99,10 +117,7 @@ export default defineConfig(async ({ mode }) => {
       '@ocentra/card-games/schema/zod/game-schema',
       '@ocentra/api-domain/httpClient',
       '@ocentra/api-domain/createApiClient',
-      '@ocentra/card-game-ui',
-      '@ocentra/game-layout-domain',
-      '@ocentra/game-ui-types',
-      '@ocentra/core-ui',
+      ...excludedOcentraPrefixes,
       '@huggingface/transformers',
       'onnxruntime-web',
     ],
@@ -110,7 +125,8 @@ export default defineConfig(async ({ mode }) => {
       ...ocentraExportSubpaths.filter(
         (specifier) => 
           (specifier === '@ocentra/ai-domain' || !specifier.startsWith('@ocentra/ai-domain/')) &&
-          !specifier.startsWith('@ocentra/card-games')
+          !specifier.endsWith('.css') &&
+          !excludedOcentraPrefixes.some(pkg => specifier === pkg || specifier.startsWith(pkg + '/'))
       ),
       'three',
       'framer-motion',

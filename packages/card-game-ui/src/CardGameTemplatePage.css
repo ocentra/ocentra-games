@@ -5,6 +5,10 @@
   isolation: isolate;
 }
 
+.game-screen--with-footer {
+  --hud-bottom-offset: clamp(2rem, 4dvh, 2.5rem);
+}
+
 .game-screen--embedded {
   min-height: 0;
   height: 100%;
@@ -46,7 +50,6 @@
 
 .game-screen__layer-item--chrome {
   position: relative;
-  z-index: 2;
   flex: 0 0 auto;
 }
 
@@ -181,6 +184,7 @@
 }
 
 .game-screen--embedded .game-header,
+/* In embedded mode (e.g. Asset Editor), ensure the footer stays within the container bounds */
 .game-screen--embedded .game-footer {
   position: absolute;
   left: 0;
