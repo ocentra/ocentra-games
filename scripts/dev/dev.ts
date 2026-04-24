@@ -57,6 +57,7 @@ const SCAN_CACHE_FILE = path.join(process.cwd(), '.dev-scan-hash');
 const REGISTRY_INPUT_DIRS = ['src', 'packages/asset-domain/src', 'packages/game-asset-domain/src'] as const;
 const SCAN_INPUT_DIR = 'packages/asset-editor/Resources';
 const DEV_SCRIPT_STARTED_AT = Date.now();
+const VITE_OPTIMIZE_CACHE_DIR = path.join(process.cwd(), 'node_modules', '.vite');
 
 function stageLog(message: string): void {
   console.log(`[dev:vite +${Date.now() - DEV_SCRIPT_STARTED_AT}ms] ${message}`);
@@ -132,6 +133,17 @@ function isScanCacheValid(): boolean {
 function writeScanCache(): void {
   try {
     fs.writeFileSync(SCAN_CACHE_FILE, computeDirHash([SCAN_INPUT_DIR]), 'utf-8');
+  } catch {
+    /* non-fatal */
+  }
+}
+
+function clearViteOptimizeCache(): void {
+  try {
+    if (fs.existsSync(VITE_OPTIMIZE_CACHE_DIR)) {
+      fs.rmSync(VITE_OPTIMIZE_CACHE_DIR, { recursive: true, force: true });
+      console.log('🧹 Cleared Vite optimize cache');
+    }
   } catch {
     /* non-fatal */
   }
@@ -586,6 +598,8 @@ async function main() {
   }
   stageLog('Starting main Vite bootstrap');
   try {
+    clearViteOptimizeCache();
+
     if (clearLogDatabase()) {
       console.log('🧹 Cleared Log.db\n');
     }

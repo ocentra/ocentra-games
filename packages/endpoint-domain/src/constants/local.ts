@@ -35,3 +35,11 @@ export const LocalApiEndpoint = {
     MountBase: apiPrefix as ApiPath,
   },
 } as const;
+
+export const CloudflareLocalConfig = {
+  Port: 8787,
+  Host: 'localhost',
+  get BaseUrl() {
+    return `http://${this.Host}:${this.Port}`;
+  },
+} as const;

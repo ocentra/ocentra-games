@@ -2,9 +2,10 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { QueueActions } from '@/ui/pages/Matchmaking/components/QueueActions';
 import { QueueCard } from '@/ui/pages/Matchmaking/components/QueueCard';
 import { useMatchmakingQueue } from '@/ui/pages/Matchmaking/hooks/useMatchmakingQueue';
@@ -111,7 +112,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
         </section>
       </main>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

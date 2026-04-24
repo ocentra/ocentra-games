@@ -2,9 +2,10 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { LeaderboardPanel } from '@/ui/pages/Competition/components/LeaderboardPanel';
 import { TournamentPanel } from '@/ui/pages/Competition/components/TournamentPanel';
 import { useCompetitionData } from '@/ui/pages/Competition/hooks/useCompetitionData';
@@ -108,7 +109,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
         </section>
       </main>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

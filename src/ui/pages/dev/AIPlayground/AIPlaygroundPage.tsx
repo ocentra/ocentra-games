@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { EditorPageHeader } from '@ocentra/core-ui';
+import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import { AppFooter } from '@/ui/components/AppFooter'
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
+import { APP_VERSION } from '@/constants/version'
 import { useAuth } from '@/providers/AuthProvider'
 import { useAdminPermissions } from '@/hooks/useAdminPermissions'
 import { useAuthHandlers } from '@/hooks/useAuthHandlers'
@@ -174,7 +175,7 @@ export const AIPlaygroundPage: React.FC = () => {
         </div>
       </div>
       
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   )
 }

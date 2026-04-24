@@ -5,6 +5,7 @@ import { createWriteStream, mkdirSync, existsSync } from 'fs';
 import { createInterface } from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -215,7 +216,7 @@ async function execute(
   androidMode?: AndroidMode
 ): Promise<number> {
   const { teeToFile, profile } = output;
-  const workerBase = 'http://127.0.0.1:8787';
+  const workerBase = CloudflareLocalConfig.BaseUrl;
   const env: Record<string, string> = {};
 
   if (backend === 'production') {
@@ -328,6 +329,22 @@ function parsePresetFromArgv(): {
 }
 
 async function main(): Promise<void> {
+  const argv = process.argv.slice(2);
+  const isForce = argv.includes('--force');
+
+  if (isForce) {
+    const viteCache = path.join(ROOT, 'node_modules', '.vite');
+    if (existsSync(viteCache)) {
+      console.log('🧹 [force] Clearing Vite optimize cache...');
+      try {
+        const { rmSync } = await import('fs');
+        rmSync(viteCache, { recursive: true, force: true });
+      } catch (err) {
+        console.warn('⚠️  Failed to clear Vite cache:', (err as Error).message);
+      }
+    }
+  }
+
   try {
     const { execSync } = await import('child_process');
     execSync('npx tsx scripts/generate-exports-flattened.ts', { stdio: 'pipe' });
@@ -356,7 +373,14 @@ async function main(): Promise<void> {
       ? ' | log + profile → .temp/dev-output.log | .temp/performance-profile.json'
       : ' | log → .temp/dev-output.log'
     : '';
-  console.log(`\n  → ${target}${webModeLabel} | ${backend}${androidLabel}${outLabel}\n`);
+  console.log(`\n  → ${target}${webModeLabel} | ${backend}${androidLabel}${outLabel}${isForce ? ' [force]' : ''}\n`);
+  
+  // Propagate force flag if present
+  if (isForce && !process.env.VITE_FORCE) {
+    process.env.VITE_FORCE = 'true';
+    process.env.FORCE = 'true';
+  }
+
   const code = await execute(target, webMode, backend, output, androidMode);
   process.exit(code);
 }

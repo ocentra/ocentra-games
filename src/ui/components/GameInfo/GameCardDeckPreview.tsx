@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CardGridMatrix } from '@ocentra/core-ui';
+import { CardGridMatrix } from '@ocentra/core-ui/Common/CardGridMatrix/CardGridMatrix';
 import { getGameMode } from '@/adapters/assets/GameCatalogService';
 import { useImageUrl } from '@/hooks/useImageUrl';
 import type { Card } from '@ocentra/game-asset-domain/card/cardBase/Card';

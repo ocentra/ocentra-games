@@ -18,7 +18,8 @@ const AuthImages = {
 const AvatarImages = avatarImageById;
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { APP_VERSION } from '@/constants/version';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -624,7 +625,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
 
       {/* Footer - Outside dialog */}
       <div className="login-footer-wrapper">
-        <AppFooter />
+        <GameFooter appVersion={APP_VERSION} />
       </div>
     </div>
   );

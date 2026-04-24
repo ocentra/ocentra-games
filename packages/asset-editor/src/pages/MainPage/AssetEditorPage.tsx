@@ -222,7 +222,7 @@ export const AssetEditorPage: React.FC = () => {
 
   useEffect(() => {
     const measureHeader = () => {
-      const header = document.querySelector('.asset-editor-topbar') as HTMLElement;
+      const header = titleBarRef.current;
       if (header) {
         const rect = header.getBoundingClientRect();
         const height = rect.height;
@@ -235,7 +235,7 @@ export const AssetEditorPage: React.FC = () => {
 
     measureHeader();
     const resizeObserver = new ResizeObserver(measureHeader);
-    const header = document.querySelector('.asset-editor-topbar');
+    const header = titleBarRef.current;
     if (header) {
       resizeObserver.observe(header);
     }
@@ -317,7 +317,6 @@ export const AssetEditorPage: React.FC = () => {
             </span>
           }
           rightSuffixContent={<WindowControls />}
-          className="editor-header asset-editor-topbar"
         />
         </div>
 

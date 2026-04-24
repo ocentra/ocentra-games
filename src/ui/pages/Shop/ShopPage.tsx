@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
-import { GameHeader } from '@ocentra/core-ui';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';

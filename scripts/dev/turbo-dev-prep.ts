@@ -16,6 +16,11 @@ type PackageJson = {
   optionalDependencies?: Record<string, string>;
 };
 
+type WorkspacePackage = {
+  name: string;
+  dir: string;
+};
+
 export type DevPrepTarget = 'main' | 'editor' | 'worker';
 
 type TargetConfig = {
@@ -68,6 +73,29 @@ function getWorkspacePackageNames(): Set<string> {
   return names;
 }
 
+function getWorkspacePackages(): WorkspacePackage[] {
+  const packages: WorkspacePackage[] = [];
+
+  for (const entry of readdirSync(PACKAGES_DIR, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+
+    const dir = path.join(PACKAGES_DIR, entry.name);
+    const packageJsonPath = path.join(dir, 'package.json');
+    if (!existsSync(packageJsonPath)) {
+      continue;
+    }
+
+    const manifest = readPackageJson(packageJsonPath);
+    if (manifest.name) {
+      packages.push({ name: manifest.name, dir });
+    }
+  }
+
+  return packages;
+}
+
 function collectWorkspaceDependencies(packageJsonPath: string, exclude: readonly string[] = []): string[] {
   const workspacePackageNames = getWorkspacePackageNames();
   const manifest = readPackageJson(packageJsonPath);
@@ -82,8 +110,15 @@ function collectWorkspaceDependencies(packageJsonPath: string, exclude: readonly
     .sort((left, right) => left.localeCompare(right));
 }
 
-function buildTurboCommand(packageNames: readonly string[]): string {
-  return ['npx', 'turbo', 'run', 'build', ...packageNames.map((packageName) => `--filter=${packageName}...`)].join(' ');
+function buildTurboCommand(packageNames: readonly string[], force = false): string {
+  return [
+    'npx',
+    'turbo',
+    'run',
+    'build',
+    ...(force ? ['--force'] : []),
+    ...packageNames.map((packageName) => `--filter=${packageName}...`),
+  ].join(' ');
 }
 
 function buildSubpathExportCheckCommand(specifier: string): string {
@@ -119,26 +154,43 @@ function collectFilesRecursively(dir: string): string[] {
   return out;
 }
 
-function runForbiddenImportChecks(log: (message: string) => void): void {
-  const cardGamesDistDir = path.join(ROOT, 'packages', 'card-games', 'dist');
-  if (!existsSync(cardGamesDistDir)) {
-    return;
-  }
-
-  const badPattern = /['"]@ocentra\/game-domain\/deck['"]/;
+function findBuiltArtifactImportViolations(): string[] {
   const badFiles: string[] = [];
-  const files = collectFilesRecursively(cardGamesDistDir).filter((file) => file.endsWith('.js') || file.endsWith('.d.ts'));
-  for (const filePath of files) {
-    const content = readFileSync(filePath, 'utf8');
-    if (badPattern.test(content)) {
-      badFiles.push(path.relative(ROOT, filePath));
+  const packages = getWorkspacePackages();
+  const badPattern = /\.css\.js['"]/;
+
+  for (const workspacePackage of packages) {
+    const distDir = path.join(workspacePackage.dir, 'dist');
+    if (!existsSync(distDir)) {
+      continue;
+    }
+
+    const files = collectFilesRecursively(distDir).filter((file) => file.endsWith('.js') || file.endsWith('.d.ts'));
+    for (const filePath of files) {
+      const content = readFileSync(filePath, 'utf8');
+      if (badPattern.test(content)) {
+        badFiles.push(path.relative(ROOT, filePath));
+      }
     }
   }
 
+  return badFiles;
+}
+
+function runBuiltArtifactImportChecks(log: (message: string) => void): void {
+  const badFiles = findBuiltArtifactImportViolations();
+
   if (badFiles.length > 0) {
-    log('Forbidden import "@ocentra/game-domain/deck" detected in built card-games dist.');
-    throw new Error(`Forbidden import detected in card-games dist: ${badFiles[0]}`);
+    log(`Stale generated CSS-module import detected in built output: ${badFiles[0]}`);
+    throw new Error(`Stale generated CSS-module import detected: ${badFiles[0]}`);
   }
+}
+
+function runTurboBuild(packageNames: readonly string[], force = false): void {
+  execSync(buildTurboCommand(packageNames, force), {
+    cwd: ROOT,
+    stdio: 'inherit',
+  });
 }
 
 function isTurboRecentlyRun(): boolean {
@@ -181,12 +233,16 @@ export function ensureTurboDevPrep(target: DevPrepTarget, log: (message: string)
   }
 
   log(`Preparing ${config.description} with Turbo (${useSingleFilter ? 'single filter' : `${packageNames.length} packages`}).`);
-  execSync(buildTurboCommand(packageNames), {
-    cwd: ROOT,
-    stdio: 'inherit',
-  });
+  runTurboBuild(packageNames);
   runCriticalSubpathExportChecks(log);
-  runForbiddenImportChecks(log);
+  try {
+    runBuiltArtifactImportChecks(log);
+  } catch {
+    log('Re-running Turbo with --force to repair stale generated output.');
+    runTurboBuild(packageNames, true);
+    runCriticalSubpathExportChecks(log);
+    runBuiltArtifactImportChecks(log);
+  }
   writeTurboLastRunSentinel();
 }
 

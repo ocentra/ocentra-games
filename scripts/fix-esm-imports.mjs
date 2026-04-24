@@ -17,8 +17,17 @@ if (!fs.existsSync(distDir)) {
 function fixFile(filePath) {
   let content = fs.readFileSync(filePath, 'utf-8');
   const original = content;
+  content = content.replace(
+    /from\s+(['"])(\.\.\/[^'"]+?\.css)\.js\1/g,
+    (_, q, p) => `from ${q}${p}${q}`
+  );
+  content = content.replace(
+    /from\s+(['"])(\.\/[^'"]+?\.css)\.js\1/g,
+    (_, q, p) => `from ${q}${p}${q}`
+  );
   const shouldKeepImportAsIs = (specifier) =>
     specifier.endsWith('.js') ||
+    specifier.endsWith('.css') ||
     specifier.endsWith('.json') ||
     specifier.endsWith('.png') ||
     specifier.endsWith('.jpg') ||

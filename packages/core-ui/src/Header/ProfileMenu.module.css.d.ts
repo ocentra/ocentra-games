@@ -1,0 +1,30 @@
+declare const styles: {
+  readonly userProfileSection: string;
+  readonly userProfileCompact: string;
+  readonly profileAvatarCompact: string;
+  readonly profileAvatarPlaceholderCompact: string;
+  readonly profileNameCompact: string;
+  readonly profileArrow: string;
+  readonly adminBadge: string;
+  readonly profileMenuBackdrop: string;
+  readonly profileMenuCompact: string;
+  readonly profileMenuHeader: string;
+  readonly profilePictureWrapper: string;
+  readonly profileMenuAvatar: string;
+  readonly profileMenuAvatarPlaceholder: string;
+  readonly editOverlay: string;
+  readonly profileMenuInfo: string;
+  readonly profileMenuName: string;
+  readonly profileMenuEmail: string;
+  readonly profileMenuDivider: string;
+  readonly profileStats: string;
+  readonly profileStat: string;
+  readonly statLabel: string;
+  readonly statValue: string;
+  readonly profileMenuLink: string;
+  readonly menuLinkIcon: string;
+  readonly menuLinkText: string;
+  readonly profileLogoutButton: string;
+};
+
+export default styles;

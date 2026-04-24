@@ -10,7 +10,7 @@ import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayo
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { HudArtworkControls } from './scene/HudArtwork.types';
-import { LayoutClasses } from '@ocentra/core-ui';
+import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
 import './CardGameTemplatePage.css';
 
 export interface CardGameTemplatePageProps {

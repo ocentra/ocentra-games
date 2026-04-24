@@ -144,7 +144,7 @@ This dual-mode model preserves package hygiene while removing local stale-dist f
 ### Tasks
 
 1. Add a root-level alias map module (for example `scripts/config/workspace-source-aliases.ts`) containing:
-   - `@ocentra/core-ui` -> `packages/core-ui/src/index.ts`
+   - `@ocentra/core-ui/*` -> `packages/core-ui/src/*`
    - `@ocentra/game-asset-domain/<subpath>` -> mapped source file roots
    - same for other frequently consumed workspace packages.
 2. Add helper builders:

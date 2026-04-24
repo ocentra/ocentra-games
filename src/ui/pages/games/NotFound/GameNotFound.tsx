@@ -1,8 +1,9 @@
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import type { UserProfile } from '@/adapters/firebase/service';
 import './GameNotFound.css';
 import '../SelectedGame/SelectedGamePage.css';
@@ -55,7 +56,7 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
         </div>
       </div>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

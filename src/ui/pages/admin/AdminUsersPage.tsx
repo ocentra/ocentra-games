@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildHomePath } from '@/ui/navigation/appRoutes';
-import { EditorPageHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { usePlatformUI } from '@/ui/platform/usePlatformUI';
 import {
   isRouteEnabled,
@@ -559,7 +560,7 @@ export const AdminUsersPage: React.FC = () => {
         </>
       )}
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 };

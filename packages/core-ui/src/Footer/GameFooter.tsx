@@ -1,5 +1,5 @@
 import React from 'react';
-import './GameFooter.css';
+import styles from './GameFooter.module.css';
 
 export interface GameFooterProps {
   appVersion?: string;
@@ -8,23 +8,23 @@ export interface GameFooterProps {
 
 export const GameFooter: React.FC<GameFooterProps> = ({ appVersion, rightContent }) => {
   return (
-    <footer className="game-footer">
-      <div className="footer-content">
-        <span className="footer-text">
-          Made with <span className="heart">❤️</span> by{' '}
+    <footer className={styles.gameFooter}>
+      <div className={styles.footerContent}>
+        <span className={styles.footerText}>
+          Made with <span className={styles.heart}>❤️</span> by{' '}
           <a
             href="https://ocentra.ca"
             target="_blank"
             rel="noopener noreferrer"
-            className="footer-link"
+            className={styles.footerLink}
           >
             ocentra.ca
           </a>
           {appVersion != null && appVersion !== '' && (
-            <span className="footer-version"> [ alpha v{appVersion} ]</span>
+            <span className={styles.footerVersion}> [ alpha v{appVersion} ]</span>
           )}
         </span>
-        {rightContent && <div className="footer-right-content">{rightContent}</div>}
+        {rightContent && <div className={styles.footerRightContent}>{rightContent}</div>}
       </div>
     </footer>
   );

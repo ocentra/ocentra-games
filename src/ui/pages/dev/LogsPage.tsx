@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { EditorPageHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import LoginDialog from '@/ui/components/Auth/LoginDialog';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAuthHandlers } from '@/hooks/useAuthHandlers';
@@ -307,7 +308,7 @@ export const LogsPage: React.FC = () => {
           )}
         </div>
       </main>
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </>
   );
 };

@@ -9,7 +9,7 @@ Shared UI components used by the main app and asset-editor. Extracted to enable 
 ## Usage
 
 ```ts
-import { GameFooter } from '@ocentra/core-ui';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 ```
 
 ## Build
@@ -23,5 +23,4 @@ Output: `dist/` with JS, .d.ts, and CSS.
 ## Adding Components
 
 1. Create component under `src/` (e.g. `src/Header/EditorPageHeader.tsx`)
-2. Add export to `src/index.ts`
-3. Add to `package.json` exports if exposing a subpath
+2. Add a `package.json` export for the direct file path

@@ -15,18 +15,15 @@ import {
   HomePageGamesDocumentSchema,
   type HomePageGamesDocument,
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
-import type { ExploreGameSummary } from '@ocentra/core-ui'
-import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer'
+import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
+import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
 import { FeaturedGameCarousel } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameCarousel'
 import { ComingSoonCarousel } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonCarousel'
-import {
-  ExplorerContentBar,
-  ExplorerSidebar,
-  GameCard,
-  GameListRow,
-  GameListRowHeader,
-} from '@ocentra/core-ui/GamesExplorer'
+import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerContentBar'
+import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar'
+import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard'
+import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow'
 import { solanaImageUrl } from '@ocentra/app-assets/commons'
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl'
 import { PreviewPanelHeader } from './PreviewPanelHeader'
@@ -1295,4 +1292,3 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     </div>
   )
 }
-

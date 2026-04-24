@@ -109,7 +109,6 @@ export default defineConfig(async ({ mode }) => {
     },
   },
   optimizeDeps: {
-    force: true,
     exclude: [
       ...aiDomainExportSubpaths,
       '@ocentra/endpoint-domain/constants/cloudflare',

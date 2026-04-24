@@ -2,13 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { solanaImageUrl } from '@ocentra/app-assets/commons';
-import { FeaturedGameCarousel, ComingSoonCarousel } from '@ocentra/core-ui';
-import type { ExploreGameSummary } from '@ocentra/core-ui';
+import { FeaturedGameCarousel } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameCarousel';
+import { ComingSoonCarousel } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonCarousel';
+import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary';
 import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSection';
 import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
@@ -256,7 +258,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
         </div>
       </div>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

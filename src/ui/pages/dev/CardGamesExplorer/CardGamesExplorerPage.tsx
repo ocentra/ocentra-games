@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { useGamesData } from './hooks/useGamesData';
 import { useGamesFilter } from './hooks/useGamesFilter';
 import { useGameDetail } from './hooks/useGameDetail';
 import type { Game } from './types';
-import {
-  ExplorerSidebar,
-  ExplorerContentBar,
-  GameCard,
-  GameListRow,
-  GameListRowHeader,
-} from '@ocentra/core-ui/GamesExplorer';
+import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerContentBar';
+import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar';
+import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard';
+import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow';
 import { ExplorerControlBar } from './components/ExplorerControlBar';
 import { GameDetailOverlay } from './components/GameDetailOverlay';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
@@ -227,7 +225,7 @@ export function CardGamesExplorerPage() {
         />
       )}
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
       </div>
     </ThreeBaseProvider>
   );

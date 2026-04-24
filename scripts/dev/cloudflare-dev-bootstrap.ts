@@ -8,13 +8,15 @@ import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensurePortFree, getPortOccupants } from './port-utils';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const ROOT = path.resolve(__dirname, '../..');
 export const GAME_WORKER_DIR = path.join(ROOT, 'infra/cloudflare');
-export const GAME_WORKER_PORT = parseInt(process.env.WORKER_PORT ?? '8787', 10);
-export const GAME_WORKER_BASE = `http://127.0.0.1:${GAME_WORKER_PORT}`;
+export const GAME_WORKER_PORT = parseInt(process.env.WORKER_PORT ?? String(CloudflareLocalConfig.Port), 10);
+export const GAME_WORKER_HOST = CloudflareLocalConfig.Host;
+export const GAME_WORKER_BASE = `http://${GAME_WORKER_HOST}:${GAME_WORKER_PORT}`;
 export const STARTUP_TIMEOUT_MS = 300_000;
 
 const PRODUCT_SEED_CACHE_FILE = path.join(GAME_WORKER_DIR, '.dev-seed-hash');
@@ -179,7 +181,7 @@ async function waitForPort(port: number, timeoutMs: number): Promise<void> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const attempt = () => {
-      const socket = net.createConnection({ port, host: '127.0.0.1' });
+      const socket = net.createConnection({ port, host: 'localhost' });
       socket.once('connect', () => {
         socket.destroy();
         resolve();
@@ -416,7 +418,7 @@ export async function ensureLocalCloudflareWorker(
 
   log(`Starting claim-storage worker on fixed port ${GAME_WORKER_PORT}...`);
   const generatedWorkerEnvFile = writeGeneratedWorkerEnvFile();
-  const wranglerArgs = ['wrangler', 'dev', '--env', 'development', '--ip', '127.0.0.1', '--port', String(GAME_WORKER_PORT)];
+  const wranglerArgs = ['wrangler', 'dev', '--env', 'development', '--ip', GAME_WORKER_HOST, '--port', String(GAME_WORKER_PORT)];
   if (generatedWorkerEnvFile) {
     wranglerArgs.push('--env-file', generatedWorkerEnvFile);
   }

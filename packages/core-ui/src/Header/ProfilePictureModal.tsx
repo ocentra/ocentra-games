@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import type { UserProfile } from '../types/userProfile';
 import type { AvatarInfo } from '../types/avatarInfo';
-import './ProfilePictureModal.css';
+import styles from './ProfilePictureModal.module.css';
 
 export interface ProfilePictureModalProps {
   isOpen: boolean;
@@ -21,36 +21,33 @@ export function ProfilePictureModal({
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [avatars, setAvatars] = useState<AvatarInfo[]>([]);
-  const [isLoadingAvatars, setIsLoadingAvatars] = useState(false);
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-
-
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-    if (isOpen) {
-      setIsLoadingAvatars(true);
-    }
-  }
+  const [avatars, setAvatars] = useState<AvatarInfo[] | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      getAvatars()
+      let cancelled = false;
+
+      void Promise.resolve(getAvatars())
         .then((loaded) => {
-          setAvatars(loaded);
-          setIsLoadingAvatars(false);
+          if (!cancelled) {
+            setAvatars(loaded);
+          }
         })
         .catch(() => {
-          setAvatars([]);
-          setIsLoadingAvatars(false);
+          if (!cancelled) {
+            setAvatars([]);
+          }
         });
+
+      return () => {
+        cancelled = true;
+      };
     }
   }, [isOpen, getAvatars]);
 
-
   if (!isOpen) return null;
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     setIsUploading(true);
@@ -117,7 +114,7 @@ export function ProfilePictureModal({
     onClose();
   };
 
-  const handleOverlayKeyDown = (e: React.KeyboardEvent) => {
+  const handleOverlayKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') handleClose();
   };
 
@@ -128,65 +125,70 @@ export function ProfilePictureModal({
 
   return (
     <div
-      className="profile-modal-overlay"
+      className={styles.profileModalOverlay}
       role="dialog"
       aria-modal="true"
       aria-labelledby="profile-modal-title"
     >
       <button
         type="button"
-        className="profile-modal-backdrop"
+        className={styles.profileModalBackdrop}
         onClick={handleClose}
         onKeyDown={handleOverlayKeyDown}
         aria-label="Close dialog"
         tabIndex={-1}
       />
-      <div className="profile-modal">
-        <div className="profile-modal-header">
-          <h2 id="profile-modal-title">Choose Your Avatar</h2>
-          <button className="close-btn" onClick={handleClose} aria-label="Close dialog">
+      <div className={styles.profileModal}>
+        <div className={styles.profileModalHeader}>
+          <h2 id="profile-modal-title" className={styles.profileModalTitle}>
+            Choose Your Avatar
+          </h2>
+          <button type="button" className={styles.closeButton} onClick={handleClose} aria-label="Close dialog">
             ×
           </button>
         </div>
 
-        <div className="profile-modal-content">
-          <div className="current-avatar-preview">
+        <div className={styles.profileModalContent}>
+          <div className={styles.currentAvatarPreview}>
             <img src={previewSrc} alt="Selected Avatar" />
           </div>
 
-          <div className="avatars-section">
-            {isLoadingAvatars && <div>Loading avatars...</div>}
-            <div className="avatars-grid">
-              {avatars.length === 0 && !isLoadingAvatars && <div>No avatars available</div>}
-              {avatars.map((avatar) => (
+          <div className={styles.avatarsSection}>
+            {avatars === null && <div>Loading avatars...</div>}
+            <div className={styles.avatarsGrid}>
+              {avatars !== null && avatars.length === 0 && <div>No avatars available</div>}
+              {avatars?.map((avatar) => (
                 <button
                   type="button"
                   key={avatar.id}
-                  className={`avatar-option ${selectedAvatar === avatar.url ? 'selected' : ''} ${user?.photoURL === avatar.url ? 'current' : ''}`}
+                  className={styles.avatarOption}
+                  data-selected={selectedAvatar === avatar.url ? 'true' : undefined}
+                  data-current={user?.photoURL === avatar.url ? 'true' : undefined}
                   onClick={() => setSelectedAvatar(avatar.url)}
                   title={avatar.name}
                 >
                   <img src={avatar.url} alt={avatar.name} />
-                  {user?.photoURL === avatar.url && <div className="current-badge">Current</div>}
+                  {user?.photoURL === avatar.url && <div className={styles.currentBadge}>Current</div>}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="modal-actions">
-            <label className="upload-btn">
-              <span className="upload-icon">📁</span>
+          <div className={styles.modalActions}>
+            <label className={styles.uploadButton}>
+              <span className={styles.uploadIcon}>📁</span>
               <span>Upload Custom</span>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleFileUpload}
-                className="file-input"
+                className={styles.fileInput}
                 disabled={isUploading || isSaving}
               />
             </label>
             <button
-              className="set-avatar-btn"
+              type="button"
+              className={styles.setAvatarButton}
               onClick={handleSetAvatar}
               disabled={!selectedAvatar || isSaving}
             >

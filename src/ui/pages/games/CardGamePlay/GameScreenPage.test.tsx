@@ -26,16 +26,16 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('@ocentra/core-ui', () => ({
+vi.mock('@ocentra/core-ui/Header/GameHeader', () => ({
   GameHeader: () => <div data-testid="mock-game-header" />,
+}));
+
+vi.mock('@ocentra/core-ui/Footer/GameFooter', () => ({
+  GameFooter: () => <div data-testid="mock-footer" />,
 }));
 
 vi.mock('@/hooks/useCoreUIHeaderProps', () => ({
   useCoreUIHeaderProps: () => ({}),
-}));
-
-vi.mock('@/ui/components/AppFooter', () => ({
-  AppFooter: () => <div data-testid="mock-footer" />,
 }));
 
 vi.mock('@/ui/components/GameScreen/CardGameScreen/CardGameComponents/GameBackground', () => ({

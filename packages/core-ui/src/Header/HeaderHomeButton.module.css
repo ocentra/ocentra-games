@@ -1,0 +1,67 @@
+.headerHomeButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
+  background: rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  margin-left: var(--space-1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.headerHomeButton[data-variant='game'] {
+  height: 80%;
+  min-height: var(--control-hit-area);
+}
+
+.headerHomeButton[data-variant='editor'] {
+  height: var(--control-h-sm);
+}
+
+.headerHomeButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.homeIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+  width: 2.125rem;
+  height: 2.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.headerHomeButton[data-variant='editor'] .homeIcon {
+  font-size: 1.2rem;
+}
+
+.homeText {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerHomeButton[data-variant='game'] .homeText {
+  max-width: clamp(0rem, 15dvw, 6rem);
+}
+
+@container header (max-width: 700px) {
+  .headerHomeButton[data-variant='game'] .homeText {
+    display: none;
+  }
+}

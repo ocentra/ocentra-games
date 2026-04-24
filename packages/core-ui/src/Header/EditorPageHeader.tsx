@@ -1,7 +1,7 @@
 import { BaseHeader } from './BaseHeader';
 import type { BaseHeaderProps } from './BaseHeader';
-import './EditorHeader.css';
-import './EditorPageHeader.css';
+import { HeaderHomeButton } from './HeaderHomeButton';
+import styles from './EditorPageHeader.module.css';
 
 export interface EditorPageHeaderProps
   extends Omit<BaseHeaderProps, 'leftContent' | 'centerContent'> {
@@ -18,37 +18,25 @@ export function EditorPageHeader({
   description,
   onHomeClick,
   onAdminDashboardClick,
-  className = '',
   ...baseProps
 }: EditorPageHeaderProps) {
-  const leftContent = onHomeClick ? (
-    <button
-      type="button"
-      className="editor-header-home-button"
-      onClick={onHomeClick}
-      title="Home"
-      aria-label="Home"
-    >
-      <span className="home-icon">🏠</span>
-      <span className="home-text">Home</span>
-    </button>
-  ) : null;
+  const leftContent = onHomeClick ? <HeaderHomeButton variant="editor" onClick={onHomeClick} /> : null;
 
   const centerContent = (
-    <div className="editor-page-header__title">
-      <span className="editor-page-header__title-text">{title}</span>
-      {subtitle && <span className="editor-page-header__subtitle">{subtitle}</span>}
-      {description && <span className="editor-page-header__description">{description}</span>}
+    <div className={styles.editorPageHeaderTitle}>
+      <span className={styles.editorPageHeaderTitleText}>{title}</span>
+      {subtitle && <span className={styles.editorPageHeaderSubtitle}>{subtitle}</span>}
+      {description && <span className={styles.editorPageHeaderDescription}>{description}</span>}
     </div>
   );
 
   return (
     <BaseHeader
       {...baseProps}
+      compact
       onAdminDashboardClick={onAdminDashboardClick}
       leftContent={leftContent}
       centerContent={centerContent}
-      className={`editor-header editor-page-header ${className}`.trim()}
     />
   );
 }

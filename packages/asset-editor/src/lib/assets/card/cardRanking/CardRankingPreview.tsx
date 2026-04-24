@@ -2,7 +2,7 @@ import React from 'react';
 import { CardRanking } from '@ocentra/game-asset-domain/card/cardRanking/CardRanking';
 import type { CardSuitEntry, CardRankingEntry } from '@ocentra/game-asset-domain/card/cardRanking/CardRanking';
 import { DeckType } from '@ocentra/game-asset-domain/deck/DeckType';
-import { CardGridMatrix } from '@ocentra/core-ui';
+import { CardGridMatrix } from '@ocentra/core-ui/Common/CardGridMatrix/CardGridMatrix';
 import './CardRankingPreview.css';
 
 interface CardRankingPreviewProps {
@@ -159,4 +159,3 @@ export const CardRankingPreview: React.FC<CardRankingPreviewProps> = ({ assetId,
     </div>
   );
 };
-

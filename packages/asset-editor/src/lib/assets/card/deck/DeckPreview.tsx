@@ -12,7 +12,7 @@ import type { AssetType } from '@ocentra/asset-domain/types/assetType';
 import { CardRanking } from '@ocentra/game-asset-domain/card/cardRanking/CardRanking';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { CardGridMatrix } from '@ocentra/core-ui';
+import { CardGridMatrix } from '@ocentra/core-ui/Common/CardGridMatrix/CardGridMatrix';
 import { extractDeckTemplateRefs } from '@/lib/assets/card/deck/deckTemplateRefs';
 import './DeckPreview.css';
 
@@ -319,4 +319,3 @@ const BackCardCell: React.FC<{ hash: ImageHash }> = ({ hash }) => {
     </div>
   );
 };
-

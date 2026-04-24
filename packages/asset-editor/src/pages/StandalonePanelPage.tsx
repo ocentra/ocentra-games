@@ -25,7 +25,8 @@ import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { HudButtonEditorModal } from '@ocentra/card-game-ui/HudButtonEditorModal';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import { type GameHeaderProps, LayoutClasses } from '@ocentra/core-ui';
+import { type GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
+import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import {
   cloneCardGameLayoutDocument,

@@ -2,9 +2,10 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { FeedPanel } from '@/ui/pages/Social/components/FeedPanel';
 import { FriendsPanel } from '@/ui/pages/Social/components/FriendsPanel';
 import { MessagesPanel } from '@/ui/pages/Social/components/MessagesPanel';
@@ -138,7 +139,7 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
         </section>
       </main>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

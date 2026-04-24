@@ -4,9 +4,10 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
 import type { PageSection } from '@/ui/components/GameInfo/types';
-import { GameHeader } from '@ocentra/core-ui';
-import { AppFooter } from '@/ui/components/AppFooter';
+import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import { GameModeSelector } from '@/ui/components/Common/GamePlayersSelector/GameModeSelector';
 import { GameInfoTabs } from '@/ui/components/GameInfo/GameInfoTabs';
 import { GameCardDeckPreview } from '@/ui/components/GameInfo/GameCardDeckPreview';
@@ -210,7 +211,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
         <GameInfoTabs sections={(gameInfo?.sections ?? []) as unknown as PageSection[]} />
       </div>
 
-      <AppFooter />
+      <GameFooter appVersion={APP_VERSION} />
     </div>
   );
 }

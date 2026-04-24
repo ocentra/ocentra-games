@@ -15,6 +15,38 @@
   --hud-bottom-offset: 4%;
   --vw: calc(var(--sim-w) / 100);
   --vh: calc(var(--sim-h) / 100);
+  /* Ground position: fixed elements inside this container */
+  transform: translateZ(0);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure the header and other fixed elements pick up the simulation units */
+.game-screen--embedded .game-header,
+.game-screen--embedded .oc-shell {
+  --vw: var(--vw);
+  --vh: var(--vh);
+}
+
+/* Orientation-aware scaling hooks */
+.game-screen--portrait .game-header {
+  /* Scale the header items down to fit narrow portrait simulation */
+  --header-scale: 0.85;
+}
+
+.game-screen--portrait .header-home-button,
+.game-screen--portrait .user-profile-compact,
+.game-screen--portrait .header-logo-unit {
+  transform: scale(var(--header-scale, 1));
+  transform-origin: center;
+}
+
+.game-screen--portrait .header-home-button {
+  transform-origin: left center;
+}
+
+.game-screen--portrait .user-profile-section {
+  transform-origin: right center;
 }
 
 .game-screen__layer-item {
