@@ -1,8 +1,8 @@
 export interface UserProfile {
   uid: string;
   displayName: string;
-  email: string;
-  photoURL?: string;
+  email?: string | null;
+  photoURL?: string | null;
   eloRating?: number;
   gamesPlayed?: number;
   winRate?: number;

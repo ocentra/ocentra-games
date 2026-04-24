@@ -370,6 +370,45 @@ fn list_cached_slice_keys(
 }
 
 #[tauri::command]
+fn save_config(app: AppHandle, name: String, content: String) -> Result<(), String> {
+    let config_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    let profiles_dir = config_dir.join("profiles").join("header");
+    fs::create_dir_all(&profiles_dir).map_err(|e| e.to_string())?;
+    let file_path = profiles_dir.join(format!("{}.json", name));
+    fs::write(file_path, content).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn load_config(app: AppHandle, name: String) -> Result<String, String> {
+    let config_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    let file_path = config_dir.join("profiles").join("header").join(format!("{}.json", name));
+    if !file_path.exists() {
+        return Err("Profile not found".to_string());
+    }
+    fs::read_to_string(file_path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn list_configs(app: AppHandle) -> Result<Vec<String>, String> {
+    let config_dir = app.path().app_config_dir().map_err(|e| e.to_string())?;
+    let profiles_dir = config_dir.join("profiles").join("header");
+    if !profiles_dir.exists() {
+        return Ok(Vec::new());
+    }
+    let mut names = Vec::new();
+    for entry in fs::read_dir(profiles_dir).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+        if path.extension().and_then(|s| s.to_str()) == Some("json") {
+            if let Some(name) = path.file_stem().and_then(|s| s.to_str()) {
+                names.push(name.to_string());
+            }
+        }
+    }
+    Ok(names)
+}
+
+#[tauri::command]
 fn remove_stale_cached_assets(app: AppHandle, valid_guids: Vec<String>) -> Result<Vec<String>, String> {
     let asset_dir = get_asset_cache_dir(&app)?;
     let valid = valid_guids
@@ -507,6 +546,9 @@ pub fn run() {
             list_cached_slice_keys,
             remove_stale_cached_assets,
             fetch_remote_resource,
+            save_config,
+            load_config,
+            list_configs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application")

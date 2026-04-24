@@ -13,6 +13,7 @@ export const LocalApiEndpoint = {
   },
 
   OpenInEditor: `${localApiPrefix}/open-in-editor` as ApiPath,
+  HeaderConfig: `${localApiPrefix}/header-config` as ApiPath,
 
   CardGames: {
     Games: `${apiPrefix}/games` as ApiPath,

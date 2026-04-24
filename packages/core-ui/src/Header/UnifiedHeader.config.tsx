@@ -1,39 +1,44 @@
 import type { ReactNode } from 'react';
+import type { AvatarInfo } from '@/types/avatarInfo';
 
 export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}): UnifiedHeaderConfig {
   return {
     layout: {
-      widthPercent: input.layout?.widthPercent ?? 100,
-      minHeightPx: input.layout?.minHeightPx ?? 52,
-      preferredHeightVw: input.layout?.preferredHeightVw ?? 5.2,
-      maxHeightPx: input.layout?.maxHeightPx ?? 80,
+      heightPx: input.layout?.heightPx ?? 52,
+      maxWidthPx: input.layout?.maxWidthPx,
       minViewWidth: input.layout?.minViewWidth ?? 360,
       outerMargin: input.layout?.outerMargin ?? 12,
       leftExpandedWidth: input.layout?.leftExpandedWidth ?? 118,
       leftCollapsedWidth: input.layout?.leftCollapsedWidth ?? 64,
       leftCollapseWidth: input.layout?.leftCollapseWidth ?? 760,
       centerWidth: input.layout?.centerWidth ?? 176,
-      rightWidth: input.layout?.rightWidth ?? 118,
+      rightWidth: input.layout?.rightWidth ?? 160,
       rightCollapsedWidth: input.layout?.rightCollapsedWidth ?? 78,
       rightCollapseWidth: input.layout?.rightCollapseWidth ?? 760,
       centerMinWidth: input.layout?.centerMinWidth ?? 96,
       boxGap: input.layout?.boxGap ?? 4,
       wingCurve: input.layout?.wingCurve ?? 9,
       wingUnderlap: input.layout?.wingUnderlap ?? 6,
-      wingY: input.layout?.wingY ?? 25,
       wingHeight: input.layout?.wingHeight ?? 30,
+      boxHeight: input.layout?.boxHeight ?? 56,
     },
     style: {
       tintColor: input.style?.tintColor ?? '#1aff8c',
       edgeColor: input.style?.edgeColor ?? '#d9f7e7',
       boxOpacity: input.style?.boxOpacity ?? 0.14,
       wingOpacity: input.style?.wingOpacity ?? 0.1,
+      pillGlowBlur: input.style?.pillGlowBlur ?? 2.5,
+      textGlowBlur: input.style?.textGlowBlur ?? 1.5,
+      iconGlowBlur: input.style?.iconGlowBlur ?? 0,
       glowBlur: input.style?.glowBlur ?? 2.5,
       backdropBlur: input.style?.backdropBlur ?? 0,
       circleFillColor: input.style?.circleFillColor ?? '#000000',
       hoverEdgeColor: input.style?.hoverEdgeColor ?? '#22ff88',
       hoverTintColor: input.style?.hoverTintColor ?? input.style?.tintColor ?? '#1aff8c',
       hoverBoxOpacityBoost: input.style?.hoverBoxOpacityBoost ?? 0.12,
+      dropdownTint: input.style?.dropdownTint ?? '#3b82f6',
+      dropdownBorderColor: input.style?.dropdownBorderColor ?? 'rgba(59, 130, 246, 0.3)',
+      dropdownSectionOpacity: input.style?.dropdownSectionOpacity ?? 0.08,
     },
     left: {
       text: input.left?.text ?? 'Home',
@@ -46,14 +51,24 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
       ariaLabel: input.left?.ariaLabel,
     },
     right: {
-      text: input.right?.text ?? 'Right Box',
+      text: input.right?.text ?? 'Login',
       textStyle: {
         size: input.right?.textStyle?.size ?? 13,
         color: input.right?.textStyle?.color ?? '#ffffff',
         weight: input.right?.textStyle?.weight ?? 700,
         letterSpacing: input.right?.textStyle?.letterSpacing ?? 0,
+        glowBlur: input.right?.textStyle?.glowBlur ?? 1.5,
       },
+      isProfile: input.right?.isProfile ?? false,
+      user: input.right?.user,
       onClick: input.right?.onClick,
+      onLogout: input.right?.onLogout,
+      onAdminDashboardClick: input.right?.onAdminDashboardClick,
+      onViewProfileClick: input.right?.onViewProfileClick,
+      onSettingsClick: input.right?.onSettingsClick,
+      onSecurityClick: input.right?.onSecurityClick,
+      onUpdatePhoto: input.right?.onUpdatePhoto,
+      getAvatars: input.right?.getAvatars,
       isButton: input.right?.isButton ?? true,
       ariaLabel: input.right?.ariaLabel,
     },
@@ -93,6 +108,10 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
       },
       customRenderer: input.center?.customRenderer,
     },
+    metadata: {
+      displayName: input.metadata?.displayName,
+      matchPatterns: input.metadata?.matchPatterns,
+    }
   };
 }
 
@@ -102,15 +121,19 @@ export type UnifiedHeaderConfig = {
   left: UnifiedHeaderLeftConfig;
   right: UnifiedHeaderRightConfig;
   center: UnifiedHeaderCenterConfig;
+  metadata?: UnifiedHeaderMetadata;
 };
 
 export type UnifiedHeaderConfigInput = DeepPartial<UnifiedHeaderConfig>;
 
+export type UnifiedHeaderMetadata = {
+  displayName?: string;
+  matchPatterns?: string[]; // e.g. ["/admin/*", "/asset-editor", "/game/:id"]
+};
+
 export type UnifiedHeaderLayoutConfig = {
-  widthPercent: number;
-  minHeightPx: number;
-  preferredHeightVw: number;
-  maxHeightPx: number;
+  heightPx: number;
+  maxWidthPx?: number;
   minViewWidth: number;
   outerMargin: number;
   leftExpandedWidth: number;
@@ -124,8 +147,8 @@ export type UnifiedHeaderLayoutConfig = {
   boxGap: number;
   wingCurve: number;
   wingUnderlap: number;
-  wingY: number;
   wingHeight: number;
+  boxHeight: number;
 };
 
 export type UnifiedHeaderStyleConfig = {
@@ -133,12 +156,18 @@ export type UnifiedHeaderStyleConfig = {
   edgeColor: string;
   boxOpacity: number;
   wingOpacity: number;
+  pillGlowBlur: number;
+  textGlowBlur: number;
+  iconGlowBlur: number;
   glowBlur: number;
   backdropBlur: number;
   circleFillColor: string;
   hoverEdgeColor: string;
   hoverTintColor: string;
   hoverBoxOpacityBoost: number;
+  dropdownTint: string;
+  dropdownBorderColor: string;
+  dropdownSectionOpacity: number;
 };
 
 export type UnifiedHeaderLeftConfig = {
@@ -156,7 +185,26 @@ export type UnifiedHeaderLeftConfig = {
 export type UnifiedHeaderRightConfig = {
   text: string;
   textStyle: TextStyleConfig;
+  isProfile?: boolean;
+  user?: {
+    name: string;
+    uid?: string;
+    email?: string | null;
+    avatarUrl?: string | null;
+    isLoggedIn?: boolean;
+    isAdmin?: boolean;
+    eloRating?: number;
+    gamesPlayed?: number;
+    winRate?: number;
+  };
   onClick?: () => void;
+  onLogout?: () => void;
+  onAdminDashboardClick?: () => void;
+  onViewProfileClick?: () => void;
+  onSettingsClick?: () => void;
+  onSecurityClick?: () => void;
+  onUpdatePhoto?: (data: { photoURL: string }) => Promise<void | { success: boolean; error?: string }>;
+  getAvatars?: () => Promise<AvatarInfo[]>;
   isButton?: boolean;
   ariaLabel?: string;
   customRenderer?: RightContentRenderer;
@@ -181,6 +229,7 @@ export type TextStyleConfig = {
   strokeWidth?: number;
   smallCaps?: boolean;
   letterSpacing?: number;
+  glowBlur?: number;
 };
 
 export type CenterModeAConfig = {

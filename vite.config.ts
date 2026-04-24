@@ -17,6 +17,7 @@ const aiDomainExportSubpaths = ocentraExportSubpaths.filter(
 import { generateRegistryMapsPlugin } from './vite/plugins/generate-inspector-map'
 import { logsPlugin } from './vite/plugins/logs'
 import { openInEditorPlugin } from './vite/plugins/open-in-editor'
+import { headerConfigPlugin } from './vite/plugins/header-config'
 import type { PluginOption } from 'vite'
 
 export default defineConfig(async ({ mode }) => {
@@ -59,6 +60,7 @@ export default defineConfig(async ({ mode }) => {
     }),
     logsPlugin(),
     openInEditorPlugin(),
+    headerConfigPlugin(),
   ]
 
   const excludedOcentraPrefixes = [

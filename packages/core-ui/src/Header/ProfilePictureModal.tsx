@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type KeyboardEvent } from 'react';
-import type { UserProfile } from '../types/userProfile';
-import type { AvatarInfo } from '../types/avatarInfo';
+import type { UserProfile } from '@/types/userProfile';
+import type { AvatarInfo } from '@/types/avatarInfo';
 import styles from './ProfilePictureModal.module.css';
 
 export interface ProfilePictureModalProps {

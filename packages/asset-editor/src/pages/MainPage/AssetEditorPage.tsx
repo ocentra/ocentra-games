@@ -1,7 +1,6 @@
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
-import { BaseHeader } from '@ocentra/core-ui/Header/BaseHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
@@ -44,7 +43,6 @@ const LazyDeleteAssetDialog = React.lazy(async () => ({
 }));
 
 export const AssetEditorPage: React.FC = () => {
-  const headerProps = useCoreUIHeaderProps();
   const { isAuthenticated, user, logout } = useAuth();
   const { isAdmin } = useAdminPermissions();
 
@@ -248,49 +246,61 @@ export const AssetEditorPage: React.FC = () => {
       <div className="asset-editor">
         <div ref={titleBarRef} className="asset-editor__titlebar-wrap">
           <TitleBarDragHandler containerRef={titleBarRef} />
-          <BaseHeader
-          position="static"
-          {...headerProps}
-          user={user ? { ...user, displayName: user.displayName ?? '', email: user.email ?? '', photoURL: user.photoURL ?? undefined } : null}
-          onLogout={logout}
-          leftContent={
-            <div className="asset-editor__topbar" data-tauri-drag-region>
-              <img src="/favicon.svg" alt="" className="asset-editor__logo" aria-hidden />
-              <MenuBar
-                onCreateAsset={handleCreateAsset}
-                onRefreshTree={refreshTree}
-                onSyncStatusChange={handleSyncStatusChange}
-                onOpenPreviewWindow={() => {
-                  const path = assetPath ?? 'virtual:AssetCatalog';
-                  const title = path.split('/').pop() ?? path;
-                  if (isTauri()) {
-                    void createPanelWindow('preview', path, title, false);
-                  } else {
-                    window.open(getStandalonePanelUrl('preview', path, false), '_blank');
-                  }
-                }}
-                onOpenInspectorWindow={() => {
-                  const path = assetPath ?? 'virtual:AssetCatalog';
-                  const title = path.split('/').pop() ?? path;
-                  if (isTauri()) {
-                    void createPanelWindow('inspector', path, title, false);
-                  } else {
-                    window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
-                  }
-                }}
-                onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
-                onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
-                onResetLayout={() => dockLayoutRef.current?.resetLayout()}
-              />
-            </div>
-          }
-          centerContent={
-            <span className="asset-editor__center-title" data-tauri-drag-region>
-              Asset Editor
-            </span>
-          }
-          rightSuffixContent={<WindowControls />}
-        />
+          <UnifiedHeader
+            profileName="asset_editor"
+            leftContent={
+              <div className="asset-editor__topbar" data-tauri-drag-region>
+                <img src="/favicon.svg" alt="" className="asset-editor__logo" aria-hidden />
+                <MenuBar
+                  onCreateAsset={handleCreateAsset}
+                  onRefreshTree={refreshTree}
+                  onSyncStatusChange={handleSyncStatusChange}
+                  onOpenPreviewWindow={() => {
+                    const path = assetPath ?? 'virtual:AssetCatalog';
+                    const title = path.split('/').pop() ?? path;
+                    if (isTauri()) {
+                      void createPanelWindow('preview', path, title, false);
+                    } else {
+                      window.open(getStandalonePanelUrl('preview', path, false), '_blank');
+                    }
+                  }}
+                  onOpenInspectorWindow={() => {
+                    const path = assetPath ?? 'virtual:AssetCatalog';
+                    const title = path.split('/').pop() ?? path;
+                    if (isTauri()) {
+                      void createPanelWindow('inspector', path, title, false);
+                    } else {
+                      window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
+                    }
+                  }}
+                  onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
+                  onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
+                  onResetLayout={() => dockLayoutRef.current?.resetLayout()}
+                />
+              </div>
+            }
+            rightSuffixContent={<WindowControls />}
+            config={{
+              right: {
+                isProfile: Boolean(user),
+                user: user ? {
+                  name: user.displayName || 'Player',
+                  email: user.email,
+                  avatarUrl: user.photoURL,
+                  isLoggedIn: true,
+                  isAdmin: isAdmin,
+                } : undefined,
+                onLogout: logout,
+              },
+              center: {
+                mode: 'A',
+                modeA: {
+                  leftText: "Asset",
+                  rightText: "Editor",
+                }
+              }
+            }}
+          />
         </div>
 
         <div className="asset-editor__dock-container">

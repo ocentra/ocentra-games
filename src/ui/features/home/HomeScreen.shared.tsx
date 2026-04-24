@@ -10,7 +10,6 @@ import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/
 import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
-import { ProfileMenu } from '@ocentra/core-ui/Header/ProfileMenu';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
@@ -192,8 +191,8 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
 
   const homeHeaderConfig = useMemo(() => ({
     layout: {
-      widthPercent: 98,
-      preferredHeightVw: 4.5,
+      heightPx: 52,
+      maxWidthPx: undefined,
     },
     center: {
       mode: 'A' as const,
@@ -220,20 +219,26 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       }
     },
     right: {
-      customRenderer: ({ box }: any) => (
-        <foreignObject x={box.x} y={box.y} width={box.w} height={box.h}>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ProfileMenu {...headerProps} user={user} showProfile={true} onLogout={handleLogout} />
-          </div>
-        </foreignObject>
-      ),
+      isProfile: Boolean(user),
+      user: user ? {
+        name: user.displayName || 'Player',
+        email: user.email,
+        avatarUrl: user.photoURL,
+        isLoggedIn: true,
+        isAdmin: user.isAdmin,
+        eloRating: user.eloRating,
+        gamesPlayed: user.gamesPlayed,
+        winRate: user.winRate,
+      } : undefined,
+      onLogout: handleLogout,
+      onAdminDashboardClick: headerProps.onAdminDashboardClick,
     },
-  }), [user, headerProps, ocentraTextImageUrl, mlogoImageUrl, gamesTextImageUrl]);
+  }), [user, headerProps.onAdminDashboardClick, mlogoImageUrl]);
 
   return (
     <div className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}>
       {ImageLoaders}
-      <UnifiedHeader config={homeHeaderConfig} />
+      <UnifiedHeader config={homeHeaderConfig} profileName="main_screen" />
 
       <div style={{ display: 'none' }}>
         <GameHeader {...headerProps} user={user} onLogout={handleLogout} showProfile variant="welcome" welcomeLogos={WELCOME_LOGOS} />
