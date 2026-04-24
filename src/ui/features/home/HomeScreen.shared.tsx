@@ -9,6 +9,8 @@ import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSec
 import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
 import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { ProfileMenu } from '@ocentra/core-ui/Header/ProfileMenu';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
@@ -188,18 +190,61 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     ...(user?.isAdmin ? [{ name: 'Admin', onClick: () => navigate('/admin') }] : []),
   ];
 
+  const homeHeaderConfig = useMemo(() => ({
+    layout: {
+      widthPercent: 98,
+      preferredHeightVw: 4.5,
+    },
+    center: {
+      mode: 'A' as const,
+      modeA: {
+        leftText: "O'centra",
+        rightText: 'Games',
+        textStyle: {
+          size: 26,
+          color: '#ffffff',
+          weight: 800,
+          strokeColor: '#0044ff',
+          strokeWidth: 1.2,
+          smallCaps: true,
+          letterSpacing: 1.5,
+        },
+        logo: {
+          size: 44,
+          renderer: ({ cx, cy, size, aspectCorrection }: { cx: number, cy: number, size: number, aspectCorrection: number }) => {
+            const logoH = size;
+            const logoW = logoH * aspectCorrection;
+            return <image href={mlogoImageUrl} x={cx - logoW / 2} y={cy - logoH / 2} width={logoW} height={logoH} />;
+          }
+        }
+      }
+    },
+    right: {
+      customRenderer: ({ box }: any) => (
+        <foreignObject x={box.x} y={box.y} width={box.w} height={box.h}>
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ProfileMenu {...headerProps} user={user} showProfile={true} onLogout={handleLogout} />
+          </div>
+        </foreignObject>
+      ),
+    },
+  }), [user, headerProps, ocentraTextImageUrl, mlogoImageUrl, gamesTextImageUrl]);
+
   return (
     <div className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}>
       {ImageLoaders}
-      <GameHeader {...headerProps} user={user} onLogout={handleLogout} showProfile variant="welcome" welcomeLogos={WELCOME_LOGOS} />
+      <UnifiedHeader config={homeHeaderConfig} />
 
-      <div className="nav-bar-container">
-        <NavigationBar
-          items={navItems}
-          height={40}
-          showArrows={true}
-          variant="default"
-        />
+      <div style={{ display: 'none' }}>
+        <GameHeader {...headerProps} user={user} onLogout={handleLogout} showProfile variant="welcome" welcomeLogos={WELCOME_LOGOS} />
+        <div className="nav-bar-container">
+          <NavigationBar
+            items={navItems}
+            height={40}
+            showArrows={true}
+            variant="default"
+          />
+        </div>
       </div>
 
       <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>

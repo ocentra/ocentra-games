@@ -8,6 +8,7 @@ export interface BaseHeaderProps {
   user: UserProfile | null;
   onLogout?: () => void;
   showProfile?: boolean;
+  position?: 'fixed' | 'static';
   leftContent?: ReactNode;
   centerContent: ReactNode;
   rightContent?: ReactNode;
@@ -25,6 +26,7 @@ export function BaseHeader({
   user,
   onLogout,
   showProfile = true,
+  position = 'fixed',
   leftContent,
   centerContent,
   rightContent,
@@ -38,7 +40,11 @@ export function BaseHeader({
   onAdminDashboardClick,
 }: BaseHeaderProps) {
   return (
-    <header className={styles.baseHeader} data-compact={compact ? 'true' : undefined}>
+    <header
+      className={styles.baseHeader}
+      data-compact={compact ? 'true' : undefined}
+      data-position={position}
+    >
       <div className={styles.baseHeaderContainer}>
         <div className={styles.baseHeaderLeft} {...(titleBarDragRegion ? { 'data-tauri-drag-region': '' } : {})}>
           {leftContent}

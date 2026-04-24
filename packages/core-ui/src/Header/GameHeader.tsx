@@ -55,17 +55,19 @@ export function GameHeader({
     return (
       <header className={styles.gameHeader}>
         <div className={styles.headerContainer} data-variant="welcome">
-          <div className={styles.headerLogoUnit}>
-            <img src={welcomeLogos.ocentraText} alt="Ocentra" className={styles.headerTextImage} />
-            <div className={styles.headerLogoCircleWrapper}>
-              <div className={styles.headerLogoCircle}>
-                <img src={welcomeLogos.mlogo} alt="Ocentra AI" className={styles.headerLogoCircleImage} />
+          <div className={styles.headerLeft} />
+          <div className={styles.headerCenter}>
+            <div className={styles.headerLogoUnit}>
+              <img src={welcomeLogos.ocentraText} alt="Ocentra" className={styles.headerTextImage} />
+              <div className={styles.headerLogoCircleWrapper}>
+                <div className={styles.headerLogoCircle}>
+                  <img src={welcomeLogos.mlogo} alt="Ocentra AI" className={styles.headerLogoCircleImage} />
+                </div>
               </div>
+              <img src={welcomeLogos.gamesText} alt="Games" className={styles.headerTextImage} />
             </div>
-            <img src={welcomeLogos.gamesText} alt="Games" className={styles.headerTextImage} />
           </div>
-          <div className={styles.headerRightWelcome} />
-          {profileMenu}
+          <div className={styles.headerRight}>{profileMenu}</div>
         </div>
       </header>
     );

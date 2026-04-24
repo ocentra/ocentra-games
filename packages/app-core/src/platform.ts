@@ -1,3 +1,5 @@
+import { isTauri } from '@tauri-apps/api/core';
+
 export const PlatformRuntime = {
   Web: 'web',
   Desktop: 'desktop',
@@ -34,22 +36,16 @@ export function getPlatformRuntime(): PlatformRuntime {
   if (typeof globalThis !== 'undefined' && (globalThis as { Capacitor?: unknown }).Capacitor) {
     return PlatformRuntime.Mobile;
   }
-  if (
-    typeof globalThis !== 'undefined' &&
-    (globalThis as { __TAURI__?: unknown }).__TAURI__
-  ) {
-    return PlatformRuntime.Desktop;
-  }
-  if (
-    typeof navigator !== 'undefined' &&
-    navigator.userAgent?.toLowerCase().includes('electron')
-  ) {
-    return PlatformRuntime.Desktop;
+  if (typeof navigator !== 'undefined' && navigator.webdriver) {
+    return PlatformRuntime.Web;
   }
   if (
     typeof navigator !== 'undefined' &&
     navigator.userAgent?.toLowerCase().includes('tauri')
   ) {
+    return PlatformRuntime.Desktop;
+  }
+  if (isTauri()) {
     return PlatformRuntime.Desktop;
   }
   if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {

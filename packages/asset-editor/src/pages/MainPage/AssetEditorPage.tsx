@@ -220,34 +220,6 @@ export const AssetEditorPage: React.FC = () => {
     setAssetData(updatedData);
   };
 
-  useEffect(() => {
-    const measureHeader = () => {
-      const header = titleBarRef.current;
-      if (header) {
-        const rect = header.getBoundingClientRect();
-        const height = rect.height;
-        document.documentElement.style.setProperty('--asset-editor-header-height', `${height}px`);
-      } else {
-        const fallbackHeight = 36;
-        document.documentElement.style.setProperty('--asset-editor-header-height', `${fallbackHeight}px`);
-      }
-    };
-
-    measureHeader();
-    const resizeObserver = new ResizeObserver(measureHeader);
-    const header = titleBarRef.current;
-    if (header) {
-      resizeObserver.observe(header);
-    }
-
-    window.addEventListener('resize', measureHeader);
-
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', measureHeader);
-    };
-  }, []);
-
   if (!isAuthenticated || !user || !isAdmin) {
     return null;
   }
@@ -277,6 +249,7 @@ export const AssetEditorPage: React.FC = () => {
         <div ref={titleBarRef} className="asset-editor__titlebar-wrap">
           <TitleBarDragHandler containerRef={titleBarRef} />
           <BaseHeader
+          position="static"
           {...headerProps}
           user={user ? { ...user, displayName: user.displayName ?? '', email: user.email ?? '', photoURL: user.photoURL ?? undefined } : null}
           onLogout={logout}
