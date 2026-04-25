@@ -4,6 +4,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { InventoryPanel } from '@/ui/pages/PlayerHub/components/InventoryPanel';
 import { MarketplacePanel } from '@/ui/pages/PlayerHub/components/MarketplacePanel';
@@ -38,30 +39,34 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
   };
 
   return (
-    <div className="ph-page">
-      <DynamicBackground />
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Player Hub",
-          tagline: "Profile, inventory, and marketplace in one control center."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="ph-page"
+      background={<DynamicBackground />}
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: "Player Hub",
+            tagline: "Profile, inventory, and marketplace in one control center."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <main className="ph-content">
         <section className="ph-shell">
           <div className="ph-toolbar">
@@ -109,8 +114,6 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
           )}
         </section>
       </main>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

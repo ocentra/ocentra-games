@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { useGamesData } from './hooks/useGamesData';
 import { useGamesFilter } from './hooks/useGamesFilter';
@@ -90,32 +91,36 @@ export function CardGamesExplorerPage() {
 
   return (
     <ThreeBaseProvider>
-      <div className="home-page cge-page">
-        <DynamicBackground controlRef={rotationRef} />
-
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Card Games Explorer",
-          tagline: loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`
-        }}
-        config={{
-          left: {
-            onClick: () => navigate('/')
-          }
-        }}
-      />
-
-      <div className="nav-bar-container">
-        <NavigationBar
-          items={navItems}
-          height={40}
-          showArrows={true}
-          variant="default"
-        />
-      </div>
-
-      <div className="scrollable-content-container">
-        <div className="home-content">
+      <UnifiedPageShell
+        className="home-page cge-page"
+        background={<DynamicBackground controlRef={rotationRef} />}
+        header={
+          <UnifiedHeader
+            dynamicData={{
+              gameName: 'Card Games Explorer',
+              tagline: loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`,
+            }}
+            config={{
+              left: {
+                onClick: () => navigate('/'),
+              },
+            }}
+          />
+        }
+        toolbar={
+          <div className="nav-bar-container">
+            <NavigationBar
+              items={navItems}
+              height={40}
+              showArrows={true}
+              variant="default"
+            />
+          </div>
+        }
+        footer={<GameFooter appVersion={APP_VERSION} />}
+      >
+        <div className="scrollable-content-container">
+          <div className="home-content">
             <div className="cge-page__top-bar">
               <ExplorerContentBar
                 currentView={currentView}
@@ -206,22 +211,20 @@ export function CardGamesExplorerPage() {
                   </div>
                 ) : null}
               </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {selectedGame && (
-        <GameDetailOverlay
-          game={selectedGame}
-          detail={gameDetail}
-          loading={detailLoading}
-          onClose={closeDetail}
-        />
-      )}
-
-      <GameFooter appVersion={APP_VERSION} />
-      </div>
+        {selectedGame && (
+          <GameDetailOverlay
+            game={selectedGame}
+            detail={gameDetail}
+            loading={detailLoading}
+            onClose={closeDetail}
+          />
+        )}
+      </UnifiedPageShell>
     </ThreeBaseProvider>
   );
 }

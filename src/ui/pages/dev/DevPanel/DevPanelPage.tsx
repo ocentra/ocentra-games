@@ -15,6 +15,11 @@
 import { useState, useRef, useCallback } from 'react';
 import { auth } from '@/adapters/firebase/config';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
+import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { APP_VERSION } from '@/constants/version';
 import './DevPanelPage.css';
 
 const BASE = 'http://localhost:8787';
@@ -296,24 +301,60 @@ function CreditsCheck() {
 // ── Root page ─────────────────────────────────────────────────────────────────
 
 export function DevPanelPage() {
+  const headerProps = useCoreUIHeaderProps();
+
   return (
-    <div className="dp-root">
-      <div className="dp-header">
-        <h1 className="dp-title">⚙️ Dev Panel</h1>
-        <p className="dp-subtitle">
-          Local Cloudflare feature tester. Worker must be running on{' '}
-          <a href="http://localhost:8787" target="_blank" rel="noopener noreferrer">localhost:8787</a>.
-          <br />
-          Start everything with: <code>npm run dev:full</code>
-        </p>
-      </div>
-      <div className="dp-body">
-        <WorkerStatus />
-        <ShopProducts />
-        <AiCatalog />
-        <AssetBucket />
-        <CreditsCheck />
-      </div>
-    </div>
+    <UnifiedPageShell
+      className="dp-root"
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: 'Dev Panel',
+            tagline: 'Local Cloudflare worker, KV, assets, and credits diagnostics.',
+          }}
+          config={{
+            right: headerProps.user
+              ? {
+                  isProfile: true,
+                  user: {
+                    uid: headerProps.user.uid,
+                    name: headerProps.user.displayName || 'Player',
+                    email: headerProps.user.email ?? '',
+                    avatarUrl: headerProps.user.photoURL
+                      ? headerProps.getImageUrl(headerProps.user.photoURL)
+                      : undefined,
+                    isLoggedIn: true,
+                    isAdmin: headerProps.user.isAdmin,
+                  },
+                  onLogout: headerProps.onLogout,
+                  onAdminDashboardClick: headerProps.onAdminDashboardClick,
+                  onUpdatePhoto: headerProps.onUpdatePhoto,
+                  getAvatars: headerProps.getAvatars,
+                }
+              : undefined,
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
+      <main className="dp-work">
+        <div className="dp-header">
+          <h1 className="dp-title">Cloudflare Dev Panel</h1>
+          <p className="dp-subtitle">
+            Local Cloudflare feature tester. Worker must be running on{' '}
+            <a href="http://localhost:8787" target="_blank" rel="noopener noreferrer">localhost:8787</a>.
+            <br />
+            Start everything with: <code>npm run dev:full</code>
+          </p>
+        </div>
+        <div className="dp-body">
+          <WorkerStatus />
+          <ShopProducts />
+          <AiCatalog />
+          <AssetBucket />
+          <CreditsCheck />
+        </div>
+      </main>
+    </UnifiedPageShell>
   );
 }

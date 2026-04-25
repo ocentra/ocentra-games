@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { buildHomePath } from '@/ui/navigation/appRoutes';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { usePlatformUI } from '@/ui/platform/usePlatformUI';
@@ -235,51 +236,57 @@ export const AdminUsersPage: React.FC = () => {
   const headerTagline = 'Control Center | Manage users and system tools';
 
   return (
-    <div className="admin-users-page">
-      <DynamicBackground
-        controlRef={rotationRef}
-        onReady={() => {/* Background ready */}}
-      />
-
-      <UnifiedHeader
-        profileName="main_screen"
-        dynamicData={{
-          gameName: 'Admin Dashboard',
-          tagline: headerTagline,
-        }}
-        config={{
-          left: {
-            onClick: () => navigate(buildHomePath()),
-          },
-          right: user
-            ? {
-                isProfile: true,
-                user: {
-                  uid: user.uid,
-                  name: user.displayName || 'Player',
-                  email: user.email ?? '',
-                  avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
-                  isLoggedIn: true,
-                  isAdmin: user.isAdmin,
-                },
-                onLogout: logout,
-                onAdminDashboardClick: () => navigate(ROUTE_FEATURES[RouteFeature.Admin].path),
-                onUpdatePhoto: headerProps.onUpdatePhoto,
-                getAvatars: headerProps.getAvatars,
-              }
-            : undefined,
-        }}
-      />
-
-      <div className="admin-nav-container">
-        <NavigationBar
-          items={navItems}
-          height={40}
-          showArrows={true}
-          variant="default"
+    <UnifiedPageShell
+      className="admin-users-page"
+      background={
+        <DynamicBackground
+          controlRef={rotationRef}
+          onReady={() => {}}
         />
-      </div>
-
+      }
+      header={
+        <UnifiedHeader
+          profileName="main_screen"
+          dynamicData={{
+            gameName: 'Admin Dashboard',
+            tagline: headerTagline,
+          }}
+          config={{
+            left: {
+              onClick: () => navigate(buildHomePath()),
+            },
+            right: user
+              ? {
+                  isProfile: true,
+                  user: {
+                    uid: user.uid,
+                    name: user.displayName || 'Player',
+                    email: user.email ?? '',
+                    avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
+                    isLoggedIn: true,
+                    isAdmin: user.isAdmin,
+                  },
+                  onLogout: logout,
+                  onAdminDashboardClick: () => navigate(ROUTE_FEATURES[RouteFeature.Admin].path),
+                  onUpdatePhoto: headerProps.onUpdatePhoto,
+                  getAvatars: headerProps.getAvatars,
+                }
+              : undefined,
+          }}
+        />
+      }
+      toolbar={
+        <div className="admin-nav-container">
+          <NavigationBar
+            items={navItems}
+            height={40}
+            showArrows={true}
+            variant="default"
+          />
+        </div>
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <div className="admin-users-main">
         <div className="admin-users-content">
           {permissionDenied && (
@@ -579,8 +586,6 @@ export const AdminUsersPage: React.FC = () => {
           </div>
         </>
       )}
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 };

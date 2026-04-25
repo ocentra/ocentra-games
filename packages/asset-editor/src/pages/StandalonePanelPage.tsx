@@ -860,6 +860,8 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             document={document as unknown as CardGameLayoutDocument}
             playerCount={playerCount}
             headerProps={headerProps}
+            headerTitle={loadedAsset.displayName || loadedAsset.gameId}
+            headerTagline={`${loadedAsset.gameId} layout preview`}
             footerVersion="Editor"
             showArenaGuide={showArenaGuide}
             assetPath={assetPath}

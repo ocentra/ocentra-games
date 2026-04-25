@@ -471,6 +471,8 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         document={bundle?.layoutDocument}
         playerCount={bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT}
         headerProps={headerProps}
+        headerTitle={bundle?.displayName || gameModeId}
+        headerTagline="Local Pilot"
         footerVersion="1.0.0-dev"
         onHomeClick={handleHome}
         hudControlsOverride={runtimeHudControls}

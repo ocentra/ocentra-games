@@ -133,35 +133,50 @@ export function setupLogsMiddleware(middlewares: Connect.Server): void {
   middlewares.use(LocalApiEndpoint.Logs.Query, async (req, res, next) => {
     if (req.method !== HttpMethod.Get) return next();
     setCors(res);
-    const params = getQueryParams(req);
-    const scope = params.get(QueryParam.Scope);
-    const query = paramsToLogQuery(params);
-    const storage = getStorageForScope(scope);
-    const logs = await ensureLogs(storage.queryLogs(query));
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ logs }));
+    try {
+      const params = getQueryParams(req);
+      const scope = params.get(QueryParam.Scope);
+      const query = paramsToLogQuery(params);
+      const storage = getStorageForScope(scope);
+      const logs = await ensureLogs(storage.queryLogs(query));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ logs }));
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ logs: [], error: error instanceof Error ? error.message : String(error) }));
+    }
   });
 
   middlewares.use(LocalApiEndpoint.Logs.Stats, async (req, res, next) => {
     if (req.method !== HttpMethod.Get) return next();
     setCors(res);
-    const params = getQueryParams(req);
-    const scope = params.get(QueryParam.Scope);
-    const source = params.get('source') ?? undefined;
-    const storage = getStorageForScope(scope);
-    const stats = await ensureStats(storage.getStats(source));
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(stats));
+    try {
+      const params = getQueryParams(req);
+      const scope = params.get(QueryParam.Scope);
+      const source = params.get('source') ?? undefined;
+      const storage = getStorageForScope(scope);
+      const stats = await ensureStats(storage.getStats(source));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(stats));
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+    }
   });
 
   middlewares.use(LocalApiEndpoint.Logs.Clear, async (req, res, next) => {
     if (req.method !== HttpMethod.Delete) return next();
     setCors(res);
-    const params = getQueryParams(req);
-    const scope = params.get(QueryParam.Scope);
-    const storage = getStorageForScope(scope);
-    await ensureClear(storage.clearLogs());
-    res.writeHead(204);
-    res.end();
+    try {
+      const params = getQueryParams(req);
+      const scope = params.get(QueryParam.Scope);
+      const storage = getStorageForScope(scope);
+      await ensureClear(storage.clearLogs());
+      res.writeHead(204);
+      res.end();
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+    }
   });
 }

@@ -6,8 +6,10 @@ const packageRoot = path.resolve(import.meta.dirname, '..');
 const fileCopies = [
   ['src/tokens.css', 'dist/'],
   ['src/Footer/GameFooter.module.css', 'dist/Footer/'],
+  ['src/Footer/UnifiedFooter.css', 'dist/Footer/'],
   ['src/Header/ProfilePictureModal.module.css', 'dist/Header/'],
   ['src/Header/UnifiedHeader.module.css', 'dist/Header/'],
+  ['src/Shell/UnifiedPageShell.css', 'dist/Shell/'],
   ['src/Common/FeaturedGameCarousel/FeaturedGameCarousel.css', 'dist/Common/FeaturedGameCarousel/'],
   ['src/Common/ComingSoonCarousel/ComingSoonCarousel.css', 'dist/Common/ComingSoonCarousel/'],
   ['src/Common/ExploreGamesPanel/ExploreGamesPanel.css', 'dist/Common/ExploreGamesPanel/'],

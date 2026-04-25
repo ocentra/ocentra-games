@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
 import { APP_VERSION } from '@/constants/version'
@@ -70,8 +71,6 @@ export const AIPlaygroundPage: React.FC = () => {
     tps?: string
     numTokens?: number
   }>({})
-  const containerRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     const isDev = import.meta.env.DEV
     const isProd = import.meta.env.PROD || import.meta.env.CF_PAGES === '1'
@@ -118,37 +117,41 @@ export const AIPlaygroundPage: React.FC = () => {
   }
 
   return (
-    <div className="ai-playground" ref={containerRef}>
-      <UnifiedHeader
-        profileName="main_screen"
-        dynamicData={{
-          gameName: 'AI Playground',
-          tagline: 'Models | Chat | Rules',
-        }}
-        config={{
-          left: {
-            onClick: () => navigate('/admin'),
-          },
-          right: user
-            ? {
-                isProfile: true,
-                user: {
-                  uid: user.uid,
-                  name: user.displayName || 'Player',
-                  email: user.email ?? '',
-                  avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
-                  isLoggedIn: true,
-                  isAdmin: user.isAdmin,
-                },
-                onLogout: logout,
-                onAdminDashboardClick: () => navigate('/admin'),
-                onUpdatePhoto: headerProps.onUpdatePhoto,
-                getAvatars: headerProps.getAvatars,
-              }
-            : undefined,
-        }}
-      />
-
+    <UnifiedPageShell
+      className="ai-playground"
+      header={
+        <UnifiedHeader
+          profileName="main_screen"
+          dynamicData={{
+            gameName: 'AI Playground',
+            tagline: 'Models | Chat | Rules',
+          }}
+          config={{
+            left: {
+              onClick: () => navigate('/admin'),
+            },
+            right: user
+              ? {
+                  isProfile: true,
+                  user: {
+                    uid: user.uid,
+                    name: user.displayName || 'Player',
+                    email: user.email ?? '',
+                    avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
+                    isLoggedIn: true,
+                    isAdmin: user.isAdmin,
+                  },
+                  onLogout: logout,
+                  onAdminDashboardClick: () => navigate('/admin'),
+                  onUpdatePhoto: headerProps.onUpdatePhoto,
+                  getAvatars: headerProps.getAvatars,
+                }
+              : undefined,
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <div className="ai-playground__main">
         <div className="ai-playground__content">
           <div className="ai-playground__left-panel">
@@ -188,8 +191,6 @@ export const AIPlaygroundPage: React.FC = () => {
           />
         </div>
       </div>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   )
 }

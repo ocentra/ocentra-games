@@ -4,6 +4,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { LeaderboardPanel } from '@/ui/pages/Competition/components/LeaderboardPanel';
 import { TournamentPanel } from '@/ui/pages/Competition/components/TournamentPanel';
@@ -43,30 +44,34 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
   };
 
   return (
-    <div className="cp-page">
-      <DynamicBackground />
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Competition",
-          tagline: "Rank ladders, nearby standings, and tournament brackets."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="cp-page"
+      background={<DynamicBackground />}
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: "Competition",
+            tagline: "Rank ladders, nearby standings, and tournament brackets."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <main className="cp-content">
         <section className="cp-shell">
           <div className="cp-toolbar">
@@ -117,8 +122,6 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
           )}
         </section>
       </main>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

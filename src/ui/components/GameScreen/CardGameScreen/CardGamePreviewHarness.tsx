@@ -132,6 +132,8 @@ export const CardGamePreviewHarness: React.FC = () => {
       document={document}
       playerCount={resolvedPlayerCount}
       headerProps={headerProps}
+      headerTitle={gameId}
+      headerTagline="Layout Preview"
       footerVersion={footerVersion}
       editableSeats={true}
       assetPath={assetPath}

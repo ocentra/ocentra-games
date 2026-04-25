@@ -4,6 +4,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { FeedPanel } from '@/ui/pages/Social/components/FeedPanel';
 import { FriendsPanel } from '@/ui/pages/Social/components/FriendsPanel';
@@ -53,30 +54,34 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
   };
 
   return (
-    <div className="social-page">
-      <DynamicBackground />
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Social Hub",
-          tagline: "Friends, parties, messages, notifications, and activity."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="social-page"
+      background={<DynamicBackground />}
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: "Social Hub",
+            tagline: "Friends, parties, messages, notifications, and activity."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <main className="social-content">
         <section className="social-shell">
           <div className="social-toolbar">
@@ -147,8 +152,6 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
           )}
         </section>
       </main>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

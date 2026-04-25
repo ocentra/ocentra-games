@@ -4,6 +4,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { QueueActions } from '@/ui/pages/Matchmaking/components/QueueActions';
 import { QueueCard } from '@/ui/pages/Matchmaking/components/QueueCard';
@@ -41,30 +42,34 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
   };
 
   return (
-    <div className="mm-page">
-      <DynamicBackground />
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Matchmaking",
-          tagline: "Find players, queue up, and move into a lobby."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="mm-page"
+      background={<DynamicBackground />}
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: "Matchmaking",
+            tagline: "Find players, queue up, and move into a lobby."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <main className="mm-content">
         <section className="mm-panel">
           <h1 className="mm-title">Multiplayer Queue</h1>
@@ -120,8 +125,6 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
           )}
         </section>
       </main>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

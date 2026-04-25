@@ -6,6 +6,7 @@ import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-sche
 import type { PageSection } from '@/ui/components/GameInfo/types';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { GameModeSelector } from '@/ui/components/Common/GamePlayersSelector/GameModeSelector';
 import { GameInfoTabs } from '@/ui/components/GameInfo/GameInfoTabs';
@@ -157,29 +158,33 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   };
 
   return (
-    <div className="generic-game-page">
-      <UnifiedHeader
-        dynamicData={{
-          gameName: displayName,
-          tagline: "Simple Rules. Deadly Game."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: handleBackToHome
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="generic-game-page"
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: displayName,
+            tagline: "Simple Rules. Deadly Game."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: handleBackToHome
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <div className="generic-game-main">
         {localPilotStatus.isReady && (
           <section className="local-pilot-card">
@@ -219,8 +224,6 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
 
         <GameInfoTabs sections={(gameInfo?.sections ?? []) as unknown as PageSection[]} />
       </div>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

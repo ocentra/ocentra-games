@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
 import type { CardGameLayoutDraftMessage, IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { HudButtonEditorModal } from './HudButtonEditorModal';
@@ -25,6 +26,8 @@ interface LegacyHeaderProps {
 export interface CardGameTemplatePageProps {
   headerProps?: LegacyHeaderProps; // Kept for backward compatibility but UnifiedHeader is preferred
   footerVersion?: string;
+  headerTitle?: string;
+  headerTagline?: string;
   onHomeClick?: () => void;
   embedded?: boolean;
   document?: CardGameLayoutDocument;
@@ -44,6 +47,8 @@ export interface CardGameTemplatePageProps {
 export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   headerProps,
   footerVersion,
+  headerTitle,
+  headerTagline,
   onHomeClick,
   embedded = false,
   document: docProp,
@@ -194,52 +199,66 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
         '--sim-h': `${activeDoc.hud.height * gameScale}px`
       } as React.CSSProperties}
     >
-      <div className={LayoutClasses.SHELL}>
-        <div className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--header ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}${showHeader ? '' : ` ${LayoutClasses.HIDDEN}`}`}>
-          <UnifiedHeader 
-            dynamicData={{
-              gameName: "Preview",
-              tagline: "Template Engine Preview"
-            }}
-            config={{
-              left: {
-                onClick: handleHomeClick
-              },
-              right: headerProps?.user ? {
-                isProfile: true,
-                user: {
-                  name: headerProps.user.displayName || 'Player',
-                  email: headerProps.user.email,
-                  avatarUrl: headerProps.user.photoURL,
-                  isLoggedIn: true,
-                },
-                onLogout: headerProps.onLogout
-              } : undefined
-            }}
-          />
-        </div>
-
-        <main className={LayoutClasses.STAGE} aria-label="Card game template stage">
-          <CardGamePreviewSurface
-            document={activeDoc}
-            playerCount={resolvedPlayerCount}
-            className="game-screen__canvas-surface"
-            showBackground={showBackground}
-            editableSeats={editableSeats}
-            onSeatsChange={handleSeatsChange}
-            hudControlsOverride={hudControlsOverride}
-            onHudButtonClick={onHudButtonClick}
-            arenaOverlay={arenaOverlay}
-            stageOverlay={stageOverlay}
-            onIsolate={handleIsolate}
-            showArenaGuide={showArenaGuide}
-          />
-        </main>
-
-        <div className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--footer ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}${showFooter ? '' : ` ${LayoutClasses.HIDDEN}`}`}>
-          <GameFooter appVersion={footerVersion} />
-        </div>
-      </div>
+      <UnifiedPageShell
+        className={LayoutClasses.SHELL}
+        embedded={embedded}
+        header={
+          showHeader ? (
+            <div
+              className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--header ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}`}
+            >
+              <UnifiedHeader
+                dynamicData={{
+                  gameName: headerTitle ?? 'Preview',
+                  tagline: headerTagline ?? 'Template Engine Preview',
+                }}
+                config={{
+                  left: {
+                    onClick: handleHomeClick,
+                  },
+                  right: headerProps?.user
+                    ? {
+                        isProfile: true,
+                        user: {
+                          name: headerProps.user.displayName || 'Player',
+                          email: headerProps.user.email,
+                          avatarUrl: headerProps.user.photoURL,
+                          isLoggedIn: true,
+                        },
+                        onLogout: headerProps.onLogout,
+                      }
+                    : undefined,
+                }}
+              />
+            </div>
+          ) : null
+        }
+        footer={
+          showFooter ? (
+            <div
+              className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--footer ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}`}
+            >
+              <GameFooter appVersion={footerVersion} />
+            </div>
+          ) : null
+        }
+        workClassName={LayoutClasses.STAGE}
+      >
+        <CardGamePreviewSurface
+          document={activeDoc}
+          playerCount={resolvedPlayerCount}
+          className="game-screen__canvas-surface"
+          showBackground={showBackground}
+          editableSeats={editableSeats}
+          onSeatsChange={handleSeatsChange}
+          hudControlsOverride={hudControlsOverride}
+          onHudButtonClick={onHudButtonClick}
+          arenaOverlay={arenaOverlay}
+          stageOverlay={stageOverlay}
+          onIsolate={handleIsolate}
+          showArenaGuide={showArenaGuide}
+        />
+      </UnifiedPageShell>
 
       {!embedded && showTools && (
         <button

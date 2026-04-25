@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import LoginDialog from '@/ui/components/Auth/LoginDialog';
@@ -136,49 +137,57 @@ export const LogsPage: React.FC = () => {
 
   return (
     <>
-      {createPortal(
-        <LoginDialog
-          onLogin={authHandlers.login}
-          onSignUp={authHandlers.signUp}
-          onFacebookLogin={authHandlers.facebookLogin}
-          onGoogleLogin={authHandlers.googleLogin}
-          onGuestLogin={authHandlers.guestLogin}
-          onWalletLogin={handleWalletLogin}
-          onSendPasswordReset={sendPasswordReset}
-        />,
-        document.body
-      )}
-      <UnifiedHeader
-        profileName="main_screen"
-        dynamicData={{
-          gameName: 'Logs',
-          tagline: 'Runtime traces | Browser and Vite',
-        }}
-        config={{
-          left: {
-            onClick: () => navigate('/admin'),
-          },
-          right: headerProps.user
-            ? {
-                isProfile: true,
-                user: {
-                  uid: headerProps.user.uid,
-                  name: headerProps.user.displayName || 'Player',
-                  email: headerProps.user.email ?? '',
-                  avatarUrl: headerProps.user.photoURL ? headerProps.getImageUrl(headerProps.user.photoURL) : undefined,
-                  isLoggedIn: true,
-                  isAdmin: headerProps.user.isAdmin,
-                },
-                onLogout: headerProps.onLogout,
-                onAdminDashboardClick: () => navigate('/admin'),
-                onUpdatePhoto: headerProps.onUpdatePhoto,
-                getAvatars: headerProps.getAvatars,
-              }
-            : undefined,
-        }}
-      />
-      <main className="logs-page-main">
-        <div className="logs-page">
+      {!headerProps.user
+        ? createPortal(
+            <LoginDialog
+              onLogin={authHandlers.login}
+              onSignUp={authHandlers.signUp}
+              onFacebookLogin={authHandlers.facebookLogin}
+              onGoogleLogin={authHandlers.googleLogin}
+              onGuestLogin={authHandlers.guestLogin}
+              onWalletLogin={handleWalletLogin}
+              onSendPasswordReset={sendPasswordReset}
+            />,
+            document.body
+          )
+        : null}
+      <UnifiedPageShell
+        className="logs-page-shell"
+        header={
+          <UnifiedHeader
+            profileName="main_screen"
+            dynamicData={{
+              gameName: 'Logs',
+              tagline: 'Runtime traces | Browser and Vite',
+            }}
+            config={{
+              left: {
+                onClick: () => navigate('/admin'),
+              },
+              right: headerProps.user
+                ? {
+                    isProfile: true,
+                    user: {
+                      uid: headerProps.user.uid,
+                      name: headerProps.user.displayName || 'Player',
+                      email: headerProps.user.email ?? '',
+                      avatarUrl: headerProps.user.photoURL ? headerProps.getImageUrl(headerProps.user.photoURL) : undefined,
+                      isLoggedIn: true,
+                      isAdmin: headerProps.user.isAdmin,
+                    },
+                    onLogout: headerProps.onLogout,
+                    onAdminDashboardClick: () => navigate('/admin'),
+                    onUpdatePhoto: headerProps.onUpdatePhoto,
+                    getAvatars: headerProps.getAvatars,
+                  }
+                : undefined,
+            }}
+          />
+        }
+        footer={<GameFooter appVersion={APP_VERSION} />}
+      >
+        <main className="logs-page-main">
+          <div className="logs-page">
           <div className="logs-page__filters">
             <div className="logs-page__filter-group">
               <span className="logs-page__filter-label">Scope</span>
@@ -333,9 +342,9 @@ export const LogsPage: React.FC = () => {
               </table>
             </div>
           )}
-        </div>
-      </main>
-      <GameFooter appVersion={APP_VERSION} />
+          </div>
+        </main>
+      </UnifiedPageShell>
     </>
   );
 };

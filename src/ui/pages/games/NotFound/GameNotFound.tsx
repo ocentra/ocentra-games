@@ -2,6 +2,7 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import type { UserProfile } from '@/adapters/firebase/service';
 import './GameNotFound.css';
@@ -30,29 +31,33 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
   };
 
   return (
-    <div className="generic-game-page">
-      <UnifiedHeader
-        dynamicData={{
-          gameName: "Game Not Found",
-          tagline: "Lost in the void."
-        }}
-        config={{
-          right: {
-            isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
-            onLogout: handleLogout
-          },
-          left: {
-            onClick: handleBackToHome
-          }
-        }}
-      />
-
+    <UnifiedPageShell
+      className="generic-game-page"
+      header={
+        <UnifiedHeader
+          dynamicData={{
+            gameName: "Game Not Found",
+            tagline: "Lost in the void."
+          }}
+          config={{
+            right: {
+              isProfile: Boolean(user),
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: user.photoURL,
+                isLoggedIn: true,
+              } : undefined,
+              onLogout: handleLogout
+            },
+            left: {
+              onClick: handleBackToHome
+            }
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       <div className="generic-game-main">
         <div className="game-not-found-content">
           <div className="game-not-found-icon">🎮</div>
@@ -65,8 +70,6 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
           </button>
         </div>
       </div>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }

@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
@@ -9,6 +11,7 @@ import { StripeEndpoint } from '@ocentra/endpoint-domain/constants/stripe';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import type { UserProfile } from '@/adapters/firebase/service';
+import { APP_VERSION } from '@/constants/version';
 import './ShopPage.css';
 
 type ProductType = 'AC_CREDITS' | 'SUBSCRIPTION' | 'TOURNAMENT_ENTRY' | 'MARKETPLACE';
@@ -137,9 +140,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const fmt = (cents?: number) => `$${((cents ?? 0) / 100).toFixed(2)}`;
 
   return (
-    <div className="sp-root">
-      <DynamicBackground />
-      <UnifiedHeader
+    <UnifiedPageShell
+      className="sp-root"
+      background={<DynamicBackground />}
+      footer={<GameFooter appVersion={APP_VERSION} />}
+      header={
+        <UnifiedHeader
         dynamicData={{
           gameName: "Arena Marketplace",
           tagline: "Gear up. Outthink. Outplay."
@@ -159,11 +165,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
             onClick: handleBack
           }
         }}
-      />
+        />
+      }
 
-      {/* ── Tab Bar ── */}
-      <div className="sp-tabs">
-        <div className="sp-tabs-inner">
+      toolbar={
+        <div className="sp-tabs">
+          <div className="sp-tabs-inner">
           <div className="sp-tab-group">
             {TABS.map(t => (
               <button key={t.id} className={`sp-tab ${activeTab === t.id ? 'active' : ''}`}
@@ -179,6 +186,8 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
           </div>
         </div>
       </div>
+      }
+    >
 
       {/* ── Content ── */}
       <div className="sp-content">
@@ -512,6 +521,6 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
           </div>
         )}
       </div>
-    </div>
+    </UnifiedPageShell>
   );
 }

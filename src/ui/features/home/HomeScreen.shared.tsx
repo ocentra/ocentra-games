@@ -9,6 +9,7 @@ import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSec
 import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
@@ -248,11 +249,12 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
   }), [user, handleLogout]);
 
   return (
-    <div className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}>
+    <UnifiedPageShell
+      className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}
+      header={<UnifiedHeader config={homeHeaderConfig} profileName="main_screen" />}
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
       {ImageLoaders}
-      <UnifiedHeader config={homeHeaderConfig} profileName="main_screen" />
-
-
       <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
         <div className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
           {DEBUG_PAGE_STRUCTURE ? (
@@ -308,8 +310,6 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           {!DEBUG_PAGE_STRUCTURE && <div className="content-spacer" />}
         </div>
       </div>
-
-      <GameFooter appVersion={APP_VERSION} />
-    </div>
+    </UnifiedPageShell>
   );
 }
