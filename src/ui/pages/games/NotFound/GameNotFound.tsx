@@ -1,8 +1,7 @@
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import type { UserProfile } from '@/adapters/firebase/service';
 import './GameNotFound.css';
@@ -16,7 +15,6 @@ interface GameNotFoundProps {
 }
 
 export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNotFoundProps) {
-  const headerProps = useCoreUIHeaderProps();
   const handleLogout = () => {
     if (onLogoutClick) {
       onLogoutClick();
@@ -33,14 +31,26 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
 
   return (
     <div className="generic-game-page">
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Game Not Found"
-        onHomeClick={handleBackToHome}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Game Not Found",
+          tagline: "Lost in the void."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: handleBackToHome
+          }
+        }}
       />
 
       <div className="generic-game-main">
@@ -60,4 +70,3 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
     </div>
   );
 }
-

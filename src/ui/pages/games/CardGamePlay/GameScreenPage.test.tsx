@@ -26,8 +26,8 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-vi.mock('@ocentra/core-ui/Header/GameHeader', () => ({
-  GameHeader: () => <div data-testid="mock-game-header" />,
+vi.mock('@ocentra/core-ui/Header/UnifiedHeader', () => ({
+  UnifiedHeader: () => <div data-testid="mock-unified-header" />,
 }));
 
 vi.mock('@ocentra/core-ui/Footer/GameFooter', () => ({

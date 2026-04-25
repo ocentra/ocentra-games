@@ -4,9 +4,8 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
 import type { PageSection } from '@/ui/components/GameInfo/types';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { GameModeSelector } from '@/ui/components/Common/GamePlayersSelector/GameModeSelector';
 import { GameInfoTabs } from '@/ui/components/GameInfo/GameInfoTabs';
@@ -52,7 +51,6 @@ function parseGameIdentifier(identifier: string): ParsedGameId | null {
 }
 
 export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: SelectedGamePageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [gameInfo, setGameInfo] = useState<GamePage | null>(null);
@@ -160,15 +158,26 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
 
   return (
     <div className="generic-game-page">
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName={displayName}
-        onHomeClick={handleBackToHome}
-        tagline="Simple Rules. Deadly Game."
+      <UnifiedHeader
+        dynamicData={{
+          gameName: displayName,
+          tagline: "Simple Rules. Deadly Game."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: handleBackToHome
+          }
+        }}
       />
 
       <div className="generic-game-main">

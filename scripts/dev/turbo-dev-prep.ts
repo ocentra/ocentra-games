@@ -10,6 +10,7 @@ const ROOT = path.resolve(__dirname, '../..');
 const PACKAGES_DIR = path.join(ROOT, 'packages');
 const TURBO_LAST_RUN_SENTINEL = path.join(ROOT, '.temp', 'turbo-last-run');
 const TURBO_SKIP_IF_RECENT_MS = 5 * 60 * 1000;
+const SOURCE_FIRST_DEV_PACKAGES = ['@ocentra/core-ui', '@ocentra/card-game-ui'] as const;
 type PackageJson = {
   name?: string;
   dependencies?: Record<string, string>;
@@ -34,12 +35,12 @@ const TARGET_CONFIG: Record<DevPrepTarget, TargetConfig> = {
   main: {
     description: 'main-app shared workspace dependencies',
     packageJsonPath: path.join(ROOT, 'package.json'),
-    exclude: ['@ocentra/asset-editor'],
+    exclude: ['@ocentra/asset-editor', ...SOURCE_FIRST_DEV_PACKAGES],
   },
   editor: {
-    description: 'asset-editor and its dependency graph only',
+    description: 'asset-editor shared workspace dependencies',
     packageJsonPath: path.join(ROOT, 'packages/asset-editor/package.json'),
-    singleFilterPackage: '@ocentra/asset-editor',
+    exclude: [...SOURCE_FIRST_DEV_PACKAGES],
   },
   worker: {
     description: 'Cloudflare worker shared workspace dependencies',
@@ -186,6 +187,21 @@ function runBuiltArtifactImportChecks(log: (message: string) => void): void {
   }
 }
 
+function runBuiltArtifactAssetChecks(log: (message: string) => void): void {
+  for (const workspacePackage of getWorkspacePackages()) {
+    const distDir = path.join(workspacePackage.dir, 'dist');
+    if (!existsSync(distDir)) {
+      continue;
+    }
+
+    log(`Verifying emitted relative assets for ${workspacePackage.name}`);
+    execSync(`node ${path.join(ROOT, 'scripts', 'verify-dist-relative-assets.mjs')} ${workspacePackage.dir}`, {
+      cwd: ROOT,
+      stdio: 'inherit',
+    });
+  }
+}
+
 function runTurboBuild(packageNames: readonly string[], force = false): void {
   execSync(buildTurboCommand(packageNames, force), {
     cwd: ROOT,
@@ -237,11 +253,13 @@ export function ensureTurboDevPrep(target: DevPrepTarget, log: (message: string)
   runCriticalSubpathExportChecks(log);
   try {
     runBuiltArtifactImportChecks(log);
+    runBuiltArtifactAssetChecks(log);
   } catch {
     log('Re-running Turbo with --force to repair stale generated output.');
     runTurboBuild(packageNames, true);
     runCriticalSubpathExportChecks(log);
     runBuiltArtifactImportChecks(log);
+    runBuiltArtifactAssetChecks(log);
   }
   writeTurboLastRunSentinel();
 }

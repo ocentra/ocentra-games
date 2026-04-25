@@ -9,7 +9,6 @@ import {
 } from '@ocentra/game-layout-domain/draftChannel';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import type { GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import { loadSavedCardGameLayoutDocument, readCardGameLayoutDocument } from '@/ui/layout/cardGameLayoutAsset';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 
@@ -110,7 +109,7 @@ export const CardGamePreviewHarness: React.FC = () => {
   const document = draftDocument ?? savedDocument ?? defaultDoc;
   const resolvedPlayerCount = playerCount ?? document.defaultPlayerCount;
 
-  const headerProps = useMemo<GameHeaderProps>(
+  const headerProps = useMemo(
     () => ({
       ...rawHeaderProps,
       user: rawHeaderProps.user

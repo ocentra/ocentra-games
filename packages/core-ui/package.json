@@ -8,30 +8,10 @@
                                                 "import":  "./dist/Footer/GameFooter.js",
                                                 "types":  "./dist/Footer/GameFooter.d.ts"
                                             },
-                    "./Header/BaseHeader":  {
-                                                "import":  "./dist/Header/BaseHeader.js",
-                                                "types":  "./dist/Header/BaseHeader.d.ts"
-                                            },
-                    "./Header/GameHeader":  {
-                                                "import":  "./dist/Header/GameHeader.js",
-                                                "types":  "./dist/Header/GameHeader.d.ts"
-                                            },
                     "./Header/UnifiedHeader":  {
                                                 "import":  "./dist/Header/UnifiedHeader.js",
                                                 "types":  "./dist/Header/UnifiedHeader.d.ts"
                                             },
-                    "./Header/EditorHeader":  {
-                                                "import":  "./dist/Header/EditorHeader.js",
-                                                "types":  "./dist/Header/EditorHeader.d.ts"
-                                            },
-                    "./Header/EditorPageHeader":  {
-                                                      "import":  "./dist/Header/EditorPageHeader.js",
-                                                      "types":  "./dist/Header/EditorPageHeader.d.ts"
-                                                  },
-                    "./Header/ProfilePictureModal":  {
-                                                         "import":  "./dist/Header/ProfilePictureModal.js",
-                                                         "types":  "./dist/Header/ProfilePictureModal.d.ts"
-                                                     },
                     "./constants/layout":  {
                                                "import":  "./dist/constants/layout.js",
                                                "types":  "./dist/constants/layout.d.ts"
@@ -99,7 +79,7 @@
                     "./tokens.css":  "./dist/tokens.css"
                 },
     "scripts":  {
-                    "build":  "tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs \u0026\u0026 node -e \"const fs=require(\u0027fs\u0027);const path=require(\u0027path\u0027);[[\u0027src/tokens.css\u0027,\u0027dist/\u0027],[\u0027src/Footer/GameFooter.module.css\u0027,\u0027dist/Footer/\u0027],[\u0027src/Header/BaseHeader.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/GameHeader.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/EditorHeader.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/EditorPageHeader.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/ProfilePictureModal.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/HeaderHomeButton.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Header/ProfileMenu.module.css\u0027,\u0027dist/Header/\u0027],[\u0027src/Common/FeaturedGameCarousel/FeaturedGameCarousel.css\u0027,\u0027dist/Common/FeaturedGameCarousel/\u0027],[\u0027src/Common/ComingSoonCarousel/ComingSoonCarousel.css\u0027,\u0027dist/Common/ComingSoonCarousel/\u0027],[\u0027src/Common/ExploreGamesPanel/ExploreGamesPanel.css\u0027,\u0027dist/Common/ExploreGamesPanel/\u0027],[\u0027src/Common/GameBadgesOverlay/GameBadgesOverlay.css\u0027,\u0027dist/Common/GameBadgesOverlay/\u0027],[\u0027src/GamesExplorer/GameCard.css\u0027,\u0027dist/GamesExplorer/\u0027],[\u0027src/GamesExplorer/GameListRow.css\u0027,\u0027dist/GamesExplorer/\u0027],[\u0027src/GamesExplorer/ExplorerContentBar.css\u0027,\u0027dist/GamesExplorer/\u0027],[\u0027src/GamesExplorer/ExplorerSidebar.css\u0027,\u0027dist/GamesExplorer/\u0027]].forEach(([s,d])=\u003e{fs.mkdirSync(d,{recursive:true});fs.copyFileSync(s,d+path.basename(s));});\"",
+                    "build":  "node ../../scripts/clean-package-build.mjs . \u0026\u0026 tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs \u0026\u0026 node scripts/copy-static-assets.mjs \u0026\u0026 node ../../scripts/verify-dist-relative-assets.mjs .",
                     "type-check":  "tsc --noEmit",
                     "lint":  "node -e \"const cmd = process.env.TURBO_HASH ? \u0027npm run lint:exec\u0027 : \u0027npx turbo run lint:exec --filter=@ocentra/core-ui\u0027; require(\u0027child_process\u0027).spawnSync(cmd.split(\u0027 \u0027)[0], cmd.split(\u0027 \u0027).slice(1), { stdio: \u0027inherit\u0027, shell: true });\"",
                     "lint:eslint":  "eslint --cache src",

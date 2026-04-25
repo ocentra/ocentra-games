@@ -2,9 +2,8 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { QueueActions } from '@/ui/pages/Matchmaking/components/QueueActions';
 import { QueueCard } from '@/ui/pages/Matchmaking/components/QueueCard';
@@ -20,7 +19,6 @@ interface MatchmakingPageProps {
 }
 
 export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: MatchmakingPageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const {
     config,
     ticket,
@@ -28,10 +26,10 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
     loading,
     leaving,
     error,
-    queue,
-    leave,
     refreshStatus,
     hasMatch,
+    queue,
+    leave,
     queueStatusLabel,
   } = useMatchmakingQueue(user, gameId);
 
@@ -45,15 +43,26 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
   return (
     <div className="mm-page">
       <DynamicBackground />
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Matchmaking"
-        tagline="Find players, queue up, and move into a lobby."
-        onHomeClick={() => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Matchmaking",
+          tagline: "Find players, queue up, and move into a lobby."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
+          }
+        }}
       />
 
       <main className="mm-content">

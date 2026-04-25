@@ -2,9 +2,8 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { LeaderboardPanel } from '@/ui/pages/Competition/components/LeaderboardPanel';
 import { TournamentPanel } from '@/ui/pages/Competition/components/TournamentPanel';
@@ -18,7 +17,6 @@ interface CompetitionPageProps {
 }
 
 export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const {
     loading,
     registering,
@@ -47,15 +45,26 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
   return (
     <div className="cp-page">
       <DynamicBackground />
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Competition"
-        tagline="Rank ladders, nearby standings, and tournament brackets."
-        onHomeClick={() => EventBus.instance.publish(new ShowScreenEvent('home'))}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Competition",
+          tagline: "Rank ladders, nearby standings, and tournament brackets."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+          }
+        }}
       />
 
       <main className="cp-content">

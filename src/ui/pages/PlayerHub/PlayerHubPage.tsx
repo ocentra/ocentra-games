@@ -2,9 +2,8 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { InventoryPanel } from '@/ui/pages/PlayerHub/components/InventoryPanel';
 import { MarketplacePanel } from '@/ui/pages/PlayerHub/components/MarketplacePanel';
@@ -20,7 +19,6 @@ interface PlayerHubPageProps {
 }
 
 export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const {
     loading,
     error,
@@ -42,15 +40,26 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
   return (
     <div className="ph-page">
       <DynamicBackground />
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Player Hub"
-        tagline="Profile, inventory, and marketplace in one control center."
-        onHomeClick={() => EventBus.instance.publish(new ShowScreenEvent('home'))}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Player Hub",
+          tagline: "Profile, inventory, and marketplace in one control center."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+          }
+        }}
       />
 
       <main className="ph-content">

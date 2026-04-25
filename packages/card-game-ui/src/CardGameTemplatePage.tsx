@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { GameHeader, type GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
 import type { CardGameLayoutDraftMessage, IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { HudButtonEditorModal } from './HudButtonEditorModal';
@@ -13,8 +13,17 @@ import type { HudArtworkControls } from './scene/HudArtwork.types';
 import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
 import './CardGameTemplatePage.css';
 
+interface LegacyHeaderProps {
+  user?: {
+    displayName?: string | null;
+    email?: string | null;
+    photoURL?: string | null;
+  } | null;
+  onLogout?: () => void;
+}
+
 export interface CardGameTemplatePageProps {
-  headerProps: GameHeaderProps;
+  headerProps?: LegacyHeaderProps; // Kept for backward compatibility but UnifiedHeader is preferred
   footerVersion?: string;
   onHomeClick?: () => void;
   embedded?: boolean;
@@ -187,7 +196,27 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     >
       <div className={LayoutClasses.SHELL}>
         <div className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--header ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}${showHeader ? '' : ` ${LayoutClasses.HIDDEN}`}`}>
-          <GameHeader {...headerProps} onHomeClick={handleHomeClick} />
+          <UnifiedHeader 
+            dynamicData={{
+              gameName: "Preview",
+              tagline: "Template Engine Preview"
+            }}
+            config={{
+              left: {
+                onClick: handleHomeClick
+              },
+              right: headerProps?.user ? {
+                isProfile: true,
+                user: {
+                  name: headerProps.user.displayName || 'Player',
+                  email: headerProps.user.email,
+                  avatarUrl: headerProps.user.photoURL,
+                  isLoggedIn: true,
+                },
+                onLogout: headerProps.onLogout
+              } : undefined
+            }}
+          />
         </div>
 
         <main className={LayoutClasses.STAGE} aria-label="Card game template stage">

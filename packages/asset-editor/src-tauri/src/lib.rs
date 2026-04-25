@@ -1,11 +1,54 @@
 mod commands;
 
+use std::fs;
 use tauri::{
+    AppHandle,
     image::Image,
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager, WindowEvent,
 };
 use tauri_plugin_window_state::{AppHandleExt, StateFlags};
+
+#[tauri::command]
+fn save_config(app: AppHandle, name: String, content: String) -> Result<(), String> {
+    let config_dir = app.path().app_config_dir().map_err(|error| error.to_string())?;
+    let profiles_dir = config_dir.join("profiles").join("header");
+    fs::create_dir_all(&profiles_dir).map_err(|error| error.to_string())?;
+    let file_path = profiles_dir.join(format!("{}.json", name));
+    fs::write(file_path, content).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+fn load_config(app: AppHandle, name: String) -> Result<String, String> {
+    let config_dir = app.path().app_config_dir().map_err(|error| error.to_string())?;
+    let file_path = config_dir.join("profiles").join("header").join(format!("{}.json", name));
+    if !file_path.exists() {
+        return Err("Profile not found".to_string());
+    }
+    fs::read_to_string(file_path).map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+fn list_configs(app: AppHandle) -> Result<Vec<String>, String> {
+    let config_dir = app.path().app_config_dir().map_err(|error| error.to_string())?;
+    let profiles_dir = config_dir.join("profiles").join("header");
+    if !profiles_dir.exists() {
+        return Ok(Vec::new());
+    }
+
+    let mut names = Vec::new();
+    for entry in fs::read_dir(profiles_dir).map_err(|error| error.to_string())? {
+        let entry = entry.map_err(|error| error.to_string())?;
+        let path = entry.path();
+        if path.extension().and_then(|value| value.to_str()) == Some("json") {
+            if let Some(name) = path.file_stem().and_then(|value| value.to_str()) {
+                names.push(name.to_string());
+            }
+        }
+    }
+
+    Ok(names)
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -98,6 +141,9 @@ pub fn run() {
             commands::asset_db::get_games_catalog,
             commands::asset_db::get_catalog_counts,
             commands::auth::start_oauth_server,
+            save_config,
+            load_config,
+            list_configs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

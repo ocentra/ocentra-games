@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
 import { StripeEndpoint } from '@ocentra/endpoint-domain/constants/stripe';
@@ -71,7 +71,7 @@ interface ShopPageProps {
 }
 
 export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: ShopPageProps) {
-  const headerProps = useCoreUIHeaderProps();
+
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -139,8 +139,27 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   return (
     <div className="sp-root">
       <DynamicBackground />
-      <GameHeader {...headerProps} user={user} onLogout={onLogout} showProfile variant="game"
-        gameName="Arena Marketplace" tagline="Gear up. Outthink. Outplay." onHomeClick={handleBack} />
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Arena Marketplace",
+          tagline: "Gear up. Outthink. Outplay."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: onLogout
+          },
+          left: {
+            onClick: handleBack
+          }
+        }}
+      />
 
       {/* ── Tab Bar ── */}
       <div className="sp-tabs">

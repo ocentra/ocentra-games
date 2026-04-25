@@ -22,10 +22,9 @@ import {
   writeStoredLayoutEditorPlayerCount,
 } from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
-import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import { CardGameTemplatePage, type CardGameTemplatePageProps } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { HudButtonEditorModal } from '@ocentra/card-game-ui/HudButtonEditorModal';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
-import { type GameHeaderProps } from '@ocentra/core-ui/Header/GameHeader';
 import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import {
@@ -681,16 +680,13 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
   }, [playerCount, updateActivePreset]);
 
   // Handle header props mapping (handle string|null vs string difference)
-  const headerProps: GameHeaderProps = {
+  const headerProps: NonNullable<CardGameTemplatePageProps['headerProps']> = {
     user: headProps.user ? {
-      uid: headProps.user.uid,
       email: headProps.user.email ?? '',
       displayName: headProps.user.displayName ?? 'Editor',
       photoURL: headProps.user.photoURL ?? undefined,
-      isAdmin: headProps.user.isAdmin,
     } : null,
     onLogout: headProps.onLogout,
-    getImageUrl: headProps.getImageUrl,
   };
 
   const getOrientedDimensions = useCallback((rawW: number, rawH: number) => {

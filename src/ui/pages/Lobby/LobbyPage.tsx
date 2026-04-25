@@ -3,9 +3,8 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { CreateRoomModal } from '@/ui/pages/Lobby/components/CreateRoomModal';
 import { RoomList } from '@/ui/pages/Lobby/components/RoomList';
@@ -22,7 +21,6 @@ interface LobbyPageProps {
 }
 
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const activeGameType = gameId ?? readMultiplayerConfig().gameId;
   const {
@@ -47,15 +45,26 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
   return (
     <div className="lb-page">
       <DynamicBackground />
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Lobby"
-        tagline="Create or join a room, then start a multiplayer session."
-        onHomeClick={() => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Lobby",
+          tagline: "Create or join a room, then start a multiplayer session."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
+          }
+        }}
       />
 
       <main className="lb-content">

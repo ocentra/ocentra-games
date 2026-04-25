@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
@@ -148,8 +148,35 @@ export const LogsPage: React.FC = () => {
         />,
         document.body
       )}
-      <EditorPageHeader {...headerProps} title="Logs" user={null} onHomeClick={() => navigate('/admin')}
-        onAdminDashboardClick={() => navigate('/admin')} />
+      <UnifiedHeader
+        profileName="main_screen"
+        dynamicData={{
+          gameName: 'Logs',
+          tagline: 'Runtime traces | Browser and Vite',
+        }}
+        config={{
+          left: {
+            onClick: () => navigate('/admin'),
+          },
+          right: headerProps.user
+            ? {
+                isProfile: true,
+                user: {
+                  uid: headerProps.user.uid,
+                  name: headerProps.user.displayName || 'Player',
+                  email: headerProps.user.email ?? '',
+                  avatarUrl: headerProps.user.photoURL ? headerProps.getImageUrl(headerProps.user.photoURL) : undefined,
+                  isLoggedIn: true,
+                  isAdmin: headerProps.user.isAdmin,
+                },
+                onLogout: headerProps.onLogout,
+                onAdminDashboardClick: () => navigate('/admin'),
+                onUpdatePhoto: headerProps.onUpdatePhoto,
+                getAvatars: headerProps.getAvatars,
+              }
+            : undefined,
+        }}
+      />
       <main className="logs-page-main">
         <div className="logs-page">
           <div className="logs-page__filters">

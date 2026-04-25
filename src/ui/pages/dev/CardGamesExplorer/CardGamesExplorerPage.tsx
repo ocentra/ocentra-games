@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { useGamesData } from './hooks/useGamesData';
 import { useGamesFilter } from './hooks/useGamesFilter';
@@ -16,21 +15,13 @@ import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/G
 import { ExplorerControlBar } from './components/ExplorerControlBar';
 import { GameDetailOverlay } from './components/GameDetailOverlay';
 import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
-import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
 
 import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
 
-const WELCOME_LOGOS = {
-  ocentraText: ocentraTextImageUrl,
-  mlogo: mlogoImageUrl,
-  gamesText: gamesTextImageUrl,
-};
-
 import { ThreeBaseProvider } from '@/ui/components/Background/ThreeBaseContext';
 
 export function CardGamesExplorerPage() {
-  const headerProps = useCoreUIHeaderProps();
   const navigate = useNavigate();
   const rotationRef = useRef<RotationControlAPI | null>(null);
 
@@ -102,12 +93,16 @@ export function CardGamesExplorerPage() {
       <div className="home-page cge-page">
         <DynamicBackground controlRef={rotationRef} />
 
-      <GameHeader
-        {...headerProps}
-        variant="welcome"
-        welcomeLogos={WELCOME_LOGOS}
-        tagline={loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`}
-        onHomeClick={() => navigate('/')}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Card Games Explorer",
+          tagline: loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`
+        }}
+        config={{
+          left: {
+            onClick: () => navigate('/')
+          }
+        }}
       />
 
       <div className="nav-bar-container">

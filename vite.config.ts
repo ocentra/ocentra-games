@@ -18,9 +18,10 @@ import { generateRegistryMapsPlugin } from './vite/plugins/generate-inspector-ma
 import { logsPlugin } from './vite/plugins/logs'
 import { openInEditorPlugin } from './vite/plugins/open-in-editor'
 import { headerConfigPlugin } from './vite/plugins/header-config'
+import { workspaceSourceResolver } from './vite/plugins/workspaceSourceResolver'
 import type { PluginOption } from 'vite'
 
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(async ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '')
   Object.keys(env).forEach(key => {
     if (key.startsWith('VITE_')) {
@@ -41,6 +42,13 @@ export default defineConfig(async ({ mode }) => {
   const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || process.env.PORT || process.env.VITE_PORT || '3000')
 
   const plugins: PluginOption[] = [
+    workspaceSourceResolver({
+      enabled: command === 'serve',
+      packages: [
+        { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, 'packages/core-ui') },
+        { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, 'packages/card-game-ui') },
+      ],
+    }),
     {
       ...generateRegistryMapsPlugin(),
       enforce: 'pre' as const,

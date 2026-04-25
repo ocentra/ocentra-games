@@ -1,17 +1,25 @@
 declare const styles: {
   readonly unifiedHeaderWrapper: string;
   readonly headerSvg: string;
+  readonly headerBackdropLayer: string;
+  readonly headerBackdropShape: string;
   readonly debugControlsFloating: string;
   readonly debugToggleButton: string;
   readonly debugPanel: string;
   readonly debugPanelHeader: string;
   readonly debugTabs: string;
+  readonly debugSubtabs: string;
+  readonly debugTextTabs: string;
+  readonly debugSubtabButton: string;
+  readonly debugTextTabButton: string;
   readonly debugTabButton: string;
   readonly active: string;
   readonly debugScrollArea: string;
   readonly debugDivider: string;
   readonly debugControlRow: string;
+  readonly debugControlMeta: string;
   readonly debugControlLabel: string;
+  readonly debugControlPath: string;
   readonly debugControlInputs: string;
   readonly debugRangeInput: string;
   readonly debugValueDisplay: string;

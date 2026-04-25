@@ -9,6 +9,7 @@ import { createAppLogStorage } from '@ocentra/logging-domain/app-log/createAppLo
 import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 import { loadWorkspaceEnv } from '../../scripts/shared/loadWorkspaceEnv';
+import { workspaceSourceResolver } from '../../vite/plugins/workspaceSourceResolver';
 
 const rootPkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8')) as { version?: string };
 const appVersion = rootPkg?.version ?? '0.1.0';
@@ -58,7 +59,7 @@ function parseNdjson(body: string): Array<Omit<LogEntry, 'id' | 'origin'>> {
   return entries;
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(appVersion),
   },
@@ -66,6 +67,13 @@ export default defineConfig({
     keepNames: true,
   },
   plugins: [
+    workspaceSourceResolver({
+      enabled: command === 'serve',
+      packages: [
+        { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, '../core-ui') },
+        { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, '../card-game-ui') },
+      ],
+    }),
     react({
       babel: {
         plugins: [
@@ -206,4 +214,4 @@ export default defineConfig({
     },
   },
   envDir: __dirname,
-});
+}));

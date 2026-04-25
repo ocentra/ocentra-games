@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildHomePath } from '@/ui/navigation/appRoutes';
-import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
@@ -232,6 +232,8 @@ export const AdminUsersPage: React.FC = () => {
     return null;
   }
 
+  const headerTagline = 'Control Center | Manage users and system tools';
+
   return (
     <div className="admin-users-page">
       <DynamicBackground
@@ -239,16 +241,34 @@ export const AdminUsersPage: React.FC = () => {
         onReady={() => {/* Background ready */}}
       />
 
-      <EditorPageHeader
-        {...headerProps}
-        title="Admin Dashboard"
-        subtitle="Control Center"
-        description="Manage users and system tools"
-        user={user}
-        onLogout={logout}
-        showProfile={true}
-        onHomeClick={() => navigate(buildHomePath())}
-        onAdminDashboardClick={() => navigate(ROUTE_FEATURES[RouteFeature.Admin].path)}
+      <UnifiedHeader
+        profileName="main_screen"
+        dynamicData={{
+          gameName: 'Admin Dashboard',
+          tagline: headerTagline,
+        }}
+        config={{
+          left: {
+            onClick: () => navigate(buildHomePath()),
+          },
+          right: user
+            ? {
+                isProfile: true,
+                user: {
+                  uid: user.uid,
+                  name: user.displayName || 'Player',
+                  email: user.email ?? '',
+                  avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
+                  isLoggedIn: true,
+                  isAdmin: user.isAdmin,
+                },
+                onLogout: logout,
+                onAdminDashboardClick: () => navigate(ROUTE_FEATURES[RouteFeature.Admin].path),
+                onUpdatePhoto: headerProps.onUpdatePhoto,
+                getAvatars: headerProps.getAvatars,
+              }
+            : undefined,
+        }}
       />
 
       <div className="admin-nav-container">

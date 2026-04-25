@@ -6,13 +6,10 @@ import { FeaturedGameCarousel } from '@ocentra/core-ui/Common/FeaturedGameCarous
 import { ComingSoonCarousel } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonCarousel';
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary';
 import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSection';
-import { gamesTextImageUrl, mlogoImageUrl, ocentraTextImageUrl } from '@ocentra/app-assets/commons';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
-import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import type { GameCatalogEntry } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
@@ -62,8 +59,6 @@ interface HomeScreenSharedProps {
   onLogoutClick?: () => void;
 }
 
-const WELCOME_LOGOS = { ocentraText: ocentraTextImageUrl, mlogo: mlogoImageUrl, gamesText: gamesTextImageUrl };
-
 function toExploreGameSummary(g: GameCatalogEntry): ExploreGameSummary {
   return {
     slug: g.gameId,
@@ -79,7 +74,6 @@ function toExploreGameSummary(g: GameCatalogEntry): ExploreGameSummary {
 
 export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSharedProps) {
   const navigate = useNavigate();
-  const headerProps = useCoreUIHeaderProps();
   const [gamesData, setGamesData] = useState<HomePageGamesData>({
     featured: [],
     recommended: [],
@@ -161,12 +155,12 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     void loadGames();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useMemo(() => () => {
     if (onLogoutClick) {
       onLogoutClick();
     }
     onLogout();
-  };
+  }, [onLogout, onLogoutClick]);
 
   const handleLearnMore = (gameIdentifier: string) => {
     logInfo('Publishing ShowScreenEvent', { gameIdentifier }, LOG_NAVIGATION);
@@ -178,42 +172,61 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     EventBus.instance.publish(new ShowScreenEvent(gameIdentifier));
   };
 
-  const navItems = [
-    { name: 'Home', onClick: () => { } },
-    { name: 'Shop', onClick: () => navigate('/shop') },
-    { name: 'Social', onClick: () => navigate('/social') },
-    { name: 'Games', onClick: () => { } },
-    { name: 'Tournaments', onClick: () => navigate('/competition') },
-    { name: 'Leaderboard', onClick: () => navigate('/competition') },
-    { name: 'Profile', onClick: () => navigate('/player-hub') },
-    ...(user?.isAdmin ? [{ name: 'Admin', onClick: () => navigate('/admin') }] : []),
-  ];
-
   const homeHeaderConfig = useMemo(() => ({
-    layout: {
-      heightPx: 52,
-      maxWidthPx: undefined,
-    },
     center: {
-      mode: 'A' as const,
       modeA: {
-        leftText: "O'centra",
-        rightText: 'Games',
-        textStyle: {
-          size: 26,
-          color: '#ffffff',
-          weight: 800,
-          strokeColor: '#0044ff',
-          strokeWidth: 1.2,
-          smallCaps: true,
-          letterSpacing: 1.5,
-        },
         logo: {
           size: 44,
-          renderer: ({ cx, cy, size, aspectCorrection }: { cx: number, cy: number, size: number, aspectCorrection: number }) => {
+          renderer: ({
+            cx,
+            cy,
+            size,
+            aspectCorrection,
+            strokeWidth,
+            innerOpacity,
+            color,
+          }: {
+            cx: number;
+            cy: number;
+            size: number;
+            aspectCorrection: number;
+            strokeWidth: number;
+            innerOpacity: number;
+            color: string;
+          }) => {
             const logoH = size;
             const logoW = logoH * aspectCorrection;
-            return <image href={mlogoImageUrl} x={cx - logoW / 2} y={cy - logoH / 2} width={logoW} height={logoH} />;
+            const outerRadius = size / 2;
+            const innerRadius = Math.max(1, outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5);
+            return (
+              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={outerRadius}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  opacity={0.95}
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={innerRadius}
+                  fill={color}
+                  opacity={innerOpacity}
+                />
+                <image
+                  href={mlogoImageUrl}
+                  x={cx - logoW / 2}
+                  y={cy - logoH / 2}
+                  width={logoW}
+                  height={logoH}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </g>
+            );
           }
         }
       }
@@ -231,26 +244,14 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
         winRate: user.winRate,
       } : undefined,
       onLogout: handleLogout,
-      onAdminDashboardClick: headerProps.onAdminDashboardClick,
     },
-  }), [user, headerProps.onAdminDashboardClick, mlogoImageUrl]);
+  }), [user, handleLogout]);
 
   return (
     <div className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}>
       {ImageLoaders}
       <UnifiedHeader config={homeHeaderConfig} profileName="main_screen" />
 
-      <div style={{ display: 'none' }}>
-        <GameHeader {...headerProps} user={user} onLogout={handleLogout} showProfile variant="welcome" welcomeLogos={WELCOME_LOGOS} />
-        <div className="nav-bar-container">
-          <NavigationBar
-            items={navItems}
-            height={40}
-            showArrows={true}
-            variant="default"
-          />
-        </div>
-      </div>
 
       <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
         <div className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>

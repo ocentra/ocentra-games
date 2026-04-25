@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { EditorPageHeader } from '@ocentra/core-ui/Header/EditorPageHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
 import { APP_VERSION } from '@/constants/version'
@@ -35,11 +35,9 @@ const logWarn = (message: string, dataOrEnabled?: unknown | boolean, enabled?: b
 
 log.register(import.meta.url)
 
-
-
 /**
  * AIPlaygroundPage
- * 
+ *
  * Dev-only AI testing playground:
  * - Left: Model selector and controls
  * - Center: Chat interface
@@ -54,7 +52,7 @@ export const AIPlaygroundPage: React.FC = () => {
   const isDevAuthBypassEnabled =
     import.meta.env.DEV && import.meta.env.VITE_AI_PLAYGROUND_ALLOW_NON_ADMIN === '1'
   const hasPlaygroundAccess = isDevAuthBypassEnabled || Boolean(user && isAdmin)
-  
+
   const handleWalletLogin = async (): Promise<{ success: boolean; error?: string }> => {
     return { success: false, error: 'Please connect your wallet in the login dialog' }
   }
@@ -86,8 +84,8 @@ export const AIPlaygroundPage: React.FC = () => {
     if (isDevAuthBypassEnabled) {
       logWarn('[AIPlaygroundPage] Dev auth bypass enabled')
     } else if (!isAdmin && user) {
-      logWarn('[AIPlaygroundPage] Access denied - admin only', { 
-        data: { email: user.email, isAdmin: user.isAdmin } 
+      logWarn('[AIPlaygroundPage] Access denied - admin only', {
+        data: { email: user.email, isAdmin: user.isAdmin }
       })
     }
     if (isAdmin) {
@@ -121,19 +119,38 @@ export const AIPlaygroundPage: React.FC = () => {
 
   return (
     <div className="ai-playground" ref={containerRef}>
-      <EditorPageHeader
-        {...headerProps}
-        user={user}
-        onLogout={logout}
-        title="AI Playground"
-        subtitle="Models · Chat · Rules"
-        onHomeClick={() => navigate('/admin')}
-        onAdminDashboardClick={() => navigate('/admin')}
+      <UnifiedHeader
+        profileName="main_screen"
+        dynamicData={{
+          gameName: 'AI Playground',
+          tagline: 'Models | Chat | Rules',
+        }}
+        config={{
+          left: {
+            onClick: () => navigate('/admin'),
+          },
+          right: user
+            ? {
+                isProfile: true,
+                user: {
+                  uid: user.uid,
+                  name: user.displayName || 'Player',
+                  email: user.email ?? '',
+                  avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
+                  isLoggedIn: true,
+                  isAdmin: user.isAdmin,
+                },
+                onLogout: logout,
+                onAdminDashboardClick: () => navigate('/admin'),
+                onUpdatePhoto: headerProps.onUpdatePhoto,
+                getAvatars: headerProps.getAvatars,
+              }
+            : undefined,
+        }}
       />
 
       <div className="ai-playground__main">
         <div className="ai-playground__content">
-          {/* Left Panel: Model Selector */}
           <div className="ai-playground__left-panel">
             <ModelSelector
               selectedModelId={selectedModelId}
@@ -146,7 +163,6 @@ export const AIPlaygroundPage: React.FC = () => {
             />
           </div>
 
-          {/* Center Panel: Chat */}
           <div className="ai-playground__center-panel">
             <ChatPanel
               modelId={selectedModelId}
@@ -155,7 +171,6 @@ export const AIPlaygroundPage: React.FC = () => {
             />
           </div>
 
-          {/* Right Panel: Game Rules Test */}
           <div className="ai-playground__right-panel">
             <GameRulesTestPanel
               modelId={selectedModelId}
@@ -165,7 +180,6 @@ export const AIPlaygroundPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Panel: Metrics */}
         <div className="ai-playground__bottom-panel">
           <MetricsPanel
             metrics={metrics}
@@ -174,7 +188,7 @@ export const AIPlaygroundPage: React.FC = () => {
           />
         </div>
       </div>
-      
+
       <GameFooter appVersion={APP_VERSION} />
     </div>
   )

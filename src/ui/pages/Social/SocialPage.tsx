@@ -2,9 +2,8 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
-import { GameHeader } from '@ocentra/core-ui/Header/GameHeader';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import { FeedPanel } from '@/ui/pages/Social/components/FeedPanel';
 import { FriendsPanel } from '@/ui/pages/Social/components/FriendsPanel';
@@ -21,7 +20,6 @@ interface SocialPageProps {
 }
 
 export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
-  const headerProps = useCoreUIHeaderProps();
   const {
     loading,
     error,
@@ -57,15 +55,26 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
   return (
     <div className="social-page">
       <DynamicBackground />
-      <GameHeader
-        {...headerProps}
-        user={user}
-        onLogout={handleLogout}
-        showProfile
-        variant="game"
-        gameName="Social Hub"
-        tagline="Friends, parties, messages, notifications, and activity."
-        onHomeClick={() => EventBus.instance.publish(new ShowScreenEvent('home'))}
+      <UnifiedHeader
+        dynamicData={{
+          gameName: "Social Hub",
+          tagline: "Friends, parties, messages, notifications, and activity."
+        }}
+        config={{
+          right: {
+            isProfile: Boolean(user),
+            user: user ? {
+              name: user.displayName || 'Player',
+              email: user.email,
+              avatarUrl: user.photoURL,
+              isLoggedIn: true,
+            } : undefined,
+            onLogout: handleLogout
+          },
+          left: {
+            onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
+          }
+        }}
       />
 
       <main className="social-content">
