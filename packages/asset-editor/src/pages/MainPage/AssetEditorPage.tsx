@@ -254,37 +254,6 @@ export const AssetEditorPage: React.FC = () => {
             <UnifiedHeader
               showPrimaryNavigation={false}
               profileName="asset_editor"
-              leftContent={
-                <div className="asset-editor__topbar" data-tauri-drag-region>
-                  <img src="/favicon.svg" alt="" className="asset-editor__logo" aria-hidden />
-                  <MenuBar
-                    onCreateAsset={handleCreateAsset}
-                    onRefreshTree={refreshTree}
-                    onSyncStatusChange={handleSyncStatusChange}
-                    onOpenPreviewWindow={() => {
-                      const path = assetPath ?? 'virtual:AssetCatalog';
-                      const title = path.split('/').pop() ?? path;
-                      if (isTauri()) {
-                        void createPanelWindow('preview', path, title, false);
-                      } else {
-                        window.open(getStandalonePanelUrl('preview', path, false), '_blank');
-                      }
-                    }}
-                    onOpenInspectorWindow={() => {
-                      const path = assetPath ?? 'virtual:AssetCatalog';
-                      const title = path.split('/').pop() ?? path;
-                      if (isTauri()) {
-                        void createPanelWindow('inspector', path, title, false);
-                      } else {
-                        window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
-                      }
-                    }}
-                    onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
-                    onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
-                    onResetLayout={() => dockLayoutRef.current?.resetLayout()}
-                  />
-                </div>
-              }
               rightSuffixContent={<WindowControls />}
               config={{
                 right: {
@@ -320,6 +289,34 @@ export const AssetEditorPage: React.FC = () => {
           />
         }
       >
+        <div className="asset-editor__menu-strip">
+          <MenuBar
+            onCreateAsset={handleCreateAsset}
+            onRefreshTree={refreshTree}
+            onSyncStatusChange={handleSyncStatusChange}
+            onOpenPreviewWindow={() => {
+              const path = assetPath ?? 'virtual:AssetCatalog';
+              const title = path.split('/').pop() ?? path;
+              if (isTauri()) {
+                void createPanelWindow('preview', path, title, false);
+              } else {
+                window.open(getStandalonePanelUrl('preview', path, false), '_blank');
+              }
+            }}
+            onOpenInspectorWindow={() => {
+              const path = assetPath ?? 'virtual:AssetCatalog';
+              const title = path.split('/').pop() ?? path;
+              if (isTauri()) {
+                void createPanelWindow('inspector', path, title, false);
+              } else {
+                window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
+              }
+            }}
+            onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
+            onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
+            onResetLayout={() => dockLayoutRef.current?.resetLayout()}
+          />
+        </div>
         <div className="asset-editor__dock-container">
           <EditorDockLayout ref={dockLayoutRef} />
         </div>

@@ -4,6 +4,7 @@ import { LogConsumer } from '@ocentra/logging-domain/transport/bridgeLogPayload'
 import { RunType, LogEnvironment } from '@ocentra/logging-domain/test-log/types';
 import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 import { TauriTransport } from '@ocentra/logging-domain/transport/tauriTransport';
+import type { ILogTransport } from '@ocentra/logging-domain/transport/logTransport';
 import { deleteAppNdjsonFiles } from '@ocentra/logging-domain/app-log/appNdjsonWriter';
 
 const pathResolver = new MainAppPathResolver({
@@ -53,6 +54,11 @@ const requestContextProvider = {
 let initialized = false;
 let flushInterval: ReturnType<typeof setInterval> | null = null;
 
+const browserNoopTransport: ILogTransport = {
+  name: 'asset-editor-browser-noop',
+  emit: async () => undefined,
+};
+
 export function initAssetEditorLogging(): void {
   if (initialized) return;
   initialized = true;
@@ -76,6 +82,8 @@ export function initAssetEditorLogging(): void {
       // eslint-disable-next-line no-console
       console.error('[Logging] Failed to initialize Tauri transport:', err);
     });
+  } else {
+    AssetEditorLogger.instance.addTransport(browserNoopTransport);
   }
 
   // Periodic flush to ensure logs reach the bridge

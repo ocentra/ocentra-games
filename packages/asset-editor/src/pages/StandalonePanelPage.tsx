@@ -33,7 +33,12 @@ import {
   seedLayoutPresetFromSource,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import {
+  ISOLATION_REQUEST_CHANNEL,
+  type IsolationRequestMessage,
+} from '@ocentra/game-layout-domain/draftChannel';
 import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
+import { isolationStore } from '@/services/IsolationStore';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import './StandalonePanelPage.css';
@@ -435,6 +440,25 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     };
   }, [assetPath]);
 
+  useEffect(() => {
+    const channel = new BroadcastChannel(ISOLATION_REQUEST_CHANNEL);
+    const handler = (event: MessageEvent<IsolationRequestMessage>) => {
+      if (event.data?.assetPath !== assetPath) {
+        return;
+      }
+      const { type, label, config } = event.data;
+      isolationStore.isolateComponent(type, label, config, assetPath);
+      if (isolationStore.getState().items.length === 1) {
+        void createPanelWindow('isolation', assetPath, 'Isolation Hub', true);
+      }
+    };
+    channel.addEventListener('message', handler);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+    };
+  }, [assetPath]);
+
   const broadcast = useCallback((nextDocument: LayoutAssetDocument, playerCount: number) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     channel.postMessage({
@@ -710,6 +734,14 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     });
   }, [updateActivePreset]);
 
+  const handleIsolateRequest = useCallback(
+    (type: IsolationRequestMessage['type'], label: string, config: unknown) => {
+      isolationStore.isolateComponent(type, label, config, assetPath);
+      void createPanelWindow('isolation', assetPath, 'Isolation Hub', true);
+    },
+    [assetPath],
+  );
+
   // Handle header props mapping (handle string|null vs string difference)
   const headerProps: NonNullable<CardGameTemplatePageProps['headerProps']> = {
     user: headProps.user ? {
@@ -895,13 +927,14 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             headerTitle={loadedAsset.displayName || loadedAsset.gameId}
             headerTagline={`${loadedAsset.gameId} layout preview`}
             footerVersion="Editor"
-            editableSeats={showHandles}
-            onSeatsChange={handleSeatsChange}
-            showArenaGuide={showArenaGuide}
-            assetPath={assetPath}
-            showHeaderDebugControls={false}
-          />
-        </div>
+          editableSeats={showHandles}
+          onSeatsChange={handleSeatsChange}
+          showArenaGuide={showArenaGuide}
+          assetPath={assetPath}
+          showHeaderDebugControls={false}
+          onIsolateRequest={handleIsolateRequest}
+        />
+      </div>
       </div>
 
       <Suspense fallback={null}>

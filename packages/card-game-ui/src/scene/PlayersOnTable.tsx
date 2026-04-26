@@ -274,6 +274,19 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
       data-seat-id={seat.id}
       aria-hidden="true"
       onClick={handleClick}
+      onContextMenu={(event) => {
+        if (event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
+          return;
+        }
+        if (onIsolate) {
+          event.preventDefault();
+          event.stopPropagation();
+          onIsolate(IsolationComponentType.PlayerUI, labelText, {
+            ...playerUiDefaults,
+            ...(seat.playerOverrides ?? {}),
+          });
+        }
+      }}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
     >

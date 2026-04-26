@@ -50,6 +50,7 @@ export interface CardGameTemplatePageProps {
   stageOverlay?: React.ReactNode;
   showArenaGuide?: boolean;
   showHeaderDebugControls?: boolean;
+  onIsolateRequest?: (type: IsolationRequestMessage['type'], label: string, config: unknown) => void;
 }
 
 export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
@@ -75,6 +76,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   stageOverlay,
   showArenaGuide = false,
   showHeaderDebugControls = true,
+  onIsolateRequest,
 }) => {
   const doc = useMemo(() => docProp ?? null, [docProp]);
   const resolvedPlayerCount = playerCountProp ?? doc?.defaultPlayerCount ?? 4;
@@ -129,6 +131,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   }, [activeDoc, onSeatsChange, resolvedPlayerCount]);
   
   const handleIsolate = useCallback((type: IsolationRequestMessage['type'], label: string, config: unknown) => {
+    onIsolateRequest?.(type, label, config);
     const channel = new BroadcastChannel(ISOLATION_REQUEST_CHANNEL);
     const message: IsolationRequestMessage = {
       type,
@@ -138,7 +141,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
     };
     channel.postMessage(message);
     channel.close();
-  }, [assetPath]);
+  }, [assetPath, onIsolateRequest]);
 
   const shellRef = useRef<HTMLDivElement>(null);
   const [gameScale, setGameScale] = useState(1);

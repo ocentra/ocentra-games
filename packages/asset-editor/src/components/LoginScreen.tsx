@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { WindowControls } from '@/components/WindowControls';
+import { canUseDevMockAdmin, setDevAuthSessionOverride } from '@/utils/devAuth';
 import './LoginScreen.css';
 
 export function LoginScreen() {
   const { login, loginWithGoogle, isFirebaseConfigured } = useAuth();
+  const allowDevMockAdmin = canUseDevMockAdmin();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -97,6 +99,18 @@ export function LoginScreen() {
         >
           Sign in with Google
         </button>
+        {allowDevMockAdmin ? (
+          <button
+            className="login-screen__button"
+            type="button"
+            onClick={() => {
+              setDevAuthSessionOverride('mock-admin');
+              window.location.reload();
+            }}
+          >
+            Use mock admin
+          </button>
+        ) : null}
       </div>
       </div>
     </div>

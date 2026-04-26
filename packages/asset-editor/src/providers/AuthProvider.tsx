@@ -17,7 +17,11 @@ import { signInWithGoogleNative } from '@/adapters/auth/GoogleOAuthTauri';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
-import { DEV_MOCK_ADMIN_USER, isDevMockAdminEnabled } from '@/utils/devAuth';
+import {
+  DEV_MOCK_ADMIN_USER,
+  isDevMockAdminEnabled,
+  setDevAuthSessionOverride,
+} from '@/utils/devAuth';
 import type { EditorUser } from '@/types/auth';
 
 const log = AssetEditorLogger.instance;
@@ -218,7 +222,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     if (devMockAdmin) {
-      setUser(DEV_MOCK_ADMIN_USER);
+      setDevAuthSessionOverride('off');
+      setUser(null);
       return;
     }
     if (auth) await signOut(auth);

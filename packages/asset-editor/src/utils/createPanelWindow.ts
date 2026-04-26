@@ -54,6 +54,13 @@ export async function createPanelWindow(
         assetPath,
         url,
       })
+      if (panel === 'isolation') {
+        window.location.assign(url)
+        return {
+          close: () => undefined,
+          once: () => undefined,
+        }
+      }
       return undefined
     }
 
