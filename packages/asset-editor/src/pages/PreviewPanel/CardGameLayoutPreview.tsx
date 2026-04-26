@@ -12,6 +12,7 @@ import {
 import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
 import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL, type IsolationRequestMessage, type CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
+import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isolationStore } from '@/services/IsolationStore';
@@ -51,6 +52,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [saveStatus, setSaveStatus] = useState<string | null>(loadedAsset ? null : 'Layout asset could not be loaded');
   const externalWindowRef = useRef<import('@tauri-apps/api/webviewWindow').WebviewWindow | null | undefined>(null);
+  const draftSessionIdRef = useRef(createDraftSessionId('editor-embedded'));
   const [activePlayerCount, setActivePlayerCount] = useState<number | null>(
     loadedAsset
       ? readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount)
@@ -144,6 +146,10 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
         return;
       }
 
+      if (event.data.sourceSurface === 'editorEmbedded' && event.data.draftSessionId === draftSessionIdRef.current) {
+        return;
+      }
+
       if (event.data.document) {
         setDocument(event.data.document);
         if (typeof event.data.playerCount === 'number') {
@@ -187,6 +193,12 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       assetPath,
       document: nextDocument,
       playerCount: playerCount ?? nextDocument.defaultPlayerCount,
+      draftSessionId: draftSessionIdRef.current,
+      sourceSurface: 'editorEmbedded',
+      viewerPerspective: {
+        mode: 'canonical',
+        localSeatId: 0,
+      },
     };
     channel.postMessage(payload);
     channel.close();

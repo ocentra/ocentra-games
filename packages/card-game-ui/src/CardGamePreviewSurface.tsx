@@ -1,5 +1,9 @@
 import React, { useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type {
+  CardGameLayoutDocument,
+  CardGameSurfaceMode,
+  CardGameViewerPerspective,
+} from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { HudArtworkControls } from './scene/HudArtwork.types';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import {
@@ -20,17 +24,29 @@ export interface CardGamePreviewSurfaceProps {
   document: CardGameLayoutDocument;
   playerCount?: number;
   className?: string;
+  surfaceMode?: CardGameSurfaceMode;
+  viewerPerspective?: CardGameViewerPerspective;
   showBackground?: boolean;
   showSeatWidgets?: boolean;
+  showLocalSeat?: boolean;
   showHandPreview?: boolean;
   editableSeats?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
+  seatPresentationById?: Partial<Record<number, CardGameSeatPresentation>>;
   hudControlsOverride?: HudArtworkControls;
   onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
   showArenaGuide?: boolean;
+}
+
+export interface CardGameSeatPresentation {
+  labelText?: string;
+  infoBoxText?: string;
+  cardTokens?: string[];
+  state?: 'default' | 'active' | 'placeholder';
+  hidden?: boolean;
 }
 
 const TABLE_ARENA_WIDTH = 1000;
@@ -68,11 +84,15 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   document,
   playerCount,
   className,
+  surfaceMode = 'templateSaved',
+  viewerPerspective,
   showBackground = true,
   showSeatWidgets = true,
+  showLocalSeat = false,
   showHandPreview = true,
   editableSeats = false,
   onSeatsChange,
+  seatPresentationById,
   hudControlsOverride,
   onHudButtonClick,
   arenaOverlay,
@@ -175,8 +195,9 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
               {showSeatsLayer ? (
                 <PlayersOnTable
                   editableSeats={editableSeats}
-                  showLocalSeat={editableSeats}
+                  showLocalSeat={showLocalSeat || editableSeats || viewerPerspective?.mode === 'rotateToLocal' || surfaceMode === 'play'}
                   onSeatsChange={onSeatsChange}
+                  seatPresentationById={seatPresentationById}
                   onIsolate={onIsolate}
                 />
               ) : null}

@@ -5,11 +5,13 @@ import { tableLayoutStore } from '@ocentra/game-layout-domain/tableLayoutStore';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import type { TableLayoutState } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { IsolationComponentType } from '@ocentra/game-layout-domain/isolation-types';
+import type { CardGameSeatPresentation } from '../CardGamePreviewSurface';
 
 interface PlayersOnTableProps {
   editableSeats?: boolean;
   showLocalSeat?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
+  seatPresentationById?: Partial<Record<number, CardGameSeatPresentation>>;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
 
@@ -28,6 +30,7 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
   editableSeats = false,
   showLocalSeat = false,
   onSeatsChange,
+  seatPresentationById,
   onIsolate,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -44,8 +47,14 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
   const selectedSeatId = layoutState.selectedSeatId ?? null;
   const playerUiDefaults = layoutState.asset?.layout.playerUiDefaults ?? {};
   const visibleSeats = useMemo(
-    () => seats.filter((seat: SeatLayout) => showLocalSeat || seat.id !== 0),
-    [seats, showLocalSeat],
+    () =>
+      seats.filter((seat: SeatLayout) => {
+        if (seatPresentationById?.[seat.id]?.hidden) {
+          return false;
+        }
+        return showLocalSeat || seat.id !== 0;
+      }),
+    [seatPresentationById, seats, showLocalSeat],
   );
 
   const handleSeatSelect = useCallback((seatId: number | null) => {
@@ -177,6 +186,7 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
           playerUiDefaults={playerUiDefaults}
           editable={editableSeats}
           isLocalSeat={seat.id === 0}
+          presentation={seatPresentationById?.[seat.id]}
           onIsolate={onIsolate}
           onPositionChange={editableSeats ? handlePositionChange : undefined}
         />
@@ -194,6 +204,7 @@ interface PlayerSeatContainerProps {
   playerUiDefaults: Record<string, unknown>;
   editable: boolean;
   isLocalSeat: boolean;
+  presentation?: CardGameSeatPresentation;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
   onPositionChange?: (seatId: number, x: number, y: number) => void;
 }
@@ -207,6 +218,7 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
   playerUiDefaults,
   editable,
   isLocalSeat,
+  presentation,
   onIsolate,
   onPositionChange,
 }) => {
@@ -247,8 +259,14 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
     selected ? 'player-seat--selected' : '',
     editable ? 'player-seat--editable' : '',
     dragging ? 'player-seat--dragging' : '',
+    presentation?.state === 'active' ? 'player-seat--active' : '',
+    presentation?.state === 'placeholder' ? 'player-seat--placeholder' : '',
     isLocalSeat ? 'player-seat--local' : '',
   ].filter(Boolean).join(' ');
+
+  const labelText = presentation?.labelText ?? seat.label ?? `Player ${seat.id + 1}`;
+  const infoBoxText = presentation?.infoBoxText;
+  const cardTokens = presentation?.cardTokens ?? [];
   return (
     <div
       ref={ref}
@@ -263,8 +281,19 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
       <PlayerUI 
         {...playerUiDefaults} 
         {...(seat.playerOverrides ?? {})} 
-        onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.PlayerUI, seat.label ?? `Player ${seat.id + 1}`, { ...playerUiDefaults, ...(seat.playerOverrides ?? {}) }) : undefined}
+        labelText={labelText}
+        infoBoxText={infoBoxText}
+        onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.PlayerUI, labelText, { ...playerUiDefaults, ...(seat.playerOverrides ?? {}) }) : undefined}
       />
+      {cardTokens.length > 0 ? (
+        <div className="player-seat__cards-overlay">
+          {cardTokens.map((token, index) => (
+            <span key={`${seat.id}-${token}-${index}`} className="player-seat__card-token">
+              {token}
+            </span>
+          ))}
+        </div>
+      ) : null}
       {editable ? (
         <div className="player-seat__editor-controls">
           <div className="player-seat__handle-wrap">

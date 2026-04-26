@@ -7,7 +7,10 @@ import {
   CARD_GAME_LAYOUT_DRAFT_CHANNEL,
   type CardGameLayoutDraftMessage,
 } from '@ocentra/game-layout-domain/draftChannel';
-import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type {
+  CardGameLayoutDocument,
+  CardGameSurfaceMode,
+} from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { loadSavedCardGameLayoutDocument, readCardGameLayoutDocument } from '@/ui/layout/cardGameLayoutAsset';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
@@ -32,6 +35,7 @@ export const CardGamePreviewHarness: React.FC = () => {
   const gameId = searchParams.get('gameId')?.trim() || 'claim';
   const layoutGuid = searchParams.get('layoutGuid')?.trim() || null;
   const assetPath = searchParams.get('assetPath')?.trim() || undefined;
+  const followDraft = searchParams.get('draft') === 'true';
 
   const defaultDoc = useMemo<CardGameLayoutDocument>(
     () => normalizeCardGameLayoutDocument({}),
@@ -41,6 +45,7 @@ export const CardGamePreviewHarness: React.FC = () => {
   const [savedDocument, setSavedDocument] = useState<CardGameLayoutDocument | null>(null);
   const [draftDocument, setDraftDocument] = useState<CardGameLayoutDocument | null>(null);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const surfaceMode: CardGameSurfaceMode = followDraft ? 'templateDraft' : 'templateSaved';
 
   useEffect(() => {
     let cancelled = false;
@@ -85,8 +90,14 @@ export const CardGamePreviewHarness: React.FC = () => {
   }, [defaultDoc, gameId, layoutGuid]);
 
   useEffect(() => {
+    if (!followDraft) {
+      return;
+    }
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     const handler = (event: MessageEvent<CardGameLayoutDraftMessage>) => {
+      if (assetPath && event.data?.assetPath && event.data.assetPath !== assetPath) {
+        return;
+      }
       if (event.data?.document) {
         setDraftDocument(event.data.document);
       }
@@ -99,7 +110,7 @@ export const CardGamePreviewHarness: React.FC = () => {
       channel.removeEventListener('message', handler);
       channel.close();
     };
-  }, []);
+  }, [assetPath, followDraft]);
 
   useEffect(() => {
     const hide = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
@@ -131,12 +142,14 @@ export const CardGamePreviewHarness: React.FC = () => {
     <CardGameTemplatePage
       document={document}
       playerCount={resolvedPlayerCount}
+      surfaceMode={surfaceMode}
       headerProps={headerProps}
       headerTitle={gameId}
       headerTagline="Layout Preview"
       footerVersion={footerVersion}
-      editableSeats={true}
+      editableSeats={false}
       assetPath={assetPath}
+      showHeaderDebugControls={false}
       onHomeClick={() => {
         window.location.href = '/';
       }}

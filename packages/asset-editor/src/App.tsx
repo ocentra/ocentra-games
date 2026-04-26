@@ -7,6 +7,7 @@ import { WindowControls } from '@/components/WindowControls';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
+import { isDevMockAdminEnabled } from '@/utils/devAuth';
 import '@ocentra/core-ui/tokens.css';
 import './styles/editor.css';
 
@@ -39,6 +40,7 @@ function AdminRequired() {
 export function App() {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
   const e2eBypassAuth = isE2EBypassAuthEnabled();
+  const devMockAdmin = isDevMockAdminEnabled();
   const isStandalone = useMemo(() => {
     const p = new URLSearchParams(window.location.search);
     return p.has('standalone') && p.has('assetPath');
@@ -91,5 +93,30 @@ export function App() {
     return <AdminRequired />;
   }
 
-  return <AssetEditorPage />;
+  return (
+    <>
+      {devMockAdmin ? (
+        <div
+          style={{
+            position: 'fixed',
+            right: '1rem',
+            bottom: '1rem',
+            zIndex: 10000,
+            padding: '0.55rem 0.8rem',
+            borderRadius: '0.75rem',
+            border: '1px solid rgba(74, 222, 128, 0.45)',
+            background: 'rgba(4, 22, 10, 0.92)',
+            color: '#86efac',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+          }}
+        >
+          Dev Auth: Mock Admin
+        </div>
+      ) : null}
+      <AssetEditorPage />
+    </>
+  );
 }

@@ -8,8 +8,8 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
+import type { CardGameSeatPresentation } from '@ocentra/card-game-ui/CardGamePreviewSurface';
 import type { HudArtworkControls } from '@ocentra/card-game-ui/scene/HudArtwork.types';
-import PlayerUI from '@ocentra/card-game-ui/scene/PlayerUI';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './GameScreenPage.css';
 import {
@@ -195,10 +195,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     return gameState.players.filter((player) => !revealed.has(player.id) && !folded.has(player.id));
   }, [gameState]);
 
-  const orderedSeats = useMemo(
-    () => [...(bundle?.layoutPreset.seats ?? [])].sort((left, right) => left.id - right.id),
-    [bundle?.layoutPreset.seats],
-  );
   const winners = useMemo(() => (gameState ? getWinningPlayers(gameState.players) : []), [gameState]);
 
   const handleHome = () => {
@@ -399,7 +395,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     nextDocument.hud.layerVisibility = {
       ...nextDocument.hud.layerVisibility,
       table: true,
-      seats: false,
+      seats: true,
       tools: false,
     };
     return nextDocument.hud;
@@ -415,68 +411,43 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     }
   }, [gameState, startingMatch]);
 
-  const renderSeat = (seatId: number, player: Player | null) => {
-    const seat = orderedSeats.find((entry) => entry.id === seatId);
-    if (!seat) {
-      return null;
+  const seatPresentationById = useMemo<Partial<Record<number, CardGameSeatPresentation>>>(() => {
+    const presentations: Partial<Record<number, CardGameSeatPresentation>> = {};
+    if (!bundle) {
+      return presentations;
     }
 
-    const details = player ? describePlayer(player, gameState) : [];
-    const isActive = seatId === gameState?.currentPlayer;
-    const isPlaceholder = !player;
+    for (let seatId = 0; seatId < bundle.playerCount; seatId += 1) {
+      const player = gameState?.players[seatId] ?? null;
+      const details = player ? describePlayer(player, gameState) : [];
+      presentations[seatId] = {
+        labelText: player?.name ?? getSeatName(seatId),
+        infoBoxText: [seatId === gameState?.currentPlayer ? 'Turn' : '', ...details].filter(Boolean).join(' | '),
+        cardTokens: (player?.hand ?? []).map((card) => formatCardShortLabel(card)),
+        state: player ? (seatId === gameState?.currentPlayer ? 'active' : 'default') : 'placeholder',
+      };
+    }
 
-    return (
-      <div
-        key={seat.id}
-        className={
-          isActive
-            ? 'playable-seat-container playable-seat-container--active'
-            : isPlaceholder
-              ? 'playable-seat-container playable-seat-container--placeholder'
-              : 'playable-seat-container'
-        }
-        style={{
-          position: 'absolute',
-          left: `${seat.position.x * 100}%`,
-          top: `${seat.position.y * 100}%`,
-          transform: `translate(-50%, -50%) scale(${seat.scale ?? 1})`,
-          zIndex: 4,
-          pointerEvents: 'auto'
-        }}
-      >
-        <PlayerUI
-          labelText={player?.name ?? getSeatName(seat.id)}
-          infoBoxText={[isActive ? 'Turn' : '', ...details].filter(Boolean).join(' | ')}
-          baseArcRotation={seat.rotation ?? 0}
-          infoBoxAngle={180}
-          infoBoxRotation={0}
-          canvasWidth={400}
-          canvasHeight={400}
-          overallScale={0.48}
-        />
-        <div className="playable-seat-cards-overlay">
-          {(player?.hand ?? []).map((card) => (
-            <span key={card.id} className="playable-seat-card-token">
-              {formatCardShortLabel(card)}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  };
+    return presentations;
+  }, [bundle, gameState]);
 
   return (
     <div className="playable-game-screen">
       <CardGameTemplatePage
         document={bundle?.layoutDocument}
         playerCount={bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT}
+        surfaceMode="play"
+        viewerPerspective={{ mode: 'rotateToLocal', localSeatId: 0 }}
         headerProps={headerProps}
         headerTitle={bundle?.displayName || gameModeId}
         headerTagline="Local Pilot"
         footerVersion="1.0.0-dev"
         onHomeClick={handleHome}
+        showLocalSeat
+        seatPresentationById={seatPresentationById}
         hudControlsOverride={runtimeHudControls}
         onHudButtonClick={(index) => handleHudButtonClick(index)}
+        showHeaderDebugControls={false}
         arenaOverlay={bundle ? (
           <>
             <div className="playable-table-center" data-testid="claim-pilot-table">
@@ -520,10 +491,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="playable-table-stage__seats">
-              {orderedSeats.map((seat) => renderSeat(seat.id, gameState?.players[seat.id] ?? null))}
             </div>
 
             {!gameState ? (

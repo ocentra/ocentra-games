@@ -93,6 +93,16 @@ export async function loadAsset(identifier: {
   if (!input) {
     throw new Error('loadAsset: exactly one of guid, path or hash required')
   }
+  if (!isTauri()) {
+    if (!resolvedPath) {
+      throw new Error('Browser asset loading requires a path identifier')
+    }
+    const normalizedPath = resolvedPath.replace(/\\/g, '/').replace(/^\/+/, '')
+    const browserPath = normalizedPath.startsWith('Resources/')
+      ? `/${normalizedPath}`
+      : `/Resources/${normalizedPath}`
+    return fetch(browserPath)
+  }
   const bytes = await invoke<number[]>('load_asset', { input })
   const contentType = path ? inferMimeType(path) : 'application/json'
   return new Response(new Uint8Array(bytes), {

@@ -1,5 +1,29 @@
 import type { SeatLayout, TableShapeSettings } from './tableLayoutTypes';
 
+export type CardGameSurfaceMode =
+  | 'play'
+  | 'templateSaved'
+  | 'templateDraft'
+  | 'editorEmbedded'
+  | 'editorCanvas'
+  | 'editorIsolation';
+
+export type CardGameViewerPerspectiveMode = 'canonical' | 'rotateToLocal';
+
+export interface CardGameViewerPerspective {
+  mode: CardGameViewerPerspectiveMode;
+  localSeatId?: number | null;
+  viewingSeatId?: number | null;
+}
+
+export interface CardGameShellMetrics {
+  headerHeight: number;
+  toolbarHeight: number;
+  footerHeight: number;
+  workTop: number;
+  workBottom: number;
+}
+
 export interface PlayerUiDefaults {
   baseArcRotation: number;
   infoBoxAngle: number;

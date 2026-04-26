@@ -33,6 +33,7 @@ import {
   seedLayoutPresetFromSource,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import './StandalonePanelPage.css';
@@ -386,6 +387,7 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
   );
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const draftSessionIdRef = useRef(createDraftSessionId('editor-standalone-studio'));
 
   useEffect(() => {
     let cancelled = false;
@@ -418,6 +420,9 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
       if (event.data?.assetPath !== assetPath || !event.data.document) {
         return;
       }
+      if (event.data.draftSessionId === draftSessionIdRef.current) {
+        return;
+      }
       setDocument(event.data.document);
       if (typeof event.data.playerCount === 'number') {
         setActivePlayerCount(event.data.playerCount);
@@ -436,6 +441,12 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
       assetPath,
       document: nextDocument,
       playerCount,
+      draftSessionId: draftSessionIdRef.current,
+      sourceSurface: 'editorIsolation',
+      viewerPerspective: {
+        mode: 'canonical',
+        localSeatId: 0,
+      },
     });
     channel.close();
   }, [assetPath]);
@@ -536,6 +547,7 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
   const [isPortrait, setIsPortrait] = useState(false);
   const [showStudio, setShowStudio] = useState(false);
   const [showHudEditor, setShowHudEditor] = useState(false);
+  const draftSessionIdRef = useRef(createDraftSessionId('editor-canvas'));
 
   useEffect(() => {
     fetch('/Resources/devices.json')
@@ -584,6 +596,9 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
       if (event.data?.assetPath !== assetPath || !event.data.document) {
         return;
       }
+      if (event.data.draftSessionId === draftSessionIdRef.current) {
+        return;
+      }
       setDocument(event.data.document);
       if (typeof event.data.playerCount === 'number') {
         setPlayerCount(event.data.playerCount);
@@ -602,6 +617,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
       assetPath,
       document: nextDocument,
       playerCount: nextPlayerCount,
+      draftSessionId: draftSessionIdRef.current,
+      sourceSurface: 'editorCanvas',
+      viewerPerspective: {
+        mode: 'canonical',
+        localSeatId: 0,
+      },
     } satisfies CardGameLayoutDraftMessage);
     channel.close();
   }, [assetPath]);
@@ -869,6 +890,7 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             embedded
             document={document as unknown as CardGameLayoutDocument}
             playerCount={playerCount}
+            surfaceMode="editorCanvas"
             headerProps={headerProps}
             headerTitle={loadedAsset.displayName || loadedAsset.gameId}
             headerTagline={`${loadedAsset.gameId} layout preview`}

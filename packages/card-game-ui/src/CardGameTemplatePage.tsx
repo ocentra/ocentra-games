@@ -1,13 +1,16 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
-import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
-import type { CardGameLayoutDraftMessage, IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
-import { HudButtonEditorModal } from './HudButtonEditorModal';
-import { CardGamePreviewSurface } from './CardGamePreviewSurface';
+import { ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChannel';
+import type { IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
+import { CardGamePreviewSurface, type CardGameSeatPresentation } from './CardGamePreviewSurface';
 import { DEFAULT_HUD_ARTWORK_CONTROLS } from './scene/HudArtwork.types';
-import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type {
+  CardGameLayoutDocument,
+  CardGameSurfaceMode,
+  CardGameViewerPerspective,
+} from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import type { SeatLayout } from '@ocentra/game-ui-types/tableLayoutTypes';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import type { HudArtworkControls } from './scene/HudArtwork.types';
@@ -37,6 +40,10 @@ export interface CardGameTemplatePageProps {
   editableSeats?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
   assetPath?: string;
+  surfaceMode?: CardGameSurfaceMode;
+  viewerPerspective?: CardGameViewerPerspective;
+  showLocalSeat?: boolean;
+  seatPresentationById?: Partial<Record<number, CardGameSeatPresentation>>;
   hudControlsOverride?: HudArtworkControls;
   onHudButtonClick?: (index: number, label: string) => void;
   arenaOverlay?: React.ReactNode;
@@ -58,6 +65,10 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   editableSeats = false,
   onSeatsChange,
   assetPath,
+  surfaceMode = 'templateSaved',
+  viewerPerspective = { mode: 'canonical' },
+  showLocalSeat = false,
+  seatPresentationById,
   hudControlsOverride,
   onHudButtonClick,
   arenaOverlay,
@@ -65,27 +76,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   showArenaGuide = false,
   showHeaderDebugControls = true,
 }) => {
-  const [draftDoc, setDraftDoc] = useState<CardGameLayoutDocument | null>(null);
-  const [draftPlayerCount, setDraftPlayerCount] = useState<number | null>(null);
-  const [showHudButtonEditor, setShowHudButtonEditor] = useState(false);
-
-  useEffect(() => {
-    const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
-    channel.onmessage = (event) => {
-      const nextDraft = event.data as CardGameLayoutDraftMessage | undefined;
-      if (nextDraft?.document) {
-        setDraftDoc(nextDraft.document);
-      }
-      if (typeof nextDraft?.playerCount === 'number') {
-        setDraftPlayerCount(nextDraft.playerCount);
-      }
-    };
-    return () => channel.close();
-  }, []);
-
-  const doc = useMemo(() => draftDoc ?? docProp ?? null, [draftDoc, docProp]);
-
-  const resolvedPlayerCount = playerCountProp ?? draftPlayerCount ?? doc?.defaultPlayerCount ?? 4;
+  const doc = useMemo(() => docProp ?? null, [docProp]);
+  const resolvedPlayerCount = playerCountProp ?? doc?.defaultPlayerCount ?? 4;
 
   const handleHomeClick = useCallback(() => {
     onHomeClick?.();
@@ -122,22 +114,6 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   const layerVisibility = resolvedHud.layerVisibility ?? {};
   const showHeader = layerVisibility.header !== false;
   const showFooter = layerVisibility.footer !== false;
-  const showTools = layerVisibility.tools !== false;
-
-  const broadcastUpdate = useCallback((nextDoc: CardGameLayoutDocument, nextPlayerCount: number) => {
-    const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
-    channel.postMessage({
-      assetPath,
-      document: nextDoc,
-      playerCount: nextPlayerCount,
-    });
-    channel.close();
-  }, [assetPath]);
-
-  const handleDocChange = useCallback((nextDoc: CardGameLayoutDocument) => {
-    setDraftDoc(nextDoc);
-    broadcastUpdate(nextDoc, resolvedPlayerCount);
-  }, [broadcastUpdate, resolvedPlayerCount]);
 
   const handleSeatsChange = useCallback((nextSeats: SeatLayout[]) => {
     const nextDoc = cloneCardGameLayoutDocument(activeDoc);
@@ -149,9 +125,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
       };
     }
     nextDoc.presets[presetKey].seats = nextSeats;
-    handleDocChange(nextDoc);
     onSeatsChange?.(nextSeats);
-  }, [activeDoc, handleDocChange, resolvedPlayerCount, onSeatsChange]);
+  }, [activeDoc, onSeatsChange, resolvedPlayerCount]);
   
   const handleIsolate = useCallback((type: IsolationRequestMessage['type'], label: string, config: unknown) => {
     const channel = new BroadcastChannel(ISOLATION_REQUEST_CHANNEL);
@@ -252,9 +227,13 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
           document={activeDoc}
           playerCount={resolvedPlayerCount}
           className="game-screen__canvas-surface"
+          surfaceMode={surfaceMode}
+          viewerPerspective={viewerPerspective}
           showBackground={showBackground}
           editableSeats={editableSeats}
+          showLocalSeat={showLocalSeat}
           onSeatsChange={handleSeatsChange}
+          seatPresentationById={seatPresentationById}
           hudControlsOverride={hudControlsOverride}
           onHudButtonClick={onHudButtonClick}
           arenaOverlay={arenaOverlay}
@@ -264,23 +243,6 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
         />
       </UnifiedPageShell>
 
-      {!embedded && showTools && (
-        <button
-          type="button"
-          className="game-screen__editor-launch"
-          onClick={() => setShowHudButtonEditor(true)}
-        >
-          Layers
-        </button>
-      )}
-
-      <HudButtonEditorModal
-        open={showHudButtonEditor}
-        onClose={() => setShowHudButtonEditor(false)}
-        document={activeDoc}
-        onChange={handleDocChange}
-        initialWorkspaceSection="layerSplit"
-      />
     </div>
   );
 };

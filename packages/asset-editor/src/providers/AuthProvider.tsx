@@ -17,6 +17,7 @@ import { signInWithGoogleNative } from '@/adapters/auth/GoogleOAuthTauri';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
+import { DEV_MOCK_ADMIN_USER, isDevMockAdminEnabled } from '@/utils/devAuth';
 import type { EditorUser } from '@/types/auth';
 
 const log = AssetEditorLogger.instance;
@@ -82,9 +83,12 @@ function safeLog(fn: () => void): void {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const e2eBypassAuth = isE2EBypassAuthEnabled();
-  const [user, setUser] = useState<EditorUser | null>(e2eBypassAuth ? E2E_BYPASS_USER : null);
+  const devMockAdmin = isDevMockAdminEnabled();
+  const [user, setUser] = useState<EditorUser | null>(
+    e2eBypassAuth ? E2E_BYPASS_USER : devMockAdmin ? DEV_MOCK_ADMIN_USER : null,
+  );
   const [isLoading, setIsLoading] = useState(() => {
-    if (e2eBypassAuth) return false;
+    if (e2eBypassAuth || devMockAdmin) return false;
     if (!auth) return false;
     return true;
   });
@@ -96,9 +100,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isLoading) setIsLoading(false);
   }
 
+  if (devMockAdmin && user?.uid !== DEV_MOCK_ADMIN_USER.uid) {
+    setUser(DEV_MOCK_ADMIN_USER);
+    if (isLoading) setIsLoading(false);
+  }
+
   useEffect(() => {
-    if (e2eBypassAuth || !auth) {
-      if (!auth && !e2eBypassAuth) {
+    if (e2eBypassAuth || devMockAdmin || !auth) {
+      if (!auth && !e2eBypassAuth && !devMockAdmin) {
         safeLog(() => logInfo('[Auth] AuthProvider mount, Firebase not configured', undefined, LOG_AUTH_LOADING));
       }
       return;
@@ -127,10 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       unsubscribe();
       clearTimeout(timeoutId);
     };
-  }, [e2eBypassAuth]);
+  }, [devMockAdmin, e2eBypassAuth]);
 
   useEffect(() => {
-    if (!auth) return;
+    if (devMockAdmin || !auth) return;
     
     const unsubscribeToken = onIdTokenChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -147,11 +156,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     
     return () => unsubscribeToken();
-  }, []);
+  }, [devMockAdmin]);
 
   const login = async (email: string, password: string) => {
     if (e2eBypassAuth) {
       setUser(E2E_BYPASS_USER);
+      return { success: true };
+    }
+    if (devMockAdmin) {
+      setUser(DEV_MOCK_ADMIN_USER);
       return { success: true };
     }
     if (!auth) {
@@ -168,6 +181,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginWithGoogle = async () => {
     if (e2eBypassAuth) {
       setUser(E2E_BYPASS_USER);
+      return { success: true };
+    }
+    if (devMockAdmin) {
+      setUser(DEV_MOCK_ADMIN_USER);
       return { success: true };
     }
     if (!auth) {
@@ -198,6 +215,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     if (e2eBypassAuth) {
       setUser(E2E_BYPASS_USER);
+      return;
+    }
+    if (devMockAdmin) {
+      setUser(DEV_MOCK_ADMIN_USER);
       return;
     }
     if (auth) await signOut(auth);
