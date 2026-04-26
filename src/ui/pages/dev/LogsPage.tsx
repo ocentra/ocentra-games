@@ -348,3 +348,4 @@ export const LogsPage: React.FC = () => {
     </>
   );
 };
+

@@ -9,6 +9,7 @@ import { APP_VERSION } from '@/constants/version';
 import { LeaderboardPanel } from '@/ui/pages/Competition/components/LeaderboardPanel';
 import { TournamentPanel } from '@/ui/pages/Competition/components/TournamentPanel';
 import { useCompetitionData } from '@/ui/pages/Competition/hooks/useCompetitionData';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './CompetitionPage.css';
 
 interface CompetitionPageProps {
@@ -59,7 +60,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -125,3 +126,4 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
     </UnifiedPageShell>
   );
 }
+

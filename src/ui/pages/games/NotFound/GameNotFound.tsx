@@ -5,6 +5,7 @@ import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import type { UserProfile } from '@/adapters/firebase/service';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './GameNotFound.css';
 import '../SelectedGame/SelectedGamePage.css';
 
@@ -35,6 +36,7 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
       className="generic-game-page"
       header={
         <UnifiedHeader
+          showPrimaryNavigation={false}
           dynamicData={{
             gameName: "Game Not Found",
             tagline: "Lost in the void."
@@ -45,7 +47,7 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -73,3 +75,4 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
     </UnifiedPageShell>
   );
 }
+

@@ -679,12 +679,22 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     });
   }, [playerCount, updateActivePreset]);
 
+  const handleSeatsChange = useCallback((seats: CardGameLayoutDocument['presets'][string]['seats']) => {
+    updateActivePreset((_next, preset) => {
+      preset.seats = seats.map((seat) => ({
+        ...seat,
+        position: { ...seat.position },
+        playerOverrides: seat.playerOverrides ? { ...seat.playerOverrides } : undefined,
+      }));
+    });
+  }, [updateActivePreset]);
+
   // Handle header props mapping (handle string|null vs string difference)
   const headerProps: NonNullable<CardGameTemplatePageProps['headerProps']> = {
     user: headProps.user ? {
       email: headProps.user.email ?? '',
       displayName: headProps.user.displayName ?? 'Editor',
-      photoURL: headProps.user.photoURL ?? undefined,
+      photoURL: headProps.user.photoURL ? headProps.getImageUrl(headProps.user.photoURL) : undefined,
     } : null,
     onLogout: headProps.onLogout,
   };
@@ -863,8 +873,11 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             headerTitle={loadedAsset.displayName || loadedAsset.gameId}
             headerTagline={`${loadedAsset.gameId} layout preview`}
             footerVersion="Editor"
+            editableSeats={showHandles}
+            onSeatsChange={handleSeatsChange}
             showArenaGuide={showArenaGuide}
             assetPath={assetPath}
+            showHeaderDebugControls={false}
           />
         </div>
       </div>

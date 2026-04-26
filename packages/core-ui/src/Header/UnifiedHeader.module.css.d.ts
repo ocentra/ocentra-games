@@ -1,8 +1,12 @@
 declare const styles: {
   readonly unifiedHeaderWrapper: string;
+  readonly headerSvgFrame: string;
   readonly headerSvg: string;
   readonly headerBackdropLayer: string;
   readonly headerBackdropShape: string;
+  readonly primaryNavExtension: string;
+  readonly primaryNavHost: string;
+  readonly primaryNavSvg: string;
   readonly debugControlsFloating: string;
   readonly debugToggleButton: string;
   readonly debugPanel: string;

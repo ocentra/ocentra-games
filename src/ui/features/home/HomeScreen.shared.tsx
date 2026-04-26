@@ -18,6 +18,7 @@ import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/h
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import '@/ui/pages/Home/HomePage.css';
 
 const log = MainAppLogger.instance;
@@ -237,7 +238,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       user: user ? {
         name: user.displayName || 'Player',
         email: user.email,
-        avatarUrl: user.photoURL,
+        avatarUrl: getHeaderAvatarUrl(user.photoURL),
         isLoggedIn: true,
         isAdmin: user.isAdmin,
         eloRating: user.eloRating,
@@ -251,65 +252,75 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
   return (
     <UnifiedPageShell
       className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}
-      header={<UnifiedHeader config={homeHeaderConfig} profileName="main_screen" />}
+      workClassName="home-shell-work"
+      header={
+        <UnifiedHeader
+          config={homeHeaderConfig}
+          profileName="main_screen"
+          includeAdminNavigation={Boolean(user?.isAdmin)}
+        />
+      }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      {ImageLoaders}
-      <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
-        <div className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
-          {DEBUG_PAGE_STRUCTURE ? (
-            <>
-              <div className="page-debug-top">top</div>
-              <div className="page-debug-middle">middle</div>
-              <div className="page-debug-bottom">bottom</div>
-            </>
-          ) : DEBUG_LAYOUT ? (
-            <>
-              <section className="about-us-section layout-debug-box" data-layout="about-us">
-                <span>About Us (top)</span>
-              </section>
-              <section className="featured-section layout-debug-box" data-layout="featured">
-                <span>Featured carousel</span>
-              </section>
-              <section className="games-section layout-debug-box" data-layout="coming-soon">
-                <span>Coming Soon carousel</span>
-              </section>
-            </>
-          ) : (
-            <>
-              <section className="about-us-section">
-                <AboutUsSection
-                  featureBannerItems={gamesData.featureBannerItems}
-                  resolveImageUrl={resolveImageUrl}
-                />
-              </section>
-              <section className="featured-section">
-                <FeaturedGameCarousel
-                  featured={gamesData.featured}
-                  recommended={gamesData.recommended}
-                  isLoading={isLoadingGames}
-                  onLearnMore={handleLearnMore}
-                  resolveImageUrl={resolveImageUrl}
-                  solanaImgSrc={solanaImageUrl}
-                  debugLayout={DEBUG_FEATURED}
-                />
-              </section>
-              <section className="games-section">
-                <ComingSoonCarousel
-                  comingSoon={gamesData.comingSoon}
-                  availableNow={gamesData.availableNow}
-                  explorerGames={explorerGamesForCarousel}
-                  isLoading={isLoadingGames}
-                  onGameClick={handlePlayGame}
-                  onExploreClick={() => navigate('/CardGamesExplorer')}
-                  resolveImageUrl={resolveImageUrl}
-                />
-              </section>
-            </>
-          )}
-          {!DEBUG_PAGE_STRUCTURE && <div className="content-spacer" />}
+      <div className="home-work-math">
+        {ImageLoaders}
+        <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
+          <div className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
+            {DEBUG_PAGE_STRUCTURE ? (
+              <>
+                <div className="page-debug-top">top</div>
+                <div className="page-debug-middle">middle</div>
+                <div className="page-debug-bottom">bottom</div>
+              </>
+            ) : DEBUG_LAYOUT ? (
+              <>
+                <section className="about-us-section layout-debug-box" data-layout="about-us">
+                  <span>About Us (top)</span>
+                </section>
+                <section className="featured-section layout-debug-box" data-layout="featured">
+                  <span>Featured carousel</span>
+                </section>
+                <section className="games-section layout-debug-box" data-layout="coming-soon">
+                  <span>Coming Soon carousel</span>
+                </section>
+              </>
+            ) : (
+              <>
+                <section className="about-us-section">
+                  <AboutUsSection
+                    featureBannerItems={gamesData.featureBannerItems}
+                    resolveImageUrl={resolveImageUrl}
+                  />
+                </section>
+                <section className="featured-section">
+                  <FeaturedGameCarousel
+                    featured={gamesData.featured}
+                    recommended={gamesData.recommended}
+                    isLoading={isLoadingGames}
+                    onLearnMore={handleLearnMore}
+                    resolveImageUrl={resolveImageUrl}
+                    solanaImgSrc={solanaImageUrl}
+                    debugLayout={DEBUG_FEATURED}
+                  />
+                </section>
+                <section className="games-section">
+                  <ComingSoonCarousel
+                    comingSoon={gamesData.comingSoon}
+                    availableNow={gamesData.availableNow}
+                    explorerGames={explorerGamesForCarousel}
+                    isLoading={isLoadingGames}
+                    onGameClick={handlePlayGame}
+                    onExploreClick={() => navigate('/CardGamesExplorer')}
+                    resolveImageUrl={resolveImageUrl}
+                  />
+                </section>
+              </>
+            )}
+            {!DEBUG_PAGE_STRUCTURE && <div className="content-spacer" />}
+          </div>
         </div>
       </div>
     </UnifiedPageShell>
   );
 }
+

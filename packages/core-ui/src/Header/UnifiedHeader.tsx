@@ -8,6 +8,7 @@ import {
   type UnifiedHeaderConfigInput,
   type UnifiedHeaderLayoutConfig,
   type UnifiedHeaderStyleConfig,
+  type UnifiedHeaderNavigationConfig,
   type UnifiedHeaderCenterConfig,
   type UnifiedHeaderLeftConfig,
   type UnifiedHeaderRightConfig,
@@ -25,6 +26,7 @@ import {
   type ShadowStyle,
 } from './UnifiedHeader.config';
 import { ProfilePictureModal } from './ProfilePictureModal';
+import { PrimarySiteNavigation } from './PrimarySiteNavigation';
 import styles from './UnifiedHeader.module.css';
 
 // Auto-import all bundled profiles
@@ -33,13 +35,32 @@ const bundledProfileNames = Object.keys(BUNDLED_PROFILES).map(path =>
   path.split('/').pop()?.replace('.json', '') || ''
 ).filter(Boolean);
 
+function getBundledProfileConfig(name: string): UnifiedHeaderConfigInput | null {
+  const bundledPath = `./profiles/${name}.json`;
+  const bundledEntry = BUNDLED_PROFILES[bundledPath];
+
+  if (!bundledEntry) {
+    return null;
+  }
+
+  const bundledModule = bundledEntry as { default?: unknown };
+  const bundledCandidate = bundledModule.default ?? bundledEntry;
+
+  if (bundledCandidate && typeof bundledCandidate === 'object' && 'config' in (bundledCandidate as Record<string, unknown>)) {
+    const bundledDocument = parseUnifiedHeaderProfileDocument(bundledCandidate);
+    return bundledDocument.config;
+  }
+
+  return parseSerializedUnifiedHeaderConfig(bundledCandidate);
+}
+
 const ENABLE_HEADER_DEBUG_CONTROLS = true;
 const DEFAULT_PROFILE_NAME = 'main_screen';
 const HEADER_SVG_HEIGHT = 80;
 const HEADER_BOX_VERTICAL_MARGIN = 8;
 
 type DebugTab = 'layout' | 'profiles';
-type LayoutSubtab = 'global' | 'home' | 'wings' | 'center' | 'login';
+type LayoutSubtab = 'global' | 'home' | 'wings' | 'center' | 'login' | 'nav';
 type TextStylePanelTab = 'basic' | 'fill' | 'edge' | 'shadow' | 'transform';
 type CenterPanelTab = 'general' | 'modeA' | 'modeB';
 
@@ -482,6 +503,15 @@ export interface UnifiedHeaderProps {
   leftContent?: React.ReactNode;
   rightSuffixContent?: React.ReactNode;
   dynamicData?: Record<string, string>;
+  showPrimaryNavigation?: boolean;
+  showDebugControls?: boolean;
+  includeAdminNavigation?: boolean;
+  primaryNavigationItems?: Array<{
+    label: string;
+    path: string;
+    matchPrefixes?: string[];
+  }>;
+  onResolvedConfigChange?: (config: UnifiedHeaderConfig) => void;
 }
 
 function mergeHeaderConfig(
@@ -567,6 +597,10 @@ function mergeHeaderConfig(
           : {}),
       },
     },
+    navigation: {
+      ...baseConfig?.navigation,
+      ...overrideConfig?.navigation,
+    },
     metadata: {
       ...baseConfig?.metadata,
       ...overrideConfig?.metadata,
@@ -650,6 +684,10 @@ function applyRuntimeOverlay(
 
   return {
     ...profileConfig,
+    navigation: {
+      ...profileConfig.navigation,
+      ...runtimeOverlay.navigation,
+    },
     left: {
       ...profileConfig.left,
       ...(runtimeOverlay.left?.onClick !== undefined ? { onClick: runtimeOverlay.left.onClick } : {}),
@@ -787,7 +825,12 @@ export function UnifiedHeader({
   profileName,
   leftContent,
   rightSuffixContent,
-  dynamicData = {}
+  dynamicData = {},
+  showPrimaryNavigation = true,
+  showDebugControls = true,
+  includeAdminNavigation = false,
+  primaryNavigationItems,
+  onResolvedConfigChange,
 }: UnifiedHeaderProps) {
   const derivedConfig = useMemo<UnifiedHeaderConfigInput>(() => {
     const hasModeBDynamicContent = Boolean(dynamicData.gameName || dynamicData.tagline);
@@ -812,17 +855,24 @@ export function UnifiedHeader({
   );
 
   const defaultEditableConfig = useMemo(() => {
-    const next = createUnifiedHeaderConfig();
+    const initialProfileConfig = getBundledProfileConfig(profileName || DEFAULT_PROFILE_NAME);
+    const next = createUnifiedHeaderConfig(sanitizeProfileConfig(initialProfileConfig ?? undefined));
     return {
       ...next,
       layout: normalizeLayoutConfig(next.layout),
     };
-  }, []);
+  }, [profileName]);
   const [initialConfig, setInitialConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
   const [config, setConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
   const [showControls, setShowControls] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showPictureModal, setShowPictureModal] = useState(false);
+  const [failedProfileAvatarUrl, setFailedProfileAvatarUrl] = useState<string | null>(null);
+  const [profileDropdownAnchor, setProfileDropdownAnchor] = useState<{
+    top: number;
+    right: number;
+    maxHeight: number;
+  } | null>(null);
   const [activeTab, setActiveTab] = useState<DebugTab>('layout');
   const [layoutSubtab, setLayoutSubtab] = useState<LayoutSubtab>('global');
   const [centerPanelTab, setCenterPanelTab] = useState<CenterPanelTab>('general');
@@ -832,6 +882,8 @@ export function UnifiedHeader({
   const [profileStatus, setProfileStatus] = useState('');
   const [profiles, setProfiles] = useState<string[]>(Array.from(new Set([DEFAULT_PROFILE_NAME, ...bundledProfileNames])));
   const profileCacheRef = useRef<Record<string, UnifiedHeaderConfigInput | null>>({});
+  const profileAvatarUrl = config.right.user?.avatarUrl?.trim() || '';
+  const profileAvatarLoadFailed = Boolean(profileAvatarUrl) && failedProfileAvatarUrl === profileAvatarUrl;
 
   const normalizeLoadedConfig = useCallback(
     (loadedConfig?: UnifiedHeaderConfigInput) => {
@@ -936,6 +988,10 @@ export function UnifiedHeader({
     };
   }, [config, runtimeConfig]);
   const { layout, style, left, center, right } = resolved;
+  const shouldShowPrimaryNavigation = showPrimaryNavigation && resolved.navigation.enabled;
+  const navTop = layout.height + resolved.navigation.gapBelowHeader;
+  const navDividerHeight = shouldShowPrimaryNavigation ? 1 : 0;
+  const navBlockHeight = shouldShowPrimaryNavigation ? resolved.navigation.height + navDividerHeight : 0;
   const initialViewWidth = 1000;
   const svgHeight = HEADER_SVG_HEIGHT;
   const [renderedSize, setRenderedSize] = useState({ width: initialViewWidth, height: svgHeight });
@@ -997,33 +1053,6 @@ export function UnifiedHeader({
     };
 
     void handleLocationChange();
-
-    const onPopState = () => {
-      void handleLocationChange();
-    };
-
-    window.addEventListener('popstate', onPopState);
-
-    const originalPush = window.history.pushState;
-    const originalReplace = window.history.replaceState;
-
-    window.history.pushState = function(...args: Parameters<typeof originalPush>) {
-      const res = originalPush.apply(this, args);
-      void handleLocationChange();
-      return res;
-    };
-
-    window.history.replaceState = function(...args: Parameters<typeof originalReplace>) {
-      const res = originalReplace.apply(this, args);
-      void handleLocationChange();
-      return res;
-    };
-
-    return () => {
-      window.removeEventListener('popstate', onPopState);
-      window.history.pushState = originalPush;
-      window.history.replaceState = originalReplace;
-    };
   }, [loadProfileIntoState, normalizeLoadedConfig, profileName, profiles, resolveRouteProfile]);
 
   useEffect(() => {
@@ -1079,6 +1108,12 @@ export function UnifiedHeader({
         ...current.center,
         modeB: { ...current.center.modeB, ...patch },
       },
+    }));
+
+  const updateNavigation = (patch: Partial<UnifiedHeaderNavigationConfig>) =>
+    setConfig((current) => ({
+      ...current,
+      navigation: { ...current.navigation, ...patch },
     }));
 
   const getModeBIconValue = (icon?: HeaderIconType) => typeof icon === 'string' ? icon : '';
@@ -1143,6 +1178,10 @@ export function UnifiedHeader({
     }
   };
 
+  useEffect(() => {
+    onResolvedConfigChange?.(resolved);
+  }, [onResolvedConfigChange, resolved]);
+
   const renderDebugPanel = () => {
     const defaultTaglineStyle: TextStyleConfig = config.center.modeB.taglineStyle ?? {
       fontFamily: SAFE_SYSTEM_FONTS[14].value,
@@ -1201,7 +1240,7 @@ export function UnifiedHeader({
 
         {activeTab === 'layout' && (
           <div className={styles.debugSubtabs}>
-            {(['global', 'home', 'wings', 'center', 'login'] as const).map((tab) => (
+            {(['global', 'home', 'wings', 'center', 'login', 'nav'] as const).map((tab) => (
               <button
                 key={tab}
                 className={`${styles.debugSubtabButton} ${layoutSubtab === tab ? styles.active : ''}`}
@@ -1397,6 +1436,39 @@ export function UnifiedHeader({
             </>
           )}
 
+          {activeTab === 'layout' && layoutSubtab === 'nav' && (
+            <>
+              <div className={styles.debugSectionHeader}><span>Primary Nav</span></div>
+              <ToggleControl label="Enabled" path="navigation.enabled" hint="Show the shared route nav under the header pills on pages that allow it." value={config.navigation.enabled} onChange={(v) => updateNavigation({ enabled: v })} />
+              <Control label="Height" path="navigation.height" hint="Overall nav strip height." value={config.navigation.height} min={32} max={86} step={1} onChange={(v) => updateNavigation({ height: v })} />
+              <Control label="Gap below header" path="navigation.gapBelowHeader" hint="Measured offset below the visible bottom of the three header pills." value={config.navigation.gapBelowHeader} min={0} max={24} step={1} onChange={(v) => updateNavigation({ gapBelowHeader: v })} />
+              <Control label="Outer margin" path="navigation.outerMargin" hint="Horizontal inset from the page edges." value={config.navigation.outerMargin} min={0} max={80} step={1} onChange={(v) => updateNavigation({ outerMargin: v })} />
+              <Control label="Panel inset Y" path="navigation.panelInsetY" value={config.navigation.panelInsetY} min={0} max={16} step={1} onChange={(v) => updateNavigation({ panelInsetY: v })} />
+              <Control label="Shell inset" path="navigation.shellInset" value={config.navigation.shellInset} min={0} max={16} step={1} onChange={(v) => updateNavigation({ shellInset: v })} />
+              <Control label="Panel radius" path="navigation.panelRadius" value={config.navigation.panelRadius} min={0} max={44} step={1} onChange={(v) => updateNavigation({ panelRadius: v })} />
+              <Control label="Button radius" path="navigation.buttonRadius" value={config.navigation.buttonRadius} min={0} max={24} step={1} onChange={(v) => updateNavigation({ buttonRadius: v })} />
+              <Control label="Min button width" path="navigation.minButtonWidth" value={config.navigation.minButtonWidth} min={50} max={180} step={1} onChange={(v) => updateNavigation({ minButtonWidth: v })} />
+              <Control label="Max button width" path="navigation.maxButtonWidth" value={config.navigation.maxButtonWidth} min={90} max={280} step={1} onChange={(v) => updateNavigation({ maxButtonWidth: v })} />
+              <Control label="Text side padding" path="navigation.textSidePadding" value={config.navigation.textSidePadding} min={8} max={60} step={1} onChange={(v) => updateNavigation({ textSidePadding: v })} />
+              <Control label="Button gap" path="navigation.buttonGap" value={config.navigation.buttonGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ buttonGap: v })} />
+              <Control label="Nav gap" path="navigation.navGap" hint="Gap between overflow arrow shells and the button run." value={config.navigation.navGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ navGap: v })} />
+              <Control label="Text scale" path="navigation.textScale" value={config.navigation.textScale} min={0.28} max={0.6} step={0.01} onChange={(v) => updateNavigation({ textScale: v })} />
+              <Control label="Accent inset" path="navigation.accentInset" value={config.navigation.accentInset} min={2} max={24} step={1} onChange={(v) => updateNavigation({ accentInset: v })} />
+              <Control label="Arrow inset" path="navigation.sideArrowInset" value={config.navigation.sideArrowInset} min={4} max={18} step={1} onChange={(v) => updateNavigation({ sideArrowInset: v })} />
+              <Control label="End curve padding" path="navigation.endCurvePadding" value={config.navigation.endCurvePadding} min={0} max={60} step={1} onChange={(v) => updateNavigation({ endCurvePadding: v })} />
+
+              <div className={styles.debugDivider}>Nav surface</div>
+              <ColorControl label="Tint color" path="navigation.tintColor" value={config.navigation.tintColor} onChange={(v) => updateNavigation({ tintColor: v })} />
+              <ColorControl label="Edge color" path="navigation.edgeColor" value={config.navigation.edgeColor} onChange={(v) => updateNavigation({ edgeColor: v })} />
+              <Control label="Box opacity" path="navigation.boxOpacity" value={config.navigation.boxOpacity} min={0} max={1} step={0.01} onChange={(v) => updateNavigation({ boxOpacity: v })} />
+              <ColorControl label="Hover tint" path="navigation.hoverTintColor" value={config.navigation.hoverTintColor} onChange={(v) => updateNavigation({ hoverTintColor: v })} />
+              <ColorControl label="Hover edge" path="navigation.hoverEdgeColor" value={config.navigation.hoverEdgeColor} onChange={(v) => updateNavigation({ hoverEdgeColor: v })} />
+              <ColorControl label="Active tint" path="navigation.activeTintColor" value={config.navigation.activeTintColor} onChange={(v) => updateNavigation({ activeTintColor: v })} />
+              <ColorControl label="Active edge" path="navigation.activeEdgeColor" value={config.navigation.activeEdgeColor} onChange={(v) => updateNavigation({ activeEdgeColor: v })} />
+              <Control label="Glow blur" path="navigation.glowBlur" value={config.navigation.glowBlur} min={0} max={20} step={0.1} onChange={(v) => updateNavigation({ glowBlur: v })} />
+            </>
+          )}
+
           {activeTab === 'profiles' && (
             <>
               <div className={styles.debugSectionHeader}><span>Profiles</span></div>
@@ -1526,6 +1598,44 @@ export function UnifiedHeader({
     };
   }, [aspectCorrection, center, layout, left, renderedSize.width, right, substituteVariables, svgHeight, viewWidth]);
 
+  useEffect(() => {
+    if (!showProfileDropdown) {
+      return;
+    }
+
+    const updateProfileDropdownAnchor = () => {
+      const wrapNode = wrapRef.current;
+      const rightPillNode = wrapNode?.querySelector('[data-header-pill="right"]');
+      if (!(rightPillNode instanceof SVGGraphicsElement)) {
+        return;
+      }
+
+      const rect = rightPillNode.getBoundingClientRect();
+      const top = rect.bottom + 12;
+      const right = Math.max(12, window.innerWidth - rect.right);
+      const maxHeight = Math.max(180, window.innerHeight - top - 24);
+      setProfileDropdownAnchor({ top, right, maxHeight });
+    };
+
+    updateProfileDropdownAnchor();
+
+    const observer = new ResizeObserver(updateProfileDropdownAnchor);
+    if (wrapRef.current) {
+      observer.observe(wrapRef.current);
+    }
+
+    window.addEventListener('resize', updateProfileDropdownAnchor);
+    window.addEventListener('scroll', updateProfileDropdownAnchor, true);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateProfileDropdownAnchor);
+      window.removeEventListener('scroll', updateProfileDropdownAnchor, true);
+    };
+  }, [showProfileDropdown]);
+
+  const activeProfileDropdownAnchor = showProfileDropdown ? profileDropdownAnchor : null;
+
   return (
     <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }}>
       {leftContent}
@@ -1536,143 +1646,161 @@ export function UnifiedHeader({
           flex: 1,
           maxWidth: layout.maxWidth ? `${layout.maxWidth}px` : 'none',
           height: `${layout.height}px`,
-          pointerEvents: 'none',
         }}
       >
-        {style.backdropBlur > 0 && (
-          <div className={styles.headerBackdropLayer}>
-            {renderBackdropShape({
-              left: `${geometry.leftBox.x * scaleX}px`,
-              top: `${geometry.leftBox.y * scaleY}px`,
-              width: `${geometry.leftBox.w * scaleX}px`,
-              height: `${geometry.leftBox.h * scaleY}px`,
-              borderRadius: '999px',
-              backdropFilter: `blur(${style.backdropBlur}px)`,
-              WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
-            }, 'left-pill')}
-            {renderBackdropShape({
-              left: `${geometry.centerBox.x * scaleX}px`,
-              top: `${geometry.centerBox.y * scaleY}px`,
-              width: `${geometry.centerBox.w * scaleX}px`,
-              height: `${geometry.centerBox.h * scaleY}px`,
-              borderRadius: '999px',
-              backdropFilter: `blur(${style.backdropBlur}px)`,
-              WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
-            }, 'center-pill')}
-            {renderBackdropShape({
-              left: `${geometry.rightBox.x * scaleX}px`,
-              top: `${geometry.rightBox.y * scaleY}px`,
-              width: `${geometry.rightBox.w * scaleX}px`,
-              height: `${geometry.rightBox.h * scaleY}px`,
-              borderRadius: '999px',
-              backdropFilter: `blur(${style.backdropBlur}px)`,
-              WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
-            }, 'right-pill')}
-            {renderBackdropShape({
-              left: `${Math.min(geometry.leftWing.x1, geometry.leftWing.x2) * scaleX}px`,
-              top: `${geometry.leftWing.y * scaleY}px`,
-              width: `${Math.abs(geometry.leftWing.x2 - geometry.leftWing.x1) * scaleX}px`,
-              height: `${geometry.leftWing.h * scaleY}px`,
-              clipPath: buildWingClipPath(Math.abs(geometry.leftWing.x2 - geometry.leftWing.x1) * scaleX, geometry.leftWing.h * scaleY, layout.wingCurve * scaleX),
-              backdropFilter: `blur(${style.backdropBlur}px)`,
-              WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
-            }, 'left-wing')}
-            {renderBackdropShape({
-              left: `${Math.min(geometry.rightWing.x1, geometry.rightWing.x2) * scaleX}px`,
-              top: `${geometry.rightWing.y * scaleY}px`,
-              width: `${Math.abs(geometry.rightWing.x2 - geometry.rightWing.x1) * scaleX}px`,
-              height: `${geometry.rightWing.h * scaleY}px`,
-              clipPath: buildWingClipPath(Math.abs(geometry.rightWing.x2 - geometry.rightWing.x1) * scaleX, geometry.rightWing.h * scaleY, layout.wingCurve * scaleX),
-              backdropFilter: `blur(${style.backdropBlur}px)`,
-              WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
-            }, 'right-wing')}
-          </div>
-        )}
-        <svg
-          viewBox={`0 0 ${viewWidth} ${svgHeight}`}
-          preserveAspectRatio="none"
-          className={styles.headerSvg}
-          style={{ pointerEvents: 'auto' }}
-        >
-          <defs>
-            <filter id="pillGlow" x="-20%" y="-80%" width="140%" height="260%">
-              <feGaussianBlur stdDeviation={String(style.pillGlowBlur)} result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            <filter id="iconGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation={String(style.iconGlowBlur)} result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
+        <div className={styles.headerSvgFrame} style={{ height: `${layout.height}px` }}>
+          {style.backdropBlur > 0 && (
+            <div className={styles.headerBackdropLayer}>
+              {renderBackdropShape({
+                left: `${geometry.leftBox.x * scaleX}px`,
+                top: `${geometry.leftBox.y * scaleY}px`,
+                width: `${geometry.leftBox.w * scaleX}px`,
+                height: `${geometry.leftBox.h * scaleY}px`,
+                borderRadius: '999px',
+                backdropFilter: `blur(${style.backdropBlur}px)`,
+                WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
+              }, 'left-pill')}
+              {renderBackdropShape({
+                left: `${geometry.centerBox.x * scaleX}px`,
+                top: `${geometry.centerBox.y * scaleY}px`,
+                width: `${geometry.centerBox.w * scaleX}px`,
+                height: `${geometry.centerBox.h * scaleY}px`,
+                borderRadius: '999px',
+                backdropFilter: `blur(${style.backdropBlur}px)`,
+                WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
+              }, 'center-pill')}
+              {renderBackdropShape({
+                left: `${geometry.rightBox.x * scaleX}px`,
+                top: `${geometry.rightBox.y * scaleY}px`,
+                width: `${geometry.rightBox.w * scaleX}px`,
+                height: `${geometry.rightBox.h * scaleY}px`,
+                borderRadius: '999px',
+                backdropFilter: `blur(${style.backdropBlur}px)`,
+                WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
+              }, 'right-pill')}
+              {renderBackdropShape({
+                left: `${Math.min(geometry.leftWing.x1, geometry.leftWing.x2) * scaleX}px`,
+                top: `${geometry.leftWing.y * scaleY}px`,
+                width: `${Math.abs(geometry.leftWing.x2 - geometry.leftWing.x1) * scaleX}px`,
+                height: `${geometry.leftWing.h * scaleY}px`,
+                clipPath: buildWingClipPath(Math.abs(geometry.leftWing.x2 - geometry.leftWing.x1) * scaleX, geometry.leftWing.h * scaleY, layout.wingCurve * scaleX),
+                backdropFilter: `blur(${style.backdropBlur}px)`,
+                WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
+              }, 'left-wing')}
+              {renderBackdropShape({
+                left: `${Math.min(geometry.rightWing.x1, geometry.rightWing.x2) * scaleX}px`,
+                top: `${geometry.rightWing.y * scaleY}px`,
+                width: `${Math.abs(geometry.rightWing.x2 - geometry.rightWing.x1) * scaleX}px`,
+                height: `${geometry.rightWing.h * scaleY}px`,
+                clipPath: buildWingClipPath(Math.abs(geometry.rightWing.x2 - geometry.rightWing.x1) * scaleX, geometry.rightWing.h * scaleY, layout.wingCurve * scaleX),
+                backdropFilter: `blur(${style.backdropBlur}px)`,
+                WebkitBackdropFilter: `blur(${style.backdropBlur}px)`,
+              }, 'right-wing')}
+            </div>
+          )}
+          <svg
+            viewBox={`0 0 ${viewWidth} ${svgHeight}`}
+            preserveAspectRatio="none"
+            className={styles.headerSvg}
+            style={{ pointerEvents: 'auto' }}
+          >
+            <defs>
+              <filter id="pillGlow" x="-20%" y="-80%" width="140%" height="260%">
+                <feGaussianBlur stdDeviation={String(style.pillGlowBlur)} result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="iconGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation={String(style.iconGlowBlur)} result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
 
-          <>
-                <WingShape box={geometry.leftWing} curve={layout.wingCurve} style={style} />
-                <WingShape box={geometry.rightWing} curve={layout.wingCurve} style={style} />
+            <>
+              <WingShape box={geometry.leftWing} curve={layout.wingCurve} style={style} />
+              <WingShape box={geometry.rightWing} curve={layout.wingCurve} style={style} />
 
-                <HeaderPill box={geometry.leftBox} style={style} onClick={left.onClick} isButton={left.isButton} ariaLabel={left.ariaLabel ?? left.text}>
-                  {left.customRenderer ? (
-                    left.customRenderer({ box: geometry.leftBox, config: left, aspectCorrection })
-                  ) : (
-                    <LeftHomeContent
-                      box={geometry.leftBox}
-                      collapsed={geometry.isLeftCollapsed}
-                      config={left}
-                      style={style}
-                      aspectCorrection={aspectCorrection}
-                      substituteVariables={substituteVariables}
-                    />
-                  )}
-                </HeaderPill>
-
-                <HeaderPill box={geometry.centerBox} style={style}>
-                  <CenterContent
-                    box={geometry.centerBox}
-                    config={center}
+              <HeaderPill box={geometry.leftBox} style={style} onClick={left.onClick} isButton={left.isButton} ariaLabel={left.ariaLabel ?? left.text}>
+                {left.customRenderer ? (
+                  left.customRenderer({ box: geometry.leftBox, config: left, aspectCorrection })
+                ) : (
+                  <LeftHomeContent
+                    box={geometry.leftBox}
+                    collapsed={geometry.isLeftCollapsed}
+                    config={left}
                     style={style}
                     aspectCorrection={aspectCorrection}
                     substituteVariables={substituteVariables}
                   />
-                </HeaderPill>
+                )}
+              </HeaderPill>
 
-                <HeaderPill
-                  box={geometry.rightBox}
+              <HeaderPill box={geometry.centerBox} style={style}>
+                <CenterContent
+                  box={geometry.centerBox}
+                  config={center}
                   style={style}
-                  onClick={right.isProfile ? () => setShowProfileDropdown((value) => !value) : right.onClick}
-                  isButton={right.isButton || right.isProfile}
-                  ariaLabel={right.ariaLabel ?? right.text}
-                >
-                  {right.customRenderer ? (
-                    right.customRenderer({ box: geometry.rightBox, config: right, aspectCorrection })
-                  ) : right.isProfile ? (
-                    <RightProfileContent
-                      box={geometry.rightBox}
-                      collapsed={geometry.isRightCollapsed}
-                      user={right.user}
-                      textStyle={right.textStyle}
-                      style={style}
-                    />
-                  ) : (
-                    <FitText
-                      text={geometry.isRightCollapsed ? '' : right.text}
-                      x={geometry.rightBox.x + geometry.rightBox.w / 2}
-                      y={geometry.rightBox.y + geometry.rightBox.h / 2 + 5}
-                      maxWidth={geometry.rightBox.w - 20}
-                      anchor="middle"
-                      textStyle={right.textStyle}
-                      aspectCorrection={aspectCorrection}
-                    />
-                  )}
-                </HeaderPill>
-          </>
-        </svg>
+                  aspectCorrection={aspectCorrection}
+                  substituteVariables={substituteVariables}
+                />
+              </HeaderPill>
 
-        {/* Logic for boxes rendering ends here */}
+              <HeaderPill
+                box={geometry.rightBox}
+                style={style}
+                onClick={right.isProfile ? () => setShowProfileDropdown((value) => !value) : right.onClick}
+                isButton={right.isButton || right.isProfile}
+                ariaLabel={right.ariaLabel ?? right.text}
+                dataSlot="right"
+              >
+                {right.customRenderer ? (
+                  right.customRenderer({ box: geometry.rightBox, config: right, aspectCorrection })
+                ) : right.isProfile ? (
+                  <RightProfileContent
+                    box={geometry.rightBox}
+                    collapsed={geometry.isRightCollapsed}
+                    user={right.user}
+                    textStyle={right.textStyle}
+                    style={style}
+                    avatarLoadFailed={profileAvatarLoadFailed}
+                    onAvatarError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
+                  />
+                ) : (
+                  <FitText
+                    text={geometry.isRightCollapsed ? '' : right.text}
+                    x={geometry.rightBox.x + geometry.rightBox.w / 2}
+                    y={geometry.rightBox.y + geometry.rightBox.h / 2 + 5}
+                    maxWidth={geometry.rightBox.w - 20}
+                    anchor="middle"
+                    textStyle={right.textStyle}
+                    aspectCorrection={aspectCorrection}
+                  />
+                )}
+              </HeaderPill>
+            </>
+          </svg>
+        </div>
+        {shouldShowPrimaryNavigation ? (
+          <div
+            className={styles.primaryNavExtension}
+            data-oc-shell-header-extension="true"
+            style={{
+              top: `${navTop}px`,
+              height: `${navBlockHeight}px`,
+            }}
+          >
+            <PrimarySiteNavigation
+              includeAdmin={includeAdminNavigation}
+              config={resolved.navigation}
+              extraItems={primaryNavigationItems}
+            />
+          </div>
+        ) : null}
       </div>
       {rightSuffixContent}
 
@@ -1683,18 +1811,21 @@ export function UnifiedHeader({
         />
       )}
 
-      {showProfileDropdown && config.right.isProfile && config.right.user && (
-        <div 
-          className={styles.profileDropdown}
-          style={{
-            '--dropdown-tint': config.style.dropdownTint,
-            '--dropdown-border': config.style.dropdownBorderColor,
-            '--dropdown-section-opacity': config.style.dropdownSectionOpacity,
-            zIndex: 10000,
-            pointerEvents: 'auto'
-          } as React.CSSProperties}
-        >
-          <div className={styles.dropdownHeader}>
+        {showProfileDropdown && right.isProfile && right.user && (
+          <div 
+           className={styles.profileDropdown}
+            style={{
+              '--dropdown-tint': style.dropdownTint,
+              '--dropdown-border': style.dropdownBorderColor,
+              '--dropdown-section-opacity': style.dropdownSectionOpacity,
+              top: activeProfileDropdownAnchor ? `${activeProfileDropdownAnchor.top}px` : undefined,
+              right: activeProfileDropdownAnchor ? `${activeProfileDropdownAnchor.right}px` : undefined,
+              maxHeight: activeProfileDropdownAnchor ? `${activeProfileDropdownAnchor.maxHeight}px` : undefined,
+              zIndex: 10000,
+              pointerEvents: 'auto'
+            } as React.CSSProperties}
+          >
+            <div className={styles.dropdownHeader}>
               <button 
                 className={styles.dropdownAvatar}
                 onClick={() => {
@@ -1702,43 +1833,48 @@ export function UnifiedHeader({
                   setShowProfileDropdown(false);
                 }}
                 title="Change profile picture"
-              >
-                {config.right.user.avatarUrl ? (
-                  <img src={config.right.user.avatarUrl} alt={config.right.user.name} style={{ width: '100%', height: '100%' }} />
-                ) : (
-                  <span>{config.right.user.name.charAt(0).toUpperCase() || 'U'}</span>
-                )}
+                >
+                 {right.user.avatarUrl && !profileAvatarLoadFailed ? (
+                   <img
+                     src={right.user.avatarUrl}
+                     alt={right.user.name}
+                     style={{ width: '100%', height: '100%' }}
+                     onError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
+                   />
+                  ) : (
+                   <span>{right.user.name.charAt(0).toUpperCase() || 'U'}</span>
+                  )}
                 <div className={styles.editOverlay}>
                   <span>✏️</span>
                 </div>
               </button>
               <div className={styles.dropdownInfo}>
-                <div className={styles.dropdownName}>{config.right.user.name}</div>
-                {config.right.user.email && <div className={styles.dropdownStatus}>{config.right.user.email}</div>}
+                <div className={styles.dropdownName}>{right.user.name}</div>
+                {right.user.email && <div className={styles.dropdownStatus}>{right.user.email}</div>}
               </div>
             </div>
             <div className={styles.dropdownDivider} />
             <div className={styles.dropdownStats}>
-              <div><span>ELO</span><strong>{config.right.user.eloRating ?? 1200}</strong></div>
-              <div><span>Games</span><strong>{config.right.user.gamesPlayed ?? 0}</strong></div>
-              <div><span>Win</span><strong>{config.right.user.winRate?.toFixed(1) ?? '0'}%</strong></div>
+              <div><span>ELO</span><strong>{right.user.eloRating ?? 1200}</strong></div>
+              <div><span>Games</span><strong>{right.user.gamesPlayed ?? 0}</strong></div>
+              <div><span>Win</span><strong>{right.user.winRate?.toFixed(1) ?? '0'}%</strong></div>
             </div>
             <div className={styles.dropdownDivider} />
             <div className={styles.dropdownMenuSections}>
               <div className={styles.dropdownMenuSection}>
-                {config.right.user.isAdmin && config.right.onAdminDashboardClick && (
-                  <button className={styles.dropdownItem} onClick={() => { config.right.onAdminDashboardClick?.(); setShowProfileDropdown(false); }}>
+                {right.user.isAdmin && right.onAdminDashboardClick && (
+                  <button className={styles.dropdownItem} onClick={() => { right.onAdminDashboardClick?.(); setShowProfileDropdown(false); }}>
                     <span style={{ fontSize: '16px' }}>👑</span>
                     Admin Dashboard
                   </button>
                 )}
-                <button className={styles.dropdownItem} onClick={() => { config.right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>View Profile</button>
-                <button className={styles.dropdownItem} onClick={() => { config.right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Settings</button>
-                <button className={styles.dropdownItem} onClick={() => { config.right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security</button>
+                <button className={styles.dropdownItem} onClick={() => { right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>View Profile</button>
+                <button className={styles.dropdownItem} onClick={() => { right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Settings</button>
+                <button className={styles.dropdownItem} onClick={() => { right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security</button>
               </div>
 
               <div className={styles.dropdownMenuSectionDanger}>
-                <button className={styles.dropdownItemLogout} onClick={() => { config.right.onLogout?.(); setShowProfileDropdown(false); }}>
+                <button className={styles.dropdownItemLogout} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
                   Logout
                 </button>
               </div>
@@ -1746,26 +1882,26 @@ export function UnifiedHeader({
           </div>
         )}
 
-      {showPictureModal && config.right.isProfile && config.right.user && config.right.onUpdatePhoto && (
+      {showPictureModal && right.isProfile && right.user && right.onUpdatePhoto && (
         <ProfilePictureModal
           isOpen={showPictureModal}
           onClose={() => setShowPictureModal(false)}
           user={{
-            uid: config.right.user.uid || config.right.user.name || 'current-user',
-            displayName: config.right.user.name,
-            email: config.right.user.email || '',
-            photoURL: config.right.user.avatarUrl || '',
-            isAdmin: config.right.user.isAdmin,
-            eloRating: config.right.user.eloRating,
-            gamesPlayed: config.right.user.gamesPlayed,
-            winRate: config.right.user.winRate,
+            uid: right.user.uid || right.user.name || 'current-user',
+            displayName: right.user.name,
+            email: right.user.email || '',
+            photoURL: right.user.avatarUrl || '',
+            isAdmin: right.user.isAdmin,
+            eloRating: right.user.eloRating,
+            gamesPlayed: right.user.gamesPlayed,
+            winRate: right.user.winRate,
           }}
-          onUpdatePhoto={config.right.onUpdatePhoto}
-          getAvatars={config.right.getAvatars || (async () => [])}
+          onUpdatePhoto={right.onUpdatePhoto}
+          getAvatars={right.getAvatars || (async () => [])}
         />
       )}
 
-      {ENABLE_HEADER_DEBUG_CONTROLS && (
+      {ENABLE_HEADER_DEBUG_CONTROLS && showDebugControls && (
         <div className={styles.debugControlsFloating}>
           {showControls && renderDebugPanel()}
           <button
@@ -1824,6 +1960,7 @@ function HeaderPill({
   onClick,
   isButton,
   ariaLabel,
+  dataSlot,
 }: {
   box: HeaderBoxRect;
   style: UnifiedHeaderStyleConfig;
@@ -1831,6 +1968,7 @@ function HeaderPill({
   onClick?: () => void;
   isButton?: boolean;
   ariaLabel?: string;
+  dataSlot?: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const interactive = Boolean(onClick || isButton);
@@ -1840,6 +1978,7 @@ function HeaderPill({
 
   return (
     <g
+      data-header-pill={dataSlot}
       onClick={() => onClick?.()}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -2131,12 +2270,16 @@ function RightProfileContent({
   user,
   textStyle,
   style,
+  avatarLoadFailed,
+  onAvatarError,
 }: {
   box: HeaderBoxRect;
   collapsed: boolean;
   user?: { name: string; avatarUrl?: string | null };
   textStyle: TextStyleConfig;
   style: UnifiedHeaderStyleConfig;
+  avatarLoadFailed: boolean;
+  onAvatarError: () => void;
 }) {
   const avatarSize = box.h * 0.7;
   const avatarX = collapsed ? box.x + (box.w - avatarSize) / 2 : box.x + 12;
@@ -2165,7 +2308,7 @@ function RightProfileContent({
         fillOpacity={0.1}
       />
 
-      {user?.avatarUrl ? (
+      {user?.avatarUrl && !avatarLoadFailed ? (
         <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
           <image
             href={user.avatarUrl}
@@ -2174,6 +2317,8 @@ function RightProfileContent({
             width={avatarSize}
             height={avatarSize}
             clipPath="url(#avatarClip)"
+            preserveAspectRatio="xMidYMid slice"
+            onError={onAvatarError}
           />
         </g>
       ) : (

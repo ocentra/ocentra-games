@@ -8,7 +8,6 @@
   justify-content: center;
   align-items: center;
   margin: 0 !important;
-  pointer-events: none;
   width: var(--header-width, 100%);
   max-width: var(--header-max-width, none);
   height: var(--header-height, 4rem);
@@ -21,6 +20,13 @@
   width: 100%;
   height: 100%;
   display: block;
+  pointer-events: auto;
+}
+
+.headerSvgFrame {
+  position: relative;
+  width: 100%;
+  z-index: 1;
 }
 
 .headerBackdropLayer {
@@ -34,6 +40,52 @@
   position: absolute;
   background: transparent;
   pointer-events: none;
+}
+
+.primaryNavExtension {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.primaryNavExtension::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(217, 247, 231, 0.2),
+    rgba(217, 247, 231, 0.56) 14%,
+    rgba(217, 247, 231, 0.68) 50%,
+    rgba(217, 247, 231, 0.56) 86%,
+    rgba(217, 247, 231, 0.2)
+  );
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.26);
+  pointer-events: none;
+}
+
+.primaryNavHost {
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.primaryNavSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* Floating Debug Controls */
@@ -473,7 +525,7 @@
 
 /* Profile Dropdown */
 .profileDropdown {
-  position: absolute;
+  position: fixed;
   top: calc(100% + 12px);
   right: 1.5rem;
   width: calc(100vw - 3rem);

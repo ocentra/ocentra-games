@@ -12,6 +12,7 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { APP_VERSION } from '@/constants/version';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './ShopPage.css';
 
 type ProductType = 'AC_CREDITS' | 'SUBSCRIPTION' | 'TOURNAMENT_ENTRY' | 'MARKETPLACE';
@@ -153,12 +154,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         config={{
           right: {
             isProfile: Boolean(user),
-            user: user ? {
-              name: user.displayName || 'Player',
-              email: user.email,
-              avatarUrl: user.photoURL,
-              isLoggedIn: true,
-            } : undefined,
+              user: user ? {
+                name: user.displayName || 'Player',
+                email: user.email,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
+                isLoggedIn: true,
+              } : undefined,
             onLogout: onLogout
           },
           left: {
@@ -524,3 +525,4 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     </UnifiedPageShell>
   );
 }
+

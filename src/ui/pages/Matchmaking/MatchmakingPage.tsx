@@ -10,6 +10,7 @@ import { QueueActions } from '@/ui/pages/Matchmaking/components/QueueActions';
 import { QueueCard } from '@/ui/pages/Matchmaking/components/QueueCard';
 import { useMatchmakingQueue } from '@/ui/pages/Matchmaking/hooks/useMatchmakingQueue';
 import { AppScreenToken, buildGameLobbyPath } from '@/ui/navigation/appRoutes';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './MatchmakingPage.css';
 
 interface MatchmakingPageProps {
@@ -57,7 +58,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -128,3 +129,4 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
     </UnifiedPageShell>
   );
 }
+

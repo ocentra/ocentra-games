@@ -1,16 +1,16 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useOptionalPlatformUI } from '@/ui/platform/usePlatformUI';
 
-// Navigation spacing constants
-const DEFAULT_NAV_ITEM_GAP = 6; // Default gap between navigation items
-const DEFAULT_NAV_ITEM_MARGIN = 4; // Default margin between navigation items
-const DEFAULT_NAV_ITEM_PADDING = '4px 8px'; // Default padding inside navigation items
+const DEFAULT_NAV_ITEM_GAP = 6;
+const DEFAULT_NAV_ITEM_MARGIN = 4;
+const DEFAULT_NAV_ITEM_PADDING = '4px 8px';
 
 const toRem = (value: number) => `${value / 16}rem`;
 
 interface ArrowButtonProps {
   direction: 'left' | 'right';
   onClick: () => void;
+  size: string;
 }
 
 export interface NavigationItem {
@@ -39,13 +39,15 @@ export interface NavigationBarProps {
   hideBackground?: boolean;
 }
 
-const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick }) => {
+const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick, size }) => {
   return (
     <button
+      type="button"
+      aria-label={direction === 'left' ? 'Previous navigation items' : 'Next navigation items'}
       onClick={onClick}
       style={{
-        width: '100%',
-        height: '100%',
+        width: size,
+        height: size,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -56,6 +58,7 @@ const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick }) => {
         transition: 'all 0.2s ease',
         color: 'white',
         padding: 0,
+        flexShrink: 0,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
@@ -64,21 +67,23 @@ const ArrowButton: React.FC<ArrowButtonProps> = ({ direction, onClick }) => {
         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
       }}
     >
-      {direction === 'left' ? '←' : '→'}
+      <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1, fontWeight: 700 }}>
+        {direction === 'left' ? '<' : '>'}
+      </span>
     </button>
   );
 };
 
-export function NavigationBar({ 
-  items, 
-  height, 
+export function NavigationBar({
+  items,
+  height,
   showArrows = true,
   variant = 'default',
   itemGap = DEFAULT_NAV_ITEM_GAP,
   itemMargin = DEFAULT_NAV_ITEM_MARGIN,
   itemPadding = DEFAULT_NAV_ITEM_PADDING,
   style,
-  hideBackground = false
+  hideBackground = false,
 }: NavigationBarProps) {
   const platformUI = useOptionalPlatformUI();
   const prefersCompactLayout = !!platformUI?.prefersCompactLayout || !!platformUI?.isMobile;
@@ -87,92 +92,91 @@ export function NavigationBar({
 
   const resolvedItemGap = prefersCompactLayout ? Math.max(4, itemGap - 2) : itemGap;
   const resolvedItemMargin = prefersCompactLayout ? Math.max(2, itemMargin - 1) : itemMargin;
-  const resolvedItemPadding = itemPadding === DEFAULT_NAV_ITEM_PADDING
-    ? prefersCompactLayout
-      ? `${toRem(4)} ${toRem(10)}`
-      : `${toRem(6)} ${toRem(14)}`
-    : itemPadding;
-  const arrowControlSize = variant === 'form'
-    ? prefersCompactLayout
-      ? 'clamp(2rem, 8vw, 2.25rem)'
-      : 'clamp(2.125rem, 6vw, 2.5rem)'
-    : `${height}px`;
-  const edgeInset = variant === 'form'
-    ? 'clamp(2.25rem, 6vw, 2.75rem)'
-    : `calc(${height}px + clamp(0.5rem, 1vw, 0.75rem))`;
-  const scrollPadding = variant === 'form'
-    ? '0 clamp(0.5rem, 1vw, 0.75rem)'
-    : '0 clamp(0.25rem, 0.8vw, 0.5rem)';
+  const resolvedItemPadding =
+    itemPadding === DEFAULT_NAV_ITEM_PADDING
+      ? prefersCompactLayout
+        ? `${toRem(4)} ${toRem(10)}`
+        : `${toRem(6)} ${toRem(14)}`
+      : itemPadding;
+  const arrowControlSize =
+    variant === 'form'
+      ? prefersCompactLayout
+        ? 'clamp(2rem, 8vw, 2.25rem)'
+        : 'clamp(2.125rem, 6vw, 2.5rem)'
+      : `${height}px`;
   const navGap = toRem(resolvedItemGap);
   const navMargin = toRem(resolvedItemMargin);
+  const sideGutter =
+    variant === 'form' ? 'clamp(0.5rem, 1vw, 0.75rem)' : 'clamp(0.375rem, 1vw, 0.75rem)';
+  const navColumns =
+    showArrows && showNavigationArrows
+      ? `${arrowControlSize} minmax(0, 1fr) ${arrowControlSize}`
+      : 'minmax(0, 1fr)';
 
   const updateScrollState = useCallback(() => {
-    if (navContainerRef.current) {
-      const { scrollWidth, clientWidth } = navContainerRef.current;
-      setShowNavigationArrows(scrollWidth > clientWidth);
+    if (!navContainerRef.current) {
+      return;
     }
+    const { scrollWidth, clientWidth } = navContainerRef.current;
+    setShowNavigationArrows(scrollWidth > clientWidth + 1);
   }, []);
 
   const scrollNav = (direction: 'left' | 'right') => {
-    if (navContainerRef.current) {
-      const container = navContainerRef.current;
-      const maxScroll = container.scrollWidth - container.clientWidth;
-      const currentScroll = container.scrollLeft;
-
-      const buttonWidth = variant === 'form'
-        ? prefersCompactLayout ? 220 : 280
-        : prefersCompactLayout ? 96 : 110;
-
-      if (direction === 'right') {
-        if (currentScroll >= maxScroll - buttonWidth) {
-          container.scrollLeft = 0;
-        } else {
-          container.scrollLeft += buttonWidth;
-        }
-      } else {
-        if (currentScroll <= buttonWidth) {
-          container.scrollLeft = maxScroll;
-        } else {
-          container.scrollLeft -= buttonWidth;
-        }
-      }
+    if (!navContainerRef.current) {
+      return;
     }
+
+    const container = navContainerRef.current;
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const currentScroll = container.scrollLeft;
+    const pageStep =
+      variant === 'form'
+        ? prefersCompactLayout
+          ? 220
+          : 280
+        : Math.max(container.clientWidth * 0.72, prefersCompactLayout ? 140 : 200);
+
+    if (direction === 'right') {
+      container.scrollLeft = currentScroll >= maxScroll - pageStep ? maxScroll : currentScroll + pageStep;
+      return;
+    }
+
+    container.scrollLeft = currentScroll <= pageStep ? 0 : currentScroll - pageStep;
   };
 
-  const handleWheel = (event: WheelEvent) => {
-    if (navContainerRef.current) {
-      event.preventDefault();
-      navContainerRef.current.scrollLeft += event.deltaY;
+  const handleWheel = useCallback((event: WheelEvent) => {
+    if (!navContainerRef.current || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+      return;
     }
-  };
+    event.preventDefault();
+    navContainerRef.current.scrollLeft += event.deltaY;
+  }, []);
 
   useEffect(() => {
     updateScrollState();
     window.addEventListener('resize', updateScrollState);
 
     const navContainer = navContainerRef.current;
-    if (navContainer) {
-      navContainer.addEventListener('wheel', handleWheel);
-    }
+    navContainer?.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       window.removeEventListener('resize', updateScrollState);
-      if (navContainer) {
-        navContainer.removeEventListener('wheel', handleWheel);
-      }
+      navContainer?.removeEventListener('wheel', handleWheel);
     };
-  }, [updateScrollState]);
+  }, [handleWheel, updateScrollState]);
 
   const renderItem = (item: NavigationItem) => {
-    // Handle custom component type
     if (item.type === 'custom' && item.customComponent) {
       return (
-        <div key={item.name} style={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          flexShrink: 0,
-          margin: `0 ${navMargin}`
-        }}>
+        <div
+          key={item.name}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            margin: `0 ${navMargin}`,
+          }}
+        >
           {item.customComponent}
         </div>
       );
@@ -180,21 +184,26 @@ export function NavigationBar({
 
     if (variant === 'form') {
       return (
-        <div key={item.name} style={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          flexShrink: 0,
-          gap: '0.5rem'
-        }}>
-          {item.label && (
-            <span style={{ 
-              color: 'rgba(255, 255, 255, 0.7)', 
-              whiteSpace: 'nowrap',
-              flexShrink: 0
-            }}>
+        <div
+          key={item.name}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            flexShrink: 0,
+            gap: '0.5rem',
+          }}
+        >
+          {item.label ? (
+            <span
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
               {item.label}
             </span>
-          )}
+          ) : null}
           {item.type === 'select' ? (
             <select
               title={item.label || item.name}
@@ -209,12 +218,14 @@ export function NavigationBar({
                 borderRadius: 'var(--radius-sm)',
                 color: 'white',
                 transition: 'all 0.2s ease',
-                flexShrink: 0
+                flexShrink: 0,
               }}
             >
               <option value="">Select {item.label?.toLowerCase()}...</option>
               {item.options?.map((option) => (
-                <option key={option} value={option}>{option}</option>
+                <option key={option} value={option}>
+                  {option}
+                </option>
               ))}
             </select>
           ) : item.type === 'checkbox' ? (
@@ -228,11 +239,12 @@ export function NavigationBar({
                 width: toRem(16),
                 height: toRem(16),
                 cursor: 'pointer',
-                flexShrink: 0
+                flexShrink: 0,
               }}
             />
           ) : item.type === 'button' ? (
             <button
+              type="button"
               onClick={item.onClick}
               style={{
                 padding: resolvedItemPadding,
@@ -247,7 +259,7 @@ export function NavigationBar({
                 whiteSpace: 'nowrap',
                 flexShrink: 0,
                 minHeight: 'var(--control-h-sm)',
-                fontSize: 'var(--fs-00)'
+                fontSize: 'var(--fs-00)',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
@@ -275,17 +287,14 @@ export function NavigationBar({
                 transition: 'all 0.3s ease',
                 flexShrink: 0,
                 minHeight: 'var(--control-h-sm)',
-                fontSize: 'var(--fs-00)'
+                fontSize: 'var(--fs-00)',
               }}
-              className="nav-input"
-              data-name={item.name}
             />
           )}
         </div>
       );
     }
 
-    // For default variant
     const commonButtonStyles = {
       padding: resolvedItemPadding,
       margin: `0 ${navMargin}`,
@@ -304,13 +313,14 @@ export function NavigationBar({
       fontSize: 'var(--fs-00)',
       paddingLeft: prefersCompactLayout ? toRem(10) : toRem(16),
       paddingRight: prefersCompactLayout ? toRem(10) : toRem(16),
-      minHeight: 'var(--control-h-sm)'
+      minHeight: 'var(--control-h-sm)',
     };
 
     if (item.onClick) {
       return (
         <button
           key={item.name}
+          type="button"
           onClick={item.onClick}
           style={commonButtonStyles}
           onMouseEnter={(e) => {
@@ -343,104 +353,87 @@ export function NavigationBar({
   };
 
   return (
-    <div style={{
-      height: `${height}px`,
-      position: 'relative',
-      margin: `${toRem(8)} 0 0 0`,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden',
-      width: '100vw',
-      maxWidth: '100vw',
-      padding: '0',
-      boxSizing: 'border-box',
-      ...(style || {})
-    }}>
-        {/* Nav Background */}
-        {!hideBackground && (
-          <div style={{
+    <div
+      style={{
+        height: `${height}px`,
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
+        maxWidth: '100%',
+        padding: 0,
+        boxSizing: 'border-box',
+        ...(style || {}),
+      }}
+    >
+      {!hideBackground ? (
+        <div
+          style={{
             position: 'absolute',
-            top: 0,
-            left: edgeInset,
-            right: edgeInset,
-            bottom: 0,
+            inset: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.15)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
             borderRadius: variant === 'form' ? 'var(--radius-sm)' : '0',
             border: '1px solid rgba(255, 255, 255, 0.2)',
-          }} />
-        )}
+          }}
+        />
+      ) : null}
 
-      {/* Left Arrow */}
-      {showArrows && showNavigationArrows && (
-        <div style={{ 
-          height: arrowControlSize,
-          width: arrowControlSize,
-          display: 'flex', 
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'absolute',
-          left: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2
-        }}>
-          <ArrowButton direction="left" onClick={() => scrollNav('left')} />
-        </div>
-      )}
-
-      {/* Scrollable Content */}
       <div
-        ref={navContainerRef}
         style={{
-          height: '100%',
-          width: variant === 'form' ? 'calc(100% - clamp(4.5rem, 12vw, 5.5rem))' : `calc(100% - ((${height}px + clamp(0.5rem, 1vw, 0.75rem)) * 2))`,
-          display: 'flex',
-          alignItems: 'center',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-          justifyContent: showNavigationArrows ? 'flex-start' : 'center',
           position: 'relative',
           zIndex: 1,
-          scrollBehavior: 'smooth',
-          padding: scrollPadding,
+          display: 'grid',
+          gridTemplateColumns: navColumns,
+          alignItems: 'center',
+          width: '100%',
+          height: '100%',
+          gap: sideGutter,
+          padding: `0 ${sideGutter}`,
+          boxSizing: 'border-box',
+          minWidth: 0,
         }}
       >
-        <div style={{ 
-          display: 'inline-flex', 
-          alignItems: 'center',
-          height: '100%',
-          gap: navGap,
-          padding: '0 clamp(0.25rem, 0.8vw, 0.5rem)',
-          flexWrap: 'nowrap',
-          width: 'max-content',
-        }}>
-          {items.map((item) => renderItem(item))}
-        </div>
-      </div>
+        {showArrows && showNavigationArrows ? (
+          <ArrowButton direction="left" onClick={() => scrollNav('left')} size={arrowControlSize} />
+        ) : null}
 
-      {/* Right Arrow */}
-      {showArrows && showNavigationArrows && (
-        <div style={{ 
-          height: arrowControlSize,
-          width: arrowControlSize,
-          display: 'flex', 
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'absolute',
-          right: 0,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2
-        }}>
-          <ArrowButton direction="right" onClick={() => scrollNav('right')} />
+        <div
+          ref={navContainerRef}
+          style={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+            justifyContent: showNavigationArrows ? 'flex-start' : 'center',
+            minWidth: 0,
+            scrollBehavior: 'smooth',
+          }}
+        >
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              height: '100%',
+              gap: navGap,
+              flexWrap: 'nowrap',
+              width: 'max-content',
+              minWidth: showNavigationArrows ? 'max-content' : '100%',
+              justifyContent: showNavigationArrows ? 'flex-start' : 'center',
+            }}
+          >
+            {items.map((item) => renderItem(item))}
+          </div>
         </div>
-      )}
+
+        {showArrows && showNavigationArrows ? (
+          <ArrowButton direction="right" onClick={() => scrollNav('right')} size={arrowControlSize} />
+        ) : null}
+      </div>
     </div>
   );
 }

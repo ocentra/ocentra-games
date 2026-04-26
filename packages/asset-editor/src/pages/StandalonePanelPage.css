@@ -10,82 +10,52 @@
   background: #02040a;
 }
 
-/* CSS Overrides for Shared Template - Universal Targeting */
-.standalone-panel-page .game-screen,
-.standalone-panel-page .game-screen__shell,
-.standalone-panel-page .game-screen__stage,
-.standalone-panel-page .card-game-preview-surface,
-.standalone-panel-page .card-game-preview-surface__stage,
-.standalone-panel-page .card-game-preview-surface__scene,
-.standalone-panel-page .game-background,
-.standalone-panel-page .game-background__texture {
+.standalone-panel-page--card-game-preview .game-screen__layer-item--chrome {
   display: block !important;
-  position: absolute !important;
-  inset: 0 !important;
+}
+
+.standalone-panel-page--card-game-preview .game-screen,
+.standalone-panel-page--card-game-preview .game-screen__shell,
+.standalone-panel-page--card-game-preview .oc-unified-shell,
+.standalone-panel-page--card-game-preview .oc-unified-shell__chrome,
+.standalone-panel-page--card-game-preview .oc-unified-shell__work,
+.standalone-panel-page--card-game-preview .game-screen__stage,
+.standalone-panel-page--card-game-preview .card-game-preview-surface,
+.standalone-panel-page--card-game-preview .card-game-preview-surface__stage,
+.standalone-panel-page--card-game-preview .card-game-preview-surface__scene,
+.standalone-panel-page--card-game-preview .game-background,
+.standalone-panel-page--card-game-preview .game-background__texture {
   width: 100% !important;
   height: 100% !important;
-  min-height: 100% !important;
+  min-height: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
-  background-color: transparent !important;
 }
 
-.standalone-panel-page .game-screen {
-  background: #080b18 !important; /* Base game color */
+.standalone-panel-page--card-game-preview .game-screen,
+.standalone-panel-page--card-game-preview .oc-unified-shell,
+.standalone-panel-page--card-game-preview .card-game-preview-surface__stage {
+  background: #080b18 !important;
 }
 
-.standalone-panel-page .game-screen__stage {
-  z-index: 1 !important;
+.standalone-panel-page--card-game-preview .game-screen__stage,
+.standalone-panel-page--card-game-preview .oc-unified-shell__work {
+  overflow: hidden !important;
 }
 
-/* Ensure the background texture actually shows through */
-.standalone-panel-page .game-background__texture {
-  z-index: 0 !important;
+.standalone-panel-page--card-game-preview .game-screen__layer-item--background {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+.standalone-panel-page--card-game-preview .game-background__texture {
   background-color: #080b18 !important;
 }
 
-/* Header/Footer overlays */
-.standalone-panel-page .game-screen__layer-item--chrome {
-  display: contents !important;
-}
-
-.standalone-panel-page .game-header,
-.standalone-panel-page .game-footer {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  z-index: 10 !important;
-  background: transparent !important;
-}
-
-.standalone-panel-page .game-header { top: 0 !important; }
-.standalone-panel-page .game-footer { bottom: 0 !important; }
-
-/* 
-   "Remove" the wrappers layout-wise while keeping the children.
-   display: contents makes the browser ignore the wrapper's box entirely.
-*/
-.standalone-panel-page--card-game-preview .game-screen__layer-item--chrome {
-  display: contents !important;
-}
-
-.standalone-panel-page--card-game-preview .game-header,
-.standalone-panel-page--card-game-preview .game-footer {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  z-index: 10 !important;
-  background: transparent !important;
-}
-
-.standalone-panel-page--card-game-preview .game-header {
-  top: 0 !important;
-}
-
-.standalone-panel-page--card-game-preview .game-footer {
-  bottom: 0 !important;
+.standalone-panel-page--card-game-preview .oc-unified-shell__slot--header,
+.standalone-panel-page--card-game-preview .oc-unified-shell__slot--footer {
+  position: relative;
+  z-index: 3;
 }
 
 /* Professional Menu Bar */

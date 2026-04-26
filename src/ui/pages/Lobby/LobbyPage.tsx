@@ -12,6 +12,7 @@ import { RoomList } from '@/ui/pages/Lobby/components/RoomList';
 import { useLobbyRooms } from '@/ui/pages/Lobby/hooks/useLobbyRooms';
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
 import { AppScreenToken, buildGameMatchmakingPath } from '@/ui/navigation/appRoutes';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './LobbyPage.css';
 
 interface LobbyPageProps {
@@ -59,7 +60,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -134,3 +135,4 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     </UnifiedPageShell>
   );
 }
+

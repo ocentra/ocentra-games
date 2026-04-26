@@ -15,7 +15,7 @@ import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard';
 import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow';
 import { ExplorerControlBar } from './components/ExplorerControlBar';
 import { GameDetailOverlay } from './components/GameDetailOverlay';
-import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
+import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 
 import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
@@ -24,6 +24,7 @@ import { ThreeBaseProvider } from '@/ui/components/Background/ThreeBaseContext';
 
 export function CardGamesExplorerPage() {
   const navigate = useNavigate();
+  const headerProps = useCoreUIHeaderProps();
   const rotationRef = useRef<RotationControlAPI | null>(null);
 
   useEffect(() => {
@@ -40,16 +41,6 @@ export function CardGamesExplorerPage() {
       document.body.classList.remove('home-page-active');
     };
   }, []);
-
-  const navItems = [
-    { name: 'Home', onClick: () => navigate('/') },
-    { name: 'Shop', onClick: () => navigate('/shop') },
-    { name: 'Social', onClick: () => navigate('/social') },
-    { name: 'Games', onClick: () => {} },
-    { name: 'Tournaments', onClick: () => navigate('/competition') },
-    { name: 'Leaderboard', onClick: () => navigate('/competition') },
-    { name: 'Profile', onClick: () => navigate('/player-hub') },
-  ];
 
   const { games, metadata, loading, loadError, refresh } = useGamesData();
   const {
@@ -93,9 +84,12 @@ export function CardGamesExplorerPage() {
     <ThreeBaseProvider>
       <UnifiedPageShell
         className="home-page cge-page"
+        workClassName="home-shell-work"
         background={<DynamicBackground controlRef={rotationRef} />}
         header={
           <UnifiedHeader
+            showPrimaryNavigation
+            includeAdminNavigation={Boolean(headerProps.user?.isAdmin)}
             dynamicData={{
               gameName: 'Card Games Explorer',
               tagline: loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`,
@@ -104,18 +98,27 @@ export function CardGamesExplorerPage() {
               left: {
                 onClick: () => navigate('/'),
               },
+              right: headerProps.user
+                ? {
+                    isProfile: true,
+                    user: {
+                      uid: headerProps.user.uid,
+                      name: headerProps.user.displayName || 'Player',
+                      email: headerProps.user.email ?? '',
+                      avatarUrl: headerProps.user.photoURL
+                        ? headerProps.getImageUrl(headerProps.user.photoURL)
+                        : undefined,
+                      isLoggedIn: true,
+                      isAdmin: headerProps.user.isAdmin,
+                    },
+                    onLogout: headerProps.onLogout,
+                    onAdminDashboardClick: headerProps.onAdminDashboardClick,
+                    onUpdatePhoto: headerProps.onUpdatePhoto,
+                    getAvatars: headerProps.getAvatars,
+                  }
+                : undefined,
             }}
           />
-        }
-        toolbar={
-          <div className="nav-bar-container">
-            <NavigationBar
-              items={navItems}
-              height={40}
-              showArrows={true}
-              variant="default"
-            />
-          </div>
         }
         footer={<GameFooter appVersion={APP_VERSION} />}
       >
@@ -228,3 +231,4 @@ export function CardGamesExplorerPage() {
     </ThreeBaseProvider>
   );
 }
+

@@ -8,6 +8,7 @@ import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogge
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { EditorStateContext } from '@/context/EditorStateContext';
 import { EditorDockLayout, type EditorDockLayoutHandle } from './EditorDockLayout';
+import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import './AssetEditorPage.css';
 
 const log = AssetEditorLogger.instance;
@@ -44,8 +45,9 @@ const LazyDeleteAssetDialog = React.lazy(async () => ({
 }));
 
 export const AssetEditorPage: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { isAdmin } = useAdminPermissions();
+  const headerProps = useCoreUIHeaderProps();
 
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
   const dockLayoutRef = React.useRef<EditorDockLayoutHandle | null>(null);
@@ -250,6 +252,7 @@ export const AssetEditorPage: React.FC = () => {
           <div ref={titleBarRef} className="asset-editor__titlebar-wrap">
             <TitleBarDragHandler containerRef={titleBarRef} />
             <UnifiedHeader
+              showPrimaryNavigation={false}
               profileName="asset_editor"
               leftContent={
                 <div className="asset-editor__topbar" data-tauri-drag-region>
@@ -290,15 +293,14 @@ export const AssetEditorPage: React.FC = () => {
                     ? {
                         name: user.displayName || 'Player',
                         email: user.email,
-                        avatarUrl: user.photoURL,
+                        avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
                         isLoggedIn: true,
                         isAdmin: isAdmin,
                       }
                     : undefined,
-                  onLogout: logout,
+                  onLogout: headerProps.onLogout,
                 },
                 center: {
-                  mode: 'A',
                   modeA: {
                     leftText: 'Asset',
                     rightText: 'Editor',

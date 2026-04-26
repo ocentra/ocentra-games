@@ -8,7 +8,7 @@ import {
 } from 'react';
 import './UnifiedPageShell.css';
 
-interface UnifiedPageShellProps {
+export interface UnifiedPageShellProps {
   header?: ReactNode;
   toolbar?: ReactNode;
   footer?: ReactNode;
@@ -27,6 +27,64 @@ type ShellMetrics = {
 
 function measureHeight(node: HTMLDivElement | null): number {
   return node?.getBoundingClientRect().height ?? 0;
+}
+
+function measureHeaderHeight(
+  rootNode: HTMLDivElement | null,
+  headerNode: HTMLDivElement | null,
+): number {
+  if (!rootNode || !headerNode) {
+    return 0;
+  }
+
+  const rootRect = rootNode.getBoundingClientRect();
+  const svgNode = headerNode.querySelector('svg');
+  const extensionNode = headerNode.querySelector<HTMLElement>('[data-oc-shell-header-extension="true"]');
+  const extensionBottom = extensionNode
+    ? Math.max(0, extensionNode.getBoundingClientRect().bottom - rootRect.top)
+    : 0;
+
+  if (svgNode instanceof SVGGraphicsElement) {
+    try {
+      const box = svgNode.getBBox();
+      const svgRect = svgNode.getBoundingClientRect();
+      const viewBoxHeight =
+        svgNode instanceof SVGSVGElement && svgNode.viewBox?.baseVal?.height
+          ? svgNode.viewBox.baseVal.height
+          : svgRect.height;
+      const scaleY = viewBoxHeight > 0 ? svgRect.height / viewBoxHeight : 1;
+      const svgBottom = Math.max(0, svgRect.top - rootRect.top + (box.y + box.height) * scaleY);
+      return Math.max(svgBottom, extensionBottom);
+    } catch {
+      return Math.max(
+        Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top),
+        extensionBottom,
+      );
+    }
+  }
+
+  return Math.max(
+    Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top),
+    extensionBottom,
+  );
+}
+
+function measureFooterHeight(
+  rootNode: HTMLDivElement | null,
+  footerNode: HTMLDivElement | null,
+): number {
+  if (!rootNode || !footerNode) {
+    return 0;
+  }
+
+  const rootRect = rootNode.getBoundingClientRect();
+  const footerBar = footerNode.querySelector<HTMLElement>('.oc-unified-footer__bar');
+
+  if (footerBar) {
+    return Math.max(0, rootRect.bottom - footerBar.getBoundingClientRect().top);
+  }
+
+  return measureHeight(footerNode);
 }
 
 export function UnifiedPageShell({
@@ -52,9 +110,9 @@ export function UnifiedPageShell({
   useLayoutEffect(() => {
     const updateMetrics = () => {
       setMetrics({
-        header: measureHeight(headerRef.current),
+        header: measureHeaderHeight(rootRef.current, headerRef.current),
         toolbar: measureHeight(toolbarRef.current),
-        footer: measureHeight(footerRef.current),
+        footer: measureFooterHeight(rootRef.current, footerRef.current),
       });
     };
 
@@ -133,4 +191,3 @@ export function UnifiedPageShell({
     </div>
   );
 }
-

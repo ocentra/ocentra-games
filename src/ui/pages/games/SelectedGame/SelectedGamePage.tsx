@@ -17,6 +17,7 @@ import { MultiplayerStorageKey } from '@/ui/pages/Matchmaking/types';
 import { AppScreenToken, buildCardGameTemplatePath, buildGameMatchmakingPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
 import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
 import { getLocalPilotStatus } from '@/ui/pages/games/CardGamePlay/localPilotCatalog';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './SelectedGamePage.css';
 
 interface SelectedGamePageProps {
@@ -162,6 +163,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       className="generic-game-page"
       header={
         <UnifiedHeader
+          showPrimaryNavigation={false}
           dynamicData={{
             gameName: displayName,
             tagline: "Simple Rules. Deadly Game."
@@ -172,7 +174,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -227,3 +229,4 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     </UnifiedPageShell>
   );
 }
+

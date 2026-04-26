@@ -13,7 +13,6 @@ import {
   ROUTE_FEATURES,
   RouteFeature,
 } from '@/config/platformFeatures';
-import { NavigationBar } from '@/ui/components/NavigationBar/NavigationBar';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
@@ -215,19 +214,19 @@ export const AdminUsersPage: React.FC = () => {
       u.displayName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const navItems = useMemo(() => {
-    const items: { name: string; onClick: () => void }[] = [];
+  const primaryNavigationItems = useMemo(() => {
+    const items: Array<{ label: string; path: string }> = [];
     if (isRouteEnabled(RouteFeature.Logs, platform, isDev)) {
-      items.push({ name: 'Logs Viewer', onClick: () => navigate(ROUTE_FEATURES[RouteFeature.Logs].path) });
+      items.push({ label: 'Logs Viewer', path: ROUTE_FEATURES[RouteFeature.Logs].path });
     }
     if (isRouteEnabled(RouteFeature.AIPlayground, platform, isDev)) {
-      items.push({ name: 'AI Playground', onClick: () => navigate(ROUTE_FEATURES[RouteFeature.AIPlayground].path) });
+      items.push({ label: 'AI Playground', path: ROUTE_FEATURES[RouteFeature.AIPlayground].path });
     }
     if (isRouteEnabled(RouteFeature.CardGamesExplorer, platform, isDev)) {
-      items.push({ name: 'Card Games Explorer', onClick: () => navigate(ROUTE_FEATURES[RouteFeature.CardGamesExplorer].path) });
+      items.push({ label: 'Card Games Explorer', path: ROUTE_FEATURES[RouteFeature.CardGamesExplorer].path });
     }
     return items;
-  }, [platform, isDev, navigate]);
+  }, [platform, isDev]);
 
   if (!isAdmin) {
     return null;
@@ -238,6 +237,7 @@ export const AdminUsersPage: React.FC = () => {
   return (
     <UnifiedPageShell
       className="admin-users-page"
+      workClassName="admin-users-work"
       background={
         <DynamicBackground
           controlRef={rotationRef}
@@ -247,6 +247,8 @@ export const AdminUsersPage: React.FC = () => {
       header={
         <UnifiedHeader
           profileName="main_screen"
+          includeAdminNavigation={Boolean(user?.isAdmin)}
+          primaryNavigationItems={primaryNavigationItems}
           dynamicData={{
             gameName: 'Admin Dashboard',
             tagline: headerTagline,
@@ -274,16 +276,6 @@ export const AdminUsersPage: React.FC = () => {
               : undefined,
           }}
         />
-      }
-      toolbar={
-        <div className="admin-nav-container">
-          <NavigationBar
-            items={navItems}
-            height={40}
-            showArrows={true}
-            variant="default"
-          />
-        </div>
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
@@ -589,3 +581,4 @@ export const AdminUsersPage: React.FC = () => {
     </UnifiedPageShell>
   );
 };
+

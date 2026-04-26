@@ -42,6 +42,7 @@ export interface CardGameTemplatePageProps {
   arenaOverlay?: React.ReactNode;
   stageOverlay?: React.ReactNode;
   showArenaGuide?: boolean;
+  showHeaderDebugControls?: boolean;
 }
 
 export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
@@ -62,6 +63,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   arenaOverlay,
   stageOverlay,
   showArenaGuide = false,
+  showHeaderDebugControls = true,
 }) => {
   const [draftDoc, setDraftDoc] = useState<CardGameLayoutDocument | null>(null);
   const [draftPlayerCount, setDraftPlayerCount] = useState<number | null>(null);
@@ -208,6 +210,8 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
               className={`${LayoutClasses.LAYER_ITEM} ${LayoutClasses.LAYER_ITEM}--header ${LayoutClasses.CHROME}${embedded ? ` ${LayoutClasses.LAYER_ITEM_EMBEDDED}` : ''}`}
             >
               <UnifiedHeader
+                showPrimaryNavigation={false}
+                showDebugControls={showHeaderDebugControls}
                 dynamicData={{
                   gameName: headerTitle ?? 'Preview',
                   tagline: headerTagline ?? 'Template Engine Preview',

@@ -12,6 +12,7 @@ import { MessagesPanel } from '@/ui/pages/Social/components/MessagesPanel';
 import { NotificationsPanel } from '@/ui/pages/Social/components/NotificationsPanel';
 import { PartyPanel } from '@/ui/pages/Social/components/PartyPanel';
 import { useSocialHubData } from '@/ui/pages/Social/hooks/useSocialHubData';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './SocialPage.css';
 
 interface SocialPageProps {
@@ -69,7 +70,7 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -155,3 +156,4 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
     </UnifiedPageShell>
   );
 }
+

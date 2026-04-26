@@ -11,6 +11,7 @@ import { MarketplacePanel } from '@/ui/pages/PlayerHub/components/MarketplacePan
 import { ProfilePanel } from '@/ui/pages/PlayerHub/components/ProfilePanel';
 import { usePlayerHubData } from '@/ui/pages/PlayerHub/hooks/usePlayerHubData';
 import { AppScreenToken } from '@/ui/navigation/appRoutes';
+import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import './PlayerHubPage.css';
 
 interface PlayerHubPageProps {
@@ -54,7 +55,7 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
               user: user ? {
                 name: user.displayName || 'Player',
                 email: user.email,
-                avatarUrl: user.photoURL,
+                avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
               } : undefined,
               onLogout: handleLogout
@@ -117,3 +118,4 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
     </UnifiedPageShell>
   );
 }
+

@@ -148,6 +148,33 @@ export const serializedUnifiedHeaderConfigSchema = z.object({
       icons: z.array(z.string()).optional(),
     }),
   }),
+  navigation: z.object({
+    enabled: z.boolean(),
+    height: z.number(),
+    gapBelowHeader: z.number(),
+    outerMargin: z.number(),
+    panelInsetY: z.number(),
+    shellInset: z.number(),
+    panelRadius: z.number(),
+    buttonRadius: z.number(),
+    minButtonWidth: z.number(),
+    maxButtonWidth: z.number(),
+    textSidePadding: z.number(),
+    buttonGap: z.number(),
+    navGap: z.number(),
+    textScale: z.number(),
+    accentInset: z.number(),
+    sideArrowInset: z.number(),
+    endCurvePadding: z.number(),
+    tintColor: z.string(),
+    edgeColor: z.string(),
+    boxOpacity: z.number(),
+    hoverEdgeColor: z.string(),
+    hoverTintColor: z.string(),
+    activeEdgeColor: z.string(),
+    activeTintColor: z.string(),
+    glowBlur: z.number(),
+  }),
   metadata: z.object({
     displayName: z.string().optional(),
     matchPatterns: z.array(z.string()).optional(),
@@ -419,6 +446,33 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
       },
       customRenderer: input.center?.customRenderer,
     },
+    navigation: {
+      enabled: input.navigation?.enabled ?? true,
+      height: input.navigation?.height ?? 40,
+      gapBelowHeader: input.navigation?.gapBelowHeader ?? 2,
+      outerMargin: input.navigation?.outerMargin ?? 0,
+      panelInsetY: input.navigation?.panelInsetY ?? 3,
+      shellInset: input.navigation?.shellInset ?? 3,
+        panelRadius: input.navigation?.panelRadius ?? 45,
+        buttonRadius: input.navigation?.buttonRadius ?? 10,
+      minButtonWidth: input.navigation?.minButtonWidth ?? 72,
+      maxButtonWidth: input.navigation?.maxButtonWidth ?? 190,
+      textSidePadding: input.navigation?.textSidePadding ?? 24,
+      buttonGap: input.navigation?.buttonGap ?? 7,
+      navGap: input.navigation?.navGap ?? 6,
+      textScale: input.navigation?.textScale ?? 0.42,
+      accentInset: input.navigation?.accentInset ?? 7,
+      sideArrowInset: input.navigation?.sideArrowInset ?? 9,
+      endCurvePadding: input.navigation?.endCurvePadding ?? 18,
+      tintColor: input.navigation?.tintColor ?? '#00bfff',
+        edgeColor: input.navigation?.edgeColor ?? 'rgba(217, 247, 231, 0.58)',
+        boxOpacity: input.navigation?.boxOpacity ?? 0.06,
+      hoverEdgeColor: input.navigation?.hoverEdgeColor ?? '#22ff88',
+      hoverTintColor: input.navigation?.hoverTintColor ?? '#1aff8c',
+      activeEdgeColor: input.navigation?.activeEdgeColor ?? '#ffd86b',
+      activeTintColor: input.navigation?.activeTintColor ?? '#ffc400',
+      glowBlur: input.navigation?.glowBlur ?? 4,
+    },
     metadata: {
       displayName: input.metadata?.displayName,
       matchPatterns: input.metadata?.matchPatterns,
@@ -432,6 +486,7 @@ export type UnifiedHeaderConfig = {
   left: UnifiedHeaderLeftConfig;
   right: UnifiedHeaderRightConfig;
   center: UnifiedHeaderCenterConfig;
+  navigation: UnifiedHeaderNavigationConfig;
   metadata?: UnifiedHeaderMetadata;
 };
 
@@ -527,6 +582,34 @@ export type UnifiedHeaderCenterConfig = {
   modeA: CenterModeAConfig;
   modeB: CenterModeBConfig;
   customRenderer?: CenterContentRenderer;
+};
+
+export type UnifiedHeaderNavigationConfig = {
+  enabled: boolean;
+  height: number;
+  gapBelowHeader: number;
+  outerMargin: number;
+  panelInsetY: number;
+  shellInset: number;
+  panelRadius: number;
+  buttonRadius: number;
+  minButtonWidth: number;
+  maxButtonWidth: number;
+  textSidePadding: number;
+  buttonGap: number;
+  navGap: number;
+  textScale: number;
+  accentInset: number;
+  sideArrowInset: number;
+  endCurvePadding: number;
+  tintColor: string;
+  edgeColor: string;
+  boxOpacity: number;
+  hoverEdgeColor: string;
+  hoverTintColor: string;
+  activeEdgeColor: string;
+  activeTintColor: string;
+  glowBlur: number;
 };
 
 export type CenterMode = 'A' | 'B';
