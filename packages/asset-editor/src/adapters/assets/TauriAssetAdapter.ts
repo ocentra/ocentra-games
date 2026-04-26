@@ -4,6 +4,8 @@ export function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
 
+const BROWSER_ASSET_INDEX_ENDPOINT = '/__asset-editor-api__/disk-resource-entries'
+
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message
@@ -143,6 +145,14 @@ export async function listDir(folder: string): Promise<DirEntry[]> {
 }
 
 export async function scanAssets(): Promise<AssetMeta[]> {
+  if (!isTauri()) {
+    const entries = await getDiskResourceEntriesFromTauri()
+    return entries.map((entry) => ({
+      path: entry.path,
+      size: entry.fileSize,
+      modified_secs: null,
+    }))
+  }
   try {
     return await invoke<AssetMeta[]>('scan_assets')
   } catch (error) {
@@ -201,6 +211,18 @@ export type AssetIndexEntry =
 export async function getResourcesInFolder(
   folder: string
 ): Promise<AssetIndexEntry[]> {
+  if (!isTauri()) {
+    const normalizedFolder = normalizeResourcePath(folder).replace(/\/$/, '')
+    const entries = await getDiskResourceEntriesFromTauri()
+    const prefix = normalizedFolder.length > 0 ? `${normalizedFolder}/` : ''
+    return entries.filter((entry) => {
+      if (!entry.path.startsWith(prefix)) {
+        return false
+      }
+      const suffix = entry.path.slice(prefix.length)
+      return suffix.length > 0 && !suffix.includes('/')
+    })
+  }
   try {
     return await invoke<AssetIndexEntry[]>('get_resources_in_folder_db', {
       folder,
@@ -225,6 +247,13 @@ export async function getIndexStatus(): Promise<IndexBuildStatus> {
 export async function getDiskResourceEntriesFromTauri(): Promise<
   AssetIndexEntry[]
 > {
+  if (!isTauri()) {
+    const response = await fetch(BROWSER_ASSET_INDEX_ENDPOINT)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch browser asset index: ${response.status}`)
+    }
+    return (await response.json()) as AssetIndexEntry[]
+  }
   try {
     return await invoke<AssetIndexEntry[]>('get_disk_resource_entries_db')
   } catch (error) {
@@ -286,6 +315,17 @@ export async function queryResourcesFromTauri(input: {
 export async function getResourceByGuidDb(
   guid: string
 ): Promise<AssetIndexEntry | null> {
+  if (!isTauri()) {
+    const entries = await getDiskResourceEntriesFromTauri()
+    return (
+      entries.find(
+        (entry) =>
+          entry.resourceEntryType === 'AssetResourceEntry' &&
+          'guid' in entry &&
+          entry.guid === guid
+      ) ?? null
+    )
+  }
   try {
     return (
       (await invoke<AssetIndexEntry | null>('get_resource_by_guid_db', {
@@ -300,6 +340,17 @@ export async function getResourceByGuidDb(
 export async function getResourceByHashDb(
   hash: string
 ): Promise<AssetIndexEntry | null> {
+  if (!isTauri()) {
+    const entries = await getDiskResourceEntriesFromTauri()
+    return (
+      entries.find(
+        (entry) =>
+          entry.resourceEntryType === 'ImageResourceEntry' &&
+          'hash' in entry &&
+          entry.hash === hash
+      ) ?? null
+    )
+  }
   try {
     return (
       (await invoke<AssetIndexEntry | null>('get_resource_by_hash_db', {

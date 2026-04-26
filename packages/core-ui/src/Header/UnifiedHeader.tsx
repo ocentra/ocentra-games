@@ -1011,7 +1011,8 @@ export function UnifiedHeader({
         } else if (typeof window !== 'undefined') {
           const { LocalApiEndpoint } = await import('@ocentra/endpoint-domain/constants/local');
           const response = await fetch(LocalApiEndpoint.HeaderConfig);
-          if (response.ok) {
+          const contentType = response.headers.get('content-type') ?? '';
+          if (response.ok && contentType.includes('application/json')) {
             const savedProfiles = await response.json();
             if (Array.isArray(savedProfiles) && savedProfiles.length > 0) {
               availableProfiles = Array.from(new Set([...availableProfiles, ...savedProfiles]));

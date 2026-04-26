@@ -16,6 +16,7 @@ export type ViteManagerOptions = {
   cwd: string;
   spawnCommand: string;
   spawnArgs: string[];
+  spawnEnv?: NodeJS.ProcessEnv;
   logPrefix: string;
   verbose?: boolean;
   beforeAllocate?: () => Promise<void> | void;
@@ -217,7 +218,12 @@ export async function runManagedVite(options: ViteManagerOptions): Promise<void>
     cwd: options.cwd,
     stdio: 'inherit',
     shell: process.platform === 'win32',
-    env: { ...process.env, PORT: String(port), VITE_PORT: String(port) },
+    env: {
+      ...process.env,
+      ...(options.spawnEnv ?? {}),
+      PORT: String(port),
+      VITE_PORT: String(port),
+    },
   });
 
   vite.on('error', (error) => {

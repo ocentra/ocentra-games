@@ -32,6 +32,9 @@ async function main(): Promise<void> {
     cwd: EDITOR_DIR,
     spawnCommand: 'npm',
     spawnArgs: ['run', 'dev:raw'],
+    spawnEnv: {
+      VITE_EDITOR_DEV_AUTH: process.env.VITE_EDITOR_DEV_AUTH ?? 'mock-admin',
+    },
     logPrefix: 'dev:editor:vite',
     beforeStart: () => {
       const inspectorStartedAt = Date.now();

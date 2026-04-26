@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 import fs from 'fs';
+import { createHash } from 'node:crypto';
 import type { Connect } from 'vite';
 import { getAssetEditorLogDir, wipeAssetEditorLogs } from './scripts/asset-editor-logs';
 import { createAppLogStorage } from '@ocentra/logging-domain/app-log/createAppLogStorage';
@@ -10,6 +11,7 @@ import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 import { loadWorkspaceEnv } from '../../scripts/shared/loadWorkspaceEnv';
 import { workspaceSourceResolver } from '../../vite/plugins/workspaceSourceResolver';
+import JSON5 from 'json5';
 
 const rootPkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8')) as { version?: string };
 const appVersion = rootPkg?.version ?? '0.1.0';
@@ -21,7 +23,137 @@ const EDITOR_PROFILE_FILENAME = 'performance-profile-editor.json';
 const echoLogsToTerminal = process.env.VITE_ECHO_LOGS_TO_TERMINAL === '1';
 
 const rootDir = path.resolve(__dirname, '../..');
+const assetEditorResourcesDir = path.resolve(__dirname, 'Resources');
 loadWorkspaceEnv(__dirname, rootDir);
+
+type BrowserAssetIndexEntry =
+  | {
+      resourceEntryType: 'AssetResourceEntry';
+      path: string;
+      guid: string;
+      assetType: string;
+      displayName: string;
+      fileSize: number;
+    }
+  | {
+      resourceEntryType: 'ImageResourceEntry';
+      path: string;
+      hash: string;
+      fileSize: number;
+    }
+  | {
+      resourceEntryType: 'FileResourceEntry';
+      path: string;
+      checksum: string;
+      fileSize: number;
+    };
+
+const IMAGE_EXTENSIONS = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.gif',
+  '.bmp',
+  '.svg',
+  '.avif',
+]);
+
+let cachedBrowserAssetIndex:
+  | {
+      builtAtMs: number;
+      entries: BrowserAssetIndexEntry[];
+    }
+  | null = null;
+
+function normalizeResourceUrlPath(relPath: string): string {
+  const normalized = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+  return normalized.startsWith('Resources/') ? normalized : `Resources/${normalized}`;
+}
+
+function sha256Hex(buffer: Buffer): string {
+  return createHash('sha256').update(buffer).digest('hex');
+}
+
+function buildBrowserAssetIndexEntries(): BrowserAssetIndexEntry[] {
+  if (cachedBrowserAssetIndex && Date.now() - cachedBrowserAssetIndex.builtAtMs < 2000) {
+    return cachedBrowserAssetIndex.entries;
+  }
+
+  const entries: BrowserAssetIndexEntry[] = [];
+
+  const walk = (dir: string): void => {
+    if (!fs.existsSync(dir)) {
+      return;
+    }
+
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+        continue;
+      }
+
+      const relativePath = path.relative(assetEditorResourcesDir, fullPath);
+      const resourcePath = normalizeResourceUrlPath(relativePath);
+      const stats = fs.statSync(fullPath);
+      const extension = path.extname(entry.name).toLowerCase();
+      const fileBytes = fs.readFileSync(fullPath);
+
+      if (extension === '.asset') {
+        try {
+          const parsed = JSON5.parse(fileBytes.toString('utf8')) as Record<string, unknown>;
+          const system =
+            parsed.system && typeof parsed.system === 'object'
+              ? (parsed.system as Record<string, unknown>)
+              : {};
+          const guid = typeof system.guid === 'string' ? system.guid : null;
+          if (!guid) {
+            continue;
+          }
+          entries.push({
+            resourceEntryType: 'AssetResourceEntry',
+            path: resourcePath,
+            guid,
+            assetType: typeof system.assetType === 'string' ? system.assetType : 'Unknown',
+            displayName:
+              typeof system.displayName === 'string'
+                ? system.displayName
+                : entry.name.replace(/\.asset$/i, ''),
+            fileSize: stats.size,
+          });
+        } catch {
+          continue;
+        }
+        continue;
+      }
+
+      if (IMAGE_EXTENSIONS.has(extension)) {
+        entries.push({
+          resourceEntryType: 'ImageResourceEntry',
+          path: resourcePath,
+          hash: sha256Hex(fileBytes),
+          fileSize: stats.size,
+        });
+        continue;
+      }
+
+      entries.push({
+        resourceEntryType: 'FileResourceEntry',
+        path: resourcePath,
+        checksum: sha256Hex(fileBytes),
+        fileSize: stats.size,
+      });
+    }
+  };
+
+  walk(assetEditorResourcesDir);
+  cachedBrowserAssetIndex = {
+    builtAtMs: Date.now(),
+    entries,
+  };
+  return entries;
+}
 
 function readBody(req: Connect.IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -178,6 +310,22 @@ export default defineConfig(({ command }) => ({
     {
       name: 'serve-resources',
       configureServer(server) {
+        server.middlewares.use('/__asset-editor-api__/disk-resource-entries', (_req, res) => {
+          try {
+            const entries = buildBrowserAssetIndexEntries();
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(entries));
+          } catch (error) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                error: error instanceof Error ? error.message : String(error),
+              })
+            );
+          }
+        });
         server.middlewares.use('/Resources', (req, res, next) => {
           const filePath = path.join(__dirname, 'Resources', req.url ?? '/');
           if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

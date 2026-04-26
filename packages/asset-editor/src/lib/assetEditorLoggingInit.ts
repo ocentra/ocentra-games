@@ -33,6 +33,8 @@ const getSessionRunId = () => {
 };
 
 const sessionRunId = getSessionRunId();
+const isTauriRuntime = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+const bridgeEndpoint = isTauriRuntime ? PUBLIC_TUNNEL_BRIDGE_URL : '';
 
 const requestContextProvider = {
   getCurrentContext: () => ({
@@ -57,7 +59,7 @@ export function initAssetEditorLogging(): void {
 
   AssetEditorLogger.initLogger(null, pathResolver, { 
     consoleEnabled: true,
-    bridgeEndpoint: PUBLIC_TUNNEL_BRIDGE_URL,
+    bridgeEndpoint,
     bridgeConsumer: LogConsumer.AssetEditor,
   }, requestContextProvider);
 
@@ -67,8 +69,7 @@ export function initAssetEditorLogging(): void {
   }
 
   // Add Tauri native transport if running in Tauri
-  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-  if (isTauri) {
+  if (isTauriRuntime) {
     import('@tauri-apps/api/core').then(({ invoke }) => {
       AssetEditorLogger.instance.addTransport(new TauriTransport(invoke));
     }).catch(err => {

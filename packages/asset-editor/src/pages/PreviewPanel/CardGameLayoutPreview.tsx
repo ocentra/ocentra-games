@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
 import type { CardGameLayoutDocument as LayoutAssetDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
-import { createPanelWindow } from '@/utils/createPanelWindow';
+import { createPanelWindow, type PanelWindowHandle } from '@/utils/createPanelWindow';
 import type { AssetData } from '@/types/assets';
 import {
   buildLoadedLayoutAssetFromRaw,
@@ -51,7 +51,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   const [document, setDocument] = useState<LayoutAssetDocument | null>(loadedAsset?.document ?? null);
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [saveStatus, setSaveStatus] = useState<string | null>(loadedAsset ? null : 'Layout asset could not be loaded');
-  const externalWindowRef = useRef<import('@tauri-apps/api/webviewWindow').WebviewWindow | null | undefined>(null);
+  const externalWindowRef = useRef<PanelWindowHandle | null | undefined>(null);
   const draftSessionIdRef = useRef(createDraftSessionId('editor-embedded'));
   const [activePlayerCount, setActivePlayerCount] = useState<number | null>(
     loadedAsset

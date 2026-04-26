@@ -80,6 +80,14 @@ function resolveHandLayout(
   };
 }
 
+function isAuthoringSurfaceMode(surfaceMode: CardGameSurfaceMode): boolean {
+  return (
+    surfaceMode === 'editorEmbedded' ||
+    surfaceMode === 'editorCanvas' ||
+    surfaceMode === 'editorIsolation'
+  );
+}
+
 export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
   document,
   playerCount,
@@ -111,7 +119,20 @@ export const CardGamePreviewSurface: React.FC<CardGamePreviewSurfaceProps> = ({
 
   const previewAsset = useMemo(() => createPreviewAsset(document), [document]);
   const floatScale = document.cardVisuals.floatScale;
-  const resolvedHudControls = hudControlsOverride ?? document.hud;
+  const resolvedHudControls = useMemo(() => {
+    const baseHud = hudControlsOverride ?? document.hud;
+    if (isAuthoringSurfaceMode(surfaceMode)) {
+      return baseHud;
+    }
+    return {
+      ...baseHud,
+      showDebugGuides: false,
+      layerVisibility: {
+        ...baseHud.layerVisibility,
+        tools: false,
+      },
+    };
+  }, [document.hud, hudControlsOverride, surfaceMode]);
 
   React.useEffect(() => {
     setGameAsset(previewAsset);

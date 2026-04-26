@@ -11,6 +11,11 @@ log.register(import.meta.url)
 
 export const ASSET_SELECTION_CHANNEL = 'ocentra-asset-editor-selection'
 
+export interface PanelWindowHandle {
+  close: () => Promise<void> | void
+  once: (event: 'tauri://destroyed', handler: () => void) => void
+}
+
 export function getStandalonePanelUrl(
   panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation',
   assetPath: string,
@@ -32,12 +37,44 @@ export async function createPanelWindow(
   title?: string,
   locked?: boolean,
   playerCount?: number
-): Promise<import('@tauri-apps/api/webviewWindow').WebviewWindow | undefined> {
-  if (!isTauri()) return
-
-  const { WebviewWindow, getAllWebviewWindows } = await import('@tauri-apps/api/webviewWindow')
+): Promise<PanelWindowHandle | undefined> {
   const url = getStandalonePanelUrl(panel, assetPath, locked, playerCount)
   const label = panel === 'preview-canvas' ? 'preview-canvas-standalone' : `panel-${panel}`
+
+  if (!isTauri()) {
+    const popup = window.open(
+      url,
+      label,
+      'popup=yes,width=1600,height=900,resizable=yes,scrollbars=yes'
+    )
+
+    if (!popup) {
+      log.logWarn('[createPanelWindow] Browser popup was blocked', getStackTrace(), {
+        panel,
+        assetPath,
+        url,
+      })
+      return undefined
+    }
+
+    popup.focus()
+
+    return {
+      close: () => {
+        popup.close()
+      },
+      once: (_event, handler) => {
+        const intervalId = window.setInterval(() => {
+          if (popup.closed) {
+            window.clearInterval(intervalId)
+            handler()
+          }
+        }, 300)
+      },
+    }
+  }
+
+  const { WebviewWindow, getAllWebviewWindows } = await import('@tauri-apps/api/webviewWindow')
   
   const windows = await getAllWebviewWindows();
   const existing = windows.find((w: import('@tauri-apps/api/webviewWindow').WebviewWindow) => w.label === label);

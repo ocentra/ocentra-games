@@ -7,7 +7,7 @@ function isLocalhostHost(hostname: string): boolean {
 }
 
 export function isDevMockAdminEnabled(): boolean {
-  if (!import.meta.env.DEV || DEV_AUTH_MODE !== 'mock-admin') {
+  if (!import.meta.env.DEV) {
     return false;
   }
 
@@ -15,7 +15,15 @@ export function isDevMockAdminEnabled(): boolean {
     return false;
   }
 
-  return isLocalhostHost(window.location.hostname);
+  if (!isLocalhostHost(window.location.hostname)) {
+    return false;
+  }
+
+  if (DEV_AUTH_MODE === 'off') {
+    return false;
+  }
+
+  return DEV_AUTH_MODE === 'mock-admin' || DEV_AUTH_MODE === undefined;
 }
 
 export const DEV_MOCK_ADMIN_USER: EditorUser = {
