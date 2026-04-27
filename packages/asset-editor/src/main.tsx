@@ -44,7 +44,7 @@ if (!rootEl) throw new Error('Root element #root not found');
     loader.addEventListener('transitionend', (e) => {
       if (e.target === loader) applyHidden();
     }, { once: true });
-    setTimeout(applyHidden, 2000);
+    setTimeout(applyHidden, 400);
   }
 };
 

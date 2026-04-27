@@ -1,13 +1,12 @@
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
-import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
-import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { EditorStateContext } from '@/context/EditorStateContext';
 import { EditorDockLayout, type EditorDockLayoutHandle } from './EditorDockLayout';
+import { AssetEditorHeader } from '@/components/AssetEditorHeader';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import './AssetEditorPage.css';
 
@@ -23,7 +22,6 @@ const logWarn = (message: string, dataOrEnabled?: unknown | boolean, enabled?: b
 log.register(import.meta.url);
 import { MenuBar } from '@/pages/MenuBar/MenuBar';
 import { WindowControls } from '@/components/WindowControls';
-import { TitleBarDragHandler } from '@/components/TitleBarDragHandler';
 import { useAssetEditorDialogs } from './useAssetEditorDialogs';
 import { useSyncMenu } from '@/pages/MenuBar/SyncMenu/useSyncMenu';
 import type { AssetData } from '@/types/assets';
@@ -246,40 +244,57 @@ export const AssetEditorPage: React.FC = () => {
       onDeleteAsset: handleDeleteAsset,
       onDeleteGameMode,
     }}>
-      <UnifiedPageShell
-        className="asset-editor"
-        header={
-          <div ref={titleBarRef} className="asset-editor__titlebar-wrap">
-            <TitleBarDragHandler containerRef={titleBarRef} />
-            <UnifiedHeader
-              showPrimaryNavigation={false}
-              profileName="asset_editor"
-              rightSuffixContent={<WindowControls />}
-              config={{
-                right: {
-                  isProfile: Boolean(user),
-                  user: user
-                    ? {
-                        name: user.displayName || 'Player',
-                        email: user.email,
-                        avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
-                        isLoggedIn: true,
-                        isAdmin: isAdmin,
-                      }
-                    : undefined,
-                  onLogout: headerProps.onLogout,
-                },
-                center: {
-                  modeA: {
-                    leftText: 'Asset',
-                    rightText: 'Editor',
-                  },
-                },
-              }}
-            />
-          </div>
-        }
-        footer={
+      <div className="asset-editor">
+        <div ref={titleBarRef} className="asset-editor__titlebar-wrap">
+          <AssetEditorHeader
+            user={user ? {
+              displayName: user.displayName ?? null,
+              email: user.email ?? null,
+              photoURL: user.photoURL ?? null,
+              isAdmin,
+            } : null}
+            onLogout={headerProps.onLogout}
+            getImageUrl={headerProps.getImageUrl}
+            rightSuffixContent={<WindowControls />}
+            leftContent={
+              <div className="asset-editor__topbar">
+                <img src="/favicon.svg" alt="" className="asset-editor__logo" aria-hidden />
+                <MenuBar
+                  onCreateAsset={handleCreateAsset}
+                  onRefreshTree={refreshTree}
+                  onSyncStatusChange={handleSyncStatusChange}
+                  onOpenPreviewWindow={() => {
+                    const path = assetPath ?? 'virtual:AssetCatalog';
+                    const title = path.split('/').pop() ?? path;
+                    if (isTauri()) {
+                      void createPanelWindow('preview', path, title, false);
+                    } else {
+                      window.open(getStandalonePanelUrl('preview', path, false), '_blank');
+                    }
+                  }}
+                  onOpenInspectorWindow={() => {
+                    const path = assetPath ?? 'virtual:AssetCatalog';
+                    const title = path.split('/').pop() ?? path;
+                    if (isTauri()) {
+                      void createPanelWindow('inspector', path, title, false);
+                    } else {
+                      window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
+                    }
+                  }}
+                  onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
+                  onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
+                  onResetLayout={() => dockLayoutRef.current?.resetLayout()}
+                />
+              </div>
+            }
+          />
+        </div>
+
+        <div className="asset-editor__dock-container">
+          <EditorDockLayout ref={dockLayoutRef} />
+        </div>
+
+        <div className="asset-editor__footer">
           <GameFooter
             appVersion={
               typeof import.meta !== 'undefined' && import.meta.env?.VITE_APP_VERSION != null
@@ -287,38 +302,6 @@ export const AssetEditorPage: React.FC = () => {
                 : '0.1.0'
             }
           />
-        }
-      >
-        <div className="asset-editor__menu-strip">
-          <MenuBar
-            onCreateAsset={handleCreateAsset}
-            onRefreshTree={refreshTree}
-            onSyncStatusChange={handleSyncStatusChange}
-            onOpenPreviewWindow={() => {
-              const path = assetPath ?? 'virtual:AssetCatalog';
-              const title = path.split('/').pop() ?? path;
-              if (isTauri()) {
-                void createPanelWindow('preview', path, title, false);
-              } else {
-                window.open(getStandalonePanelUrl('preview', path, false), '_blank');
-              }
-            }}
-            onOpenInspectorWindow={() => {
-              const path = assetPath ?? 'virtual:AssetCatalog';
-              const title = path.split('/').pop() ?? path;
-              if (isTauri()) {
-                void createPanelWindow('inspector', path, title, false);
-              } else {
-                window.open(getStandalonePanelUrl('inspector', path, false), '_blank');
-              }
-            }}
-            onOpenPreviewPanel={() => dockLayoutRef.current?.openPreviewPanel()}
-            onOpenInspectorPanel={() => dockLayoutRef.current?.openInspectorPanel()}
-            onResetLayout={() => dockLayoutRef.current?.resetLayout()}
-          />
-        </div>
-        <div className="asset-editor__dock-container">
-          <EditorDockLayout ref={dockLayoutRef} />
         </div>
 
         {isCreateDialogOpen && (
@@ -345,7 +328,7 @@ export const AssetEditorPage: React.FC = () => {
             />
           </Suspense>
         )}
-      </UnifiedPageShell>
+      </div>
     </EditorStateContext.Provider>
   );
 };

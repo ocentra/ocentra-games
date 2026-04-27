@@ -268,6 +268,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
     params.set('assetPath', assetPath);
     params.set('hideTools', 'true');
     params.set('locked', 'true');
+    params.set('reflectionOnly', 'true');
     if (activePlayerCount !== null) params.set('playerCount', String(activePlayerCount));
     return `/standalone-panel?${params.toString()}`;
   }, [assetPath, activePlayerCount]);

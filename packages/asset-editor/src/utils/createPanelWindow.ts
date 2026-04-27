@@ -1,5 +1,6 @@
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger'
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace'
+import { applyDevAuthQueryToUrl } from '@/utils/devAuth'
 export { CARD_GAME_LAYOUT_DRAFT_CHANNEL } from '@ocentra/game-layout-domain/draftChannel'
 
 export function isTauri(): boolean {
@@ -28,7 +29,7 @@ export function getStandalonePanelUrl(
   params.set('assetPath', assetPath)
   if (locked !== undefined) params.set('locked', String(locked))
   if (playerCount !== undefined) params.set('playerCount', String(playerCount))
-  return `${base}?${params.toString()}`
+  return applyDevAuthQueryToUrl(`${base}?${params.toString()}`)
 }
 
 export async function createPanelWindow(

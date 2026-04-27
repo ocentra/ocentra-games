@@ -8,21 +8,36 @@
 .dock-panel {
   background: #1e1e1e;
   border: 1px solid #333;
+  min-width: 48px !important; /* Force override of rc-dock inline styles to keep icons visible */
+  container-type: inline-size; /* Enable container queries for responsive tab content */
 }
 
 /* Tab bar (rc-dock class is .dock-bar, not .dock-tab-bar) */
 .dock-bar {
   background: #2a2a2a;
   border-bottom: 1px solid #3a3a3a;
+  /* Ensure tab bar itself has a consistent readable height - increased min */
+  height: clamp(30px, 4.5dvh, 36px);
+  min-height: clamp(30px, 4.5dvh, 36px);
 }
 
 /* Individual tabs */
 .dock-tab {
   background: #2a2a2a;
   color: #999;
-  font-size: 12px;
+  font-size: clamp(11px, 1.2dvh, 13px);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   border-bottom: 1px solid #3a3a3a;
+  padding: 0 clamp(8px, 1dvh, 14px);
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  line-height: 1;
 }
 
 .dock-tab:hover {
@@ -40,6 +55,7 @@
 /* Active tab underline indicator */
 .dock-ink-bar {
   background: #4a9eff;
+  height: 2px !important;
 }
 
 /* Resize dividers — 8px grab area, 1px visual line via ::before */
@@ -124,8 +140,8 @@
   background: rgba(18, 26, 36, 0.92);
   color: rgba(220, 234, 255, 0.9);
   border-radius: 5px;
-  padding: 2px 8px;
-  font-size: 11px;
+  padding: 2px clamp(6px, 0.8dvh, 10px);
+  font-size: clamp(9px, 1.1dvh, 12px);
   line-height: 1.2;
   cursor: pointer;
   transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
@@ -175,6 +191,56 @@
   background: rgba(255, 255, 255, 0.15);
 }
 
+.dock-tab > div > .dock-tab-base-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.dock-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dock-tab-active .dock-tab-icon {
+  color: #4a9eff;
+}
+
+.dock-tab-text {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Responsive tab hiding using Container Queries */
+/* When the panel is narrow, hide the text and show only icons */
+@container (max-width: 150px) {
+  .dock-tab-text {
+    display: none;
+  }
+  
+  .dock-tab > div > .dock-tab-base-title {
+    gap: 0;
+    padding: 0;
+    justify-content: center;
+  }
+  
+  /* Ensure tab remains wide enough for icon but doesn't force parent wider */
+  .dock-tab {
+    min-width: 0 !important;
+    padding: 0 4px !important;
+    flex: 1;
+    justify-content: center;
+  }
+}
+
 .dock-tab-with-lock {
   display: inline-flex;
   align-items: center;
@@ -222,22 +288,6 @@
   position: relative;
   width: 100%;
   height: 100%;
-}
-
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(1),
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(2) {
-  display: none !important;
-  flex: 0 0 0 !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-}
-
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-child(1) {
-  flex: 0 0 25% !important;
-}
-
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-child(3) {
-  flex: 1 1 auto !important;
 }
 
 .dock-fallback-new-window {

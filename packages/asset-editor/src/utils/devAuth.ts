@@ -1,77 +1,80 @@
 import type { EditorUser } from '@/types/auth';
 
 const DEV_AUTH_MODE = import.meta.env.VITE_EDITOR_DEV_AUTH;
-const DEV_AUTH_SESSION_KEY = 'asset-editor-dev-auth-mode';
+const DEV_AUTH_QUERY_KEY = 'mock';
 
 function isLocalhostHost(hostname: string): boolean {
   return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
 }
 
-export function isDevMockAdminEnabled(): boolean {
-  if (!import.meta.env.DEV) {
-    return false;
-  }
-
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  if (!isLocalhostHost(window.location.hostname)) {
-    return false;
-  }
-
-  const sessionOverride = getDevAuthSessionOverride();
-  if (sessionOverride === 'off' || DEV_AUTH_MODE === 'off') {
-    return false;
-  }
-
-  if (sessionOverride === 'mock-admin') {
-    return true;
-  }
-
-  return DEV_AUTH_MODE === 'mock-admin' || DEV_AUTH_MODE === undefined;
+function isTauriRuntime(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 }
 
-export function canUseDevMockAdmin(): boolean {
+function canUseBrowserDevMockAdmin(): boolean {
   return (
     import.meta.env.DEV &&
     typeof window !== 'undefined' &&
     isLocalhostHost(window.location.hostname) &&
+    !isTauriRuntime() &&
     DEV_AUTH_MODE !== 'off'
   );
 }
 
-export function getDevAuthSessionOverride(): 'mock-admin' | 'off' | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  try {
-    const value = window.sessionStorage.getItem(DEV_AUTH_SESSION_KEY);
-    return value === 'mock-admin' || value === 'off' ? value : null;
-  } catch {
-    return null;
-  }
+export function canUseDevMockAdmin(): boolean {
+  return canUseBrowserDevMockAdmin();
 }
 
-export function setDevAuthSessionOverride(value: 'mock-admin' | 'off' | null): void {
-  if (typeof window === 'undefined') {
+export function isDevMockAdminEnabled(): boolean {
+  if (!canUseBrowserDevMockAdmin()) {
+    return false;
+  }
+
+  if (DEV_AUTH_MODE === 'mock-admin') {
+    return true;
+  }
+
+  return getDevAuthQueryEnabled();
+}
+
+export function getDevAuthQueryEnabled(): boolean {
+  if (!canUseBrowserDevMockAdmin()) {
+    return false;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const value = params.get(DEV_AUTH_QUERY_KEY)?.toLowerCase();
+  return value === 'true' || value === '1' || value === 'admin';
+}
+
+export function setDevAuthQueryEnabled(enabled: boolean): void {
+  if (!canUseBrowserDevMockAdmin()) {
     return;
   }
-  try {
-    if (value === null) {
-      window.sessionStorage.removeItem(DEV_AUTH_SESSION_KEY);
-      return;
-    }
-    window.sessionStorage.setItem(DEV_AUTH_SESSION_KEY, value);
-  } catch {
-    return;
+
+  const url = new URL(window.location.href);
+  if (enabled) {
+    url.searchParams.set(DEV_AUTH_QUERY_KEY, 'true');
+  } else {
+    url.searchParams.delete(DEV_AUTH_QUERY_KEY);
   }
+  window.location.assign(url.toString());
+}
+
+export function applyDevAuthQueryToUrl(url: string): string {
+  if (!canUseBrowserDevMockAdmin() || !getDevAuthQueryEnabled()) {
+    return url;
+  }
+
+  const nextUrl = new URL(url, window.location.origin);
+  nextUrl.searchParams.set(DEV_AUTH_QUERY_KEY, 'true');
+  return nextUrl.toString();
 }
 
 export const DEV_MOCK_ADMIN_USER: EditorUser = {
   uid: 'asset-editor-dev-admin',
   email: 'asset-editor-dev-admin@ocentra.local',
-  displayName: 'Asset Editor Dev Admin',
+  displayName: 'Mock Admin',
   photoURL: null,
   isAdmin: true,
 };

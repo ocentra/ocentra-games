@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   signInWithCredential,
   GoogleAuthProvider,
+  sendPasswordResetEmail,
   signOut,
   onIdTokenChanged,
 } from 'firebase/auth';
@@ -20,7 +21,7 @@ import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
 import {
   DEV_MOCK_ADMIN_USER,
   isDevMockAdminEnabled,
-  setDevAuthSessionOverride,
+  setDevAuthQueryEnabled,
 } from '@/utils/devAuth';
 import type { EditorUser } from '@/types/auth';
 
@@ -98,14 +99,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const timedOutRef = React.useRef(false);
 
-  // Sync E2E bypass user during render if enabled
-  if (e2eBypassAuth && user?.uid !== E2E_BYPASS_USER.uid) {
-    setUser(E2E_BYPASS_USER);
-    if (isLoading) setIsLoading(false);
-  }
+  // Check if we've explicitly logged out in this session to prevent auto-login loops
+  const [hasExplicitlyLoggedOut, setHasExplicitlyLoggedOut] = useState(() => {
+    return sessionStorage.getItem('ocentra-editor-explicit-logout') === 'true';
+  });
 
-  if (devMockAdmin && user?.uid !== DEV_MOCK_ADMIN_USER.uid) {
-    setUser(DEV_MOCK_ADMIN_USER);
+  const shouldAutoLoginMock = (e2eBypassAuth || devMockAdmin) && !hasExplicitlyLoggedOut;
+
+  // Sync E2E bypass user during render if enabled and not logged out
+  if (shouldAutoLoginMock && user?.uid !== (e2eBypassAuth ? E2E_BYPASS_USER.uid : DEV_MOCK_ADMIN_USER.uid)) {
+    setUser(e2eBypassAuth ? E2E_BYPASS_USER : DEV_MOCK_ADMIN_USER);
     if (isLoading) setIsLoading(false);
   }
 
@@ -163,12 +166,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [devMockAdmin]);
 
   const login = async (email: string, password: string) => {
-    if (e2eBypassAuth) {
-      setUser(E2E_BYPASS_USER);
-      return { success: true };
-    }
-    if (devMockAdmin) {
-      setUser(DEV_MOCK_ADMIN_USER);
+    if (e2eBypassAuth || devMockAdmin) {
+      sessionStorage.removeItem('ocentra-editor-explicit-logout');
+      setHasExplicitlyLoggedOut(false);
+      setUser(e2eBypassAuth ? E2E_BYPASS_USER : DEV_MOCK_ADMIN_USER);
       return { success: true };
     }
     if (!auth) {
@@ -208,6 +209,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await signInWithPopup(auth, new GoogleAuthProvider());
         logInfo('[Auth] Web: signInWithPopup success');
       }
+      sessionStorage.removeItem('ocentra-editor-explicit-logout');
+      setHasExplicitlyLoggedOut(false);
       return { success: true };
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
@@ -217,17 +220,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    if (e2eBypassAuth) {
-      setUser(E2E_BYPASS_USER);
-      return;
-    }
+    logInfo('[Auth] Logout initiated');
+    sessionStorage.setItem('ocentra-editor-explicit-logout', 'true');
+    setHasExplicitlyLoggedOut(true);
+    
     if (devMockAdmin) {
-      setDevAuthSessionOverride('off');
-      setUser(null);
-      return;
+      logInfo('[Auth] Mock mode: disabling dev auth query');
+      setDevAuthQueryEnabled(false);
     }
-    if (auth) await signOut(auth);
+    
+    if (auth) {
+      logInfo('[Auth] Firebase: signing out');
+      await signOut(auth);
+    }
+    
+    logInfo('[Auth] Logout complete, clearing user state');
     setUser(null);
+  };
+
+  const sendPasswordReset = async (email: string) => {
+    if (e2eBypassAuth || devMockAdmin) {
+      return { success: false, error: 'Password reset is not available in mock sessions.' };
+    }
+    if (!auth) {
+      return { success: false, error: 'Firebase not configured. Add VITE_FIREBASE_* to .env.' };
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Password reset failed' };
+    }
   };
 
   logInfo('[Auth] AuthProvider render', { isLoading, hasUser: !!user, isAuthenticated: !!user, isAdmin: user?.isAdmin ?? false }, LOG_AUTH_LOADING);
@@ -242,6 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isFirebaseConfigured: isFirebaseConfigured(),
         login,
         loginWithGoogle,
+        sendPasswordReset,
         logout,
       }}
     >

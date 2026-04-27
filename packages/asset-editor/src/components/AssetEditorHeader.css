@@ -1,0 +1,259 @@
+/* AssetEditorHeader — clamped compact native-app titlebar */
+
+.aeh-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* min 32px  →  scales with viewport height  →  max 44px */
+  height: clamp(32px, 5dvh, 44px);
+  min-height: clamp(32px, 5dvh, 44px);
+  max-height: clamp(32px, 5dvh, 44px);
+  background: #2a2a2a;
+  border-bottom: 1px solid #333;
+  box-sizing: border-box;
+  padding: 0 8px;
+  overflow: hidden;
+  position: relative;
+  pointer-events: none;
+}
+
+.aeh-drag-handle {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  z-index: 0;
+}
+
+/* ── Left zone: logo + menubar ───────────────────────────── */
+.aeh-left {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+  height: 100%;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* ── Center zone: "ASSET EDITOR" pill (Perfectly Centered) ── */
+.aeh-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 850px) {
+  .aeh-center {
+    display: none; /* Hide when menus would collide */
+  }
+}
+
+.aeh-center-title {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 4px clamp(12px, 1.5dvh, 20px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  font-size: clamp(0.625rem, 1dvh, 0.8rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  line-height: 1;
+  color: #a0ff6c;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 8px rgba(160, 255, 108, 0.3);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+/* ── Right zone: profile pill + window controls ─────────── */
+.aeh-right {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 8px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* ── Profile section ─────────────────────────────────────── */
+.aeh-profile-section {
+  position: relative;
+}
+
+.aeh-profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* 4px vertical keeps it proportional inside the clamped header */
+  padding: 4px 10px 4px 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  font-size: clamp(0.625rem, 1dvh, 0.75rem);
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.aeh-profile-pill:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.aeh-avatar {
+  /* clamps between 18px and 24px alongside header height */
+  width: clamp(18px, 2.4dvh, 24px);
+  height: clamp(18px, 2.4dvh, 24px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.aeh-avatar-placeholder {
+  width: clamp(18px, 2.4dvh, 24px);
+  height: clamp(18px, 2.4dvh, 24px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: clamp(0.55rem, 0.9dvh, 0.7rem);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+}
+
+.aeh-profile-name {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aeh-admin-badge {
+  font-size: 0.7rem;
+}
+
+.aeh-profile-arrow {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.5rem;
+  line-height: 1;
+}
+
+/* ── Profile backdrop (dismiss click) ───────────────────── */
+.aeh-profile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 999;
+  border: none;
+  cursor: default;
+  padding: 0;
+}
+
+/* ── Profile dropdown menu ───────────────────────────────── */
+.aeh-profile-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 220px;
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.97) 0%, rgba(20, 20, 35, 0.97) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(102, 126, 234, 0.1);
+  z-index: 1002;
+}
+
+.aeh-profile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.aeh-menu-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.aeh-menu-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.aeh-profile-menu-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.aeh-profile-menu-name {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aeh-profile-menu-email {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aeh-profile-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(102, 126, 234, 0.5) 50%, transparent 100%);
+  margin: 10px 0;
+}
+
+.aeh-logout-button {
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s;
+}
+
+.aeh-logout-button:hover {
+  opacity: 0.88;
+}

@@ -24,7 +24,7 @@ import {
 } from './dockWorkspace';
 import { createPanelWindow, isTauri } from '@/utils/createPanelWindow';
 
-const LAYOUT_KEY = 'ocentra-editor-dock-layout';
+const LAYOUT_KEY = 'ocentra-editor-dock-layout-v2';
 
 const PanelMaxIcon: React.FC = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -71,6 +71,33 @@ const LockIcon: React.FC<{ locked: boolean }> = ({ locked }) => (
     )}
   </svg>
 )
+
+const GamesIcon: React.FC = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M6 12h4m-2-2v4" />
+    <circle cx="15" cy="10" r="1" fill="currentColor" />
+    <circle cx="18" cy="13" r="1" fill="currentColor" />
+    <path d="M18 6H6a4 4 0 0 0-4 4v4a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-4a4 4 0 0 0-4-4Z" />
+  </svg>
+);
+
+const ResourcesIcon: React.FC = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+interface BaseTabTitleProps {
+  label: string;
+  icon: React.ReactNode;
+}
+
+const BaseTabTitle: React.FC<BaseTabTitleProps> = ({ label, icon }) => (
+  <span className="dock-tab-base-title">
+    <span className="dock-tab-icon">{icon}</span>
+    <span className="dock-tab-text">{label}</span>
+  </span>
+);
 
 interface TabTitleProps {
   tab: WorkspaceTabData;
@@ -298,7 +325,15 @@ const InspectorPanelConnector: React.FC<{ tab: WorkspaceTabData }> = ({ tab }) =
     : true;
 
   if (!showInspector) {
-    return <div className="inspector-panel inspector-panel--hidden" aria-hidden />;
+    return (
+      <div className="inspector-panel inspector-panel--empty">
+        <div className="inspector-panel__placeholder">
+          <p className="inspector-panel__placeholder-subtitle">
+            {effectiveAssetPath ? 'This asset has no properties to inspect' : 'Select an asset to inspect properties'}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -343,7 +378,7 @@ function buildLoadTab(
           panelKind: 'resources',
           resourceView: tab.resourceView ?? 'all',
           group: 'resources',
-          title: 'Resources',
+          title: <BaseTabTitle label="Resources" icon={<ResourcesIcon />} />,
           content: <ResourcesPanel view={tab.resourceView === 'games' ? 'games' : 'all'} />,
         }
       case 'games':
@@ -352,7 +387,7 @@ function buildLoadTab(
           panelKind: 'games',
           resourceView: 'games',
           group: 'resources',
-          title: 'Games',
+          title: <BaseTabTitle label="Games" icon={<GamesIcon />} />,
           content: <ResourcesPanel view="games" />,
         }
       case 'preview': {
@@ -438,12 +473,6 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   const loadTabFn = useCallback((data: TabData) => {
     return buildLoadTab(toggleTabLockRef, closeTabRef)(data);
   }, []);
-
-
-
-
-
-
 
   const createPanelTab = useCallback((kind: 'preview' | 'inspector') => {
     const id = makeWorkspaceTabId(kind)
@@ -841,10 +870,8 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   }, [assetPath])
 
 
-  const hideInspector = !isInspectableSelection(assetPath ?? null, assetData);
-
   return (
-    <div className={hideInspector ? 'editor-dock-container editor-dock-container--hide-inspector' : 'editor-dock-container'}>
+    <div className="editor-dock-container">
     <DockLayout
       ref={dockRef}
       defaultLayout={savedLayout ?? defaultLayout}

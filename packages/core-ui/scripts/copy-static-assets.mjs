@@ -5,6 +5,7 @@ const packageRoot = path.resolve(import.meta.dirname, '..');
 
 const fileCopies = [
   ['src/tokens.css', 'dist/'],
+  ['src/Auth/LoginDialog.css', 'dist/Auth/'],
   ['src/Footer/GameFooter.module.css', 'dist/Footer/'],
   ['src/Footer/UnifiedFooter.css', 'dist/Footer/'],
   ['src/Header/ProfilePictureModal.module.css', 'dist/Header/'],

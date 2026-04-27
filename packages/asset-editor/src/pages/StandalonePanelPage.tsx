@@ -544,10 +544,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
   assetPath: string;
   assetData: AssetData;
   hideTools?: boolean;
+  reflectionOnly?: boolean;
 }> = ({
   assetPath,
   assetData,
   hideTools,
+  reflectionOnly = false,
 }) => {
   const headProps = useCoreUIHeaderProps();
   const loadedAsset = useMemo(
@@ -826,6 +828,37 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     return () => ro.disconnect();
   }, [aspectRatio]);
 
+  const stageContent = (
+    <CardGameTemplatePage
+      embedded
+      document={document as unknown as CardGameLayoutDocument}
+      playerCount={playerCount}
+      surfaceMode="editorCanvas"
+      headerProps={headerProps}
+      headerTitle={loadedAsset.displayName || loadedAsset.gameId}
+      headerTagline={`${loadedAsset.gameId} layout preview`}
+      footerVersion="Editor"
+      editableSeats={showHandles}
+      onSeatsChange={handleSeatsChange}
+      showArenaGuide={showArenaGuide}
+      assetPath={assetPath}
+      showHeaderDebugControls={false}
+      onIsolateRequest={handleIsolateRequest}
+    />
+  );
+
+  if (reflectionOnly) {
+    return (
+      <div
+        className={`standalone-panel-page standalone-panel-page--card-game-preview standalone-panel-page--reflection-only ${LayoutClasses.EDITOR_PREVIEW}`}
+      >
+        <div className="standalone-panel-page__reflection-frame">
+          {stageContent}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`standalone-panel-page ${LayoutClasses.EDITOR_PREVIEW}`} style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       {!hideTools && (
@@ -918,23 +951,8 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          <CardGameTemplatePage
-            embedded
-            document={document as unknown as CardGameLayoutDocument}
-            playerCount={playerCount}
-            surfaceMode="editorCanvas"
-            headerProps={headerProps}
-            headerTitle={loadedAsset.displayName || loadedAsset.gameId}
-            headerTagline={`${loadedAsset.gameId} layout preview`}
-            footerVersion="Editor"
-          editableSeats={showHandles}
-          onSeatsChange={handleSeatsChange}
-          showArenaGuide={showArenaGuide}
-          assetPath={assetPath}
-          showHeaderDebugControls={false}
-          onIsolateRequest={handleIsolateRequest}
-        />
-      </div>
+          {stageContent}
+        </div>
       </div>
 
       <Suspense fallback={null}>
@@ -969,18 +987,20 @@ export const StandalonePanelPage: React.FC = () => {
     assetPath: string;
     locked: boolean;
     hideTools: boolean;
+    reflectionOnly: boolean;
   } | null>(() => {
     const search = new URLSearchParams(window.location.search);
     const panel = search.get('standalone') as StandalonePanel;
     const assetPath = search.get('assetPath');
     const locked = search.get('locked') === 'true';
     const hideTools = search.get('hideTools') === 'true';
+    const reflectionOnly = search.get('reflectionOnly') === 'true';
     if (
       panel &&
       assetPath &&
       (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas' || panel === 'isolation')
     ) {
-      return { panel, assetPath, locked, hideTools };
+      return { panel, assetPath, locked, hideTools, reflectionOnly };
     }
     return null;
   });
@@ -1030,7 +1050,7 @@ export const StandalonePanelPage: React.FC = () => {
     }
     return params.panel === 'design-studio'
       ? <StandaloneCardGameDesignStudio key={`design-studio:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} />
-      : <StandaloneCardGamePreviewCanvas key={`preview-canvas:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} />;
+      : <StandaloneCardGamePreviewCanvas key={`preview-canvas:${params.assetPath}`} assetPath={params.assetPath} assetData={assetData} hideTools={params.hideTools} reflectionOnly={params.reflectionOnly} />;
   }
 
   if (params.panel === 'isolation') {
