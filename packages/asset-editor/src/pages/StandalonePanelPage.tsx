@@ -41,6 +41,7 @@ import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
 import { isolationStore } from '@/services/IsolationStore';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { isInspectableAssetSelection } from '@/utils/isInspectableAssetSelection';
 import './StandalonePanelPage.css';
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -319,13 +320,6 @@ function useStandaloneAsset(assetPath: string | null) {
   };
 }
 
-function isInspectable(assetPath: string, assetData: AssetData | null): boolean {
-  if (assetPath.startsWith('virtual:AssetCatalog')) return false;
-  const type = assetData?.system?.assetType;
-  if (type === 'AssetCatalog') return false;
-  return true;
-}
-
 const StandalonePreview: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(assetPath);
   const noop = useCallback(() => {}, []);
@@ -355,7 +349,7 @@ const StandaloneInspector: React.FC<{ assetPath: string }> = ({ assetPath }) => 
   }, [noop]);
 
   if (!assetData && !isLoading && !error) return null;
-  if (!isInspectable(assetPath, assetData)) {
+  if (!isInspectableAssetSelection(assetPath, assetData)) {
     return (
       <div className="standalone-inspector-placeholder">
         No inspector for this asset type.

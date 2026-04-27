@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   authAnnonImageUrl,
   authFacebookImageUrl,
@@ -6,6 +6,16 @@ import {
 } from '@ocentra/app-assets/auth';
 import { avatarImageById } from '@ocentra/app-assets/avatars';
 import { mlogoImageUrl } from '@ocentra/app-assets/commons';
+import {
+  cardGameWOCClubFilledImageUrl,
+  cardGameWOCClubHollowImageUrl,
+  cardGameWOCDiamondFilledImageUrl,
+  cardGameWOCDiamondHollowImageUrl,
+  cardGameWOCHeartFilledImageUrl,
+  cardGameWOCHeartHollowImageUrl,
+  cardGameWOCSpadeFilledImageUrl,
+  cardGameWOCSpadeHollowImageUrl,
+} from '@ocentra/app-assets/cardgame';
 import { GameFooter } from '../Footer/GameFooter';
 import './LoginDialog.css';
 
@@ -14,6 +24,34 @@ const AuthImages = {
 } as const;
 
 const AvatarImages = avatarImageById;
+
+const AuthBackgroundCards = [
+  cardGameWOCSpadeFilledImageUrl,
+  cardGameWOCSpadeHollowImageUrl,
+  cardGameWOCHeartFilledImageUrl,
+  cardGameWOCHeartHollowImageUrl,
+  cardGameWOCDiamondFilledImageUrl,
+  cardGameWOCDiamondHollowImageUrl,
+  cardGameWOCClubFilledImageUrl,
+  cardGameWOCClubHollowImageUrl,
+] as const;
+
+const AuthBackgroundLayout = [
+  { left: '4%', top: '18%', size: '2rem', opacity: 0.18, rotation: -8 },
+  { left: '8%', top: '45%', size: '4.2rem', opacity: 0.14, rotation: 10 },
+  { left: '11%', top: '76%', size: '3rem', opacity: 0.12, rotation: -12 },
+  { left: '20%', top: '29%', size: '1.7rem', opacity: 0.1, rotation: 5 },
+  { left: '27%', top: '61%', size: '3.5rem', opacity: 0.16, rotation: -6 },
+  { left: '38%', top: '12%', size: '1.9rem', opacity: 0.1, rotation: 0 },
+  { left: '47%', top: '38%', size: '1.8rem', opacity: 0.1, rotation: -7 },
+  { left: '58%', top: '18%', size: '2rem', opacity: 0.1, rotation: 7 },
+  { left: '61%', top: '63%', size: '4.9rem', opacity: 0.12, rotation: -4 },
+  { left: '71%', top: '27%', size: '2.7rem', opacity: 0.14, rotation: -10 },
+  { left: '79%', top: '76%', size: '2.1rem', opacity: 0.12, rotation: 3 },
+  { left: '87%', top: '20%', size: '4.8rem', opacity: 0.11, rotation: 6 },
+  { left: '92%', top: '56%', size: '3.1rem', opacity: 0.16, rotation: -7 },
+  { left: '95%', top: '82%', size: '5rem', opacity: 0.14, rotation: 2 },
+] as const;
 
 export interface LoginDialogActionResult {
   success: boolean;
@@ -74,6 +112,15 @@ export function LoginDialog({
   disableCredentials = false,
   disableGoogleLogin = false,
 }: LoginDialogProps) {
+  const backgroundCards = useMemo(
+    () =>
+      AuthBackgroundLayout.map((entry, index) => ({
+        ...entry,
+        src: AuthBackgroundCards[index % AuthBackgroundCards.length],
+        delay: `${(index % 5) * -1.6}s`,
+      })),
+    [],
+  );
   const signUpEnabled = typeof onSignUp === 'function';
   const socialOptions = [
     { key: 'facebook', handler: onFacebookLogin, icon: AuthImages.Social.facebook, alt: 'Facebook', error: 'Facebook login failed. Please try again.' },
@@ -277,6 +324,27 @@ export function LoginDialog({
 
   return (
     <div className="login-dialog-overlay">
+      <div className="login-dialog-background" aria-hidden="true">
+        <div className="login-dialog-background__glow login-dialog-background__glow--left" />
+        <div className="login-dialog-background__glow login-dialog-background__glow--right" />
+        {backgroundCards.map((card, index) => (
+          <img
+            key={`${card.left}-${card.top}-${index}`}
+            className="login-dialog-background__card"
+            src={card.src}
+            alt=""
+            style={{
+              left: card.left,
+              top: card.top,
+              width: card.size,
+              height: card.size,
+              opacity: card.opacity,
+              transform: `rotate(${card.rotation}deg)`,
+              animationDelay: card.delay,
+            }}
+          />
+        ))}
+      </div>
       <div className="login-logo-section">
         <img src={mlogoImageUrl} alt="Ocentra Logo" className="login-logo" />
         <h2 className="login-brand-text">{brandTitle}</h2>

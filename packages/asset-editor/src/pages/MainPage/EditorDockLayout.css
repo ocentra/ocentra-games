@@ -8,9 +8,17 @@
 .dock-panel {
   background: #1e1e1e;
   border: 1px solid #333;
-  min-width: 48px !important; /* Force override of rc-dock inline styles to keep icons visible */
+  min-width: 150px !important; /* Minimum width that allows 'icon-only' tabs to be visible without squashing content */
   container-type: inline-size; /* Enable container queries for responsive tab content */
 }
+
+/* Specific minimums for the main workspace area to prevent it from disappearing */
+.dock-panel:has(.preview-panel) {
+  min-width: 400px !important; 
+}
+
+/* Allow sidebar/inspector to go smaller only if they specifically support it, 
+   but 200px is a better default for "not allowed to drag so much that nothing is left" */
 
 /* Tab bar (rc-dock class is .dock-bar, not .dock-tab-bar) */
 .dock-bar {
@@ -288,6 +296,22 @@
   position: relative;
   width: 100%;
   height: 100%;
+}
+
+.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(1),
+.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(2) {
+  display: none !important;
+  flex: 0 0 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-child(1) {
+  flex: 0 0 25% !important;
+}
+
+.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(3) {
+  flex: 1 1 auto !important;
 }
 
 .dock-fallback-new-window {

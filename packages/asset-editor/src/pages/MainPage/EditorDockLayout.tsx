@@ -23,6 +23,7 @@ import {
   type WorkspaceTabData,
 } from './dockWorkspace';
 import { createPanelWindow, isTauri } from '@/utils/createPanelWindow';
+import { isInspectableAssetSelection } from '@/utils/isInspectableAssetSelection';
 
 const LAYOUT_KEY = 'ocentra-editor-dock-layout-v2';
 
@@ -293,17 +294,6 @@ const PreviewPanelConnector: React.FC<{ tab: WorkspaceTabData }> = ({ tab }) => 
   );
 };
 
-function isInspectableSelection(
-  assetPath: string | null,
-  assetData: { system?: { assetType?: string } } | null
-): boolean {
-  if (!assetPath) return false
-  if (assetPath.startsWith('virtual:AssetCatalog')) return false
-  const type = assetData?.system?.assetType
-  if (type === 'AssetCatalog') return false
-  return true
-}
-
 const InspectorPanelConnector: React.FC<{ tab: WorkspaceTabData }> = ({ tab }) => {
   const {
     assetPath, assetData, isLoadingAsset, assetError, syncStatus,
@@ -321,19 +311,11 @@ const InspectorPanelConnector: React.FC<{ tab: WorkspaceTabData }> = ({ tab }) =
   const effectiveIsLoading = useLiveSelection ? isLoadingAsset : false;
 
   const showInspector = useLiveSelection
-    ? isInspectableSelection(effectiveAssetPath, effectiveAssetData)
+    ? isInspectableAssetSelection(effectiveAssetPath, effectiveAssetData)
     : true;
 
   if (!showInspector) {
-    return (
-      <div className="inspector-panel inspector-panel--empty">
-        <div className="inspector-panel__placeholder">
-          <p className="inspector-panel__placeholder-subtitle">
-            {effectiveAssetPath ? 'This asset has no properties to inspect' : 'Select an asset to inspect properties'}
-          </p>
-        </div>
-      </div>
-    );
+    return <div className="inspector-panel inspector-panel--hidden" aria-hidden />;
   }
 
   return (
@@ -870,8 +852,10 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   }, [assetPath])
 
 
+  const hideInspector = isInspectableAssetSelection(assetPath ?? null, assetData) === false
+
   return (
-    <div className="editor-dock-container">
+    <div className={hideInspector ? 'editor-dock-container editor-dock-container--hide-inspector' : 'editor-dock-container'}>
     <DockLayout
       ref={dockRef}
       defaultLayout={savedLayout ?? defaultLayout}

@@ -38,7 +38,7 @@ export interface LayoutStructure {
 })
 export abstract class Layout extends ScriptableObject {
   static override schemaVersion = 1;
-  static readonly requiresInspector = true;
+  static readonly requiresInspector = false;
 
   static override createTemplate(): Record<string, unknown> {
     return {};

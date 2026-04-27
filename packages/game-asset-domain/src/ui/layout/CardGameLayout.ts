@@ -25,7 +25,7 @@ const DEFAULT_DOCUMENT = createDefaultCardGameLayoutDocument();
 })
 export class CardGameLayout extends Layout {
   static override schemaVersion = 1;
-  static override readonly requiresInspector = true;
+  static override readonly requiresInspector = false;
 
   static override createTemplate(): Record<string, unknown> {
     return cloneCardGameLayoutDocument(DEFAULT_DOCUMENT) as unknown as Record<string, unknown>;
