@@ -9,11 +9,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding:
-    max(var(--space-3), calc(var(--safe-area-top) + var(--space-2)))
+    max(var(--space-2), calc(var(--safe-area-top) + var(--space-2)))
     var(--space-3)
-    calc(var(--space-4) + var(--safe-area-bottom) + 2.5rem);
+    calc(var(--space-3) + var(--safe-area-bottom) + 2rem);
   overflow-y: auto;
   box-sizing: border-box;
   z-index: 2000;
@@ -36,11 +36,14 @@
   border-radius: var(--radius-md);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   padding: 0;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: min(26rem, 100%);
   border: 1px solid #00eeff;
   position: relative;
-  overflow: visible;
+  overflow: auto;
+  max-height: min(40rem, calc(100dvh - var(--safe-area-top) - var(--safe-area-bottom) - 8.5rem));
   animation: scaleIn 0.4s ease-out;
 }
 
@@ -248,8 +251,8 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
 }
 
 .input-group {
@@ -294,7 +297,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   transition: all 0.3s ease;
-  margin: var(--space-2) 0 var(--space-1);
+  margin: var(--space-1) 0;
 }
 
 .sign-in-button {
@@ -316,7 +319,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: 0 var(--space-3) var(--space-3);
+  padding: 0 var(--space-3) var(--space-2);
 }
 
 .login-secondary-button {
@@ -342,7 +345,7 @@
 .divider {
   display: flex;
   align-items: center;
-  margin: var(--space-2) var(--space-3);
+  margin: var(--space-1) var(--space-3);
   color: #00aaff;
   font-size: var(--fs-00);
   font-weight: 500;
@@ -368,15 +371,15 @@
 .social-login {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: 0 var(--space-3) var(--space-3);
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-2);
 }
 
 .social-buttons-container {
   display: flex;
   justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
   flex-wrap: wrap;
 }
 
@@ -418,13 +421,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-2);
-  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  gap: var(--space-1);
 }
 
 .login-logo {
-  width: 5rem;
-  height: 5rem;
+  width: clamp(3rem, 6dvh, 4.25rem);
+  height: clamp(3rem, 6dvh, 4.25rem);
   object-fit: contain;
   animation: logoGlow 2s ease-in-out infinite alternate;
 }
@@ -440,7 +443,7 @@
 
 .login-brand-text {
   color: #00eeff;
-  font-size: var(--fs-2);
+  font-size: clamp(var(--fs-1), 2.5dvh, var(--fs-2));
   font-weight: bold;
   margin: 0;
   text-shadow: 0 0 10px rgba(0, 238, 255, 0.5);

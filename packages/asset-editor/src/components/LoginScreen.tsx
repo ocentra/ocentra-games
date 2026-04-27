@@ -20,21 +20,22 @@ export function LoginScreen() {
       <div className="login-screen-shell__window-controls">
         <WindowControls />
       </div>
-      {allowDevMockAdmin ? (
-        <button
-          type="button"
-          className="login-screen-shell__mock-button"
-          onClick={() => {
-            setDevAuthQueryEnabled(true);
-          }}
-        >
-          Use mock admin
-        </button>
-      ) : null}
       <LoginDialog
         onLogin={login}
         onGoogleLogin={loginWithGoogle}
         onSendPasswordReset={sendPasswordReset}
+        secondaryActions={
+          allowDevMockAdmin
+            ? [
+                {
+                  label: 'Use mock admin',
+                  onClick: () => {
+                    setDevAuthQueryEnabled(true);
+                  },
+                },
+              ]
+            : []
+        }
         adminRequired
         adminMessage="Admin access required for Asset Editor. Sign in with an administrator account."
         brandTitle="Ocentra AI"
