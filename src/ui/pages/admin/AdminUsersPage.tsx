@@ -266,6 +266,7 @@ export const AdminUsersPage: React.FC = () => {
                     email: user.email ?? '',
                     avatarUrl: user.photoURL ? headerProps.getImageUrl(user.photoURL) : undefined,
                     isLoggedIn: true,
+                    isGuest: user.isGuest,
                     isAdmin: user.isAdmin,
                   },
                   onLogout: logout,

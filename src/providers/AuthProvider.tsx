@@ -7,6 +7,7 @@ import { FirestoreCollection } from '@ocentra/boundary-domain/constants/firestor
 import type { AuthResult, UserProfile } from '@/adapters/firebase/service';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { createGuestDisplayName, isGuestIdentity } from '@/lib/auth/guestIdentity';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -135,7 +136,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               const userData = userDoc.data() as UserProfile;
               const userProfile: UserProfile = {
                 ...userData,
-                uid: firebaseUser.uid
+                uid: firebaseUser.uid,
+                isGuest: userData.isGuest ?? firebaseUser.isAnonymous ?? isGuestIdentity(userData),
               };
               setUser(userProfile);
               logInfo('[onAuthStateChanged] ✅ User profile loaded from Firestore:', {
@@ -150,7 +152,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               logInfo('[onAuthStateChanged] ⚠️ User profile not found in Firestore, creating basic profile', LOG_AUTH_FLOW);
               setUser({
                 uid: firebaseUser.uid,
-                displayName: firebaseUser.displayName || 'Anonymous',
+                displayName: firebaseUser.isAnonymous
+                  ? createGuestDisplayName(firebaseUser.uid)
+                  : firebaseUser.displayName || 'Anonymous',
                 email: firebaseUser.email || '',
                 photoURL: firebaseUser.photoURL || '',
                 createdAt: new Date(),
@@ -160,13 +164,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 losses: 0,
                 winRate: 0,
                 eloRating: 1200,
-                achievements: []
+                achievements: [],
+                isGuest: firebaseUser.isAnonymous,
               });
             }
           } else {
             setUser({
               uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName || 'Anonymous',
+              displayName: firebaseUser.isAnonymous
+                ? createGuestDisplayName(firebaseUser.uid)
+                : firebaseUser.displayName || 'Anonymous',
               email: firebaseUser.email || '',
               photoURL: firebaseUser.photoURL || '',
               createdAt: new Date(),
@@ -176,14 +183,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               losses: 0,
               winRate: 0,
               eloRating: 1200,
-              achievements: []
+              achievements: [],
+              isGuest: firebaseUser.isAnonymous,
             });
           }
         } catch (error) {
           logError('[onAuthStateChanged] ❌ Error fetching user profile:', { data: error }, LOG_AUTH_ERROR);
           const fallbackProfile = {
             uid: firebaseUser.uid,
-            displayName: firebaseUser.displayName || 'Anonymous',
+            displayName: firebaseUser.isAnonymous
+              ? createGuestDisplayName(firebaseUser.uid)
+              : firebaseUser.displayName || 'Anonymous',
             email: firebaseUser.email || '',
             photoURL: firebaseUser.photoURL || '',
             createdAt: new Date(),
@@ -193,7 +203,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             losses: 0,
             winRate: 0,
             eloRating: 1200,
-            achievements: []
+            achievements: [],
+            isGuest: firebaseUser.isAnonymous,
           };
           setUser(fallbackProfile);
         }
@@ -411,7 +422,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(true);
       setUser({
         uid: 'simulated-guest-user',
-        displayName: 'Guest',
+        displayName: createGuestDisplayName('simulated-guest-user'),
         email: '',
         photoURL: '',
         createdAt: new Date(),
@@ -421,7 +432,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         losses: 0,
         winRate: 0,
         eloRating: 1200,
-        achievements: []
+        achievements: [],
+        isGuest: true,
       });
       logInfo('[loginAsGuest] ✅ Simulated guest login successful', LOG_AUTH_GUEST);
       return { success: true };

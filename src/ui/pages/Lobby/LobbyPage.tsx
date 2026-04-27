@@ -62,6 +62,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

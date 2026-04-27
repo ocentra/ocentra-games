@@ -173,6 +173,7 @@ export const LogsPage: React.FC = () => {
                       email: headerProps.user.email ?? '',
                       avatarUrl: headerProps.user.photoURL ? headerProps.getImageUrl(headerProps.user.photoURL) : undefined,
                       isLoggedIn: true,
+                      isGuest: headerProps.user.isGuest,
                       isAdmin: headerProps.user.isAdmin,
                     },
                     onLogout: headerProps.onLogout,

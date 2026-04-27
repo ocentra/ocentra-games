@@ -312,6 +312,7 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
       user: input.right?.user,
       onClick: input.right?.onClick,
       onLogout: input.right?.onLogout,
+      onUpgradeGuestClick: input.right?.onUpgradeGuestClick,
       onAdminDashboardClick: input.right?.onAdminDashboardClick,
       onViewProfileClick: input.right?.onViewProfileClick,
       onSettingsClick: input.right?.onSettingsClick,
@@ -558,12 +559,14 @@ export type UnifiedHeaderRightConfig = {
     avatarUrl?: string | null;
     isLoggedIn?: boolean;
     isAdmin?: boolean;
+    isGuest?: boolean;
     eloRating?: number;
     gamesPlayed?: number;
     winRate?: number;
   };
   onClick?: () => void;
   onLogout?: () => void;
+  onUpgradeGuestClick?: () => void;
   onAdminDashboardClick?: () => void;
   onViewProfileClick?: () => void;
   onSettingsClick?: () => void;

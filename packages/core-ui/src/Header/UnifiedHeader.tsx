@@ -59,6 +59,7 @@ const ENABLE_HEADER_DEBUG_CONTROLS = true;
 const DEFAULT_PROFILE_NAME = 'main_screen';
 const HEADER_SVG_HEIGHT = 80;
 const HEADER_BOX_VERTICAL_MARGIN = 8;
+const AUTH_MODE_STORAGE_KEY = 'ocentra.auth.mode';
 
 type DebugTab = 'layout' | 'profiles';
 type LayoutSubtab = 'global' | 'home' | 'wings' | 'center' | 'login' | 'nav';
@@ -637,6 +638,7 @@ function sanitizeProfileConfig(config?: UnifiedHeaderConfigInput): UnifiedHeader
           isProfile: undefined,
           onClick: undefined,
           onLogout: undefined,
+          onUpgradeGuestClick: undefined,
           onAdminDashboardClick: undefined,
           onViewProfileClick: undefined,
           onSettingsClick: undefined,
@@ -710,6 +712,7 @@ function applyRuntimeOverlay(
       ...(runtimeOverlay.right?.isProfile !== undefined ? { isProfile: runtimeOverlay.right.isProfile } : {}),
       ...(runtimeOverlay.right?.onClick !== undefined ? { onClick: runtimeOverlay.right.onClick } : {}),
       ...(runtimeOverlay.right?.onLogout !== undefined ? { onLogout: runtimeOverlay.right.onLogout } : {}),
+      ...(runtimeOverlay.right?.onUpgradeGuestClick !== undefined ? { onUpgradeGuestClick: runtimeOverlay.right.onUpgradeGuestClick } : {}),
       ...(runtimeOverlay.right?.onAdminDashboardClick !== undefined ? { onAdminDashboardClick: runtimeOverlay.right.onAdminDashboardClick } : {}),
       ...(runtimeOverlay.right?.onViewProfileClick !== undefined ? { onViewProfileClick: runtimeOverlay.right.onViewProfileClick } : {}),
       ...(runtimeOverlay.right?.onSettingsClick !== undefined ? { onSettingsClick: runtimeOverlay.right.onSettingsClick } : {}),
@@ -885,6 +888,16 @@ export function UnifiedHeader({
   const profileCacheRef = useRef<Record<string, UnifiedHeaderConfigInput | null>>({});
   const profileAvatarUrl = config.right.user?.avatarUrl?.trim() || '';
   const profileAvatarLoadFailed = Boolean(profileAvatarUrl) && failedProfileAvatarUrl === profileAvatarUrl;
+  const isGuestUser = Boolean(config.right.user?.isGuest);
+
+  const handleGuestUpgrade = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(AUTH_MODE_STORAGE_KEY, 'signup');
+    }
+    config.right.onUpgradeGuestClick?.();
+    config.right.onLogout?.();
+    setShowProfileDropdown(false);
+  }, [config.right]);
 
   const normalizeLoadedConfig = useCallback(
     (loadedConfig?: UnifiedHeaderConfigInput) => {
@@ -1828,21 +1841,30 @@ export function UnifiedHeader({
             } as React.CSSProperties}
           >
             <div className={styles.dropdownHeader}>
-              <button 
-                className={styles.dropdownAvatar}
-                onClick={() => {
-                  setShowPictureModal(true);
-                  setShowProfileDropdown(false);
-                }}
-                title="Change profile picture"
+              {isGuestUser ? (
+                <div className={styles.dropdownAvatar}>
+                  <img
+                    src={authAnnonImageUrl}
+                    alt="Anonymous User"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </div>
+              ) : (
+                <button
+                  className={styles.dropdownAvatar}
+                  onClick={() => {
+                    setShowPictureModal(true);
+                    setShowProfileDropdown(false);
+                  }}
+                  title="Change profile picture"
                 >
-                 {right.user.avatarUrl && !profileAvatarLoadFailed ? (
-                   <img
-                     src={right.user.avatarUrl}
-                     alt={right.user.name}
-                     style={{ width: '100%', height: '100%' }}
-                     onError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
-                   />
+                  {right.user.avatarUrl && !profileAvatarLoadFailed ? (
+                    <img
+                      src={right.user.avatarUrl}
+                      alt={right.user.name}
+                      style={{ width: '100%', height: '100%' }}
+                      onError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
+                    />
                   ) : (
                     <img
                       src={authAnnonImageUrl}
@@ -1850,45 +1872,79 @@ export function UnifiedHeader({
                       style={{ width: '100%', height: '100%' }}
                     />
                   )}
-                <div className={styles.editOverlay}>
-                  <span>✏️</span>
-                </div>
-              </button>
+                  <div className={styles.editOverlay}>
+                    <span>Edit</span>
+                  </div>
+                </button>
+              )}
               <div className={styles.dropdownInfo}>
                 <div className={styles.dropdownName}>{right.user.name}</div>
-                {right.user.email && <div className={styles.dropdownStatus}>{right.user.email}</div>}
+                <div className={styles.dropdownStatus}>
+                  {isGuestUser ? 'Guest session' : right.user.email}
+                </div>
               </div>
             </div>
             <div className={styles.dropdownDivider} />
-            <div className={styles.dropdownStats}>
-              <div><span>ELO</span><strong>{right.user.eloRating ?? 1200}</strong></div>
-              <div><span>Games</span><strong>{right.user.gamesPlayed ?? 0}</strong></div>
-              <div><span>Win</span><strong>{right.user.winRate?.toFixed(1) ?? '0'}%</strong></div>
-            </div>
-            <div className={styles.dropdownDivider} />
-            <div className={styles.dropdownMenuSections}>
-              <div className={styles.dropdownMenuSection}>
-                {right.user.isAdmin && right.onAdminDashboardClick && (
-                  <button className={styles.dropdownItem} onClick={() => { right.onAdminDashboardClick?.(); setShowProfileDropdown(false); }}>
-                    <span style={{ fontSize: '16px' }}>👑</span>
-                    Admin Dashboard
+            {isGuestUser ? (
+              <div className={styles.dropdownMenuSections}>
+                <div className={styles.guestDropdownCopy}>
+                  Save your progress, keep your identity, and unlock the real player profile once you register.
+                </div>
+                <div className={styles.guestBenefits}>
+                  <div className={styles.guestBenefitCard}>
+                    <span>Keep</span>
+                    <strong>Your name</strong>
+                  </div>
+                  <div className={styles.guestBenefitCard}>
+                    <span>Track</span>
+                    <strong>Stats</strong>
+                  </div>
+                  <div className={styles.guestBenefitCard}>
+                    <span>Unlock</span>
+                    <strong>Social play</strong>
+                  </div>
+                </div>
+                <div className={styles.dropdownMenuSection}>
+                  <button className={styles.guestPrimaryButton} onClick={handleGuestUpgrade}>
+                    Create Ocentra Account
                   </button>
-                )}
-                <button className={styles.dropdownItem} onClick={() => { right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>View Profile</button>
-                <button className={styles.dropdownItem} onClick={() => { right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Settings</button>
-                <button className={styles.dropdownItem} onClick={() => { right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security</button>
+                  <button className={styles.dropdownItem} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
+                    Sign out
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className={styles.dropdownStats}>
+                  <div><span>ELO</span><strong>{right.user.eloRating ?? 1200}</strong></div>
+                  <div><span>Games</span><strong>{right.user.gamesPlayed ?? 0}</strong></div>
+                  <div><span>Win</span><strong>{right.user.winRate?.toFixed(1) ?? '0'}%</strong></div>
+                </div>
+                <div className={styles.dropdownDivider} />
+                <div className={styles.dropdownMenuSections}>
+                  <div className={styles.dropdownMenuSection}>
+                    {right.user.isAdmin && right.onAdminDashboardClick && (
+                      <button className={styles.dropdownItem} onClick={() => { right.onAdminDashboardClick?.(); setShowProfileDropdown(false); }}>
+                        Admin Dashboard
+                      </button>
+                    )}
+                    <button className={styles.dropdownItem} onClick={() => { right.onViewProfileClick?.(); setShowProfileDropdown(false); }}>View Profile</button>
+                    <button className={styles.dropdownItem} onClick={() => { right.onSettingsClick?.(); setShowProfileDropdown(false); }}>Settings</button>
+                    <button className={styles.dropdownItem} onClick={() => { right.onSecurityClick?.(); setShowProfileDropdown(false); }}>Security</button>
+                  </div>
 
-              <div className={styles.dropdownMenuSectionDanger}>
-                <button className={styles.dropdownItemLogout} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
-                  Logout
-                </button>
-              </div>
-            </div>
+                  <div className={styles.dropdownMenuSectionDanger}>
+                    <button className={styles.dropdownItemLogout} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 
-      {showPictureModal && right.isProfile && right.user && right.onUpdatePhoto && (
+      {showPictureModal && right.isProfile && right.user && !isGuestUser && right.onUpdatePhoto && (
         <ProfilePictureModal
           isOpen={showPictureModal}
           onClose={() => setShowPictureModal(false)}
@@ -2786,3 +2842,4 @@ function Control({
     </div>
   );
 }
+

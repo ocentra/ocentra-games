@@ -324,6 +324,7 @@ export function DevPanelPage() {
                       ? headerProps.getImageUrl(headerProps.user.photoURL)
                       : undefined,
                     isLoggedIn: true,
+                    isGuest: headerProps.user.isGuest,
                     isAdmin: headerProps.user.isAdmin,
                   },
                   onLogout: headerProps.onLogout,

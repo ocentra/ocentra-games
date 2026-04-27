@@ -129,6 +129,7 @@ export const CardGamePreviewHarness: React.FC = () => {
             email: rawHeaderProps.user.email ?? '',
             displayName: rawHeaderProps.user.displayName ?? 'Player',
             photoURL: rawHeaderProps.user.photoURL ?? undefined,
+            isGuest: rawHeaderProps.user.isGuest,
             isAdmin: rawHeaderProps.user.isAdmin,
           }
         : null,

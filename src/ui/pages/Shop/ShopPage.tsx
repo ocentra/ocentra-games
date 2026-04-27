@@ -159,6 +159,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
             onLogout: onLogout
           },

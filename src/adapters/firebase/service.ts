@@ -22,6 +22,7 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { R2Service } from '@/adapters/storage/R2Service';
 import { getStorageConfig } from '@/services/storage/StorageConfig';
+import { createGuestDisplayName, isGuestIdentity } from '@/lib/auth/guestIdentity';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -78,7 +79,8 @@ export interface UserProfile {
   matchHistory?: string[];
   matchIds?: string[];
   walletAddress?: string;
-  isAdmin?: boolean;  
+  isAdmin?: boolean;
+  isGuest?: boolean;
 }
 
 export interface AuthResult {
@@ -900,7 +902,7 @@ export const loginAsGuest = async (): Promise<AuthResult> => {
       logInfo('loginAsGuest: Creating new guest profile in Firestore', LOG_AUTH_FLOW);
       userProfile = {
         uid: user.uid,
-        displayName: `Guest-${user.uid.substring(0, 5)}`,
+        displayName: createGuestDisplayName(user.uid),
         email: '',
         photoURL: '',
         createdAt: new Date(),
@@ -910,14 +912,25 @@ export const loginAsGuest = async (): Promise<AuthResult> => {
         losses: 0,
         winRate: 0,
         eloRating: 1200,
-        achievements: []
+        achievements: [],
+        isGuest: true,
       };
       await setDoc(doc(db!, FirestoreCollection.Users, user.uid), userProfile);
     } else {
       logInfo('loginAsGuest: Guest profile exists, updating lastLoginAt', LOG_AUTH_FLOW);
       userProfile = { ...userDoc.data() as UserProfile, uid: user.uid };
+      const nextGuestName = isGuestIdentity(userProfile) && userProfile.displayName.startsWith('Guest-')
+        ? createGuestDisplayName(user.uid)
+        : userProfile.displayName;
+      userProfile = {
+        ...userProfile,
+        displayName: nextGuestName,
+        isGuest: true,
+      };
       await updateDoc(doc(db!, FirestoreCollection.Users, user.uid), {
-        lastLoginAt: new Date()
+        lastLoginAt: new Date(),
+        displayName: nextGuestName,
+        isGuest: true,
       });
     }
     

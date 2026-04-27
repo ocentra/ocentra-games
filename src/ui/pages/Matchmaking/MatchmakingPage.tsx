@@ -60,6 +60,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

@@ -62,6 +62,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

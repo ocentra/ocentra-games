@@ -240,6 +240,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
         email: user.email,
         avatarUrl: getHeaderAvatarUrl(user.photoURL),
         isLoggedIn: true,
+        isGuest: user.isGuest,
         isAdmin: user.isAdmin,
         eloRating: user.eloRating,
         gamesPlayed: user.gamesPlayed,

@@ -23,6 +23,8 @@ const AuthImages = {
   Social: { facebook: authFacebookImageUrl, google: authGoogleImageUrl, guest: authAnnonImageUrl },
 } as const;
 
+const AUTH_MODE_STORAGE_KEY = 'ocentra.auth.mode';
+
 const AvatarImages = avatarImageById;
 
 const AuthBackgroundCards = [
@@ -93,6 +95,25 @@ export interface LoginDialogProps {
   secondaryActions?: LoginDialogSecondaryAction[];
   disableCredentials?: boolean;
   disableGoogleLogin?: boolean;
+  initialMode?: 'signin' | 'signup';
+}
+
+function resolveInitialAuthMode(initialMode?: 'signin' | 'signup') {
+  if (initialMode) {
+    return initialMode;
+  }
+
+  if (typeof window === 'undefined') {
+    return 'signin';
+  }
+
+  const requestedMode = window.sessionStorage.getItem(AUTH_MODE_STORAGE_KEY);
+  if (requestedMode === 'signup') {
+    window.sessionStorage.removeItem(AUTH_MODE_STORAGE_KEY);
+    return 'signup';
+  }
+
+  return 'signin';
 }
 
 export function LoginDialog({
@@ -111,6 +132,7 @@ export function LoginDialog({
   secondaryActions = [],
   disableCredentials = false,
   disableGoogleLogin = false,
+  initialMode,
 }: LoginDialogProps) {
   const backgroundCards = useMemo(
     () =>
@@ -127,7 +149,7 @@ export function LoginDialog({
     { key: 'google', handler: onGoogleLogin, icon: AuthImages.Social.google, alt: 'Google', error: 'Google login failed. Please try again.', disabled: disableGoogleLogin },
     { key: 'guest', handler: onGuestLogin, icon: AuthImages.Social.guest, alt: 'Guest', error: 'Guest login failed. Please try again.' },
   ].filter((option) => typeof option.handler === 'function');
-  const [isSignIn, setIsSignIn] = useState(true);
+  const [isSignIn, setIsSignIn] = useState(() => resolveInitialAuthMode(initialMode) === 'signin');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

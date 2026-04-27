@@ -72,6 +72,7 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

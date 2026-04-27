@@ -176,6 +176,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

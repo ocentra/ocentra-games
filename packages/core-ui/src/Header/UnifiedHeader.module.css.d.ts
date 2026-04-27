@@ -50,6 +50,10 @@ declare const styles: {
   readonly dropdownMenuSections: string;
   readonly dropdownMenuSection: string;
   readonly dropdownMenuSectionDanger: string;
+  readonly guestDropdownCopy: string;
+  readonly guestBenefits: string;
+  readonly guestBenefitCard: string;
+  readonly guestPrimaryButton: string;
   readonly dropdownItemLogout: string;
 };
 

@@ -57,6 +57,7 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
                 email: user.email,
                 avatarUrl: getHeaderAvatarUrl(user.photoURL),
                 isLoggedIn: true,
+                isGuest: user.isGuest,
               } : undefined,
               onLogout: handleLogout
             },

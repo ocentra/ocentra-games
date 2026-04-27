@@ -7,4 +7,5 @@ export interface UserProfile {
   gamesPlayed?: number;
   winRate?: number;
   isAdmin?: boolean;
+  isGuest?: boolean;
 }
