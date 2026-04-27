@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
@@ -8,6 +7,7 @@ import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import LoginDialog from '@/ui/components/Auth/LoginDialog';
 import { useAuth } from '@/providers/AuthProvider';
+import { useAdminPermissions } from '@/hooks/useAdminPermissions';
 import { useAuthHandlers } from '@/hooks/useAuthHandlers';
 import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
 import './LogsPage.css';
@@ -43,15 +43,12 @@ const DEFAULT_LIMIT = 100;
 export const LogsPage: React.FC = () => {
   const navigate = useNavigate();
   const headerProps = useCoreUIHeaderProps();
-  const { login, signUp, loginWithFacebook, loginWithGoogle, loginAsGuest } = useAuth();
+  const { login, signUp, loginWithFacebook, loginWithGoogle, loginAsGuest, sendPasswordReset, user } = useAuth();
+  const { isAdmin } = useAdminPermissions();
   const handleWalletLogin = async (): Promise<{ success: boolean; error?: string }> => {
     return { success: false, error: 'Please connect your wallet in the login dialog' };
   };
   const authHandlers = useAuthHandlers(login, signUp, loginWithFacebook, loginWithGoogle, loginAsGuest, handleWalletLogin);
-  const sendPasswordReset = async (_email: string): Promise<{ success: boolean; error?: string }> => ({
-    success: false,
-    error: 'Not configured',
-  });
 
   const [logs, setLogs] = useState<LogEntryRow[]>([]);
   const [stats, setStats] = useState<LogStatsData | null>(null);
@@ -135,22 +132,32 @@ export const LogsPage: React.FC = () => {
     return d.toLocaleTimeString('en-US', { hour12: false }) + '.' + String(d.getMilliseconds()).padStart(3, '0');
   };
 
+  if (!isAdmin) {
+    return (
+      <LoginDialog
+        onLogin={authHandlers.login}
+        onFacebookLogin={authHandlers.facebookLogin}
+        onGoogleLogin={authHandlers.googleLogin}
+        onGuestLogin={authHandlers.guestLogin}
+        onWalletLogin={handleWalletLogin}
+        onSendPasswordReset={sendPasswordReset}
+        adminRequired
+        disableGuestLogin
+        initialMode="signin"
+        contextEyebrow="Runtime Logs"
+        contextTitle={user?.isGuest ? 'Upgrade from guest to administrator access' : 'Administrator access required'}
+        contextDescription={
+          user?.email
+            ? `Signed in as ${user.email}, but operational logs and diagnostics are restricted to approved administrator accounts.`
+            : 'Operational logs and diagnostics are restricted to approved administrator accounts.'
+        }
+        onClose={() => navigate('/')}
+      />
+    );
+  }
+
   return (
     <>
-      {!headerProps.user
-        ? createPortal(
-            <LoginDialog
-              onLogin={authHandlers.login}
-              onSignUp={authHandlers.signUp}
-              onFacebookLogin={authHandlers.facebookLogin}
-              onGoogleLogin={authHandlers.googleLogin}
-              onGuestLogin={authHandlers.guestLogin}
-              onWalletLogin={handleWalletLogin}
-              onSendPasswordReset={sendPasswordReset}
-            />,
-            document.body
-          )
-        : null}
       <UnifiedPageShell
         className="logs-page-shell"
         header={

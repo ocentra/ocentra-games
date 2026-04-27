@@ -78,6 +78,8 @@ export interface LoginDialogStatusMessage {
   text: string;
 }
 
+export type LoginDialogContextTone = 'default' | 'warning';
+
 export interface LoginDialogProps {
   onLogin: (username: string, password: string) => Promise<LoginDialogActionResult>;
   onSignUp?: (userData: LoginDialogSignUpPayload) => Promise<LoginDialogActionResult>;
@@ -93,9 +95,16 @@ export interface LoginDialogProps {
   appVersion?: string;
   statusMessage?: LoginDialogStatusMessage | null;
   secondaryActions?: LoginDialogSecondaryAction[];
+  contextEyebrow?: string;
+  contextTitle?: string;
+  contextDescription?: string;
+  contextTone?: LoginDialogContextTone;
   disableCredentials?: boolean;
   disableGoogleLogin?: boolean;
+  disableGuestLogin?: boolean;
   initialMode?: 'signin' | 'signup';
+  onClose?: () => void | Promise<void>;
+  closeAriaLabel?: string;
 }
 
 function resolveInitialAuthMode(initialMode?: 'signin' | 'signup') {
@@ -116,6 +125,34 @@ function resolveInitialAuthMode(initialMode?: 'signin' | 'signup') {
   return 'signin';
 }
 
+function formatBrandToken(token: string, index: number) {
+  if (index === 0 && /^ocentra$/i.test(token)) {
+    return "O'CENTRA";
+  }
+
+  return token.toUpperCase();
+}
+
+function resolveBrandPillParts(brandTitle: string) {
+  const tokens = brandTitle
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return { left: "O'CENTRA", right: 'GAMES' };
+  }
+
+  if (tokens.length === 1) {
+    return { left: formatBrandToken(tokens[0], 0), right: 'GAMES' };
+  }
+
+  return {
+    left: formatBrandToken(tokens[0], 0),
+    right: tokens.slice(1).map((token, index) => formatBrandToken(token, index + 1)).join(' '),
+  };
+}
+
 export function LoginDialog({
   onLogin,
   onSignUp,
@@ -126,13 +163,20 @@ export function LoginDialog({
   onTabSwitch,
   adminRequired = false,
   adminMessage = 'You need to be an administrator to access this page. Please sign in with an admin account.',
-  brandTitle = 'Ocentra AI',
+  brandTitle = 'Ocentra Games',
   appVersion = '0.1.0',
   statusMessage = null,
   secondaryActions = [],
+  contextEyebrow,
+  contextTitle,
+  contextDescription,
+  contextTone = 'default',
   disableCredentials = false,
   disableGoogleLogin = false,
+  disableGuestLogin = false,
   initialMode,
+  onClose,
+  closeAriaLabel = 'Close authentication dialog',
 }: LoginDialogProps) {
   const backgroundCards = useMemo(
     () =>
@@ -147,8 +191,8 @@ export function LoginDialog({
   const socialOptions = [
     { key: 'facebook', handler: onFacebookLogin, icon: AuthImages.Social.facebook, alt: 'Facebook', error: 'Facebook login failed. Please try again.' },
     { key: 'google', handler: onGoogleLogin, icon: AuthImages.Social.google, alt: 'Google', error: 'Google login failed. Please try again.', disabled: disableGoogleLogin },
-    { key: 'guest', handler: onGuestLogin, icon: AuthImages.Social.guest, alt: 'Guest', error: 'Guest login failed. Please try again.' },
-  ].filter((option) => typeof option.handler === 'function');
+    { key: 'guest', handler: onGuestLogin, icon: AuthImages.Social.guest, alt: 'Guest', error: 'Guest login failed. Please try again.', hidden: disableGuestLogin },
+  ].filter((option) => !option.hidden && typeof option.handler === 'function');
   const [isSignIn, setIsSignIn] = useState(() => resolveInitialAuthMode(initialMode) === 'signin');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -189,6 +233,42 @@ export function LoginDialog({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
+
+    const { body, documentElement } = document;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscrollBehavior = body.style.overscrollBehavior;
+    const previousDocumentOverflow = documentElement.style.overflow;
+
+    body.style.overflow = 'hidden';
+    body.style.overscrollBehavior = 'contain';
+    documentElement.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscrollBehavior;
+      documentElement.style.overflow = previousDocumentOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!signUpEnabled || typeof window === 'undefined') {
+      return;
+    }
+
+    const preloadedAvatars = avatarOptions.map((option) => {
+      const image = new window.Image();
+      image.decoding = 'async';
+      image.src = option.url;
+      return image;
+    });
+
+    void preloadedAvatars;
+  }, [avatarOptions, signUpEnabled]);
 
   const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -343,6 +423,16 @@ export function LoginDialog({
     errorMessage || successMessage
       ? { kind: errorMessage ? 'error' : 'success', text: errorMessage || successMessage }
       : statusMessage;
+  const introEyebrow = contextEyebrow ?? (adminRequired ? 'Restricted feature' : disableGuestLogin ? 'Player account' : 'Player access');
+  const introTitle = contextTitle ?? (adminRequired ? 'Administrator access required' : 'Sign in to continue');
+  const introDescription = contextDescription
+    ?? (adminRequired
+      ? adminMessage
+      : disableGuestLogin
+        ? 'Use a full account to continue.'
+        : 'Use a full account or continue as guest when this feature allows it.');
+  const introTone = adminRequired ? 'warning' : contextTone;
+  const brandPill = resolveBrandPillParts(brandTitle);
 
   return (
     <div className="login-dialog-overlay">
@@ -367,261 +457,284 @@ export function LoginDialog({
           />
         ))}
       </div>
-      <div className="login-logo-section">
-        <img src={mlogoImageUrl} alt="Ocentra Logo" className="login-logo" />
-        <h2 className="login-brand-text">{brandTitle}</h2>
-      </div>
 
-      <div className="login-dialog">
-        {adminRequired ? (
-          <div className="admin-required-message">
-            <div className="admin-required-icon">Locked</div>
-            <p className="admin-required-text">{adminMessage}</p>
-          </div>
+      <div className="login-dialog-shell">
+        {onClose ? (
+          <button
+            type="button"
+            className="login-dialog-close"
+            aria-label={closeAriaLabel}
+            onClick={() => {
+              void onClose();
+            }}
+          >
+            <span className="login-dialog-close__icon" aria-hidden="true">
+              <span className="login-dialog-close__letter">X</span>
+            </span>
+          </button>
         ) : null}
 
-        <div className="login-header">
-          <div className="tab-buttons">
-            <button
-              type="button"
-              className={`tab-button ${isSignIn ? 'active' : ''}`}
-              onClick={() => {
-                if (!isSignIn && onTabSwitch) {
-                  onTabSwitch();
-                }
-                setIsSignIn(true);
-                clearMessages();
-              }}
-            >
-              SIGN IN
-            </button>
-            {signUpEnabled ? (
+        <div className="login-dialog">
+          <div className={`login-dialog-intro login-dialog-intro--${introTone}`}>
+            <div className="login-dialog-intro__bar">
+              <div className="login-dialog-brand-pill" aria-label={brandTitle}>
+                <span className="login-dialog-brand-pill__segment">{brandPill.left}</span>
+                <span className="login-dialog-brand-pill__logo-wrap" aria-hidden="true">
+                  <img src={mlogoImageUrl} alt="" className="login-dialog-brand-pill__logo" />
+                </span>
+                <span className="login-dialog-brand-pill__segment">{brandPill.right}</span>
+              </div>
+            </div>
+            <div className="login-dialog-intro__copy">
+              {introEyebrow ? <p className="login-dialog-intro__eyebrow">{introEyebrow}</p> : null}
+              <h2 className="login-dialog-intro__title">{introTitle}</h2>
+              <p className="login-dialog-intro__description">{introDescription}</p>
+            </div>
+          </div>
+
+          <div className="login-header">
+            <div className="tab-buttons">
               <button
                 type="button"
-                className={`tab-button ${!isSignIn ? 'active' : ''}`}
+                className={`tab-button ${isSignIn ? 'active' : ''}`}
                 onClick={() => {
-                  if (isSignIn && onTabSwitch) {
+                  if (!isSignIn && onTabSwitch) {
                     onTabSwitch();
                   }
-                  setIsSignIn(false);
+                  setIsSignIn(true);
                   clearMessages();
                 }}
               >
-                SIGN UP
+                SIGN IN
               </button>
-            ) : null}
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="login-form">
-          {!isSignIn && signUpEnabled ? (
-            <>
-              <div className="avatar-container">
+              {signUpEnabled ? (
                 <button
                   type="button"
-                  className="avatar-preview"
-                  onClick={() => setShowAvatarSelector((value) => !value)}
-                  aria-label="Select avatar"
-                  aria-expanded={showAvatarSelector}
+                  className={`tab-button ${!isSignIn ? 'active' : ''}`}
+                  onClick={() => {
+                    if (isSignIn && onTabSwitch) {
+                      onTabSwitch();
+                    }
+                    setIsSignIn(false);
+                    clearMessages();
+                  }}
                 >
-                  {avatar ? (
-                    <img src={avatar} alt="Selected avatar" />
-                  ) : (
-                    <div className="avatar-placeholder">User</div>
-                  )}
+                  SIGN UP
                 </button>
+              ) : null}
+            </div>
+          </div>
 
-                {showAvatarSelector ? (
-                  <div className="avatar-selector" ref={avatarSelectorRef}>
-                    {avatarOptions.length === 0 ? <div>No avatars available</div> : null}
-                    <div className="avatar-grid">
-                      {avatarOptions.map((option) => (
+          <form onSubmit={handleSubmit} className="login-form">
+            {!isSignIn && signUpEnabled ? (
+              <>
+                <div className="avatar-container">
+                  <button
+                    type="button"
+                    className="avatar-preview"
+                    onClick={() => setShowAvatarSelector((value) => !value)}
+                    aria-label="Select avatar"
+                    aria-expanded={showAvatarSelector}
+                  >
+                    {avatar ? (
+                      <img src={avatar} alt="Selected avatar" />
+                    ) : (
+                      <div className="avatar-placeholder">User</div>
+                    )}
+                  </button>
+
+                  {showAvatarSelector ? (
+                    <div className="avatar-selector" ref={avatarSelectorRef}>
+                      {avatarOptions.length === 0 ? <div>No avatars available</div> : null}
+                      <div className="avatar-grid">
+                        {avatarOptions.map((option) => (
+                          <button
+                            type="button"
+                            key={option.id}
+                            className={`avatar-option ${avatar === option.url ? 'selected' : ''}`}
+                            onClick={() => handleAvatarSelect(option.url)}
+                            aria-label={`Select avatar ${option.id}`}
+                          >
+                            <img src={option.url} alt={`Avatar ${option.id}`} />
+                          </button>
+                        ))}
                         <button
                           type="button"
-                          key={option.id}
-                          className={`avatar-option ${avatar === option.url ? 'selected' : ''}`}
-                          onClick={() => handleAvatarSelect(option.url)}
-                          aria-label={`Select avatar ${option.id}`}
+                          className="avatar-option upload-option"
+                          onClick={handleUploadClick}
+                          aria-label="Upload custom avatar"
                         >
-                          <img src={option.url} alt={`Avatar ${option.id}`} />
+                          <div className="upload-placeholder">+</div>
+                          <div className="upload-text">Upload</div>
                         </button>
-                      ))}
-                      <button
-                        type="button"
-                        className="avatar-option upload-option"
-                        onClick={handleUploadClick}
-                        aria-label="Upload custom avatar"
-                      >
-                        <div className="upload-placeholder">+</div>
-                        <div className="upload-text">Upload</div>
-                      </button>
+                      </div>
+                      <label htmlFor="avatar-upload" hidden>
+                        Upload avatar
+                      </label>
+                      <input
+                        type="file"
+                        id="avatar-upload"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                      />
                     </div>
-                    <label htmlFor="avatar-upload" hidden>
-                      Upload avatar
-                    </label>
-                    <input
-                      type="file"
-                      id="avatar-upload"
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                      accept="image/*"
-                    />
-                  </div>
-                ) : null}
-              </div>
+                  ) : null}
+                </div>
 
+                <div className="input-group">
+                  <input
+                    type="text"
+                    placeholder="Alias"
+                    value={alias}
+                    onChange={(event) => setAlias(event.target.value)}
+                    className="login-input"
+                  />
+                </div>
+              </>
+            ) : null}
+
+            <div className="input-group">
+              <input
+                type="email"
+                placeholder={isSignIn ? 'Email' : 'Email (Username)'}
+                value={username}
+                onChange={(event) => {
+                  setUsername(event.target.value);
+                  if (validationErrors.email) {
+                    setValidationErrors({ ...validationErrors, email: undefined });
+                  }
+                }}
+                className={`login-input ${validationErrors.email ? 'error' : ''}`}
+                disabled={showForgotPassword || disableCredentials}
+              />
+              {validationErrors.email ? <div className="validation-error">{validationErrors.email}</div> : null}
+            </div>
+
+            <div className="input-group">
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  if (validationErrors.password) {
+                    setValidationErrors({ ...validationErrors, password: undefined });
+                  }
+                }}
+                className={`login-input ${validationErrors.password ? 'error' : ''}`}
+                disabled={showForgotPassword || disableCredentials}
+              />
+              {validationErrors.password ? <div className="validation-error">{validationErrors.password}</div> : null}
+              {isSignIn && !showForgotPassword && onSendPasswordReset && !disableCredentials ? (
+                <button
+                  type="button"
+                  className="forgot-password-link"
+                  onClick={() => {
+                    setShowForgotPassword(true);
+                    clearMessages();
+                    setValidationErrors({});
+                  }}
+                >
+                  Forgot Password?
+                </button>
+              ) : null}
+            </div>
+
+            {isSignIn && showForgotPassword ? (
+              <div className="forgot-password-section">
+                <p>Enter your email address and we&apos;ll send you a link to reset your password.</p>
+                <button type="button" className="sign-in-button" onClick={handleForgotPassword} disabled={isLoading}>
+                  {isLoading ? 'Sending...' : 'Send Reset Email'}
+                </button>
+                <button
+                  type="button"
+                  className="back-to-signin-button"
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    clearMessages();
+                  }}
+                >
+                  Back to Sign In
+                </button>
+              </div>
+            ) : null}
+
+            {activeMessage ? <div className={`message-display ${activeMessage.kind}`}>{activeMessage.text}</div> : null}
+
+            {!isSignIn && signUpEnabled ? (
               <div className="input-group">
                 <input
-                  type="text"
-                  placeholder="Alias"
-                  value={alias}
-                  onChange={(event) => setAlias(event.target.value)}
-                  className="login-input"
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(event) => {
+                    setConfirmPassword(event.target.value);
+                    if (validationErrors.confirmPassword) {
+                      setValidationErrors({ ...validationErrors, confirmPassword: undefined });
+                    }
+                  }}
+                  className={`login-input ${validationErrors.confirmPassword ? 'error' : ''}`}
                 />
+                {validationErrors.confirmPassword ? (
+                  <div className="validation-error">{validationErrors.confirmPassword}</div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {!showForgotPassword ? (
+              <button type="submit" className="sign-in-button" disabled={isLoading || disableCredentials}>
+                {isLoading ? 'Loading...' : isSignIn || !signUpEnabled ? 'SIGN IN' : 'SIGN UP'}
+              </button>
+            ) : null}
+          </form>
+
+          {isSignIn && socialOptions.length > 0 ? (
+            <>
+              <div className="divider">
+                <span>or Log in with</span>
+              </div>
+
+              <div className="social-login">
+                <div className="social-buttons-container">
+                  {socialOptions.map((option) => (
+                    <button
+                      type="button"
+                      key={option.key}
+                      className="social-button"
+                      onClick={() => {
+                        if (option.handler) {
+                          void handleSocialAuthResult(option.handler, option.error);
+                        }
+                      }}
+                      disabled={isLoading || option.disabled}
+                    >
+                      <img src={option.icon} alt={option.alt} className="social-icon" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </>
           ) : null}
 
-          <div className="input-group">
-            <input
-              type="email"
-              placeholder={isSignIn ? 'Email' : 'Email (Username)'}
-              value={username}
-              onChange={(event) => {
-                setUsername(event.target.value);
-                if (validationErrors.email) {
-                  setValidationErrors({ ...validationErrors, email: undefined });
-                }
-              }}
-              className={`login-input ${validationErrors.email ? 'error' : ''}`}
-              disabled={showForgotPassword || disableCredentials}
-            />
-            {validationErrors.email ? <div className="validation-error">{validationErrors.email}</div> : null}
-          </div>
-
-          <div className="input-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value);
-                if (validationErrors.password) {
-                  setValidationErrors({ ...validationErrors, password: undefined });
-                }
-              }}
-              className={`login-input ${validationErrors.password ? 'error' : ''}`}
-              disabled={showForgotPassword || disableCredentials}
-            />
-            {validationErrors.password ? <div className="validation-error">{validationErrors.password}</div> : null}
-            {isSignIn && !showForgotPassword && onSendPasswordReset && !disableCredentials ? (
-              <button
-                type="button"
-                className="forgot-password-link"
-                onClick={() => {
-                  setShowForgotPassword(true);
-                  clearMessages();
-                  setValidationErrors({});
-                }}
-              >
-                Forgot Password?
-              </button>
-            ) : null}
-          </div>
-
-          {isSignIn && showForgotPassword ? (
-            <div className="forgot-password-section">
-              <p>Enter your email address and we&apos;ll send you a link to reset your password.</p>
-              <button type="button" className="sign-in-button" onClick={handleForgotPassword} disabled={isLoading}>
-                {isLoading ? 'Sending...' : 'Send Reset Email'}
-              </button>
-              <button
-                type="button"
-                className="back-to-signin-button"
-                onClick={() => {
-                  setShowForgotPassword(false);
-                  clearMessages();
-                }}
-              >
-                Back to Sign In
-              </button>
+          {secondaryActions.length > 0 ? (
+            <div className="login-secondary-actions">
+              {secondaryActions.map((action) => (
+                <button
+                  type="button"
+                  key={action.label}
+                  className="login-secondary-button"
+                  onClick={() => {
+                    void action.onClick();
+                  }}
+                  disabled={action.disabled || isLoading}
+                >
+                  {action.label}
+                </button>
+              ))}
             </div>
           ) : null}
-
-          {activeMessage ? <div className={`message-display ${activeMessage.kind}`}>{activeMessage.text}</div> : null}
-
-          {!isSignIn && signUpEnabled ? (
-            <div className="input-group">
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(event) => {
-                  setConfirmPassword(event.target.value);
-                  if (validationErrors.confirmPassword) {
-                    setValidationErrors({ ...validationErrors, confirmPassword: undefined });
-                  }
-                }}
-                className={`login-input ${validationErrors.confirmPassword ? 'error' : ''}`}
-              />
-              {validationErrors.confirmPassword ? (
-                <div className="validation-error">{validationErrors.confirmPassword}</div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {!showForgotPassword ? (
-            <button type="submit" className="sign-in-button" disabled={isLoading || disableCredentials}>
-              {isLoading ? 'Loading...' : isSignIn || !signUpEnabled ? 'SIGN IN' : 'SIGN UP'}
-            </button>
-          ) : null}
-        </form>
-
-        {isSignIn && socialOptions.length > 0 ? (
-          <>
-            <div className="divider">
-              <span>or Log in with</span>
-            </div>
-
-            <div className="social-login">
-              <div className="social-buttons-container">
-                {socialOptions.map((option) => (
-                  <button
-                    type="button"
-                    key={option.key}
-                    className="social-button"
-                    onClick={() => {
-                      if (option.handler) {
-                        void handleSocialAuthResult(option.handler, option.error);
-                      }
-                    }}
-                    disabled={isLoading || option.disabled}
-                  >
-                    <img src={option.icon} alt={option.alt} className="social-icon" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : null}
-
-        {secondaryActions.length > 0 ? (
-          <div className="login-secondary-actions">
-            {secondaryActions.map((action) => (
-              <button
-                type="button"
-                key={action.label}
-                className="login-secondary-button"
-                onClick={() => {
-                  void action.onClick();
-                }}
-                disabled={action.disabled || isLoading}
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
-        ) : null}
+        </div>
       </div>
 
       <div className="login-footer-wrapper">

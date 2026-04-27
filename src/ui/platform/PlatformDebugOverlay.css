@@ -1,9 +1,11 @@
 .platform-debug-overlay__launcher {
-  position: absolute;
-  right: var(--space-2);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
+  position: fixed;
+  right: max(0.75rem, calc(var(--safe-area-right) + 0.5rem));
+  bottom: calc(var(--safe-area-bottom) + 0.5rem);
+  z-index: 12001;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 2.25rem;
   min-height: 1.75rem;
   padding: 0.2rem 0.45rem;
@@ -17,6 +19,17 @@
   letter-spacing: 0.08em;
   cursor: pointer;
   transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.platform-debug-overlay__launcher--docked {
+  position: static;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  min-height: 1.45rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.6rem;
+  line-height: 1;
 }
 
 .platform-debug-overlay__launcher:hover {

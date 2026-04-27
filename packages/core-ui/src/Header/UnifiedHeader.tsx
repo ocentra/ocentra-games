@@ -1,4 +1,5 @@
-import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode, type SVGProps } from 'react';
+import { createPortal } from 'react-dom';
 import { authAnnonImageUrl } from '@ocentra/app-assets/auth';
 import {
   SAFE_SYSTEM_FONTS,
@@ -55,16 +56,38 @@ function getBundledProfileConfig(name: string): UnifiedHeaderConfigInput | null 
   return parseSerializedUnifiedHeaderConfig(bundledCandidate);
 }
 
-const ENABLE_HEADER_DEBUG_CONTROLS = true;
+const ENABLE_HEADER_DEBUG_CONTROLS = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;
 const DEFAULT_PROFILE_NAME = 'main_screen';
 const HEADER_SVG_HEIGHT = 80;
 const HEADER_BOX_VERTICAL_MARGIN = 8;
 const AUTH_MODE_STORAGE_KEY = 'ocentra.auth.mode';
+const FOOTER_DEV_DOCK_SELECTOR = '.oc-unified-footer__dev-dock';
+
+function resolveFooterDevDockHost(): HTMLElement | null {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  const footerBar = document.querySelector<HTMLElement>('.oc-unified-footer__bar');
+  if (!footerBar) {
+    return null;
+  }
+
+  let dock = footerBar.querySelector<HTMLElement>(FOOTER_DEV_DOCK_SELECTOR);
+  if (!dock) {
+    dock = document.createElement('div');
+    dock.className = FOOTER_DEV_DOCK_SELECTOR.slice(1);
+    footerBar.appendChild(dock);
+  }
+
+  return dock;
+}
 
 type DebugTab = 'layout' | 'profiles';
 type LayoutSubtab = 'global' | 'home' | 'wings' | 'center' | 'login' | 'nav';
 type TextStylePanelTab = 'basic' | 'fill' | 'edge' | 'shadow' | 'transform';
 type CenterPanelTab = 'general' | 'modeA' | 'modeB';
+type NavPanelTab = 'layout' | 'text' | 'surface' | 'states';
 
 const SVG_TITLE_PRESETS: Record<string, Partial<TextStyleConfig>> = {
   ocentraGold: {
@@ -338,6 +361,10 @@ function getProfileDisplayName(name: string | undefined, maxChars = 9) {
   return `${firstWord.slice(0, Math.max(1, maxChars - 2))}..`;
 }
 
+function looksLikeGeneratedGuestName(name: string | undefined) {
+  return /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/.test((name || '').trim());
+}
+
 function estimateLeftBoxWidth(config: UnifiedHeaderLeftConfig, boxHeight: number, substituteVariables: (text: string | undefined) => string) {
   const text = substituteVariables(config.text);
   const circlePadding = 3;
@@ -362,7 +389,9 @@ function estimateRightBoxWidth(
   }
 
   const text = substituteVariables(config.text);
-  return Math.ceil(20 + estimateTextWidth(text, textStyle) + 20);
+  const iconSize = boxHeight * 0.7;
+  const textWidth = estimateTextWidth(text, textStyle);
+  return Math.ceil(12 + iconSize + 10 + textWidth + 18);
 }
 
 function fitSideWidths({
@@ -418,6 +447,88 @@ function fitSideWidths({
 
 function clampNumber(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
+}
+
+function AuthDoorIcon({ direction = 'out', ...svgProps }: { direction?: 'in' | 'out' } & SVGProps<SVGSVGElement>) {
+  const gradientIdPrefix = useId().replace(/:/g, '');
+  const doorStrokeId = `${gradientIdPrefix}-door-stroke`;
+  const doorHighlightId = `${gradientIdPrefix}-door-highlight`;
+  const personBlueId = `${gradientIdPrefix}-person-blue`;
+  const skinId = `${gradientIdPrefix}-skin`;
+  const arrowRedId = `${gradientIdPrefix}-arrow-red`;
+  const arrowTransform = direction === 'in' ? 'translate(433 0) scale(-1 1)' : undefined;
+
+  return (
+    <svg viewBox="0 0 300 300" fill="none" aria-hidden="true" focusable="false" {...svgProps}>
+      <defs>
+        <linearGradient id={doorStrokeId} x1="26" y1="34" x2="154" y2="272" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FFD43B" />
+          <stop offset="1" stopColor="#FFC300" />
+        </linearGradient>
+        <linearGradient id={doorHighlightId} x1="105" y1="34" x2="105" y2="272" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#D4A900" stopOpacity="0.45" />
+          <stop offset="1" stopColor="#D4A900" stopOpacity="0.35" />
+        </linearGradient>
+        <linearGradient id={personBlueId} x1="58" y1="153" x2="154" y2="222" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#46A7F2" />
+          <stop offset="1" stopColor="#2F93DF" />
+        </linearGradient>
+        <linearGradient id={skinId} x1="74" y1="88" x2="139" y2="153" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FFE98A" />
+          <stop offset="1" stopColor="#F0CC63" />
+        </linearGradient>
+        <linearGradient id={arrowRedId} x1="170" y1="98" x2="267" y2="209" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FF5A5A" />
+          <stop offset="1" stopColor="#E04444" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M146 41H57C43.7452 41 33 51.7452 33 65V235C33 248.255 43.7452 259 57 259H146"
+        stroke={`url(#${doorStrokeId})`}
+        strokeWidth="16"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M106 41H146"
+        stroke={`url(#${doorHighlightId})`}
+        strokeWidth="16"
+        strokeLinecap="round"
+      />
+      <path
+        d="M106 259H146"
+        stroke={`url(#${doorHighlightId})`}
+        strokeWidth="16"
+        strokeLinecap="round"
+      />
+      <circle cx="106" cy="121" r="32" fill={`url(#${skinId})`} />
+      <path
+        d="M106 89C123.673 89 138 103.327 138 121C138 138.673 123.673 153 106 153V89Z"
+        fill="#D8B85B"
+        opacity="0.28"
+      />
+      <path
+        d="M58 206C58 184.461 68.1285 169.471 78.3723 164.047C81.5413 162.369 85.3564 162.71 88.2443 164.839C93.1113 168.427 99.1183 170.548 105.624 170.548C112.341 170.548 118.526 168.286 123.474 164.499C126.288 162.345 130.056 161.906 133.228 163.49C143.805 168.774 154 184.005 154 206V212C154 215.314 151.314 218 148 218H64C60.6863 218 58 215.314 58 212V206Z"
+        fill={`url(#${personBlueId})`}
+      />
+      <path
+        d="M106 170.548C112.341 170.548 118.526 168.286 123.474 164.499C126.288 162.345 130.056 161.906 133.228 163.49C143.805 168.774 154 184.005 154 206V212C154 215.314 151.314 218 148 218H106V170.548Z"
+        fill="#257FC4"
+        opacity="0.24"
+      />
+      <g transform={arrowTransform}>
+        <rect x="170" y="130" width="50" height="47" rx="8" fill={`url(#${arrowRedId})`} />
+        <path
+          d="M203 106.479C203 99.3521 211.617 95.7828 216.657 100.822L263.436 147.601C266.56 150.725 266.56 155.79 263.436 158.914L216.657 205.693C211.617 210.732 203 207.163 203 200.036V106.479Z"
+          fill={`url(#${arrowRedId})`}
+        />
+      </g>
+    </svg>
+  );
+}
+
+function LogoutDoorIcon() {
+  return <AuthDoorIcon direction="out" />;
 }
 
 function normalizeLayoutConfig(layout: UnifiedHeaderLayoutConfig): UnifiedHeaderLayoutConfig {
@@ -831,7 +942,7 @@ export function UnifiedHeader({
   rightSuffixContent,
   dynamicData = {},
   showPrimaryNavigation = true,
-  showDebugControls = true,
+  showDebugControls = ENABLE_HEADER_DEBUG_CONTROLS,
   includeAdminNavigation = false,
   primaryNavigationItems,
   onResolvedConfigChange,
@@ -869,6 +980,7 @@ export function UnifiedHeader({
   const [initialConfig, setInitialConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
   const [config, setConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
   const [showControls, setShowControls] = useState(false);
+  const [footerDebugDockHost, setFooterDebugDockHost] = useState<HTMLElement | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showPictureModal, setShowPictureModal] = useState(false);
   const [failedProfileAvatarUrl, setFailedProfileAvatarUrl] = useState<string | null>(null);
@@ -880,24 +992,13 @@ export function UnifiedHeader({
   const [activeTab, setActiveTab] = useState<DebugTab>('layout');
   const [layoutSubtab, setLayoutSubtab] = useState<LayoutSubtab>('global');
   const [centerPanelTab, setCenterPanelTab] = useState<CenterPanelTab>('general');
+  const [navPanelTab, setNavPanelTab] = useState<NavPanelTab>('layout');
   const [activeProfile, setActiveProfile] = useState(profileName || DEFAULT_PROFILE_NAME);
   const [selectedProfile, setSelectedProfile] = useState(profileName || DEFAULT_PROFILE_NAME);
   const [newProfileName, setNewProfileName] = useState('');
   const [profileStatus, setProfileStatus] = useState('');
   const [profiles, setProfiles] = useState<string[]>(Array.from(new Set([DEFAULT_PROFILE_NAME, ...bundledProfileNames])));
   const profileCacheRef = useRef<Record<string, UnifiedHeaderConfigInput | null>>({});
-  const profileAvatarUrl = config.right.user?.avatarUrl?.trim() || '';
-  const profileAvatarLoadFailed = Boolean(profileAvatarUrl) && failedProfileAvatarUrl === profileAvatarUrl;
-  const isGuestUser = Boolean(config.right.user?.isGuest);
-
-  const handleGuestUpgrade = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem(AUTH_MODE_STORAGE_KEY, 'signup');
-    }
-    config.right.onUpgradeGuestClick?.();
-    config.right.onLogout?.();
-    setShowProfileDropdown(false);
-  }, [config.right]);
 
   const normalizeLoadedConfig = useCallback(
     (loadedConfig?: UnifiedHeaderConfigInput) => {
@@ -1002,6 +1103,19 @@ export function UnifiedHeader({
     };
   }, [config, runtimeConfig]);
   const { layout, style, left, center, right } = resolved;
+  const profileAvatarUrl = right.user?.avatarUrl?.trim() || '';
+  const profileAvatarLoadFailed = Boolean(profileAvatarUrl) && failedProfileAvatarUrl === profileAvatarUrl;
+  const accountEmail = right.user?.email?.trim() || '';
+  const isGuestUser = Boolean(right.user?.isGuest)
+    || (Boolean(right.user) && !accountEmail && !right.user?.isAdmin)
+    || looksLikeGeneratedGuestName(right.user?.name);
+  const handleGuestUpgrade = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(AUTH_MODE_STORAGE_KEY, 'signup');
+    }
+    right.onUpgradeGuestClick?.();
+    setShowProfileDropdown(false);
+  }, [right]);
   const shouldShowPrimaryNavigation = showPrimaryNavigation && resolved.navigation.enabled;
   const navTop = layout.height + resolved.navigation.gapBelowHeader;
   const navDividerHeight = shouldShowPrimaryNavigation ? 1 : 0;
@@ -1091,6 +1205,23 @@ export function UnifiedHeader({
 
     return () => observer.disconnect();
   }, [svgHeight]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    const syncFooterDebugDockHost = () => {
+      setFooterDebugDockHost(resolveFooterDevDockHost());
+    };
+
+    syncFooterDebugDockHost();
+
+    const observer = new MutationObserver(syncFooterDebugDockHost);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
 
   const updateLayout = (patch: Partial<UnifiedHeaderLayoutConfig>) =>
     setConfig((current) => ({ ...current, layout: normalizeLayoutConfig({ ...current.layout, ...patch }) }));
@@ -1454,33 +1585,65 @@ export function UnifiedHeader({
           {activeTab === 'layout' && layoutSubtab === 'nav' && (
             <>
               <div className={styles.debugSectionHeader}><span>Primary Nav</span></div>
-              <ToggleControl label="Enabled" path="navigation.enabled" hint="Show the shared route nav under the header pills on pages that allow it." value={config.navigation.enabled} onChange={(v) => updateNavigation({ enabled: v })} />
-              <Control label="Height" path="navigation.height" hint="Overall nav strip height." value={config.navigation.height} min={32} max={86} step={1} onChange={(v) => updateNavigation({ height: v })} />
-              <Control label="Gap below header" path="navigation.gapBelowHeader" hint="Measured offset below the visible bottom of the three header pills." value={config.navigation.gapBelowHeader} min={0} max={24} step={1} onChange={(v) => updateNavigation({ gapBelowHeader: v })} />
-              <Control label="Outer margin" path="navigation.outerMargin" hint="Horizontal inset from the page edges." value={config.navigation.outerMargin} min={0} max={80} step={1} onChange={(v) => updateNavigation({ outerMargin: v })} />
-              <Control label="Panel inset Y" path="navigation.panelInsetY" value={config.navigation.panelInsetY} min={0} max={16} step={1} onChange={(v) => updateNavigation({ panelInsetY: v })} />
-              <Control label="Shell inset" path="navigation.shellInset" value={config.navigation.shellInset} min={0} max={16} step={1} onChange={(v) => updateNavigation({ shellInset: v })} />
-              <Control label="Panel radius" path="navigation.panelRadius" value={config.navigation.panelRadius} min={0} max={44} step={1} onChange={(v) => updateNavigation({ panelRadius: v })} />
-              <Control label="Button radius" path="navigation.buttonRadius" value={config.navigation.buttonRadius} min={0} max={24} step={1} onChange={(v) => updateNavigation({ buttonRadius: v })} />
-              <Control label="Min button width" path="navigation.minButtonWidth" value={config.navigation.minButtonWidth} min={50} max={180} step={1} onChange={(v) => updateNavigation({ minButtonWidth: v })} />
-              <Control label="Max button width" path="navigation.maxButtonWidth" value={config.navigation.maxButtonWidth} min={90} max={280} step={1} onChange={(v) => updateNavigation({ maxButtonWidth: v })} />
-              <Control label="Text side padding" path="navigation.textSidePadding" value={config.navigation.textSidePadding} min={8} max={60} step={1} onChange={(v) => updateNavigation({ textSidePadding: v })} />
-              <Control label="Button gap" path="navigation.buttonGap" value={config.navigation.buttonGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ buttonGap: v })} />
-              <Control label="Nav gap" path="navigation.navGap" hint="Gap between overflow arrow shells and the button run." value={config.navigation.navGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ navGap: v })} />
-              <Control label="Text scale" path="navigation.textScale" value={config.navigation.textScale} min={0.28} max={0.6} step={0.01} onChange={(v) => updateNavigation({ textScale: v })} />
-              <Control label="Accent inset" path="navigation.accentInset" value={config.navigation.accentInset} min={2} max={24} step={1} onChange={(v) => updateNavigation({ accentInset: v })} />
-              <Control label="Arrow inset" path="navigation.sideArrowInset" value={config.navigation.sideArrowInset} min={4} max={18} step={1} onChange={(v) => updateNavigation({ sideArrowInset: v })} />
-              <Control label="End curve padding" path="navigation.endCurvePadding" value={config.navigation.endCurvePadding} min={0} max={60} step={1} onChange={(v) => updateNavigation({ endCurvePadding: v })} />
+              <div className={styles.debugTextTabs}>
+                {([
+                  { value: 'layout', label: 'Layout' },
+                  { value: 'text', label: 'Text' },
+                  { value: 'surface', label: 'Surface' },
+                  { value: 'states', label: 'States' },
+                ] as const).map((tab) => (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    className={`${styles.debugTextTabButton} ${navPanelTab === tab.value ? styles.active : ''}`}
+                    onClick={() => setNavPanelTab(tab.value)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-              <div className={styles.debugDivider}>Nav surface</div>
-              <ColorControl label="Tint color" path="navigation.tintColor" value={config.navigation.tintColor} onChange={(v) => updateNavigation({ tintColor: v })} />
-              <ColorControl label="Edge color" path="navigation.edgeColor" value={config.navigation.edgeColor} onChange={(v) => updateNavigation({ edgeColor: v })} />
-              <Control label="Box opacity" path="navigation.boxOpacity" value={config.navigation.boxOpacity} min={0} max={1} step={0.01} onChange={(v) => updateNavigation({ boxOpacity: v })} />
-              <ColorControl label="Hover tint" path="navigation.hoverTintColor" value={config.navigation.hoverTintColor} onChange={(v) => updateNavigation({ hoverTintColor: v })} />
-              <ColorControl label="Hover edge" path="navigation.hoverEdgeColor" value={config.navigation.hoverEdgeColor} onChange={(v) => updateNavigation({ hoverEdgeColor: v })} />
-              <ColorControl label="Active tint" path="navigation.activeTintColor" value={config.navigation.activeTintColor} onChange={(v) => updateNavigation({ activeTintColor: v })} />
-              <ColorControl label="Active edge" path="navigation.activeEdgeColor" value={config.navigation.activeEdgeColor} onChange={(v) => updateNavigation({ activeEdgeColor: v })} />
-              <Control label="Glow blur" path="navigation.glowBlur" value={config.navigation.glowBlur} min={0} max={20} step={0.1} onChange={(v) => updateNavigation({ glowBlur: v })} />
+              {navPanelTab === 'layout' && (
+                <>
+                  <ToggleControl label="Enabled" path="navigation.enabled" hint="Show the shared route nav under the header pills on pages that allow it." value={config.navigation.enabled} onChange={(v) => updateNavigation({ enabled: v })} />
+                  <Control label="Height" path="navigation.height" hint="Overall nav strip height." value={config.navigation.height} min={32} max={86} step={1} onChange={(v) => updateNavigation({ height: v })} />
+                  <Control label="Gap below header" path="navigation.gapBelowHeader" hint="Measured offset below the visible bottom of the three header pills." value={config.navigation.gapBelowHeader} min={0} max={24} step={1} onChange={(v) => updateNavigation({ gapBelowHeader: v })} />
+                  <Control label="Outer margin" path="navigation.outerMargin" hint="Horizontal inset from the page edges." value={config.navigation.outerMargin} min={0} max={80} step={1} onChange={(v) => updateNavigation({ outerMargin: v })} />
+                  <Control label="Panel inset Y" path="navigation.panelInsetY" value={config.navigation.panelInsetY} min={0} max={16} step={1} onChange={(v) => updateNavigation({ panelInsetY: v })} />
+                  <Control label="Shell inset" path="navigation.shellInset" value={config.navigation.shellInset} min={0} max={16} step={1} onChange={(v) => updateNavigation({ shellInset: v })} />
+                  <Control label="Panel radius" path="navigation.panelRadius" value={config.navigation.panelRadius} min={0} max={44} step={1} onChange={(v) => updateNavigation({ panelRadius: v })} />
+                  <Control label="Button radius" path="navigation.buttonRadius" value={config.navigation.buttonRadius} min={0} max={24} step={1} onChange={(v) => updateNavigation({ buttonRadius: v })} />
+                  <Control label="Min button width" path="navigation.minButtonWidth" value={config.navigation.minButtonWidth} min={50} max={180} step={1} onChange={(v) => updateNavigation({ minButtonWidth: v })} />
+                  <Control label="Max button width" path="navigation.maxButtonWidth" value={config.navigation.maxButtonWidth} min={90} max={280} step={1} onChange={(v) => updateNavigation({ maxButtonWidth: v })} />
+                  <Control label="Button gap" path="navigation.buttonGap" value={config.navigation.buttonGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ buttonGap: v })} />
+                  <Control label="Nav gap" path="navigation.navGap" hint="Gap between overflow arrow shells and the button run." value={config.navigation.navGap} min={0} max={18} step={1} onChange={(v) => updateNavigation({ navGap: v })} />
+                  <Control label="Accent inset" path="navigation.accentInset" value={config.navigation.accentInset} min={2} max={24} step={1} onChange={(v) => updateNavigation({ accentInset: v })} />
+                  <Control label="Arrow inset" path="navigation.sideArrowInset" value={config.navigation.sideArrowInset} min={4} max={18} step={1} onChange={(v) => updateNavigation({ sideArrowInset: v })} />
+                  <Control label="End curve padding" path="navigation.endCurvePadding" value={config.navigation.endCurvePadding} min={0} max={60} step={1} onChange={(v) => updateNavigation({ endCurvePadding: v })} />
+                </>
+              )}
+
+              {navPanelTab === 'text' && (
+                <NavigationTextControls value={config.navigation} onChange={updateNavigation} />
+              )}
+
+              {navPanelTab === 'surface' && (
+                <>
+                  <ColorControl label="Tint color" path="navigation.tintColor" value={config.navigation.tintColor} onChange={(v) => updateNavigation({ tintColor: v })} />
+                  <ColorControl label="Edge color" path="navigation.edgeColor" value={config.navigation.edgeColor} onChange={(v) => updateNavigation({ edgeColor: v })} />
+                  <Control label="Box opacity" path="navigation.boxOpacity" value={config.navigation.boxOpacity} min={0} max={1} step={0.01} onChange={(v) => updateNavigation({ boxOpacity: v })} />
+                  <Control label="Glow blur" path="navigation.glowBlur" value={config.navigation.glowBlur} min={0} max={20} step={0.1} onChange={(v) => updateNavigation({ glowBlur: v })} />
+                </>
+              )}
+
+              {navPanelTab === 'states' && (
+                <>
+                  <ColorControl label="Hover tint" path="navigation.hoverTintColor" value={config.navigation.hoverTintColor} onChange={(v) => updateNavigation({ hoverTintColor: v })} />
+                  <ColorControl label="Hover edge" path="navigation.hoverEdgeColor" value={config.navigation.hoverEdgeColor} onChange={(v) => updateNavigation({ hoverEdgeColor: v })} />
+                  <ColorControl label="Active tint" path="navigation.activeTintColor" value={config.navigation.activeTintColor} onChange={(v) => updateNavigation({ activeTintColor: v })} />
+                  <ColorControl label="Active edge" path="navigation.activeEdgeColor" value={config.navigation.activeEdgeColor} onChange={(v) => updateNavigation({ activeEdgeColor: v })} />
+                </>
+              )}
             </>
           )}
 
@@ -1554,25 +1717,27 @@ export function UnifiedHeader({
 
     const isLeftCollapsed = renderedSize.width < layout.leftCollapseWidth;
     const isRightCollapsed = renderedSize.width < layout.rightCollapseWidth;
+    const leftCollapsedWidth = boxHeight;
+    const rightCollapsedWidth = boxHeight;
 
     const leftDesiredWidth = isLeftCollapsed
-      ? layout.leftCollapsedWidth
-      : Math.min(layout.leftExpandedWidth, Math.max(layout.leftCollapsedWidth, estimateLeftBoxWidth(left, boxHeight, substituteVariables)));
+      ? leftCollapsedWidth
+      : Math.min(layout.leftExpandedWidth, Math.max(leftCollapsedWidth, estimateLeftBoxWidth(left, boxHeight, substituteVariables)));
 
     const rightDesiredWidth = isRightCollapsed
-      ? layout.rightCollapsedWidth
-      : Math.min(layout.rightWidth, Math.max(layout.rightCollapsedWidth, estimateRightBoxWidth(right, boxHeight, substituteVariables)));
+      ? rightCollapsedWidth
+      : Math.min(layout.rightWidth, Math.max(rightCollapsedWidth, estimateRightBoxWidth(right, boxHeight, substituteVariables)));
 
     const fittedSideWidths = fitSideWidths({
       leftDesired: leftDesiredWidth,
       rightDesired: rightDesiredWidth,
-      leftMin: layout.leftCollapsedWidth,
-      rightMin: layout.rightCollapsedWidth,
+      leftMin: leftCollapsedWidth,
+      rightMin: rightCollapsedWidth,
       maxTotal: Math.max(0, viewWidth - outerMargin * 2 - layout.centerMinWidth - boxGap * 2),
     });
 
-    const finalLeftWidth = isLeftCollapsed ? layout.leftCollapsedWidth : fittedSideWidths.left;
-    const finalRightWidth = isRightCollapsed ? layout.rightCollapsedWidth : fittedSideWidths.right;
+    const finalLeftWidth = isLeftCollapsed ? leftCollapsedWidth : fittedSideWidths.left;
+    const finalRightWidth = isRightCollapsed ? rightCollapsedWidth : fittedSideWidths.right;
 
     const centerX = viewWidth / 2;
     const desiredCenterWidth = estimateCenterBoxWidth(center, boxHeight, aspectCorrection, substituteVariables);
@@ -1650,6 +1815,8 @@ export function UnifiedHeader({
   }, [showProfileDropdown]);
 
   const activeProfileDropdownAnchor = showProfileDropdown ? profileDropdownAnchor : null;
+
+  const shouldKeepCollapsedLoginText = !right.isProfile && Boolean(right.onClick) && (right.text || '').trim().length > 0;
 
   return (
     <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }}>
@@ -1786,13 +1953,12 @@ export function UnifiedHeader({
                     onAvatarError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
                   />
                 ) : (
-                  <FitText
-                    text={geometry.isRightCollapsed ? '' : right.text}
-                    x={geometry.rightBox.x + geometry.rightBox.w / 2}
-                    y={geometry.rightBox.y + geometry.rightBox.h / 2 + 5}
-                    maxWidth={geometry.rightBox.w - 20}
-                    anchor="middle"
+                  <RightLoginContent
+                    box={geometry.rightBox}
+                    collapsed={geometry.isRightCollapsed}
+                    text={geometry.isRightCollapsed && !shouldKeepCollapsedLoginText ? '' : right.text}
                     textStyle={right.textStyle}
+                    style={style}
                     aspectCorrection={aspectCorrection}
                   />
                 )}
@@ -1887,29 +2053,49 @@ export function UnifiedHeader({
             <div className={styles.dropdownDivider} />
             {isGuestUser ? (
               <div className={styles.dropdownMenuSections}>
-                <div className={styles.guestDropdownCopy}>
-                  Save your progress, keep your identity, and unlock the real player profile once you register.
+                <div className={styles.accountLockedMessage}>
+                  Create an account to unlock tracked ELO, your real profile, settings, and security tools.
                 </div>
-                <div className={styles.guestBenefits}>
-                  <div className={styles.guestBenefitCard}>
-                    <span>Keep</span>
-                    <strong>Your name</strong>
+                <div className={styles.accountLockedCard}>
+                  <div className={`${styles.dropdownStats} ${styles.dropdownStatsLocked}`}>
+                    <div>
+                      <span>ELO</span>
+                      <strong>--</strong>
+                    </div>
+                    <div>
+                      <span>Games</span>
+                      <strong>--</strong>
+                    </div>
+                    <div>
+                      <span>Win</span>
+                      <strong>--</strong>
+                    </div>
                   </div>
-                  <div className={styles.guestBenefitCard}>
-                    <span>Track</span>
-                    <strong>Stats</strong>
+                  <div className={`${styles.dropdownMenuSection} ${styles.dropdownMenuSectionLocked}`}>
+                    <div className={styles.dropdownItemLocked}>
+                      <span className={styles.dropdownItemLabel}>View Profile</span>
+                      <span className={styles.dropdownItemHint}>Account</span>
+                    </div>
+                    <div className={styles.dropdownItemLocked}>
+                      <span className={styles.dropdownItemLabel}>Settings</span>
+                      <span className={styles.dropdownItemHint}>Account</span>
+                    </div>
+                    <div className={styles.dropdownItemLocked}>
+                      <span className={styles.dropdownItemLabel}>Security</span>
+                      <span className={styles.dropdownItemHint}>Account</span>
+                    </div>
                   </div>
-                  <div className={styles.guestBenefitCard}>
-                    <span>Unlock</span>
-                    <strong>Social play</strong>
-                  </div>
+                  <div className={styles.accountLockedOverlay} />
                 </div>
                 <div className={styles.dropdownMenuSection}>
                   <button className={styles.guestPrimaryButton} onClick={handleGuestUpgrade}>
                     Create Ocentra Account
                   </button>
                   <button className={styles.dropdownItem} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
-                    Sign out
+                    <span className={`${styles.dropdownItemIcon} ${styles.dropdownItemIconLogout}`}>
+                      <LogoutDoorIcon />
+                    </span>
+                    <span className={styles.dropdownItemLabel}>Sign out</span>
                   </button>
                 </div>
               </div>
@@ -1935,7 +2121,10 @@ export function UnifiedHeader({
 
                   <div className={styles.dropdownMenuSectionDanger}>
                     <button className={styles.dropdownItemLogout} onClick={() => { right.onLogout?.(); setShowProfileDropdown(false); }}>
-                      Logout
+                      <span className={`${styles.dropdownItemIcon} ${styles.dropdownItemIconLogout}`}>
+                        <LogoutDoorIcon />
+                      </span>
+                      <span className={styles.dropdownItemLabel}>Logout</span>
                     </button>
                   </div>
                 </div>
@@ -1963,18 +2152,30 @@ export function UnifiedHeader({
         />
       )}
 
-      {ENABLE_HEADER_DEBUG_CONTROLS && showDebugControls && (
-        <div className={styles.debugControlsFloating}>
-          {showControls && renderDebugPanel()}
-          <button
-            type="button"
-            onClick={() => setShowControls((v) => !v)}
-            className={styles.debugToggleButton}
+      {ENABLE_HEADER_DEBUG_CONTROLS && showDebugControls && (() => {
+        const debugControls = (
+          <div
+            className={
+              footerDebugDockHost
+                ? `${styles.debugControlsFloating} ${styles.debugControlsFloatingDocked}`
+                : styles.debugControlsFloating
+            }
           >
-            {showControls ? 'Hide Header Controls' : 'Show Header Controls'}
-          </button>
-        </div>
-      )}
+            {showControls && renderDebugPanel()}
+            <button
+              type="button"
+              onClick={() => setShowControls((v) => !v)}
+              className={styles.debugToggleButton}
+            >
+              {showControls ? 'Hide Header Controls' : 'Show Header Controls'}
+            </button>
+          </div>
+        );
+
+        return footerDebugDockHost
+          ? createPortal(debugControls, footerDebugDockHost)
+          : debugControls;
+      })()}
     </div>
   );
 }
@@ -2056,6 +2257,7 @@ function HeaderPill({
       role={interactive ? 'button' : undefined}
       aria-label={interactive ? ariaLabel : undefined}
       tabIndex={interactive ? 0 : undefined}
+      pointerEvents={interactive ? 'bounding-box' : 'visiblePainted'}
       style={{ cursor: interactive ? 'pointer' : 'default', outline: 'none' }}
     >
       <rect
@@ -2420,6 +2622,76 @@ function RightProfileContent({
   );
 }
 
+function RightLoginContent({
+  box,
+  collapsed,
+  text,
+  textStyle,
+  style,
+  aspectCorrection,
+  }: {
+    box: HeaderBoxRect;
+    collapsed: boolean;
+    text: string;
+    textStyle: TextStyleConfig;
+    style: UnifiedHeaderStyleConfig;
+    aspectCorrection: number;
+  }) {
+    const circleInset = box.h * 0.15;
+    const circleRadius = Math.min((box.h - circleInset * 2) / 2, 24);
+    const circleCx = collapsed ? box.x + box.w / 2 : box.x + circleInset + circleRadius;
+    const circleCy = box.y + box.h / 2;
+    const iconSize = Math.min(box.h * 0.7, circleRadius * 1.55);
+    const iconX = circleCx - iconSize / 2;
+    const iconY = circleCy - iconSize / 2;
+    const textX = circleCx + circleRadius + 6;
+    const maxTextWidth = Math.max(24, box.x + box.w - 14 - textX);
+    const iconText = truncateTextToWidth(
+      text,
+      { ...textStyle, fontSize: Math.min(textStyle.fontSize, box.h * 0.45) },
+      maxTextWidth,
+    );
+  
+    return (
+      <g>
+        <g transform={`translate(${circleCx} ${circleCy}) scale(${aspectCorrection} 1) translate(${-circleCx} ${-circleCy})`}>
+          <circle
+            cx={circleCx}
+            cy={circleCy}
+            r={circleRadius}
+            fill={style.circleFillColor}
+            fillOpacity={0.22}
+            stroke={style.edgeColor}
+          strokeOpacity={0.55}
+          strokeWidth={1.2}
+          vectorEffect="non-scaling-stroke"
+        />
+          <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
+            <AuthDoorIcon
+              direction="in"
+              x={iconX}
+              y={iconY}
+              width={iconSize}
+              height={iconSize}
+            />
+          </g>
+        </g>
+  
+        {!collapsed && text && (
+          <FitText
+            text={iconText}
+            x={textX}
+            y={circleCy + 5}
+            maxWidth={maxTextWidth}
+            anchor="start"
+            textStyle={textStyle}
+            aspectCorrection={aspectCorrection}
+        />
+      )}
+    </g>
+  );
+}
+
 function FitText({
   text,
   x,
@@ -2637,6 +2909,142 @@ function TextStyleControls({
           <Control label="moveY" path={`${pathPrefix}.moveY`} value={value.moveY} min={-120} max={120} step={1} onChange={(next) => onChange({ ...value, moveY: next })} />
           <Control label="rotate" path={`${pathPrefix}.rotate`} value={value.rotate} min={-45} max={45} step={1} onChange={(next) => onChange({ ...value, rotate: next })} />
           <Control label="skewX" path={`${pathPrefix}.skewX`} value={value.skewX} min={-30} max={30} step={1} onChange={(next) => onChange({ ...value, skewX: next })} />
+        </>
+      )}
+    </>
+  );
+}
+
+function NavigationTextControls({
+  value,
+  onChange,
+}: {
+  value: UnifiedHeaderNavigationConfig;
+  onChange: (patch: Partial<UnifiedHeaderNavigationConfig>) => void;
+}) {
+  const [activeNavTextTab, setActiveNavTextTab] = useState<'basic' | 'paint' | 'fit'>('basic');
+
+  return (
+    <>
+      <div className={styles.debugDivider}>Nav text</div>
+      <div className={styles.debugTextTabs}>
+        {([
+          { value: 'basic', label: 'Basic' },
+          { value: 'paint', label: 'Paint' },
+          { value: 'fit', label: 'Fit' },
+        ] as const).map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            className={`${styles.debugTextTabButton} ${activeNavTextTab === tab.value ? styles.active : ''}`}
+            onClick={() => setActiveNavTextTab(tab.value)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeNavTextTab === 'basic' && (
+        <>
+          <SelectControl
+            label="Text font"
+            path="navigation.textFontFamily"
+            value={value.textFontFamily}
+            onChange={(next) => onChange({ textFontFamily: next })}
+            options={SAFE_SYSTEM_FONTS.map((font) => ({ value: font.value, label: font.name }))}
+          />
+          <Control
+            label="Text weight"
+            path="navigation.textFontWeight"
+            value={value.textFontWeight}
+            min={300}
+            max={900}
+            step={50}
+            onChange={(next) => onChange({ textFontWeight: next })}
+          />
+          <Control
+            label="Letter spacing"
+            path="navigation.textLetterSpacing"
+            value={value.textLetterSpacing}
+            min={-1}
+            max={4}
+            step={0.1}
+            onChange={(next) => onChange({ textLetterSpacing: next })}
+          />
+          <ToggleControl
+            label="Uppercase"
+            path="navigation.textForceUppercase"
+            value={value.textForceUppercase}
+            onChange={(next) => onChange({ textForceUppercase: next })}
+          />
+        </>
+      )}
+
+      {activeNavTextTab === 'paint' && (
+        <>
+          <ColorControl
+            label="Text color"
+            path="navigation.textColor"
+            value={value.textColor}
+            onChange={(next) => onChange({ textColor: next })}
+          />
+          <Control
+            label="Text opacity"
+            path="navigation.textOpacity"
+            value={value.textOpacity}
+            min={0}
+            max={1}
+            step={0.01}
+            onChange={(next) => onChange({ textOpacity: next })}
+          />
+          <ColorControl
+            label="Text outline"
+            path="navigation.textStrokeColor"
+            value={value.textStrokeColor}
+            onChange={(next) => onChange({ textStrokeColor: next })}
+          />
+          <Control
+            label="Outline width"
+            path="navigation.textStrokeWidth"
+            value={value.textStrokeWidth}
+            min={0}
+            max={6}
+            step={0.1}
+            onChange={(next) => onChange({ textStrokeWidth: next })}
+          />
+        </>
+      )}
+
+      {activeNavTextTab === 'fit' && (
+        <>
+          <Control
+            label="Text scale"
+            path="navigation.textScale"
+            value={value.textScale}
+            min={0.28}
+            max={0.6}
+            step={0.01}
+            onChange={(next) => onChange({ textScale: next })}
+          />
+          <Control
+            label="Text side padding"
+            path="navigation.textSidePadding"
+            value={value.textSidePadding}
+            min={8}
+            max={60}
+            step={1}
+            onChange={(next) => onChange({ textSidePadding: next })}
+          />
+          <Control
+            label="Text offset Y"
+            path="navigation.textOffsetY"
+            hint="Nudge labels up or down inside each nav button."
+            value={value.textOffsetY}
+            min={-12}
+            max={12}
+            step={0.5}
+            onChange={(next) => onChange({ textOffsetY: next })}
+          />
         </>
       )}
     </>

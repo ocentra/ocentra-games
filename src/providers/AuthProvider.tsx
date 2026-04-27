@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import type { AuthResult, UserProfile } from '@/adapters/firebase/service';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { createGuestDisplayName, isGuestIdentity } from '@/lib/auth/guestIdentity';
+import LoginDialog from '@/ui/components/Auth/LoginDialog';
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -36,9 +37,47 @@ const LOG_AUTH_SOCIAL = false;
 const LOG_AUTH_GUEST = false;
 const LOG_AUTH_ERROR = false;
 
+export type AuthKind = 'signedOut' | 'guest' | 'account' | 'admin';
+export type AuthRequirement = 'session' | 'account' | 'admin';
+
+interface AuthPromptState {
+  requirement: AuthRequirement;
+}
+
+interface AuthPromptContent {
+  eyebrow: string;
+  title: string;
+  description: string;
+  tone?: 'default' | 'warning';
+}
+
+function doesUserSatisfyRequirement(
+  requirement: AuthRequirement,
+  candidateUser: UserProfile | null
+): candidateUser is UserProfile {
+  if (!candidateUser) {
+    return false;
+  }
+
+  if (requirement === 'session') {
+    return true;
+  }
+
+  if (requirement === 'account') {
+    return candidateUser.isGuest !== true;
+  }
+
+  return candidateUser.isAdmin === true;
+}
+
 interface AuthContextType {
   isAuthenticated: boolean;
   user: UserProfile | null;
+  authKind: AuthKind;
+  hasSession: boolean;
+  hasAccount: boolean;
+  isGuest: boolean;
+  isAdmin: boolean;
   login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (userData: { alias: string; avatar: string; username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
@@ -56,6 +95,9 @@ interface AuthContextType {
     eloRating: number;
     achievements: string[];
   }>) => Promise<{ success: boolean; error?: string }>;
+  requireSession: () => Promise<UserProfile | null>;
+  requireAccount: () => Promise<UserProfile | null>;
+  requireAdmin: () => Promise<UserProfile | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -68,6 +110,97 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authPrompt, setAuthPrompt] = useState<AuthPromptState | null>(null);
+  const authPromptResolverRef = useRef<((nextUser: UserProfile | null) => void) | null>(null);
+  const authPromptPromiseRef = useRef<Promise<UserProfile | null> | null>(null);
+
+  const hasSession = Boolean(user);
+  const isGuest = user?.isGuest === true;
+  const hasAccount = Boolean(user) && !isGuest;
+  const isAdmin = user?.isAdmin === true;
+  const authKind: AuthKind = isAdmin
+    ? 'admin'
+    : hasAccount
+      ? 'account'
+      : isGuest
+        ? 'guest'
+        : 'signedOut';
+
+  const resolveAuthPrompt = useCallback((nextUser: UserProfile | null) => {
+    authPromptResolverRef.current?.(nextUser);
+    authPromptResolverRef.current = null;
+    authPromptPromiseRef.current = null;
+    setAuthPrompt(null);
+  }, []);
+
+  const requestAuthRequirement = useCallback((requirement: AuthRequirement): Promise<UserProfile | null> => {
+    if (doesUserSatisfyRequirement(requirement, user)) {
+      return Promise.resolve(user);
+    }
+
+    if (authPromptPromiseRef.current) {
+      return authPromptPromiseRef.current;
+    }
+
+    const pendingPrompt = new Promise<UserProfile | null>((resolve) => {
+      authPromptResolverRef.current = resolve;
+      setAuthPrompt({ requirement });
+    });
+
+    authPromptPromiseRef.current = pendingPrompt;
+    return pendingPrompt;
+  }, [user]);
+
+  const requireSession = useCallback(() => requestAuthRequirement('session'), [requestAuthRequirement]);
+  const requireAccount = useCallback(() => requestAuthRequirement('account'), [requestAuthRequirement]);
+  const requireAdmin = useCallback(() => requestAuthRequirement('admin'), [requestAuthRequirement]);
+
+  const closeAuthPrompt = useCallback(() => {
+    resolveAuthPrompt(null);
+  }, [resolveAuthPrompt]);
+
+  useEffect(() => {
+    if (!authPrompt) {
+      return;
+    }
+
+    if (doesUserSatisfyRequirement(authPrompt.requirement, user)) {
+      resolveAuthPrompt(user);
+    }
+  }, [authPrompt, resolveAuthPrompt, user]);
+
+  const authPromptContent = useMemo<AuthPromptContent | null>(() => {
+    if (!authPrompt) {
+      return null;
+    }
+
+    if (authPrompt.requirement === 'session') {
+      return {
+        eyebrow: 'Quick multiplayer access',
+        title: 'Start a session to continue',
+        description: 'Create a guest session or sign in to join multiplayer queues, rooms, and live game features.',
+      };
+    }
+
+    if (authPrompt.requirement === 'account') {
+      return {
+        eyebrow: 'Real account required',
+        title: user?.isGuest
+          ? 'Upgrade your guest session'
+          : 'Sign in with a real account',
+        description: user?.isGuest
+          ? 'This feature stores account-owned progress, purchases, or identity, so guest access stops here.'
+          : 'This feature stores account-owned progress, purchases, or identity, so guest access is not available here.',
+      };
+    }
+
+    return {
+      eyebrow: 'Restricted area',
+      title: 'Administrator access required',
+      description: 'This feature is limited to administrator accounts. Sign in with an approved admin profile to continue.',
+      tone: 'warning',
+    };
+  }, [authPrompt, user?.isGuest]);
 
   useEffect(() => {
     logInfo('[useEffect] Setting up auth state listener...', LOG_AUTH_STATE);
@@ -134,10 +267,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const userDoc = await getDoc(doc(db, FirestoreCollection.Users, firebaseUser.uid));
             if (userDoc.exists()) {
               const userData = userDoc.data() as UserProfile;
+              const isGuestProfile = firebaseUser.isAnonymous || userData.isGuest === true || isGuestIdentity(userData);
               const userProfile: UserProfile = {
                 ...userData,
                 uid: firebaseUser.uid,
-                isGuest: userData.isGuest ?? firebaseUser.isAnonymous ?? isGuestIdentity(userData),
+                isGuest: isGuestProfile,
               };
               setUser(userProfile);
               logInfo('[onAuthStateChanged] ✅ User profile loaded from Firestore:', {
@@ -572,6 +706,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value = {
     isAuthenticated,
     user,
+    authKind,
+    hasSession,
+    hasAccount,
+    isGuest,
+    isAdmin,
     login,
     signUp,
     logout,
@@ -581,7 +720,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loginWithWallet: loginWithWalletAuth,
     sendPasswordReset: sendPasswordResetEmail,
     updateUserProfile: updateProfile,
-    updateUserStats: updateCurrentUserStats
+    updateUserStats: updateCurrentUserStats,
+    requireSession,
+    requireAccount,
+    requireAdmin,
   };
 
   if (loading) {
@@ -591,6 +733,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider value={value}>
       {children}
+      {authPrompt ? (
+        <LoginDialog
+          onLogin={login}
+          onSignUp={authPrompt.requirement === 'admin' ? undefined : signUp}
+          onFacebookLogin={loginWithFacebookAuth}
+          onGoogleLogin={loginWithGoogleAuth}
+          onGuestLogin={loginAsGuestAuth}
+          onWalletLogin={undefined}
+          onSendPasswordReset={sendPasswordResetEmail}
+          adminRequired={authPrompt.requirement === 'admin'}
+          adminMessage="You need to be an administrator to continue. Please sign in with an admin account."
+          contextEyebrow={authPromptContent?.eyebrow}
+          contextTitle={authPromptContent?.title}
+          contextDescription={authPromptContent?.description}
+          contextTone={authPromptContent?.tone}
+          onClose={closeAuthPrompt}
+          disableGuestLogin={authPrompt.requirement !== 'session'}
+          initialMode="signin"
+        />
+      ) : null}
     </AuthContext.Provider>
   );
 };

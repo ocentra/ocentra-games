@@ -101,6 +101,29 @@
   pointer-events: none;
 }
 
+.debugControlsFloatingDocked {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  overflow: visible;
+}
+
+.debugControlsFloatingDocked .debugToggleButton {
+  min-height: 1.45rem;
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+.debugControlsFloatingDocked .debugPanel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.5rem);
+  z-index: 20000;
+}
+
 .debugToggleButton {
   pointer-events: auto;
   padding: 0.5rem 1rem;
@@ -706,6 +729,63 @@
   line-height: 1.45;
 }
 
+.accountLockedMessage {
+  margin: 0 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.16), rgba(120, 53, 15, 0.14));
+  color: rgba(255, 248, 220, 0.96);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 248, 220, 0.12);
+}
+
+.accountLockedCard {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding-bottom: 2px;
+}
+
+.accountLockedOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  background: linear-gradient(180deg, rgba(250, 204, 21, 0.08), rgba(120, 53, 15, 0.12));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 244, 214, 0.08),
+    0 0 0.8rem rgba(250, 204, 21, 0.08);
+  pointer-events: none;
+}
+
+.dropdownStatsLocked {
+  position: relative;
+  z-index: 0;
+}
+
+.dropdownStatsLocked div {
+  background: linear-gradient(180deg, rgba(255, 248, 220, 0.08), rgba(255, 255, 255, 0.03));
+  border-color: rgba(250, 204, 21, 0.16);
+}
+
+.dropdownStatsLocked div:hover {
+  transform: none;
+  background: linear-gradient(180deg, rgba(255, 248, 220, 0.08), rgba(255, 255, 255, 0.03));
+  border-color: rgba(250, 204, 21, 0.16);
+}
+
+.dropdownStatsLocked span {
+  color: rgba(255, 248, 220, 0.62);
+}
+
+.dropdownStatsLocked strong {
+  color: rgba(255, 248, 220, 0.86);
+  text-shadow: none;
+}
+
 .guestBenefits {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -762,6 +842,7 @@
 
 .dropdownItem {
   width: 100%;
+  box-sizing: border-box;
   text-align: left;
   padding: 10px 16px;
   background: rgba(255, 255, 255, 0.04);
@@ -778,6 +859,41 @@
   margin-bottom: 0px;
 }
 
+.dropdownMenuSectionLocked {
+  border-color: rgba(250, 204, 21, 0.16);
+  background: linear-gradient(180deg, rgba(255, 248, 220, 0.06), rgba(255, 255, 255, 0.03));
+}
+
+.dropdownItemLocked {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  text-align: left;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 248, 220, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(241, 245, 249, 0.78);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dropdownItemHint {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-left: 8px;
+  white-space: nowrap;
+  color: rgba(250, 204, 21, 0.88);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .dropdownItem:hover {
   background: var(--dropdown-tint, rgba(59, 130, 246, 0.25));
   border-color: var(--dropdown-border, rgba(59, 130, 246, 0.5));
@@ -789,6 +905,32 @@
 .dropdownItem:active {
   transform: scale(0.96);
   background: var(--dropdown-tint, rgba(59, 130, 246, 0.35));
+}
+
+.dropdownItemIcon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdownItemIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.dropdownItemIconLogout {
+  width: 1.85rem;
+  height: 1.85rem;
+  flex: 0 0 1.85rem;
+}
+
+.dropdownItemLabel {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .dropdownItemLogout {

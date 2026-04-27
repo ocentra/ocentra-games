@@ -14,9 +14,9 @@ export interface LobbyRoomsState {
   creating: boolean;
   error: string | null;
   refresh: () => Promise<void>;
-  createRoom: (form: CreateLobbyRoomForm) => Promise<void>;
-  joinRoom: (roomId: string) => Promise<void>;
-  leaveRoom: (roomId: string) => Promise<void>;
+  createRoom: (form: CreateLobbyRoomForm, userId: string) => Promise<void>;
+  joinRoom: (roomId: string, userId: string) => Promise<void>;
+  leaveRoom: (roomId: string, userId: string) => Promise<void>;
 }
 
 export const DefaultCreateLobbyRoomForm: CreateLobbyRoomForm = {

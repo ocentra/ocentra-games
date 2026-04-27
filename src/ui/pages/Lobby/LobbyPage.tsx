@@ -12,7 +12,8 @@ import { RoomList } from '@/ui/pages/Lobby/components/RoomList';
 import { useLobbyRooms } from '@/ui/pages/Lobby/hooks/useLobbyRooms';
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
 import { AppScreenToken, buildGameMatchmakingPath } from '@/ui/navigation/appRoutes';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useAuthAccess } from '@/hooks/useAuthAccess';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './LobbyPage.css';
 
 interface LobbyPageProps {
@@ -24,6 +25,7 @@ interface LobbyPageProps {
 
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+  const { runWithSession } = useAuthAccess();
   const activeGameType = gameId ?? readMultiplayerConfig().gameId;
   const {
     rooms,
@@ -35,7 +37,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     createRoom,
     joinRoom,
     leaveRoom,
-  } = useLobbyRooms(user, activeGameType);
+  } = useLobbyRooms(activeGameType);
 
   const handleLogout = () => {
     if (onLogoutClick) {
@@ -43,6 +45,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     }
     onLogout();
   };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   return (
     <UnifiedPageShell
@@ -55,17 +58,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
             tagline: "Create or join a room, then start a multiplayer session."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
             }
@@ -113,10 +106,14 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
               rooms={rooms}
               busyRoomId={busyRoomId}
               onJoin={(roomId) => {
-                void joinRoom(roomId);
+                void runWithSession(async (activeUser) => {
+                  await joinRoom(roomId, activeUser.uid);
+                });
               }}
               onLeave={(roomId) => {
-                void leaveRoom(roomId);
+                void runWithSession(async (activeUser) => {
+                  await leaveRoom(roomId, activeUser.uid);
+                });
               }}
             />
           )}
@@ -129,7 +126,13 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         defaultGameType={activeGameType}
         onClose={() => setShowCreateRoomModal(false)}
         onCreate={async (form) => {
-          await createRoom(form);
+          const created = await runWithSession(async (activeUser) => {
+            await createRoom(form, activeUser.uid);
+            return true;
+          });
+          if (!created) {
+            return;
+          }
           setShowCreateRoomModal(false);
         }}
       />

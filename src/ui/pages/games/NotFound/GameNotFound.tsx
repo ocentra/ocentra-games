@@ -5,7 +5,7 @@ import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
 import type { UserProfile } from '@/adapters/firebase/service';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './GameNotFound.css';
 import '../SelectedGame/SelectedGamePage.css';
 
@@ -23,6 +23,7 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
     }
     onLogout();
   };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   const handleBackToHome = () => {
     if (window.history && window.history.pushState) {
@@ -42,17 +43,7 @@ export function GameNotFound({ user, onLogout, onLogoutClick, message }: GameNot
             tagline: "Lost in the void."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: handleBackToHome
             }

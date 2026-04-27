@@ -30,7 +30,7 @@ const DISABLE_BACKGROUND_3D = false;
 
 const AuthenticatedApp: React.FC = () => {
   const location = useLocation();
-  const { isAuthenticated, user, login, signUp, logout, loginWithFacebook, loginWithGoogle, loginAsGuest, sendPasswordReset } = useAuth();
+  const { isAuthenticated, hasAccount, user, login, signUp, logout, loginWithFacebook, loginWithGoogle, loginAsGuest, sendPasswordReset } = useAuth();
   const handleWalletLogin = async (): Promise<{ success: boolean; error?: string }> => {
     return { success: false, error: 'Connect your wallet in Add funds when available' };
   };
@@ -87,17 +87,17 @@ const AuthenticatedApp: React.FC = () => {
     };
   }, [shouldShowBackground, isBackgroundReady]);
 
-  const { shouldShowLoading, showLoginDialog } = useLoadingState({
+  const { shouldShowLoading } = useLoadingState({
     isBackgroundReady,
     isAuthenticated,
   });
 
   logger.logRender({
     isAuthenticated,
+    hasAccount,
     user: user ? { uid: user.uid, displayName: user.displayName } : null,
     isBackgroundReady,
     shouldShowLoading,
-    showLoginDialog
   });
 
   if (error) {
@@ -122,9 +122,8 @@ const AuthenticatedApp: React.FC = () => {
       
       
       <AuthScreen
-        isAuthenticated={isAuthenticated}
         user={user}
-        showLoginDialog={showLoginDialog}
+        hasAccount={hasAccount}
         onLogin={authHandlers.login}
         onSignUp={authHandlers.signUp}
         onFacebookLogin={authHandlers.facebookLogin}

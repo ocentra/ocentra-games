@@ -18,7 +18,7 @@ import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/h
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import '@/ui/pages/Home/HomePage.css';
 
 const log = MainAppLogger.instance;
@@ -163,6 +163,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     }
     onLogout();
   }, [onLogout, onLogoutClick]);
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   const handleLearnMore = (gameIdentifier: string) => {
     logInfo('Publishing ShowScreenEvent', { gameIdentifier }, LOG_NAVIGATION);
@@ -234,21 +235,9 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       }
     },
     right: {
-      isProfile: Boolean(user),
-      user: user ? {
-        name: user.displayName || 'Player',
-        email: user.email,
-        avatarUrl: getHeaderAvatarUrl(user.photoURL),
-        isLoggedIn: true,
-        isGuest: user.isGuest,
-        isAdmin: user.isAdmin,
-        eloRating: user.eloRating,
-        gamesPlayed: user.gamesPlayed,
-        winRate: user.winRate,
-      } : undefined,
-      onLogout: handleLogout,
+      ...headerRightConfig,
     },
-  }), [user, handleLogout]);
+  }), [headerRightConfig]);
 
   return (
     <UnifiedPageShell

@@ -64,6 +64,9 @@ const GUEST_NAMES = [
   'Monty',
 ] as const;
 
+const GUEST_ADJECTIVE_SET = new Set<string>(GUEST_ADJECTIVES);
+const GUEST_NAME_SET = new Set<string>(GUEST_NAMES);
+
 function hashSeed(seed: string): number {
   let hash = 0;
   for (let index = 0; index < seed.length; index += 1) {
@@ -82,6 +85,20 @@ export function createGuestDisplayName(seed: string): string {
   return `${adjective} ${name} ${suffix}`;
 }
 
+function hasGeneratedGuestDisplayName(displayName: string | null | undefined): boolean {
+  if (!displayName) {
+    return false;
+  }
+
+  const match = /^([A-Za-z]+) ([A-Za-z]+) (\d{3})$/.exec(displayName.trim());
+  if (!match) {
+    return false;
+  }
+
+  const [, adjective, name] = match;
+  return GUEST_ADJECTIVE_SET.has(adjective) && GUEST_NAME_SET.has(name);
+}
+
 export function isGuestIdentity(input: {
   isGuest?: boolean;
   uid?: string | null;
@@ -97,6 +114,10 @@ export function isGuestIdentity(input: {
   }
 
   if (input.displayName?.startsWith('Guest-')) {
+    return true;
+  }
+
+  if (hasGeneratedGuestDisplayName(input.displayName)) {
     return true;
   }
 

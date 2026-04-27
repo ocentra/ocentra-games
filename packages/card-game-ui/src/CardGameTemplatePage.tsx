@@ -24,6 +24,7 @@ interface LegacyHeaderProps {
     email?: string | null;
     photoURL?: string | null;
   } | null;
+  onLogin?: () => void;
   onLogout?: () => void;
 }
 
@@ -215,11 +216,15 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
                           name: headerProps.user.displayName || 'Player',
                           email: headerProps.user.email,
                           avatarUrl: headerProps.user.photoURL,
-                          isLoggedIn: true,
-                        },
-                        onLogout: headerProps.onLogout,
-                      }
-                    : undefined,
+                        isLoggedIn: true,
+                      },
+                      onLogout: headerProps.onLogout,
+                    }
+                    : headerProps?.onLogin
+                      ? {
+                          onClick: headerProps.onLogin,
+                        }
+                      : undefined,
                 }}
               />
             </div>

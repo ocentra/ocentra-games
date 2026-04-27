@@ -9,7 +9,8 @@ import { APP_VERSION } from '@/constants/version';
 import { LeaderboardPanel } from '@/ui/pages/Competition/components/LeaderboardPanel';
 import { TournamentPanel } from '@/ui/pages/Competition/components/TournamentPanel';
 import { useCompetitionData } from '@/ui/pages/Competition/hooks/useCompetitionData';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useAuthAccess } from '@/hooks/useAuthAccess';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './CompetitionPage.css';
 
 interface CompetitionPageProps {
@@ -19,6 +20,8 @@ interface CompetitionPageProps {
 }
 
 export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPageProps) {
+  const { runWithAccount } = useAuthAccess();
+  const hasAccount = Boolean(user) && user.isGuest !== true;
   const {
     loading,
     registering,
@@ -35,7 +38,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
     refreshLeaderboard,
     loadTournamentBracket,
     registerForTournament,
-  } = useCompetitionData(user);
+  } = useCompetitionData(hasAccount ? user?.uid ?? null : null);
 
   const handleLogout = () => {
     if (onLogoutClick) {
@@ -43,6 +46,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
     }
     onLogout();
   };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   return (
     <UnifiedPageShell
@@ -55,17 +59,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
             tagline: "Rank ladders, nearby standings, and tournament brackets."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
             }
@@ -108,6 +102,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
                 seasonId={seasonId}
                 lastUpdated={lastUpdated}
                 entries={leaderboardEntries}
+                showPersonalizedStats={hasAccount}
                 userEntry={userEntry}
                 nearbyAbove={nearbyAbove}
                 nearbyBelow={nearbyBelow}
@@ -118,7 +113,11 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
                 registering={registering}
                 bracket={tournamentBracket}
                 onLoadBracket={loadTournamentBracket}
-                onRegister={registerForTournament}
+                onRegister={async (nextTournamentId) => {
+                  await runWithAccount(async () => {
+                    await registerForTournament(nextTournamentId);
+                  });
+                }}
               />
             </div>
           )}

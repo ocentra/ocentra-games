@@ -17,7 +17,7 @@ import { MultiplayerStorageKey } from '@/ui/pages/Matchmaking/types';
 import { AppScreenToken, buildCardGameTemplatePath, buildGameMatchmakingPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
 import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
 import { getLocalPilotStatus } from '@/ui/pages/games/CardGamePlay/localPilotCatalog';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './SelectedGamePage.css';
 
 interface SelectedGamePageProps {
@@ -58,6 +58,13 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   const [gameInfo, setGameInfo] = useState<GamePage | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [parsedGameName, setParsedGameName] = useState<string>('');
+  const handleLogout = () => {
+    if (onLogoutClick) {
+      onLogoutClick();
+    }
+    onLogout();
+  };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   useEffect(() => {
     async function validateGame() {
@@ -111,12 +118,6 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   if (!isValid) {
     return <GameNotFound user={user} onLogout={onLogout} onLogoutClick={onLogoutClick} message={errorMessage} />;
   }
-  const handleLogout = () => {
-    if (onLogoutClick) {
-      onLogoutClick();
-    }
-    onLogout();
-  };
 
   const handlePlaySinglePlayer = (config: { aiCount: number; aiModel: string }) => {
     void config;
@@ -169,17 +170,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
             tagline: "Simple Rules. Deadly Game."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: handleBackToHome
             }

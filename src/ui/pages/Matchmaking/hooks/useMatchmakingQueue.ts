@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { UserProfile } from '@/adapters/firebase/service';
 import {
   enqueueMatchmaking,
   getMatchmakingStatus,
@@ -13,6 +12,8 @@ import {
   readMultiplayerConfig,
   type MultiplayerStoredConfig,
 } from '@/ui/pages/Matchmaking/types';
+import { GameName, GameTypeId } from '@ocentra/endpoint-domain/constants/game';
+import { GameSlug } from '@/constants/game';
 
 export interface MatchmakingQueueState {
   config: MultiplayerStoredConfig;
@@ -21,7 +22,7 @@ export interface MatchmakingQueueState {
   loading: boolean;
   leaving: boolean;
   error: string | null;
-  queue: () => Promise<void>;
+  queue: (userId: string) => Promise<void>;
   leave: () => Promise<void>;
   refreshStatus: () => Promise<void>;
   hasMatch: boolean;
@@ -59,7 +60,25 @@ function resolveConfig(gameIdOverride?: string): MultiplayerStoredConfig {
   };
 }
 
-export function useMatchmakingQueue(user: UserProfile | null, gameIdOverride?: string): MatchmakingQueueState {
+function resolveMatchmakingGameType(gameId: string): number {
+  const normalized = gameId.trim().toLowerCase();
+
+  if (normalized === GameSlug.Claim || normalized === GameName.Claim.toLowerCase()) {
+    return GameTypeId.Claim;
+  }
+
+  if (normalized === GameName.Poker.toLowerCase()) {
+    return GameTypeId.Poker;
+  }
+
+  if (normalized === GameName.WordSearch.toLowerCase() || normalized === 'word-search') {
+    return GameTypeId.WordSearch;
+  }
+
+  return GameTypeId.Claim;
+}
+
+export function useMatchmakingQueue(gameIdOverride?: string): MatchmakingQueueState {
   const [config] = useState<MultiplayerStoredConfig>(() => resolveConfig(gameIdOverride));
   const [ticket, setTicket] = useState<MatchmakingQueueResponse | null>(null);
   const [status, setStatus] = useState<MatchmakingStatusResponse | null>(null);
@@ -80,8 +99,8 @@ export function useMatchmakingQueue(user: UserProfile | null, gameIdOverride?: s
     }
   }, [ticket?.ticketId]);
 
-  const queue = useCallback(async () => {
-    if (!user?.uid) {
+  const queue = useCallback(async (userId: string) => {
+    if (!userId) {
       setError('Sign in required');
       return;
     }
@@ -91,11 +110,8 @@ export function useMatchmakingQueue(user: UserProfile | null, gameIdOverride?: s
 
     try {
       const response = await enqueueMatchmaking({
-        userId: user.uid,
-        gameMode: config.gameId,
-        humans: config.humans,
-        ai: config.ai,
-        aiModel: config.aiModel,
+        userId,
+        gameType: resolveMatchmakingGameType(config.gameId),
       });
       setTicket(response);
       setStatus(response);
@@ -106,7 +122,7 @@ export function useMatchmakingQueue(user: UserProfile | null, gameIdOverride?: s
     } finally {
       setLoading(false);
     }
-  }, [config.ai, config.aiModel, config.gameId, config.humans, user?.uid]);
+  }, [config.ai, config.aiModel, config.gameId, config.humans]);
 
   const leave = useCallback(async () => {
     if (!ticket?.ticketId) {

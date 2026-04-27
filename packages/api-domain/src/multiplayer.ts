@@ -33,10 +33,9 @@ export interface JoinLeaveLobbyRoomRequest {
 
 export interface MatchmakingQueueRequest {
   userId: string;
-  gameMode?: string;
-  humans?: number;
-  ai?: number;
-  aiModel?: string;
+  displayName?: string;
+  elo?: number;
+  gameType?: number;
 }
 
 export interface MatchmakingQueueResponse {
@@ -105,7 +104,7 @@ export async function enqueueMatchmaking(payload: MatchmakingQueueRequest): Prom
 }
 
 export async function getMatchmakingStatus(ticketId: string): Promise<MatchmakingStatusResponse> {
-  const endpoint = appendQuery(ApiEndpoint.Matchmaking.Queue, { ticketId });
+  const endpoint = appendQuery(ApiEndpoint.Matchmaking.Base, { ticketId });
   return requestJson<MatchmakingStatusResponse>(endpoint, {
     method: HttpMethod.Get,
     authMode: 'required',

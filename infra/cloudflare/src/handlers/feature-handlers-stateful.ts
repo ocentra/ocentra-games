@@ -681,9 +681,12 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
   const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
   if (methodCheck) return methodCheck;
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for tournaments');
-  if (authResult instanceof Response) return authResult;
-  const authUserId = authResult.userId;
+  let authUserId = '';
+  if (!(segment === TournamentDOSegment.Bracket && request.method === HttpMethod.Get)) {
+    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for tournaments');
+    if (authResult instanceof Response) return authResult;
+    authUserId = authResult.userId;
+  }
   const ns = env.TOURNAMENT_DO;
   if (!ns) return stubJson(env, { tournaments: [] });
   const tournamentIdResult = extractAndValidateIdFromPath(path, ApiEndpoint.Tournament.Base, ParamName.TournamentId, request.url);

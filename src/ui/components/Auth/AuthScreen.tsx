@@ -1,22 +1,22 @@
 import { useEffect, useMemo, useRef, Suspense, lazy } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { UserProfile } from '@/adapters/firebase/service';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus'
-import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent'
+import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
+import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { parseAppRoute, resolvePathFromScreenToken } from '@/ui/navigation/appRoutes';
+import { buildHomePath, parseAppRoute, resolvePathFromScreenToken, type AppRouteState } from '@/ui/navigation/appRoutes';
 
-const LoginScreen = lazy(() => import('@/ui/features/auth/LoginScreen').then(m => ({ default: m.LoginScreen })));
-const HomeScreen = lazy(() => import('@/ui/features/home/HomeScreen').then(m => ({ default: m.HomeScreen })));
-const SelectedGameScreen = lazy(() => import('@/ui/features/selectedGame/SelectedGameScreen').then(m => ({ default: m.SelectedGameScreen })));
-const SettingsScreen = lazy(() => import('@/ui/features/settings/SettingsScreen').then(m => ({ default: m.SettingsScreen })));
-const ShopScreen = lazy(() => import('@/ui/features/shop/ShopScreen').then(m => ({ default: m.ShopScreen })));
-const MatchmakingScreen = lazy(() => import('@/ui/features/matchmaking/MatchmakingScreen').then(m => ({ default: m.MatchmakingScreen })));
-const LobbyScreen = lazy(() => import('@/ui/features/lobby/LobbyScreen').then(m => ({ default: m.LobbyScreen })));
-const SocialScreen = lazy(() => import('@/ui/features/social/SocialScreen').then(m => ({ default: m.SocialScreen })));
-const CompetitionScreen = lazy(() => import('@/ui/features/competition/CompetitionScreen').then(m => ({ default: m.CompetitionScreen })));
-const PlayerHubScreen = lazy(() => import('@/ui/features/playerHub/PlayerHubScreen').then(m => ({ default: m.PlayerHubScreen })));
+const LoginScreen = lazy(() => import('@/ui/features/auth/LoginScreen').then((m) => ({ default: m.LoginScreen })));
+const HomeScreen = lazy(() => import('@/ui/features/home/HomeScreen').then((m) => ({ default: m.HomeScreen })));
+const SelectedGameScreen = lazy(() => import('@/ui/features/selectedGame/SelectedGameScreen').then((m) => ({ default: m.SelectedGameScreen })));
+const SettingsScreen = lazy(() => import('@/ui/features/settings/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
+const ShopScreen = lazy(() => import('@/ui/features/shop/ShopScreen').then((m) => ({ default: m.ShopScreen })));
+const MatchmakingScreen = lazy(() => import('@/ui/features/matchmaking/MatchmakingScreen').then((m) => ({ default: m.MatchmakingScreen })));
+const LobbyScreen = lazy(() => import('@/ui/features/lobby/LobbyScreen').then((m) => ({ default: m.LobbyScreen })));
+const SocialScreen = lazy(() => import('@/ui/features/social/SocialScreen').then((m) => ({ default: m.SocialScreen })));
+const CompetitionScreen = lazy(() => import('@/ui/features/competition/CompetitionScreen').then((m) => ({ default: m.CompetitionScreen })));
+const PlayerHubScreen = lazy(() => import('@/ui/features/playerHub/PlayerHubScreen').then((m) => ({ default: m.PlayerHubScreen })));
 
 const RouteFallback = () => (
   <div
@@ -48,10 +48,49 @@ log.register(import.meta.url);
 
 const LOG_SCREEN_EVENTS = true;
 
+type RouteAccess = 'public' | 'account';
+
+interface RouteAccessMessage {
+  eyebrow: string;
+  title: string;
+  description: string;
+}
+
+function getRouteAccess(route: AppRouteState): RouteAccess {
+  if (route.kind === 'social' || route.kind === 'playerHub') {
+    return 'account';
+  }
+
+  return 'public';
+}
+
+function getAccountRouteMessage(route: AppRouteState, isGuestUser: boolean): RouteAccessMessage {
+  if (route.kind === 'social') {
+    return {
+      eyebrow: 'Community features',
+      title: isGuestUser ? 'Upgrade your guest session for social features' : 'Social features need a real account',
+      description: 'Friends, messages, parties, and notifications belong to a persistent player identity, so this area is limited to full accounts.',
+    };
+  }
+
+  if (route.kind === 'playerHub') {
+    return {
+      eyebrow: 'Player Hub',
+      title: isGuestUser ? 'Upgrade your guest session for your player hub' : 'Your player hub needs a real account',
+      description: 'Inventory, profile progress, and account-owned items live in your real player profile, so this area is not available to guests.',
+    };
+  }
+
+  return {
+    eyebrow: 'Account required',
+    title: isGuestUser ? 'Upgrade your guest session' : 'Sign in with a real account',
+    description: 'This part of the platform needs a real player account to continue.',
+  };
+}
+
 interface AuthScreenProps {
-  isAuthenticated: boolean;
   user: UserProfile | null;
-  showLoginDialog: boolean;
+  hasAccount: boolean;
   onLogin: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   onSignUp: (userData: { alias: string; avatar: string; username: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   onFacebookLogin: () => Promise<{ success: boolean; error?: string }>;
@@ -65,8 +104,8 @@ interface AuthScreenProps {
 }
 
 export function AuthScreen({
-  isAuthenticated,
   user,
+  hasAccount,
   onLogin,
   onSignUp,
   onFacebookLogin,
@@ -96,19 +135,30 @@ export function AuthScreen({
       if (nextPath !== currentPathRef.current) {
         navigate(nextPath);
       }
-    }
+    };
 
-    EventBus.instance.subscribe(ShowScreenEvent, handleShowScreen)
+    EventBus.instance.subscribe(ShowScreenEvent, handleShowScreen);
 
     return () => {
       EventBus.instance.unsubscribe(ShowScreenEvent, handleShowScreen);
-    }
-  }, [navigate])
+    };
+  }, [navigate]);
 
-  if (isAuthenticated && user) {
+  const renderHome = (currentUser: UserProfile | null) => (
+    <Suspense fallback={<RouteFallback />}>
+      <HomeScreen
+        user={currentUser}
+        onLogout={onLogout}
+        onLogoutClick={onLogoutClick}
+      />
+    </Suspense>
+  );
+
+  const renderRoute = (currentUser: UserProfile | null) => {
     if (route.kind === 'template') {
       return null;
     }
+
     if (route.kind === 'settings') {
       return (
         <Suspense fallback={<RouteFallback />}>
@@ -116,11 +166,12 @@ export function AuthScreen({
         </Suspense>
       );
     }
+
     if (route.kind === 'matchmaking') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <MatchmakingScreen
-            user={user}
+            user={currentUser}
             gameId={route.gameId}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
@@ -128,11 +179,12 @@ export function AuthScreen({
         </Suspense>
       );
     }
+
     if (route.kind === 'lobby') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <LobbyScreen
-            user={user}
+            user={currentUser}
             gameId={route.gameId}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
@@ -140,60 +192,57 @@ export function AuthScreen({
         </Suspense>
       );
     }
+
     if (route.kind === 'shop') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <ShopScreen
-            user={user}
+            user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
           />
         </Suspense>
       );
     }
+
     if (route.kind === 'social') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <SocialScreen
-            user={user}
+            user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
           />
         </Suspense>
       );
     }
+
     if (route.kind === 'competition') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <CompetitionScreen
-            user={user}
+            user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
           />
         </Suspense>
       );
     }
+
     if (route.kind === 'playerHub') {
       return (
         <Suspense fallback={<RouteFallback />}>
           <PlayerHubScreen
-            user={user}
+            user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
           />
         </Suspense>
       );
     }
+
     if (route.kind === 'home') {
-      return (
-        <Suspense fallback={<RouteFallback />}>
-          <HomeScreen
-            user={user}
-            onLogout={onLogout}
-            onLogoutClick={onLogoutClick}
-          />
-        </Suspense>
-      );
+      return renderHome(currentUser);
     }
 
     const gameId = route.kind === 'game'
@@ -203,41 +252,45 @@ export function AuthScreen({
         : '';
 
     if (!gameId) {
-      return (
-        <Suspense fallback={<RouteFallback />}>
-          <HomeScreen
-            user={user}
-            onLogout={onLogout}
-            onLogoutClick={onLogoutClick}
-          />
-        </Suspense>
-      );
+      return renderHome(currentUser);
     }
 
     return (
       <Suspense fallback={<RouteFallback />}>
         <SelectedGameScreen
           gameId={gameId}
-          user={user}
+          user={currentUser}
           onLogout={onLogout}
           onLogoutClick={onLogoutClick}
         />
       </Suspense>
     );
+  };
+
+  if (getRouteAccess(route) === 'account' && !hasAccount) {
+    const accessMessage = getAccountRouteMessage(route, user?.isGuest === true);
+
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <LoginScreen
+          onLogin={onLogin}
+          onSignUp={onSignUp}
+          onFacebookLogin={onFacebookLogin}
+          onGoogleLogin={onGoogleLogin}
+          onGuestLogin={onGuestLogin}
+          onWalletLogin={onWalletLogin}
+          onSendPasswordReset={onSendPasswordReset}
+          onTabSwitch={onTabSwitch}
+          disableGuestLogin
+          initialMode="signin"
+          contextEyebrow={accessMessage.eyebrow}
+          contextTitle={accessMessage.title}
+          contextDescription={accessMessage.description}
+          onClose={() => navigate(buildHomePath())}
+        />
+      </Suspense>
+    );
   }
 
-  return (
-    <Suspense fallback={<RouteFallback />}>
-      <LoginScreen
-        onLogin={onLogin}
-        onSignUp={onSignUp}
-        onFacebookLogin={onFacebookLogin}
-        onGoogleLogin={onGoogleLogin}
-        onGuestLogin={onGuestLogin}
-        onWalletLogin={onWalletLogin}
-        onSendPasswordReset={onSendPasswordReset}
-        onTabSwitch={onTabSwitch}
-      />
-    </Suspense>
-  );
+  return renderRoute(user);
 }

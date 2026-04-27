@@ -1,6 +1,6 @@
-import { HashAlgorithm, CryptoAlgorithm, KeyFormat, KeyUsage } from '@/constants/crypto';
+import { HashAlgorithm, CryptoAlgorithm, KeyUsage } from '@/constants/crypto';
 import { FirebaseUrl } from '@ocentra/endpoint-domain/constants/firebase';
-import { JwtAlgorithm, TestTokenPrefix, TestTokenValue, PemMarker, FirebaseIssuer } from '@ocentra/endpoint-domain/constants/auth';
+import { JwtAlgorithm, TestTokenPrefix, TestTokenValue, FirebaseIssuer } from '@ocentra/endpoint-domain/constants/auth';
 import { HttpHeader, HttpContentType, HttpAuthScheme } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { QueryValue } from '@ocentra/endpoint-domain/constants/query';
@@ -17,32 +17,49 @@ export interface VerifiedToken {
   exp: number;
 }
 
-interface FirebaseJWKS {
-  [kid: string]: string;
+interface FirebaseJwk {
+  kid?: string;
+  kty?: string;
+  alg?: string;
+  use?: string;
+  n?: string;
+  e?: string;
 }
 
-let cachedPublicKeys: FirebaseJWKS | null = null;
+interface FirebaseJWKS {
+  keys?: FirebaseJwk[];
+}
+
+type FirebasePublicKeyMap = Record<string, JsonWebKey>;
+
+let cachedPublicKeys: FirebasePublicKeyMap | null = null;
 let cacheExpiry = 0;
 const CACHE_TTL = 3600000;
+const FIREBASE_JWK_FALLBACK_URL = 'https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com';
 
 function validateJWKSStructure(keys: FirebaseJWKS): boolean {
   if (!keys || typeof keys !== 'object') {
     return false;
   }
 
-  const keyEntries = Object.entries(keys);
-  if (keyEntries.length === 0) {
+  if (!Array.isArray(keys.keys) || keys.keys.length === 0) {
     return false;
   }
 
-  for (const [kid, pem] of keyEntries) {
-    if (!kid || typeof kid !== 'string') {
+  for (const key of keys.keys) {
+    if (!key || typeof key !== 'object') {
       return false;
     }
-    if (!pem || typeof pem !== 'string') {
+    if (!key.kid || typeof key.kid !== 'string') {
       return false;
     }
-    if (!pem.includes(PemMarker.BeginCertificate) || !pem.includes(PemMarker.EndCertificate)) {
+    if (key.kty !== 'RSA') {
+      return false;
+    }
+    if (!key.n || typeof key.n !== 'string') {
+      return false;
+    }
+    if (!key.e || typeof key.e !== 'string') {
       return false;
     }
   }
@@ -50,7 +67,30 @@ function validateJWKSStructure(keys: FirebaseJWKS): boolean {
   return true;
 }
 
-async function getFirebasePublicKeys(env?: Env): Promise<FirebaseJWKS> {
+function createFirebasePublicKeyMap(keys: FirebaseJWKS): FirebasePublicKeyMap {
+  const publicKeyMap: FirebasePublicKeyMap = {};
+
+  for (const key of keys.keys ?? []) {
+    if (!key.kid || !key.n || !key.e) {
+      continue;
+    }
+
+    publicKeyMap[key.kid] = {
+      kid: key.kid,
+      kty: 'RSA',
+      alg: key.alg ?? JwtAlgorithm.Rs256,
+      use: key.use ?? 'sig',
+      n: key.n,
+      e: key.e,
+      ext: true,
+      key_ops: [KeyUsage.Verify],
+    };
+  }
+
+  return publicKeyMap;
+}
+
+async function getFirebasePublicKeys(env?: Env): Promise<FirebasePublicKeyMap> {
   const now = Date.now();
 
   if (cachedPublicKeys && now < cacheExpiry) {
@@ -58,26 +98,30 @@ async function getFirebasePublicKeys(env?: Env): Promise<FirebaseJWKS> {
   }
 
   try {
-    const response = await fetch(
-      FirebaseUrl.PublicKeys,
-      {
-        signal: AbortSignal.timeout(Timeout.JwksFetchMs),
-        headers: {
-          [HttpHeader.Accept]: HttpContentType.ApplicationJson
+    const fetchJwks = async (url: string): Promise<FirebaseJWKS> => {
+      const response = await fetch(
+        url,
+        {
+          signal: AbortSignal.timeout(Timeout.JwksFetchMs),
+          headers: {
+            [HttpHeader.Accept]: HttpContentType.ApplicationJson
+          }
         }
-      }
-    );
+      );
 
-    if (!response.ok) {
-      await consumeResponseBody(response);
-      const errorMsg = `Failed to fetch Firebase public keys: ${response.status}`;
-      if (env) {
-        await alertJWKSFailure(errorMsg, env);
+      if (!response.ok) {
+        await consumeResponseBody(response);
+        throw new Error(`Failed to fetch Firebase public keys: ${response.status}`);
       }
-      throw new Error(errorMsg);
+
+      return await response.json() as FirebaseJWKS;
+    };
+
+    let keys = await fetchJwks(FirebaseUrl.PublicKeys);
+
+    if (!validateJWKSStructure(keys) && FirebaseUrl.PublicKeys !== FIREBASE_JWK_FALLBACK_URL) {
+      keys = await fetchJwks(FIREBASE_JWK_FALLBACK_URL);
     }
-
-    const keys = await response.json() as FirebaseJWKS;
 
     if (!validateJWKSStructure(keys)) {
       const errorMsg = 'Invalid JWKS structure received from Firebase';
@@ -87,10 +131,10 @@ async function getFirebasePublicKeys(env?: Env): Promise<FirebaseJWKS> {
       throw new Error(errorMsg);
     }
 
-    cachedPublicKeys = keys;
+    cachedPublicKeys = createFirebasePublicKeyMap(keys);
     cacheExpiry = now + CACHE_TTL;
 
-    return keys;
+    return cachedPublicKeys;
   } catch (error) {
     const errorMsg = `Failed to fetch Firebase public keys: ${error instanceof Error ? error.message : 'Unknown error'}`;
     if (env) {
@@ -100,21 +144,11 @@ async function getFirebasePublicKeys(env?: Env): Promise<FirebaseJWKS> {
   }
 }
 
-async function pemToCryptoKey(pem: string): Promise<CryptoKey> {
-  const pemContents = pem
-    .replace(PemMarker.BeginCertificate, '')
-    .replace(PemMarker.EndCertificate, '')
-    .replace(/\n/g, '');
-  const binaryDer = atob(pemContents);
-  const derBuffer = new Uint8Array(binaryDer.length);
-  for (let i = 0; i < binaryDer.length; i++) {
-    derBuffer[i] = binaryDer.charCodeAt(i);
-  }
-
+async function jwkToCryptoKey(jwk: JsonWebKey): Promise<CryptoKey> {
   try {
     const cryptoKey = await crypto.subtle.importKey(
-      KeyFormat.Spki,
-      derBuffer,
+      'jwk',
+      jwk,
       {
         name: CryptoAlgorithm.RsaPkcs1V15,
         hash: HashAlgorithm.Sha256,
@@ -142,6 +176,10 @@ function base64UrlDecode(input: string): Uint8Array {
   return bytes;
 }
 
+function decodeBase64UrlText(input: string): string {
+  return new TextDecoder().decode(base64UrlDecode(input));
+}
+
 export async function verifyFirebaseToken(
   idToken: string,
   projectId: string,
@@ -156,7 +194,7 @@ export async function verifyFirebaseToken(
     const [headerB64, payloadB64, signatureB64] = parts;
     let header: { alg?: string; kid?: string };
     try {
-      header = JSON.parse(atob(headerB64));
+      header = JSON.parse(decodeBase64UrlText(headerB64));
     } catch {
       throw new Error('Invalid token header - not valid base64 JSON');
     }
@@ -175,7 +213,7 @@ export async function verifyFirebaseToken(
       throw new Error(`Public key not found for kid: ${header.kid}`);
     }
 
-    const cryptoKey = await pemToCryptoKey(publicKeyPem);
+    const cryptoKey = await jwkToCryptoKey(publicKeyPem);
     const signedData = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
     const signature = base64UrlDecode(signatureB64);
 
@@ -202,7 +240,7 @@ export async function verifyFirebaseToken(
     };
 
     try {
-      payload = JSON.parse(atob(payloadB64));
+      payload = JSON.parse(decodeBase64UrlText(payloadB64));
     } catch {
       throw new Error('Invalid token payload - not valid base64 JSON');
     }
@@ -285,13 +323,20 @@ export async function verifyAuth(
           const userId = testTokenMatch[1];
           return { userId };
         }
-      }
-      if (token.startsWith(TestTokenPrefix.Forged) || token.startsWith(TestTokenPrefix.Expired) ||
-          token.startsWith(TestTokenPrefix.InvalidIssuer) || token.startsWith(TestTokenPrefix.InvalidAudience) ||
-          token === TestTokenValue.InvalidFormat || token === TestTokenValue.NotValidJwt || token === TestTokenValue.InvalidToken) {
         return { userId: '', error: ErrorMessage.InvalidTestTokenFormat };
       }
-      return { userId: '', error: ErrorMessage.InvalidTestTokenFormat };
+
+      if (
+        token.startsWith(TestTokenPrefix.Forged) ||
+        token.startsWith(TestTokenPrefix.Expired) ||
+        token.startsWith(TestTokenPrefix.InvalidIssuer) ||
+        token.startsWith(TestTokenPrefix.InvalidAudience) ||
+        token === TestTokenValue.InvalidFormat ||
+        token === TestTokenValue.NotValidJwt ||
+        token === TestTokenValue.InvalidToken
+      ) {
+        return { userId: '', error: ErrorMessage.InvalidTestTokenFormat };
+      }
     }
 
     const verifiedToken = await verifyFirebaseToken(token, projectId, env as Env | undefined);

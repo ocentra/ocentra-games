@@ -6,6 +6,7 @@ interface LeaderboardPanelProps {
   seasonId: string;
   lastUpdated: string;
   entries: LeaderboardEntry[];
+  showPersonalizedStats: boolean;
   userEntry: LeaderboardEntry | null;
   nearbyAbove: LeaderboardEntry[];
   nearbyBelow: LeaderboardEntry[];
@@ -17,6 +18,7 @@ export function LeaderboardPanel({
   seasonId,
   lastUpdated,
   entries,
+  showPersonalizedStats,
   userEntry,
   nearbyAbove,
   nearbyBelow,
@@ -70,34 +72,40 @@ export function LeaderboardPanel({
         {entries.length === 0 && <li className="cp-empty">No leaderboard entries</li>}
       </ul>
 
-      <div className="cp-metrics">
-        <div className="cp-metric-block">
-          <h3 className="cp-metric-title">My Rank</h3>
-          {userEntry ? (
-            <div className="cp-metric-content">
-              <span>Rank: {userEntry.rank}</span>
-              <span>Score: {userEntry.score}</span>
-              <span>W/L: {userEntry.wins}/{userEntry.losses}</span>
-            </div>
-          ) : (
-            <p className="cp-empty">No personal rank</p>
-          )}
+      {showPersonalizedStats ? (
+        <div className="cp-metrics">
+          <div className="cp-metric-block">
+            <h3 className="cp-metric-title">My Rank</h3>
+            {userEntry ? (
+              <div className="cp-metric-content">
+                <span>Rank: {userEntry.rank}</span>
+                <span>Score: {userEntry.score}</span>
+                <span>W/L: {userEntry.wins}/{userEntry.losses}</span>
+              </div>
+            ) : (
+              <p className="cp-empty">No personal rank</p>
+            )}
+          </div>
+          <div className="cp-metric-block">
+            <h3 className="cp-metric-title">Nearby</h3>
+            {(nearbyAbove.length > 0 || nearbyBelow.length > 0) ? (
+              <ul className="cp-inline-list">
+                {[...nearbyAbove, ...nearbyBelow].map((entry) => (
+                  <li key={`${entry.user_id}-${entry.rank}`} className="cp-inline-list-item">
+                    #{entry.rank} {entry.user_id}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="cp-empty">No nearby ranks</p>
+            )}
+          </div>
         </div>
-        <div className="cp-metric-block">
-          <h3 className="cp-metric-title">Nearby</h3>
-          {(nearbyAbove.length > 0 || nearbyBelow.length > 0) ? (
-            <ul className="cp-inline-list">
-              {[...nearbyAbove, ...nearbyBelow].map((entry) => (
-                <li key={`${entry.user_id}-${entry.rank}`} className="cp-inline-list-item">
-                  #{entry.rank} {entry.user_id}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="cp-empty">No nearby ranks</p>
-          )}
+      ) : (
+        <div className="cp-callout">
+          Sign in with a real account to see your rank and nearby standings.
         </div>
-      </div>
+      )}
     </section>
   );
 }

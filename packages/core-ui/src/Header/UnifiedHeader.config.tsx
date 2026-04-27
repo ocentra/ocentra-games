@@ -163,6 +163,15 @@ export const serializedUnifiedHeaderConfigSchema = z.object({
     buttonGap: z.number(),
     navGap: z.number(),
     textScale: z.number(),
+    textFontFamily: z.string().default(SAFE_SYSTEM_FONTS[14].value),
+    textFontWeight: z.number().default(850),
+    textLetterSpacing: z.number().default(0),
+    textForceUppercase: z.boolean().default(false),
+    textColor: z.string().default('#ffffff'),
+    textStrokeColor: z.string().default('rgba(0, 14, 32, 0.8)'),
+    textStrokeWidth: z.number().default(2.8),
+    textOpacity: z.number().default(1),
+    textOffsetY: z.number().default(0),
     accentInset: z.number(),
     sideArrowInset: z.number(),
     endCurvePadding: z.number(),
@@ -462,6 +471,15 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
       buttonGap: input.navigation?.buttonGap ?? 7,
       navGap: input.navigation?.navGap ?? 6,
       textScale: input.navigation?.textScale ?? 0.42,
+      textFontFamily: input.navigation?.textFontFamily ?? SAFE_SYSTEM_FONTS[14].value,
+      textFontWeight: input.navigation?.textFontWeight ?? 850,
+      textLetterSpacing: input.navigation?.textLetterSpacing ?? 0,
+      textForceUppercase: input.navigation?.textForceUppercase ?? false,
+      textColor: input.navigation?.textColor ?? '#ffffff',
+      textStrokeColor: input.navigation?.textStrokeColor ?? 'rgba(0, 14, 32, 0.8)',
+      textStrokeWidth: input.navigation?.textStrokeWidth ?? 2.8,
+      textOpacity: input.navigation?.textOpacity ?? 1,
+      textOffsetY: input.navigation?.textOffsetY ?? 0,
       accentInset: input.navigation?.accentInset ?? 7,
       sideArrowInset: input.navigation?.sideArrowInset ?? 9,
       endCurvePadding: input.navigation?.endCurvePadding ?? 18,
@@ -602,6 +620,15 @@ export type UnifiedHeaderNavigationConfig = {
   buttonGap: number;
   navGap: number;
   textScale: number;
+  textFontFamily: string;
+  textFontWeight: number;
+  textLetterSpacing: number;
+  textForceUppercase: boolean;
+  textColor: string;
+  textStrokeColor: string;
+  textStrokeWidth: number;
+  textOpacity: number;
+  textOffsetY: number;
   accentInset: number;
   sideArrowInset: number;
   endCurvePadding: number;

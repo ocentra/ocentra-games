@@ -2,6 +2,7 @@ import type { Env } from '@/constants/env';
 import { validateZodBody } from '@/utils/zod-validation';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
+import { verifyAuth } from '@/utils/auth';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
@@ -100,6 +101,11 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
 
 export async function handleLobbyRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Lobby request', getStackTrace(), { path });
+  const parts = path.split('/').filter(Boolean);
+  const roomIdFromPath = (path.includes(LobbyDOSegment.Join) || path.includes(LobbyDOSegment.Leave) || path.includes(LobbyDOSegment.Spectate)) ? (parts[3] ?? '') : '';
+  const isJoin = path.includes(LobbyDOSegment.Join);
+  const isLeave = path.includes(LobbyDOSegment.Leave);
+  const isSpectate = path.includes(LobbyDOSegment.Spectate);
   const supportedMethods = (path.includes(LobbyDOSegment.Join) || path.includes(LobbyDOSegment.Leave) || path.includes(LobbyDOSegment.Spectate))
     ? [HttpMethod.Post]
     : [HttpMethod.Get, HttpMethod.Post];
@@ -111,14 +117,18 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
     return stubJson(env, { rooms: [] });
   }
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
-  const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for lobby');
-  if (authResult instanceof Response) return authResult;
-  const authUserId = authResult.userId;
-  const parts = path.split('/').filter(Boolean);
-  const roomIdFromPath = (path.includes(LobbyDOSegment.Join) || path.includes(LobbyDOSegment.Leave) || path.includes(LobbyDOSegment.Spectate)) ? (parts[3] ?? '') : '';
-  const isJoin = path.includes(LobbyDOSegment.Join);
-  const isLeave = path.includes(LobbyDOSegment.Leave);
-  const isSpectate = path.includes(LobbyDOSegment.Spectate);
+  let authUserId = '';
+  if (request.method === HttpMethod.Get && !isJoin && !isLeave && !isSpectate) {
+    const authHeader = request.headers.get(HttpHeader.Authorization);
+    if (authHeader) {
+      const optionalAuthResult = await verifyAuth(request, env.FIREBASE_PROJECT_ID || '', env);
+      authUserId = optionalAuthResult.userId || '';
+    }
+  } else {
+    const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for lobby');
+    if (authResult instanceof Response) return authResult;
+    authUserId = authResult.userId;
+  }
   const shardKey = roomIdFromPath && (isJoin || isLeave || isSpectate) ? getLobbyShardKey(roomIdFromPath) : DEFAULT_SHARD;
   let bodyText: string | undefined;
   if (request.method === HttpMethod.Post) {
@@ -175,12 +185,14 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
 
 export async function handleMatchmakingRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Matchmaking request', getStackTrace(), { path });
-  const supportedMethods = path.endsWith(MatchmakingDOSegment.Status)
+  const isQueuePath = path.endsWith(MatchmakingDOSegment.Queue);
+  const isStatusPath = path.endsWith(MatchmakingDOSegment.Status);
+  const supportedMethods = isStatusPath
     ? [HttpMethod.Get]
     : path.endsWith(MatchmakingDOSegment.Leave)
       ? [HttpMethod.Post]
-      : path.endsWith(MatchmakingDOSegment.Queue)
-        ? [HttpMethod.Post, HttpMethod.Delete]
+      : isQueuePath
+        ? [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete]
         : [HttpMethod.Get, HttpMethod.Post, HttpMethod.Delete];
   const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
   if (methodCheck) return methodCheck;
@@ -194,9 +206,9 @@ export async function handleMatchmakingRequest(request: Request, env: Env, path:
   }
   const stub = ns.get(ns.idFromName(DEFAULT_REGION));
   const search = new URL(request.url).search;
-  const isLeave = path.endsWith(MatchmakingDOSegment.Leave) || (path.endsWith(MatchmakingDOSegment.Queue) && request.method === HttpMethod.Delete);
+  const isLeave = path.endsWith(MatchmakingDOSegment.Leave) || (isQueuePath && request.method === HttpMethod.Delete);
   const doPath =
-    path.endsWith(MatchmakingDOSegment.Queue) && request.method !== HttpMethod.Delete
+    isQueuePath && request.method === HttpMethod.Post
       ? MatchmakingDOPaths.Queue(DEFAULT_REGION)
       : isLeave
         ? MatchmakingDOPaths.Leave(DEFAULT_REGION) + (search ? search : '')

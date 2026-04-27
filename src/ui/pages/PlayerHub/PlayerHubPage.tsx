@@ -11,7 +11,7 @@ import { MarketplacePanel } from '@/ui/pages/PlayerHub/components/MarketplacePan
 import { ProfilePanel } from '@/ui/pages/PlayerHub/components/ProfilePanel';
 import { usePlayerHubData } from '@/ui/pages/PlayerHub/hooks/usePlayerHubData';
 import { AppScreenToken } from '@/ui/navigation/appRoutes';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './PlayerHubPage.css';
 
 interface PlayerHubPageProps {
@@ -38,6 +38,7 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
     }
     onLogout();
   };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   return (
     <UnifiedPageShell
@@ -50,17 +51,7 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
             tagline: "Profile, inventory, and marketplace in one control center."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: () => EventBus.instance.publish(new ShowScreenEvent('home'))
             }

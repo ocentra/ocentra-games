@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
+import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { ensurePortFree, getPortOccupants } from './port-utils';
 import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
@@ -42,6 +43,54 @@ export function createManagedProcessRegistry(): ManagedProcessRegistry {
   return { processes: [] };
 }
 
+class LogDeduplicator {
+  private lastNormalized = '';
+  private repeatCount = 0;
+  private lastFlushTime = Date.now();
+  private readonly flushThresholdMs = 10000;
+
+  private label: string;
+
+  constructor(label: string) {
+    this.label = label;
+  }
+
+  private normalize(line: string): string {
+
+    return line
+      .replace(/\u001b\[[0-9;]*m/g, '')
+      .replace(/\[\d{4}-\d{2}-\d{2}\]\[\d{2}:\d{2}:\d{2}\]/g, '[TIMESTAMP]')
+      .replace(/\(\d+ms\)/g, '(DURATION)')
+      .replace(/\d+\.\d+s/g, 'DURATION')
+      .trim();
+  }
+
+  public handleLine(line: string): void {
+    const normalized = this.normalize(line);
+
+    if (normalized === this.lastNormalized && normalized !== '') {
+      this.repeatCount++;
+      if (Date.now() - this.lastFlushTime > this.flushThresholdMs) {
+        this.flush();
+      }
+    } else {
+      this.flush();
+      process.stdout.write(`[${this.label}] ${line}\n`);
+      this.lastNormalized = normalized;
+      this.repeatCount = 0;
+      this.lastFlushTime = Date.now();
+    }
+  }
+
+  public flush(): void {
+    if (this.repeatCount > 0) {
+      process.stdout.write(`[${this.label}] (repeated ${this.repeatCount}x)\n`);
+      this.repeatCount = 0;
+      this.lastFlushTime = Date.now();
+    }
+  }
+}
+
 export function spawnManaged(
   registry: ManagedProcessRegistry,
   command: string,
@@ -57,9 +106,22 @@ export function spawnManaged(
     env: { ...process.env, ...envOverrides },
   });
 
-  proc.stdout?.on('data', (data: Buffer) => process.stdout.write(`[${label}] ${data}`));
-  proc.stderr?.on('data', (data: Buffer) => process.stderr.write(`[${label}] ${data}`));
+  const outDeduplicator = new LogDeduplicator(label);
+  const errDeduplicator = new LogDeduplicator(`${label}:err`);
+
+  if (proc.stdout) {
+    const rlOut = readline.createInterface({ input: proc.stdout, terminal: false });
+    rlOut.on('line', (line) => outDeduplicator.handleLine(line));
+  }
+
+  if (proc.stderr) {
+    const rlErr = readline.createInterface({ input: proc.stderr, terminal: false });
+    rlErr.on('line', (line) => errDeduplicator.handleLine(line));
+  }
+
   proc.on('exit', (code) => {
+    outDeduplicator.flush();
+    errDeduplicator.flush();
     if (code && code !== 0) {
       console.log(`[${label}] exited with code ${code}`);
     }

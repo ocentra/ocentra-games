@@ -8,6 +8,7 @@ declare const styles: {
   readonly primaryNavHost: string;
   readonly primaryNavSvg: string;
   readonly debugControlsFloating: string;
+  readonly debugControlsFloatingDocked: string;
   readonly debugToggleButton: string;
   readonly debugPanel: string;
   readonly debugPanelHeader: string;
@@ -44,16 +45,26 @@ declare const styles: {
   readonly dropdownStatus: string;
   readonly dropdownDivider: string;
   readonly dropdownStats: string;
+  readonly accountLockedMessage: string;
+  readonly accountLockedCard: string;
+  readonly accountLockedOverlay: string;
+  readonly dropdownStatsLocked: string;
   readonly dropdownItem: string;
   readonly editOverlay: string;
   readonly pencilIcon: string;
   readonly dropdownMenuSections: string;
   readonly dropdownMenuSection: string;
   readonly dropdownMenuSectionDanger: string;
+  readonly dropdownMenuSectionLocked: string;
   readonly guestDropdownCopy: string;
   readonly guestBenefits: string;
   readonly guestBenefitCard: string;
   readonly guestPrimaryButton: string;
+  readonly dropdownItemLocked: string;
+  readonly dropdownItemHint: string;
+  readonly dropdownItemIcon: string;
+  readonly dropdownItemIconLogout: string;
+  readonly dropdownItemLabel: string;
   readonly dropdownItemLogout: string;
 };
 

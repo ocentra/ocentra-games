@@ -14,8 +14,10 @@ import {
   RouteFeature,
 } from '@/config/platformFeatures';
 import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
+import LoginDialog from '@/ui/components/Auth/LoginDialog';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
+import { useAuthHandlers } from '@/hooks/useAuthHandlers';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import {
@@ -79,13 +81,34 @@ interface AdminActivity {
 
 export const AdminUsersPage: React.FC = () => {
   const headerProps = useCoreUIHeaderProps();
-  const { user, logout } = useAuth();
+  const {
+    user,
+    logout,
+    login,
+    signUp,
+    loginWithFacebook,
+    loginWithGoogle,
+    loginAsGuest,
+    sendPasswordReset,
+  } = useAuth();
   const { isAdmin } = useAdminPermissions();
   const { shell } = usePlatformUI();
   const navigate = useNavigate();
   const rotationRef = useRef<RotationControlAPI | null>(null);
   const platform = shell as PlatformShell;
   const isDev = import.meta.env.DEV;
+  const handleWalletLogin = useCallback(async (): Promise<{ success: boolean; error?: string }> => ({
+    success: false,
+    error: 'Please connect your wallet in the login dialog',
+  }), []);
+  const authHandlers = useAuthHandlers(
+    login,
+    signUp,
+    loginWithFacebook,
+    loginWithGoogle,
+    loginAsGuest,
+    handleWalletLogin
+  );
 
   const [users, setUsers] = useState<UserData[]>([]);
   const [activities, setActivities] = useState<AdminActivity[]>([]);
@@ -97,17 +120,10 @@ export const AdminUsersPage: React.FC = () => {
   const [pendingAction, setPendingAction] = useState<AdminActivityAction | null>(null);
   const hasLoadedRef = useRef(false);
 
-  // Redirect non-admins
   useEffect(() => {
-    if (!isAdmin && user) {
-      logInfo('Access denied - redirecting to home', { email: user.email });
-      alert('Access Denied: Admin privileges required');
-      navigate(buildHomePath());
-    }
-
     const hideLoading = (globalThis as Record<string, unknown>).__hideAppLoading as (() => void) | undefined;
     hideLoading?.();
-  }, [isAdmin, user, navigate]);
+  }, []);
 
   const loadAdminDashboardData = useCallback(async () => {
     const authTraceEnabled = syncAdminAuthTraceFlag();
@@ -229,7 +245,27 @@ export const AdminUsersPage: React.FC = () => {
   }, [platform, isDev]);
 
   if (!isAdmin) {
-    return null;
+    return (
+      <LoginDialog
+        onLogin={authHandlers.login}
+        onFacebookLogin={authHandlers.facebookLogin}
+        onGoogleLogin={authHandlers.googleLogin}
+        onGuestLogin={authHandlers.guestLogin}
+        onWalletLogin={authHandlers.walletLogin}
+        onSendPasswordReset={sendPasswordReset}
+        adminRequired
+        disableGuestLogin
+        initialMode="signin"
+        contextEyebrow="Admin Dashboard"
+        contextTitle={user?.isGuest ? 'Upgrade from guest to administrator access' : 'Administrator access required'}
+        contextDescription={
+          user?.email
+            ? `Signed in as ${user.email}, but this dashboard is limited to approved administrator accounts.`
+            : 'This dashboard manages player accounts and platform permissions, so it is limited to approved administrator accounts.'
+        }
+        onClose={() => navigate(buildHomePath())}
+      />
+    );
   }
 
   const headerTagline = 'Control Center | Manage users and system tools';

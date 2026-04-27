@@ -96,9 +96,13 @@ function estimateLabelWidth(label: string, textSize: number) {
   return width;
 }
 
+function getRenderedLabel(label: string, config: UnifiedHeaderNavigationConfig) {
+  return config.textForceUppercase ? label.toUpperCase() : label;
+}
+
 function getButtonWidth(label: string, shellHeight: number, config: UnifiedHeaderNavigationConfig) {
   const textSize = clamp(shellHeight * config.textScale, 11, 18);
-  const labelWidth = estimateLabelWidth(label, textSize);
+  const labelWidth = estimateLabelWidth(getRenderedLabel(label, config), textSize) + (config.textLetterSpacing * Math.max(0, label.length - 1));
   const sideArrowClearance = config.sideArrowInset + clamp(shellHeight * 0.16, 4, 7) + 8;
   const sidePadding = Math.max(config.textSidePadding, sideArrowClearance);
   const naturalWidth = labelWidth + sidePadding * 2;
@@ -324,8 +328,9 @@ function NavButton({
   const fillColor = active ? config.activeTintColor : hovered ? config.hoverTintColor : config.tintColor;
   const fillOpacity = active ? 0.18 : hovered ? 0.15 : 0.09;
   const textSize = clamp(box.h * config.textScale, 11, 18);
-  const textStroke = clamp(textSize * 0.22, 2.2, 3.6);
+  const textStroke = clamp(config.textStrokeWidth, 0, 6);
   const lift = hovered ? -1.2 : active ? -0.6 : 0;
+  const renderedLabel = getRenderedLabel(item.label, config);
 
   return (
     <g
@@ -403,17 +408,19 @@ function NavButton({
       <SideArrow box={box} side="right" color={edgeColor} active={lit} inset={config.sideArrowInset} />
       <text
         x={box.x + box.w / 2}
-        y={box.y + box.h / 2 + textSize * 0.36}
+        y={box.y + box.h / 2 + textSize * 0.36 + config.textOffsetY}
         textAnchor="middle"
-        fontFamily="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+        fontFamily={config.textFontFamily}
         fontSize={textSize}
-        fontWeight={850}
-        fill="#ffffff"
+        fontWeight={config.textFontWeight}
+        fill={config.textColor}
+        fillOpacity={config.textOpacity}
         paintOrder="stroke fill markers"
-        stroke="rgba(0, 14, 32, 0.8)"
+        stroke={config.textStrokeColor}
         strokeWidth={textStroke}
+        letterSpacing={config.textLetterSpacing}
       >
-        {item.label}
+        {renderedLabel}
       </text>
     </g>
   );

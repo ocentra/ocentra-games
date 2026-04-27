@@ -5,7 +5,17 @@ import { useAuth } from '@/hooks/useAuth';
 import { canUseDevMockAdmin, setDevAuthQueryEnabled } from '@/utils/devAuth';
 import './LoginScreen.css';
 
-export function LoginScreen() {
+interface LoginScreenProps {
+  contextTitle?: string;
+  contextDescription?: string;
+  secondaryActions?: Array<{
+    label: string;
+    onClick: () => void | Promise<void>;
+    disabled?: boolean;
+  }>;
+}
+
+export function LoginScreen({ contextTitle, contextDescription, secondaryActions = [] }: LoginScreenProps = {}) {
   const { login, loginWithGoogle, sendPasswordReset, isFirebaseConfigured } = useAuth();
   const allowDevMockAdmin = canUseDevMockAdmin();
   const statusMessage: LoginDialogStatusMessage | null = !isFirebaseConfigured
@@ -25,20 +35,29 @@ export function LoginScreen() {
         onGoogleLogin={loginWithGoogle}
         onSendPasswordReset={sendPasswordReset}
         secondaryActions={
-          allowDevMockAdmin
-            ? [
-                {
-                  label: 'Use mock admin',
-                  onClick: () => {
-                    setDevAuthQueryEnabled(true);
+          [
+            ...secondaryActions,
+            ...(allowDevMockAdmin
+              ? [
+                  {
+                    label: 'Use mock admin',
+                    onClick: () => {
+                      setDevAuthQueryEnabled(true);
+                    },
                   },
-                },
-              ]
-            : []
+                ]
+              : []),
+          ]
         }
         adminRequired
         adminMessage="Admin access required for Asset Editor. Sign in with an administrator account."
-        brandTitle="Ocentra AI"
+        contextEyebrow="Asset Editor"
+        contextTitle={contextTitle ?? 'Administrator access required'}
+        contextDescription={
+          contextDescription
+          ?? 'The editor writes shared assets and tooling state, so it is limited to approved administrator accounts.'
+        }
+        brandTitle="Ocentra Editor"
         appVersion={
           typeof import.meta !== 'undefined' && import.meta.env?.VITE_APP_VERSION != null
             ? String(import.meta.env.VITE_APP_VERSION)

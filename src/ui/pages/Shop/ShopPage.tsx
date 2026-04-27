@@ -12,7 +12,8 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { APP_VERSION } from '@/constants/version';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useAuthAccess } from '@/hooks/useAuthAccess';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './ShopPage.css';
 
 type ProductType = 'AC_CREDITS' | 'SUBSCRIPTION' | 'TOURNAMENT_ENTRY' | 'MARKETPLACE';
@@ -75,6 +76,8 @@ interface ShopPageProps {
 }
 
 export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: ShopPageProps) {
+  const { runWithAccount } = useAuthAccess();
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout });
 
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -105,7 +108,6 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const handleBack = () => EventBus.instance.publish(new ShowScreenEvent('home'));
 
   const handleBuy = async (product: ShopProduct) => {
-    if (!user?.uid) { setError('Sign in to purchase'); return; }
     setError(null);
     setLoadingId(product.productId);
     try {
@@ -137,6 +139,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     }
   };
 
+  const handleProtectedBuy = (product: ShopProduct) => {
+    void runWithAccount(async () => {
+      await handleBuy(product);
+    });
+  };
+
   const sub = (id: string) => subProducts.find(p => p.productId === id);
   const fmt = (cents?: number) => `$${((cents ?? 0) / 100).toFixed(2)}`;
 
@@ -152,17 +160,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
           tagline: "Gear up. Outthink. Outplay."
         }}
         config={{
-          right: {
-            isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-            onLogout: onLogout
-          },
+          right: headerRightConfig,
           left: {
             onClick: handleBack
           }
@@ -238,7 +236,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                       {meta?.savingsLabel && <div className="sp-ac-savings">{meta.savingsLabel}</div>}
                       <div className="sp-ac-price">{fmt(p.unitPriceCents)}</div>
                       <button className="sp-buy-btn" disabled={loadingId !== null}
-                        onClick={() => handleBuy(p)}>
+                        onClick={() => handleProtectedBuy(p)}>
                         {loadingId === p.productId ? <span className="sp-spinner" /> : 'RELOAD AC'}
                       </button>
                     </div>
@@ -337,7 +335,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                         <li className="feat-no">Early access features</li>
                       </ul>
                       <button className="sp-tier-btn sp-tier-btn-pro" disabled={loadingId !== null}
-                        onClick={() => handleBuy(sub('sub-arena-pass')!)}>
+                        onClick={() => handleProtectedBuy(sub('sub-arena-pass')!)}>
                         {loadingId === 'sub-arena-pass' ? <span className="sp-spinner" /> : 'Subscribe — $9.99/mo'}
                       </button>
                     </div>
@@ -364,7 +362,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                         <li className="feat-yes">Tournament priority (when live)</li>
                       </ul>
                       <button className="sp-tier-btn sp-tier-btn-champion" disabled={loadingId !== null}
-                        onClick={() => handleBuy(sub('sub-champions-pass')!)}>
+                        onClick={() => handleProtectedBuy(sub('sub-champions-pass')!)}>
                         {loadingId === 'sub-champions-pass' ? <span className="sp-spinner" /> : 'Subscribe — $19.99/mo'}
                       </button>
                     </div>
@@ -392,7 +390,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                         <li className="feat-yes">Never available again after 500 slots</li>
                       </ul>
                       <button className="sp-tier-btn sp-tier-btn-founder" disabled={loadingId !== null}
-                        onClick={() => handleBuy(sub('sub-founder')!)}>
+                        onClick={() => handleProtectedBuy(sub('sub-founder')!)}>
                         {loadingId === 'sub-founder' ? <span className="sp-spinner" /> : 'Claim Founder Slot — $149'}
                       </button>
                     </div>
@@ -469,7 +467,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
                             className={`sp-vault-btn ${!canAfford ? 'sp-vault-btn-locked' : ''}`}
                             disabled={!canAfford || loadingId !== null}
                             title={!canAfford ? `Need ${(meta?.acCost ?? 0) - acBalance} more AC` : undefined}
-                            onClick={() => canAfford && handleBuy(p)}>
+                            onClick={() => canAfford && handleProtectedBuy(p)}>
                             {!canAfford ? `🔒 Need ${(meta?.acCost ?? 0) - acBalance} more` : 'UNLOCK'}
                           </button>
                         </div>

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { UserProfile } from '@/adapters/firebase/service';
 import {
   createLobbyRoom,
   joinLobbyRoom,
@@ -11,7 +10,7 @@ import type { CreateLobbyRoomForm, LobbyRoomsState } from '@/ui/pages/Lobby/type
 
 const RoomPollIntervalMs = 5000;
 
-export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string): LobbyRoomsState {
+export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
   const [rooms, setRooms] = useState<LobbyRoom[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyRoomId, setBusyRoomId] = useState<string | null>(null);
@@ -49,8 +48,8 @@ export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string)
     };
   }, [refresh]);
 
-  const createRoom = useCallback(async (form: CreateLobbyRoomForm) => {
-    if (!user?.uid) {
+  const createRoom = useCallback(async (form: CreateLobbyRoomForm, userId: string) => {
+    if (!userId) {
       setError('Sign in required');
       return;
     }
@@ -60,7 +59,7 @@ export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string)
 
     try {
       await createLobbyRoom({
-        hostId: user.uid,
+        hostId: userId,
         roomType: form.roomType,
         maxPlayers: form.maxPlayers,
         gameType: form.gameType || gameTypeFilter || '',
@@ -72,10 +71,10 @@ export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string)
     } finally {
       setCreating(false);
     }
-  }, [gameTypeFilter, refresh, user?.uid]);
+  }, [gameTypeFilter, refresh]);
 
-  const joinRoom = useCallback(async (roomId: string) => {
-    if (!user?.uid) {
+  const joinRoom = useCallback(async (roomId: string, userId: string) => {
+    if (!userId) {
       setError('Sign in required');
       return;
     }
@@ -84,17 +83,17 @@ export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string)
     setError(null);
 
     try {
-      await joinLobbyRoom(roomId, { userId: user.uid });
+      await joinLobbyRoom(roomId, { userId });
       await refresh();
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to join room');
     } finally {
       setBusyRoomId(null);
     }
-  }, [refresh, user?.uid]);
+  }, [refresh]);
 
-  const leaveRoom = useCallback(async (roomId: string) => {
-    if (!user?.uid) {
+  const leaveRoom = useCallback(async (roomId: string, userId: string) => {
+    if (!userId) {
       setError('Sign in required');
       return;
     }
@@ -103,14 +102,14 @@ export function useLobbyRooms(user: UserProfile | null, gameTypeFilter?: string)
     setError(null);
 
     try {
-      await leaveLobbyRoom(roomId, { userId: user.uid });
+      await leaveLobbyRoom(roomId, { userId });
       await refresh();
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to leave room');
     } finally {
       setBusyRoomId(null);
     }
-  }, [refresh, user?.uid]);
+  }, [refresh]);
 
   return {
     rooms,

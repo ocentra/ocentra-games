@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { auth } from '@/adapters/firebase/config';
 import { ProviderType } from '@ocentra/ai-domain/types/app-providers'
 import { getAiService } from '@/adapters/ai/aiDomainAppBootstrap'
+import { useAuth } from '@/providers/AuthProvider';
+import { useAuthAccess } from '@/hooks/useAuthAccess';
 import './ProviderConfigTab.css'
 
 type ProviderConfigState = Record<
@@ -13,6 +14,8 @@ const GOOGLE_GEMINI_OAUTH_ID = 'google_gemini'
 
 export function ProviderConfigTab() {
   const svc = getAiService();
+  const { hasAccount, isGuest } = useAuth();
+  const { requireAccount } = useAuthAccess();
   const [config, setConfig] = useState<ProviderConfigState | null>(null)
   const [cloudProviders, setCloudProviders] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,6 +29,13 @@ export function ProviderConfigTab() {
   const [googleGeminiTestResult, setGoogleGeminiTestResult] = useState<string | null>(null)
 
   const loadConfig = useCallback(async () => {
+    if (!hasAccount) {
+      setConfig(null)
+      setCloudProviders([])
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const list = await svc.listConfiguredProviders()
@@ -49,7 +59,7 @@ export function ProviderConfigTab() {
     } finally {
       setLoading(false)
     }
-  }, [svc])
+  }, [hasAccount, svc])
 
   useEffect(() => {
     loadConfig()
@@ -190,9 +200,25 @@ export function ProviderConfigTab() {
     return <div className="provider-config-loading">Loading provider configurations...</div>
   }
 
-  if (!auth?.currentUser) {
+  if (!hasAccount) {
     return (
-      <div className="provider-config-error">Please log in to configure AI providers</div>
+      <div className="provider-config-gate">
+        <h3>Provider keys require a full account</h3>
+        <p className="provider-config-description">
+          {isGuest
+            ? 'Guest sessions cannot store cloud provider keys. Sign in with a real account to manage provider access.'
+            : 'Sign in with a real account to configure cloud provider access and keep those settings with your profile.'}
+        </p>
+        <button
+          type="button"
+          className="save-btn"
+          onClick={() => {
+            void requireAccount()
+          }}
+        >
+          {isGuest ? 'Switch to account' : 'Sign in to continue'}
+        </button>
+      </div>
     )
   }
 

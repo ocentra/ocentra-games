@@ -10,7 +10,8 @@ import { QueueActions } from '@/ui/pages/Matchmaking/components/QueueActions';
 import { QueueCard } from '@/ui/pages/Matchmaking/components/QueueCard';
 import { useMatchmakingQueue } from '@/ui/pages/Matchmaking/hooks/useMatchmakingQueue';
 import { AppScreenToken, buildGameLobbyPath } from '@/ui/navigation/appRoutes';
-import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
+import { useAuthAccess } from '@/hooks/useAuthAccess';
+import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import './MatchmakingPage.css';
 
 interface MatchmakingPageProps {
@@ -21,6 +22,7 @@ interface MatchmakingPageProps {
 }
 
 export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: MatchmakingPageProps) {
+  const { runWithSession } = useAuthAccess();
   const {
     config,
     ticket,
@@ -33,7 +35,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
     queue,
     leave,
     queueStatusLabel,
-  } = useMatchmakingQueue(user, gameId);
+  } = useMatchmakingQueue(gameId);
 
   const handleLogout = () => {
     if (onLogoutClick) {
@@ -41,6 +43,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
     }
     onLogout();
   };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
 
   return (
     <UnifiedPageShell
@@ -53,17 +56,7 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
             tagline: "Find players, queue up, and move into a lobby."
           }}
           config={{
-            right: {
-              isProfile: Boolean(user),
-              user: user ? {
-                name: user.displayName || 'Player',
-                email: user.email,
-                avatarUrl: getHeaderAvatarUrl(user.photoURL),
-                isLoggedIn: true,
-                isGuest: user.isGuest,
-              } : undefined,
-              onLogout: handleLogout
-            },
+            right: headerRightConfig,
             left: {
               onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
             }
@@ -91,10 +84,14 @@ export function MatchmakingPage({ user, gameId, onLogout, onLogoutClick }: Match
             queueDisabled={loading || Boolean(ticket)}
             leaveDisabled={leaving || !ticket}
             onQueue={() => {
-              void queue();
+              void runWithSession(async (activeUser) => {
+                await queue(activeUser.uid);
+              });
             }}
             onLeave={() => {
-              void leave();
+              void runWithSession(async () => {
+                await leave();
+              });
             }}
             queueLoading={loading}
             leaveLoading={leaving}

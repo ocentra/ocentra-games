@@ -49,26 +49,7 @@ export function SettingsPage() {
             left: {
               onClick: handleBack,
             },
-            right: headerProps.user
-              ? {
-                  isProfile: true,
-                  user: {
-                    uid: headerProps.user.uid,
-                    name: headerProps.user.displayName || 'Player',
-                    email: headerProps.user.email ?? '',
-                    avatarUrl: headerProps.user.photoURL
-                      ? headerProps.getImageUrl(headerProps.user.photoURL)
-                      : undefined,
-                    isLoggedIn: true,
-                    isGuest: headerProps.user.isGuest,
-                    isAdmin: headerProps.user.isAdmin,
-                  },
-                  onLogout: headerProps.onLogout,
-                  onAdminDashboardClick: headerProps.onAdminDashboardClick,
-                  onUpdatePhoto: headerProps.onUpdatePhoto,
-                  getAvatars: headerProps.getAvatars,
-                }
-              : undefined,
+            right: headerProps.rightConfig,
           }}
         />
       }

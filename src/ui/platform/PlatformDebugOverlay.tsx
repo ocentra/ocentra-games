@@ -23,6 +23,28 @@ const DEBUG_TABS: { key: DebugTabKey; label: string }[] = [
   { key: 'runtime', label: 'Runtime' },
 ];
 
+const FOOTER_DEV_DOCK_SELECTOR = '.oc-unified-footer__dev-dock';
+
+function resolveFooterDevDockHost(): HTMLElement | null {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  const footerBar = document.querySelector<HTMLElement>('.oc-unified-footer__bar');
+  if (!footerBar) {
+    return null;
+  }
+
+  let dock = footerBar.querySelector<HTMLElement>(FOOTER_DEV_DOCK_SELECTOR);
+  if (!dock) {
+    dock = document.createElement('div');
+    dock.className = FOOTER_DEV_DOCK_SELECTOR.slice(1);
+    footerBar.appendChild(dock);
+  }
+
+  return dock;
+}
+
 function DebugField({ label, value }: { label: string; value: string }): ReactElement {
   return (
     <div className="platform-debug-overlay__field">
@@ -52,7 +74,7 @@ export function PlatformDebugOverlay(): ReactElement | null {
   const [activeTab, setActiveTab] = useState<DebugTabKey>('layout');
   const [cacheActionState, setCacheActionState] = useState<'idle' | 'working' | 'done' | 'failed'>('idle');
   const [debugSnapshotVersion, setDebugSnapshotVersion] = useState(0);
-  const [footerHost, setFooterHost] = useState<Element | null>(null);
+  const [footerHost, setFooterHost] = useState<HTMLElement | null>(null);
   const storageConfig = useMemo(() => getStorageConfig(), []);
   const [runtimeSnapshot, setRuntimeSnapshot] = useState(() => getRuntimeAssetDebugSnapshot());
   const sourcePath = useMemo(
@@ -72,7 +94,7 @@ export function PlatformDebugOverlay(): ReactElement | null {
     }
 
     const syncHost = () => {
-      setFooterHost(document.querySelector('.game-footer .footer-content'));
+      setFooterHost(resolveFooterDevDockHost());
     };
 
     syncHost();
@@ -147,10 +169,13 @@ export function PlatformDebugOverlay(): ReactElement | null {
   }
 
   if (!debugInspectorEnabled) {
+    const launcherClassName = footerHost
+      ? 'platform-debug-overlay__launcher platform-debug-overlay__launcher--docked'
+      : 'platform-debug-overlay__launcher';
     const launcher = (
       <button
         aria-label="Open developer tools"
-        className="platform-debug-overlay__launcher"
+        className={launcherClassName}
         onClick={() => {
           void openPlatformInspectorWindow();
         }}

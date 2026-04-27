@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { UserProfile } from '@/adapters/firebase/service';
 import {
   getLeaderboard,
   getLeaderboardNearby,
@@ -27,7 +26,7 @@ function mapError(error: unknown, fallback: string): string {
   return fallback;
 }
 
-export function useCompetitionData(user: UserProfile | null): CompetitionData {
+export function useCompetitionData(userId: string | null): CompetitionData {
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,11 +52,11 @@ export function useCompetitionData(user: UserProfile | null): CompetitionData {
       setLastUpdated(leaderboard.last_updated ?? '');
       setLeaderboardEntries(leaderboard.entries ?? []);
 
-      if (user?.uid) {
+      if (userId) {
         try {
           const [entry, nearby] = await Promise.all([
-            getLeaderboardUser(selectedGameType, user.uid),
-            getLeaderboardNearby(selectedGameType, user.uid),
+            getLeaderboardUser(selectedGameType, userId),
+            getLeaderboardNearby(selectedGameType, userId),
           ]);
           setUserEntry(entry);
           setNearbyAbove(nearby.above ?? []);
@@ -77,7 +76,7 @@ export function useCompetitionData(user: UserProfile | null): CompetitionData {
     } finally {
       setLoading(false);
     }
-  }, [gameType, user?.uid]);
+  }, [gameType, userId]);
 
   const loadTournamentBracket = useCallback(async (nextTournamentId: string) => {
     if (!nextTournamentId) {

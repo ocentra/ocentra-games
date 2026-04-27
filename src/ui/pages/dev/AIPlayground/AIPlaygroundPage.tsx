@@ -99,7 +99,7 @@ export const AIPlaygroundPage: React.FC = () => {
     return (
       <LoginDialog
         onLogin={authHandlers.login}
-        onSignUp={authHandlers.signUp}
+        onSignUp={isDevAuthBypassEnabled ? authHandlers.signUp : undefined}
         onFacebookLogin={authHandlers.facebookLogin}
         onGoogleLogin={authHandlers.googleLogin}
         onGuestLogin={authHandlers.guestLogin}
@@ -112,6 +112,23 @@ export const AIPlaygroundPage: React.FC = () => {
             ? 'Sign in with any account or continue as guest to access AI Playground in local dev bypass mode.'
             : 'You need to be an administrator to access this page. Please sign in with an admin account.'
         }
+        disableGuestLogin={!isDevAuthBypassEnabled}
+        contextEyebrow="AI Playground"
+        contextTitle={
+          isDevAuthBypassEnabled
+            ? 'Start a local dev session'
+            : user?.isGuest
+              ? 'Upgrade from guest to administrator access'
+              : 'Administrator access required'
+        }
+        contextDescription={
+          isDevAuthBypassEnabled
+            ? 'This local development surface can use a guest or full account when dev bypass is enabled.'
+            : user?.email
+              ? `Signed in as ${user.email}, but model controls, diagnostics, and prompt testing are restricted to approved administrator accounts.`
+              : 'Model controls, diagnostics, and prompt testing are restricted to approved administrator accounts.'
+        }
+        onClose={() => navigate('/')}
       />
     )
   }

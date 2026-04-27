@@ -21,23 +21,8 @@ const appLogInfo = (message: string, data?: unknown, enabled: boolean = true) =>
   }
 };
 
-function AdminRequired() {
-  const { user, logout } = useAuth();
-  return (
-    <div className="editor-access-denied-wrap" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0f1117' }}>
-      <div className="editor-access-denied__header" style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 4px 0 0' }}>
-        <WindowControls />
-      </div>
-      <div className="editor-access-denied" style={{ flex: 1 }}>
-        <p>Signed in as <strong>{user?.email}</strong> but this account does not have admin access.</p>
-        <button type="button" onClick={logout}>Sign out</button>
-      </div>
-    </div>
-  );
-}
-
 export function App() {
-  const { isAuthenticated, isAdmin, isLoading } = useAuth();
+  const { isAuthenticated, isAdmin, isLoading, user, logout } = useAuth();
   const e2eBypassAuth = isE2EBypassAuthEnabled();
   const isStandalone = useMemo(() => {
     const p = new URLSearchParams(window.location.search);
@@ -88,7 +73,13 @@ export function App() {
   }
 
   if (!isAdmin) {
-    return <AdminRequired />;
+    return (
+      <LoginScreen
+        contextTitle="Administrator access required"
+        contextDescription={`Signed in as ${user?.email || 'this account'}, but the asset editor is limited to approved administrator profiles.`}
+        secondaryActions={[{ label: 'Sign out', onClick: logout }]}
+      />
+    );
   }
 
   return (
