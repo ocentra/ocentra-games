@@ -16,6 +16,7 @@ interface AssetEditorHeaderProps {
   leftContent?: ReactNode;
   rightSuffixContent?: ReactNode;
   containerRef?: React.RefObject<HTMLDivElement | null>;
+  centerIconSrc?: string;
 }
 
 function UserPill({
@@ -65,6 +66,7 @@ export function AssetEditorHeader({
   leftContent,
   rightSuffixContent,
   containerRef,
+  centerIconSrc,
 }: AssetEditorHeaderProps) {
   return (
     <header className="aeh-header asset-editor-topbar" ref={containerRef}>
@@ -74,7 +76,7 @@ export function AssetEditorHeader({
       <div className="aeh-center" data-tauri-drag-region>
         <span className="aeh-center-title">
           <span className="aeh-center-word">Asset</span>
-          <span className="aeh-center-sep"> </span>
+          {centerIconSrc ? <img src={centerIconSrc} alt="" className="aeh-center-icon" aria-hidden /> : null}
           <span className="aeh-center-word">Editor</span>
         </span>
       </div>

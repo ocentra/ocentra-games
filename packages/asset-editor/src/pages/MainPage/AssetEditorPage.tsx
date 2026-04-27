@@ -255,10 +255,10 @@ export const AssetEditorPage: React.FC = () => {
             } : null}
             onLogout={headerProps.onLogout}
             getImageUrl={headerProps.getImageUrl}
+            centerIconSrc="/favicon.svg"
             rightSuffixContent={<WindowControls />}
             leftContent={
               <div className="asset-editor__topbar">
-                <img src="/favicon.svg" alt="" className="asset-editor__logo" aria-hidden />
                 <MenuBar
                   onCreateAsset={handleCreateAsset}
                   onRefreshTree={refreshTree}
