@@ -6,6 +6,7 @@ import { ISOLATION_REQUEST_CHANNEL } from '@ocentra/game-layout-domain/draftChan
 import type { IsolationRequestMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { CardGamePreviewSurface, type CardGameSeatPresentation } from './CardGamePreviewSurface';
 import { DEFAULT_HUD_ARTWORK_CONTROLS } from './scene/HudArtwork.types';
+import GameBackground from './scene/GameBackground';
 import type {
   CardGameLayoutDocument,
   CardGameSurfaceMode,
@@ -116,6 +117,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
   const layerVisibility = resolvedHud.layerVisibility ?? {};
   const showHeader = layerVisibility.header !== false;
   const showFooter = layerVisibility.footer !== false;
+  const showBackgroundLayer = showBackground && layerVisibility.background !== false;
 
   const handleSeatsChange = useCallback((nextSeats: SeatLayout[]) => {
     const nextDoc = cloneCardGameLayoutDocument(activeDoc);
@@ -182,6 +184,14 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
       <UnifiedPageShell
         className={LayoutClasses.SHELL}
         embedded={embedded}
+        background={
+          showBackgroundLayer ? (
+            <GameBackground
+              floatScale={activeDoc.cardVisuals.floatScale}
+              position="absolute"
+            />
+          ) : null
+        }
         header={
           showHeader ? (
             <div
@@ -232,7 +242,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
           className="game-screen__canvas-surface"
           surfaceMode={surfaceMode}
           viewerPerspective={viewerPerspective}
-          showBackground={showBackground}
+          showBackground={false}
           editableSeats={editableSeats}
           showLocalSeat={showLocalSeat}
           onSeatsChange={handleSeatsChange}
