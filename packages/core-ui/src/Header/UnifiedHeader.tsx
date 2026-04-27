@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { authAnnonImageUrl } from '@ocentra/app-assets/auth';
 import {
   SAFE_SYSTEM_FONTS,
   createUnifiedHeaderConfig,
@@ -1843,7 +1844,11 @@ export function UnifiedHeader({
                      onError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
                    />
                   ) : (
-                   <span>{right.user.name.charAt(0).toUpperCase() || 'U'}</span>
+                    <img
+                      src={authAnnonImageUrl}
+                      alt="Anonymous User"
+                      style={{ width: '100%', height: '100%' }}
+                    />
                   )}
                 <div className={styles.editOverlay}>
                   <span>✏️</span>
@@ -2291,8 +2296,6 @@ function RightProfileContent({
     { ...textStyle, fontSize: Math.min(textStyle.fontSize, box.h * 0.45) },
     Math.max(24, box.w - avatarSize - 40),
   );
-  const firstLetter = name.charAt(0).toUpperCase() || 'U';
-
   return (
     <g>
       <defs>
@@ -2324,23 +2327,15 @@ function RightProfileContent({
         </g>
       ) : (
         <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
-          <circle
-            cx={avatarX + avatarSize / 2}
-            cy={avatarY + avatarSize / 2}
-            r={avatarSize / 2}
-            fill="rgba(255,255,255,0.2)"
+          <image
+            href={authAnnonImageUrl}
+            x={avatarX}
+            y={avatarY}
+            width={avatarSize}
+            height={avatarSize}
+            clipPath="url(#avatarClip)"
+            preserveAspectRatio="xMidYMid slice"
           />
-          <text
-            x={avatarX + avatarSize / 2}
-            y={avatarY + avatarSize / 2 + textStyle.fontSize * 0.32}
-            textAnchor="middle"
-            fontFamily="Arial, sans-serif"
-            fontSize={Math.min(textStyle.fontSize, avatarSize * 0.45)}
-            fontWeight={textStyle.fontWeight}
-            fill={getTextSolidColor(textStyle)}
-          >
-            {firstLetter}
-          </text>
         </g>
       )}
 
