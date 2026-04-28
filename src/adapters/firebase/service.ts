@@ -121,7 +121,9 @@ export const getAuthErrorMessage = (error: unknown): string => {
     case 'auth/cancelled-popup-request':
       return "";
     case 'auth/popup-blocked':
-      return "Popup was blocked. Please allow popups and try again.";
+      return "Popup was blocked. Please allow popups and try again, or open the app in your regular browser.";
+    case 'auth/operation-not-supported-in-this-environment':
+      return "This browser cannot open the sign-in popup. Please use your regular browser for Google or Facebook sign-in.";
     case 'auth/account-exists-with-different-credential':
       return "An account with this email exists with a different sign-in method. We'll link your accounts automatically.";
     case 'auth/credential-already-in-use':
