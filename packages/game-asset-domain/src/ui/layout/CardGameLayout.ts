@@ -17,14 +17,14 @@ import { cloneCardGameLayoutDocument, createDefaultCardGameLayoutDocument } from
 const DEFAULT_DOCUMENT = createDefaultCardGameLayoutDocument();
 
 @serializableClass({
-  schemaVersion: 1,
+  schemaVersion: 2,
   assetType: 'CardGameLayout',
   displayName: 'Card Game Layout',
   icon: '🎏',
   category: AssetTypeCategory.UI,
 })
 export class CardGameLayout extends Layout {
-  static override schemaVersion = 1;
+  static override schemaVersion = 2;
   static override readonly requiresInspector = false;
 
   static override createTemplate(): Record<string, unknown> {
@@ -43,14 +43,38 @@ export class CardGameLayout extends Layout {
   @serializable({ label: 'HUD' })
   hud: CardGameLayoutDocument['hud'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).hud;
 
+  @serializable({ label: 'Scoreboard' })
+  scoreboard: CardGameLayoutDocument['scoreboard'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).scoreboard;
+
+  @serializable({ label: 'Card Strip' })
+  cardStrip: CardGameLayoutDocument['cardStrip'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardStrip;
+
+  @serializable({ label: 'Deck Tray' })
+  deckTray: CardGameLayoutDocument['deckTray'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).deckTray;
+
   @serializable({ label: 'Card Fan' })
   cardFan: CardGameLayoutDocument['cardFan'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardFan;
 
   @serializable({ label: 'Card Visuals' })
   cardVisuals: CardGameLayoutDocument['cardVisuals'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardVisuals;
 
+  @serializable({ label: 'Card Frame' })
+  cardFrame: CardGameLayoutDocument['cardFrame'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).cardFrame;
+
+  @serializable({ label: 'Render Toggles' })
+  renderToggles: CardGameLayoutDocument['renderToggles'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).renderToggles;
+
+  @serializable({ label: 'Table Presentation' })
+  tablePresentation: CardGameLayoutDocument['tablePresentation'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).tablePresentation;
+
+  @serializable({ label: 'Table Attachments' })
+  tableAttachments: CardGameLayoutDocument['tableAttachments'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).tableAttachments;
+
   @serializable({ label: 'Views' })
   views: Record<string, LayoutPreset> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).views;
+
+  @serializable({ label: 'Stage Layout' })
+  stageLayout: CardGameLayoutDocument['stageLayout'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).stageLayout;
 
   @serializable({ label: 'Zones' })
   zones: CardGameLayoutDocument['zones'] = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).zones;

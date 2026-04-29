@@ -3,6 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { findProcessedGameFileBySlug } from "../processed-game-files";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
@@ -18,7 +19,8 @@ const LINE_PARTS = /:\s*(card-games\/processed-games\/[^:]+\.json)\s*:\s*(https?
   const urlToJson = new Map<string, string>();
   for (const line of fs.readFileSync(PAGAT_TXT, "utf-8").split("\n")) {
     const parts = line.match(LINE_PARTS);
-    const jsonPath = parts ? path.join(ROOT, "processed-games", path.basename(parts[1])) : null;
+    const jsonEntry = parts ? findProcessedGameFileBySlug(path.join(ROOT, "processed-games"), path.basename(parts[1], ".json")) : null;
+    const jsonPath = jsonEntry?.absolutePath ?? null;
     const m = line.match(URL_IN_LINE);
     if (m) {
       for (const u of m) {

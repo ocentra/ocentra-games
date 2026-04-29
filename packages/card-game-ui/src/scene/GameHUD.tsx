@@ -8,20 +8,23 @@ interface GameHUDProps {
   children?: ReactNode;
   controls: HudArtworkControls;
   showButtonGuides?: boolean;
+  showDebugFrame?: boolean;
+  showDomeBounds?: boolean;
+  showWingBounds?: boolean;
+  showBankBounds?: boolean;
   showArtwork?: boolean;
   onButtonClick?: (index: number, label: string) => void;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
 
-/**
- * GameHUD acts as a self-scaling "prefab" unit that contains the HUD artwork
- * and its children (like CardInHand).
- * It automatically fits its width to the parent container.
- */
 const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({ 
   children, 
   controls, 
   showButtonGuides = false, 
+  showDebugFrame = false,
+  showDomeBounds = false,
+  showWingBounds = false,
+  showBankBounds = false,
   showArtwork = true, 
   onButtonClick,
   onIsolate
@@ -36,11 +39,7 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({
       style={{
         width: controls.width,
         height: controls.height,
-        left: '50%',
-        bottom: 'var(--hud-bottom-offset, 0)',
-        transform: `translate(-50%, 0) scale(var(--game-scale, 1))`,
-        transformOrigin: 'center bottom',
-        position: 'absolute',
+        position: 'relative',
         isolation: 'isolate',
         pointerEvents: 'none',
         overflow: 'visible',
@@ -54,13 +53,16 @@ const GameHUD = forwardRef<HTMLDivElement, GameHUDProps>(({
           fitWidth={controls.width}
           fitHeight={controls.height}
           showButtonGuides={showButtonGuides}
+          showDebugFrame={showDebugFrame}
+          showDomeBounds={showDomeBounds}
+          showWingBounds={showWingBounds}
+          showBankBounds={showBankBounds}
           onButtonClick={onButtonClick}
           onIsolate={onIsolate}
         />
       ) : (
         <div ref={ref} style={{ position: 'absolute', inset: 0 }} />
       )}
-      {/* Overlay children (like CardInHand) inherit the fitScale */}
       {children ? <div className="hud__overlay" style={{ position: 'absolute', inset: 0, zIndex: 4, pointerEvents: 'none' }}>{children}</div> : null}
     </div>
   );

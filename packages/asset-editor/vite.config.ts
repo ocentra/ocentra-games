@@ -204,6 +204,8 @@ export default defineConfig(({ command }) => ({
       packages: [
         { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, '../core-ui') },
         { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, '../card-game-ui') },
+        { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, '../app-assets') },
+        { name: '@ocentra/game-layout-domain', rootDir: path.resolve(__dirname, '../game-layout-domain') },
       ],
     }),
     react({
@@ -340,6 +342,7 @@ export default defineConfig(({ command }) => ({
   optimizeDeps: {
     exclude: [
       '@ocentra/card-game-ui',
+      '@ocentra/app-assets',
       '@ocentra/game-layout-domain',
       '@ocentra/game-ui-types',
       '@ocentra/core-ui',

@@ -1,0 +1,752 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "italian-poker.json",
+  "name": "Italian Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Poker all'italiana is a draw poker variant played with a short deck (32, 36 or 40 cards by player count). It has optional blind opening (buio), two betting rounds with a draw in between, and a non-standard hand ranking where flush beats full house and straight flushes have min-medium-max tie rules.",
+    "category": "Poker",
+    "subCategory": "Draw",
+    "origin": "Italy",
+    "originName": "Poker all'italiana",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "4-6"
+    },
+    "deck": "Short deck: 32 cards (7 to Ace) for 4 players, 36 (6 to Ace) for 5, 40 (5 to Ace) for 6, from a standard 52-card pack.",
+    "difficulty": "Intermediate",
+    "duration": "Variable",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Italian Poker is documented in published rules and active table play traditions.",
+    "originCountries": [
+      "Italy"
+    ],
+    "timeline": [
+      "21st century: Widely played in Italy; rules from published Italian sources and active table play."
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition.",
+      "cultural": "No specific cultural or regional significance documented beyond its origins."
+    }
+  },
+  "setup": {
+    "players": "4, 5, or 6 players.",
+    "deck": "Short deck of 32 (4 players), 36 (5) or 40 (6) cards from a standard 52-card pack; lowest rank is 11 minus number of players.",
+    "equipment": "Standard deck (short pack), chips for betting; ante amount and min/max limits agreed before play.",
+    "dealing": "All players ante (invito). Optionally the first player may open blind (buio) before the deal; then dealer gives 5 cards each, one at a time clockwise starting to dealer's left.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the pot by having the highest-ranking hand at showdown, or by being the last player standing when all others have folded.",
+    "gameplay": "Ante; optional blind (buio, controbuio, over) before deal. Deal 5 cards each. First betting round: pass or open (with pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise. Draw: each surviving player may exchange 0–4 cards. Second betting round: bet, check, or parol (throw in and carry pot); then fold, call, raise. Showdown: highest hand wins; flush beats full house; straight flush has min/medium/max with min beating max.",
+    "keyRules": [
+      "Opening requires pair of Jacks or better, or four consecutive cards of a suit (no Ace) that can extend to straight flush.",
+      "Flush ranks above full house. Straight flush: minimum beats maximum, maximum beats medium, medium beats minimum.",
+      "Ties broken by suit order: hearts highest, then diamonds, clubs, spades.",
+      "Direction of play is clockwise."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize lines that directly improve your path to primary objective: meet the game winning condition..",
+    "intermediate": "Track public information during play and adjust decisions around italian poker proceeds through deal, legal play actions, and end-of-round resolution..",
+    "advanced": "Plan endgame sequencing early so final actions maximize scoring in italian poker is resolved as follows: scoring follows the game-specific point or pot rules..",
+    "tips": [
+      "Fix the exact local variant before play so edge cases are clear.",
+      "Track public information every turn.",
+      "Recalculate risk before committing to high-variance lines."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "noVariationsReason": "Sources describe only the standard form; no regional or rule variations documented.",
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "considerations": [],
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "easy": "Easy AI can play legal bets and folds with no bluff or hand reading.",
+      "medium": "No distinct medium tier; AI can use basic hand strength and pot odds.",
+      "hard": "Hard AI would use bluff frequency and opponent modeling; not a separate tier in stub."
+    }
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat",
+        "name": "Pagat.com - Italian Poker",
+        "url": "https://www.pagat.com/poker/variants/italian.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-italian-poker.html"
+      },
+      {
+        "id": "src:wikipedia_poker_en_wikipedia_org_wiki_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional card game; no commercial or trademark claim documented.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "ante"
+        ],
+        "nextPhase": "deal",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "first_bet",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "first_bet",
+        "label": "First betting round",
+        "actor": "current_player",
+        "legalActions": [
+          "fold",
+          "pass",
+          "bet",
+          "call",
+          "raise"
+        ],
+        "nextPhase": "draw",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Pass or open (pair of Jacks or better, or 4-card straight-flush draw); then fold, call, raise."
+      },
+      {
+        "id": "draw",
+        "label": "Draw",
+        "actor": "current_player",
+        "legalActions": [
+          "discard",
+          "draw"
+        ],
+        "nextPhase": "second_bet",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Exchange 0 to 4 cards; dealer gives replacements from stock."
+      },
+      {
+        "id": "second_bet",
+        "label": "Second betting round",
+        "actor": "current_player",
+        "legalActions": [
+          "fold",
+          "check",
+          "call",
+          "bet",
+          "raise"
+        ],
+        "nextPhase": "showdown",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Bet (punto), check (busso), or parol to throw in and carry pot; then fold, call, raise."
+      },
+      {
+        "id": "showdown",
+        "label": "Showdown",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "reveal_hand",
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Highest hand wins the pot."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Place the agreed stake in the pot before cards are dealt (invito).",
+        "cost": "0",
+        "constraints": "Before deal; required to compete; amount agreed before play (invito).",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards to players",
+        "cost": "0",
+        "constraints": "At start of round",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Play or act according to game rules.",
+        "cost": "0",
+        "constraints": "During betting round",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": true,
+        "description": "Check (no bet)",
+        "cost": "0",
+        "constraints": "When no bet to call",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "call": {
+        "supported": true,
+        "description": "Call the current bet to stay in the hand.",
+        "cost": {
+          "type": "match_current_bet"
+        },
+        "constraints": "When facing a bet; match amount to stay in.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place a bet; must meet table minimum.",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "When no bet has been made; subject to table stakes.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "raise": {
+        "supported": true,
+        "description": "Raise the current bet; must meet minimum raise.",
+        "cost": {
+          "type": "min_raise"
+        },
+        "constraints": "When facing a bet",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": true,
+        "description": "Reveal hand at showdown; highest-ranking hand wins the pot.",
+        "cost": "0",
+        "constraints": "At showdown when two or more players remain.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Winner collects the pot; applied after showdown or when all others have folded.",
+        "cost": "0",
+        "constraints": "After showdown or when only one player remains.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Italian Poker is draw poker; players bet, draw, and showdown rather than playing cards to a trick."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Receive replacement cards from the dealer after discarding; 0 to 4 cards may be exchanged.",
+        "cost": "0",
+        "constraints": "During draw phase; discard first then receive same number from stock.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard 0 to 4 cards face down to exchange for replacements from the deck.",
+        "cost": "0",
+        "constraints": "During draw phase; each player in turn states how many, discards that many, receives same number.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": true,
+        "description": "Do not open but reserve the right to join if another player opens (passo).",
+        "cost": "0",
+        "constraints": "First player(s) in first betting round until someone opens.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 4,
+          "notes": "0 to 4 cards exchanged in draw phase."
+        }
+      ],
+      "drawCount": 4,
+      "drawTiming": "phase_specific",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": true
+    },
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "any_time",
+      "discardVisibility": "face_down",
+      "discardCount": 4,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "standard_poker",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "chips",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": 5,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "opening_escalation",
+          "appliesTo": "first_bet",
+          "text": "Opening requirement escalates if all pass: next deal requires pair of Queens, then Kings, then back to Jacks.",
+          "affects": "min_open_hand"
+        },
+        {
+          "id": "blind_buio",
+          "appliesTo": "ante",
+          "text": "Optional blind (buio) before deal: first player may bet pot amount; second may controbuio (2x); third may over (4x). After deal, no raise until last blind bettor has spoken.",
+          "affects": "betting_order"
+        },
+        {
+          "id": "straight_flush_rank",
+          "appliesTo": "showdown",
+          "text": "Straight flush: minimum beats maximum, maximum beats medium, medium beats minimum; three-way split if one of each.",
+          "affects": "hand_ranking"
+        },
+        {
+          "id": "parol",
+          "appliesTo": "second_bet",
+          "text": "Parol: if all agree in second round, throw in and carry pot to next deal; no blind bets in that deal, open requirement pair of Kings or 4-card sequence.",
+          "affects": "pot_carry"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "ante",
+      "deal",
+      "first_bet",
+      "draw",
+      "second_bet",
+      "showdown"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Poker all'italiana order: straight flush (min/med/max), four of a kind, flush, full house, straight, three of a kind, two pair, pair, high card; flush beats full house; suit order for ties.",
+    "rankingSystem": "",
+    "bettingLimits": "Fixed Limit",
+    "useTrump": false,
+    "deckDescription": "Short deck from 52-card pack: 32 cards (7 to Ace) for 4 players, 36 (6 to Ace) for 5, 40 (5 to Ace) for 6. Lowest rank equals 11 minus number of players.",
+    "suitDescription": "Four French suits (hearts, diamonds, clubs, spades); standard poker suit order for straights and flushes.",
+    "rankDescription": "Ranks 7, 8, 9, 10, J, Q, K, A (and 9, 6 for 36/40-card variants); standard poker hand rankings.",
+    "dealPattern": "One card at a time clockwise, starting to dealer's left, until each has 5.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "ITALIAN POKER",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Italian Poker is a Poker variant.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "discard"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Italian Poker: play by the rules, manage scoring opportunities, and pursue the win condition.",
+    "ai": "Game: Italian Poker. Objective: Primary objective: Meet the game winning condition."
+  },
+  "scoring": {
+    "description": "Pot is won by the player with the highest-ranking hand at showdown, or by the last player left when all others fold. Three-way straight flush (min, medium, max) splits the pot.",
+    "winCondition": "Highest-ranking hand at showdown wins the pot; or the last player standing when all others have folded.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If three players hold one each of minimum, medium and maximum straight flush, the pot is split between them.",
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Poker uses hand rankings, not point values for individual cards."
+    }
+  },
+  "alsoKnownAs": [
+    "Poker all'italiana"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

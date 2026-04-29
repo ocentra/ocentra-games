@@ -1,8 +1,11 @@
 import React, { useEffect, useId, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { resolveHudButtonGeometry } from "./hudButtonGeometry";
 
 export type HudButtonProps = {
   label?: string;
+  buttonOffsetX?: number;
+  buttonOffsetY?: number;
   width?: number;
   height?: number;
   bodyHeight?: number;
@@ -40,11 +43,8 @@ export type HudButtonProps = {
   style?: React.CSSProperties;
   onClick?: () => void;
   onIsolate?: () => void;
+  showArtGuides?: boolean;
 };
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
 
 function splitLabelIntoLines(label: string, maxCharsPerLine: number) {
   const cleaned = label.trim();
@@ -164,6 +164,8 @@ function SideFront({
 
 export function HudButton({
   label = "PLAY",
+  buttonOffsetX = 0,
+  buttonOffsetY = 0,
   width = 500,
   height = 140,
   bodyHeight,
@@ -201,6 +203,7 @@ export function HudButton({
   style,
   onClick,
   onIsolate,
+  showArtGuides = false,
 }: HudButtonProps) {
   const uid = useId().replace(/:/g, "");
   const [isHovered, setIsHovered] = useState(false);
@@ -215,55 +218,107 @@ export function HudButton({
     return () => window.clearTimeout(timeoutId);
   }, [clickFlash]);
 
-  const bodyX = 0;
-  const bodyW = width;
-  const bodyH = bodyHeight ?? height;
-  const bodyY = (height - bodyH) / 2;
-  const centerX = bodyX + bodyW / 2;
-  const centerY = bodyY + bodyH / 2;
+  const geometry = useMemo(() => resolveHudButtonGeometry({
+    buttonOffsetX,
+    buttonOffsetY,
+    width,
+    height,
+    bodyHeight,
+    radius,
+    leftX,
+    rightX,
+    sideInset,
+    dotInset,
+    dotGap,
+    textColor,
+    fontSize,
+    bodyCenter,
+    bodyMid,
+    bodyEdge,
+    ringColor,
+    outerGlowColor,
+    midGlowColor,
+    dotGlowColor,
+    dotCoreColor,
+    sideFillTop,
+    sideFillMid,
+    sideFillBottom,
+    sideStroke,
+    sideGlow,
+    frontFillTop,
+    frontFillMid,
+    frontFillBottom,
+    hoverInsetExpand,
+    hoverClampGlowColor,
+    hoverClampGlowOpacity,
+    clickInsetExpand,
+    clickRingFlashColor,
+    clickRingFlashOpacity,
+  }), [
+    buttonOffsetX,
+    buttonOffsetY,
+    width,
+    height,
+    bodyHeight,
+    radius,
+    leftX,
+    rightX,
+    sideInset,
+    dotInset,
+    dotGap,
+    textColor,
+    fontSize,
+    bodyCenter,
+    bodyMid,
+    bodyEdge,
+    ringColor,
+    outerGlowColor,
+    midGlowColor,
+    dotGlowColor,
+    dotCoreColor,
+    sideFillTop,
+    sideFillMid,
+    sideFillBottom,
+    sideStroke,
+    sideGlow,
+    frontFillTop,
+    frontFillMid,
+    frontFillBottom,
+    hoverInsetExpand,
+    hoverClampGlowColor,
+    hoverClampGlowOpacity,
+    clickInsetExpand,
+    clickRingFlashColor,
+    clickRingFlashOpacity,
+  ]);
 
-  const baseLeftX = leftX ?? bodyX + sideInset;
-  const baseRightX = rightX ?? bodyX + bodyW - sideInset;
+  const bodyX = geometry.bodyX;
+  const bodyY = geometry.bodyY;
+  const bodyW = geometry.bodyWidth;
+  const bodyH = geometry.bodyHeight;
+  const centerX = geometry.centerX;
+  const centerY = geometry.centerY;
+
+  const baseLeftX = geometry.baseLeftX;
+  const baseRightX = geometry.baseRightX;
 
   const activeInsetExpand = clickFlash > 0 ? clickInsetExpand : isHovered ? hoverInsetExpand : 0;
   const animatedLeftX = baseLeftX - activeInsetExpand;
   const animatedRightX = baseRightX + activeInsetExpand;
 
-  const safeDotInset = clamp(dotInset, 4, Math.min(bodyW / 4, bodyH / 3));
-  const innerX = bodyX + safeDotInset;
-  const innerY = bodyY + safeDotInset;
-  const innerW = Math.max(20, bodyW - safeDotInset * 2);
-  const innerH = Math.max(20, bodyH - safeDotInset * 2);
-  const innerR = Math.max(4, Math.min(radius - safeDotInset, innerH / 2));
+  const innerX = geometry.innerX;
+  const innerY = geometry.innerY;
+  const innerW = geometry.innerWidth;
+  const innerH = geometry.innerHeight;
+  const innerR = geometry.innerRadius;
 
   const floorGlowRx = Math.max(90, bodyW * 0.38);
   const floorGlowRx2 = Math.max(55, bodyW * 0.22);
   const floorGlowRx3 = Math.max(18, bodyW * 0.08);
-  const floorGlowY = bodyY + bodyH + Math.max(10, bodyH * 0.08);
-  const artYOffset = Math.max(6, Math.round(height * 0.04));
-
-  const charWidthFactor = 0.62;
-  const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * charWidthFactor)));
+  const maxCharsPerLine = Math.max(8, Math.floor(bodyW / (fontSize * 0.72)));
   const labelLines = splitLabelIntoLines(label, maxCharsPerLine);
-
-  const longestLineLen = Math.max(...labelLines.map(l => l.length));
-  const maxLineW = bodyW * 0.88;
-  const autoFontSize = longestLineLen > 0
-    ? Math.min(fontSize, maxLineW / (longestLineLen * charWidthFactor))
-    : fontSize;
-
-  const effectiveFontSize = Math.max(24, autoFontSize);
-  const lineHeight = effectiveFontSize * 1.08;
-  const textStartY = labelLines.length > 1 ? centerY - lineHeight * 0.38 : centerY + effectiveFontSize * 0.35;
-
-  const viewBox = useMemo(() => {
-    const maxExpand = Math.max(hoverInsetExpand, clickInsetExpand);
-    const minX = Math.min(-52, baseLeftX - 52 - maxExpand);
-    const minY = -24;
-    const maxX = Math.max(bodyW + 52, baseRightX + 52 + maxExpand);
-    const maxY = Math.max(bodyH + 56 + artYOffset, floorGlowY + 20 + artYOffset);
-    return `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
-  }, [artYOffset, bodyW, bodyH, baseLeftX, baseRightX, floorGlowY, hoverInsetExpand, clickInsetExpand]);
+  const lineHeight = fontSize * 1.08;
+  const textStartY = labelLines.length > 1 ? centerY - lineHeight * 0.38 : centerY + fontSize * 0.35;
 
   const bodyFillId = `bodyFill-${uid}`;
   const sideFillId = `sideFill-${uid}`;
@@ -283,6 +338,8 @@ export function HudButton({
   return (
     <button
       type="button"
+      aria-label={label}
+      title={label}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -300,12 +357,21 @@ export function HudButton({
         background: "transparent",
         border: 0,
         padding: 0,
+        position: "relative",
+        overflow: "visible",
         cursor: onClick ? "pointer" : "default",
         width: "100%",
         ...style,
       }}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width="100%" height="100%" preserveAspectRatio="none">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={geometry.viewBox}
+        width="100%"
+        height="100%"
+        preserveAspectRatio="xMidYMid meet"
+        style={{ overflow: "visible" }}
+      >
         <defs>
           <filter id={glowStrongId} x="-40%" y="-50%" width="180%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur1" />
@@ -331,7 +397,7 @@ export function HudButton({
             </feMerge>
           </filter>
           <filter id={glowWhiteId} x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="0.4" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -368,88 +434,23 @@ export function HudButton({
           </g>
         </defs>
 
-        <g transform={`translate(0 ${artYOffset})`}>
-          <ellipse
-            cx={centerX}
-            cy={bodyY + bodyH + bodyH * 0.95}
-            rx={floorGlowRx}
-            ry={18}
-            fill={outerGlowColor}
-            opacity={clickFlash > 0 ? 0.36 : isHovered ? 0.33 : 0.3}
-            filter={`url(#${glowStrongId})`}
-          />
-          <ellipse
-            cx={centerX}
-            cy={bodyY + bodyH + bodyH * 0.97}
-            rx={floorGlowRx2}
-            ry={5}
-            fill={midGlowColor}
-            opacity={clickFlash > 0 ? 0.72 : isHovered ? 0.62 : 0.55}
-            filter={`url(#${glowStrongId})`}
-          />
-          <ellipse
-            cx={centerX}
-            cy={bodyY + bodyH + bodyH * 0.98}
-            rx={floorGlowRx3}
-            ry={2}
-            fill="#ffffff"
-            opacity={clickFlash > 0 ? 0.95 : 0.8}
-            filter={`url(#${glowWhiteId})`}
-          />
+        <g transform={`translate(${buttonOffsetX} ${buttonOffsetY})`}>
+          <ellipse cx={centerX} cy={bodyY + bodyH + bodyH * 0.95} rx={floorGlowRx} ry={18} fill={outerGlowColor} opacity={clickFlash > 0 ? 0.36 : isHovered ? 0.33 : 0.3} filter={`url(#${glowStrongId})`} />
+          <ellipse cx={centerX} cy={bodyY + bodyH + bodyH * 0.97} rx={floorGlowRx2} ry={5} fill={midGlowColor} opacity={clickFlash > 0 ? 0.72 : isHovered ? 0.62 : 0.55} filter={`url(#${glowStrongId})`} />
+          <ellipse cx={centerX} cy={bodyY + bodyH + bodyH * 0.98} rx={floorGlowRx3} ry={2} fill="#ffffff" opacity={clickFlash > 0 ? 0.95 : 0.8} filter={`url(#${glowWhiteId})`} />
 
-          <rect
-            x={bodyX}
-            y={bodyY}
-            width={bodyW}
-            height={bodyH}
-            rx={radius}
-            fill="none"
-            stroke={outerGlowColor}
-            strokeWidth="16"
-            opacity={outerGlowOpacity}
-            filter={`url(#${glowStrongId})`}
-          />
-          <rect
-            x={bodyX}
-            y={bodyY}
-            width={bodyW}
-            height={bodyH}
-            rx={radius}
-            fill="none"
-            stroke={midGlowColor}
-            strokeWidth="8"
-            opacity={midGlowOpacityValue}
-            filter={`url(#${glowMidId})`}
-          />
+          <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill="none" stroke={outerGlowColor} strokeWidth="16" opacity={outerGlowOpacity} filter={`url(#${glowStrongId})`} />
+          <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill="none" stroke={midGlowColor} strokeWidth="8" opacity={midGlowOpacityValue} filter={`url(#${glowMidId})`} />
 
           <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
             <SideBack x={baseLeftX} y={centerY} sideFillId={sideFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
           </motion.g>
           <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
-            <SideBack
-              x={baseRightX}
-              y={centerY}
-              mirrored
-              sideFillId={sideFillId}
-              glowId={glowMidId}
-              sideStroke={sideStroke}
-              sideGlow={sideGlow}
-            />
+            <SideBack x={baseRightX} y={centerY} mirrored sideFillId={sideFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
           </motion.g>
 
           <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill={`url(#${bodyFillId})`} />
-          <rect
-            x={bodyX}
-            y={bodyY}
-            width={bodyW}
-            height={bodyH}
-            rx={radius}
-            fill="none"
-            stroke="#000000"
-            strokeWidth="8"
-            opacity="0.45"
-            filter={`url(#${softShadowId})`}
-          />
+          <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill="none" stroke="#000000" strokeWidth="8" opacity="0.45" filter={`url(#${softShadowId})`} />
           <rect
             x={bodyX}
             y={bodyY}
@@ -460,79 +461,39 @@ export function HudButton({
             stroke={ringStroke}
             strokeWidth="3"
             filter={ringGlowFilter}
-            style={{
-              opacity: clickFlash > 0 ? clickRingFlashOpacity : 1,
-              transition: "opacity 180ms ease",
-            }}
+            opacity={clickFlash > 0 ? clickRingFlashOpacity : 1}
+            style={{ transition: "opacity 0.18s ease" }}
           />
-          <rect
-            x={innerX}
-            y={innerY}
-            width={innerW}
-            height={innerH}
-            rx={innerR}
-            fill="none"
-            stroke={dotGlowColor}
-            strokeWidth="4.5"
-            strokeLinecap="round"
-            strokeDasharray={`0.1 ${dotGap}`}
-            opacity="0.95"
-            filter={`url(#${glowYellowId})`}
-          />
-          <rect
-            x={innerX}
-            y={innerY}
-            width={innerW}
-            height={innerH}
-            rx={innerR}
-            fill="none"
-            stroke={dotCoreColor}
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeDasharray={`0.1 ${dotGap}`}
-          />
+          <rect x={innerX} y={innerY} width={innerW} height={innerH} rx={innerR} fill="none" stroke={dotGlowColor} strokeWidth="4.5" strokeLinecap="round" strokeDasharray={`0.1 ${dotGap}`} opacity="0.95" filter={`url(#${glowYellowId})`} />
+          <rect x={innerX} y={innerY} width={innerW} height={innerH} rx={innerR} fill="none" stroke={dotCoreColor} strokeWidth="2.2" strokeLinecap="round" strokeDasharray={`0.1 ${dotGap}`} />
 
           <motion.g animate={{ x: animatedLeftX - baseLeftX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
             <SideFront x={baseLeftX} y={centerY} frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
-            <g style={{ opacity: clampGlowOpacity, transition: "opacity 160ms ease" }}>
+            <g opacity={clampGlowOpacity} style={{ transition: "opacity 0.16s ease" }}>
               <g transform={`translate(${animatedLeftX} ${centerY})`}>
-                <use
-                  href="#sideFrontShape"
-                  fill={hoverClampGlowColor}
-                  stroke={hoverClampGlowColor}
-                  strokeWidth="2.5"
-                  filter={`url(#${glowYellowId})`}
-                />
+                <use href="#sideFrontShape" fill={hoverClampGlowColor} stroke={hoverClampGlowColor} strokeWidth="2.5" filter={`url(#${glowYellowId})`} />
               </g>
             </g>
           </motion.g>
 
           <motion.g animate={{ x: animatedRightX - baseRightX }} transition={{ type: "spring", stiffness: 420, damping: 28 }}>
             <SideFront x={baseRightX} y={centerY} mirrored frontFillId={frontFillId} glowId={glowMidId} sideStroke={sideStroke} sideGlow={sideGlow} />
-            <g style={{ opacity: clampGlowOpacity, transition: "opacity 160ms ease" }}>
+            <g opacity={clampGlowOpacity} style={{ transition: "opacity 0.16s ease" }}>
               <g transform={`translate(${animatedRightX} ${centerY}) scale(-1 1)`}>
-                <use
-                  href="#sideFrontShape"
-                  fill={hoverClampGlowColor}
-                  stroke={hoverClampGlowColor}
-                  strokeWidth="2.5"
-                  filter={`url(#${glowYellowId})`}
-                />
+                <use href="#sideFrontShape" fill={hoverClampGlowColor} stroke={hoverClampGlowColor} strokeWidth="2.5" filter={`url(#${glowYellowId})`} />
               </g>
             </g>
           </motion.g>
 
-          <text
-            x={centerX}
-            y={textStartY}
-            textAnchor="middle"
-            fontSize={effectiveFontSize}
-            fontWeight="700"
-            letterSpacing="0.16em"
-            fill={textColor}
-            filter={`url(#${glowWhiteId})`}
-            style={{ userSelect: "none" }}
-          >
+          {showArtGuides ? (
+            <>
+              <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={radius} fill="none" stroke="#53f6ff" strokeWidth="2" strokeDasharray="12 8" opacity="0.9" />
+              <line x1={baseLeftX} y1={bodyY - 18} x2={baseLeftX} y2={bodyY + bodyH + 18} stroke="#ffb547" strokeWidth="2" strokeDasharray="8 6" opacity="0.92" />
+              <line x1={baseRightX} y1={bodyY - 18} x2={baseRightX} y2={bodyY + bodyH + 18} stroke="#ffb547" strokeWidth="2" strokeDasharray="8 6" opacity="0.92" />
+            </>
+          ) : null}
+
+          <text x={centerX} y={textStartY} textAnchor="middle" fontSize={fontSize} fontWeight="700" letterSpacing="0.16em" fill={textColor} filter={`url(#${glowWhiteId})`} style={{ userSelect: "none" }}>
             {labelLines.map((line, index) => (
               <tspan key={`${line}-${index}`} x={centerX} dy={index === 0 ? 0 : lineHeight}>
                 {line}

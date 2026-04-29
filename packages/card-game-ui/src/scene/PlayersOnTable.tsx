@@ -9,7 +9,11 @@ import type { CardGameSeatPresentation } from '../CardGamePreviewSurface';
 
 interface PlayersOnTableProps {
   editableSeats?: boolean;
+  showSeats?: boolean;
   showLocalSeat?: boolean;
+  showPlayerUi?: boolean;
+  showSeatBounds?: boolean;
+  showPlayerUiBounds?: boolean;
   onSeatsChange?: (seats: SeatLayout[]) => void;
   seatPresentationById?: Partial<Record<number, CardGameSeatPresentation>>;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
@@ -28,7 +32,11 @@ function clampUnit(value: number): number {
 
 const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
   editableSeats = false,
+  showSeats = true,
   showLocalSeat = false,
+  showPlayerUi = true,
+  showSeatBounds = false,
+  showPlayerUiBounds = false,
   onSeatsChange,
   seatPresentationById,
   onIsolate,
@@ -186,6 +194,10 @@ const PlayersOnTable: React.FC<PlayersOnTableProps> = ({
           playerUiDefaults={playerUiDefaults}
           editable={editableSeats}
           isLocalSeat={seat.id === 0}
+          showSeats={showSeats}
+          showPlayerUi={showPlayerUi}
+          showSeatBounds={showSeatBounds}
+          showPlayerUiBounds={showPlayerUiBounds}
           presentation={seatPresentationById?.[seat.id]}
           onIsolate={onIsolate}
           onPositionChange={editableSeats ? handlePositionChange : undefined}
@@ -204,6 +216,10 @@ interface PlayerSeatContainerProps {
   playerUiDefaults: Record<string, unknown>;
   editable: boolean;
   isLocalSeat: boolean;
+  showSeats: boolean;
+  showPlayerUi: boolean;
+  showSeatBounds: boolean;
+  showPlayerUiBounds: boolean;
   presentation?: CardGameSeatPresentation;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
   onPositionChange?: (seatId: number, x: number, y: number) => void;
@@ -218,6 +234,10 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
   playerUiDefaults,
   editable,
   isLocalSeat,
+  showSeats,
+  showPlayerUi,
+  showSeatBounds,
+  showPlayerUiBounds,
   presentation,
   onIsolate,
   onPositionChange,
@@ -290,15 +310,22 @@ const PlayerSeatContainer: React.FC<PlayerSeatContainerProps> = ({
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
     >
+      {showSeatBounds ? <div className="player-seat__seat-bounds" /> : null}
+      {showPlayerUiBounds ? <div className="player-seat__player-ui-bounds" /> : null}
       {editable ? <div className="player-seat__editor-frame" /> : null}
-      <PlayerUI 
-        {...playerUiDefaults} 
-        {...(seat.playerOverrides ?? {})} 
-        labelText={labelText}
-        infoBoxText={infoBoxText}
-        onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.PlayerUI, labelText, { ...playerUiDefaults, ...(seat.playerOverrides ?? {}) }) : undefined}
-      />
-      {cardTokens.length > 0 ? (
+      {showSeats ? <div className="player-seat__anchor-dot" /> : null}
+      {showPlayerUi ? (
+        <PlayerUI 
+          {...playerUiDefaults} 
+          {...(seat.playerOverrides ?? {})} 
+          labelText={labelText}
+          infoBoxText={infoBoxText}
+          turnTimerLabel={presentation?.turnTimerLabel}
+          turnTimerProgress={presentation?.turnTimerProgress}
+          onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.PlayerUI, labelText, { ...playerUiDefaults, ...(seat.playerOverrides ?? {}) }) : undefined}
+        />
+      ) : null}
+      {showPlayerUi && cardTokens.length > 0 ? (
         <div className="player-seat__cards-overlay">
           {cardTokens.map((token, index) => (
             <span key={`${seat.id}-${token}-${index}`} className="player-seat__card-token">

@@ -1,0 +1,706 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "rummikub.json",
+  "name": "Rummikub",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tile rummy for 2–4 players using 106 tiles (numbers 1–13 in four colors, two of each, plus two jokers). Players draw from the pool or meld groups and runs on the table; first to empty their rack wins. Sabra is the main version with table manipulation.",
+    "category": "Rummy",
+    "subCategory": "Manipulation",
+    "origin": "Israel",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "106 Rummikub tiles",
+    "difficulty": "Intermediate",
+    "duration": "30-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Rummikub"
+  },
+  "history": {
+    "originCountries": [
+      "Romania",
+      "Israel"
+    ],
+    "origins": "Tile rummy games invented by Ephraim Hertzano; conceived in 1940s Romania and later developed in Israel. Introduced to Western Europe and America; Sabra became the main version; American and International versions appear in Hertzano's 1978 Official Rummikub Book.",
+    "timeline": [
+      "1940s: Conceived in Romania by Ephraim Hertzano.",
+      "Post-WWII: Hertzano emigrated to Israel; developed and hand-made first sets.",
+      "1978: Official Rummikub Book published (American, Sabra, International versions).",
+      "1980: Sabra Rummikub won Spiel des Jahres."
+    ],
+    "evolution": null,
+    "cultural": null,
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented rule evolution; Sabra rules have varied slightly between editions.",
+      "cultural": "Commercial tile game with strong presence in Israel and Western markets; no specific folk-cultural narrative beyond inventor origin."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "106 Rummikub tiles",
+    "equipment": "Rummikub set",
+    "dealing": "Tiles are shuffled face down; each player takes 14 tiles onto a rack. The remaining tiles stay face down as the pool.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first to get rid of all your tiles by melding them in valid groups and runs on the table; you may also rearrange existing table melds when adding from hand.",
+    "gameplay": "Each turn: either draw one tile from the pool or meld. First meld must total at least 30 from hand (groups of same number in different colors, runs of three or more consecutive same color). After that you may add tiles and manipulate table melds; at least one tile from hand must be played each turn. First to empty their rack wins.",
+    "keyRules": [
+      "Groups: three or four tiles of the same number in different colors; runs: three or more consecutive numbers in the same color (1 low, no 12-13-1).",
+      "Jokers substitute for any tile; if you replace a joker with the real tile you must use the joker in a meld the same turn.",
+      "Failed manipulation within time limit: revert table, take back your tiles, draw three as penalty."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Get your initial 30-point meld down early so you can manipulate the table; use jokers in runs or groups you can later reclaim with the real tile.",
+    "intermediate": "Break and recombine opponents' melds when it lets you play more tiles; keep runs and groups balanced so you can add from hand without getting stuck.",
+    "advanced": "Plan table rearrangements before touching tiles; use time limits to pressure opponents; when pool is low, prefer melding over drawing to reduce others' options.",
+    "tips": [
+      "Place tiles from hand crosswise until your turn is complete so you can revert if you run out of time.",
+      "Joker in a group of three can be replaced by a tile of either missing color."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "sabra",
+        "name": "Sabra Rummikub",
+        "description": "Default version: draw or meld each turn; initial meld 30+; table manipulation allowed; no discard pile.",
+        "overrides": {},
+        "emptyOverridesReason": "Sabra is the default; engine already models this version."
+      },
+      {
+        "id": "american",
+        "name": "American Rummikub",
+        "description": "Draw one, optionally meld, then discard one; initial meld 21+; discard pile; win by melding all but one tile and discarding the last.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant differs in meld threshold and discard; overrides to be added when implementing."
+      },
+      {
+        "id": "international",
+        "name": "International Rummikub",
+        "description": "More complex scoring; can win Open, Foot, or Closed with special hand types and point values.",
+        "overrides": {},
+        "emptyOverridesReason": "Complex scoring and hand types; overrides to be added when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI plays legal moves with minimal tile-group planning.",
+      "medium": "No distinct medium tier; AI scales with meld and run formation.",
+      "hard": "Hard AI optimizes table layout and blocks; no separate tier defined."
+    },
+    "considerations": [
+      "Legal move generation: valid groups (same number, different colors), runs (consecutive same color), initial meld 30+, table manipulation must leave all melds valid.",
+      "Joker substitution and reclamation; penalty for failed manipulation (revert and draw 3)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-rummikub",
+        "name": "Pagat - Rummikub",
+        "url": "https://www.pagat.com/rummy/rummikub.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-rummikub.html"
+      },
+      {
+        "id": "src:wikipedia_rummikub",
+        "name": "Wikipedia - Rummikub",
+        "url": "https://en.wikipedia.org/wiki/Rummikub",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-rummikub.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/tile/matching.html",
+        "localHtml": "pagat-tile-matching.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "rummy",
+    "tile",
+    "social"
+  ],
+  "legal": {
+    "status": "Trademarked",
+    "isCommercial": true,
+    "trademarkNote": "Rummikub Â®"
+  },
+  "statistics": {
+    "popularity": 70,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "draw",
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Each turn player either draws one tile from the pool or melds and optionally manipulates table; first to empty rack wins."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Meld one or more tiles from hand into valid groups or runs on the table; may rearrange existing table melds. At least one tile from hand must be played; all table combinations must remain valid. First meld must total 30 or more.",
+        "cost": "0",
+        "constraints": "Legal when melding instead of drawing. Groups: same number different colors; runs: three or more consecutive same color (1 low).",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": true,
+        "description": "Draw one tile from the face-down pool.",
+        "cost": "0",
+        "constraints": "Legal when choosing not to meld this turn; only one of draw or meld per turn.",
+        "isTerminating": true,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": true,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": 1,
+          "notes": null
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "end_of_turn",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": null
+    },
+    "deckType": "Okey 106",
+    "suitSet": "Okey",
+    "rankSet": "Okey",
+    "initialHandSize": 14,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": true,
+      "meldTypes": [
+        {
+          "type": "set",
+          "minSize": 3,
+          "maxSize": 4,
+          "acesHigh": null,
+          "wildcardAllowed": true
+        },
+        {
+          "type": "run",
+          "minSize": 3,
+          "maxSize": null,
+          "acesHigh": false,
+          "wildcardAllowed": true
+        }
+      ],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": true,
+      "initialMeldRequirement": "First meld must total at least 30 from hand; jokers count as the tile they represent.",
+      "goingOut": {
+        "condition": "First player to play all tiles from their rack wins.",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": null
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 14
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 106
+      },
+      {
+        "id": "table",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 106
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "pool_empty",
+          "text": "If pool is empty and current player cannot or does not meld, round ends; player with lowest tile count in rack wins; zero-sum scoring."
+        },
+        {
+          "id": "failed_manipulation",
+          "text": "Failed manipulation within time limit: revert table to start of turn, take back tiles played from hand, draw three tiles from pool as penalty."
+        },
+        {
+          "id": "joker_value",
+          "text": "Joker in hand at end counts 30; some variants use 25."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Rummikub uses 106 tiles: 104 numbered tiles (numbers 1 to 13 in four colors—black, red, blue, orange—two of each number and color) plus two jokers that substitute for any tile. Tiles are kept on racks; the remainder forms the face-down pool.",
+    "suitDescription": "Four colors function as suits: black, red, blue, and orange. Each color has two tiles of each number 1–13; jokers have no color and can represent any number and color in melds.",
+    "rankDescription": "Numbers 1 through 13; 1 is always low in runs (e.g. 1-2-3 valid, 12-13-1 not in Sabra). Two tiles per number per color; jokers count as the tile they represent for initial meld value and scoring.",
+    "dealPattern": "14 tiles each; remainder to stock.",
+    "notApplicableReasons": {
+      "discardConfig": "Sabra Rummikub has no discard pile; players either draw from the pool or meld. American and International variants use a discard."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "RUMMIKUB",
+      "subtitle": "Tile Rummy",
+      "tagline": "Tile rummy with manipulation."
+    },
+    "shortDescription": "Tile rummy for 2–4: draw or meld groups and runs; first to empty their rack wins.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "table"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "adjacent_stock",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Rummikub: draw one from the pool or meld; first meld 30+; manipulate table; first to empty rack wins.",
+    "ai": "Game: Rummikub. Logic: groups (same number, different colors), runs (3+ consecutive same color), jokers wild; initial 30; table manipulation; penalty for failed move."
+  },
+  "scoring": {
+    "description": "Winner scores plus the sum of all losers' tile values; each loser scores minus their remaining tile total. Number tiles at face value; joker in rack counts 30 (some variants 25). Zero-sum.",
+    "winCondition": "First player to play all tiles from their rack wins.",
+    "cardValues": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "10": "10",
+      "11": "11",
+      "12": "12",
+      "13": "13",
+      "joker": "30"
+    },
+    "penalties": {
+      "failed_manipulation": "Draw three tiles from pool; revert table and take back tiles played from hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules."
+    }
+  },
+  "alsoKnownAs": [
+    "Rummikub American",
+    "Rummikub International",
+    "Rummikub Sabra"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

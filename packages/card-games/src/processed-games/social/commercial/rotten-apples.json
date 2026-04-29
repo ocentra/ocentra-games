@@ -1,0 +1,527 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "rotten-apples.json",
+  "name": "Rotten Apples",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Rotten Apples is a commercial party card game in the judge-and-response family of Apples to Apples.",
+    "category": "Social",
+    "subCategory": "Social / Party",
+    "origin": "Commercial publication",
+    "originName": "Rotten Apples",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "3 or more"
+    },
+    "deck": "Dedicated Rotten Apples prompt and response deck",
+    "difficulty": "Intermediate",
+    "duration": "20-45 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Rotten Apples is documented as a distinct commercial card-game publication with its own player count, equipment, and objective.",
+    "originCountries": [
+      "Unknown"
+    ],
+    "timeline": [
+      "Documented source page identifies Rotten Apples as a standalone game rather than only a synonym or expansion."
+    ],
+    "evolution": null,
+    "cultural": "Rotten Apples is included because the source describes a playable ruleset or product-level card game, not just a deck style or expansion page.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No separate evolution notes were available in the local source."
+    }
+  },
+  "setup": {
+    "players": "3 or more players use the table arrangement described for Rotten Apples.",
+    "deck": "Dedicated Rotten Apples prompt and response deck",
+    "equipment": "Dedicated Rotten Apples prompt and response deck, score area, and enough table space for play.",
+    "dealing": "Prepare Dedicated Rotten Apples prompt and response deck and deal or lay out cards according to the documented Rotten Apples rules before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win rounds by submitting the response card the judge chooses.",
+    "gameplay": "A rotating judge reveals a prompt, other players submit response cards, and the judge chooses the preferred or funniest answer. Scoring is round-based and social rather than deterministic.",
+    "keyRules": [
+      "Rotating judge selects the winning response.",
+      "Players submit cards secretly before judging.",
+      "Commercial card text and presentation are proprietary."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Focus first on the visible objective in Rotten Apples: conserve cards or resources that directly advance the win condition.",
+    "intermediate": "Track public information and avoid giving opponents easy tempo swings during the middle turns.",
+    "advanced": "Plan several turns ahead around the scoring window and force opponents into low-value or defensive plays.",
+    "tips": [
+      "Track the cards and roles that have already appeared.",
+      "Preserve flexible plays until they improve the final scoring position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "hasPlaceholders": false,
+    "noVariationsReason": "Sources describe only the standard form; no separate named variants documented."
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal Rotten Apples moves and follows the immediate objective.",
+      "medium": "Tracks scoring threats and obvious opponent progress in Rotten Apples.",
+      "hard": "Plans around hidden information, timing, and the documented win condition for Rotten Apples."
+    },
+    "considerations": [
+      "Represent Rotten Apples as Social with Social / Party mechanics.",
+      "Use source-linked rules before adding digital-only shortcuts."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki-rotten-apples",
+        "name": "Wikipedia - Rotten Apples",
+        "url": "https://en.wikipedia.org/wiki/Rotten_Apples_(card_game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-rotten-apples.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "social",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Trademarked",
+    "isCommercial": true,
+    "trademarkNote": "Commercial title or dedicated deck. Keep this record as reference metadata; do not clone protected branding, art, card text, or proprietary presentation without rights."
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "turning_round",
+        "label": "Card Turning",
+        "actor": "current_player",
+        "legalActions": [
+          "flip_top_card"
+        ],
+        "nextPhase": "payment_round",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "payment_round",
+        "label": "Paying the Fee",
+        "actor": "current_player",
+        "legalActions": [
+          "flip_top_card"
+        ],
+        "nextPhase": "turning_round",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Beggar My Neighbour is a children's game of chance and does not utilize a monetary or chip-based ante."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed equally by the system dealer at the start of the game session."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-stack accumulation game where all cards are held in private stacks; no market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any shared area; they only play from their own stack."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no remaining stock after the initial deal; every card is in a player's stack."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Participation is mandatory for every turn until a player's stack is completely exhausted."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game follows a deterministic flip-and-pay structure rather than a vying structure with checks."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no bets to match in this game; competition is based on card accumulation through face-card triggers."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is determined by collecting the physical cards rather than wagering points or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no wagering mechanic in this game, so raising stakes is not a valid action."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The results of each card flip are immediate and public; no separate declaration phase is required."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Stacks remain face down; only the top card is revealed when played onto the central pile."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "While players win the center pile, it is not a pot of chips; it is handled by Outcome A/B logic."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Flip the top card of your stack onto the center pile.",
+        "cost": "0",
+        "constraints": "Must be your turn or your obligation to pay.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "New cards are only acquired by winning the central pile through successful face-card triggers."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card remains in play until collected by a player or the game terminates; no discarding exists."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot skip their turn to flip or pay; the sequence of actions is strictly forced."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Beggar My Neighbour does not utilize a bidding system to determine game state or dealer."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is an accumulation game based on single card flips rather than building sets or sequences."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "A player exits the game only when their stack is empty; the round terminates for the loser."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "face_up",
+      "tableauCards": "NA"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Cards are only moved from player stacks to the center and back; no drawing from a stock pile occurs.",
+      "discardConfig": "Cards played to the center are part of the active pile to be won; no discard or waste pile exists.",
+      "specialCards": "Face cards trigger payment obligations (Ace=4, King=3, etc.); these are modeled in game logic rather than as separate special card actions.",
+      "declarationMechanism": "The result of each flip is immediate and public; no hidden declaration phase exists.",
+      "fishingConfig": "Beggar My Neighbour is an accumulation game and does not use a capture-from-tableau fishing mechanic.",
+      "shedding": "Goal is to win all cards from others; players play from stacks rather than emptying a hand as in shedding games."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 0,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "deck_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "hidden",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "pot",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "turning_round",
+      "payment_round"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "flip_top_card",
+        "supported": true,
+        "description": "Move the top card of the player stack to the central pile.",
+        "cost": "0",
+        "constraints": "Player's turn or obligation.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; only the presence of face cards (Ace, King, Queen, Jack) determines play flow.",
+    "rankingSystem": "Accumulation",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card deck is used only as a physical object to scatter and collect.",
+    "suitDescription": "The four French suits are present in the pack, but suits have no rule effect because the cards are only scattered and collected.",
+    "rankDescription": "The standard ranks ace through king are present in the pack, but ranks have no rule effect in this social prank.",
+    "dealPattern": "No deal; the whole pack is scattered after the invitation is accepted."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "52 PICK-UP",
+      "subtitle": "Card game",
+      "tagline": "52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards"
+    },
+    "shortDescription": "52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "pot"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "stacked",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "52 Pick-up is a social prank using a standard pack: one player offers a game, scatters the cards, and the other player is left to pick them up. It is recorded as a social card-game joke rather than a strategic contest.",
+    "ai": "Game: 52 Pick-up. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "No scoring; the activity ends when the deck has been picked up.",
+    "winCondition": "No formal winner is defined.",
+    "cardValues": {
+      "A": "1",
+      "K": "13",
+      "Q": "12",
+      "J": "11"
+    },
+    "penalties": {},
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "high_wins",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "splitRules": "No split scoring exists.",
+      "targetScore": "No target score exists.",
+      "scoringDirection": "No score direction exists."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

@@ -17,9 +17,18 @@ export interface NormalizedCardGameLayoutDocument {
   presets: Record<string, LayoutPreset>;
   playerUiDefaults: CardGameLayoutDocument['playerUiDefaults'];
   hud: CardGameLayoutDocument['hud'];
+  scoreboard: CardGameLayoutDocument['scoreboard'];
+  cardStrip: CardGameLayoutDocument['cardStrip'];
+  deckTray: CardGameLayoutDocument['deckTray'];
   cardFan: CardGameLayoutDocument['cardFan'];
   cardVisuals: CardGameLayoutDocument['cardVisuals'];
+  cardFrame: NonNullable<CardGameLayoutDocument['cardFrame']>;
+  renderToggles: CardGameLayoutDocument['renderToggles'];
+  tablePresentation: CardGameLayoutDocument['tablePresentation'];
+  tableAttachments: CardGameLayoutDocument['tableAttachments'];
   views: Record<string, LayoutPreset>;
+  stageLayout: CardGameLayoutDocument['stageLayout'];
+  zones: NonNullable<CardGameLayoutDocument['zones']>;
   gameplay: Record<string, unknown>;
   extensions: Record<string, unknown>;
   layoutStructure: LooseRecord;
@@ -66,17 +75,28 @@ function extractGuid(value: unknown): string | null {
 export function readCardGameLayoutDocument(source: LooseRecord): NormalizedCardGameLayoutDocument {
   const data = getRootData(source);
   const normalized = normalizeCardGameLayoutDocument(data);
+  const gameplay = isRecord(data.gameplay) ? cloneRecord(data.gameplay) : cloneRecord(normalized.gameplay);
+  const extensions = isRecord(data.extensions) ? cloneRecord(data.extensions) : cloneRecord(normalized.extensions);
 
   return {
     defaultPlayerCount: normalized.defaultPlayerCount,
     presets: cloneRecord(normalized.presets),
     playerUiDefaults: cloneRecord(normalized.playerUiDefaults),
     hud: cloneRecord(normalized.hud),
+    scoreboard: cloneRecord(normalized.scoreboard),
+    cardStrip: cloneRecord(normalized.cardStrip),
+    deckTray: cloneRecord(normalized.deckTray),
     cardFan: cloneRecord(normalized.cardFan),
     cardVisuals: cloneRecord(normalized.cardVisuals),
+    cardFrame: cloneRecord(normalized.cardFrame ?? {}),
+    renderToggles: cloneRecord(normalized.renderToggles),
+    tablePresentation: cloneRecord(normalized.tablePresentation),
+    tableAttachments: cloneRecord(normalized.tableAttachments),
     views: cloneRecord(normalized.views),
-    gameplay: cloneRecord(normalized.gameplay),
-    extensions: cloneRecord(normalized.extensions),
+    stageLayout: cloneRecord(normalized.stageLayout),
+    zones: cloneRecord(normalized.zones ?? []),
+    gameplay,
+    extensions,
     layoutStructure: getLayoutStructure(data),
   };
 }
@@ -86,28 +106,40 @@ export function toSerializedGameAssetFromLayoutSource(
   gameId: string,
 ): SerializedCardGameLayoutAsset {
   const document = readCardGameLayoutDocument(source);
+  const data = getRootData(source);
   const metadataSource = isRecord(source.metadata) ? source.metadata : {};
+  const gameplay = isRecord(data.gameplay) ? cloneRecord(data.gameplay) : cloneRecord(document.gameplay);
+  const extensions = isRecord(data.extensions) ? cloneRecord(data.extensions) : cloneRecord(document.extensions);
 
   const asset = hydrateCardGameLayoutAsset(
     {
       metadata: {
         ...metadataSource,
         gameId: typeof metadataSource.gameId === 'string' ? metadataSource.gameId : gameId,
-        schemaVersion: typeof metadataSource.schemaVersion === 'number' ? metadataSource.schemaVersion : 1,
+        schemaVersion: typeof metadataSource.schemaVersion === 'number' ? metadataSource.schemaVersion : 2,
       },
       layout: {
         defaultPlayerCount: document.defaultPlayerCount,
         presets: document.presets,
         playerUiDefaults: document.playerUiDefaults,
         hud: document.hud,
+        scoreboard: document.scoreboard,
+        cardStrip: document.cardStrip,
+        deckTray: document.deckTray,
         cardFan: document.cardFan,
         cardVisuals: document.cardVisuals,
+        cardFrame: document.cardFrame,
+        renderToggles: document.renderToggles,
+        tablePresentation: document.tablePresentation,
+        tableAttachments: document.tableAttachments,
         views: document.views,
-        gameplay: document.gameplay,
-        extensions: document.extensions,
+        stageLayout: document.stageLayout,
+        zones: document.zones,
+        gameplay,
+        extensions,
       },
-      gameplay: document.gameplay,
-      extensions: document.extensions,
+      gameplay,
+      extensions,
     },
     gameId,
   );
@@ -130,9 +162,18 @@ export function resolveLayoutPreset(
       presets: document.presets,
       playerUiDefaults: document.playerUiDefaults,
       hud: document.hud,
+      scoreboard: document.scoreboard,
+      cardStrip: document.cardStrip,
+      deckTray: document.deckTray,
       cardFan: document.cardFan,
       cardVisuals: document.cardVisuals,
+      cardFrame: document.cardFrame,
+      renderToggles: document.renderToggles,
+      tablePresentation: document.tablePresentation,
+      tableAttachments: document.tableAttachments,
       views: document.views,
+      stageLayout: document.stageLayout,
+      zones: document.zones,
       gameplay: document.gameplay,
       extensions: document.extensions,
     },

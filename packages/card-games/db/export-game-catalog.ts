@@ -16,6 +16,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { walkProcessedGameFiles } from '../src/processed-game-files';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -263,7 +264,7 @@ async function main() {
 
   fs.mkdirSync(CATALOG_GAMES_DIR, { recursive: true });
 
-  const files = fs.readdirSync(PROCESSED_GAMES_DIR).filter(f => f.endsWith('.json'));
+  const files = walkProcessedGameFiles(PROCESSED_GAMES_DIR);
   console.log(`📂 Found ${files.length} processed game files`);
 
   const indexEntries: CatalogIndexEntry[] = [];
@@ -271,15 +272,16 @@ async function main() {
   let skipped = 0;
   let failed = 0;
 
-  for (const filename of files) {
-    const slug = filename.replace(/\.json$/, '');
+  for (const entry of files) {
+    const filename = entry.relativePath;
+    const slug = entry.slug;
 
     if (madeGameSlugs.has(slug)) {
       skipped++;
       continue;
     }
 
-    const filePath = path.join(PROCESSED_GAMES_DIR, filename);
+    const filePath = entry.absolutePath;
     let game: ProcessedGame;
     try {
       const raw = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');

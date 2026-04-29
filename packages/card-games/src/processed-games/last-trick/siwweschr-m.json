@@ -1,0 +1,695 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "siwweschr-m.json",
+  "name": "Siwweschroom",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Siwweschroom is an Eifel and Rhineland variant of Toepen, a no-trump last-trick game played with four-card hands and aggressive knocking. Players who accumulate seven penalty points are eliminated; the last remaining player wins.",
+    "category": "Trick-taking",
+    "subCategory": "Last-trick / Elimination",
+    "origin": "Germany (Eifel, Rhineland)",
+    "originName": "Siwweschrööm / Schröömen",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 3,
+      "display": "3-8"
+    },
+    "deck": "32-card French pack (10, 9, 8, 7, A, K, Q, J in each suit)",
+    "difficulty": "Intermediate",
+    "duration": "20-45 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Germany",
+      "Netherlands"
+    ],
+    "origins": "Siwweschroom is documented as a local West German form of Dutch Toepen, especially in the Eifel region and parts of the Rhineland.",
+    "timeline": [
+      "Traditional period: Toepen family games circulate in the Low Countries and neighboring German regions.",
+      "Modern documentation: Siwweschroom is recorded as a named regional variant linked to Toepen.",
+      "Present: Still played as a social pub and table game under local spellings."
+    ],
+    "evolution": "Compared with Dutch Toepen, Siwweschroom keeps the same core play but typically omits the theatrical whistle/stand announcements for three or four tens or jacks.",
+    "cultural": "The game sits in a local tradition of noisy, social, risk-taking card play where table image and timing of knocks matter as much as card strength.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3-8 players in clockwise order. Dealer rotates each hand.",
+    "deck": "32-card pack. Rank in every suit is 10 (high), 9, 8, 7, A, K, Q, J (low). There are no trumps.",
+    "equipment": "Cards plus a score track for penalty points.",
+    "dealing": "Deal 4 cards to each player. Leader is player to dealer's left.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Avoid penalty points by winning the fourth (last) trick, or by staying out of expensive losing positions after knocks.",
+    "gameplay": "1. **Deal**: Four cards each from a 32-card deck. 2. **Play**: Four tricks are played; players follow suit when able, otherwise discard any card. 3. **Trick winner**: Highest card of the led suit wins and leads next. 4. **Knocking**: After players pick up cards, and at any time during the hand, a player may knock to raise the stake by one life. 5. **Fold or stay**: Opponents may fold (take current loss) or continue. 6. **Hand result**: Winner of trick four avoids loss; others who stayed lose according to the raised stake. 7. **Elimination**: In Siwweschroom, players reaching seven penalty points drop out; last survivor wins.",
+    "keyRules": [
+      "No trumps are used.",
+      "Only the last trick decides the hand winner.",
+      "Knocks raise risk for everyone still in.",
+      "A player cannot knock and then fold to that same knock.",
+      "Siwweschroom end condition is elimination at 7 points, not a fixed 10-point loser rule."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Preserve your strongest suit card for trick four whenever possible; early tricks are mainly about control of the final lead.",
+    "intermediate": "Use folds proactively: conceding one stake is often better than staying into a bad final trick under raised stakes.",
+    "advanced": "Time knocks around information edges, such as after seeing opponents commit high cards in a suit you can still dominate on trick four.",
+    "tips": [
+      "Track who can still follow each suit by trick three.",
+      "If you cannot realistically win trick four, fold early before another knock lands.",
+      "When near elimination, avoid speculative knocks and prioritize survival."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "simultaneous-folding",
+        "name": "Fast Folding Response",
+        "description": "After a knock, players effectively decide immediately and simultaneously whether to fold or stay.",
+        "overrides": {},
+        "emptyOverridesReason": "Folding procedure only; no engine constants differ."
+      },
+      {
+        "id": "ordered-folding",
+        "name": "Ordered Folding Response",
+        "description": "After a knock, responses proceed in turn starting left of the knocker.",
+        "overrides": {},
+        "emptyOverridesReason": "Folding procedure only; no engine constants differ."
+      },
+      {
+        "id": "toepen-style-end",
+        "name": "Toepen-Style End",
+        "description": "Play to a fixed loser at 10 lives instead of elimination at 7.",
+        "overrides": {},
+        "emptyOverridesReason": "End condition differs; add overrides when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Follows suit and chooses folds conservatively, but rarely uses strategic knocking.",
+      "medium": "Estimates last-trick strength from revealed suit flow and uses situational knocks.",
+      "hard": "Models fold equity, tracks suit exhaustion, and adjusts risk based on each player's elimination pressure."
+    },
+    "considerations": [
+      "AI should value final-trick control over early-trick count.",
+      "Knock decisions must weigh both card equity and fold pressure.",
+      "Elimination format changes utility near seven points compared with ordinary Toepen."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-toepen",
+        "name": "Pagat.com - Toepen (Siwweschroom section)",
+        "url": "https://www.pagat.com/last/toepen.html#eifel",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-toepen.html"
+      },
+      {
+        "id": "src:wikipedia_last_card",
+        "name": "Wikipedia - Last Card",
+        "url": "https://en.wikipedia.org/wiki/Last_Card",
+        "retrievedAt": "2026-02-19",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_poker",
+        "name": "Wikipedia - Poker",
+        "url": "https://en.wikipedia.org/wiki/Poker",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-poker.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://www.pagat.com/last/toepen.html",
+        "localHtml": "pagat-toepen.html"
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "social",
+    "bluffing"
+  ],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional pub game; no known trademark or commercial claim.",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 35,
+    "complexity": 3,
+    "luck": 6,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Deal 4 cards to each player."
+      },
+      {
+        "id": "trick_play",
+        "label": "Play Four Tricks",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "knock",
+          "fold"
+        ],
+        "nextPhase": "score",
+        "isMandatory": true,
+        "loopIndex": 1,
+        "totalLoops": 4,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Knocking can occur once all players have seen their hands, including during active play."
+      },
+      {
+        "id": "score",
+        "label": "Score Hand",
+        "actor": "system",
+        "legalActions": [
+          "apply_penalties",
+          "eliminate_players"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Apply stake-based penalties and drop players at 7 points."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards according to the phase dealing pattern.",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Fold and forfeit participation in this hand.",
+        "cost": "0",
+        "constraints": "Allowed during betting when player chooses to leave the hand.",
+        "isTerminating": false,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 32",
+    "suitSet": "French",
+    "rankSet": "Stripped_32",
+    "initialHandSize": 4,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 4,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "none",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "last_player_standing"
+    },
+    "constants": {
+      "hand_size": 4,
+      "trick_count": 4
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "trick_play",
+      "score"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "knock",
+        "supported": true,
+        "description": "Rap the table to raise the stake by one life; other players may fold (lose current stake) or stay in. The last player to knock may not knock again until someone else has knocked; a player may not knock and then fold on their own knock.",
+        "cost": "0",
+        "constraints": "Allowed once all players have seen their cards; may occur at any time during the hand including during a trick.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "apply_penalties",
+        "supported": true,
+        "description": "Assign penalty lives: each player who stayed in but did not win the last trick loses one life plus one per knock in the hand; each player who folded loses the current stake (one life per knock that had occurred when they folded).",
+        "cost": "0",
+        "constraints": "Applied after the fourth trick is complete; winner of last trick loses no life.",
+        "isTerminating": false,
+        "effectType": "play"
+      },
+      {
+        "id": "eliminate_players",
+        "supported": true,
+        "description": "Remove from the game any player who has reached seven penalty points; the last remaining player wins the game.",
+        "cost": "0",
+        "constraints": "Checked after penalties are applied each hand; players at seven points drop out.",
+        "isTerminating": false,
+        "effectType": "play"
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "",
+    "rankingSystem": "last_trick_decides",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A 32-card French deck formed by removing ranks 2 through 6 from a standard pack, leaving 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "4 cards to each player",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SIWWESCHROOM",
+      "subtitle": "Eifel Last-Trick Elimination",
+      "tagline": "Read the room, raise the stake, survive the table."
+    },
+    "shortDescription": "A German regional Toepen variant where knocks escalate losses and seven points means elimination.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Siwweschroom is last-trick survival. Four tricks decide each hand, and knocks can raise the pain at any time. Win the final trick or fold wisely, because seven penalty points knocks you out of the game.",
+    "ai": "Game: Siwweschroom. Structure: Deal 4 each -> 4 tricks -> score penalties -> eliminate at 7. Rules: no trumps, must follow suit, highest of led suit wins. Only last trick decides hand winner; knocks raise stake; folds concede current stake; cannot fold your own knock."
+  },
+  "scoring": {
+    "description": "Penalty-life system with variable stake based on knocks. Folding concedes the current stake; staying risks a larger loss if the last trick is lost.",
+    "winCondition": "Remain in the game after all opponents have been eliminated at seven penalty points.",
+    "cardValues": {},
+    "nullReasons": {
+      "cardValues": "Scoring uses penalty lives per hand, not point values per card."
+    },
+    "penalties": {
+      "Lose after staying": "Lose one life plus one for each knock in the hand.",
+      "Fold after n-th knock": "Lose n lives immediately and take no further part in that hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 7,
+    "scoringDirection": "low_wins"
+  },
+  "alsoKnownAs": [
+    "Schroomen",
+    "Eifelpoker",
+    "Tuppen",
+    "Siwweschr M Eifel Poker",
+    "Siwweschroom Eifelpoker"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

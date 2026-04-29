@@ -1,0 +1,641 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "bid-euchre.json",
+  "name": "Bid Euchre",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Bid Euchre is a North American partnership trick-taking game derived from Euchre, where instead of offering the turned-up card for trump, players bid competitively for the right to name the trump suit (or No Trump). The highest bidder must fulfill their contract of tricks, or be 'Euchred' and lose points. It bridges the gap between casual Euchre and contract games like Spades.",
+    "category": "Trick-taking",
+    "subCategory": "Euchre / Auction",
+    "origin": "North America (USA, Canada)",
+    "originName": "Bid Euchre",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships of 2)"
+    },
+    "deck": "24 cards (9 through Ace in 4 suits)",
+    "difficulty": "Intermediate",
+    "duration": "30-45 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Evolved from standard Euchre in North America, with early forms documented in the American Midwest and Ontario, Canada, likely in the late 19th century, as players sought a more competitive bidding element.",
+    "originCountries": [
+      "United States",
+      "Canada"
+    ],
+    "timeline": [
+      "1860s: Euchre is the most popular card game in America.",
+      "1900s: Bid Euchre variants emerge as Euchre players adapt Bridge-like bidding.",
+      "Present: Remains popular in the Midwest and rural communities, often played in leagues."
+    ],
+    "evolution": "Many regional variants exist, some using a double deck (48 cards) for 6 players.",
+    "cultural": "A staple of Midwestern American social card play, often played at church halls and family gatherings.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in fixed partnerships (North-South vs East-West).",
+    "deck": "24 cards: 9, 10, J, Q, K, A in all four suits.",
+    "equipment": "Standard deck (stripped), score pad.",
+    "dealing": "Deal 6 cards to each player (3-3).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score 32 points first by making your bid on each hand.",
+    "gameplay": "1. **Bidding**: Starting left of dealer, each player bids a number of tricks (typically 3-6). Dealer must take the bid if no one else does. 2. **Trump**: Winner of bidding names trump (or 'No Trump'). 3. **Play**: 6 tricks played. Must follow suit. Bowers are treated as trump. 4. **Scoring**: Maker's team gets 1pt/trick if they make their bid. If they fail (Euchre), opponents score the bid amount instead.",
+    "keyRules": [
+      "Dealer 'must bid' if all other players pass (forced to bid at least 3).",
+      "A bid of 6 (all tricks) is sometimes called a 'Loner' or 'Shoot the Moon' with bonus points.",
+      "In No Trump, Jacks rank normally (no Bowers mechanic)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Bid honestly: you need the Right Bower + 2 more sure tricks to bid 3. The Left Bower and an Ace of a side suit count as near-certain tricks.",
+    "intermediate": "Dealer's Advantage: The dealer must bid, so opponents to the dealer's right should push the bid to force the dealer into an uncomfortable contract.",
+    "advanced": "No-Trump Bidding: A balanced hand with Aces in each suit is the ideal No-Trump hand. Signal your strength to partner through bidding levels.",
+    "tips": [
+      "Don't overbid. Being Euchred gives the opponents points AND control.",
+      "Count your sure tricks (Aces + Bowers) before bidding."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "hasenpfeffer",
+        "name": "Hasenpfeffer",
+        "description": "Uses a 24-card deck + Joker. A bid of 6+Joker available. The Joker is the highest trump.",
+        "overrides": {},
+        "emptyOverridesReason": "This variant changes deck composition and scoring but engine-level overrides have not been modeled yet."
+      },
+      {
+        "id": "pepper",
+        "name": "Pepper",
+        "description": "4-player variant where the first bid is always at 6, and non-bidders play a 'neutral' role.",
+        "overrides": {},
+        "emptyOverridesReason": "This variant alters bidding structure and scoring but uses the same core engine configuration."
+      },
+      {
+        "id": "double-deck",
+        "name": "Double Deck Bid Euchre",
+        "description": "48 cards, 6 players. Common in leagues.",
+        "overrides": {},
+        "emptyOverridesReason": "This league style version adjusts player count and deck size without a separate override block yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Uses Bowers as trump indicators but bids randomly.",
+      "medium": "Counts sure tricks before bidding. Understands Left Bower is trump.",
+      "hard": "Calculates suit voids, partnership signals, No-Trump probabilities. Manages Euchre risk vs. bid escalation in competitive auctions."
+    },
+    "considerations": [
+      "Bower system requires special suit logic.",
+      "Partnership bidding communication is implicit (bid levels signal strength)."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_bid_euchre_www_pagat_com_euchre_bideuch_html",
+        "name": "Pagat - Bid Euchre",
+        "url": "https://www.pagat.com/euchre/bideuch.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-bideuch.html"
+      },
+      {
+        "id": "src:wikipedia_bid_euchre",
+        "name": "Wikipedia - Bid Euchre",
+        "url": "https://en.wikipedia.org/wiki/Bid_Euchre",
+        "retrievedAt": "2026-02-20",
+        "sections": [],
+        "localHtml": "wiki-bid-euchre.html"
+      }
+    ],
+    "additional": [
+      "Hoyle's Rules of Games",
+      "Bicycle Cards"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "partnership",
+    "auction",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 65,
+    "complexity": 5,
+    "luck": 4,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_6_each"
+        ],
+        "nextPhase": "bidding",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "bidding",
+        "label": "Auction",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "name_trump",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "name_trump",
+        "label": "Name Trump",
+        "actor": "current_player",
+        "legalActions": [
+          "name_suit",
+          "name_no_trump"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Trick Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bid Euchre is a point-based partnership game and does not utilize a monetary or chip-based ante."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The initial distribution of six cards to each of the four players is performed automatically by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-hand bidding game where all cards are dealt to players; no community market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any shared area; they must succeed using their initial six-card hand."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire 24-card deck is distributed at the start of the round; no cards remain in stock to be purchased."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Partnerships are committed to the contract and must participate in all six tricks of the hand to determine points."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a trick-taking structure rather than a vying structure where checking would be an appropriate action."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot to match in Bid Euchre; competition is based on bidding trick counts and winning tricks."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is determined by total point accumulation on a scorecard rather than through financial or chip betting."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The value of the deal is fixed by the bid and cannot be raised through further wagering rounds."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hand resolution is based purely on trick capture without a separate declaration phase for melds or sets."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands stay private until individual cards are played into tricks; no full-hand reveal phase occurs in the game."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning points are added to a cumulative partnership total rather than distributed from a physical pot."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the trick; follow suit and bower rules.",
+        "cost": "0",
+        "constraints": "Must follow suit; Bowers count as the trump suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards are distributed at the start; no drawing phase exists during the play of the six tricks."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card in the player's hand must be played into a trick; no cards are discarded or buried."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Decline to bid during the auction phase.",
+        "cost": "0",
+        "constraints": "Dealer must bid at least 3 if all others pass.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Declare a number of tricks the partnership intends to win.",
+        "cost": "0",
+        "constraints": "Must exceed the current high bid; maximum of 6.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bid Euchre is strictly a trick-taking game and does not involve the formation of sequences or melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The hand terminates automatically once all six tricks have been played by all participants."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "The full hand is dealt at the start; no draw pile exists during the trick-taking play.",
+      "discardConfig": "Cards are played directly to tricks; no separate waste or discard pile is utilized.",
+      "specialCards": "Bowers (Jacks) have high trump hierarchy but do not trigger separate automated engine actions.",
+      "declarationMechanism": "Bidding is performed verbally around the table; no hidden declaration is required.",
+      "fishingConfig": "Bid Euchre is a trick-taking game and does not use a capture-from-tableau fishing mechanic.",
+      "shedding": "Goal is to win tricks and reach partnership score; hands are played out in tricks, not emptied as in shedding games."
+    },
+    "deckType": "Standard 24",
+    "suitSet": "French",
+    "rankSet": "Stripped_24",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": true,
+      "trumpSuitRanking": "J(Right)-J(Left)-A-K-Q-10-9",
+      "canCallNoTrump": true,
+      "overtakingRule": "Highest card of lead suit or highest bower/trump wins."
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 6,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Highest bidder leads the first trick.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": 3,
+        "maxBid": 6,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": null,
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 6,
+      "target_score": 32
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "trick",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "bidding",
+      "name_trump",
+      "play_loop"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_6_each",
+        "supported": true,
+        "description": "Distribute six cards to each of the four players.",
+        "cost": "0",
+        "constraints": "Start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "name_suit",
+        "supported": true,
+        "description": "Establish the trump suit for the current hand.",
+        "cost": "0",
+        "constraints": "Highest bidder only.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "name_no_trump",
+        "supported": true,
+        "description": "Establish that no trump suit will be used for the current hand.",
+        "cost": "0",
+        "constraints": "Highest bidder only.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card rank comparison (Bowers > A > K...) determines trick winner.",
+    "rankingSystem": "Euchre (Bowers High)",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "One standard 24-card deck: six ranks (nine through ace) in each of four French suits. No jokers; used for Bid Euchre where players bid for the right to choose trump and the jack of trump (right bower) is the highest card.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Trump is chosen by the winning bidder; the jack of trump (right bower) and the jack of the same color (left bower) are the two highest trumps. Follow suit when able.",
+    "rankDescription": "Six ranks per suit: nine, ten, jack, queen, king, ace. In trump the right bower (jack of trump) is highest, then the left bower (jack of same color), then ace, king, queen, ten, nine. In plain suits ace is high.",
+    "dealPattern": "Cards are dealt in batches of three cards each."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BID EUCHRE",
+      "subtitle": "The American Auction",
+      "tagline": "Name your trump. Make your bid. Or pay the price."
+    },
+    "shortDescription": "Euchre elevated—with full competitive bidding. Partners must communicate through bids alone, and the loser of the auction can turn the table with a timely Euchre.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "You hold the Right Bower (J♠), Left Bower (J♣), and Ace of Spades. This is a power hand! Bid 4. If your partner has even one Ace, you can make it. Don't overbid—you need 4 sure tricks.",
+    "ai": "Game: Bid Euchre. Rules: 24-card. Bowers: Right>Left. No Trump possible. Target: 32. Bid evaluation: sure_tricks = Bowers + Aces + voids."
+  },
+  "scoring": {
+    "description": "Points accumulate per hand based on contract success.",
+    "winCondition": "First partnership to reach 32 points.",
+    "cardValues": {},
+    "penalties": {
+      "Euchred": "If the making team fails to meet their bid, the opponents score the bid amount instead."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "None; the first team to 32 points wins immediately.",
+    "targetScore": 32,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Individual cards contribute to trick wins rather than having discrete point values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "Cut Throat Euchre",
+    "Hasenpfeffer"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

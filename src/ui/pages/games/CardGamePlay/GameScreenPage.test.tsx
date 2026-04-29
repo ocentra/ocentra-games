@@ -138,6 +138,7 @@ function createClaimBundle() {
     turnPolicy: {
       direction: 'clockwise',
       startsWith: 'dealer_left',
+      timerSeconds: 60,
     },
     endConditions: [],
     deckType: 'Standard 52',
@@ -150,7 +151,10 @@ function createClaimBundle() {
     familyKernel: 'claim',
     playerCount: 2,
     deckSize: 52,
-    gameMode: {} as never,
+    gameMode: {
+      baseBet: 15000,
+      maxRounds: 11,
+    } as never,
     mechanics: {} as never,
     spec,
     layoutDocument: normalizeCardGameLayoutDocument({
@@ -266,9 +270,9 @@ describe('GameScreenPage', () => {
     render(<GameScreenPage gameModeId="claim" />);
 
     expect(await screen.findByTestId('claim-pilot-table')).toBeTruthy();
-    expect(screen.getByText(/Starting local pilot/i)).toBeTruthy();
-    expect(screen.getByText(/Starting in 3/i)).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /start match/i })).toBeNull();
+    expect(screen.getByText(/Preparing Table/i)).toBeTruthy();
+    expect(screen.getByText(/Dealing a 2-player table in 3/i)).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-redeal')).toBeTruthy();
   });
 
   it('auto-starts the Claim match and renders the live template table state', async () => {
@@ -282,14 +286,24 @@ describe('GameScreenPage', () => {
 
     await act(async () => {
       await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(screen.getByText(/Dealing a 2-player table in 3/i)).toBeTruthy();
+
+    await act(async () => {
       await vi.advanceTimersByTimeAsync(3100);
+      await Promise.resolve();
       await Promise.resolve();
     });
 
-    expect(screen.getByTestId('claim-pilot-current-hand')).toBeTruthy();
-    expect(screen.getByText('Deck')).toBeTruthy();
-    expect(screen.getByText('Floor Card')).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-redeal')).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-floor-zone')).toBeTruthy();
+    expect(screen.queryByText('Turn Loop')).toBeNull();
+    expect(document.querySelector('.turn-timer__progress')).toBeTruthy();
     expect(screen.getByText('Pot')).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Scoreboard' })).toBeTruthy();
+    expect(screen.getByText('BET')).toBeTruthy();
+    expect(screen.getByText('15000')).toBeTruthy();
     expect(processPlayerActionMock).not.toHaveBeenCalled();
   });
 });

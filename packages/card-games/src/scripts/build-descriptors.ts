@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { walkProcessedGameFiles } from '../processed-game-files';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -22,7 +23,7 @@ interface GameJson {
 }
 
 function buildJsonDescriptors(): number {
-  const files = fs.readdirSync(PROCESSED).filter((f) => f.endsWith('.json')).sort();
+  const files = walkProcessedGameFiles(PROCESSED);
   const lines = [
     '# JSON descriptors for fuzzy matching',
     '# Format: filename | name. 2-4 line description. Category. Origin. Also: alias1, alias2, ...',
@@ -30,16 +31,15 @@ function buildJsonDescriptors(): number {
   ];
 
   for (const file of files) {
-    const p = path.join(PROCESSED, file);
     let data: GameJson;
     try {
-      data = JSON.parse(fs.readFileSync(p, 'utf8')) as GameJson;
+      data = JSON.parse(fs.readFileSync(file.absolutePath, 'utf8')) as GameJson;
     } catch {
-      lines.push(`${file} | (parse error)`);
+      lines.push(`${file.relativePath} | (parse error)`);
       continue;
     }
 
-    const name = data.name ?? path.basename(file, '.json').replace(/-/g, ' ');
+    const name = data.name ?? file.slug.replace(/-/g, ' ');
     const ov = data.overview ?? {};
     const desc = truncate(ov.description ?? '', 250);
     const cat = [ov.category, ov.subCategory].filter(Boolean).join(', ') ?? '';
@@ -50,7 +50,7 @@ function buildJsonDescriptors(): number {
         ? data.alsoKnownAs
         : '';
 
-    const parts = [file, '|', name];
+    const parts = [file.relativePath, '|', name];
     if (desc) parts.push('.', desc);
     if (cat) parts.push('.', `Category: ${cat}`);
     if (origin) parts.push('.', `Origin: ${origin}`);

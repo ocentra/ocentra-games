@@ -26,7 +26,22 @@ type ShellMetrics = {
 };
 
 function measureHeight(node: HTMLDivElement | null): number {
-  return node?.getBoundingClientRect().height ?? 0;
+  return node?.clientHeight ?? node?.getBoundingClientRect().height ?? 0;
+}
+
+function measureScaleY(node: HTMLDivElement | null): number {
+  if (!node) {
+    return 1;
+  }
+
+  const rect = node.getBoundingClientRect();
+  const layoutHeight = node.clientHeight || node.offsetHeight;
+
+  if (rect.height <= 0 || layoutHeight <= 0) {
+    return 1;
+  }
+
+  return rect.height / layoutHeight;
 }
 
 function measureHeaderHeight(
@@ -38,10 +53,11 @@ function measureHeaderHeight(
   }
 
   const rootRect = rootNode.getBoundingClientRect();
+  const rootScaleY = measureScaleY(rootNode);
   const svgNode = headerNode.querySelector('svg');
   const extensionNode = headerNode.querySelector<HTMLElement>('[data-oc-shell-header-extension="true"]');
   const extensionBottom = extensionNode
-    ? Math.max(0, extensionNode.getBoundingClientRect().bottom - rootRect.top)
+    ? Math.max(0, extensionNode.getBoundingClientRect().bottom - rootRect.top) / rootScaleY
     : 0;
 
   if (svgNode instanceof SVGGraphicsElement) {
@@ -53,18 +69,19 @@ function measureHeaderHeight(
           ? svgNode.viewBox.baseVal.height
           : svgRect.height;
       const scaleY = viewBoxHeight > 0 ? svgRect.height / viewBoxHeight : 1;
-      const svgBottom = Math.max(0, svgRect.top - rootRect.top + (box.y + box.height) * scaleY);
+      const svgBottom =
+        Math.max(0, svgRect.top - rootRect.top + (box.y + box.height) * scaleY) / rootScaleY;
       return Math.max(svgBottom, extensionBottom);
     } catch {
       return Math.max(
-        Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top),
+        Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top) / rootScaleY,
         extensionBottom,
       );
     }
   }
 
   return Math.max(
-    Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top),
+    Math.max(0, headerNode.getBoundingClientRect().bottom - rootRect.top) / rootScaleY,
     extensionBottom,
   );
 }
@@ -78,10 +95,11 @@ function measureFooterHeight(
   }
 
   const rootRect = rootNode.getBoundingClientRect();
+  const rootScaleY = measureScaleY(rootNode);
   const footerBar = footerNode.querySelector<HTMLElement>('.oc-unified-footer__bar');
 
   if (footerBar) {
-    return Math.max(0, rootRect.bottom - footerBar.getBoundingClientRect().top);
+    return Math.max(0, rootRect.bottom - footerBar.getBoundingClientRect().top) / rootScaleY;
   }
 
   return measureHeight(footerNode);

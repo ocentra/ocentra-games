@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { walkProcessedGameFiles } from '../processed-game-files';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,14 +38,10 @@ type SuitSetConflict = {
 };
 
 function readProcessedGames(): Array<{ file: string; data: ProcessedGame }> {
-  return fs
-    .readdirSync(PROCESSED_GAMES_DIR)
-    .filter((file) => file.endsWith('.json'))
-    .sort()
-    .map((file) => ({
-      file,
-      data: JSON.parse(fs.readFileSync(path.join(PROCESSED_GAMES_DIR, file), 'utf8')) as ProcessedGame,
-    }));
+  return walkProcessedGameFiles(PROCESSED_GAMES_DIR).map((entry) => ({
+    file: entry.relativePath,
+    data: JSON.parse(fs.readFileSync(entry.absolutePath, 'utf8')) as ProcessedGame,
+  }));
 }
 
 function combinedDeckText(game: ProcessedGame): string {

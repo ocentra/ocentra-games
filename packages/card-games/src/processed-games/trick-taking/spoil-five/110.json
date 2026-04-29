@@ -1,0 +1,653 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "110.json",
+  "name": "110 (One Hundred and Ten)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "110 (One Hundred and Ten) is an Irish trick-taking game with bidding, related to Twenty-Five. Played with a standard 52-card deck; the first player or team to reach 110 points wins. Players score 5 points per trick. Card ranking varies by trump suit.",
+    "category": "Trick-taking",
+    "subCategory": "Point-trick with Bidding",
+    "origin": "Ireland",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 9,
+      "recommendedPlayers": 3,
+      "display": "3-9"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "originName": "One Hundred and Ten",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Ireland. Bidding version of the game Twenty-Five; part of the Irish trick-taking family (Twenty-Five, 55, 110, 220).",
+    "originCountries": [
+      "Ireland"
+    ],
+    "timeline": [
+      "Early 2000s: modern rule summaries describe 110 as a bidding variant of the traditional Irish game Twenty-Five."
+    ],
+    "evolution": null,
+    "cultural": "Ireland; bidding variant of Twenty-Five.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "2–9 (five cards each plus five-card kitty from one 52-card pack)",
+    "deck": "Standard 52-card deck",
+    "equipment": "Standard 52-card deck, score sheet",
+    "dealing": "Five cards to each player and five to the kitty (two then three or three then two at a time); deal passes left.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.",
+    "gameplay": "Bidding (10, 15, 20, 25, or 60) starts left of dealer; dealer may 'take' by equalling the bid. Highest bidder picks up the five-card kitty, discards five, and names trump (no robbing). Player to dealer's left leads; same card ranking as Twenty-Five (5 of trump highest, then J, then A of hearts).",
+    "keyRules": [
+      "Bids: 10, 15, 20, 25, 60; dealer can take by equalling",
+      "Bidder takes kitty, discards 5, names trump",
+      "5 points per trick; +5 for highest trump in play",
+      "First to 110 wins"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Bid according to hand strength and trump potential; remember card ranking (5, J, A♥, then K-Q and numerals; red suits 'highest best', black 'lowest best'). The 5 of trump and J of trump are the top trumps; A of hearts is always trump.",
+    "intermediate": "Competing with dealer: dealer can take by equalling, so bids can be pushed up. Holding the highest trump gives +5; time when you play it. In 110, reaching the target in the same deal—who took tricks first can decide the winner.",
+    "advanced": "Bid 60 only when you can win all five tricks. If you bid lower and make all tricks you score 30 (five tricks + highest trump), not 60. Track who is close to 110 and whether to bid to win or to block.",
+    "tips": [
+      "Same ranking as Twenty-Five: learn 5, J, A♥ as top trumps and red high / black low in non-trump.",
+      "Bidder names trump after taking kitty (or before, in some variants).",
+      "First to 110 wins; last hand is played out to see if bid succeeds."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "bidder_must_win",
+        "name": "Only bidder can win",
+        "description": "Some groups play that only the bidder can win the game; if someone reaches 110 points through tricks taken against another player's bid, the game continues until the bidder wins or loses.",
+        "overrides": {},
+        "emptyOverridesReason": "This variant changes only who is allowed to win the game and can be handled in scoring logic without separate engine overrides."
+      },
+      {
+        "id": "bidder_names_trump_before_kitty",
+        "name": "Bidder names trump before kitty",
+        "description": "In some circles the bidder must name the trump suit before looking at the five-card kitty instead of naming trump after picking up and discarding.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation only changes when trump is announced relative to the kitty and does not require a different engine structure here."
+      },
+      {
+        "id": "different_first_lead",
+        "name": "Different first lead",
+        "description": "Some play that the first lead comes from the player to the left of the bidder; others play that the player to the right of the bidder leads the first trick instead.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation affects only which seat leads the first trick and can be expressed by table rules without dedicated override entries."
+      },
+      {
+        "id": "bidder_scores_only_bid",
+        "name": "Bidder scores only bid amount",
+        "description": "Some groups rule that the bidder can only score the amount bid; for example, a bid of 15 that wins all five tricks still scores 15 rather than 30.",
+        "overrides": {},
+        "emptyOverridesReason": "This variant changes how much the bidder scores when exceeding their bid and is handled in scoring logic rather than separate engine overrides."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Basic legal move selection\nMinimal strategy\nRandom choices when equivalent",
+      "medium": "Basic strategy implementation\nSimple opponent modeling\nStandard tactical play",
+      "hard": "Advanced strategy\nPattern recognition\nOptimal play in common situations"
+    },
+    "considerations": [
+      "Bidding: 10, 15, 20, 25, 60; dealer can take by equalling; model hand strength and kitty.",
+      "Trump ranking: 5, J, A♥, then K-Q and numerals; red high, black low in plain suits.",
+      "Scoring: 5 per trick + 5 for highest trump; bidder needs ≥ bid or loses bid; 60 = all tricks.",
+      "Race to 110: track scores; order of tricks can decide winner if two reach 110 in same deal."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_25_html",
+        "name": "Pagat.com",
+        "url": "https://www.pagat.com/spoil5/25.html#110",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-spoil-five-25.html"
+      },
+      {
+        "id": "src:wikipedia_forty_fives",
+        "name": "Wikipedia - Forty-fives",
+        "url": "https://en.wikipedia.org/wiki/Forty-fives",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-forty-fives-2.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "localHtml": "wiki-list-of-card-games.html"
+      },
+      "https://boardgamegeek.com/",
+      "https://www.bicyclecards.com/"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "bidding",
+        "label": "Bidding",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bid",
+          "pass"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Clockwise auction with fixed bids of 10, 15, 20, 25, or 60; each bid must overcall the previous one except that the dealer may equal the highest bid to take it."
+      },
+      {
+        "id": "play",
+        "label": "Play tricks",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Player to dealer's left leads the first trick; winner of each trick leads the next. Rules of play and following suit are the same as in Twenty-Five, including the privilege of the top three trumps (5, J, ace of hearts) to renege unless a higher trump is led."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass during the bidding phase instead of raising the current bid.",
+        "cost": "0",
+        "constraints": "Available during the bidding phase when the player chooses not to overcall the current highest bid.",
+        "isTerminating": true,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Bid 10, 15, 20, 25, or 60 to commit to scoring at least that many points.",
+        "cost": "0",
+        "constraints": "Bids must be one of 10, 15, 20, 25, or 60 and strictly higher than the current highest bid, except that the dealer may equal the highest bid to take it; a player who passes or is outbid cannot bid again in that auction.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 9,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "5 (highest), J, ace of hearts (always third), then ace of the trump suit (if not hearts), followed by K, Q and numeral cards; non-trump suits follow the Twenty-Five ranking: highest in red, lowest in black.",
+      "canCallNoTrump": false,
+      "overtakingRule": "Highest trump wins the trick; players must follow suit if possible and may always play a trump when a non-trump suit is led."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 5,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "Player to dealer's left leads the first trick; winner of each trick leads the next.",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "auction",
+        "minBid": 10,
+        "maxBid": 60,
+        "passAllowed": true,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "bidding",
+      "play"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Trick-taking; no poker hand rankings. Tricks score points (5 per trick plus a 5-point bonus for the highest trump in play).",
+    "rankingSystem": "Same ranking as Irish Twenty-Five: highest trump is the 5 of the trump suit, then the J of trumps, then the ace of hearts (always a trump), followed by the ace of the trump suit (if not hearts), K, Q and numeral cards. In non-trump suits the cards rank K-Q-J-10-9-8-7-6-5-4-3-2 in red suits and K-Q-J-A-2-3-4-5-6-7-8-9-10 in black suits.",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck with four suits (Hearts, Diamonds, Clubs, Spades), each containing thirteen ranks from Ace down to 2. This deck is used without jokers for Twenty-Five and its bidding variants 55, 110, and 220.",
+    "suitDescription": "Four traditional French suits: Hearts and Diamonds (red) and Clubs and Spades (black). Suit colour matters for ranking in non-trump suits: higher cards are better in red suits, while lower cards are better in black suits.",
+    "rankDescription": "Thirteen ranks in each suit: Ace, King, Queen, Jack, 10, 9, 8, 7, 6, 5, 4, 3, 2. In Twenty-Five and 110, the 5 and J of the trump suit and the ace of hearts have special high-trump roles above the normal rank order.",
+    "dealPattern": "2+3 or 3+2 cards per player plus a five-card kitty dealt as an extra hand.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "110",
+      "subtitle": "Card Game",
+      "tagline": "110 (One Hundred and Ten) is an Irish trick-taking game with bidding, related to..."
+    },
+    "shortDescription": "110 (One Hundred and Ten) is an Irish trick-taking game with bidding, related to Twenty-Five. Played with a standard 52-card deck; the first player or",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "110 (One Hundred and Ten) is an Irish trick-taking game with bidding, related to Twenty-Five. Played with a standard 52-card deck; the first player or team to reach 110 points wins. Players score 5 points per trick. Card ranking varies by trump suit.",
+    "ai": "Game: 110. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Bidder scores trick points if total ≥ bid, else loses the bid amount. Bid of 60 = win all tricks: score 60 or lose 60. Others score for their tricks. First to 110 wins; if two reach it in the same deal, order of tricks determines winner.",
+    "winCondition": "Be the first player (or team) to reach 110 points. Each trick is worth 5 points; the holder of the highest trump in play gets an extra 5 points.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 110,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Trick points are fixed at 5 per trick plus a 5-point bonus for the highest trump in play; there are no additional per-card point values beyond this."
+    }
+  },
+  "alsoKnownAs": [
+    "One Hundred and Ten",
+    "Hundred and Ten"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

@@ -2,7 +2,7 @@ import SolanaImage from './images/commons/solana.png';
 import GamesTextImage from './images/commons/GamesText.png';
 import OcentraTextImage from './images/commons/OcentraText.png';
 import ReactImage from './images/commons/react.svg';
-import MlogoImage from './images/cardgame/commons/Mlogo.png';
+import MlogoImage from './images/commons/OcentraLogo.svg';
 
 export const solanaImageUrl = SolanaImage;
 export const gamesTextImageUrl = GamesTextImage;

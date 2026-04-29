@@ -61,6 +61,7 @@ export interface MechanicsRuntimeContext {
   foldedPlayerIds: string[];
   roundPot: number;
   trumpCard: Card | null;
+  familyState?: Record<string, unknown>;
 }
 
 export interface GameState {

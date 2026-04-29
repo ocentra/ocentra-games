@@ -1,0 +1,613 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "xeri.json",
+  "name": "Xeri",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Xeri (Ξερή, 'dry') is a popular Greek fishing card game. 2 or 4 players. 52 cards. 6 each + 4 face-up on table. Match rank to capture entire pile. Jack captures any pile. 'Xeri' = capturing lone card (10pts bonus, Jack Xeri = 20pts). Score: most cards=3pts, A/K/Q/J/10=1pt each, 10♦=1pt extra, 2♣=1pt.",
+    "category": "Fishing",
+    "subCategory": "Capturing",
+    "origin": "Greece",
+    "originName": "Ξερή (Xeri) — Greek for 'dry' or 'plain'",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2 or 4 (partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Xeri (from Greek ξερή, meaning dry or plain) is a well-known Greek card game in which players capture the play pile by matching its top card. Play is similar to the Turkish game Pişti though scoring differs; the xeri (capturing a lone card) idea also appears in Kontsina and in Diloti. Documented from Greek contributors and widely played in Greece.",
+    "originCountries": [
+      "Greece"
+    ],
+    "timeline": [
+      "20th century: Widely played in Greece as a traditional fishing game."
+    ],
+    "evolution": null,
+    "cultural": "One of Greece's most popular card games.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "2 or 4 (partnerships)",
+    "deck": "52 cards. 6 each. 4 face-up on table.",
+    "equipment": "Cards",
+    "dealing": "6 each + 4 face-up center. Redeal 6 when hands empty.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Collect the most points by capturing cards from the table; win each round by scoring the majority of points (cards, face values, good 10, good 2, and xeri bonuses).",
+    "gameplay": "Play card. Match rank = capture entire pile. Jack = capture any pile. Xeri = capture lone card (bonus 10pts; Jack Xeri = 20pts). Redeal 6 when hands empty. Last capturer gets remaining cards.",
+    "keyRules": [
+      "Rank matching captures pile",
+      "Jack captures any pile",
+      "Xeri bonus (10/20pts)",
+      "10♦ and 2♣ special scoring",
+      "Redeal from stock"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Save Jacks for big piles.",
+    "intermediate": "Create Xeri opportunities.",
+    "advanced": "Track card values.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "four_players",
+        "name": "Four players",
+        "description": "Played by four in partnerships, partners opposite; direction of play anticlockwise; opponent to dealer's left cuts, opponent to dealer's right leads.",
+        "overrides": {},
+        "emptyOverridesReason": "Partnership and player-count variant; no engine constant overrides defined for 4p."
+      },
+      {
+        "id": "point_scoring_151",
+        "name": "Point scoring to 151",
+        "description": "Instead of counting games won, keep cumulative points; first player or team to reach 151 or more at end of a round wins; if both reach 151 in same round, play to 251.",
+        "overrides": {},
+        "emptyOverridesReason": "Scoring variant only; target score would need scoring.targetScore override."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI captures at random with no table counting.",
+      "medium": "No distinct medium tier; all non-easy AI uses basic capture and sweep strategy.",
+      "hard": "Hard AI optimizes captures and sweeps (scopa-style)."
+    },
+    "considerations": [],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_xeri",
+        "name": "Pagat.com - Xeri",
+        "url": "https://www.pagat.com/fishing/xeri.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-xeri.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "fishing",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to match rank and capture pile, or use Jack to capture any pile.",
+        "cost": "0",
+        "constraints": "Must have card in hand matching a rank on table or play Jack.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "XERI",
+      "subtitle": "Card Game",
+      "tagline": "Xeri (Ξερή, 'dry') is a popular Greek fishing card game. 2 or 4 players. 52 card..."
+    },
+    "shortDescription": "Xeri (Ξερή, 'dry') is a popular Greek fishing card game. 2 or 4 players. 52 cards. 6 each + 4 face-up on table. Match rank to capture entire pile. Jac",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Xeri (Ξερή, 'dry') is a popular Greek fishing card game. 2 or 4 players. 52 cards. 6 each + 4 face-up on table. Match rank to capture entire pile. Jack captures any pile. 'Xeri' = capturing lone card (10pts bonus, Jack Xeri = 20pts). Score: most cards=3pts, A/K/Q/J/10=1pt each, 10♦=1pt extra, 2♣=1pt.",
+    "ai": "Game: Xeri. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Most cards=3pts. Each A,K,Q,J,10=1pt. 10♦=extra 1pt. 2♣=1pt. Xeri=10pts. Jack Xeri=20pts. Play to 151.",
+    "winCondition": "Score most points through captures.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Fishing game scores by captures and bonuses; point values are not a rank-to-value map."
+    }
+  },
+  "alsoKnownAs": [
+    "Kseri"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

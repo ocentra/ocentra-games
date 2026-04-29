@@ -1,0 +1,658 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "mizerka-polish.json",
+  "name": "Mizerka (Polish Trick-Taking)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Mizerka is a popular Polish trick-taking game for three players, played with a standard 52-card deck. It is a game of 'Contracts', where each player must eventually choose to play through six distinct game types (four suits, No Trump, and the eponymous 'Mizerka'â€”a misere avoidance contract). It features a unique 'Partial Deal' bidding phase and a talon exchange that allows players to refine their hands. It is highly strategic, requiring players to balance their aggressive and defensive contracts throughout 18 total rounds.",
+    "category": "Trick-taking",
+    "subCategory": "Trick-taking",
+    "origin": "Poland",
+    "originName": "Mizerka",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "recommendedPlayers": 3,
+      "display": "3"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Poland"
+    ],
+    "origins": "Rooted in the Slavic tradition of trick-taking games like preference and thousand (1000). It became a standardized parlor game in Poland during the 20th century.",
+    "timeline": [
+      "Mid-20th Century: Mizerka emerges as a preferred 3-player alternative to Bridge in Poland.",
+      "1980s: Standardized rules for the 18-round cycle are established.",
+      "2000s: Online implementations popularize the game among the Polish diaspora.",
+      "Present: A staple of 'Skata' (card game clubs) across Poland."
+    ],
+    "evolution": "The requirement to play every contract exactly three times (once per player rotation) makes it a game of long-term endurance and point-averaging.",
+    "cultural": "Known for its 'Mizerka' (Misery) rounds which are often the most tense and competitive parts of the game.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Three players. Play is clockwise. Any player may deal first; the turn to deal passes clockwise. In each deal the three roles are: dealer (deals and has a quota of 1 trick in trump contracts, 7 in mizerka), forehand or left of dealer (chooses the contract after seeing six cards and has quota 7 in trump contracts, 1 in mizerka), and middlehand or right of dealer (quota 5 in both). The player to dealer's left leads to the first trick.",
+    "deck": "52 cards. Rank: Ace (High) to 2 (Low).",
+    "equipment": "",
+    "dealing": "Each player gets 6 cards. 6 for the talon. Then the rest (13 total each + 13 for talon).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score the highest cumulative points over 18 rounds. Each player must play each contract once.",
+    "gameplay": "Must follow suit. No obligation to trump. Highest trump or card of led suit wins the trick.",
+    "keyRules": [
+      "Player to dealer's left chooses one of six contracts (clubs, hearts, spades, diamonds, no trumps, mizerka) after seeing six cards.",
+      "Must follow suit if possible; if void may play any card. No obligation to trump or overtake.",
+      "Trick won by highest trump if any, else highest card of suit led. Winner leads next trick.",
+      "Talon exchange: left of dealer then right of dealer then dealer may discard and replace from talon; no obligation to discard.",
+      "Quotas and scoring: left 7/1, right 5/5, dealer 1/7 tricks (trump/NT vs mizerka). Above quota +1 per trick (trump/NT) or -1 (mizerka); below quota -1 or +1. Game ends after 18 deals when each player has chosen each contract once."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Suit Conservation: In the 'Mizerka' (Avoidance) round, your lowest cards (2s, 3s) are your most valuable assets. Don't play them until you are forced to. Lead your highest cards early in suits where you are 'safe' (have low insurance cards) to clear the opponents' low cards.",
+    "intermediate": "Talon Management: When choosing your exchange, don't just look for high cards. In a trump contract, look for 'voids' (suits you have zero cards in) so you can trump in early. In Mizerka, exchange your Aces and Kings for anything low.",
+    "advanced": "Contract Pacing: Track which contracts your opponents have left. If an opponent has only 'Clubs' and 'Mizerka' left, and you are currently in a Mizerka round, you know they are likely to be desperate to lose tricks. Use their desperation to force them into capturing yours.",
+    "tips": [
+      "If you have a hand full of middle-cards (7s, 8s, 9s), save them for a trump contract where you have at least 4 trumps to protect them.",
+      "Never pick 'No Trump' if you have a wide suit distribution with many losers; save it for a 'solid' hand with multiple Aces."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "standard",
+        "name": "Standard (six contracts)",
+        "description": "Six contracts: clubs, hearts, spades, diamonds, no trumps, and mizerka (misère). Each player chooses each contract once over 18 deals.",
+        "overrides": {},
+        "emptyOverridesReason": "Standard rules; no variant-specific overrides."
+      },
+      {
+        "id": "contract-order",
+        "name": "Contract order",
+        "description": "Contract is chosen by player to dealer's left after seeing first six cards; no other variant specified in source.",
+        "overrides": {},
+        "emptyOverridesReason": "Contract order is standard; no overrides needed."
+      },
+      {
+        "id": "talon-exchange",
+        "name": "Talon exchange",
+        "description": "Left of dealer exchanges first, then right of dealer, then dealer if talon remains; no obligation to discard.",
+        "overrides": {},
+        "emptyOverridesReason": "Talon exchange order is standard; no overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to manage the talon; pickscontracts poorly; wins tricks in Mizerka rounds.",
+      "medium": "Reasonable contract-pacing; manages suit-voiding effectively.",
+      "hard": "Expert at 'End-Game Point Averaging'; perfectly calculates the risk of the 13th talon card; master of the Mizerka discard."
+    },
+    "considerations": [
+      "18-round contract matrix.",
+      "Misere (Avoidance) logic.",
+      "Talon-inference heuristics."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_com_mizerka_www_pagat_com_miser_mizerka_html",
+        "name": "Pagat.com - Mizerka",
+        "url": "https://www.pagat.com/quotawhist/mizerka.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-mizerka.html"
+      },
+      {
+        "id": "src:wikipedia_list_of_card_games_en_wikipedia_org_wiki_list_of_card_games",
+        "name": "Wikipedia - List of card games",
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-list-of-card-games.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - Mizerka (gra karciana)",
+      "Polish Card Game Traditions"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public domain card game; no trademark or license found.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to the current trick. Must follow suit if possible; if void may play any card. No obligation to trump or overtake. Trick is won by the highest trump if any, else by the highest card of the suit led.",
+        "cost": "0",
+        "constraints": "Must follow suit if possible. If void may play any card. No obligation to trump or overtake. Trick won by highest trump if any, else highest card of led suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 3,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": "face_up",
+      "discardTop": "NA",
+      "tableauCards": "NA"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "called_by_contract",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": true,
+      "overtakingRule": "no_obligation"
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 13,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 18,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "fixed_rounds_complete"
+    },
+    "constants": {},
+    "finalHandSize": 13,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "talon-exchange-order",
+          "text": "Talon exchange order: player to dealer's left discards and replaces first (any number, then no further discards); then player to dealer's right (up to remaining talon cards); then dealer if any talon remains. No player is obliged to discard."
+        },
+        {
+          "id": "quota-scoring",
+          "text": "Quotas vary by position and contract: left of dealer 7 tricks (trump/NT) or 1 trick (mizerka), right 5/5, dealer 1/7. Above quota scores +1 per trick (trump/NT) or -1 (mizerka); below quota -1 (trump/NT) or +1 (mizerka)."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Trick-based scoring by quota; no poker hand ranking.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "One card at a time into four piles (three hands and talon). After six cards each, deal pauses for contract choice by player to dealer's left; then remaining 28 cards dealt so each player has 13 and talon has 13 face-down.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MIZERKA (POLISH TRICK-TAKING)",
+      "subtitle": "Card game",
+      "tagline": "Play and win."
+    },
+    "shortDescription": "Mizerka is a popular Polish trick-taking game for three players, played with a standard 52-card deck. It is a game of 'Contracts', where each player must eventually choose to play through six distinct",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "",
+    "ai": ""
+  },
+  "scoring": {
+    "description": "Points or match rules.",
+    "winCondition": "Win by game rules.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": "NA",
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "cardValues": "Scoring is by tricks above or below quota (+1/-1), not by card point values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

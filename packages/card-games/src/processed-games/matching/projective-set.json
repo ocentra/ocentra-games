@@ -1,0 +1,627 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "projective-set.json",
+  "name": "Projective Set",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Projective Set is a real-time pattern-matching card game derived from Set and based on binary attributes from finite projective geometry.",
+    "category": "Matching",
+    "subCategory": "Matching",
+    "origin": "United States",
+    "originName": "Projective Set",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2 or more"
+    },
+    "deck": "63-card Projective Set deck with six binary dot attributes",
+    "difficulty": "Intermediate",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Projective Set is documented as a distinct traditional card game with its own player count, equipment, and objective.",
+    "originCountries": [
+      "United States"
+    ],
+    "timeline": [
+      "Documented source page identifies Projective Set as a standalone game rather than only a synonym or expansion."
+    ],
+    "evolution": null,
+    "cultural": "Projective Set is included because the source describes a playable ruleset or product-level card game, not just a deck style or expansion page.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No separate evolution notes were available in the local source."
+    }
+  },
+  "setup": {
+    "players": "2 or more players use the table arrangement described for Projective Set.",
+    "deck": "63-card Projective Set deck with six binary dot attributes",
+    "equipment": "63-card Projective Set deck with six binary dot attributes, score area, and enough table space for play.",
+    "dealing": "Prepare 63-card Projective Set deck with six binary dot attributes and deal or lay out cards according to the documented Projective Set rules before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Find valid sets among the visible cards faster than the other players.",
+    "gameplay": "Cards display combinations of colored dots. A tableau is exposed and players race to identify groups satisfying the projective-set rule. Correct calls claim cards or points; mistaken calls may be penalized by local rules.",
+    "keyRules": [
+      "The deck contains every non-empty combination of six binary attributes.",
+      "Players search the shared tableau in real time.",
+      "A valid set follows the finite-geometry relationship defined by the card attributes."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Focus first on the visible objective in Projective Set: conserve cards or resources that directly advance the win condition.",
+    "intermediate": "Track public information and avoid giving opponents easy tempo swings during the middle turns.",
+    "advanced": "Plan several turns ahead around the scoring window and force opponents into low-value or defensive plays.",
+    "tips": [
+      "Track the cards and roles that have already appeared.",
+      "Preserve flexible plays until they improve the final scoring position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "hasPlaceholders": false,
+    "noVariationsReason": "Sources describe only the standard form; no separate named variants documented."
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal Projective Set moves and follows the immediate objective.",
+      "medium": "Tracks scoring threats and obvious opponent progress in Projective Set.",
+      "hard": "Plans around hidden information, timing, and the documented win condition for Projective Set."
+    },
+    "considerations": [
+      "Represent Projective Set as Matching with Matching mechanics.",
+      "Use source-linked rules before adding digital-only shortcuts."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki-projective-set",
+        "name": "Wikipedia - Projective Set",
+        "url": "https://en.wikipedia.org/wiki/Projective_Set_(game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-projective-set.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "matching",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 35,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal Cards",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Dealer deals all cards one at a time clockwise to each player starting with player to dealer's left."
+      },
+      {
+        "id": "play_round",
+        "label": "Play Round",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "pass"
+        ],
+        "nextPhase": "play_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "player_hand_empty == true",
+            "nextPhase": null
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Players play cards to the layout or pass. First to empty hand wins."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Shedding game with no betting mechanic."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes all cards one at a time.",
+        "cost": "0",
+        "constraints": "Dealer only, occurs once at game start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": null
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market mechanic in Fan Tan."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market buying in Fan Tan."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock buying in Fan Tan."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Shedding game, no folding mechanic."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No check action in Fan Tan."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No call/match betting in Fan Tan."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in Fan Tan."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in Fan Tan."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase in Fan Tan."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No showdown in Fan Tan."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "First to empty hand wins automatically."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the layout starting with Sevens and expanding sequentially.",
+        "cost": "0",
+        "constraints": "Must play if a legal card exists; can only play Sevens (start new suit row) or cards adjacent in sequence to existing cards.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards dealt at start; no draw mechanic."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard pile; cards go to layout."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Skip turn when no legal play is available.",
+        "cost": "0",
+        "constraints": "Only when no valid card can be played.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding in Fan Tan."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No meld mechanic in Fan Tan."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "First to empty hand wins automatically."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All cards are dealt at the start of the game; no draw mechanic exists.",
+      "discardConfig": "Shed cards are played to the layout, not to a discard pile."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player"
+      },
+      {
+        "id": "tableau",
+        "type": "grid",
+        "visibility": "public",
+        "owner": "table"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "play_round"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "One full deck of 52 cards using French suits (hearts, diamonds, clubs, spades) and standard ranks from ace through king, with no jokers.",
+    "suitDescription": "French suits: hearts (cœurs), diamonds (carreaux), clubs (trèfles), and spades (piques). Each suit has thirteen cards from ace through king.",
+    "rankDescription": "Standard ranking for a 52-card deck: ace (high or low by context), king, queen, jack, 10, 9, 8, 7, 6, 5, 4, 3, 2. Thirteen cards per suit.",
+    "dealPattern": ""
+  },
+  "synthesis": {
+    "hero": {
+      "title": "FAN TAN (SEVENS)",
+      "subtitle": "Card Game",
+      "tagline": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic ..."
+    },
+    "shortDescription": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "tableau",
+        "hand"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    "ai": "Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Be the first player to shed all cards from your hand.",
+    "winCondition": "Be the first player to shed all cards from your hand.",
+    "cardValues": {
+      "A": "1",
+      "K": "13",
+      "Q": "12",
+      "J": "11"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "nullReasons": {},
+    "scoringDirection": "high_wins"
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

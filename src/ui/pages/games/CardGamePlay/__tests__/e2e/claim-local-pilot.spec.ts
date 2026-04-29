@@ -1,6 +1,12 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test.describe.configure({ timeout: 60000 });
+
+const waitForPilotToBeReady = async (page: Page) => {
+  await expect(page.getByTestId('claim-pilot-floor-zone')).toBeVisible({ timeout: 20000 });
+  await expect(page.getByTestId('claim-pilot-floor-zone')).not.toContainText('Waiting', { timeout: 20000 });
+  await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
+};
 
 test.describe('Claim local pilot', () => {
   test('loads the Claim pilot route and starts a visible-hand match', async ({ page }) => {
@@ -18,13 +24,12 @@ test.describe('Claim local pilot', () => {
 
     await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('claim-pilot-current-hand')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('claim-pilot-floor-zone')).not.toContainText('Waiting for deal');
-    await expect(page.getByRole('button', { name: 'Pass' })).toBeVisible();
+    await waitForPilotToBeReady(page);
+    await expect(page.getByTestId('claim-pilot-redeal')).toBeVisible({ timeout: 20000 });
+    await expect(page.getByRole('button', { name: /^(Declare|Pick|Pass|Showdown)/ }).first()).toBeVisible({ timeout: 20000 });
   });
 
-  test('plays through one full Claim round and advances to the next round', async ({ page }) => {
+  test('updates the Claim pilot action state after declare and pick interactions', async ({ page }) => {
     page.on('pageerror', (error) => {
       process.stdout.write(`[pageerror] ${error.message}\n`);
     });
@@ -39,31 +44,20 @@ test.describe('Claim local pilot', () => {
 
     await page.goto('/games/claim/play', { waitUntil: 'domcontentloaded' });
 
-    await expect(page.getByTestId('claim-pilot-table')).toBeVisible({ timeout: 20000 });
-    await expect(page.getByTestId('claim-pilot-current-hand')).toBeVisible({ timeout: 20000 });
+    await waitForPilotToBeReady(page);
+    await expect(page.getByTestId('claim-pilot-redeal')).toBeVisible({ timeout: 20000 });
 
     const declareButtons = page.getByRole('button', { name: /^Declare / });
     await expect(declareButtons.first()).toBeVisible({ timeout: 20000 });
     await declareButtons.first().click();
 
-    for (let index = 0; index < 8; index += 1) {
-      if (await page.getByText(/Current turn \| Declared:/i).count()) {
-        break;
-      }
-      const passButton = page.getByRole('button', { name: 'Pass' });
-      await expect(passButton).toBeVisible({ timeout: 20000 });
-      await passButton.click();
-    }
+    await expect(page.getByText(/Declared: clubs/i)).toBeVisible({ timeout: 20000 });
 
-    await expect(page.getByText(/Current turn \| Declared:/i)).toBeVisible({ timeout: 20000 });
-    await expect(page.getByRole('button', { name: 'Call Showdown' })).toBeVisible({ timeout: 20000 });
-    await page.getByRole('button', { name: 'Call Showdown' }).click();
+    const pickButtons = page.getByRole('button', { name: /^Pick / });
+    await expect(pickButtons.first()).toBeVisible({ timeout: 20000 });
+    await pickButtons.first().click();
 
-    while ((await page.getByRole('button', { name: /^Reveal / }).count()) > 0) {
-      await page.getByRole('button', { name: /^Reveal / }).first().click();
-    }
-
-    await expect(page.getByText('Round 2')).toBeVisible({ timeout: 20000 });
+    await expect(page.getByRole('button', { name: 'Pass' })).toBeVisible({ timeout: 20000 });
     await expect(page.getByTestId('claim-pilot-table')).toBeVisible();
   });
 

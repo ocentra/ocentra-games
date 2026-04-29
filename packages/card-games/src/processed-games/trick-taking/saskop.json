@@ -1,0 +1,721 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "saskop.json",
+  "name": "Saskop",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Saskop or Sasku is an Estonian four-player partnership game in the Schafkopf group. A 36-card deck is used, with picture cards as permanent high trumps and the 6 of the chosen trump suit highest of all.",
+    "category": "Trick-taking",
+    "subCategory": "Schafkopf Family",
+    "origin": "Estonia",
+    "originName": "Saskop / Sasku",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (2 vs 2)"
+    },
+    "deck": "36-card French-suited deck",
+    "difficulty": "Intermediate",
+    "duration": "20-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Estonia"
+    ],
+    "origins": "Derived from the German Schafkopf games brought to the Baltics in the 19th century. It evolved into a distinct Estonian folk game, adopting the name 'Lambapea' (Sheep's Head) in parallel with its German ancestor.",
+    "timeline": [
+      "1880s: Schafkopf variants are documented in Estonian university circles.",
+      "1930s: Saskop emerges as a staple in rural Estonian social life.",
+      "1990s: Post-independence resurgence as a traditional cultural pastime.",
+      "Present: Played competitively in Estonian card clubs and online forums."
+    ],
+    "evolution": "The game simplified the complex 'Solo' bidding of German Schafkopf to prioritize the partnership experience, while retaining the '6-is-top' ranking logic.",
+    "cultural": "In Estonia, Saskop is often associated with long social gatherings and communal strategy.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in fixed partnerships (North-South, East-West).",
+    "deck": "36-card deck (6s, 7s, 8s, 9s, 10s, J, Q, K, A).",
+    "equipment": "",
+    "dealing": "Each player receives 9 cards (the entire deck).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score at least 61 points (out of 120 card points) to win the round.",
+    "gameplay": "Four players in two partnerships bid 5 to 9 for the right to choose trump. The 6 of the chosen trump suit is highest; then all Kings, Queens, and Jacks in suit order (clubs, spades, hearts, diamonds), then trump suit A-10-9-8-7. Left of dealer leads; must follow suit and must beat the current trick if able. First team to 16 strokes wins.",
+    "keyRules": [
+      "Follow suit; picture cards (J, Q, K) count as trumps.",
+      "Must trump if void in led suit; must beat highest card in trick if able.",
+      "61+ card points wins the round; 16 strokes win the game.",
+      "Tie at 60: redeal same trumps, no bidding. All pass: diamonds, winners score 1 stroke."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Protect the Kings. In Saskop, Kings are the top tier of the trump suit after the 6. If you have the King of Spades, you have the second most powerful card in the game. Use your high trumps to 'Draw' out the opponents' 10s and Aces early. Don't waste your 6 on a trick that doesn't contain at least 10 points.",
+    "intermediate": "The 'Diamond Doubler': If you have a strong hand in Diamonds, bid aggressively. In most Estonian variants, declaring Diamonds as trumps doubles the value of the game points. This is the fastest way to reach the 16-point goal, but also the fastest way to lose points if the opponents capture your 10s.",
+    "advanced": "Void Manipulation: Since only 36 cards are in play, suits are short. If you are void in a suit, wait for the opponent to lead it, then 'Slash' it with a medium-rank Jack or Queen. This captures their points without spending your power-cards like the 6 or the Kings. Communication with your partner through 'Throw-away' points is key.",
+    "tips": [
+      "Memorize the 120 total points. If you know you have 55 and your partner just won a trick with a 10, 'Call Out' or stop being defensive.",
+      "The 6 is worth zero points but is the ultimate trick-winnerâ€”treat it like a 'Vacuum' for your partner's Aces."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "deal_method",
+        "name": "Deal method",
+        "description": "Cutter may specify how cards are dealt: 3 at a time (default), one at a time, 9 at a time, or other patterns such as covers to us, content to us, or face-up until a chosen card appears.",
+        "overrides": {},
+        "emptyOverridesReason": "Deal method is a table convention; no engine constants change."
+      },
+      {
+        "id": "single_picture_exchange",
+        "name": "Single picture exchange",
+        "description": "After the deal, a player with only one picture card (K, Q, or J) may place it face up; partner passes one card face down in exchange.",
+        "overrides": {},
+        "emptyOverridesReason": "Optional house rule; engine can support via future exchange phase."
+      },
+      {
+        "id": "roof_signal",
+        "name": "Roof signal",
+        "description": "A player with no picture cards may signal partner (e.g. fingertips forming a roof); some groups allow it, others treat it as illegal.",
+        "overrides": {},
+        "emptyOverridesReason": "Signalling is informal; no engine overrides required."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't understand the 6-High ranking; wastes Kings on empty tricks; fails to follow suit signals.",
+      "medium": "Strategic bidding (5-9 range); protects high-value suits; identifies partner's void suits.",
+      "hard": "Expert at 'Point-Tracking'; calculates the exact margin needed for the 61-point win; perfectly times the Diamond-double bid."
+    },
+    "considerations": [
+      "Bidding-logic (Trump-Count) solver.",
+      "Point-accounting (120-Total) engine.",
+      "Partnership-synergy (Void-Leading) module."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_saskop",
+        "name": "Pagat - Saskop",
+        "url": "https://www.pagat.com/schafkopf/saskop.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-saskop.html"
+      }
+    ],
+    "additional": [
+      "Eesti KaardimÃ¤ngud History Archive",
+      "Traditional Baltic Card Manuals",
+      {
+        "url": "https://en.wikipedia.org/wiki/List_of_card_games",
+        "localHtml": "wiki-list-of-card-games.html"
+      },
+      "https://boardgamegeek.com/",
+      "https://www.bicyclecards.com/"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_9_each"
+        ],
+        "nextPhase": "bid",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Dealer deals 9 cards each in batches of 3 (or as specified by cutter)."
+      },
+      {
+        "id": "bid",
+        "label": "Bidding",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "bid",
+          "pass",
+          "override_diamonds"
+        ],
+        "nextPhase": "play",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Left of dealer first; bid 5-9 or pass; any player may override with diamonds."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Left of dealer leads; nine tricks; must follow suit and beat if able."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass in the bidding; you drop out of the auction and cannot bid again this deal.",
+        "cost": "0",
+        "constraints": "Only during the bidding phase when it is your turn.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Bid a number from 5 to 9 indicating the length of your longest potential trump suit (including picture cards). Each bid must be higher than the previous. The final bidder announces the trump suit.",
+        "cost": "0",
+        "constraints": "Must have at least that many cards in a suit to bid that number. Only when it is your turn in the bidding round.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 36",
+    "suitSet": "French",
+    "rankSet": "Stripped_36",
+    "initialHandSize": 9,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "bid_winner_chooses",
+      "permanentTrumps": [
+        {
+          "card": "J",
+          "rank": null,
+          "name": "Jack"
+        },
+        {
+          "card": "Q",
+          "rank": null,
+          "name": "Queen"
+        },
+        {
+          "card": "K",
+          "rank": null,
+          "name": "King"
+        }
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "6_highest_then_K_Q_J_then_A_10_9_8_7",
+      "canCallNoTrump": false,
+      "overtakingRule": "Must play a card that beats the highest card so far in the trick if able."
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": 9,
+      "mustFollowSuit": true,
+      "mustOvertrump": true,
+      "leadRestrictions": "any",
+      "trickWinCondition": "highest_trump_if_played_else_highest_led",
+      "trickWinnerLeads": true,
+      "scoredTricks": true,
+      "bidding": {
+        "hasBidding": true,
+        "biddingSystem": "german_style",
+        "minBid": 5,
+        "maxBid": 9,
+        "passAllowed": true,
+        "doubling": true
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 0,
+      "roundEndCondition": "tricks_complete",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "tie_60",
+          "text": "Tie at 60 card points: cards redealt by same dealer, same trumps, no bidding; replay scored as the tied hand.",
+          "appliesTo": "scoring"
+        },
+        {
+          "id": "all_pass",
+          "text": "All four players pass: diamonds are trumps; winning team scores 1 stroke only (unless they take all tricks).",
+          "appliesTo": "bidding"
+        },
+        {
+          "id": "lambapea",
+          "text": "Lambapea: one team takes all nine tricks and wins the whole game (16 strokes) regardless of trump.",
+          "appliesTo": "scoring"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "bid",
+      "play"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_9_each",
+        "supported": true,
+        "description": "Dealer distributes 9 cards to each player, typically in batches of 3 (or as specified by cutter).",
+        "cost": "0",
+        "constraints": "Only the dealer acts in the deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "override_diamonds",
+        "supported": true,
+        "description": "Override the final bid and declare diamonds as trump. Allowed even if you passed. Any player may do this after the highest bidder announces a non-diamond trump; diamonds double the stroke value.",
+        "cost": "0",
+        "constraints": "Only after the final bidder has announced a non-diamond trump suit.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "A 36-card French deck formed by removing ranks 2 through 5 from a standard pack, leaving 6, 7, 8, 9, 10, Jack, Queen, King, and Ace in each of the four French suits.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "3,3,3",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "handRanks": "Winners are determined by trick points and strokes, not by hand ranking."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "SASKOP",
+      "subtitle": "Card Game",
+      "tagline": "Saskop (also known as Lambapea) is an Estonian trick-taking card game for four p..."
+    },
+    "shortDescription": "Saskop (also known as Lambapea) is an Estonian trick-taking card game for four players. It is the Estonian member of the prestigious Schafkopf group o",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Saskop (also known as Lambapea) is an Estonian trick-taking card game for four players. It is the Estonian member of the prestigious Schafkopf group of games. It distinguishes itself with a 36-card deck (removing 5s and lower) and a complex ranking system where the 6s and Kings occupy the highest tiers of the trump suit. It is a partnership game that emphasizes card counting and aggressive bidding to secure the 61-point victory threshold.",
+    "ai": "Game: Saskop. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Each round: team with more than 60 of 120 card points wins strokes. First team to 16 strokes wins the game. Card points: K=4, Q=3, J=2, A=11, 10=10; 9-6=0.",
+    "winCondition": "First team to reach 16 strokes wins the game. Each round is won by the team that takes more than 60 card points in tricks.",
+    "cardValues": {
+      "6": "0",
+      "7": "0",
+      "8": "0",
+      "9": "0",
+      "10": "10",
+      "K": "4",
+      "Q": "3",
+      "J": "2",
+      "A": "11"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 16,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Sasku",
+    "Lambapea"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

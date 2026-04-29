@@ -24,6 +24,8 @@ function toDocument(source: ReturnType<typeof readCardGameLayoutDocument>): Card
     cardFan: source.cardFan,
     cardVisuals: source.cardVisuals,
     views: source.views,
+    stageLayout: source.stageLayout,
+    zones: source.zones,
     gameplay: source.gameplay,
     extensions: source.extensions,
   };

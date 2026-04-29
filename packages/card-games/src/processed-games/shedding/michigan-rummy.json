@@ -1,0 +1,680 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "michigan-rummy.json",
+  "name": "Michigan Rummy (Newmarket, Boodle)",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Michigan Rummy (also known as Newmarket, Boodle, or Stops) is a classic American family game that combines elements of sequence-based shedding with a wagering layout. Players compete to be the first to play all their cards (Shedding) while simultaneously trying to play specific 'Money Cards' (Ace of Hearts, King of Clubs, etc.) that correspond to pots on the game board. It is one of the most famous 'three-games-in-one' style tabletop classics.",
+    "category": "Shedding",
+    "subCategory": "Shedding",
+    "origin": "USA / UK",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 3,
+      "display": "3-8"
+    },
+    "deck": "Standard 52-card deck + special layout board",
+    "difficulty": "Beginner",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Newmarket (Britain), Michigan (USA)"
+  },
+  "history": {
+    "originCountries": [
+      "United Kingdom",
+      "USA"
+    ],
+    "origins": "Derived from the ancient game of 'Pope Joan', simplified into 'Newmarket' in the UK and then branded as 'Michigan Rummy' by various US publishers (including Milton Bradley and Pressman) in the 20th century.",
+    "timeline": [
+      "1800s: 'Stops' and 'Newmarket' are popular in Victorian England.",
+      "1930s: US companies begin producing colorful 'Michigan Rummy' boards.",
+      "1960s: Becomes a staple of the American family game closet alongside Monopoly.",
+      "Present: Still produced in various 'retro' and modern editions."
+    ],
+    "evolution": "The addition of a 'Poker' round at the start of some versions evolved it into a more complex gambling hybrid.",
+    "cultural": "Symbolizes the 'Golden Age' of American cardboard gaming.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Three to eight players. The game is suitable for about 3 to 8 players; all cards are dealt out one at a time so hand sizes vary slightly (some players may have one card more than others). One spare hand (dummy or window) is dealt and left face down; it is not used during play but creates stop cards when the next higher card in sequence lies in that hand.",
+    "deck": "Standard 52 cards.",
+    "equipment": "Staking board or cloth with four layout positions; chips or counters. Alternatively, four cards from a second deck placed on the table for stakes.",
+    "dealing": "Each player receives a hand. An EXTRA 'Dummy' hand is dealt (the Window or Widow).",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+    "gameplay": "Before play, the dealer places two chips on each boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) and each other player places one chip on each. All cards are dealt clockwise one at a time to each player and one spare hand (dummy), which stays face down. The player to the left of the dealer begins by playing any suit but must play the lowest card they hold in that suit. Whoever holds the next higher card in the same suit must play it; play continues in suit sequence until the ace is reached or no one can follow (a stop card). The last player to play starts the next sequence with their lowest card in any suit. Playing a boodle card collects all chips on that card. When a player runs out of cards, play ends; each other player pays one chip per card left in hand to the player who went out. Chips left on unclaimed boodle cards stay for the next hand.",
+    "keyRules": [
+      "Dealer puts two chips on each boodle card; others put one each. All cards dealt, one spare hand (dummy) face down. Left of dealer starts; must play lowest in chosen suit. Next higher in same suit must play until ace or stop. Last to play starts next sequence. Playing a boodle card wins chips on it. First out wins; others pay one chip per card left."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep track of the 'Stops'. If you know a card is in the dummy hand (because the sequence ended early), you can lead into that suit safely, knowing you will likely hold the last playable card and get to start the next sequence.",
+    "intermediate": "Suit Control: If you have a 'Money Card' (e.g., Ace of Hearts), try to maneuver the game into Hearts. If the current sequence is Spades, wait for a Stop, then lead your lowest Heart to move toward your payout card.",
+    "advanced": "The Dealer's Gamble: As the dealer, you can choose to swap your hand for the 'Dummy' hand. Only do this if your current hand is poor and has zero Money Cards. The Dummy hand is a total unknown but holds the potential for better payouts.",
+    "tips": [
+      "Don't lead your Money Cards immediately. If you lead an Ace of Hearts, you might get the payout, but you also end that suit's sequence instantly.",
+      "Watch what other players 'Stop' on. It tells you exactly what is missing in the Dummy hand."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "free_placement",
+        "name": "Free placement of chips",
+        "description": "Players put a fixed number of chips (e.g. 6) on the layout at the start of the hand but may distribute them as they like among the boodle cards.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes chip placement rules; no engine overrides needed."
+      },
+      {
+        "id": "dealer_exchange",
+        "name": "Dealer exchanges or auctions the spare hand",
+        "description": "After the deal, the dealer may exchange their hand for the face-down spare hand without looking at it first; or may auction the spare hand to the highest bidder, who discards their hand and pays the dealer.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only adds optional dealer exchange or auction; no engine overrides yet."
+      },
+      {
+        "id": "compulsory_change_suit",
+        "name": "Compulsory change of suit",
+        "description": "When starting a new sequence after a stop or ace, the leader must if possible play a card of a different suit from the one just played.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only changes lead rule; no engine overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Leads high cards; fails to capitalize on Stops; ignores the Poker phase value.",
+      "medium": "Reasonable suit management; tracks known Stop cards.",
+      "hard": "Expert at 'Dummy-Hand Inference'; predicts exactly which suits are 'clean' to run; master of the Dealer-Swap risk calculation."
+    },
+    "considerations": [
+      "Sequence-tracking engine.",
+      "Stop-card inference logic.",
+      "Wagering-pot optimization."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:michigan_rummy_legacy_rules_www_pagat_com_stops_michigan_html",
+        "name": "Michigan Rummy - Legacy Rules",
+        "url": "https://www.pagat.com/stops/michigan.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-michigan.html"
+      },
+      {
+        "id": "src:wikipedia_michigan_card_game_en_wikipedia_org_wiki_michigan_card_game",
+        "name": "Wikipedia - Michigan (card game)",
+        "url": "https://en.wikipedia.org/wiki/Michigan_(card_game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-michigan.html"
+      },
+      {
+        "id": "src:wiki-newmarket",
+        "name": "Wikipedia - Newmarket (card game)",
+        "url": "https://en.wikipedia.org/wiki/Newmarket_(card_game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-newmarket.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Newmarket_(card_game)",
+        "localHtml": "wiki-michigan.html"
+      },
+      {
+        "url": "https://www.pagat.com/stops/3in1.html",
+        "localHtml": "pagat-stops-3-in-1.html"
+      },
+      "Wikipedia - Michigan Rummy",
+      "BoardGameGeek - Michigan Rummy"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Sequence play: lead lowest in suit or follow with next higher in same suit until stop; last to play starts next sequence. First player out wins the hand."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the table in front of you. When starting a sequence you must play your lowest card in the suit you choose; when continuing a sequence you must play the next higher card in the same suit if you hold it. Playing a boodle card (Ace of Hearts, King of Clubs, Queen of Diamonds, Jack of Spades) collects the chips on that layout card.",
+        "cost": "0",
+        "constraints": "When leading: play lowest card in chosen suit. When following: must play next higher in same suit if held.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "higher_sequence",
+          "notes": "When leading play lowest card in chosen suit; when continuing play next higher in same suit. Sequences run 2 through Ace in suit; stop when no one holds next card (e.g. in dummy)."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "Cards are placed face up in front of the player who played them; not burned."
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "stop_card",
+          "text": "Stop card: a card that no one can follow (next higher is in dummy or already played) ends the sequence; last to play starts the next sequence.",
+          "affects": "sequence_flow"
+        },
+        {
+          "id": "dealer_exchange_dummy",
+          "appliesTo": "variation",
+          "text": "Dealer may optionally exchange their hand for the unseen dummy hand before play."
+        },
+        {
+          "id": "unclaimed_boodle_carry",
+          "text": "Chips on boodle cards that are not claimed in a hand (e.g. card is in dummy) remain for the next hand.",
+          "affects": "stakes"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Not applicable; winner is first to empty hand; boodle cards (AH, KC, QD, JS) collect layout chips when played.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "All cards dealt one at a time clockwise to each player and one spare (dummy) hand; hand size 5-13 depending on player count.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MICHIGAN RUMMY (NEWMARKET / BOODLE)",
+      "subtitle": "Card Game",
+      "tagline": "Michigan Rummy (also known as Newmarket, Boodle, or Stops) is a classic American..."
+    },
+    "shortDescription": "Michigan Rummy (also known as Newmarket, Boodle, or Stops) is a classic American family game that combines elements of sequence-based shedding with a ",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Michigan Rummy (also known as Newmarket, Boodle, or Stops) is a classic American family game that combines elements of sequence-based shedding with a wagering layout. Players compete to be the first to play all their cards (Shedding) while simultaneously trying to play specific 'Money Cards' (Ace of Hearts, King of Clubs, etc.) that correspond to pots on the game board. It is one of the most famous 'three-games-in-one' style tabletop classics.",
+    "ai": "Game: Michigan Rummy (Newmarket, Boodle). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+    "winCondition": "Win the most chips by playing 'Money Cards' and being the first to empty your hand.",
+    "cardValues": {
+      "2": "1",
+      "3": "1",
+      "4": "1",
+      "5": "1",
+      "6": "1",
+      "7": "1",
+      "8": "1",
+      "9": "1",
+      "10": "1",
+      "J": "1",
+      "Q": "1",
+      "K": "1",
+      "A": "1"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 100,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Boodle",
+    "Michigan",
+    "Newmarket",
+    "Stops"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

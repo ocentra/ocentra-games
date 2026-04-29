@@ -4,6 +4,7 @@ import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import type { Plugin } from 'vite';
 import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
+import { findProcessedGameFileBySlug } from '../processed-game-files';
 import {
   openDb,
   closeDb,
@@ -95,15 +96,15 @@ export function serveFromGameData(options?: ServeFromGameDataOptions): Plugin {
         }
         if (pathname.startsWith(`${LocalApiEndpoint.CardGames.GamesPath}/`) && pathname.length > `${LocalApiEndpoint.CardGames.GamesPath}/`.length) {
           const slug = decodeURIComponent(pathname.slice(`${LocalApiEndpoint.CardGames.GamesPath}/`.length)).replace(/\.json$/i, '');
-          const filePath = path.join(processedDir, slug + '.json');
-          if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+          const entry = findProcessedGameFileBySlug(processedDir, slug);
+          if (entry === null) {
             res.statusCode = 404;
             res.end();
             return;
           }
           let data: Record<string, unknown>;
           try {
-            const raw = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');
+            const raw = fs.readFileSync(entry.absolutePath, 'utf-8').replace(/^\uFEFF/, '');
             data = JSON.parse(raw) as Record<string, unknown>;
           } catch {
             res.statusCode = 500;
@@ -349,17 +350,31 @@ export function serveFromGameData(options?: ServeFromGameDataOptions): Plugin {
 
 export function serveProcessedGames(): Plugin {
   const gamesDir = getProcessedGamesDir();
+  const gamesRoot = path.resolve(gamesDir);
   return {
     name: 'serve-processed-games',
     configureServer(server) {
       server.middlewares.use('/games', (req, res, next) => {
-        const filePath = path.join(gamesDir, req.url ?? '');
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const requestPath = decodeURIComponent((req.url ?? '').split('?')[0] ?? '').replace(/^\/+/, '');
+        const directPath = path.resolve(gamesRoot, requestPath);
+        const isInsideGamesRoot = directPath === gamesRoot || directPath.startsWith(`${gamesRoot}${path.sep}`);
+        if (isInsideGamesRoot && fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {
           res.setHeader('Content-Type', 'application/json');
-          fs.createReadStream(filePath).pipe(res);
-        } else {
-          next();
+          fs.createReadStream(directPath).pipe(res);
+          return;
         }
+
+        const slug = path.basename(requestPath).replace(/\.json$/i, '');
+        if (slug.length > 0) {
+          const entry = findProcessedGameFileBySlug(gamesDir, slug);
+          if (entry !== null) {
+            res.setHeader('Content-Type', 'application/json');
+            fs.createReadStream(entry.absolutePath).pipe(res);
+            return;
+          }
+        }
+
+        next();
       });
     },
   };

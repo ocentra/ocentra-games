@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories';
+import { walkProcessedGameFiles } from '../src/processed-game-files';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -43,38 +44,37 @@ function resolvePlayers(data: unknown): {
   return { min, max, display };
 }
 
-const files = fs.readdirSync(processedDir).filter((f) => f.endsWith('.json'));
+const files = walkProcessedGameFiles(processedDir);
 const db = new duckdb.Database(dbPath);
 const conn = db.connect();
 
-conn.run('DELETE FROM game_names');
-conn.run('DELETE FROM games');
+function runStatement(sql: string, ...params: unknown[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    conn.run(sql, ...params, (err: Error | null) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
+    });
+  });
+}
 
 let id = 0;
 let nameId = 0;
 let ok = 0;
 let fail = 0;
 
-function processOne(i: number) {
-  if (i >= files.length) {
-    conn.close();
-    db.close();
-    console.log('Games ingest done.');
-    console.log('  Total game files:', files.length);
-    console.log('  Games inserted:', ok);
-    console.log('  Game names (primary + alsoKnownAs):', nameId);
-    console.log('  Failed:', fail);
-    return;
-  }
-  const filename = files[i];
-  const slug = filename.slice(0, -5);
-  const filePath = path.join(processedDir, filename);
+async function processOne(i: number): Promise<void> {
+  const entry = files[i];
+  const filename = entry.relativePath;
+  const slug = entry.slug;
+  const filePath = entry.absolutePath;
   let raw: string;
   try {
     raw = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');
   } catch {
     fail++;
-    processOne(i + 1);
     return;
   }
   let data: Record<string, unknown>;
@@ -82,7 +82,6 @@ function processOne(i: number) {
     data = JSON.parse(raw) as Record<string, unknown>;
   } catch {
     fail++;
-    processOne(i + 1);
     return;
   }
 
@@ -154,7 +153,7 @@ function processOne(i: number) {
     ? (data.alsoKnownAs as string[]).filter((s): s is string => typeof s === 'string' && s.trim().length > 0)
     : [];
   try {
-    conn.run(
+    await runStatement(
       `INSERT INTO games (
         id, slug, source_file, primary_name, category, subcategory, description, origin,
         player_mode, players_min, players_max, players_display, deck, deck_type, suit_set, rank_set,
@@ -205,7 +204,7 @@ function processOne(i: number) {
       raw
     );
     nameId++;
-    conn.run(
+    await runStatement(
       'INSERT INTO game_names (id, slug, display_name, is_primary, sort_order) VALUES (?, ?, ?, 1, 0)',
       nameId,
       slug,
@@ -213,7 +212,7 @@ function processOne(i: number) {
     );
     for (let j = 0; j < alsoKnownAsArr.length; j++) {
       nameId++;
-      conn.run(
+      await runStatement(
         'INSERT INTO game_names (id, slug, display_name, is_primary, sort_order) VALUES (?, ?, ?, 0, ?)',
         nameId,
         slug,
@@ -227,7 +226,29 @@ function processOne(i: number) {
     fail++;
   }
   if ((ok + fail) % 200 === 0) process.stdout.write(`\r  ${ok + fail}/${files.length}`);
-  processOne(i + 1);
 }
 
-processOne(0);
+async function main(): Promise<void> {
+  await runStatement('DELETE FROM game_names');
+  await runStatement('DELETE FROM games');
+
+  for (let i = 0; i < files.length; i++) {
+    await processOne(i);
+  }
+
+  console.log('Games ingest done.');
+  console.log('  Total game files:', files.length);
+  console.log('  Games inserted:', ok);
+  console.log('  Game names (primary + alsoKnownAs):', nameId);
+  console.log('  Failed:', fail);
+}
+
+main()
+  .catch((e: unknown) => {
+    console.error('Games ingest failed:', e);
+    process.exitCode = 1;
+  })
+  .finally(() => {
+    conn.close();
+    db.close();
+  });

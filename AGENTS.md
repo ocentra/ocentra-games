@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-04-29
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -40,9 +40,11 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 | [`.cursor/rules/ocentra-test-rules.mdc`](.cursor/rules/ocentra-test-rules.mdc) | Testing standards & requirements | Writing tests |
 | [`.cursor/rules/ocentra-security-rules.mdc`](.cursor/rules/ocentra-security-rules.mdc) | Security guarantees & rules | Security-related code |
 | [`.cursor/rules/ocentra-mutation-rules.mdc`](.cursor/rules/ocentra-mutation-rules.mdc) | State mutation patterns | State management |
+| [`.cursor/rules/ocentra-endpoints-single-source.mdc`](.cursor/rules/ocentra-endpoints-single-source.mdc) | Endpoint single-source rule for app, scripts, card-games, and infra | Any endpoint/path work outside endpoint-domain |
 | [`.cursor/rules/`](.cursor/rules/) | All rules | See index below |
 | [`docs/ocentra/`](docs/ocentra/) | Full documentation hub | Deep dives |
 | [`docs/ocentra/asset-handling.md`](docs/ocentra/asset-handling.md) | Asset delivery (`download-url`), dev/prod, main app vs editor, Tauri/mobile | Changing asset load paths or Worker contracts |
+| [`docs/ocentra/plans/platform-aware-logging-plan.md`](docs/ocentra/plans/platform-aware-logging-plan.md) | Platform-aware logging transport and retention plan | Logging architecture or local log-query work |
 
 ---
 
@@ -136,6 +138,7 @@ docs/ocentra/   # ← Full documentation
 | `ocentra-security-guidelines.mdc` | Security tooling & CI |
 | `ocentra-mutation-rules.mdc` | State mutation patterns |
 | `ocentra-endpoint-domain-rules.mdc` | Endpoint-domain: branded types, no raw strings (when editing `packages/endpoint-domain/**`) |
+| `ocentra-endpoints-single-source.mdc` | Endpoints only in endpoint-domain; app/scripts/infra consume exported constants |
 | `ocentra-cloudflare-logging.mdc` | **infra/cloudflare**: Logger + logInfo/logWarn/logError/logDebug in all new handlers, DOs, tests |
 | `ocentra-cloudflare-workers-io.mdc` | **infra/cloudflare**: Consume fetch response at call site (whoever sends must consume; Workers request-scoped I/O) |
 | `ocentra-durable-objects-rules.md` | Durable Objects patterns |
@@ -163,6 +166,7 @@ When you want a **compliance report** (rules vs `infra/cloudflare` code and test
 | [`Multiplayer and Solana/`](docs/ocentra/Multiplayer%20and%20Solana/) | Blockchain integration |
 | [`REPO-MINDMAP.md`](docs/ocentra/REPO-MINDMAP.md) | Complete repo overview |
 | [`plans/responsive-scaling-plan.md`](docs/ocentra/plans/responsive-scaling-plan.md) | Responsive layout: tokens, rem, clamp, dvh, unit policy, migration phases |
+| [`plans/platform-aware-logging-plan.md`](docs/ocentra/plans/platform-aware-logging-plan.md) | Logging transports, retention, and platform-specific runtime behavior |
 
 ### Domain Package Docs (read when touching that domain)
 
@@ -180,10 +184,23 @@ When you want a **compliance report** (rules vs `infra/cloudflare` code and test
 
 ```bash
 npm run dev              # Dev server
+npm run dev:prep:main    # Prebuild shared workspace deps for main app
+npm run dev:prep:editor  # Prebuild shared workspace deps for asset editor
+npm run dev:prep:worker  # Prebuild shared workspace deps for Cloudflare worker
+npm run dev:compare      # Shared web stack + desktop/mobile compare targets
+npm run dev:editor:stack # Asset editor with shared backend/dev stack
+npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run build            # Production build
 npm test                 # Unit tests
 npm run test:e2e         # E2E tests
 npm run lint             # ESLint + type check
+npm run validate:main    # Main-app focused lint + type-check
+npm run validate:editor  # Asset-editor focused lint + type-check
+npm run logs:main        # Query local main-app logs
+npm run logs:main:errors # Query local main-app errors
+npm run logs:main:stats  # Query local main-app log stats
+npm run logs:vite        # Query local Vite/dev-server logs
+npm run logs:vite:errors # Query local Vite/dev-server errors
 ```
 
 ---
@@ -208,6 +225,12 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 ---
 
 ## Troubleshooting: npm install / npm audit fix
+
+- **`rg.exe` fails with `Access is denied`**: In this Windows shell, switch to PowerShell-native repo discovery instead of retrying `rg`. Use `Get-ChildItem -Recurse -File` for file inventory and `Get-ChildItem -Recurse | Select-String -Pattern '<pattern>'` for text search.
+
+- **`npx.ps1` / `npm.ps1` cannot be loaded because running scripts is disabled**: Invoke through `cmd /c` instead of the PowerShell shim, e.g. `cmd /c npx eslint path\to\file.tsx` or `cmd /c npm run lint`.
+
+- **Validation is noisy or blocked by unrelated tooling**: Prefer targeted checks before repo-wide commands. Typical order in this repo: file-level eslint via `cmd /c npx eslint ...`, package-level validation such as `cmd /c npm --prefix packages/core-ui run lint:exec`, then broader gates like `cmd /c npm run lint`.
 
 - **`yarn` is not recognized** or **`@stellar/stellar-sdk` command failed**: A transitive dependency (Stellar SDK, via Trezor wallet adapter) runs a lifecycle script that expects Yarn and Unix shell. Use:
   ```bash

@@ -9,6 +9,7 @@ import {
 } from "./HudArtwork.types";
 import "./HudArtwork.css";
 import { IsolationComponentType } from "@ocentra/game-layout-domain/isolation-types";
+import { createHudButtonBankLayout } from "./hudButtonBankLayout";
 
 
 export interface HudArtworkProps {
@@ -16,6 +17,10 @@ export interface HudArtworkProps {
   fitWidth: number;
   fitHeight: number;
   showButtonGuides?: boolean;
+  showDebugFrame?: boolean;
+  showDomeBounds?: boolean;
+  showWingBounds?: boolean;
+  showBankBounds?: boolean;
   onButtonClick?: (index: number, label: string) => void;
   onIsolate?: (type: IsolationComponentType, label: string, config: unknown) => void;
 }
@@ -117,7 +122,7 @@ function domeClipRect(width: number, height: number) {
   return { x: 0, y: 0, width, height };
 }
 
-const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, onButtonClick, onIsolate }, ref) => {
+const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitWidth, fitHeight, showButtonGuides = false, showDebugFrame = false, showDomeBounds = false, showWingBounds = false, showBankBounds = false, onButtonClick, onIsolate }, ref) => {
   const uid = useId().replace(/:/g, "");
   const wingGlowId = `${uid}-wingGlow`;
   const domeGlowId = `${uid}-domeGlow`;
@@ -143,8 +148,6 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
     panelBottom,
     panelGlassOpacity,
   } = controls;
-  const buttonOffsetX = button.buttonOffsetX ?? 0;
-  const buttonOffsetY = button.buttonOffsetY ?? 0;
 
   const leftWingShape = leftWingPath(leftWing.x, leftWing.y, leftWing.width, leftWing.height, leftWing.topRadius);
   const rightWingShape = rightWingPath(rightWing.x, rightWing.y, rightWing.width, rightWing.height, rightWing.topRadius);
@@ -176,9 +179,6 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   const rightButtonCount = Math.max(0, visibleButtonCount - leftButtonCount);
   const leftButtonLabels = visibleButtonLabels.slice(0, leftButtonCount);
   const rightButtonLabels = visibleButtonLabels.slice(leftButtonCount, leftButtonCount + rightButtonCount);
-  const leftButtonSlotWidth = leftButtonLabels.length > 0 ? leftAvailableWidth / leftButtonLabels.length : 0;
-  const rightButtonSlotWidth = rightButtonLabels.length > 0 ? rightAvailableWidth / rightButtonLabels.length : 0;
-  const normalizedButtonScale = Math.max(0.5, Math.min(1.5, buttonScale));
 
   const resolveButtonConfig = (index: number): HudButtonControls => {
     const variant: HudButtonVariantControls = buttonVariants[index] ?? { linked: true, overrides: {} };
@@ -191,48 +191,52 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
       ...variant.overrides,
     };
   };
-
-  const createButtonMetrics = (buttonConfig: HudButtonControls, slotWidth: number, slotHeight: number) => {
-    const baseWidth = Math.max(1, buttonConfig.width);
-    const baseHeight = Math.max(1, buttonConfig.height);
-    const fitScale = Math.max(0.1, Math.min(slotWidth / baseWidth, slotHeight / baseHeight));
-    const scaledWidth = Math.max(1, Math.round(baseWidth * fitScale));
-    const scaledHeight = Math.max(1, Math.round(baseHeight * fitScale));
-    const scale = fitScale;
-
-    return {
-      width: scaledWidth,
-      height: scaledHeight,
-      bodyHeight: buttonConfig.bodyHeight !== undefined ? Math.max(1, Math.round(buttonConfig.bodyHeight * scale)) : undefined,
-      radius: Math.max(0, Math.round(buttonConfig.radius * scale)),
-      sideInset: Math.max(0, Math.round(buttonConfig.sideInset * scale)),
-      dotInset: Math.max(0, Math.round(buttonConfig.dotInset * scale)),
-      dotGap: Math.max(1, Math.round(buttonConfig.dotGap * scale)),
-      textColor: buttonConfig.textColor,
-      fontSize: Math.max(8, Math.round(buttonConfig.fontSize * scale)),
-      bodyCenter: buttonConfig.bodyCenter,
-      bodyMid: buttonConfig.bodyMid,
-      bodyEdge: buttonConfig.bodyEdge,
-      ringColor: buttonConfig.ringColor,
-      outerGlowColor: buttonConfig.outerGlowColor,
-      midGlowColor: buttonConfig.midGlowColor,
-      dotGlowColor: buttonConfig.dotGlowColor,
-      dotCoreColor: buttonConfig.dotCoreColor,
-      sideFillTop: buttonConfig.sideFillTop,
-      sideFillMid: buttonConfig.sideFillMid,
-      sideFillBottom: buttonConfig.sideFillBottom,
-      sideStroke: buttonConfig.sideStroke,
-      sideGlow: buttonConfig.sideGlow,
-      frontFillTop: buttonConfig.frontFillTop,
-      frontFillMid: buttonConfig.frontFillMid,
-      frontFillBottom: buttonConfig.frontFillBottom,
-      hoverInsetExpand: Math.max(0, Math.round(buttonConfig.hoverInsetExpand * scale)),
-      hoverClampGlowColor: buttonConfig.hoverClampGlowColor,
-      hoverClampGlowOpacity: buttonConfig.hoverClampGlowOpacity,
-      clickInsetExpand: Math.max(0, Math.round(buttonConfig.clickInsetExpand * scale)),
-      clickRingFlashColor: buttonConfig.clickRingFlashColor,
-      clickRingFlashOpacity: buttonConfig.clickRingFlashOpacity,
-    };
+  const leftBankLayout = createHudButtonBankLayout({
+    buttons: leftButtonLabels.map((label, index) => ({
+      index,
+      label: label || `A${index + 1}`,
+      config: resolveButtonConfig(index),
+    })),
+    hostLeft: leftAvailableLeft,
+    hostTop: leftBankTop,
+    hostWidth: leftAvailableWidth,
+    hostHeight: leftBankHeight,
+    align: 'start',
+    buttonScale,
+    bankControls: controls.buttonBank,
+    offsetX: controls.buttonBank.leftOffsetX,
+    offsetY: controls.buttonBank.leftOffsetY,
+  });
+  const rightBankLayout = createHudButtonBankLayout({
+    buttons: rightButtonLabels.map((label, index) => {
+      const resolvedIndex = leftButtonLabels.length + index;
+      return {
+        index: resolvedIndex,
+        label: label || `B${index + 1}`,
+        config: resolveButtonConfig(resolvedIndex),
+      };
+    }),
+    hostLeft: rightAvailableLeft,
+    hostTop: rightBankTop,
+    hostWidth: rightAvailableWidth,
+    hostHeight: rightBankHeight,
+    align: 'end',
+    buttonScale,
+    bankControls: controls.buttonBank,
+    offsetX: controls.buttonBank.rightOffsetX,
+    offsetY: controls.buttonBank.rightOffsetY,
+  });
+  const leftBankHostStyle: CSSProperties = {
+    left: `${leftAvailableLeft}px`,
+    top: `${leftBankTop}px`,
+    width: `${leftAvailableWidth}px`,
+    height: `${leftBankHeight}px`,
+  };
+  const rightBankHostStyle: CSSProperties = {
+    left: `${rightAvailableLeft}px`,
+    top: `${rightBankTop}px`,
+    width: `${rightAvailableWidth}px`,
+    height: `${rightBankHeight}px`,
   };
 
   const artworkStyle: CSSProperties = {
@@ -260,15 +264,16 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
   };
 
   return (
-    <div className="hud-artwork" aria-hidden="true" data-button-debug={showButtonGuides ? "true" : "false"} style={artworkStyle}>
-      {controls.showDebugGuides ? <div className="hud-artwork__debug-frame" aria-hidden="true" /> : null}
-      {controls.showDebugGuides ? (
+    <div className="hud-artwork" data-button-debug={showButtonGuides ? "true" : "false"} style={artworkStyle}>
+      {showDebugFrame ? <div className="hud-artwork__debug-frame" aria-hidden="true" /> : null}
+      {showDebugFrame ? (
         <div className="hud-artwork__debug-label" aria-hidden="true">
           {fitWidth} x {fitHeight}
         </div>
       ) : null}
       <svg
         className="hud-artwork__svg"
+        aria-hidden="true"
         onContextMenu={(e) => {
           if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return;
           if (onIsolate) {
@@ -352,7 +357,7 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
           </clipPath>
         </defs>
 
-        {controls.showDebugGuides ? (
+        {showDebugFrame ? (
           <rect
             x="0"
             y="0"
@@ -363,6 +368,29 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
             strokeWidth="1"
             strokeDasharray="10 8"
             opacity="0.8"
+          />
+        ) : null}
+        {showWingBounds ? (
+          <>
+            <path d={leftWingShape} fill="none" stroke="#00ff66" strokeWidth="2" strokeDasharray="10 8" opacity="0.92" />
+            <path d={leftClamp} fill="none" stroke="#00ff66" strokeWidth="2" strokeDasharray="10 8" opacity="0.92" />
+            <path d={rightWingShape} fill="none" stroke="#00ff66" strokeWidth="2" strokeDasharray="10 8" opacity="0.92" />
+            <path d={rightClamp} fill="none" stroke="#00ff66" strokeWidth="2" strokeDasharray="10 8" opacity="0.92" />
+          </>
+        ) : null}
+        {showDomeBounds ? (
+          <rect
+            x={domeLeft}
+            y={domeTop}
+            width={dome.width}
+            height={dome.height}
+            rx={dome.topRadius}
+            ry={dome.topRadius}
+            fill="none"
+            stroke="#00ff66"
+            strokeWidth="2"
+            strokeDasharray="10 8"
+            opacity="0.92"
           />
         ) : null}
 
@@ -529,74 +557,100 @@ const HudArtwork = forwardRef<HTMLDivElement, HudArtworkProps>(({ controls, fitW
         </g>
       </svg>
 
-      <div
-        className="hud-artwork__button-bank hud-artwork__button-bank--left"
-        aria-hidden="true"
-        style={{
-          left: `${leftAvailableLeft}px`,
-          top: `${leftBankTop}px`,
-          width: `${leftAvailableWidth}px`,
-          height: `${leftBankHeight}px`,
-          transform: `translate(${buttonOffsetX}px, ${buttonOffsetY}px)`,
-        }}
-      >
-        {leftButtonLabels.map((label, index) => {
-          const configIndex = index;
-          const buttonConfig = resolveButtonConfig(configIndex);
-          return (
-            <HudButton
-              key={label || `left-${index}`}
-              label={label || `A${index + 1}`}
-              className="hud-artwork__action-button"
-              {...createButtonMetrics(buttonConfig, leftButtonSlotWidth, leftBankHeight)}
+      {showBankBounds ? (
+        <>
+          <div className="hud-artwork__button-host" aria-hidden="true" style={leftBankHostStyle}>
+            <div className="hud-artwork__button-host-label">A Host</div>
+          </div>
+          <div className="hud-artwork__button-host" aria-hidden="true" style={rightBankHostStyle}>
+            <div className="hud-artwork__button-host-label">B Host</div>
+          </div>
+        </>
+      ) : null}
+      {leftBankLayout ? (
+        <div
+          className="hud-artwork__button-bank hud-artwork__button-bank--left"
+          style={{
+            left: `${leftBankLayout.left}px`,
+            top: `${leftBankLayout.top}px`,
+            width: `${leftBankLayout.width}px`,
+            height: `${leftBankLayout.height}px`,
+            gap: `${leftBankLayout.gap}px`,
+            transform: `scale(${leftBankLayout.scale})`,
+            transformOrigin: 'top left',
+          }}
+        >
+          {showBankBounds ? <div className="hud-artwork__button-bank-bounds" aria-hidden="true" /> : null}
+          {leftBankLayout.items.map(({ index, label, config, left, top, width: itemWidth, height: itemHeight }, slotIndex) => (
+            <div
+              key={label || `left-slot-${index}`}
+              className={`hud-artwork__button-slot ${showBankBounds ? "hud-artwork__button-slot--bounds" : ""}`}
               style={{
-                flex: "1 1 0",
-                minWidth: 0,
-                width: "auto",
-                height: "100%",
-                transform: `scale(${normalizedButtonScale})`,
-                transformOrigin: "center center",
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${itemWidth}px`,
+                height: `${itemHeight}px`,
               }}
-              onClick={() => onButtonClick?.(configIndex, label || `A${index + 1}`)}
-              onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label || `A${index + 1}`, buttonConfig) : undefined}
-            />
-          );
-        })}
-      </div>
-      <div
-        className="hud-artwork__button-bank hud-artwork__button-bank--right"
-        aria-hidden="true"
-        style={{
-          left: `${rightAvailableRight}px`,
-          top: `${rightBankTop}px`,
-          width: `${rightAvailableWidth}px`,
-          height: `${rightBankHeight}px`,
-          transform: `translate(calc(-100% + ${buttonOffsetX}px), ${buttonOffsetY}px)`,
-        }}
-      >
-        {rightButtonLabels.map((label, index) => {
-          const configIndex = leftButtonLabels.length + index;
-          const buttonConfig = resolveButtonConfig(configIndex);
-          return (
-            <HudButton
-              key={label || `right-${index}`}
-              label={label || `B${index + 1}`}
-              className="hud-artwork__action-button"
-              {...createButtonMetrics(buttonConfig, rightButtonSlotWidth, rightBankHeight)}
+            >
+              {showBankBounds ? <div className="hud-artwork__button-slot-label">A{slotIndex + 1}</div> : null}
+              <HudButton
+                label={label}
+                className="hud-artwork__action-button"
+                {...config}
+                showArtGuides={showButtonGuides}
+                style={{
+                  width: `${itemWidth}px`,
+                  height: `${itemHeight}px`,
+                }}
+                onClick={() => onButtonClick?.(index, label)}
+                onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label, config) : undefined}
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {rightBankLayout ? (
+        <div
+          className="hud-artwork__button-bank hud-artwork__button-bank--right"
+          style={{
+            left: `${rightBankLayout.left}px`,
+            top: `${rightBankLayout.top}px`,
+            width: `${rightBankLayout.width}px`,
+            height: `${rightBankLayout.height}px`,
+            gap: `${rightBankLayout.gap}px`,
+            transform: `scale(${rightBankLayout.scale})`,
+            transformOrigin: 'top left',
+          }}
+        >
+          {showBankBounds ? <div className="hud-artwork__button-bank-bounds" aria-hidden="true" /> : null}
+          {rightBankLayout.items.map(({ index, label, config, left, top, width: itemWidth, height: itemHeight }, slotIndex) => (
+            <div
+              key={label || `right-slot-${index}`}
+              className={`hud-artwork__button-slot ${showBankBounds ? "hud-artwork__button-slot--bounds" : ""}`}
               style={{
-                flex: "1 1 0",
-                minWidth: 0,
-                width: "auto",
-                height: "100%",
-                transform: `scale(${normalizedButtonScale})`,
-                transformOrigin: "center center",
+                left: `${left}px`,
+                top: `${top}px`,
+                width: `${itemWidth}px`,
+                height: `${itemHeight}px`,
               }}
-              onClick={() => onButtonClick?.(configIndex, label || `B${index + 1}`)}
-              onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label || `B${index + 1}`, buttonConfig) : undefined}
-            />
-          );
-        })}
-      </div>
+            >
+              {showBankBounds ? <div className="hud-artwork__button-slot-label">B{slotIndex + 1}</div> : null}
+              <HudButton
+                label={label}
+                className="hud-artwork__action-button"
+                {...config}
+                showArtGuides={showButtonGuides}
+                style={{
+                  width: `${itemWidth}px`,
+                  height: `${itemHeight}px`,
+                }}
+                onClick={() => onButtonClick?.(index, label)}
+                onIsolate={onIsolate ? () => onIsolate(IsolationComponentType.HudButton, label, config) : undefined}
+              />
+            </div>
+          ))}
+        </div>
+      ) : null}
 
       <div ref={ref} className="hud-artwork__anchor" style={anchorStyle} />
     </div>

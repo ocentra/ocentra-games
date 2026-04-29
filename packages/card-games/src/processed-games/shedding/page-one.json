@@ -1,0 +1,700 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "page-one.json",
+  "name": "Page One",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Page One is a traditional Japanese card game that combines follow-suit trick-taking mechanics with a shedding objective. Players must follow the led suit or draw from the stock until they find a playable card. The game is known for its mandatory 'Page One!' declaration when a player is down to their final card, with failure to declare resulting in a severe five-card penalty.",
+    "category": "Shedding",
+    "subCategory": "Follow-Suit / Inflation",
+    "origin": "Japan (mid-20th century)",
+    "originName": "ページワン (Pēji Wan)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2-6 players"
+    },
+    "deck": "53 cards (Standard 52 + 1 Joker)",
+    "difficulty": "Beginner",
+    "duration": "5-15 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": [
+      "Japan"
+    ],
+    "origins": "Developed in Japan during the 1950s and 1960s, it predates the 'American' Crazy Eights variant that often shares its name.",
+    "timeline": [
+      "1950s: Game actively played in Japanese social and student circles.",
+      "1970s: American Page One (Crazy Eights variant) gains popularity.",
+      "Present: Remains a staple of Japanese household and family card gaming culture."
+    ],
+    "evolution": "The game evolved from trick-taking games into a unique shedding format requiring players to follow suit or suffer inflation.",
+    "cultural": "The 'Page One' call is a ritualized declaration indicating the player has reached the final page of their hand.",
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "setup": {
+    "players": "Typically four players sit in a circle; play and dealing proceed in a clockwise direction.",
+    "deck": "Standard 52-card pack with one added Joker. Rank: Joker > Ace > King > Queen > Jack > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2.",
+    "equipment": "One standard pack of cards, one Joker, and a playing surface for the central trick pile.",
+    "dealing": "The dealer distributes four cards to each player one at a time. The remaining cards form the face-down stock.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to successfully shed all cards from your hand by playing them to the central pile.",
+    "gameplay": "1. Lead: Dealer's left leads any card to start the trick. 2. Follow: Players must follow suit if they hold a card of that suit. 3. Draw: If unable to follow suit, draw one-by-one until a playable card is found. 4. Joker: Can be played anytime to win the trick; if led, the next player sets the suit. 5. Next: Winner of the trick leads the next one. 6. Page One!: Call 'Page One!' when down to one card.",
+    "keyRules": [
+      "Must follow the led suit if a playable card is held in the hand.",
+      "If unable to follow suit, players must draw from the stock until a card of the led suit or Joker is obtained.",
+      "The Joker always wins the trick; if led, the next card determines the suit for all following players.",
+      "Players must declare 'Page One!' when playing their second-to-last card to avoid a five-card draw penalty.",
+      "The first player to empty their hand of all cards wins the round immediately."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep high cards to win tricks and gain the lead, allowing you to play suits your opponents might not have.",
+    "intermediate": "Track which suits have been drawn from the stock to identify which players are likely to draw more cards.",
+    "advanced": "Save the Joker for your second-to-last or last play to guarantee a win and exit the game safely.",
+    "tips": [
+      "Lead suits that have appeared frequently to force opponents to draw from the stock.",
+      "Always be prepared to declare 'Page One!' the instant you play your second-to-last card.",
+      "In a 5-6 player game, the stock depletes quickly; be mindful of the reshuffle rules."
+    ],
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "five-card-start",
+        "name": "Five-Card Start",
+        "description": "Players start with five cards each instead of four to extend the length of the game deal.",
+        "overrides": {
+          "engine.constants.hand_size": 5
+        }
+      },
+      {
+        "id": "restricted-joker",
+        "name": "Restricted Joker",
+        "description": "The Joker can only be played if the player has no cards of the led suit in their hand.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only restricts when the Joker may be played; no engine constant overrides are needed for this rule."
+      },
+      {
+        "id": "no-joker-last",
+        "name": "No Joker Last",
+        "description": "Players are not permitted to win the game by playing the Joker as their final card.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule is enforced by game logic; no engine numeric or config overrides apply to this variant."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal cards without strategy and frequently forgets to declare Page One, taking many penalties.",
+      "medium": "Consistently follows suit and uses the Joker strategically to win tricks and regain the lead.",
+      "hard": "Tracks drawn suits and played cards to maximize opponent draws while optimizing their own exit strategy."
+    },
+    "considerations": [
+      "Prioritizing follow-suit actions over drawing from the stock pile.",
+      "Strategic use of the Joker to secure the lead for subsequent tricks.",
+      "Monitoring the Page One declaration state for all players at the table."
+    ],
+    "hasPlaceholders": false,
+    "nullReasons": {}
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-page-one",
+        "name": "Pagat.com - Page One",
+        "url": "https://www.pagat.com/inflation/page_one.html",
+        "retrievedAt": "2026-02-25",
+        "sections": [
+          {
+            "section": "Play"
+          },
+          {
+            "section": "End of the Game"
+          }
+        ],
+        "localHtml": "pagat-page-one.html"
+      }
+    ],
+    "additional": [
+      "Wikipedia - List of card games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "trick-taking",
+    "social",
+    "matching"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 25,
+    "complexity": 2,
+    "luck": 6,
+    "skill": 4
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Four cards dealt to each player."
+      },
+      {
+        "id": "play",
+        "label": "Trick Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "draw_until_playable",
+          "declare_page_one"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Players must follow suit or draw until they can."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Traditional Japanese Page One is a shedding game and does not utilize an ante or betting mechanism."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal four cards to each player one at a time in clockwise order; remaining cards form the face-down stock.",
+        "cost": "0",
+        "constraints": "Dealer only; performed once at start of the game.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not feature a market zone or any market-based card acquisition mechanics."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no system for purchasing cards from a market in the traditional Page One ruleset."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players draw from the stock as a penalty or requirement rather than purchasing cards with currency."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game requires players to continue until their hand is empty; folding is not a valid action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Betting rounds and the check action are not included in the traditional Japanese Page One game."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Standard betting calls are not used in this follow-suit shedding card game."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Initial betting or wagering is not a component of the Page One shedding game loop."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "As there is no initial betting, raising the stakes is not an applicable mechanic in this game."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Card combinations are not declared for points; see the Page One declaration for the shedding state."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands remain private and are only revealed card-by-card as they are played to the trick pile."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no central pot of chips or currency to award at the end of the game round."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card from your hand into the current trick pile on the table.",
+        "cost": "0",
+        "constraints": "Must follow the suit of the lead card if possible; Joker may be played anytime.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The standard draw action is replaced by the draw_until_playable requirement when unable to follow suit."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played into a trick-taking format rather than being discarded into a common waste pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Passing is not permitted; players must either play a card or draw until a playable card is found."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Japanese Page One does not include an auction or bidding phase to determine a declarer or trump."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no melding or set-matching mechanics where cards are laid down in combinations for scoring."
+      },
+      "go_out": {
+        "supported": true,
+        "description": "Play the final card from your hand to win the current game deal.",
+        "cost": "0",
+        "constraints": "Must have only one card remaining and have correctly declared Page One to the other players.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This is the terminal winning action when a player successfully sheds all cards from their hand."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 0,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_down",
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": true,
+      "drawSources": [
+        {
+          "source": "stock",
+          "visibility": "face_down",
+          "isOptional": false,
+          "canPickAny": false,
+          "mustRevealCard": false,
+          "maxPerTurn": null,
+          "notes": "Must draw until a playable card is obtained from the pile."
+        }
+      ],
+      "drawCount": 1,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": true,
+      "drawAndDiscard": false
+    },
+    "discardConfig": null,
+    "deckType": "Standard 52 + Joker(s)",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": {
+      "hasTrump": true,
+      "trumpDetermination": "permanent_rank",
+      "permanentTrumps": [
+        {
+          "card": "Joker",
+          "rank": 14,
+          "name": "Joker"
+        }
+      ],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "Joker > Ace > King > Queen > Jack > 10 > 9 > 8 > 7 > 6 > 5 > 4 > 3 > 2",
+      "canCallNoTrump": false,
+      "overtakingRule": "must_beat_if_possible"
+    },
+    "meldConfig": null,
+    "trickConfig": {
+      "hasTricks": true,
+      "tricksPerRound": null,
+      "mustFollowSuit": true,
+      "mustOvertrump": false,
+      "leadRestrictions": "The winner of the previous trick leads any card to start the next trick.",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": true,
+      "scoredTricks": false,
+      "bidding": null
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": {
+      "high": null,
+      "low": null,
+      "lowQualifier": null
+    },
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [
+        {
+          "card": "Joker",
+          "canSubstituteFor": "any_card",
+          "restrictions": "Always wins the trick; if led, the next player determines the required suit for the trick.",
+          "naturalPreferred": false
+        }
+      ],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Must follow the suit led or play the Joker to win the trick."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "Completed tricks are shuffled to form a new stock when the stock pile is fully exhausted."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 4,
+      "joker_count": 1
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 53
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 53
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 6
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "joker-lead",
+          "text": "When the Joker is led, the second player plays any card and that card sets the suit requirement."
+        },
+        {
+          "id": "missed-page-one",
+          "text": "Failing to say 'Page One!' when down to one card results in a mandatory five-card penalty draw."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "draw_until_playable_logic",
+        "page_one_declaration_check",
+        "joker_win_logic"
+      ]
+    },
+    "progression": [
+      "deal",
+      "play"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "draw_until_playable",
+        "supported": true,
+        "description": "Draw cards from the stock pile one-by-one until you obtain a card of the led suit or the Joker.",
+        "cost": "0",
+        "constraints": "Only used if the player has no cards of the led suit in their hand at the time.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {
+          "from": "stock",
+          "to": "hand",
+          "count": 1
+        },
+        "reason": "This is the core requirement when a player cannot follow suit in the Japanese Page One game."
+      },
+      {
+        "id": "declare_page_one",
+        "supported": true,
+        "description": "Verbally declare 'Page One!' to notify opponents that you have reached your final card in hand.",
+        "cost": "0",
+        "constraints": "Must be performed immediately when playing your second-to-last card or winning a trick with it.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {},
+        "reason": "This is a mandatory social declaration required to avoid significant card penalties during the shedding process."
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; this is a shedding game where individual card values determine the winner of each trick.",
+    "rankingSystem": "High-card follow-suit trick-taking with the Joker acting as an invincible trump card.",
+    "bettingLimits": "None",
+    "useTrump": true,
+    "deckDescription": "Standard fifty-two card pack with one Joker added, totaling fifty-three cards used for play and the stock pile.",
+    "suitDescription": "The four standard French suits consisting of Hearts, Diamonds, Clubs, and Spades are used for follow-suit trick mechanics.",
+    "rankDescription": "Cards rank Joker (high), Ace, King, Queen, Jack, Ten, Nine, Eight, Seven, Six, Five, Four, Three, Two (low).",
+    "dealPattern": "Each player is dealt four cards one at a time in a clockwise order starting from the dealer.",
+    "notApplicableReasons": {
+      "discardConfig": "Cards are played into a trick pile and removed rather than being discarded into a common waste pile.",
+      "buyCosts": "There is no economic or currency system for purchasing cards in the traditional Japanese Page One.",
+      "marketConfig": "The game uses a single face-down stock pile rather than an open market of face-up cards.",
+      "fishingConfig": "This is a follow-suit shedding game and does not utilize any capture or fishing mechanics.",
+      "patienceConfig": "Page One is a competitive multiplayer game and is not designed for solitaire or patience play.",
+      "bankingConfig": "There is no house banker or central banking role involved in the traditional Page One gameplay loop.",
+      "meldConfig": "Players shed individual cards to tricks and do not form or lay down melded combinations for points.",
+      "handRanks": "Standard poker hand rankings do not apply as this is a high-card trick-taking shedding game."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PAGE ONE",
+      "subtitle": "Japanese Shedding",
+      "tagline": "Follow suit, survive the draw, and declare your way to victory."
+    },
+    "shortDescription": "A Japanese shedding game where you must follow suit or draw until you can. Call 'Page One!' on your last card or take a five-card penalty.",
+    "uiThemes": [
+      "classic",
+      "asian"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "trick"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "How do I play Page One?",
+    "ai": "Page One is a Japanese shedding game. Follow the led suit if you can; if not, draw until you get a playable card. Don't forget to say 'Page One!' when you're down to your last card, or you'll have to draw five penalty cards."
+  },
+  "scoring": {
+    "description": "None; the first player to shed all cards wins the round immediately.",
+    "winCondition": "Shed all cards from your hand before any other player in the game.",
+    "cardValues": {
+      "2": "1",
+      "3": "2",
+      "4": "3",
+      "5": "4",
+      "6": "5",
+      "7": "6",
+      "8": "7",
+      "9": "8",
+      "10": "9",
+      "J": "10",
+      "Q": "11",
+      "K": "12",
+      "A": "13",
+      "Joker": "14"
+    },
+    "penalties": {
+      "missing_declaration": "Mandatory five card penalty draw from the face-down stock pile."
+    },
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Japanese Page One",
+    "Classic Page One",
+    "ページワン (Pēji Wan)",
+    "Page One (Japanese)"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Follows Pagat's description of Japanese Page One mechanics.",
+      "Identical to the mechanics described in page-one-japanese.json."
+    ],
+    "openQuestions": [],
+    "validatorVersion": "2.1.0"
+  },
+  "fieldStatus": {}
+}

@@ -40,7 +40,7 @@ export const CardGameViewportScaler: React.FC<CardGameViewportScalerProps> = ({
   }, []);
 
   const floatScale = pageProps.document?.cardVisuals?.floatScale ?? 1;
-  const showHostBackground = pageProps.document?.hud.layerVisibility?.background !== false;
+  const showHostBackground = pageProps.document?.renderToggles?.background !== false;
 
   return (
     <div

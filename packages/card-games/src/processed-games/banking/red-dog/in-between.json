@@ -1,0 +1,662 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "in-between.json",
+  "name": "In Between",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "In Between is a banking gambling game where a player bets that a third card will rank strictly between two initial cards.",
+    "category": "Banking",
+    "subCategory": "Gambling / Banking",
+    "origin": "Europe / United States",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 4,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "United States",
+      "Europe"
+    ],
+    "origins": "In Between appears in gambling and dealer's-choice traditions, with major name variants including Acey Deucey and Red Dog.",
+    "timeline": [
+      "Early-mid 20th century: Documented in gambling references and home poker rotations.",
+      "Late 20th century: Casino adaptation popularized as Red Dog side-game formats."
+    ],
+    "evolution": "Home pot-banker versions and casino fixed-odds versions diverged in payout structures and bet windows.",
+    "cultural": "Known as a quick betting game with simple rules and high variance.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2-8 players; often best around 5-8.",
+    "deck": "One standard 52-card deck.",
+    "equipment": "Deck, chips, and a banker/dealer position.",
+    "dealing": "Dealer gives two initial face-up cards for a wager decision, then a third resolving card.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win bets by correctly calling that the third card falls strictly between the first two card ranks.",
+    "gameplay": "In the dealer-as-banker form, each non-dealer player is resolved in turn. Dealer reveals first card, then second card for that player. Player may fold or bet up to the pot limit. Dealer reveals third card and settles: strictly between = win amount equal to bet, outside range = lose bet, equal to an endpoint = lose double ('hitting the post').",
+    "keyRules": [
+      "Third card strictly between first two ranks is a win.",
+      "Third card outside interval is a loss.",
+      "Third card equal to an endpoint commonly loses double (hitting the post) in many rulesets.",
+      "Consecutive first two cards usually produce a push in several versions.",
+      "Pair starts are handled by special house payout rules."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Bet larger only when the rank spread between first two cards is wide.",
+    "intermediate": "Use spread-based expected value to choose raise, call, or fold actions.",
+    "advanced": "Exploit format-specific payout tables (home banker vs casino Red Dog) and avoid overbetting narrow spreads.",
+    "tips": [
+      "Wider intervals improve hit probability.",
+      "House edge shifts significantly with endpoint and pair rules."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "pot_banker",
+        "name": "Pot Banker",
+        "description": "Dealer acts as banker and players wager against shared pot.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses same engine as base; no overrides needed."
+      },
+      {
+        "id": "casino_red_dog",
+        "name": "Casino Red Dog",
+        "description": "Single house deal with fixed spread-based payouts.",
+        "overrides": {},
+        "emptyOverridesReason": "Payout table differs; add overrides when spread payouts are specified."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Bets with little spread sensitivity.",
+      "medium": "Adjusts bet size by interval width and basic endpoint risk.",
+      "hard": "Uses full spread EV and variant payout model before every wager decision."
+    },
+    "considerations": [
+      "Decision quality depends on spread width and payout table.",
+      "Endpoint hit penalties materially change optimal aggression."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_in_between",
+        "name": "Pagat - In Between",
+        "url": "https://www.pagat.com/banking/in-between.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Home game with dealer as banker"
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "Settlement bullets + variations"
+          },
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Home game with dealer as banker"
+          }
+        ],
+        "localHtml": "pagat-in-between.html"
+      },
+      {
+        "id": "src:wikipedia_acey_deucey_card_game",
+        "name": "Wikipedia - Acey Deucey (card game)",
+        "url": "https://en.wikipedia.org/wiki/Acey_Deucey_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [
+          {
+            "section": "history.origins",
+            "sourcePath": "Overview"
+          }
+        ],
+        "localHtml": "wiki-acey-deucey.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Red_dog_(card_game)",
+        "localHtml": "wiki-acey-deucey.html"
+      },
+      "Pagat Red Dog section and casino rules references"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "banking",
+    "gambling",
+    "social",
+    "betting"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 2,
+    "luck": 8,
+    "skill": 3
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "ante",
+        "label": "Ante / Entry",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "ante"
+        ],
+        "nextPhase": "deal_two",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Optional or table-defined entry contribution before wager cycle."
+      },
+      {
+        "id": "deal_two",
+        "label": "Deal Two Cards",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "bet_decision",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_up"
+        },
+        "notes": "Dealer exposes first two cards for interval decision."
+      },
+      {
+        "id": "bet_decision",
+        "label": "Bet or Fold",
+        "actor": "current_player",
+        "legalActions": [
+          "fold",
+          "bet"
+        ],
+        "nextPhase": "deal_third",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Active player chooses wager or fold after seeing first two cards."
+      },
+      {
+        "id": "deal_third",
+        "label": "Deal Third Card",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "settlement",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_up"
+        },
+        "notes": "Dealer reveals resolving third card."
+      },
+      {
+        "id": "settlement",
+        "label": "Settle Bet",
+        "actor": "dealer",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Settle winnings/losses by interval result and house endpoint rules."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": true,
+        "description": "Pay the ante required to participate in the round (dealer stakes pot or all contribute equal ante).",
+        "cost": {
+          "type": "flat",
+          "value": 1
+        },
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "ante",
+        "effectHints": {}
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer reveals cards for interval resolution sequence.",
+        "cost": "0",
+        "constraints": "Dealer-only during deal phases: first card, second card, and third resolving card.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "tableau",
+          "count": 1
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": true,
+        "description": "Decline to bet this turn after seeing first two cards.",
+        "cost": "0",
+        "constraints": "Only in bet decision phase before third card is dealt.",
+        "isTerminating": true,
+        "effectType": "fold",
+        "effectHints": {}
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": true,
+        "description": "Place wager on third card landing strictly between the first two ranks; up to pot size or fold.",
+        "cost": {
+          "type": "min_bet"
+        },
+        "constraints": "Only in bet decision phase after first two cards are exposed; capped by current pot.",
+        "isTerminating": false,
+        "effectType": "bet",
+        "effectHints": {
+          "limitType": "spread_limit"
+        }
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Award the pot to the winning player(s).",
+        "cost": "0",
+        "constraints": "Allowed only in phases that list this action as legal.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use play_card in engine."
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_up",
+      "initialDeal": "face_up",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": "NA",
+    "shedding": "NA",
+    "fishingConfig": "NA",
+    "patienceConfig": "NA",
+    "bankingConfig": {
+      "hasBanker": true,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": null,
+      "bustRule": null,
+      "playerVsBanker": true
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": 3,
+      "roundEndCondition": "fixed_rounds",
+      "gameEndCondition": "agreed_session"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 8,
+      "hand_size": 3,
+      "round_limit": 3
+    },
+    "finalHandSize": 3,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 3
+      },
+      {
+        "id": "pot",
+        "type": "pool",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "hitting_the_post",
+          "text": "Third card equal to an endpoint is often a special penalty (commonly double loss)."
+        },
+        {
+          "id": "consecutive_push",
+          "text": "Consecutive endpoint cards are often treated as push in common versions."
+        },
+        {
+          "id": "pair_first_two_cards",
+          "text": "If the first two cards are equal, table rule determines outcome (push, special payout, or optional split-hand variant)."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": false,
+      "customLogicNeeded": [
+        "rank_interval_resolution",
+        "endpoint_penalty_rule",
+        "spread_payout_table"
+      ]
+    },
+    "progression": [
+      "ante",
+      "deal_two",
+      "bet_decision",
+      "deal_third",
+      "settlement"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Third-card interval betting between two exposed card ranks",
+    "bettingLimits": "Spread Limit",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "Two cards shown, wager decision, third card shown, settle.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "specialCards": "Standard 52-card deck; no card has a special action or bonus value.",
+      "shedding": "In Between is a betting game on card ranks, not a shedding game; the goal is to bet on the third card falling between two shown.",
+      "fishingConfig": "In Between uses no play-to-capture or fishing tableau; players bet on rank intervals only."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "IN BETWEEN",
+      "subtitle": "Acey Deucey Banking",
+      "tagline": "Bet the interval."
+    },
+    "shortDescription": "Bet whether the third card lands between two exposed ranks.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock",
+        "pot",
+        "tableau"
+      ],
+      "marketPosition": null,
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "row",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "In Between: decide whether to bet on the third card landing strictly between the first two ranks.",
+    "ai": "Game: In Between (Acey Deucey / Red Dog style). Flow: expose two cards, bet or fold, expose third, settle by interval rule."
+  },
+  "scoring": {
+    "description": "Wager-settlement game with table-defined payout rules.",
+    "winCondition": "Finish agreed rounds with positive net chips versus the banker or empty the pot as bettor.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": "NA",
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Banking game; settlement is by bet win or loss, not card point values."
+    }
+  },
+  "alsoKnownAs": [
+    "Acey Deucey",
+    "Between the Sheets",
+    "Red Dog",
+    "Yablon"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0",
+    "overviewNaReasons": {
+      "originName": "Origin cannot be traced; no documented native name found."
+    }
+  },
+  "fieldStatus": {}
+}

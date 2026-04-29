@@ -1,0 +1,627 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "pit.json",
+  "name": "Pit",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pit is a fast real-time commodity trading card game where players shout trades to corner a complete set of commodity cards.",
+    "category": "Matching",
+    "subCategory": "Pair Collection",
+    "origin": "United States",
+    "originName": "Pit",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "recommendedPlayers": 3,
+      "display": "3-8"
+    },
+    "deck": "Dedicated Pit commodity deck",
+    "difficulty": "Beginner",
+    "duration": "10-20 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Pit is documented as a distinct commercial card-game publication with its own player count, equipment, and objective.",
+    "originCountries": [
+      "United States"
+    ],
+    "timeline": [
+      "Documented source page identifies Pit as a standalone game rather than only a synonym or expansion."
+    ],
+    "evolution": null,
+    "cultural": "Pit is included because the source describes a playable ruleset or product-level card game, not just a deck style or expansion page.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No separate evolution notes were available in the local source."
+    }
+  },
+  "setup": {
+    "players": "3-8 players use the table arrangement described for Pit.",
+    "deck": "Dedicated Pit commodity deck",
+    "equipment": "Dedicated Pit commodity deck, score area, and enough table space for play.",
+    "dealing": "Prepare Dedicated Pit commodity deck and deal or lay out cards according to the documented Pit rules before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Corner the market by collecting all cards of one commodity before the other players do.",
+    "gameplay": "Players simultaneously trade face-down sets of matching quantity, calling out how many cards they are offering. Trades are accepted by another player offering the same number. A player who completes a full commodity set calls the corner and scores the hand.",
+    "keyRules": [
+      "Trades are simultaneous and must exchange equal numbers of cards.",
+      "Players may not reveal the exact commodities being traded during the exchange.",
+      "A complete commodity set wins the hand; editions with Bull and Bear cards add bonus and penalty cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Focus first on the visible objective in Pit: conserve cards or resources that directly advance the win condition.",
+    "intermediate": "Track public information and avoid giving opponents easy tempo swings during the middle turns.",
+    "advanced": "Plan several turns ahead around the scoring window and force opponents into low-value or defensive plays.",
+    "tips": [
+      "Track the cards and roles that have already appeared.",
+      "Preserve flexible plays until they improve the final scoring position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "hasPlaceholders": false,
+    "noVariationsReason": "Sources describe only the standard form; no separate named variants documented."
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal Pit moves and follows the immediate objective.",
+      "medium": "Tracks scoring threats and obvious opponent progress in Pit.",
+      "hard": "Plans around hidden information, timing, and the documented win condition for Pit."
+    },
+    "considerations": [
+      "Represent Pit as Matching with Pair Collection mechanics.",
+      "Use source-linked rules before adding digital-only shortcuts."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki-pit",
+        "name": "Wikipedia - Pit",
+        "url": "https://en.wikipedia.org/wiki/Pit_(game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-pit.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "matching",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Trademarked",
+    "isCommercial": true,
+    "trademarkNote": "Commercial title or dedicated deck. Keep this record as reference metadata; do not clone protected branding, art, card text, or proprietary presentation without rights."
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal Cards",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Dealer deals all cards one at a time clockwise to each player starting with player to dealer's left."
+      },
+      {
+        "id": "play_round",
+        "label": "Play Round",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "pass"
+        ],
+        "nextPhase": "play_round",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "player_hand_empty == true",
+            "nextPhase": null
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Players play cards to the layout or pass. First to empty hand wins."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Shedding game with no betting mechanic."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes all cards one at a time.",
+        "cost": "0",
+        "constraints": "Dealer only, occurs once at game start.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": null
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market mechanic in Fan Tan."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market buying in Fan Tan."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock buying in Fan Tan."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Shedding game, no folding mechanic."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No check action in Fan Tan."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No call/match betting in Fan Tan."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in Fan Tan."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting rounds in Fan Tan."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No declaration phase in Fan Tan."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No showdown in Fan Tan."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "First to empty hand wins automatically."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card to the layout starting with Sevens and expanding sequentially.",
+        "cost": "0",
+        "constraints": "Must play if a legal card exists; can only play Sevens (start new suit row) or cards adjacent in sequence to existing cards.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards dealt at start; no draw mechanic."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard pile; cards go to layout."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Skip turn when no legal play is available.",
+        "cost": "0",
+        "constraints": "Only when no valid card can be played.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No bidding in Fan Tan."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No meld mechanic in Fan Tan."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "First to empty hand wins automatically."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 8,
+      "optimalPlayers": 3,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "All cards are dealt at the start of the game; no draw mechanic exists.",
+      "discardConfig": "Shed cards are played to the layout, not to a discard pile."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player"
+      },
+      {
+        "id": "tableau",
+        "type": "grid",
+        "visibility": "public",
+        "owner": "table"
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table"
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "play_round"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "One full deck of 52 cards using French suits (hearts, diamonds, clubs, spades) and standard ranks from ace through king, with no jokers.",
+    "suitDescription": "French suits: hearts (cœurs), diamonds (carreaux), clubs (trèfles), and spades (piques). Each suit has thirteen cards from ace through king.",
+    "rankDescription": "Standard ranking for a 52-card deck: ace (high or low by context), king, queen, jack, 10, 9, 8, 7, 6, 5, 4, 3, 2. Thirteen cards per suit.",
+    "dealPattern": ""
+  },
+  "synthesis": {
+    "hero": {
+      "title": "FAN TAN (SEVENS)",
+      "subtitle": "Card Game",
+      "tagline": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic ..."
+    },
+    "shortDescription": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "tableau",
+        "hand"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Fan Tan, also widely known as 'Sevens', 'Domino', or 'Parliament', is a classic layout-based card game where the objective is to be the first to get rid of all your cards. Players build upon a central layout of cards, starting with the Sevens and expanding outward to the Ace and Two in each suit. It is a game of both luck and light strategy, as players can choose to hold back key 'blocking' cards to prevent opponents from playing.",
+    "ai": "Game: Fan Tan (Sevens). Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Be the first player to shed all cards from your hand.",
+    "winCondition": "Be the first player to shed all cards from your hand.",
+    "cardValues": {
+      "A": "1",
+      "K": "13",
+      "Q": "12",
+      "J": "11"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "nullReasons": {},
+    "scoringDirection": "high_wins"
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

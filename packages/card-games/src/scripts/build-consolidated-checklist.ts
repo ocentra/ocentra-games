@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { walkProcessedGameFiles, type ProcessedGameFile } from "../processed-game-files";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "..");
@@ -44,7 +45,8 @@ function stripSee(name: string): string {
 }
 
 function primaryName(jsonFile: string, names: Set<string>): string {
-  const base = jsonFile.replace(".json", "").replace(/-/g, " ");
+  const fileName = jsonFile.split("/").pop() ?? jsonFile;
+  const base = fileName.replace(".json", "").replace(/-/g, " ");
   const title = base.replace(/\b\w/g, (c) => c.toUpperCase());
   const arr = [...names];
   const exact = arr.find((n) => n.toLowerCase() === title.toLowerCase());
@@ -53,7 +55,7 @@ function primaryName(jsonFile: string, names: Set<string>): string {
     n.toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "")
-      .includes(jsonFile.replace(".json", "").toLowerCase())
+      .includes(fileName.replace(".json", "").toLowerCase())
   );
   if (partial) return partial;
   return arr.sort((a, b) => a.localeCompare(b))[0];
@@ -66,7 +68,10 @@ function sectionKey(primary: string): string {
   return "9";
 }
 
-const existingJson = new Set<string>(readdirSync(PROCESSED).filter((f: string) => f.endsWith(".json")));
+const processedFiles = walkProcessedGameFiles(PROCESSED);
+const processedByRelativePath = new Map(processedFiles.map((entry) => [entry.relativePath.toLowerCase(), entry]));
+const processedByFileName = new Map(processedFiles.map((entry) => [entry.fileName.toLowerCase(), entry]));
+const existingJson = new Set<string>(processedFiles.map((entry) => entry.relativePath));
 const sourceHtmlFiles = existsSync(SOURCE_HTML)
   ? new Set<string>(readdirSync(SOURCE_HTML).filter((f: string) => f.endsWith(".html")))
   : new Set<string>();
@@ -140,18 +145,24 @@ interface JsonEntry {
 const byJson = new Map<string, JsonEntry>();
 
 function addEntry(jsonFile: string, name: string, urls: string[] = []): void {
-  const base = jsonFile.replace(/^.*\//, "");
-  if (!existingJson.has(base)) return;
-  if (!byJson.has(base)) {
-    byJson.set(base, { names: new Set(), urls: new Set() });
+  const entry = resolveProcessedGameFile(jsonFile);
+  if (entry === null) return;
+  const key = entry.relativePath;
+  if (!byJson.has(key)) {
+    byJson.set(key, { names: new Set(), urls: new Set() });
   }
-  const e = byJson.get(base)!;
+  const e = byJson.get(key)!;
   e.names.add(stripSee(name));
   for (const u of urls) e.urls.add(u.trim());
 }
 
 const LINE_RE = /^([^#\s].+?)\s*:\s*card-games\/processed-games\/([^\s:]+\.json)\s*:\s*(.+)$/;
 const URL_RE = /https?:\/\/[^\s|]+/g;
+
+function resolveProcessedGameFile(jsonFile: string): ProcessedGameFile | null {
+  const normalized = jsonFile.replace(/\\/g, "/").replace(/^card-games\/processed-games\//, "");
+  return processedByRelativePath.get(normalized.toLowerCase()) ?? processedByFileName.get(normalized.split("/").pop()!.toLowerCase()) ?? null;
+}
 
 for (const line of readFileSync(GAME_NAMES, "utf8").split("\n")) {
   const m = line.match(LINE_RE);
@@ -179,8 +190,10 @@ for (const f of existingJson) {
 }
 
 function getUrlsFromJson(jsonFile: string): string[] {
+  const entry = resolveProcessedGameFile(jsonFile);
+  if (entry === null) return [];
   try {
-    const raw = readFileSync(join(PROCESSED, jsonFile), "utf8").replace(/^\uFEFF/, "");
+    const raw = readFileSync(entry.absolutePath, "utf8").replace(/^\uFEFF/, "");
     const data = JSON.parse(raw) as Record<string, unknown>;
     const out: string[] = [];
     for (const p of (data?.sources as { primary?: Array<{ url?: string }> })?.primary ?? []) {

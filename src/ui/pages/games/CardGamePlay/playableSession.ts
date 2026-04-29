@@ -50,6 +50,8 @@ interface LoadedPlayableGameMode {
   displayName: string;
   minPlayers: number;
   maxPlayers: number;
+  baseBet?: number | null;
+  maxRounds?: number | null;
   mechanicsAsset: AssetResourceEntry<CardGameMechanics> | CardGameMechanics;
   layoutAsset?: AssetResourceEntry<Layout> | AssetResourceEntry<CardGameLayout> | CardGameLayout;
 }
@@ -408,6 +410,8 @@ async function loadPlayableGameModeDocument(guid: string, fallbackGameId: string
     displayName: typeof system.displayName === 'string' && system.displayName ? system.displayName : fallbackGameId,
     minPlayers: typeof data.minPlayers === 'number' ? data.minPlayers : 2,
     maxPlayers: typeof data.maxPlayers === 'number' ? data.maxPlayers : 6,
+    baseBet: typeof data.baseBet === 'number' ? data.baseBet : null,
+    maxRounds: typeof data.maxRounds === 'number' ? data.maxRounds : null,
     mechanicsAsset: mechanicsEntry,
     layoutAsset: layoutEntry,
   };

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import fs from "fs";
-import path from "path";
 import { PROCESSED_GAMES_DIR } from "@/paths";
+import { findProcessedGameFileBySlug } from "@/processed-game-files";
 import { isValidDeckTriple } from "@ocentra/game-domain/deck/deckCompatibility";
 
 const SCRIPT_TRIPLES = new Set([
@@ -40,12 +40,13 @@ const manual: string[] = [];
 const validButNoMap: string[] = [];
 
 for (const basename of deckErrorFiles) {
-  const filePath = path.join(PROCESSED_GAMES_DIR, basename);
-  if (!fs.existsSync(filePath)) {
+  const slug = basename.replace(/\.json$/i, "");
+  const entry = findProcessedGameFileBySlug(PROCESSED_GAMES_DIR, slug);
+  if (entry === null) {
     manual.push(basename + " (missing)");
     continue;
   }
-  const data = JSON.parse(fs.readFileSync(filePath, "utf-8")) as Record<string, unknown>;
+  const data = JSON.parse(fs.readFileSync(entry.absolutePath, "utf-8")) as Record<string, unknown>;
   const engine = (data?.engine as Record<string, unknown>) ?? {};
   const d = String(engine.deckType ?? "").trim();
   const s = String(engine.suitSet ?? "").trim();

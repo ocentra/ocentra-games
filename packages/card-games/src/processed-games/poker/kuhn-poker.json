@@ -1,0 +1,599 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "kuhn-poker.json",
+  "name": "Kuhn Poker",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Kuhn Poker is a simplified two-player poker model using only three cards, designed for complete analysis of imperfect-information strategy.",
+    "category": "Poker",
+    "subCategory": "Poker Family",
+    "origin": "Mathematical model by Harold W. Kuhn",
+    "originName": "Kuhn Poker",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "recommendedPlayers": 2,
+      "display": "2"
+    },
+    "deck": "Three-card deck such as king, queen, and jack",
+    "difficulty": "Intermediate",
+    "duration": "5-10 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Harold W. Kuhn introduced Kuhn Poker as a zero-sum imperfect-information game suitable for formal game-theoretic analysis.",
+    "originCountries": [
+      "United States"
+    ],
+    "timeline": [
+      "Documented source page identifies Kuhn Poker as a standalone game rather than only a synonym or expansion."
+    ],
+    "evolution": null,
+    "cultural": "Kuhn Poker is included because the source describes a playable ruleset or product-level card game, not just a deck style or expansion page.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No separate evolution notes were available in the local source."
+    }
+  },
+  "setup": {
+    "players": "2 players use the table arrangement described for Kuhn Poker.",
+    "deck": "Three-card deck such as king, queen, and jack",
+    "equipment": "Three-card deck such as king, queen, and jack, score area, and enough table space for play.",
+    "dealing": "Prepare Three-card deck such as king, queen, and jack and deal or lay out cards according to the documented Kuhn Poker rules before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Win chips through optimal checking, betting, calling, and folding decisions with one private card each.",
+    "gameplay": "Use three ranked cards. Each player antes and receives one private card. The first player checks or bets; the second player responds according to the simple betting tree. If there is a showdown, the higher card wins; otherwise, the bettor wins when the opponent folds.",
+    "keyRules": [
+      "Only three cards are used.",
+      "Each player receives one private card.",
+      "The game has a known mixed-strategy equilibrium and no pure-strategy equilibrium."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Focus first on the visible objective in Kuhn Poker: conserve cards or resources that directly advance the win condition.",
+    "intermediate": "Track public information and avoid giving opponents easy tempo swings during the middle turns.",
+    "advanced": "Plan several turns ahead around the scoring window and force opponents into low-value or defensive plays.",
+    "tips": [
+      "Track the cards and roles that have already appeared.",
+      "Preserve flexible plays until they improve the final scoring position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "hasPlaceholders": false,
+    "noVariationsReason": "Sources describe only the standard form; no separate named variants documented."
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal Kuhn Poker moves and follows the immediate objective.",
+      "medium": "Tracks scoring threats and obvious opponent progress in Kuhn Poker.",
+      "hard": "Plans around hidden information, timing, and the documented win condition for Kuhn Poker."
+    },
+    "considerations": [
+      "Represent Kuhn Poker as Poker with Game-theory poker model mechanics.",
+      "Use source-linked rules before adding digital-only shortcuts."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki-kuhn-poker",
+        "name": "Wikipedia - Kuhn poker",
+        "url": "https://en.wikipedia.org/wiki/Kuhn_poker",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-kuhn-poker.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "poker",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 35,
+    "complexity": 2,
+    "luck": 2,
+    "skill": 8
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a card (placeholder).",
+        "cost": "0",
+        "constraints": "See game rules.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 2,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 3,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": {
+      "high": "Unknown",
+      "low": "Unknown",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "Deck used for Magic The Gathering: Constructed Magic The Gathering decks. Use the ranks, suits, special cards, and pack size described in the setup section for this catalog record.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "MAGIC THE GATHERING",
+      "subtitle": "Vying",
+      "tagline": "Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play"
+    },
+    "shortDescription": "Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "Unknown",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Magic The Gathering is a commercial collectible or trading card game using proprietary decks, constructed play, and direct player conflict.",
+    "ai": "Game: Magic The Gathering. Logic: Defeat the opposing player or satisfy the published victory condition through card play and resource timing."
+  },
+  "scoring": {
+    "description": "The published duel or scenario condition determines the winner.",
+    "winCondition": "Defeat the opposing player or satisfy the published victory condition through card play and resource timing.",
+    "cardValues": {
+      "A": "1",
+      "K": "13",
+      "Q": "12",
+      "J": "11"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "The ending is based on the layout, hand, deal, or scenario rather than a universal numeric target."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

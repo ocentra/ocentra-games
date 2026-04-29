@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { walkProcessedGameFiles } from "../processed-game-files";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
@@ -102,19 +103,18 @@ interface GameSources {
 }
 
 const urlToHtmlFiles = buildUrlToHtmlFiles();
-const jsonFiles = readdirSync(PROCESSED).filter((f: string) => f.endsWith(".json"));
+const jsonFiles = walkProcessedGameFiles(PROCESSED);
 
 let updated = 0;
 let touched = 0;
 
 for (const jsonFile of jsonFiles) {
-  const filePath = join(PROCESSED, jsonFile);
-  const raw = readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
+  const raw = readFileSync(jsonFile.absolutePath, "utf8").replace(/^\uFEFF/, "");
   let data: Record<string, unknown>;
   try {
     data = JSON.parse(raw);
   } catch {
-    console.error(`Skip ${jsonFile}: invalid JSON`);
+    console.error(`Skip ${jsonFile.relativePath}: invalid JSON`);
     continue;
   }
 
@@ -175,7 +175,7 @@ for (const jsonFile of jsonFiles) {
   }
 
   if (changed && !DRY_RUN) {
-    writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
+    writeFileSync(jsonFile.absolutePath, JSON.stringify(data, null, 2) + "\n", "utf8");
     updated++;
   } else if (changed) {
     updated++;

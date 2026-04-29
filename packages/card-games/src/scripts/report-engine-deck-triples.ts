@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import fs from "fs";
-import path from "path";
 import { PROCESSED_GAMES_DIR } from "@/paths";
+import { walkProcessedGameFiles } from "@/processed-game-files";
 import { GameSchema, type Game } from "@/schema/zod/game-schema";
 
 type TripleKey = `${string}\0${string}\0${string}`;
@@ -26,7 +26,7 @@ function main(): void {
 
   const includeExamples = args.has("--examples");
 
-  const files = fs.readdirSync(PROCESSED_GAMES_DIR).filter((f) => f.endsWith(".json"));
+  const files = walkProcessedGameFiles(PROCESSED_GAMES_DIR);
   const counts = new Map<TripleKey, number>();
   const deckCountCounts = new Map<string, number>();
   const jokerCountCounts = new Map<string, number>();
@@ -34,9 +34,8 @@ function main(): void {
   let invalid = 0;
   let skippedCommercialGames = 0;
 
-  for (const f of files) {
-    const abs = path.join(PROCESSED_GAMES_DIR, f);
-    const raw = readJson(abs);
+  for (const file of files) {
+    const raw = readJson(file.absolutePath);
     const parsed = GameSchema.safeParse(raw);
     if (!parsed.success) {
       invalid++;
@@ -59,7 +58,7 @@ function main(): void {
 
     if (includeExamples) {
       const arr = examples.get(key) ?? [];
-      if (arr.length < 5) arr.push(f);
+      if (arr.length < 5) arr.push(file.relativePath);
       examples.set(key, arr);
     }
   }

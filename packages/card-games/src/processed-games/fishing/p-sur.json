@@ -1,0 +1,755 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "p-sur.json",
+  "name": "Pasur",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Pasur is an Iranian fishing game where captures are made by exact rank pairing or by making sums of 11. Players score for aces, jacks, key cards, most clubs, and table-clearing surs, racing to 62 points.",
+    "category": "Fishing",
+    "subCategory": "Arithmetic Capture",
+    "origin": "Iran",
+    "originName": "Pâsur (پاسور)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 2,
+      "display": "2-4"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-45 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Iran"
+    ],
+    "origins": "Pasur is one of the best-known Iranian card games and belongs to the fishing family. It is traditionally played with a standard 52-card deck and is known by several local names.",
+    "timeline": [
+      "Traditional era: Pasur develops as a popular social card game in Iran.",
+      "Late 20th century: Regional naming conventions such as Chahar barg and Haft khaj remain in active use.",
+      "21st century: Online rule references and web archives document standardized scoring and sur conventions."
+    ],
+    "evolution": "Core capture logic stayed stable while table conventions vary on target score (61, 62, or 100) and sur restrictions.",
+    "cultural": "The game is a common household and cafe game in Iran; in modern colloquial use, 'pasur' can also refer broadly to card play.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 to 4 players. Two-player is standard; 4-player partnership is common with partners opposite.",
+    "deck": "Single standard 52-card deck without jokers.",
+    "equipment": "Cards and a visible running score.",
+    "dealing": "Deal anticlockwise in packets of 4: four to each player face down, then four face up to the tableau. If tableau starts with more than one jack, more than two queens, or more than two kings, redeal. If exactly one jack appears in tableau, bury it and replace from stock. After all players play their 4 cards, deal 4 more to each player; no new tableau cards are added. Continue until deck is exhausted.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player or team to reach at least 62 cumulative points.",
+    "gameplay": "Players act anticlockwise, playing one card from hand to the tableau. A played card either captures cards (played card plus captured cards move to that player's capture pile) or remains on tableau if no legal capture is taken. Face cards capture by rank (Q takes Q, K takes K). Number cards A-10 capture any chosen set of tableau cards summing with the played card to 11. Jacks capture all tableau cards except kings and queens. At end of final deal, remaining tableau cards go to the last player who made a capture.",
+    "keyRules": [
+      "If your played card can capture, you must take one legal capture set; if multiple sets are legal, you choose one.",
+      "A sur is scored by clearing the tableau with a non-jack capture, except where sur restrictions apply.",
+      "Playing a jack never scores a sur, even if it clears the tableau.",
+      "No sur can be scored in the final deal after the last cards are dealt.",
+      "A side at 50 or more points cannot score a new sur or cancel an opponent sur."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize captures that win clubs and key scoring cards (2 of Clubs, 10 of Diamonds). Avoid leaving easy 11-combinations for opponents.",
+    "intermediate": "Manage tableau totals: leaving 10 or less often invites an opponent sur. Use face cards to break arithmetic capture patterns when you cannot profitably capture.",
+    "advanced": "Track club majority race and sur state simultaneously. In two-player games, preserving jack timing can force opponent exposure and improve end-control for last-capture advantage.",
+    "tips": [
+      "7+ clubs is a large swing (7 points), so avoid donating clubs to tableau unless it creates a high-value capture.",
+      "When multiple captures are possible, choose the line that removes opponent sur threats and secures scoring cards.",
+      "Use end-of-round memory of who last captured to plan who receives leftover tableau cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "target-61-or-100",
+        "name": "Alternative Target Score",
+        "description": "Some tables play to 61 or 100 instead of 62.",
+        "overrides": {},
+        "emptyOverridesReason": "Target score constant override path to be added when mapping is defined."
+      },
+      {
+        "id": "sur-threshold-40",
+        "name": "Lower Sur Threshold",
+        "description": "Some tables disallow scoring sur after 40 points rather than 50.",
+        "overrides": {},
+        "emptyOverridesReason": "Sur threshold override for engine.constants.low_threshold to be added."
+      },
+      {
+        "id": "last-deal-sur-cancel",
+        "name": "Last Deal Sur Cancel Allowed",
+        "description": "Some groups allow clearing in last deal to cancel opponent sur even when not scoring your own.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule variant; no engine overrides documented for this option."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Prefers immediate captures and ignores long-term club majority and sur interactions.",
+      "medium": "Prioritizes key-point cards and blocks obvious opponent sur opportunities.",
+      "hard": "Evaluates capture sets by expected point swing, sur state, club majority race, and last-capture endgame control."
+    },
+    "considerations": [
+      "Capture resolution supports multiple legal sum-to-11 subsets; AI must evaluate alternatives.",
+      "Jack capture sweeps non-face tableau but never grants sur.",
+      "Sur scoring is stateful and can cancel existing opponent sur markers.",
+      "Three-player tie for most clubs gives the 7-point club bonus to the third player, not to tied leaders."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_pasur_www_pagat_com_fishing_pasur_html",
+        "name": "Pagat - Pasur",
+        "url": "https://www.pagat.com/fishing/pasur.html",
+        "retrievedAt": "2026-02-22",
+        "sections": [
+          {
+            "section": "overview.description",
+            "sourcePath": "Introduction",
+            "paragraph": 1
+          },
+          {
+            "section": "setup.dealing",
+            "sourcePath": "Deal",
+            "paragraph": 1
+          },
+          {
+            "section": "rules.gameplay",
+            "sourcePath": "Play and Card Capturing Rules",
+            "paragraph": 1
+          },
+          {
+            "section": "rules.keyRules",
+            "sourcePath": "Sur",
+            "paragraph": 1
+          },
+          {
+            "section": "scoring.description",
+            "sourcePath": "Scoring",
+            "paragraph": 1
+          }
+        ],
+        "localHtml": "pagat-pasur.html"
+      },
+      {
+        "id": "src:wikipedia_scopa_en_wikipedia_org_wiki_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [
+      "https://web.archive.org/web/20131006153246/jahanshiri.ir/cardgames/en/pasur.html"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "fishing",
+    "traditional",
+    "strategy",
+    "social",
+    "partnership"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 68,
+    "complexity": 3,
+    "luck": 6,
+    "skill": 7
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal_batch",
+        "label": "Deal Batch of Four",
+        "actor": "dealer",
+        "legalActions": [
+          "deal",
+          "reveal_market"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down",
+          "reveal_market": "face_up"
+        },
+        "notes": "Deal four to each player; reveal four tableau cards only on first batch. Apply initial invalid-tableau redeal and single-jack replacement rule."
+      },
+      {
+        "id": "play_loop",
+        "label": "Play and Capture",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "round_transition",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "play_card": "face_up"
+        },
+        "notes": "Play one card; resolve capture by rank or sum-to-11 if chosen/available, otherwise trail card to tableau."
+      },
+      {
+        "id": "round_transition",
+        "label": "Refill or Finish",
+        "actor": "system",
+        "legalActions": [
+          "advance_phase"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "players_have_cards_in_hand",
+            "nextPhase": "play_loop"
+          },
+          {
+            "condition": "hands_empty_and_stock_has_cards",
+            "nextPhase": "deal_batch"
+          },
+          {
+            "condition": "hands_empty_and_stock_empty",
+            "nextPhase": "settlement"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "When all hands empty, either deal another batch of four or proceed to settlement if stock exhausted."
+      },
+      {
+        "id": "settlement",
+        "label": "Score Round",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Award remaining tableau cards to last capturer, then score clubs majority, aces, jacks, 2 of Clubs, 10 of Diamonds, and net sur value."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Deal cards in packets of four to each player.",
+        "cost": "0",
+        "constraints": "Dealer action at start and whenever all players have exhausted current four-card batch while stock remains.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 4
+        }
+      },
+      "reveal_market": {
+        "supported": true,
+        "description": "Reveal initial tableau cards and apply initial tableau correction rules.",
+        "cost": "0",
+        "constraints": "Performed only on first deal of the round to place four cards face up on table.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {
+          "from": "stock",
+          "to": "tableau"
+        }
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply round scoring and update cumulative totals toward target score.",
+        "cost": "0",
+        "constraints": "After all cards are played and leftover tableau cards are awarded to last capturer.",
+        "isTerminating": true,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card from hand to capture by rank or sum, or leave it on tableau if no capture.",
+        "cost": "0",
+        "constraints": "Current player must play exactly one card each turn. If played card can capture, one legal capture must be taken.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 4,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [
+        {
+          "card": "2 of Clubs",
+          "bonusPoints": 2,
+          "condition": "Captured in your pile at round end."
+        },
+        {
+          "card": "10 of Diamonds",
+          "bonusPoints": 3,
+          "condition": "Captured in your pile at round end."
+        }
+      ],
+      "penaltyCards": []
+    },
+    "shedding": "NA",
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": 11,
+      "sweepBonus": 5,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": "NA",
+    "bankingConfig": "NA",
+    "turnOrder": {
+      "direction": "counterclockwise",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "hand_size": 4,
+      "target_score": 62,
+      "deck_count": 1,
+      "low_threshold": 50
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:capture_pile",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "player",
+        "capacity": null
+      },
+      {
+        "id": "custom:sur_track",
+        "type": "track",
+        "visibility": "public",
+        "owner": "player",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "initial-tableau-redeal",
+          "appliesTo": "setup",
+          "text": "If initial tableau has more than one jack, more than two queens, or more than two kings, the whole deal is cancelled and redealt.",
+          "affects": "deal"
+        },
+        {
+          "id": "single-jack-replacement",
+          "appliesTo": "setup",
+          "text": "If exactly one jack appears in initial tableau, bury it and replace with top stock card before play starts.",
+          "affects": "deal"
+        },
+        {
+          "id": "jack-no-sur",
+          "appliesTo": "play_loop",
+          "text": "A jack that clears tableau does not score sur.",
+          "affects": "play_card"
+        },
+        {
+          "id": "last-deal-no-sur",
+          "appliesTo": "play_loop",
+          "text": "Clearing tableau in the final deal does not score sur.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "sur-disabled-at-50",
+          "appliesTo": "scoring",
+          "text": "A player/team at 50 or more points cannot score or cancel sur markers.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "last-capture-gets-tableau",
+          "appliesTo": "settlement",
+          "text": "Any cards left on tableau after final play are awarded to the side that made the final capture.",
+          "affects": "award_pot"
+        },
+        {
+          "id": "three-player-club-tie",
+          "appliesTo": "scoring",
+          "text": "In three-player games, if two players tie for clubs, the third player receives the 7-point clubs majority award.",
+          "affects": "award_pot"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle",
+        "deal"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "sum_to_eleven_capture_set_selection",
+        "jack_captures_non_face_cards_only",
+        "stateful_sur_cancel_and_threshold_rule",
+        "three_player_club_tie_override"
+      ]
+    },
+    "progression": [
+      "deal_batch",
+      "play_loop",
+      "round_transition",
+      "settlement"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "advance_phase",
+        "supported": true,
+        "description": "System evaluates hand and stock state and advances to next phase (refill hands, next deal batch, or settlement).",
+        "cost": "0",
+        "constraints": "System-only; triggered when all players have played current batch.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Card-capture points and sur bonuses to target score.",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "4 cards per player per batch; 4 tableau cards only in first batch; continue batches until deck exhausted.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile.",
+      "shedding": "Pasur is a fishing game; goal is to capture cards, not empty hand."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "PASUR",
+      "subtitle": "Iranian Fishing Classic",
+      "tagline": "Capture to 11, control clubs, and manage sur swings."
+    },
+    "shortDescription": "Iranian fishing game where players capture by rank or sum-to-11 and race to 62 through clubs, key cards, and sur bonuses.",
+    "uiThemes": [
+      "traditional",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "tableau",
+        "custom:capture_pile",
+        "custom:sur_track"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center_left",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "Play one card each turn. Capture by matching Q/K, by making 11 with A-10, or with a Jack that takes all non-face tableau cards. Track clubs and key cards; first to 62 points wins.",
+    "ai": "Game: Pasur. Fishing capture with sum_or_match target 11. Q/K capture same rank only. J captures all tableau except Q/K. Sur scores +5 only when non-jack clears tableau, not in final deal, and not for side already at 50+. Score: clubs majority 7, each Ace 1, each Jack 1, 2C=2, 10D=3, plus net sur."
+  },
+  "scoring": {
+    "description": "At round end score captured cards and sur markers: 7 points for clubs majority (Haft Khaj), 1 each Ace, 1 each Jack, 2 for 2 of Clubs, 3 for 10 of Diamonds, and 5 per sur.",
+    "winCondition": "First player or team with 62 or more cumulative points wins; if multiple reach 62+ simultaneously, highest score wins and ties continue.",
+    "cardValues": {
+      "Haft Khaj (7+ clubs)": "7 points",
+      "Ace": "1 point each",
+      "Jack": "1 point each",
+      "2 of Clubs": "2 points",
+      "10 of Diamonds": "3 points",
+      "Sur": "5 points each"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "If tied for highest score after reaching 62+, continue additional rounds until tie breaks.",
+    "targetScore": 62,
+    "scoringDirection": "high_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Chahar barg",
+    "Haft khaj",
+    "Yazdahtayi",
+    "Haft va chahar, yazdah"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [
+      "Primary implementation target is 2-4 players; rare 5+ two-deck play is treated as out-of-scope variant."
+    ],
+    "openQuestions": [
+      "Some tables allow last-deal sur only for cancellation; this is preserved in variations but not base rules."
+    ],
+    "validatorVersion": "validate-game.mjs@2026-02-22"
+  },
+  "fieldStatus": {}
+}

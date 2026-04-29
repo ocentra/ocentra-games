@@ -1,0 +1,694 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "verish-ne-verish.json",
+  "name": "Verish' Ne Verish'",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Verish' Ne Verish' ('Believe It or Not') is the Russian version of BS/Cheat. 2-6+ players. Deal all cards. Play face-down declaring rank. Players call 'Ne Veryu!' to challenge. Wrong challengee picks up pile; wrong challenger picks up pile. Shed all cards to win.",
+    "category": "Vying",
+    "subCategory": "Vying",
+    "origin": "Russia",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "2-6+"
+    },
+    "deck": "36 or 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer",
+    "originName": "Веришь не веришь (Verish' Ne Verish')"
+  },
+  "history": {
+    "origins": "Verish' Ne Verish' is the Russian equivalent of I Doubt It (Cheat/BS). The name means 'Trust - don't trust'. It belongs to the worldwide family of shedding games where players play face-down, declare ranks, and may be challenged. The game is played in Russia as a family and casual game.",
+    "originCountries": [
+      "Russia"
+    ],
+    "timeline": [
+      "20th century: Russian family game; part of the worldwide Cheat/BS shedding family."
+    ],
+    "evolution": "Russian version of the worldwide Cheat/BS family.",
+    "cultural": "Popular Russian family game.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "36 or 52 cards. Deal all evenly.",
+    "equipment": "Cards",
+    "dealing": "All cards dealt.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Get rid of all your cards. Last player left with cards loses.",
+    "gameplay": "Play 1+ cards face-down declaring rank. Next player: add same rank OR challenge ('Ne Veryu!'). Caught bluffing = pick up pile. Wrong challenge = challenger picks up. Four-of-a-kind auto-discards (variant).",
+    "keyRules": [
+      "Face-down play with rank declaration",
+      "Ne Veryu! challenge",
+      "Bluffer or challenger picks up pile",
+      "Four-of-a-kind auto-discard variant"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Mix truth and lies.",
+    "intermediate": "Track declared cards.",
+    "advanced": "Bluff when opponents have few cards.",
+    "tips": [],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "trust-and-expose",
+        "name": "I trust and expose",
+        "description": "Player may say I trust and expose previous play; if lied they pick up, if truth cards go to discard and they start next round. Often no four-of-a-kind discard.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant affects trust/expose flow only; no engine constant overrides documented."
+      },
+      {
+        "id": "no-fours-discard",
+        "name": "No fours discard",
+        "description": "Players may not discard sets of four equal cards; legal to start a round by playing four cards.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant disables four-of-a-kind discard; add overrides when implementing optional discard rule."
+      },
+      {
+        "id": "last-card-wait",
+        "name": "Last card wait",
+        "description": "When a player plays their last cards they must wait until turn comes again and then trust or not trust; if wrong they pick up and stay in the game.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant adds wait-before-win rule; engine overrides to be added when implementing."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": null,
+      "medium": null,
+      "hard": null
+    },
+    "nullReasons": {
+      "easy": "Easy AI plays and declares at random with no bluff detection.",
+      "medium": "No distinct medium tier; all non-easy AI uses basic bluff and challenge logic.",
+      "hard": "Hard AI uses bluff detection and optimal challenge timing."
+    },
+    "considerations": [
+      "Bluff detection"
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat-verish",
+        "name": "Pagat.com - Verish",
+        "url": "https://www.pagat.com/beating/verish.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-verish.html"
+      },
+      {
+        "id": "src:wikipedia_durak",
+        "name": "Wikipedia - Durak",
+        "url": "https://en.wikipedia.org/wiki/Durak",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-durak-3.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "climbing"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "One card set aside face down; remaining cards dealt clockwise one at a time. First card recipient leads first."
+      },
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card",
+          "challenge"
+        ],
+        "nextPhase": "play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "all_cards_played",
+            "nextPhase": "game_end"
+          }
+        ],
+        "cardVisibilityChanges": {},
+        "notes": "Players either play 1-3 cards face-down declaring a rank, or challenge with Ne Veryu!. Wrong bluffer or wrong challenger picks up the table pile."
+      },
+      {
+        "id": "game_end",
+        "label": "Game End",
+        "actor": "system",
+        "legalActions": [
+          "finish_game"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Game complete."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": true,
+        "description": "One card is set aside face down; remaining cards are dealt clockwise one at a time. First card recipient leads first.",
+        "cost": "0",
+        "constraints": "Dealer performs the deal.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Make a claim about your hand.",
+        "cost": "0",
+        "constraints": "During declaration phase.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one, two, or three cards face down onto the table pile and declare a rank (which may or may not match the cards).",
+        "cost": "0",
+        "constraints": "On your turn add 1-3 cards declaring the same rank as the previous player, or start a new round with 1-3 cards and any rank declaration.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "after_showdown",
+      "pigRule": false,
+      "pigPenalty": "NA"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "Play 1-3 cards face down declaring a rank; may lie."
+        }
+      ],
+      "passAllowed": false,
+      "burnRules": "At end of round, player who picked up may discard sets of four same rank from hand."
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "set-aside-rank",
+          "text": "One card set aside at start; the three other cards of that rank stay in play. Last player left holding any when others are out loses."
+        },
+        {
+          "id": "fours-discard",
+          "text": "Player who picked up may optionally discard sets of four same rank at end of round."
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "play",
+      "game_end"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "challenge",
+        "supported": true,
+        "description": "Call Ne Veryu! to challenge the previous player's declaration. If they lied they pick up the table pile and you lead the next round; if they told the truth you pick up the pile and the next player leads.",
+        "cost": "0",
+        "constraints": "Only on your turn after the previous player has played cards.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "finish_game",
+        "supported": true,
+        "description": "End the game when one player has shed all cards.",
+        "cost": "0",
+        "constraints": "System phase; no player action.",
+        "isTerminating": true,
+        "effectType": "play",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Not applicable; no hand ranking; first to empty hand wins.",
+    "rankingSystem": "",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "One card set aside face down; remaining cards dealt clockwise one at a time; first card recipient leads.",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "VERISH' NE VERISH'",
+      "subtitle": "Card Game",
+      "tagline": "Verish' Ne Verish' ('Believe It or Not') is the Russian version of BS/Cheat. 2-6..."
+    },
+    "shortDescription": "Verish' Ne Verish' ('Believe It or Not') is the Russian version of BS/Cheat. 2-6+ players. Deal all cards. Play face-down declaring rank. Players call",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Verish' Ne Verish' ('Believe It or Not') is the Russian version of BS/Cheat. 2-6+ players. Deal all cards. Play face-down declaring rank. Players call 'Ne Veryu!' to challenge. Wrong challengee picks up pile; wrong challenger picks up pile. Shed all cards to win.",
+    "ai": "Game: Verish' Ne Verish'. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "First out wins. Last = loser.",
+    "winCondition": "Shed all cards first.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Shedding game; no point values for cards; first to empty hand wins."
+    }
+  },
+  "alsoKnownAs": [
+    "I Doubt It",
+    "Trust Don't Trust"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

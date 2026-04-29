@@ -1,0 +1,94 @@
+.playable-runtime-dock {
+  position: absolute;
+  left: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(5.2rem, 9dvh, 6.6rem);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+.playable-runtime-dock__action {
+  padding: 0.72rem 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(226, 193, 109, 0.32);
+  background: rgba(7, 17, 28, 0.88);
+  color: #f4f1e8;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+  backdrop-filter: blur(10px);
+}
+
+.playable-runtime-dock__action:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(226, 193, 109, 0.18);
+  border-color: rgba(226, 193, 109, 0.5);
+}
+
+.playable-runtime-dock__action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.playable-runtime-dock__panel {
+  display: grid;
+  gap: 0.45rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(226, 193, 109, 0.22);
+  background: rgba(7, 17, 28, 0.82);
+  color: rgba(244, 241, 232, 0.84);
+  backdrop-filter: blur(10px);
+  white-space: pre-wrap;
+  pointer-events: auto;
+}
+
+.playable-runtime-dock__panel--error {
+  border-color: rgba(244, 96, 96, 0.35);
+  background: rgba(73, 12, 18, 0.74);
+  color: #ffd5d5;
+}
+
+.playable-runtime-dock__label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d9b86a;
+}
+
+.playable-runtime-dock__panel p {
+  margin: 0;
+}
+
+.playable-table-presence {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.playable-table-stage__empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(28rem, calc(100% - 2rem));
+  padding: 1rem 1.2rem;
+  border-radius: 1rem;
+  background: rgba(4, 11, 20, 0.82);
+  border: 1px solid rgba(226, 193, 109, 0.24);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.playable-table-stage__empty h2 {
+  margin: 0 0 0.6rem;
+}
+
+.playable-table-stage__empty p {
+  margin: 0;
+  color: rgba(244, 241, 232, 0.78);
+}

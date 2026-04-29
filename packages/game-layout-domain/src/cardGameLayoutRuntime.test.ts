@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  DEFAULT_CARD_FAN_CONTROLS,
   adjustSeatsForTableChange,
   cloneCardGameLayoutDocument,
   createDefaultCardGameLayoutAsset,
@@ -104,6 +105,37 @@ describe('cardGameLayoutRuntime', () => {
     });
     expect(normalized.gameplay).toEqual({ draftMode: true });
     expect(normalized.extensions).toEqual({ experimental: 'enabled' });
+    expect(normalized.cardFan.cardHeightScale).toBe(DEFAULT_CARD_FAN_CONTROLS.cardHeightScale);
+  });
+
+  it('migrates legacy HUD visibility without persisting editor-only HUD fields', () => {
+    const normalized = normalizeCardGameLayoutDocument({
+      hud: {
+        button: {
+          buttonOffsetX: 14,
+          buttonOffsetY: -6,
+        },
+        layerVisibility: {
+          header: false,
+          hud: false,
+          cards: false,
+          zones: false,
+        },
+        showDebugGuides: true,
+      },
+    });
+
+    expect(normalized.renderToggles.header).toBe(false);
+    expect(normalized.renderToggles.hud).toBe(false);
+    expect(normalized.renderToggles.cardFan).toBe(false);
+    expect(normalized.renderToggles.zones).toBe(false);
+    expect(normalized.renderToggles.deckTray).toBe(false);
+    expect(normalized.hud.button.buttonOffsetX).toBe(0);
+    expect(normalized.hud.button.buttonOffsetY).toBe(0);
+    expect(normalized.hud.buttonBank.leftOffsetX).toBe(14);
+    expect(normalized.hud.buttonBank.leftOffsetY).toBe(-6);
+    expect(Object.prototype.hasOwnProperty.call(normalized.hud, 'layerVisibility')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(normalized.hud, 'showDebugGuides')).toBe(false);
   });
 
   it('resolves presets with fallback behavior', () => {
@@ -165,7 +197,7 @@ describe('cardGameLayoutRuntime', () => {
 
     expect(asset.metadata.gameId).toBe('card-game');
     expect(asset.metadata.displayName).toBe('CardGame');
-    expect(asset.metadata.schemaVersion).toBe(1);
+    expect(asset.metadata.schemaVersion).toBe(2);
     expect(typeof asset.metadata.createdAt).toBe('string');
     expect(typeof asset.metadata.updatedAt).toBe('string');
     expect(asset.layout.defaultPlayerCount).toBe(6);

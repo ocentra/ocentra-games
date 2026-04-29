@@ -1,4 +1,6 @@
 import type {
+  CardGameEditorOverlayVisibility,
+  CardGameLayerVisibility,
   CardGameLayoutDocument,
   CardGameSurfaceMode,
   CardGameViewerPerspective,
@@ -11,6 +13,8 @@ export interface CardGameLayoutDraftMessage {
   assetPath?: string;
   document?: CardGameLayoutDocument;
   playerCount?: number;
+  editorLayerVisibility?: CardGameLayerVisibility;
+  editorOverlayVisibility?: CardGameEditorOverlayVisibility;
   draftSessionId?: string;
   sourceSurface?: CardGameSurfaceMode;
   viewerPerspective?: CardGameViewerPerspective;

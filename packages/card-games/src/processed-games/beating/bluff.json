@@ -1,0 +1,611 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "bluff.json",
+  "name": "Bluff",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Bluff (also known as 'I Doubt It' or IDI) is a tactical shedding game based on deception and rank counting. Players take turns playing cards face-down, claiming they all match the current required rank. Anyone can challenge a claim; if the liar is caught, they take the entire central pile, but if the challenger is wrong, they take it instead. It is a universal social game that rewards a 'poker face' and sharp memory.",
+    "category": "Vying",
+    "subCategory": "Bluffing",
+    "origin": "International (Widespread)",
+    "originName": "Bluff (West Bengal)",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "recommendedPlayers": 4,
+      "display": "3-6"
+    },
+    "deck": "52 cards (Standard)",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Bluff is a regional variant of the children's game I Doubt It, played in West Bengal, India, where players may lay several cards while claiming they all match the required rank. It belongs to the broader family of 'Cheat' games based on deception and card counting.",
+    "originCountries": [
+      "India"
+    ],
+    "timeline": [
+      "1800s: Variations like 'Cheat' and 'Bullshit' emerge in European folk culture.",
+      "1900s: Standardized as 'I Doubt It' in American family game books.",
+      "Present: A perennial party game favorite worldwide, frequently adapted for digital platforms."
+    ],
+    "evolution": "The game shifted from simple children's play into a more sophisticated psychological duel as competitive card-counting strategies were developed by adult players.",
+    "cultural": "Universal appeal across cultures; known as 'Mogeln' in Germany and 'Verish' ne Verish'' in Russia.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3 to 6 players playing individually.",
+    "deck": "Standard 52-card French pack (No Jokers).",
+    "equipment": "Standard pack.",
+    "dealing": "Deal the entire deck as evenly as possible clockwise. Players keep their hands private but their card count visible.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Be the first player to empty your hand of all cards.",
+    "gameplay": "1. **Establish Rank**: A target rank (e.g., Queens) is chosen for the round. 2. **Turn**: Each player in turn must play 1 to 4 cards face-down, claiming they are the target rank. 3. **Challenge**: Any player can shout 'Bluff!' or 'I Doubt It!' after a play. 4. **Reveal**: If challenged, the played cards are revealed. 5. **Penalty**: If the player lied, they take the entire table pile. If they were truthful, the challenger takes the pile. 6. **Rank Change**: The rank changes to the next in sequence (A-2-3...) after a successful challenge or when a new round starts.",
+    "keyRules": [
+      "You must play at least one card every turn.",
+      "Any player can challenge any other player's claim.",
+      "Successful challenges reset the central pile."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Only bluff when you have no choice or when you hold very few cards of the current rank. Use your real cards first to thin your hand.",
+    "intermediate": "Rank Tracking: Count how many cards of the current rank have been played. If you hold three Kings and someone else plays two, you know they are lying.",
+    "advanced": "The Desperation Bluff: If you are down to your last card and it doesn't match the rank, you MUST bluff. Try to play it quickly and confidently to deter challenges.",
+    "tips": [
+      "Watch for 'Hesitation Tells'—players often pause longer when they are about to lie.",
+      "If you win a challenge and set the next rank, choose one where you hold several cards."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "bullshit",
+        "name": "Bullshit (Sequential)",
+        "description": "Rank increments every turn (Aces, then 2s, then 3s...) rather than staying the same for a round.",
+        "overrides": {},
+        "emptyOverridesReason": "This variation only changes the sequence of ranks between rounds; the core engine loop and actions stay the same."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Never bluffs unless forced. Challenges randomly without counting cards.",
+      "medium": "Bluffs 20% of the time. Tracks the current rank and challenges if more than four have been claimed.",
+      "hard": "Full card counter. Calculates the exact probability of an opponent lying based on known cards. Detects human bluffing frequencies."
+    },
+    "considerations": [
+      "Must implement a 'Deception Level' for AI behavior.",
+      "Requires state tracking for the central pile composition."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_bluff",
+        "name": "Pagat - I Doubt It / Bluff",
+        "url": "https://www.pagat.com/beating/doubt.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-doubt.html"
+      }
+    ],
+    "additional": [
+      "The Penguin Book of Card Games"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "bluffing",
+    "shedding",
+    "traditional",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 80,
+    "complexity": 2,
+    "luck": 3,
+    "skill": 6
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Full Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_all"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "play_loop",
+        "label": "Claim and Challenge",
+        "actor": "current_player",
+        "legalActions": [
+          "play_facedown",
+          "pass",
+          "challenge_previous"
+        ],
+        "nextPhase": "resolution",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "resolution",
+        "label": "Challenge Reveal",
+        "actor": "system",
+        "legalActions": [
+          "reveal_cards",
+          "award_pile_to_loser"
+        ],
+        "nextPhase": "play_loop",
+        "isMandatory": false,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bluff is a social shedding game and does not utilize a monetary or chip-based ante system."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck distribution at the start of the game is handled automatically by the system dealer."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no shared community market in Bluff; cards move from hands to a face-down central pile."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any external area; they only shed cards via claims."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed at the start; no cards remain in stock to be purchased during play."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Participation is mandatory for every turn until a player's hand is completely exhausted to win."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a claiming structure rather than a vying structure where checking would be an option."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot or bet to match in Bluff; competition is based on deception and shedding."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Success is determined by emptying the hand rather than through the wagering of chips or currency."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the round cannot be increased via raises."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Claim that played cards match the rounds current required rank.",
+        "cost": "0",
+        "constraints": "Mandatory turn action when playing cards face-down.",
+        "isTerminating": false,
+        "effectType": "declare",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands stay private; only specific cards are revealed during a successful 'Bluff' challenge."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no central pot of points or chips to be awarded to a winner in this shedding game."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play 1 to 4 cards face-down onto the center pile.",
+        "cost": "0",
+        "constraints": "Mandatory each turn until the hand is empty.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are only acquired by failing or wrongly making a challenge rather than a standard draw action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are played face-down to the table rather than being discarded to a waste pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Skip your turn without playing a card.",
+        "cost": "0",
+        "constraints": "Any player can pass on their turn; the lead rank must be followed when other players play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bluff does not utilize a bidding system to determine the dealer or game objectives."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a shedding game based on deception rather than creating melds on the table."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning occurs automatically upon playing the last card; no separate go-out action is used."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 3,
+      "maxPlayers": 6,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_down"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "The full deck is distributed at the start; new cards are obtained only via challenge penalties.",
+      "discardConfig": "Cards are played face-down to the center pile; no separate waste or discard pile exists.",
+      "specialCards": "All cards follow the standard rank sequence; no individual card has a secondary engine effect.",
+      "declarationMechanism": "Challenges are performed verbally; no hidden tokens or chips are used for declarations.",
+      "fishingConfig": "Bluff is a shedding game and does not use a capture-from-tableau fishing mechanic.",
+      "trickConfig": "Bluff uses a turn-based shedding loop rather than a trick-taking competition."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "any_combination",
+          "notes": "1-4 cards claimed to be the current rank."
+        }
+      ],
+      "passAllowed": true,
+      "burnRules": "Central pile reset after each challenge."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 13
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "custom:pile",
+        "type": "area",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [
+        "shuffle"
+      ],
+      "authoritativeServer": true,
+      "customLogicNeeded": [
+        "Challenge resolution logic.",
+        "Rank sequencing tracking."
+      ]
+    },
+    "progression": [
+      "dealing",
+      "play_loop",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "play_facedown",
+        "supported": true,
+        "description": "Place 1-4 cards face-down and declare a rank match.",
+        "cost": "0",
+        "constraints": "Current player's turn.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "challenge_previous",
+        "supported": true,
+        "description": "Accuse the previous player of lying about their cards.",
+        "cost": "0",
+        "constraints": "Any player after a claim.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      {
+        "id": "deal_all",
+        "supported": true,
+        "description": "Deal all cards from the deck to players.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "reveal_cards",
+        "supported": true,
+        "description": "Reveal the challenged cards to verify the claim.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "reveal",
+        "effectHints": {}
+      },
+      {
+        "id": "award_pile_to_loser",
+        "supported": true,
+        "description": "Award the accumulated pile to the player who made the false claim.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "None; card ranks are used for matching claims rather than comparative strength.",
+    "rankingSystem": "Rank Sequential (A-2-3...)",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; used for Bluff (Cheat) where players claim ranks and may lie; suits are ignored.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). Suits have no effect on play; only the rank of the card matters. Players play in rank order (twos, then threes, etc.); claiming a rank that does not match is the bluff.",
+    "rankDescription": "Thirteen ranks per suit (ace through two). Play proceeds in rank order; the current rank to play determines what may be laid. Face cards and aces follow the same order. Matching the declared rank or bluffing is the core of the game.",
+    "dealPattern": "Cards are dealt one at a time clockwise until the deck is exhausted."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BLUFF",
+      "subtitle": "The Art of Deception",
+      "tagline": "Lie with confidence. Challenge with caution. Empty your hand first."
+    },
+    "shortDescription": "The timeless bluffing game. Play cards face-down and claim they're something. Anyone can call your bluff—but they'd better be right. The liar and the wrongful accuser both pay. Sharpen your poker face and master the cards.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "custom:pile"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "The current rank is 7s. You have no 7s! Play 2 cards face-down and claim 'Two Sevens'. Risky—but if your opponents aren't counting, they won't know there have already been three 7s played. If no one challenges, you shed 2 cards for free!",
+    "ai": "Game: Bluff/IDI. Shedding + deduction. All cards dealt. Players claim current rank face-down. Challenge = loser takes pile. First to empty hand wins."
+  },
+  "scoring": {
+    "description": "No points are awarded; the objective is purely hand-emptying.",
+    "winCondition": "Successful shedding of all hand cards.",
+    "cardValues": {},
+    "penalties": {
+      "Failed Challenge": "The challenger takes the entire table pile into their hand.",
+      "Caught Bluffing": "The lying player takes the entire table pile into their hand."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "None; only the first player to empty their hand is the winner.",
+    "targetScore": null,
+    "scoringDirection": "low_wins",
+    "nullReasons": {
+      "targetScore": "Victory is determined by hand state rather than a numerical point threshold.",
+      "cardValues": "Individual cards determine challenge results rather than having scoring values.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [
+    "I Doubt It",
+    "Cheat"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

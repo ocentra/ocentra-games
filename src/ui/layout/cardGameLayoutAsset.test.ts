@@ -24,7 +24,7 @@ describe('cardGameLayoutAsset', () => {
     });
 
     expect(document.defaultPlayerCount).toBe(4);
-    expect(document.presets['4']?.seats).toHaveLength(1);
+    expect(document.presets['4']?.seats).toHaveLength(4);
     expect(document.gameplay).toEqual({ mode: 'legacy' });
     expect(document.extensions).toEqual({ theme: 'claim' });
     expect(document.layoutStructure).toEqual({ type: 'custom', sections: [] });
@@ -47,7 +47,7 @@ describe('cardGameLayoutAsset', () => {
 
     expect(serialized.layout?.defaultPlayerCount).toBe(4);
     expect(serialized.layout?.presets?.['4']?.table?.offsetY).toBe(-78);
-    expect(serialized.gameplay).toEqual({ mode: 'flat' });
+    expect(serialized.layout?.gameplay).toEqual({ mode: 'flat' });
   });
 
   it('falls back to the default preset when the requested seat count is missing', () => {
@@ -64,7 +64,7 @@ describe('cardGameLayoutAsset', () => {
 
     const preset = resolveLayoutPreset(document, 6);
 
-    expect(preset?.seats).toHaveLength(1);
+    expect(preset?.seats).toHaveLength(6);
     expect(preset?.table.width).toBe(960);
   });
 });

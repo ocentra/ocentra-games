@@ -1,5 +1,5 @@
 import CardGameBg from './images/cardgame/commons/CardBg.png';
-import CardGameMlogo from './images/cardgame/commons/Mlogo.png';
+import CardGameMlogo from './images/commons/OcentraLogo.svg';
 import CardGameBackCard from './images/cardgame/commons/BackCard.png';
 
 // 256 Slight Fill

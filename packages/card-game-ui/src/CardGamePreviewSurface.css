@@ -25,10 +25,42 @@
   overflow: hidden;
 }
 
+.card-game-preview-surface__arena-host,
+.card-game-preview-surface__hud-host,
+.card-game-preview-surface__scoreboard-host,
+.card-game-preview-surface__card-strip-host {
+  position: absolute;
+  pointer-events: none;
+}
+
+.card-game-preview-surface__scaled-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
+}
+
+.card-game-preview-surface__editor-bounds-host {
+  pointer-events: none;
+  z-index: 120;
+}
+
+.card-game-preview-surface__editor-bounds {
+  position: absolute;
+  inset: 0;
+  border: 0.125rem dashed rgba(0, 255, 102, 0.92);
+  border-radius: 1rem;
+  box-shadow:
+    0 0 0 0.0625rem rgba(0, 0, 0, 0.35),
+    0 0 1rem rgba(0, 255, 102, 0.22),
+    inset 0 0 1rem rgba(0, 255, 102, 0.05);
+  pointer-events: none;
+}
+
 .card-game-preview-surface__arena {
   position: absolute;
+  inset: 0;
   z-index: 0;
-  transform-origin: center;
   pointer-events: none;
 }
 
@@ -38,13 +70,25 @@
   pointer-events: none;
 }
 
+.card-game-preview-surface__arena-layer--table {
+  z-index: 10;
+}
+
 .card-game-preview-surface__arena-layer--seats,
 .card-game-preview-surface__arena-layer--overlay {
   pointer-events: auto;
 }
 
-.card-game-preview-surface__arena-layer--overlay {
+.card-game-preview-surface__arena-layer--seats {
+  z-index: 40;
+}
+
+.card-game-preview-surface__arena-layer--zones {
   z-index: 30;
+}
+
+.card-game-preview-surface__arena-layer--overlay {
+  z-index: 60;
 }
 
 .card-game-preview-surface__layer {

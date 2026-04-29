@@ -1,0 +1,621 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "28-dominoes.json",
+  "name": "28 dominoes",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "28 dominoes is block or draw dominoes with a double-6 set of 28 tiles. Two to five players; 7 tiles each (2-3 players) or 5 (4-5 players). Highest double leads. Match numbers on open ends; doubles placed crosswise. Block: pass if cannot play. Draw: draw from boneyard until you can play. First out wins; or lowest pips if blocked.",
+    "category": "Domino",
+    "subCategory": "Block / Line Game",
+    "origin": "Europe / worldwide",
+    "originName": "Dominoes",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "recommendedPlayers": 2,
+      "display": "2-5"
+    },
+    "deck": "28 tiles (double-6)",
+    "difficulty": "Beginner",
+    "duration": "15-30 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Domino tiles originated in China in the 12th–13th centuries; the modern 28-tile double-six block and draw games developed in France and spread across Europe and worldwide.",
+    "originCountries": [
+      "China",
+      "France"
+    ],
+    "timeline": [
+      "12th–13th centuries: Chinese gambling tiles and early domino games appear.",
+      "Mid-18th century: Modern 28-tile double-six domino set and simple block/draw games are documented in France and England.",
+      "19th century: Dominoes spreads across Europe and becomes a common café and pub game worldwide."
+    ],
+    "evolution": null,
+    "cultural": "Family and pub game.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No documented evolutionary changes; game emerged as a stable tradition."
+    }
+  },
+  "setup": {
+    "players": "Two or more players.",
+    "deck": "Double-6 domino set of 28 tiles: each tile has two ends with 0–6 pips; every combination appears once. Used for block and draw games.",
+    "equipment": "Double-6 set, table",
+    "dealing": "7 each (2-3 players) or 5 each (4-5); rest boneyard.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Play all tiles first, or have fewest pips if blocked.",
+    "gameplay": "Match to open ends; doubles crosswise. Block: pass if cannot play. Draw: draw until playable.",
+    "keyRules": [
+      "28 tiles double-6",
+      "Block or draw variant"
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Dump high tiles; block when ahead.",
+    "intermediate": "Block ends opponents need; in draw variant draw early to keep options.",
+    "advanced": "Force block when you have few pips; leave awkward ends.",
+    "tips": [
+      "Play high doubles early.",
+      "Agree block vs draw before play."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "block_dominoes",
+        "name": "Block dominoes",
+        "description": "Standard blocking game with a double-six set: each player draws an initial hand, plays matching tiles to the open ends, and passes when unable to play; the winner is first to play all tiles or the player with the lowest pip total when the game is blocked.",
+        "overrides": {},
+        "emptyOverridesReason": "Block dominoes uses the same base engine configuration; the difference is that players simply pass instead of drawing when they cannot play."
+      },
+      {
+        "id": "draw_dominoes",
+        "name": "Draw dominoes",
+        "description": "Draw variant using the same double-six set: when a player cannot play they must draw from the boneyard until they find a playable tile or the stock is empty; scoring still uses the remaining pips in opponents' hands.",
+        "overrides": {},
+        "emptyOverridesReason": "Draw dominoes shares the same core engine; drawing from the boneyard is handled by rules, so no variant-specific engine overrides are required."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Legal match",
+      "medium": "Blocking",
+      "hard": "Plans several turns ahead, tracks remaining tiles, and plays to force blocks while minimizing pip totals."
+    },
+    "considerations": [
+      "Match to open ends; doubles crosswise; block or draw variant.",
+      "Winner scores opponents pips or lowest hand if blocked."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_trick",
+        "name": "Masters of Games - Dominoes",
+        "url": "https://www.pagat.com/domino/trick/28.html",
+        "retrievedAt": "2026-02-21",
+        "sections": []
+      },
+      {
+        "id": "src:wikipedia_dominoes",
+        "name": "Wikipedia - Dominoes",
+        "url": "https://en.wikipedia.org/wiki/Dominoes",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-dominoes.html"
+      }
+    ],
+    "additional": [
+      "https://www.gameschamp.co.uk/block-and-draw-dominoes.html"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "domino",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "play",
+        "label": "Play",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Placeholder phase. Replace with game-specific phases."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a legal card according to current phase rules.",
+        "cost": "0",
+        "constraints": "Legal during play phases when the selected card satisfies phase/trick constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no draw-from-stock action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 5,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "deckType": "Double-6 Dominoes",
+    "suitSet": "Dominoes",
+    "rankSet": "Domino_double6",
+    "initialHandSize": 5,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "Unknown"
+    },
+    "handRanks": {
+      "high": "Unknown",
+      "low": "Unknown",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "Unknown",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 4
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "",
+    "bettingLimits": "Unknown",
+    "useTrump": false,
+    "deckDescription": "A standard double-6 domino set of 28 tiles: each tile has two ends with values 0 through 6, with every combination represented once, used in blocking and drawing domino games.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "",
+    "notApplicableReasons": {
+      "drawConfig": "This game does not use a draw pile during play.",
+      "discardConfig": "This game has no discard pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "28 DOMINOES",
+      "subtitle": "Card Game",
+      "tagline": "28 dominoes is block or draw dominoes with a double-6 set of 28 tiles. Two to fi..."
+    },
+    "shortDescription": "28 dominoes is block or draw dominoes with a double-6 set of 28 tiles. Two to five players; 7 tiles each (2-3 players) or 5 (4-5 players). Highest dou",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "stock"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "Unknown",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "28 dominoes is block or draw dominoes with a double-6 set of 28 tiles. Two to five players; 7 tiles each (2-3 players) or 5 (4-5 players). Highest double leads. Match numbers on open ends; doubles placed crosswise. Block: pass if cannot play. Draw: draw from boneyard until you can play. First out wins; or lowest pips if blocked.",
+    "ai": "Game: 28 dominoes. Logic: See rules.objective and rules.gameplay."
+  },
+  "scoring": {
+    "description": "Winner scores opponents' pips; or blocked game lowest wins.",
+    "winCondition": "Play all tiles first, or have fewest pips if blocked.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": null,
+    "scoringDirection": null,
+    "nullReasons": {
+      "targetScore": "No fixed target score; play by game rules.",
+      "scoringDirection": "Scoring direction is not applicable; winner is determined by game rules.",
+      "cardValues": "Tiles score only by the total pips remaining in each player’s hand at the end of a hand; there are no separate per-rank card values."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

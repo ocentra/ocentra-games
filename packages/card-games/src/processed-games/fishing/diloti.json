@@ -1,0 +1,743 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "diloti.json",
+  "name": "Diloti",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Diloti (Î”Î·Î»Ï‰Ï„Î®, from the verb Î´Î·Î»ÏŽÎ½Ï‰ meaning 'to declare') is the most popular and complex Greek fishing game. It combines mechanics from Kontsina and Xeri with a 'declaration' (build) system inspired by Casino. Players capture cards by matching or summing values, protected by declarations that define specific capture sets.",
+    "category": "Fishing",
+    "subCategory": "Scopa / Capture",
+    "origin": "Greece",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "2 or 4 (partnerships)"
+    },
+    "deck": "52-card standard deck",
+    "difficulty": "Expert",
+    "duration": "30-45 minutes",
+    "originName": "Δηλωτή",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "originCountries": [
+      "Greece",
+      "Cyprus"
+    ],
+    "origins": "Diloti originated in Greece and is a cornerstone of Greek coffee-shop (kafeneio) gaming culture. It evolved by merging older fishing games (Kontsina) with matching bonuses (Xeri) and strategic declarations.",
+    "timeline": [
+      "Early 20th Century: Developed as a competitive alternative to simpler fishing games.",
+      "1950s-Present: Established as a major social game across Greece and Cyprus.",
+      "Modern Era: Widely played online and in tournaments."
+    ],
+    "evolution": "The game's name identifies the 'declaration' phase as its unique selling point, separating it from the purely reactive nature of older fishing games.",
+    "cultural": "In Greece, Diloti is considered a game of high skill and memory, often compared to bridge in terms of the partnership awareness required.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "2 players or 4 in fixed partnerships.",
+    "deck": "52 cards. Aces rank as 1 for sums, but otherwise have high point value.",
+    "equipment": "Standard deck, score sheet.",
+    "dealing": "6 cards per player; 4 face-up on table. If 3 or 4 face cards of same value are on the table, it's a misdeal.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score points by capturing key cards, winning most cards, and making xeri sweeps; first to 61 points usually wins.",
+    "gameplay": "1. Fishing: Match a card from hand to one on the table (for number cards you may also capture a chosen sum-equal combination).\n2. Face Cards: J/Q/K capture exactly one matching face card and cannot be used in sum captures or declarations.\n3. Declarations (Builds): Create plain or group declarations from number cards. A player making or raising a declaration must hold a matching card for later capture.\n4. Raising and ownership: Opponents may raise plain declarations; group declarations cannot be raised. The player who most recently created/added to a declaration is responsible for capturing it.\n5. Xeri: Capturing all table cards in one play scores 10 points (with standard exceptions for the opening table-clear and some end-of-round cases).\n6. Further deals: When hands are exhausted, dealer gives 6 new cards each from stock; no new table cards are dealt.",
+    "keyRules": [
+      "Must follow suit is NOT applicable (Fishing game).",
+      "Face cards cannot be part of sum-captures.",
+      "A successful Xeri is marked by placing a card face-up under the capture pile.",
+      "Aces are worth 1 point each and count as 1 in numerical captures.",
+      "In 4-player games, declarations bind only the player who made them, not the partner."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Prioritize capturing the 10 of Diamonds and the 2 of Clubs.",
+    "intermediate": "Use declarations to trap opponent cards. If you see an opponent building a 10, try to raise it to an 11 if you have one.",
+    "advanced": "Memory-based clearing: Track which Kings and Queens have been played to set up a mid-game Xeri when you hold the final matching card.",
+    "tips": [
+      "Don't leave a single low card on the table if the opponent can Xeri it.",
+      "The 'Most Cards' bonus (4 points) is often the deciding factor in close games.",
+      "Declarations are your best defense against having your table cards stolen."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "target_121",
+        "name": "Long Game Target",
+        "description": "Use 121 points instead of 61 as the game target.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation changes target score only; engine.constants override not yet mapped."
+      },
+      {
+        "id": "mandatory_capture",
+        "name": "Forced Capture",
+        "description": "If a played card can capture, the play must include a legal capture rather than laying.",
+        "overrides": {},
+        "emptyOverridesReason": "Rule change affects play_card constraints; no engine override defined yet."
+      },
+      {
+        "id": "face_card_redeal_exception",
+        "name": "Three Face Cards Keep",
+        "description": "When initial table cards include exactly three equal face cards, keep deal and allow capture by the fourth matching face card.",
+        "overrides": {},
+        "emptyOverridesReason": "Exception to redeal rule; edge case override not yet mapped."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fishes for matching pairs only; misses sum combinations.",
+      "medium": "Understands builds but fails to 'raise' opponent builds.",
+      "hard": "Perfect memory of all 52 cards; calculates exact odds for Xeria."
+    },
+    "considerations": [
+      "Must implement declaration ownership and responsibility rules.",
+      "Must implement recursive sum-solver for legal number-card captures.",
+      "Must support redeal cycles with no fresh table cards after the opening deal."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_diloti_www_pagat_com_fishing_diloti_html",
+        "name": "Pagat - Diloti",
+        "url": "https://www.pagat.com/fishing/diloti.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-diloti.html"
+      },
+      {
+        "id": "src:wikipedia_scopa_en_wikipedia_org_wiki_scopa",
+        "name": "Wikipedia - Scopa",
+        "url": "https://en.wikipedia.org/wiki/Scopa",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-scopa-4.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [],
+  "legal": {
+    "status": "NA",
+    "reasonForNA": "Traditional public-domain Greek card game; no known IP holder.",
+    "isCommercial": false,
+    "trademarkNote": ""
+  },
+  "statistics": {
+    "popularity": 1,
+    "complexity": 1,
+    "luck": 1,
+    "skill": 1
+  },
+  "media": {
+    "videoTutorial": ""
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "capture_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Opening deal: 6 cards per player and 4 face-up table cards."
+      },
+      {
+        "id": "capture_play",
+        "label": "Capture and Build",
+        "actor": "active_players_clockwise",
+        "legalActions": [
+          "play_card",
+          "declare"
+        ],
+        "nextPhase": "capture_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [
+          {
+            "condition": "hands_empty == true && stock_remaining == true",
+            "nextPhase": "redeal"
+          },
+          {
+            "condition": "all_cards_played == true",
+            "nextPhase": "resolution"
+          }
+        ],
+        "cardVisibilityChanges": {
+          "play_card": "face_up",
+          "declare": "face_up"
+        },
+        "notes": "Players capture by match/sum and create declarations."
+      },
+      {
+        "id": "redeal",
+        "label": "Redeal Hands",
+        "actor": "dealer",
+        "legalActions": [
+          "deal"
+        ],
+        "nextPhase": "capture_play",
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {
+          "deal": "face_down"
+        },
+        "notes": "Subsequent deals: 6 cards each from stock; no extra table cards."
+      },
+      {
+        "id": "resolution",
+        "label": "Score",
+        "actor": "system",
+        "legalActions": [
+          "award_pot"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Count captures, point cards, and xeria bonuses."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diloti has no ante or pot-betting entry fee."
+      },
+      "deal": {
+        "supported": true,
+        "description": "Dealer distributes 6-card hands; opening deal also places 4 table cards face up.",
+        "cost": "0",
+        "constraints": "Dealer-only action used for opening deal and subsequent redeals until stock is exhausted.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {
+          "target": "hand",
+          "count": 6
+        }
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no market row in Diloti."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are captured from table, not purchased."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No stock-buy mechanic exists in this fishing game."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players play through each deal; no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting round means no check action."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no wager to call in Diloti."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is card-capture based, not betting based."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No betting ladder exists, so raise is not used."
+      },
+      "declare": {
+        "supported": true,
+        "description": "Create, raise, or add to declarations (plain/group) using number cards.",
+        "cost": "0",
+        "constraints": "Player must hold a matching capture card when making or raising a declaration; group declarations cannot be raised.",
+        "isTerminating": false,
+        "effectType": "custom",
+        "effectHints": {}
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are exposed gradually through normal play."
+      },
+      "award_pot": {
+        "supported": true,
+        "description": "Apply end-of-deal scoring for captures and xeria.",
+        "cost": "0",
+        "constraints": "System action after all cards are played.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play one card to capture by match/sum, capture declarations, or lay it on table when legal.",
+        "cost": "0",
+        "constraints": "Face cards capture one matching face card only; number cards use exact-match and selected sum combinations under declaration constraints.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {
+          "from": "hand",
+          "to": "tableau"
+        }
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Cards are dealt in batches; no draw-per-turn action."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Uncaptured cards stay on table, not in a discard pile."
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Each turn requires a legal card play."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Diloti does not include bidding rounds."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring comes from captures, not meld sets."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Round end is all cards played, not a go-out event."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ]
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": "NA",
+      "tableauCards": "face_up"
+    },
+    "drawConfig": {
+      "canDraw": false,
+      "drawSources": [],
+      "drawCount": 0,
+      "drawTiming": "start_of_turn",
+      "mustDrawBeforePlay": false,
+      "drawAndDiscard": false
+    },
+    "discardConfig": {
+      "hasDiscard": false,
+      "mustDiscard": false,
+      "discardTiming": "after_draw",
+      "discardVisibility": "face_up",
+      "discardCount": 0,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": {
+        "canPickTop": false,
+        "canPickAny": false,
+        "mustTakeAll": false,
+        "mustUsePickedCard": false,
+        "pickCost": "",
+        "frozenPileRules": ""
+      }
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 6,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "fixed_suit",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "verbal",
+      "encoding": {},
+      "revealTiming": "clockwise",
+      "pigRule": false,
+      "pigPenalty": null
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": true,
+      "captureMethod": "sum_or_match",
+      "captureTarget": null,
+      "sweepBonus": 10,
+      "tableauStartSize": 4
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "variable",
+      "startsWith": "right_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "all_cards_played",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "min_players": 2,
+      "max_players": 4,
+      "hand_size": 6,
+      "target_score": 61
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 6
+      },
+      {
+        "id": "tableau",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": null
+      },
+      {
+        "id": "custom:capture_pile",
+        "type": "pool",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": null
+      }
+    ],
+    "rules": {
+      "edgeCases": [
+        {
+          "id": "first_last_no_xeri",
+          "appliesTo": "xeri_scoring",
+          "text": "Opening-table clear with the first played card does not count as xeri; collecting leftover table cards at end of round is also not automatically xeri.",
+          "affects": "bonus_scoring"
+        },
+        {
+          "id": "table_face_card_redeal",
+          "appliesTo": "opening_deal",
+          "text": "If opening table cards contain three or four face cards of the same rank, redeal opening table cards according to standard rules.",
+          "affects": "deal_validation"
+        }
+      ]
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "capture_play",
+      "redeal",
+      "resolution"
+    ],
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Capture totals and bonus-card scoring",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "A standard 52-card French deck comprising four suits: Hearts, Diamonds, Clubs, and Spades. Each suit contains thirteen ranks: Ace, 2 through 10, Jack, Queen, and King, providing versatile options for various card games.",
+    "suitDescription": "Four traditional French suits: Hearts (Cœur), Diamonds (Carreau), Clubs (Trèfle), and Spades (Pique), each represented with standard French card iconography and distinct color coding for easy identification.",
+    "rankDescription": "Standard thirteen ranks per suit: Ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, and King, where each rank has distinct value and meaning depending on the specific game rules and player strategies.",
+    "dealPattern": "Deal 6 cards each with 4 cards to tableau; replenish by batch deals.",
+    "notApplicableReasons": {}
+  },
+  "synthesis": {
+    "hero": {
+      "title": "DILOTI",
+      "subtitle": "Greek Declaration Capture",
+      "tagline": "Build, trap, and sweep the table."
+    },
+    "shortDescription": "A deep Greek fishing game combining sum-capture and declaration builds.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "tableau",
+        "custom:capture_pile"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Capture cards by matching or summing values, and use declarations to lock table sets.",
+    "ai": "Game: Diloti. Deal 6 each, capture or declare builds, then score cards and xeria bonuses."
+  },
+  "scoring": {
+    "description": "Points come from most cards, aces, 10 of diamonds, 2 of clubs, and xeri sweeps.",
+    "winCondition": "First side or player to reach 61 points wins.",
+    "cardValues": {},
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": "",
+    "targetScore": 61,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Diloti uses fixed point values per card type (aces, 10♦, 2♣) and sweep bonuses; see rules."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

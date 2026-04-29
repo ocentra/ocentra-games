@@ -1,0 +1,734 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "auction-bridge.json",
+  "name": "Auction Bridge",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Auction Bridge is the historic bridge variant that bridged the gap between Bridge Whist and modern Contract Bridge. Unlike modern Bridge, in Auction Bridge, all tricks won above six count toward the game score if the contract is fulfilled, making the bidding process less about strict precision and more about competition for the trump suit.",
+    "category": "Trick-taking",
+    "subCategory": "Bridge Family",
+    "origin": "UK / India",
+    "originName": "Auction Bridge",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4 (Partnerships)"
+    },
+    "deck": "Standard 52-card deck",
+    "difficulty": "Intermediate",
+    "duration": "20-40 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "origins": "Developed in the late 19th century as an improvement over Bridge Whist, where the dealer chose trumps. Auction introduced competitive bidding. It was reportedly formalized by members of the Bath Club in London and popularized in India.",
+    "originCountries": [
+      "England",
+      "India"
+    ],
+    "timeline": [
+      "1904: First formal rules of Auction Bridge published.",
+      "1910s: Becomes the most popular social card game in English-speaking countries.",
+      "1925: Gradually superseded by Contract Bridge, which rewarded precise bidding more heavily.",
+      "Present: Occasionally played by bridge historians and in traditional social circles."
+    ],
+    "evolution": "The most significant evolution was moving the scoring of overtricks 'below the line', a rule changed in Contract Bridge to penalize under-bidding.",
+    "cultural": "A staple of the Edwardian era, Auction Bridge was the definitive 'Game of the Elite' before the Great Depression.",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "4 players in two partnerships (North-South, East-West).",
+    "deck": "Standard 52-card deck. Ranks A(high)-2(low). Suit priorities: No Trumps, Spades, Hearts, Diamonds, Clubs.",
+    "equipment": "Standard pack, score sheet with a line drawn horizontally in the middle.",
+    "dealing": "The entire deck is dealt out, 13 cards per player.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Score 'Below the Line' points by winning tricks to reach 30 points for a 'Game'. Win two games to win the 'Rubber'.",
+    "gameplay": "1. **Lead**: Player to declarer's left leads. 2. **Dummy**: Declarer's partner lays cards face up. Declarer plays both hands. 3. **Trick Rules**: Must follow suit if possible. Highest trump or led suit wins. 4. **Scoring**: If contract is made, ALL tricks over 6 score towards the game (e.g., if you bid 1 and win 3, all 3 count toward the game).",
+    "keyRules": [
+      "Trick Values: No Trump (10), Spades (9), Hearts (8), Diamonds (7), Clubs (6).",
+      "Honors: High cards (A, K, Q, J, 10 of trumps) score separate bonus points 'Above the Line'.",
+      "Rubber: The first team to win two games of 30 points each wins the Rubber bonus (250 points)."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Bidding is less about hand-strength accuracy than in Contract Bridge. The goal is primarily to reach the 30-point threshold for a game as cheaply as possible.",
+    "intermediate": "Overtrick Strategy: Since overtricks count toward the game, you can bid conservatively. A bid of '1 No Trump' potentially scores the whole game (30 pts) if you take 9 tricks.",
+    "advanced": "Defensive Doubling: Double an opponent if you are certain they cannot make their bid, but be waryâ€”if they make it, the doubled tricks may win them the game immediately.",
+    "tips": [
+      "In No Trump hands, prioritize long suits to set up 'low' trick-winners after high cards are gone.",
+      "Don't ignore the honors. In Auction, the honor bonus (e.g., 4 honors in one hand = 80-100 pts) is often larger than the trick score."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "auction-null",
+        "name": "Nullos",
+        "description": "A variation where a player bids to lose tricks. Ranking usually falls between Spades and No Trump.",
+        "overrides": {},
+        "emptyOverridesReason": "Variation describes null-style contracts; base engine already models bidding and trick play so no overrides yet."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Fails to prioritize suit values in bidding. Doesn't count honors.",
+      "medium": "Bids aggressively to reach the 30-point game mark. Uses basic finessing in play.",
+      "hard": "Performs complex probability analysis for overtricks. Uses 'Above the Line' honor tracking to decide between a risky high bid or a safe defensive pass."
+    },
+    "considerations": [
+      "AI must differentiate its bidding weighting from modern bridge (overtricks = game points).",
+      "Honor score simulation is required for valuation."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:pagat_auction_bridge_www_pagat_com_auctionwhist_bridge_html",
+        "name": "Pagat - Auction Bridge",
+        "url": "https://www.pagat.com/auctionwhist/bridge.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-bridge.html"
+      },
+      {
+        "sections": [],
+        "url": "https://en.wikipedia.org/wiki/Auction_bridge",
+        "name": "Wikipedia - Auction bridge",
+        "id": "src:wikipedia_auction_bridge",
+        "retrievedAt": "2026-02-20",
+        "localHtml": "wiki-auction-bridge-2.html"
+      },
+      {
+        "id": "src:wiki-auction-bridge",
+        "name": "Wikipedia - Auction bridge",
+        "url": "https://en.wikipedia.org/wiki/Auction_bridge",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-auction-bridge.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Bridge_whist",
+        "localHtml": "wiki-bridge-whist.html"
+      },
+      "Bicycle Cards - The History and Rules of Auction Bridge",
+      "Ely Culbertson - The Blue Book of Bridge (Early Editions)"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "trick-taking",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 60,
+    "complexity": 5,
+    "luck": 3,
+    "skill": 9
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "deal",
+        "label": "Full Deal",
+        "actor": "dealer",
+        "legalActions": [
+          "deal_thirteen"
+        ],
+        "nextPhase": "bidding",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "bidding",
+        "label": "The Auction",
+        "actor": "current_player",
+        "legalActions": [
+          "bid",
+          "pass",
+          "double",
+          "redouble"
+        ],
+        "nextPhase": "trick_play",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "trick_play",
+        "label": "Trick Play",
+        "actor": "current_player",
+        "legalActions": [
+          "play_card"
+        ],
+        "nextPhase": "tally",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 13,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "tally",
+        "label": "Rubber Scoring",
+        "actor": "system",
+        "legalActions": [
+          "score_honors",
+          "score_game_tricks",
+          "score_bonuses"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction Bridge has no antes; bidding starts the auction."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dealer deals all 52 cards (13 each); not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No market; full deal to four hands."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Entire deck is dealt; no stock to buy from."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "All cards dealt; no draw or stock purchase."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bridge is partnership play; no folding out of hands."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bidding uses pass or bid; no check in auction."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction uses level-and-suit bids, not chip call."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Bidding is by contract level and suit, not chips."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction uses bids; no chip raise."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dummy is exposed by rule; no separate declare action."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Dummy exposed at start of play; no showdown reveal."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Scoring is below/above the line; no pot to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Standard trick-taking rules.",
+        "cost": "0",
+        "constraints": "Must follow suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Auction Bridge deals all 52 cards; no draw pile."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "No discard pile; cards are played to tricks."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without taking another action this turn.",
+        "cost": "0",
+        "constraints": "Allowed when rules permit skipping a wager or play.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": true,
+        "description": "Quantity (1-7) + Suit/NT. Must exceed previous bid value.",
+        "cost": "0",
+        "constraints": "Suit points: NT=10, S=9, H=8, D=7, C=6.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Trick-taking game; no melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Game ends when a team wins two games (30 pts each)."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": true,
+      "partnershipFormats": [
+        "2v2"
+      ],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": "face_up",
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "Auction Bridge deals all 52 cards; no draw pile.",
+      "discardConfig": "Cards are played to tricks; there is no discard pile."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": null,
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": []
+    },
+    "shedding": {
+      "hasShedding": false,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": ""
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 13
+      },
+      {
+        "id": "trick",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "deal",
+      "bidding",
+      "trick_play",
+      "tally"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_thirteen",
+        "supported": true,
+        "description": "Deal 13 cards to each player.",
+        "cost": "0",
+        "constraints": "Deal phase.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "double",
+        "supported": true,
+        "description": "Double the contract.",
+        "cost": "0",
+        "constraints": "During bidding.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "redouble",
+        "supported": true,
+        "description": "Redouble the contract.",
+        "cost": "0",
+        "constraints": "During bidding after double.",
+        "isTerminating": false,
+        "effectType": "bid",
+        "effectHints": {}
+      },
+      {
+        "id": "score_honors",
+        "supported": true,
+        "description": "Score honor card bonuses.",
+        "cost": "0",
+        "constraints": "After tricks.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      {
+        "id": "score_game_tricks",
+        "supported": true,
+        "description": "Score trick points.",
+        "cost": "0",
+        "constraints": "After tricks.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      },
+      {
+        "id": "score_bonuses",
+        "supported": true,
+        "description": "Score slam and other bonuses.",
+        "cost": "0",
+        "constraints": "After tricks.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hand rankings.",
+    "rankingSystem": "Auction-Point Bridge",
+    "bettingLimits": "NA",
+    "useTrump": true,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks from ace down to two. No jokers; the full pack is dealt to four players for auction and play.",
+    "suitDescription": "Four French suits (spades, hearts, diamonds, clubs). In bridge, suit hierarchy for bidding is spades highest, then hearts, diamonds, clubs, then no-trump. Follow suit when possible; trump overrides plain suits.",
+    "rankDescription": "Thirteen ranks per suit in standard order: ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three, two. Trick order is standard; contract and declarer are determined by the auction.",
+    "dealPattern": "13 each."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "AUCTION BRIDGE",
+      "subtitle": "The Edwardian Classic",
+      "tagline": "The game that defined a generation. Bidding made competitive, all tricks count."
+    },
+    "shortDescription": "Step back into the golden age of card games with Auction Bridge. Master the competitive auction, manage your honors, and claim the 250-point Rubber bonus in this refined precursor to modern Bridge.",
+    "uiThemes": [
+      "classic",
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "trick"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "NA",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Welcome to Auction Bridge. You have 13 cards. Unlike modern Bridge, every trick you win above six will count toward the game if you make your contract. The target is 30 points. Will you start with 1 Heart or try for a No Trump?",
+    "ai": "Game: Auction Bridge. Type: Partnership bidding. Rules: 52 cards. Ranks: NT=10, S=9, H=8, D=7, C=6. All tricks over 6 count for game if contract made. Goal: Win two games (30 pts each) for the Rubber."
+  },
+  "scoring": {
+    "description": "Score is divided into 'Above the Line' (bonuses/honors) and 'Below the Line' (tricks toward game).",
+    "winCondition": "The partnership with the highest cumulative total (Above + Below) after a team wins two games wins the Rubber.",
+    "cardValues": {},
+    "penalties": {
+      "Undertricks": "If the contract is failed, opponents score points 'Above the Line' (usually 50 per trick, more if doubled)."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "30 points constitutes a Game. Points past 30 do not carry over to the next game.",
+    "targetScore": 30,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "cardValues": "Auction Bridge scoring is defined by contracts, tricks, and bonuses; there is no fixed per-card rank value table to list."
+    }
+  },
+  "alsoKnownAs": [
+    "Bridge Whist (Evolution)",
+    "Auction",
+    "Pre-Contract Bridge"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

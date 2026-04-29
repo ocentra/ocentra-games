@@ -1,0 +1,718 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "old-maid.json",
+  "name": "Old Maid",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Old Maid is a timeless children's card game focused on matching and evasion. Using a standard deck with one card removed (or a specialized deck), players aim to pair up all their cards and discard them. The tension lies in the final unmatchable card—the 'Old Maid'. The player left with this card at the end of the game loses. It is a game of simple mechanics, bluffing, and luck.",
+    "category": "Shedding",
+    "subCategory": "Shedding",
+    "origin": "Global (likely Victorian England)",
+    "originName": "Old Maid; Schwarzer Peter (German); Le Pouilleux (French)",
+    "players": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "recommendedPlayers": 2,
+      "display": "2-8"
+    },
+    "deck": "Standard 52-card deck (with 1 Queen removed) or dedicated Old Maid deck",
+    "difficulty": "Beginner",
+    "duration": "5-10 minutes",
+    "hasPlaceholders": false,
+    "playerMode": "multiplayer"
+  },
+  "history": {
+    "originCountries": [
+      "Germany",
+      "England",
+      "USA",
+      "France"
+    ],
+    "origins": "Dates back to the early 19th century. It likely evolved from older gambling games where the loser had to pay for drinks ('Black Peter' in Germany, 'Le Pouilleux' in France).",
+    "timeline": [
+      "1830s: First literary mentions of Old Maid as a nursery game.",
+      "1880s: Milton Bradley and Parker Brothers begin manufacturing dedicated Old Maid decks with comical characters.",
+      "1950s: Becomes one of the 'Big Four' children's card games (alongside Go Fish, Crazy Eights, and Slapjack).",
+      "Present: A universal introductory game for teaching youngsters card handling and turn-taking."
+    ],
+    "evolution": "The game was originally used as a semi-gambling game for adults but shifted toward a purely social/family game by the late Victorian era.",
+    "cultural": "Known by many regional names: Black Peter (Germany), Musta Pekka (Finland), and Scabby Queen (UK).",
+    "hasPlaceholders": false
+  },
+  "setup": {
+    "players": "3-6 is typical.",
+    "deck": "Standard cards. Remove the Queen of Clubs. The Queen of Spades becomes the 'Old Maid'.",
+    "equipment": "Standard 52-card pack with one Queen removed, or a dedicated Old Maid deck.",
+    "dealing": "Deal all cards out one by one. It doesn't matter if some players have one more card than others.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "Pair up and discard all your cards; the player left holding the single remaining Queen (the Old Maid) at the end loses.",
+    "gameplay": "The dealer deals all 51 cards one by one; some players may have one more card. Everyone discards any pairs (and from triplets or quartets, discard two or two pairs). The dealer offers their hand face down to the player on their left, who draws one card without looking. If it makes a pair they discard the pair. The player who drew then offers their hand to the next player left; play continues clockwise. Players drop out when their hand is empty. The player left holding the single Queen (the Old Maid) loses.",
+    "keyRules": [
+      "Pairs are two cards of equal rank (e.g. two sevens or two kings).",
+      "The player who just drew a card offers their hand to the next player to their left.",
+      "If you empty your hand you are safe and take no further part; turn passes to the next player.",
+      "The holder of the single remaining Queen (Old Maid) at the end loses."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Keep your cards spread out! If you are holding the Old Maid, try to keep your face neutral. If the player drawing from you sees you smiling or looking nervous when they touch a certain card, they will avoid it. Conversely, if you want them to pick it, try to hide it slightly higher or lower in your hand so it 'sticks out' naturally.",
+    "intermediate": "The 'Card Shuffle': When it's your turn to have a card drawn, shuffle your hand behind your back or under the table. This prevents the drawing player from tracking where you moved the Old Maid from the previous round.",
+    "advanced": "Bluff-Targeting: If you have two cards and one is the Old Maid, you can try to trick the opponent by holding the 'safe' card slightly forward. Many children reflexively pick the 'easiest' card to grab. If you know an opponent uses this habit, place the Old Maid in the prominent position.",
+    "tips": [
+      "In a specialized deck, the Old Maid often has a distinct character (the 'Nanny' or 'Aunt'). Children often focus on the art, which makes bluffing harder!",
+      "If you draw a card that completes a pair, discard it IMMEDIATELY to reduce your hand size and improve your odds of not having the Old Maid drawn back from you."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [
+      {
+        "id": "black-peter",
+        "name": "Black Peter",
+        "description": "A Jack is removed instead of a Queen; the holder of the odd Jack at the end loses. Often played with a special 31- or 37-card pack where the odd card depicts a black cat or chimney sweep.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses same engine; only deck and odd card differ; no numeric overrides needed."
+      },
+      {
+        "id": "reversed-old-maid",
+        "name": "Reversed Old Maid",
+        "description": "Same mechanics but the holder of the odd card (last Queen or Old Maid) at the end is the winner instead of the loser.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant only inverts win condition; engine logic unchanged; no overrides needed."
+      },
+      {
+        "id": "special-pack",
+        "name": "Dedicated Old Maid Pack",
+        "description": "Special pack of matching pairs plus one Old Maid card (e.g. comical character); the single Old Maid card has no pair and its holder loses.",
+        "overrides": {},
+        "emptyOverridesReason": "Variant uses dedicated deck; same phases and actions; no engine overrides needed."
+      }
+    ],
+    "hasPlaceholders": false
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Doesn't shuffle; shows emotions in the UI (if applicable); always picks the leftmost card.",
+      "medium": "Randomizes card positions; uses basic bluffing logic for drawing.",
+      "hard": "Expert at 'Micro-Expression' simulation (or behavioral randomization); tracks which cards were discarded to know which 'Safe' cards remain."
+    },
+    "considerations": [
+      "Hand-position (Spatially) randomization.",
+      "Bluff-logic (Risk vs. Reward) simulator.",
+      "Pair-discard (Shedding) efficiency."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki_how_how_to_play_old_maid_www_pagat_com_passing_oldmaid_html",
+        "name": "WikiHow - How to Play Old Maid",
+        "url": "https://www.pagat.com/passing/oldmaid.html",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "pagat-old-maid.html"
+      },
+      {
+        "id": "src:wikipedia_old_maid_card_game_en_wikipedia_org_wiki_old_maid_card_game",
+        "name": "Wikipedia - Old maid (card game)",
+        "url": "https://en.wikipedia.org/wiki/Old_maid_(card_game)",
+        "retrievedAt": "2026-02-21",
+        "sections": [],
+        "localHtml": "wiki-old-maid-2.html"
+      },
+      {
+        "id": "src:wikipedia_old_maid_card_game_en_wikipedia_org_wiki_old_maid_card_game_3",
+        "name": "Wikipedia - Old maid (card game)",
+        "url": "https://en.wikipedia.org/wiki/Old_maid_(card_game)",
+        "retrievedAt": "2026-02-19",
+        "sections": [],
+        "localHtml": "wiki-old-maid-2.html"
+      },
+      {
+        "id": "src:wiki-old-maid-3",
+        "name": "Wikipedia - Old maid (card game)",
+        "url": "https://en.wikipedia.org/wiki/Old_maid_(card_game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-old-maid-3.html"
+      },
+      {
+        "id": "src:wiki-old-maid",
+        "name": "Wikipedia - Old maid (card game)",
+        "url": "https://en.wikipedia.org/wiki/Old_maid_(card_game)",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-old-maid.html"
+      },
+      {
+        "id": "src:wiki-vieux-garon",
+        "name": "Wikipedia - Vieux garçon",
+        "url": "https://en.wikipedia.org/wiki/Vieux_gar%C3%A7on",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-vieux-garon.html"
+      }
+    ],
+    "additional": [
+      {
+        "url": "https://en.wikipedia.org/wiki/Black_Peter_(card_game)",
+        "localHtml": "wiki-black-peter.html"
+      },
+      "Wikipedia - Old Maid (card game)",
+      "Traditional English Nursery Games Archive"
+    ],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "shedding",
+    "traditional"
+  ],
+  "legal": {
+    "status": "Public Domain",
+    "isCommercial": false,
+    "trademarkNote": null
+  },
+  "statistics": {
+    "popularity": 50,
+    "complexity": 3,
+    "luck": 5,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "initial_discard",
+        "label": "Initial discard pairs",
+        "actor": "all_simultaneous",
+        "legalActions": [
+          "discard"
+        ],
+        "nextPhase": "draw_round",
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "All players discard any pairs (and from triplets or quartets) from their dealt hand."
+      },
+      {
+        "id": "draw_round",
+        "label": "Draw from neighbor",
+        "actor": "each_player_clockwise",
+        "legalActions": [
+          "draw",
+          "discard"
+        ],
+        "nextPhase": null,
+        "isMandatory": false,
+        "loopIndex": null,
+        "totalLoops": null,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": "Current player offers hand face down to left neighbor, who draws one card; drawer discards a pair if formed. Drawer then offers to next player; repeat until one player holds the Old Maid."
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no ante or betting."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Deal is performed by the dealer; not a player action."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game does not use a market to reveal."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no market purchase."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no buying from stock."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no fold action."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no check or betting."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no call or betting."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bet action."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no raise or betting."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no declare phase."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands are not revealed in this phase."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pot to award."
+      },
+      "play_card": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players draw from neighbors and discard pairs; there is no play-to-table action."
+      },
+      "draw": {
+        "supported": true,
+        "description": "Take one card from the hand of the player to your right who has offered their hand face down.",
+        "cost": "0",
+        "constraints": "Only when that player has offered their hand; you must take exactly one card without looking.",
+        "isTerminating": false,
+        "effectType": "draw",
+        "effectHints": {}
+      },
+      "discard": {
+        "supported": true,
+        "description": "Discard a pair of cards of equal rank from your hand to the discard pile.",
+        "cost": "0",
+        "constraints": "You must have at least two cards of the same rank; pairs are discarded face up.",
+        "isTerminating": false,
+        "effectType": "discard",
+        "effectHints": {}
+      },
+      "pass": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no pass action."
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no bid action."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no meld action."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This game has no go-out action."
+      }
+    },
+    "playerConfig": {
+      "minPlayers": 2,
+      "maxPlayers": 8,
+      "optimalPlayers": 2,
+      "startingStack": 1000,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": [],
+      "playerMode": "multiplayer"
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": "face_up",
+      "discardTop": null,
+      "tableauCards": null
+    },
+    "drawConfig": null,
+    "discardConfig": {
+      "hasDiscard": true,
+      "mustDiscard": false,
+      "discardTiming": "any_time",
+      "discardVisibility": "face_up",
+      "discardCount": 2,
+      "opponentCanPickFromDiscard": false,
+      "discardPickRules": null
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 17,
+    "trumpConfig": {
+      "hasTrump": false,
+      "trumpDetermination": "turned_card",
+      "permanentTrumps": [],
+      "rightBowerLeftBower": false,
+      "trumpSuitRanking": "",
+      "canCallNoTrump": false,
+      "overtakingRule": ""
+    },
+    "meldConfig": {
+      "hasMelding": false,
+      "meldTypes": [],
+      "meldTiming": "any_time_in_turn",
+      "layOffAllowed": false,
+      "initialMeldRequirement": "",
+      "goingOut": {
+        "condition": "",
+        "mustAnnounce": false,
+        "knockOption": false,
+        "knockDeadwoodLimit": 0
+      }
+    },
+    "trickConfig": {
+      "hasTricks": false,
+      "tricksPerRound": 0,
+      "mustFollowSuit": false,
+      "mustOvertrump": false,
+      "leadRestrictions": "",
+      "trickWinCondition": "highest_of_led_suit",
+      "trickWinnerLeads": false,
+      "scoredTricks": false,
+      "bidding": {
+        "hasBidding": false,
+        "biddingSystem": "auction",
+        "minBid": 0,
+        "maxBid": 0,
+        "passAllowed": false,
+        "doubling": false
+      }
+    },
+    "declarationMechanism": {
+      "type": "chips_in_fist",
+      "encoding": {},
+      "revealTiming": "simultaneous",
+      "pigRule": false,
+      "pigPenalty": "forfeit_entire_pot"
+    },
+    "handRanks": {
+      "high": "NA",
+      "low": "NA",
+      "lowQualifier": {
+        "maxHighCard": 0,
+        "acePlaysLow": false,
+        "straightsAndFlushesCount": false
+      }
+    },
+    "buyCosts": {
+      "enabled": false,
+      "currency": "NA",
+      "sources": {
+        "market": {
+          "byRank": {},
+          "flat": 0
+        },
+        "stock": {
+          "flat": 0
+        },
+        "discard": {
+          "flat": 0
+        }
+      }
+    },
+    "marketConfig": {
+      "enabled": false,
+      "size": 0,
+      "refillFrom": "stock",
+      "refillTiming": "immediately_after_purchase",
+      "visibility": "face_up"
+    },
+    "specialCards": {
+      "wildcards": [],
+      "actionCards": [],
+      "bonusCards": [],
+      "penaltyCards": [
+        {
+          "card": "Remaining Queen",
+          "penaltyPoints": 0,
+          "notes": "The Old Maid; holder loses the game."
+        }
+      ]
+    },
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [],
+      "passAllowed": false,
+      "burnRules": "Pairs of equal rank are discarded to the discard pile. Triplets: discard two and keep one. Quartets: discard two pairs."
+    },
+    "fishingConfig": {
+      "hasFishing": false,
+      "captureMethod": "matching_rank",
+      "captureTarget": 0,
+      "sweepBonus": 0,
+      "tableauStartSize": 0
+    },
+    "patienceConfig": {
+      "isSolitaire": false,
+      "tableauColumns": 0,
+      "foundationCount": 0,
+      "buildDirection": "ascending",
+      "buildSuitRule": "same_suit",
+      "redealAllowed": false,
+      "redealCount": 0
+    },
+    "bankingConfig": {
+      "hasBanker": false,
+      "bankerDetermination": "fixed_dealer",
+      "targetValue": 0,
+      "bustRule": "",
+      "playerVsBanker": false
+    },
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "left_of_dealer",
+      "dealerRotates": false
+    },
+    "roundConfig": {
+      "hasRounds": false,
+      "roundCount": 0,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {},
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "progression": [
+      "initial_discard",
+      "draw_round"
+    ],
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 52
+      },
+      {
+        "id": "stock",
+        "type": "stack",
+        "visibility": "hidden",
+        "owner": "table",
+        "capacity": 52
+      },
+      {
+        "id": "discard",
+        "type": "stack",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "roles": [],
+    "customActions": [],
+    "actions": {},
+    "handRankingSystem": "No hand ranking; pairs match by rank only.",
+    "rankingSystem": "",
+    "bettingLimits": "NA",
+    "useTrump": false,
+    "deckDescription": "Standard 52-card French deck with one Queen removed (51 cards). The remaining Queen is the Old Maid; its holder at game end loses. Four suits (Hearts, Diamonds, Clubs, Spades), thirteen ranks each; one Queen is removed before play.",
+    "suitDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "rankDescription": "Suits and ranks are as defined in the deck description above; no separate suit or rank set is used for this game.",
+    "dealPattern": "All 51 cards dealt one by one clockwise; some players may have one more card than others.",
+    "notApplicableReasons": {
+      "drawConfig": "Players draw one card from the hand of the player to their right when offered, not from a stock pile."
+    }
+  },
+  "synthesis": {
+    "hero": {
+      "title": "OLD MAID",
+      "subtitle": "Card Game",
+      "tagline": "Old Maid is a timeless children's card game focused on matching and evasion. Usi..."
+    },
+    "shortDescription": "Old Maid is a timeless children's card game focused on matching and evasion. Using a standard deck with one card removed (or a specialized deck), play",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "stock",
+        "discard"
+      ],
+      "marketPosition": "center",
+      "stockPosition": "center",
+      "discardPosition": "center",
+      "playerHandLayout": "arc",
+      "potPosition": "center"
+    }
+  },
+  "prompts": {
+    "human": "Old Maid is a timeless children's card game focused on matching and evasion. Using a standard deck with one card removed (or a specialized deck), players aim to pair up all their cards and discard them. The tension lies in the final unmatchable card—the 'Old Maid'. The player left with this card at the end of the game loses. It is a game of simple mechanics, bluffing, and luck.",
+    "ai": "Game: Old Maid. Logic: Deal all 51 cards; players discard pairs. In turn, offer hand to left neighbor who draws one card and discards any pair. Holder of the single Queen (Old Maid) at end loses."
+  },
+  "scoring": {
+    "description": "Avoid being the player left with the Old Maid. Cards in hand count as penalty; first to zero cards wins.",
+    "winCondition": "Avoid being the player left with the Old Maid.",
+    "cardValues": {
+      "2": "1",
+      "3": "1",
+      "4": "1",
+      "5": "1",
+      "6": "1",
+      "7": "1",
+      "8": "1",
+      "9": "1",
+      "10": "1",
+      "A": "1",
+      "K": "1",
+      "Q": "1",
+      "J": "1"
+    },
+    "penalties": {},
+    "hasPlaceholders": false,
+    "splitRules": null,
+    "targetScore": 1,
+    "scoringDirection": "low_wins",
+    "nullReasons": {}
+  },
+  "alsoKnownAs": [
+    "Black Peter",
+    "Ekae",
+    "Pouilleux, Le",
+    "Schwarzer Peter",
+    "Vieux Garçon"
+  ],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": ""
+  },
+  "fieldStatus": {}
+}

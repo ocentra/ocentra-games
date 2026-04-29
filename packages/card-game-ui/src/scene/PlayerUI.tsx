@@ -83,6 +83,8 @@ export class PlayerUIConfig {
 
 export type PlayerUIProps = Partial<PlayerUIConfig> & {
   onIsolate?: () => void;
+  turnTimerLabel?: string;
+  turnTimerProgress?: number;
 };
 export type SerializablePlayerUIKey = 'baseArcRotation' | 'infoBoxAngle' | 'infoBoxRotation';
 export const PLAYER_UI_SERIALIZABLE_KEYS: readonly SerializablePlayerUIKey[] = [
@@ -190,7 +192,7 @@ const createArcPathForText = (
 };
 
 const PlayerUI: PlayerUIComponent = (props) => {
-  const { onIsolate, ...otherProps } = props;
+  const { onIsolate, turnTimerLabel, turnTimerProgress, ...otherProps } = props;
   const config = useMemo(() => Object.assign(new PlayerUIConfig(), otherProps), [otherProps]);
   const {
     baseArcRadius,
@@ -366,6 +368,18 @@ const PlayerUI: PlayerUIComponent = (props) => {
     if (infoBoxGlowEnabled) return 'infoBoxGlow';
     return undefined;
   }, [infoBoxBevelEnabled, infoBoxGlowEnabled]);
+  const normalizedTurnTimerProgress = useMemo(() => {
+    if (typeof turnTimerProgress !== 'number' || !Number.isFinite(turnTimerProgress)) {
+      return null;
+    }
+    return Math.max(0, Math.min(1, turnTimerProgress));
+  }, [turnTimerProgress]);
+  const turnTimerRadius = edgeRingRadius + edgeRingStrokeWidth * 0.75;
+  const turnTimerStrokeWidth = Math.max(4, edgeRingStrokeWidth * 0.38);
+  const turnTimerCircumference = 2 * Math.PI * turnTimerRadius;
+  const turnTimerDashOffset = normalizedTurnTimerProgress === null
+    ? 0
+    : turnTimerCircumference * (1 - normalizedTurnTimerProgress);
   
   return (
     <div 
@@ -524,6 +538,41 @@ const PlayerUI: PlayerUIComponent = (props) => {
           strokeWidth={edgeRingStrokeWidth}
           filter={edgeRingFilterId ? `url(#${edgeRingFilterId})` : undefined}
         />
+
+        {normalizedTurnTimerProgress !== null ? (
+          <g className="turn-timer">
+            <circle
+              className="turn-timer__track"
+              cx={baseArcCenterX}
+              cy={baseArcCenterY}
+              r={turnTimerRadius}
+              fill="none"
+              strokeWidth={turnTimerStrokeWidth}
+            />
+            <circle
+              className="turn-timer__progress"
+              cx={baseArcCenterX}
+              cy={baseArcCenterY}
+              r={turnTimerRadius}
+              fill="none"
+              strokeWidth={turnTimerStrokeWidth}
+              strokeDasharray={turnTimerCircumference}
+              strokeDashoffset={turnTimerDashOffset}
+              transform={`rotate(-90 ${baseArcCenterX} ${baseArcCenterY})`}
+            />
+            {turnTimerLabel ? (
+              <text
+                className="turn-timer__label"
+                x={baseArcCenterX}
+                y={baseArcCenterY + edgeRingRadius + edgeRingStrokeWidth + 30}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {turnTimerLabel}
+              </text>
+            ) : null}
+          </g>
+        ) : null}
         
         <circle 
           className="image-base"

@@ -1,0 +1,585 @@
+{
+  "schemaVersion": "processed-game@1.0.0",
+  "engineModelVersion": "engine-blueprint@1.0.0",
+  "filename": "tichu.json",
+  "name": "Tichu",
+  "completeness": {
+    "overview": true,
+    "history": true,
+    "setup": true,
+    "rules": true,
+    "strategy": true,
+    "variations": true,
+    "ai": true,
+    "sources": true
+  },
+  "quality": "complete",
+  "overview": {
+    "description": "Tichu is a proprietary partnership climbing game combining Big Two style combinations with special cards and team scoring.",
+    "category": "Climbing",
+    "subCategory": "Climbing",
+    "origin": "Commercial publication",
+    "originName": "Tichu",
+    "playerMode": "multiplayer",
+    "players": {
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "recommendedPlayers": 4,
+      "display": "4"
+    },
+    "deck": "Dedicated 56-card Tichu deck",
+    "difficulty": "Intermediate",
+    "duration": "45-60 minutes",
+    "hasPlaceholders": false
+  },
+  "history": {
+    "origins": "Tichu is documented as a distinct commercial card-game publication with its own player count, equipment, and objective.",
+    "originCountries": [
+      "Unknown"
+    ],
+    "timeline": [
+      "Documented source page identifies Tichu as a standalone game rather than only a synonym or expansion."
+    ],
+    "evolution": null,
+    "cultural": "Tichu is included because the source describes a playable ruleset or product-level card game, not just a deck style or expansion page.",
+    "hasPlaceholders": false,
+    "nullReasons": {
+      "evolution": "No separate evolution notes were available in the local source."
+    }
+  },
+  "setup": {
+    "players": "4 players use the table arrangement described for Tichu.",
+    "deck": "Dedicated 56-card Tichu deck",
+    "equipment": "Dedicated 56-card Tichu deck, score area, and enough table space for play.",
+    "dealing": "Prepare Dedicated 56-card Tichu deck and deal or lay out cards according to the documented Tichu rules before play begins.",
+    "hasPlaceholders": false
+  },
+  "rules": {
+    "objective": "As a partnership, be first to reach the target score, usually 1000 points.",
+    "gameplay": "Partners play climbing combinations to empty hands, call Tichu bets, and use special cards such as Dragon, Phoenix, Dog, and Mah Jong. Points from captured cards and successful calls determine the score.",
+    "keyRules": [
+      "Four players in two partnerships.",
+      "Players climb with singles, pairs, sequences, full houses, and bombs.",
+      "Tichu calls create major bonus or penalty swings."
+    ],
+    "hasPlaceholders": false
+  },
+  "strategy": {
+    "basic": "Focus first on the visible objective in Tichu: conserve cards or resources that directly advance the win condition.",
+    "intermediate": "Track public information and avoid giving opponents easy tempo swings during the middle turns.",
+    "advanced": "Plan several turns ahead around the scoring window and force opponents into low-value or defensive plays.",
+    "tips": [
+      "Track the cards and roles that have already appeared.",
+      "Preserve flexible plays until they improve the final scoring position."
+    ],
+    "hasPlaceholders": false
+  },
+  "variations": {
+    "list": [],
+    "hasPlaceholders": false,
+    "noVariationsReason": "Sources describe only the standard form; no separate named variants documented."
+  },
+  "ai": {
+    "difficulty": {
+      "easy": "Plays legal Tichu moves and follows the immediate objective.",
+      "medium": "Tracks scoring threats and obvious opponent progress in Tichu.",
+      "hard": "Plans around hidden information, timing, and the documented win condition for Tichu."
+    },
+    "considerations": [
+      "Represent Tichu as Climbing with Climbing mechanics.",
+      "Use source-linked rules before adding digital-only shortcuts."
+    ],
+    "hasPlaceholders": false
+  },
+  "sources": {
+    "primary": [
+      {
+        "id": "src:wiki-tichu",
+        "name": "Wikipedia - Tichu",
+        "url": "https://en.wikipedia.org/wiki/Tichu",
+        "retrievedAt": "2026-02-22",
+        "sections": [],
+        "localHtml": "wiki-tichu.html"
+      }
+    ],
+    "additional": [],
+    "hasPlaceholders": false
+  },
+  "tags": [
+    "climbing",
+    "strategy"
+  ],
+  "legal": {
+    "status": "Trademarked",
+    "isCommercial": true,
+    "trademarkNote": "Commercial title or dedicated deck. Keep this record as reference metadata; do not clone protected branding, art, card text, or proprietary presentation without rights."
+  },
+  "statistics": {
+    "popularity": 55,
+    "complexity": 3,
+    "luck": 4,
+    "skill": 5
+  },
+  "media": {
+    "videoTutorial": null
+  },
+  "engine": {
+    "phases": [
+      {
+        "id": "dealing",
+        "label": "Full Deal",
+        "actor": "system",
+        "legalActions": [
+          "deal_13_each"
+        ],
+        "nextPhase": "climbing",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "climbing",
+        "label": "Play Combinations",
+        "actor": "current_player",
+        "legalActions": [
+          "play_combination",
+          "pass"
+        ],
+        "nextPhase": "scoring",
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      },
+      {
+        "id": "scoring",
+        "label": "Penalty Tally",
+        "actor": "system",
+        "legalActions": [
+          "calculate_penalties"
+        ],
+        "nextPhase": null,
+        "isMandatory": true,
+        "loopIndex": 0,
+        "totalLoops": 0,
+        "conditionalNext": [],
+        "cardVisibilityChanges": {},
+        "notes": ""
+      }
+    ],
+    "playerActions": {
+      "ante": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Big Two is a point-based shedding game played without a pre-hand monetary ante."
+      },
+      "deal": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire 52-card deck is distributed equally by the system dealer at the start of the round."
+      },
+      "reveal_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a closed-hand climbing game where all cards are held privately; no community market exists."
+      },
+      "buy_market": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players cannot purchase or swap cards from any external area; they must succeed with their initial 13 cards."
+      },
+      "buy_stock": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The entire deck is distributed at once; no cards remain in stock to be purchased during play."
+      },
+      "fold": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Players must remain in the game until a winner has shed all cards to determine the penalty counts."
+      },
+      "check": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game uses a climbing and passing structure rather than a vying structure with checks and bets."
+      },
+      "call": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There is no pot or bet to match in Big Two; competition is based on combination rankings."
+      },
+      "bet": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "The game is scored via penalty points for cards remaining in hand rather than through wagering."
+      },
+      "raise": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "There are no wagering rounds in this game, so the value of the deal cannot be increased via raises."
+      },
+      "declare": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Winning results are immediate upon playing the last card; no formal declaration phase is required."
+      },
+      "reveal_hand": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Hands remain private until individual cards are played into climbing combos; no showdown occurs."
+      },
+      "award_pot": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Points are tallied on a scorecard after each hand; there is no physical pot of assets to award."
+      },
+      "play_card": {
+        "supported": true,
+        "description": "Play a valid combination (single, pair, triple, or 5-card) to beat the previous play.",
+        "cost": "0",
+        "constraints": "Must match the combination type and exceed the previous rank/suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      "draw": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Each player receives thirteen cards at the start and no further drawing occurs during the play phase."
+      },
+      "discard": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Every card must be shed through valid climbing combinations; there is no separate discard or waste pile."
+      },
+      "pass": {
+        "supported": true,
+        "description": "Pass without playing a combination this turn.",
+        "cost": "0",
+        "constraints": "Allowed at any time during the climbing phase.",
+        "isTerminating": false,
+        "effectType": "pass",
+        "effectHints": {}
+      },
+      "bid": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "Big Two does not utilize a bidding system to determine the dealer, trump, or game objectives."
+      },
+      "meld": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "This is a climbing game based on beating combinations rather than creating or laying down melds."
+      },
+      "go_out": {
+        "supported": false,
+        "description": "NA",
+        "cost": "NA",
+        "constraints": "NA",
+        "isTerminating": false,
+        "effectType": "NA",
+        "effectHints": {},
+        "reason": "A player wins the round automatically upon playing their final combination from hand."
+      }
+    },
+    "playerConfig": {
+      "playerMode": "multiplayer",
+      "minPlayers": 4,
+      "maxPlayers": 4,
+      "optimalPlayers": 4,
+      "startingStack": null,
+      "seatLayout": "circular",
+      "partnerships": false,
+      "partnershipFormats": []
+    },
+    "cardVisibility": {
+      "handDefault": "face_down",
+      "initialDeal": "face_down",
+      "marketCards": null,
+      "stockPurchase": null,
+      "discardTop": null,
+      "tableauCards": "face_up"
+    },
+    "drawConfig": null,
+    "discardConfig": null,
+    "notApplicableReasons": {
+      "drawConfig": "The full hand is dealt initially; no draw pile exists during the climbing phase.",
+      "discardConfig": "Cards are played to the table center or held; no separate discard pile is utilized.",
+      "specialCards": "Certain ranks (Twos) are high-ranking but do not trigger secondary automated engine effects.",
+      "declarationMechanism": "The game state is determined by public combination play without a hidden declaration phase.",
+      "fishingConfig": "Big Two is a climbing game and does not use a capture-from-tableau fishing mechanic."
+    },
+    "deckType": "Standard 52",
+    "suitSet": "French",
+    "rankSet": "Standard_52",
+    "initialHandSize": 13,
+    "trumpConfig": null,
+    "meldConfig": null,
+    "trickConfig": null,
+    "declarationMechanism": null,
+    "handRanks": null,
+    "buyCosts": null,
+    "marketConfig": null,
+    "specialCards": null,
+    "shedding": {
+      "hasShedding": true,
+      "sheddingGoal": "empty_hand_first",
+      "validPlays": [
+        {
+          "type": "higher_single",
+          "notes": "2 is highest rank."
+        },
+        {
+          "type": "higher_pair",
+          "notes": "Must match ranks; high suit breaks tie."
+        },
+        {
+          "type": "higher_sequence",
+          "notes": "Five-card poker combinations."
+        }
+      ],
+      "passAllowed": true,
+      "burnRules": "Trick ends when three players pass consecutively."
+    },
+    "fishingConfig": null,
+    "patienceConfig": null,
+    "bankingConfig": null,
+    "turnOrder": {
+      "direction": "clockwise",
+      "startsWith": "fixed_player",
+      "dealerRotates": true
+    },
+    "roundConfig": {
+      "hasRounds": true,
+      "roundCount": null,
+      "roundEndCondition": "player_goes_out",
+      "gameEndCondition": "target_score_reached"
+    },
+    "constants": {
+      "hand_size": 13
+    },
+    "finalHandSize": 0,
+    "deckCount": 1,
+    "zones": [
+      {
+        "id": "hand",
+        "type": "hand",
+        "visibility": "private",
+        "owner": "player",
+        "capacity": 13
+      },
+      {
+        "id": "table",
+        "type": "area",
+        "visibility": "public",
+        "owner": "table",
+        "capacity": 52
+      }
+    ],
+    "rules": {
+      "edgeCases": []
+    },
+    "implementationHints": {
+      "rngUsed": [],
+      "authoritativeServer": false,
+      "customLogicNeeded": []
+    },
+    "progression": [
+      "dealing",
+      "climbing",
+      "scoring"
+    ],
+    "roles": [],
+    "customActions": [
+      {
+        "id": "deal_13_each",
+        "supported": true,
+        "description": "Distribute thirteen cards to each player clockwise.",
+        "cost": "0",
+        "constraints": "Start of hand.",
+        "isTerminating": false,
+        "effectType": "deal",
+        "effectHints": {}
+      },
+      {
+        "id": "play_combination",
+        "supported": true,
+        "description": "Play a valid single, pair, triple, or five-card poker combo.",
+        "cost": "0",
+        "constraints": "Must exceed previous play in rank or suit.",
+        "isTerminating": false,
+        "effectType": "play",
+        "effectHints": {}
+      },
+      {
+        "id": "calculate_penalties",
+        "supported": true,
+        "description": "Count cards left in losers' hands and apply multipliers.",
+        "cost": "0",
+        "constraints": "System.",
+        "isTerminating": false,
+        "effectType": "award",
+        "effectHints": {}
+      }
+    ],
+    "actions": {},
+    "handRankingSystem": "Standard poker hierarchy for 5-card combos; 2 high for singles/pairs.",
+    "rankingSystem": "Chinese Big Two (2-A-K...3)",
+    "bettingLimits": "None",
+    "useTrump": false,
+    "deckDescription": "One standard 52-card deck consisting of four suits (spades, hearts, diamonds, clubs), each with thirteen ranks. No jokers; used for Big Two (Chinese climbing game) where the two is the highest rank and suit order breaks ties.",
+    "suitDescription": "Four French suits with a fixed hierarchy for tie-breaking: spades highest, then hearts, then clubs, then diamonds. When two players play the same rank, the higher suit wins. All four suits are used in the deck.",
+    "rankDescription": "Thirteen ranks per suit in Big Two order: two (highest), ace, king, queen, jack, ten, nine, eight, seven, six, five, four, three (lowest). Singles, pairs, triples, and other combinations are compared by highest card then suit.",
+    "dealPattern": "Cards are dealt individually clockwise until hands are full."
+  },
+  "synthesis": {
+    "hero": {
+      "title": "BIG TWO",
+      "subtitle": "The Ultimate Climber",
+      "tagline": "Two is King. Three is weak. Every card must go."
+    },
+    "shortDescription": "Master the world's most popular climbing game. Manage your powerful deuces, build tactical sequences, and outmaneuver your opponents to empty your hand first. From social gatherings to high-stakes matches, Big Two is the gold standard of East Asian card gaming.",
+    "uiThemes": [
+      "classic"
+    ],
+    "uiLayout": {
+      "zones": [
+        "hand",
+        "table"
+      ],
+      "marketPosition": null,
+      "stockPosition": null,
+      "discardPosition": null,
+      "playerHandLayout": "arc",
+      "potPosition": null
+    }
+  },
+  "prompts": {
+    "human": "You have the 2 of Spades—the highest single in the game. An opponent just played an Ace. Regain control of the lead with your 2, then dump that troublesome pair of 4s!",
+    "ai": "Game: Big Two. Type: Climbing. Rules: 2-A-K...3 rank. Spades > Hearts > Clubs > Diamonds. Singles, Pairs, Triples, 5-card Poker hands. Goal: Empty hand."
+  },
+  "scoring": {
+    "description": "Losers receive penalty points based on remaining cards (1x, 2x, or 3x multipliers).",
+    "winCondition": "First player to empty their hand wins the round.",
+    "cardValues": {
+      "2": "15",
+      "A": "14",
+      "K": "13",
+      "Q": "12",
+      "J": "11",
+      "T": "10"
+    },
+    "penalties": {
+      "Double Penalty": "10-12 cards remaining results in 2x penalty points.",
+      "Triple Penalty": "13 cards remaining (unplayed) results in 3x penalty points."
+    },
+    "hasPlaceholders": false,
+    "splitRules": "None; only the first player to finish wins.",
+    "targetScore": 1000,
+    "scoringDirection": "high_wins",
+    "nullReasons": {
+      "targetScore": "Pagat describes accumulating penalty points without a fixed finish line; this JSON uses 100 points as a conventional session threshold that tables may adjust.",
+      "nullReasons": "Not applicable."
+    }
+  },
+  "alsoKnownAs": [],
+  "evidence": [],
+  "extraction": {
+    "status": "validated",
+    "missingCritical": [],
+    "assumptions": [],
+    "openQuestions": [],
+    "validatorVersion": "1.0.0"
+  },
+  "fieldStatus": {}
+}

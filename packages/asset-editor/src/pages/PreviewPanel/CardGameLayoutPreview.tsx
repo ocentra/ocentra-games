@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
-import type { CardGameLayoutDocument as LayoutAssetDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type {
+  CardGameEditorOverlayVisibility,
+  CardGameLayerVisibility,
+  CardGameLayoutDocument as LayoutAssetDocument,
+} from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { createPanelWindow, type PanelWindowHandle } from '@/utils/createPanelWindow';
 import type { AssetData } from '@/types/assets';
 import {
@@ -17,7 +21,9 @@ import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogge
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isolationStore } from '@/services/IsolationStore';
 import {
+  readStoredLayoutEditorOverlayPreferences,
   readStoredLayoutEditorPlayerCount,
+  writeStoredLayoutEditorOverlayPreferences,
   writeStoredLayoutEditorPlayerCount,
 } from '@/utils/layoutEditorPreferences';
 import './CardGameLayoutPreview.css';
@@ -51,6 +57,12 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
   const [document, setDocument] = useState<LayoutAssetDocument | null>(loadedAsset?.document ?? null);
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [saveStatus, setSaveStatus] = useState<string | null>(loadedAsset ? null : 'Layout asset could not be loaded');
+  const [editorLayerVisibility, setEditorLayerVisibility] = useState<CardGameLayerVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).isolationVisibility,
+  );
+  const [editorOverlayVisibility, setEditorOverlayVisibility] = useState<CardGameEditorOverlayVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).boundsVisibility,
+  );
   const externalWindowRef = useRef<PanelWindowHandle | null | undefined>(null);
   const draftSessionIdRef = useRef(createDraftSessionId('editor-embedded'));
   const [activePlayerCount, setActivePlayerCount] = useState<number | null>(
@@ -64,6 +76,16 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       writeStoredLayoutEditorPlayerCount(assetPath, activePlayerCount);
     }
   }, [activePlayerCount, assetPath]);
+
+  useEffect(() => {
+    const stored = readStoredLayoutEditorOverlayPreferences(assetPath);
+    writeStoredLayoutEditorOverlayPreferences(assetPath, {
+      showHandles: stored.showHandles,
+      showArenaGuide: stored.showArenaGuide,
+      isolationVisibility: editorLayerVisibility,
+      boundsVisibility: editorOverlayVisibility,
+    });
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility]);
 
 
   useEffect(() => {
@@ -98,9 +120,18 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       presets: nextDocument.presets,
       playerUiDefaults: nextDocument.playerUiDefaults,
       hud: nextDocument.hud,
+      scoreboard: nextDocument.scoreboard,
+      cardStrip: nextDocument.cardStrip,
+      deckTray: nextDocument.deckTray,
       cardFan: nextDocument.cardFan,
       cardVisuals: nextDocument.cardVisuals,
+      cardFrame: nextDocument.cardFrame,
+      renderToggles: nextDocument.renderToggles,
+      tablePresentation: nextDocument.tablePresentation,
+      tableAttachments: nextDocument.tableAttachments,
       views: nextDocument.views,
+      stageLayout: nextDocument.stageLayout,
+      zones: nextDocument.zones,
       gameplay: nextDocument.gameplay,
       extensions: nextDocument.extensions,
       layout: nextDocument,
@@ -152,6 +183,12 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
 
       if (event.data.document) {
         setDocument(event.data.document);
+        if (event.data.editorLayerVisibility) {
+          setEditorLayerVisibility(event.data.editorLayerVisibility);
+        }
+        if (event.data.editorOverlayVisibility) {
+          setEditorOverlayVisibility(event.data.editorOverlayVisibility);
+        }
         if (typeof event.data.playerCount === 'number') {
           setActivePlayerCount(event.data.playerCount);
         }
@@ -187,12 +224,19 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
     };
   }, [assetPath]);
 
-  const broadcastDraft = useCallback((nextDocument: LayoutAssetDocument, playerCount: number | null) => {
+  const broadcastDraft = useCallback((
+    nextDocument: LayoutAssetDocument,
+    playerCount: number | null,
+    nextEditorLayerVisibility: CardGameLayerVisibility = editorLayerVisibility,
+    nextEditorOverlayVisibility: CardGameEditorOverlayVisibility = editorOverlayVisibility,
+  ) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     const payload: CardGameLayoutDraftMessage = {
       assetPath,
       document: nextDocument,
       playerCount: playerCount ?? nextDocument.defaultPlayerCount,
+      editorLayerVisibility: nextEditorLayerVisibility,
+      editorOverlayVisibility: nextEditorOverlayVisibility,
       draftSessionId: draftSessionIdRef.current,
       sourceSurface: 'editorEmbedded',
       viewerPerspective: {
@@ -202,7 +246,7 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
     };
     channel.postMessage(payload);
     channel.close();
-  }, [assetPath]);
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility]);
 
   const handleChange = useCallback((nextDocument: LayoutAssetDocument) => {
     setDocument(nextDocument);
@@ -217,6 +261,20 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
       broadcastDraft(document, count);
     }
   }, [broadcastDraft, document]);
+
+  const handleEditorLayerVisibilityChange = useCallback((next: CardGameLayerVisibility) => {
+    setEditorLayerVisibility(next);
+    if (document) {
+      broadcastDraft(document, activePlayerCount, next, editorOverlayVisibility);
+    }
+  }, [activePlayerCount, broadcastDraft, document, editorOverlayVisibility]);
+
+  const handleEditorOverlayVisibilityChange = useCallback((next: CardGameEditorOverlayVisibility) => {
+    setEditorOverlayVisibility(next);
+    if (document) {
+      broadcastDraft(document, activePlayerCount, editorLayerVisibility, next);
+    }
+  }, [activePlayerCount, broadcastDraft, document, editorLayerVisibility]);
 
   const handleSave = useCallback(async () => {
     if (!loadedAsset || !document) {
@@ -330,6 +388,10 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
               minPlayerCount={playerRange?.minPlayers}
               maxPlayerCount={playerRange?.maxPlayers}
               embedded
+              editorLayerVisibility={editorLayerVisibility}
+              onEditorLayerVisibilityChange={handleEditorLayerVisibilityChange}
+              editorOverlayVisibility={editorOverlayVisibility}
+              onEditorOverlayVisibilityChange={handleEditorOverlayVisibilityChange}
             />
           </div>
         </div>

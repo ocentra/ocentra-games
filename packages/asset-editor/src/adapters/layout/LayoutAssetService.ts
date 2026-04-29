@@ -81,8 +81,15 @@ function isSerializedLayoutDocument(value: unknown): value is Record<string, unk
     'defaultPlayerCount' in value ||
     'presets' in value ||
     'hud' in value ||
+    'scoreboard' in value ||
+    'cardStrip' in value ||
+    'deckTray' in value ||
     'cardFan' in value ||
-    'cardVisuals' in value
+    'cardVisuals' in value ||
+    'cardFrame' in value ||
+    'renderToggles' in value ||
+    'tablePresentation' in value ||
+    'tableAttachments' in value
   );
 }
 
@@ -307,6 +314,7 @@ export async function saveLayoutAsset(
   asset: LoadedLayoutAsset,
   document: LayoutAssetDocument,
 ): Promise<LoadedLayoutAsset> {
+  const normalizedDocument = normalizeCardGameLayoutDocument(document);
   const nextRoot = cloneRecord(asset.raw);
   const nextSystem = getSystemBlock(nextRoot);
   const nextData = getDataBlock(nextRoot);
@@ -316,18 +324,28 @@ export async function saveLayoutAsset(
   nextSystem.displayName = asset.displayName;
   nextSystem.category = AssetTypeCategory.UI;
   nextSystem.gameId = asset.gameId;
+  nextSystem.schemaVersion = 2;
   nextSystem.treePath = asset.path;
   nextRoot.system = nextSystem;
 
-  nextData.defaultPlayerCount = document.defaultPlayerCount;
-  nextData.presets = document.presets;
-  nextData.playerUiDefaults = document.playerUiDefaults;
-  nextData.hud = document.hud;
-  nextData.cardFan = document.cardFan;
-  nextData.cardVisuals = document.cardVisuals;
-  nextData.views = document.views;
-  nextData.gameplay = document.gameplay;
-  nextData.extensions = document.extensions;
+  nextData.defaultPlayerCount = normalizedDocument.defaultPlayerCount;
+  nextData.presets = normalizedDocument.presets;
+  nextData.playerUiDefaults = normalizedDocument.playerUiDefaults;
+  nextData.hud = normalizedDocument.hud;
+  nextData.scoreboard = normalizedDocument.scoreboard;
+  nextData.cardStrip = normalizedDocument.cardStrip;
+  nextData.deckTray = normalizedDocument.deckTray;
+  nextData.cardFan = normalizedDocument.cardFan;
+  nextData.cardVisuals = normalizedDocument.cardVisuals;
+  nextData.cardFrame = normalizedDocument.cardFrame;
+  nextData.renderToggles = normalizedDocument.renderToggles;
+  nextData.tablePresentation = normalizedDocument.tablePresentation;
+  nextData.tableAttachments = normalizedDocument.tableAttachments;
+  nextData.views = normalizedDocument.views;
+  nextData.stageLayout = normalizedDocument.stageLayout;
+  nextData.zones = normalizedDocument.zones;
+  nextData.gameplay = normalizedDocument.gameplay;
+  nextData.extensions = normalizedDocument.extensions;
   nextData.layout = getLayoutStructure(nextData);
   nextRoot.data = nextData;
 
@@ -358,6 +376,6 @@ export async function saveLayoutAsset(
     ...asset,
     path: result.value.path || asset.path,
     raw: nextRoot,
-    document: cloneCardGameLayoutDocument(document),
+    document: cloneCardGameLayoutDocument(normalizedDocument),
   };
 }

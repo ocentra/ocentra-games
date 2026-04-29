@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 
-import { readFileSync, readdirSync, existsSync, writeFileSync } from "fs";
+import { readFileSync, existsSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { walkProcessedGameFiles, type ProcessedGameFile } from "../processed-game-files";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const MANIFEST = join(ROOT, "SourceHtml", "manifest.json");
 const PROCESSED = join(ROOT, "processed-games");
 const GAME_NAMES = join(ROOT, "schema", "game_names_pagat.txt");
+const processedFiles = walkProcessedGameFiles(PROCESSED);
+const processedByRelativePath = new Map(processedFiles.map((entry) => [entry.relativePath.toLowerCase(), entry]));
+const processedByFileName = new Map(processedFiles.map((entry) => [entry.fileName.toLowerCase(), entry]));
 
 function normalize(u: string): string {
   try {
@@ -46,9 +50,16 @@ const urlToJson = new Map<string, Set<string>>();
 const URL_RE = /https?:\/\/[^\s|]+/g;
 const LINE_RE = /^([^#\s].+?)\s*:\s*card-games\/processed-games\/([^\s:]+\.json)\s*:\s*(.+)$/;
 
-function addUrlToJson(n: string, jsonFile: string): void {
+function resolveProcessedGameFile(jsonFile: string): ProcessedGameFile | null {
+  const normalized = jsonFile.replace(/\\/g, "/").replace(/^card-games\/processed-games\//, "");
+  return processedByRelativePath.get(normalized.toLowerCase()) ?? processedByFileName.get(normalized.split("/").pop()!.toLowerCase()) ?? null;
+}
+
+function addUrlToJson(n: string, jsonFile: string | ProcessedGameFile): void {
+  const entry = typeof jsonFile === "string" ? resolveProcessedGameFile(jsonFile) : jsonFile;
+  if (entry === null) return;
   if (!urlToJson.has(n)) urlToJson.set(n, new Set());
-  urlToJson.get(n)!.add(jsonFile);
+  urlToJson.get(n)!.add(entry.relativePath);
 }
 
 for (const line of readFileSync(GAME_NAMES, "utf8").split("\n")) {
@@ -73,8 +84,10 @@ for (const line of readFileSync(GAME_NAMES, "utf8").split("\n")) {
 }
 
 function getUrlsFromJson(jsonFile: string): string[] {
+  const entry = resolveProcessedGameFile(jsonFile);
+  if (entry === null) return [];
   try {
-    const raw = readFileSync(join(PROCESSED, jsonFile), "utf8").replace(/^\uFEFF/, "");
+    const raw = readFileSync(entry.absolutePath, "utf8").replace(/^\uFEFF/, "");
     const data = JSON.parse(raw) as Record<string, unknown>;
     const out: string[] = [];
     const primary = (data?.sources as { primary?: Array<{ url?: string }> })?.primary ?? [];
@@ -94,8 +107,8 @@ function getUrlsFromJson(jsonFile: string): string[] {
   }
 }
 
-for (const f of readdirSync(PROCESSED).filter((x: string) => x.endsWith(".json"))) {
-  for (const u of getUrlsFromJson(f)) {
+for (const f of processedFiles) {
+  for (const u of getUrlsFromJson(f.relativePath)) {
     const n = normalize(u);
     addUrlToJson(n, f);
     if (/pagat\.com/i.test(u)) {

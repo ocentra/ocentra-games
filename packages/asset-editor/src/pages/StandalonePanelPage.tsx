@@ -18,7 +18,9 @@ import {
 } from '@/adapters/layout/LayoutAssetService';
 import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
 import {
+  readStoredLayoutEditorOverlayPreferences,
   readStoredLayoutEditorPlayerCount,
+  writeStoredLayoutEditorOverlayPreferences,
   writeStoredLayoutEditorPlayerCount,
 } from '@/utils/layoutEditorPreferences';
 import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio';
@@ -26,7 +28,11 @@ import { CardGameTemplatePage, type CardGameTemplatePageProps } from '@ocentra/c
 import { HudButtonEditorModal } from '@ocentra/card-game-ui/HudButtonEditorModal';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
-import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
+import type {
+  CardGameEditorOverlayVisibility,
+  CardGameLayerVisibility,
+  CardGameLayoutDocument,
+} from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import {
   cloneCardGameLayoutDocument,
   createLayoutPreset,
@@ -39,9 +45,14 @@ import {
 } from '@ocentra/game-layout-domain/draftChannel';
 import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
 import { isolationStore } from '@/services/IsolationStore';
+import { useLocalPilotRuntimePreview } from '@/pages/StandalonePanelPage.localPilot';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isInspectableAssetSelection } from '@/utils/isInspectableAssetSelection';
+import {
+  StandaloneEditorCanvas,
+  type ResolutionOption,
+} from '@/pages/StandaloneCanvas/StandaloneEditorCanvas';
 import './StandalonePanelPage.css';
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -54,243 +65,6 @@ type StandalonePanel =
   | 'design-studio'
   | 'preview-canvas'
   | 'isolation';
-
-interface StandaloneCanvasMenuBarProps {
-  playerCount: number;
-  minPlayerCount: number;
-  maxPlayerCount: number;
-  showHandles: boolean;
-  onPlayerCountChange: (count: number) => void;
-  onShowHandlesChange: (value: boolean) => void;
-  onCopyPreset: (sourceCount: number) => void;
-  showArenaGuide: boolean;
-  onShowArenaGuideChange: (value: boolean) => void;
-  resolution: string;
-  onResolutionChange: (value: string) => void;
-  showStudio: boolean;
-  onShowStudioChange: (value: boolean) => void;
-  isPortrait: boolean;
-  onIsPortraitChange: (value: boolean) => void;
-  customWidth: number;
-  onCustomWidthChange: (value: number) => void;
-  customHeight: number;
-  onCustomHeightChange: (value: number) => void;
-  resolutions: ResolutionOption[];
-  onAddCustomDevice: (name: string, width: number, height: number) => void;
-  onShowLayers: () => void;
-}
-
-interface ResolutionOption {
-  label: string;
-  value: string;
-  disabled?: boolean;
-}
-
-function resolveCopySourceCount(
-  requestedCount: number,
-  playerCount: number,
-  minPlayerCount: number,
-  maxPlayerCount: number,
-): number {
-  const clampedRequested = Math.max(minPlayerCount, Math.min(maxPlayerCount, requestedCount));
-  const fallback = Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1));
-  if (clampedRequested !== playerCount) {
-    return clampedRequested;
-  }
-  return fallback === playerCount ? minPlayerCount : fallback;
-}
-
-const StandaloneCanvasMenuBar: React.FC<StandaloneCanvasMenuBarProps> = ({
-  playerCount,
-  minPlayerCount,
-  maxPlayerCount,
-  showHandles,
-  onPlayerCountChange,
-  onShowHandlesChange,
-  onCopyPreset,
-  showArenaGuide,
-  onShowArenaGuideChange,
-  resolution,
-  onResolutionChange,
-  showStudio,
-  onShowStudioChange,
-  isPortrait,
-  onIsPortraitChange,
-  customWidth,
-  onCustomWidthChange,
-  customHeight,
-  onCustomHeightChange,
-  resolutions,
-  onAddCustomDevice,
-  onShowLayers,
-}) => {
-  const counts = useMemo(
-    () => Array.from({ length: maxPlayerCount - minPlayerCount + 1 }, (_, index) => minPlayerCount + index),
-    [maxPlayerCount, minPlayerCount],
-  );
-  const sourceCounts = useMemo(
-    () => counts.filter((count) => count !== playerCount),
-    [counts, playerCount],
-  );
-  
-  const [copySourceCount, setCopySourceCount] = useState<number>(
-    Math.max(minPlayerCount, Math.min(maxPlayerCount, playerCount - 1)),
-  );
-  
-  const resolvedCopySourceCount = useMemo(
-    () => resolveCopySourceCount(copySourceCount, playerCount, minPlayerCount, maxPlayerCount),
-    [copySourceCount, maxPlayerCount, minPlayerCount, playerCount],
-  );
-
-  const handleCopy = useCallback(() => {
-    if (resolvedCopySourceCount !== playerCount) {
-      onCopyPreset(resolvedCopySourceCount);
-    }
-  }, [onCopyPreset, playerCount, resolvedCopySourceCount]);
-
-
-
-  return (
-    <div className="standalone-canvas-menu-bar">
-      <div className="standalone-canvas-menu-bar__group">
-        <div className="standalone-canvas-menu-bar__logo">Layout Studio</div>
-        
-        <div className="standalone-canvas-menu-bar__menu">
-          <span className="standalone-canvas-menu-bar__menu-label">View</span>
-          <div className="standalone-canvas-menu-bar__menu-dropdown">
-            <button 
-              className={`standalone-canvas-menu-bar__menu-item ${showArenaGuide ? 'is-active' : ''}`}
-              onClick={() => onShowArenaGuideChange(!showArenaGuide)}
-            >
-              Show Arena Guide
-            </button>
-            <button 
-              className={`standalone-canvas-menu-bar__menu-item ${showHandles ? 'is-active' : ''}`}
-              onClick={() => onShowHandlesChange(!showHandles)}
-            >
-              Show Interaction Handles
-            </button>
-          </div>
-        </div>
-
-        <div className="standalone-canvas-menu-bar__menu">
-          <span className="standalone-canvas-menu-bar__menu-label">Window</span>
-          <div className="standalone-canvas-menu-bar__menu-dropdown">
-            <button 
-              className={`standalone-canvas-menu-bar__menu-item ${showStudio ? 'is-active' : ''}`}
-              onClick={() => onShowStudioChange(!showStudio)}
-            >
-              Design Studio (Inspector)
-            </button>
-            <button 
-              className="standalone-canvas-menu-bar__menu-item"
-              onClick={onShowLayers}
-            >
-              Layer Management...
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="standalone-canvas-menu-bar__group">
-        <label className="standalone-canvas-menu-bar__field">
-          <span className="standalone-canvas-menu-bar__label">Players</span>
-          <select 
-            className="standalone-canvas-menu-bar__select"
-            value={playerCount}
-            onChange={(e) => onPlayerCountChange(Number(e.target.value))}
-          >
-            {counts.map((count) => (
-              <option key={count} value={count}>
-                {count} Players
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <div className="standalone-canvas-menu-bar__separator" />
-
-        <label className="standalone-canvas-menu-bar__field">
-          <span className="standalone-canvas-menu-bar__label">Viewport</span>
-          <select 
-            className="standalone-canvas-menu-bar__select"
-            value={resolution}
-            onChange={(e) => onResolutionChange(e.target.value)}
-          >
-            {resolutions.map((r, idx) => (
-              <option key={`${r.value}-${idx}`} value={r.value} disabled={r.disabled}>
-                {r.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <button
-          type="button"
-          className={`standalone-canvas-menu-bar__orientation-btn ${isPortrait ? 'is-active' : ''}`}
-          onClick={() => onIsPortraitChange(!isPortrait)}
-          disabled={resolution === 'fit'}
-          title={isPortrait ? "Switch to Landscape" : "Switch to Portrait"}
-        >
-          {isPortrait ? 'Portrait ⭥' : 'Landscape ⭤'}
-        </button>
-        
-        {resolution === 'custom' && (
-          <div className="standalone-canvas-menu-bar__custom-group">
-            <input 
-              type="number" 
-              className="standalone-canvas-menu-bar__input" 
-              value={customWidth}
-              onChange={(e) => onCustomWidthChange(Number(e.target.value))}
-              placeholder="W"
-            />
-            <span className="standalone-canvas-menu-bar__x">×</span>
-            <input 
-              type="number" 
-              className="standalone-canvas-menu-bar__input" 
-              value={customHeight}
-              onChange={(e) => onCustomHeightChange(Number(e.target.value))}
-              placeholder="H"
-            />
-            <button 
-              className="standalone-canvas-menu-bar__save"
-              onClick={() => {
-                const name = prompt('Device Name:', 'Custom Mobile');
-                if (name) onAddCustomDevice(name, customWidth, customHeight);
-              }}
-            >
-              Save
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="standalone-canvas-menu-bar__group" style={{ marginLeft: 'auto' }}>
-        {sourceCounts.length > 0 && (
-          <div className="standalone-canvas-menu-bar__copy-group">
-            <select
-              className="standalone-canvas-menu-bar__select"
-              value={copySourceCount}
-              onChange={(e) => setCopySourceCount(Number(e.target.value))}
-            >
-              {sourceCounts.map((count) => (
-                <option key={count} value={count}>
-                  From {count}P
-                </option>
-              ))}
-            </select>
-            <button 
-              className="standalone-canvas-menu-bar__btn"
-              onClick={handleCopy}
-            >
-              Copy Layout
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -384,6 +158,12 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
   const [activePlayerCount, setActivePlayerCount] = useState<number>(
     () => readStoredLayoutEditorPlayerCount(assetPath, loadedAsset.document.defaultPlayerCount),
   );
+  const [editorLayerVisibility, setEditorLayerVisibility] = useState<CardGameLayerVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).isolationVisibility,
+  );
+  const [editorOverlayVisibility, setEditorOverlayVisibility] = useState<CardGameEditorOverlayVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).boundsVisibility,
+  );
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const draftSessionIdRef = useRef(createDraftSessionId('editor-standalone-studio'));
@@ -414,6 +194,16 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
   }, [activePlayerCount, assetPath]);
 
   useEffect(() => {
+    const stored = readStoredLayoutEditorOverlayPreferences(assetPath);
+    writeStoredLayoutEditorOverlayPreferences(assetPath, {
+      showHandles: stored.showHandles,
+      showArenaGuide: stored.showArenaGuide,
+      isolationVisibility: editorLayerVisibility,
+      boundsVisibility: editorOverlayVisibility,
+    });
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility]);
+
+  useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     const handler = (event: MessageEvent<CardGameLayoutDraftMessage>) => {
       if (event.data?.assetPath !== assetPath || !event.data.document) {
@@ -423,6 +213,12 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
         return;
       }
       setDocument(event.data.document);
+      if (event.data.editorLayerVisibility) {
+        setEditorLayerVisibility(event.data.editorLayerVisibility);
+      }
+      if (event.data.editorOverlayVisibility) {
+        setEditorOverlayVisibility(event.data.editorOverlayVisibility);
+      }
       if (typeof event.data.playerCount === 'number') {
         setActivePlayerCount(event.data.playerCount);
       }
@@ -453,12 +249,19 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     };
   }, [assetPath]);
 
-  const broadcast = useCallback((nextDocument: LayoutAssetDocument, playerCount: number) => {
+  const broadcast = useCallback((
+    nextDocument: LayoutAssetDocument,
+    playerCount: number,
+    nextEditorLayerVisibility: CardGameLayerVisibility = editorLayerVisibility,
+    nextEditorOverlayVisibility: CardGameEditorOverlayVisibility = editorOverlayVisibility,
+  ) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     channel.postMessage({
       assetPath,
       document: nextDocument,
       playerCount,
+      editorLayerVisibility: nextEditorLayerVisibility,
+      editorOverlayVisibility: nextEditorOverlayVisibility,
       draftSessionId: draftSessionIdRef.current,
       sourceSurface: 'editorIsolation',
       viewerPerspective: {
@@ -467,7 +270,7 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
       },
     });
     channel.close();
-  }, [assetPath]);
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility]);
 
   const handleChange = useCallback((nextDocument: LayoutAssetDocument) => {
     setDocument(nextDocument);
@@ -478,6 +281,16 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
     setActivePlayerCount(count);
     broadcast(document, count);
   }, [broadcast, document]);
+
+  const handleEditorLayerVisibilityChange = useCallback((next: CardGameLayerVisibility) => {
+    setEditorLayerVisibility(next);
+    broadcast(document, activePlayerCount, next, editorOverlayVisibility);
+  }, [activePlayerCount, broadcast, document, editorOverlayVisibility]);
+
+  const handleEditorOverlayVisibilityChange = useCallback((next: CardGameEditorOverlayVisibility) => {
+    setEditorOverlayVisibility(next);
+    broadcast(document, activePlayerCount, editorLayerVisibility, next);
+  }, [activePlayerCount, broadcast, document, editorLayerVisibility]);
 
   const handleSave = useCallback(async () => {
     logInfo('[StandalonePanelPage] handleSave started');
@@ -528,6 +341,10 @@ const StandaloneCardGameDesignStudio: React.FC<{ assetPath: string; assetData: A
           onActivePlayerCountChange={handleActivePlayerCountChange}
           minPlayerCount={playerRange?.minPlayers}
           maxPlayerCount={playerRange?.maxPlayers}
+          editorLayerVisibility={editorLayerVisibility}
+          onEditorLayerVisibilityChange={handleEditorLayerVisibilityChange}
+          editorOverlayVisibility={editorOverlayVisibility}
+          onEditorOverlayVisibilityChange={handleEditorOverlayVisibilityChange}
         />
       </div>
     </div>
@@ -551,6 +368,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     [assetData, assetPath],
   );
   const [document, setDocument] = useState<LayoutAssetDocument>(() => loadedAsset.document);
+  const [editorLayerVisibility, setEditorLayerVisibility] = useState<CardGameLayerVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).isolationVisibility,
+  );
+  const [editorOverlayVisibility, setEditorOverlayVisibility] = useState<CardGameEditorOverlayVisibility>(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).boundsVisibility,
+  );
   const [playerCount, setPlayerCount] = useState<number>(() => {
     const urlCount = new URLSearchParams(window.location.search).get('playerCount');
     const fromUrl = urlCount !== null ? parseInt(urlCount, 10) : NaN;
@@ -558,8 +381,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     return Number.isFinite(fromUrl) ? fromUrl : stored;
   });
   const [playerRange, setPlayerRange] = useState<LayoutPlayerRange | null>(null);
-  const [showHandles, setShowHandles] = useState(true);
-  const [showArenaGuide, setShowArenaGuide] = useState(true);
+  const [showHandles, setShowHandles] = useState(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).showHandles,
+  );
+  const [showArenaGuide, setShowArenaGuide] = useState(() =>
+    readStoredLayoutEditorOverlayPreferences(assetPath).showArenaGuide,
+  );
   const [resolution, setResolution] = useState('fit');
   const [customWidth, setCustomWidth] = useState(1920);
   const [customHeight, setCustomHeight] = useState(1080);
@@ -575,7 +402,6 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
       .then((data) => setResolutions(data))
       .catch((err) => {
         logError('Failed to load devices.json', err);
-        // Fallback to minimal set if file fetch fails
         setResolutions([
           { label: 'Fit Window', value: 'fit' },
           { label: 'Desktop Full HD (1920x1080)', value: '1920x1080' },
@@ -609,6 +435,15 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     writeStoredLayoutEditorPlayerCount(assetPath, playerCount);
   }, [assetPath, playerCount]);
 
+  useEffect(() => {
+    writeStoredLayoutEditorOverlayPreferences(assetPath, {
+      showHandles,
+      showArenaGuide,
+      isolationVisibility: editorLayerVisibility,
+      boundsVisibility: editorOverlayVisibility,
+    });
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility, showArenaGuide, showHandles]);
+
 
   useEffect(() => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
@@ -620,6 +455,12 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
         return;
       }
       setDocument(event.data.document);
+      if (event.data.editorLayerVisibility) {
+        setEditorLayerVisibility(event.data.editorLayerVisibility);
+      }
+      if (event.data.editorOverlayVisibility) {
+        setEditorOverlayVisibility(event.data.editorOverlayVisibility);
+      }
       if (typeof event.data.playerCount === 'number') {
         setPlayerCount(event.data.playerCount);
       }
@@ -631,12 +472,19 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     };
   }, [assetPath]);
 
-  const broadcast = useCallback((nextDocument: LayoutAssetDocument, nextPlayerCount: number) => {
+  const broadcast = useCallback((
+    nextDocument: LayoutAssetDocument,
+    nextPlayerCount: number,
+    nextEditorLayerVisibility: CardGameLayerVisibility = editorLayerVisibility,
+    nextEditorOverlayVisibility: CardGameEditorOverlayVisibility = editorOverlayVisibility,
+  ) => {
     const channel = new BroadcastChannel(CARD_GAME_LAYOUT_DRAFT_CHANNEL);
     channel.postMessage({
       assetPath,
       document: nextDocument,
       playerCount: nextPlayerCount,
+      editorLayerVisibility: nextEditorLayerVisibility,
+      editorOverlayVisibility: nextEditorOverlayVisibility,
       draftSessionId: draftSessionIdRef.current,
       sourceSurface: 'editorCanvas',
       viewerPerspective: {
@@ -645,12 +493,22 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
       },
     } satisfies CardGameLayoutDraftMessage);
     channel.close();
-  }, [assetPath]);
+  }, [assetPath, editorLayerVisibility, editorOverlayVisibility]);
 
   const handleChange = useCallback((nextDocument: LayoutAssetDocument) => {
     setDocument(nextDocument);
     broadcast(nextDocument, playerCount);
   }, [broadcast, playerCount]);
+
+  const handleEditorLayerVisibilityChange = useCallback((next: CardGameLayerVisibility) => {
+    setEditorLayerVisibility(next);
+    broadcast(document, playerCount, next, editorOverlayVisibility);
+  }, [broadcast, document, editorOverlayVisibility, playerCount]);
+
+  const handleEditorOverlayVisibilityChange = useCallback((next: CardGameEditorOverlayVisibility) => {
+    setEditorOverlayVisibility(next);
+    broadcast(document, playerCount, editorLayerVisibility, next);
+  }, [broadcast, document, editorLayerVisibility, playerCount]);
 
   const updateActivePreset = useCallback((
     updater: (nextDocument: LayoutAssetDocument, preset: LayoutAssetDocument['presets'][string]) => void,
@@ -672,7 +530,6 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
   const handleAddCustomDevice = useCallback((name: string, width: number, height: number) => {
     const newOption: ResolutionOption = { label: name, value: `${width}x${height}` };
     setResolutions((current) => {
-      // Add before the custom entry if it exists, otherwise at the end
       const customIdx = current.findIndex(r => r.value === 'custom');
       const next = [...current];
       if (customIdx !== -1) {
@@ -681,7 +538,6 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
         next.push(newOption);
       }
       
-      // Persist back to the JSON file using Tauri command
       const content = new TextEncoder().encode(JSON.stringify(next, null, 2));
       invoke('write_asset', { path: 'devices.json', content: Array.from(content) })
         .then(() => logInfo('Persisted new device to devices.json'))
@@ -738,7 +594,6 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     [assetPath],
   );
 
-  // Handle header props mapping (handle string|null vs string difference)
   const headerProps: NonNullable<CardGameTemplatePageProps['headerProps']> = {
     user: headProps.user ? {
       email: headProps.user.email ?? '',
@@ -747,6 +602,17 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     } : null,
     onLogout: headProps.onLogout,
   };
+  const runtimePreviewTitle = useMemo(() => {
+    const displayName = loadedAsset.displayName?.trim();
+    if (displayName) {
+      return displayName.replace(/\s+layout$/i, '');
+    }
+    const gameId = loadedAsset.gameId?.trim();
+    if (gameId) {
+      return gameId.charAt(0).toUpperCase() + gameId.slice(1);
+    }
+    return 'Preview';
+  }, [loadedAsset.displayName, loadedAsset.gameId]);
 
   const getOrientedDimensions = useCallback((rawW: number, rawH: number) => {
     let w = rawW;
@@ -759,85 +625,76 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
     return { w, h };
   }, [isPortrait]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [boxDimensions, setBoxDimensions] = useState({ width: 0, height: 0 });
-
-  const aspectRatio = useMemo(() => {
-    if (resolution === 'fit') return 0;
-    
-    let rawW = 1920;
-    let rawH = 1080;
+  const authoredViewport = document.stageLayout?.authoredViewport;
+  const simulationViewport = useMemo(() => {
+    let rawW = authoredViewport?.width ?? 1920;
+    let rawH = authoredViewport?.height ?? 1080;
 
     if (resolution === 'custom') {
       rawW = customWidth;
       rawH = customHeight;
-    } else {
-      // Extract numbers from strings like "iPhone SE (667x375)"
+    } else if (resolution !== 'fit') {
       const matches = resolution.match(/(\d+)\D+(\d+)/);
       if (matches) {
-        rawW = parseInt(matches[1]);
-        rawH = parseInt(matches[2]);
+        rawW = parseInt(matches[1], 10);
+        rawH = parseInt(matches[2], 10);
       }
     }
 
-    const { w, h } = getOrientedDimensions(rawW, rawH);
-    return w / h;
-  }, [resolution, customWidth, customHeight, getOrientedDimensions]);
+    return getOrientedDimensions(rawW, rawH);
+  }, [authoredViewport?.height, authoredViewport?.width, customHeight, customWidth, getOrientedDimensions, resolution]);
 
-  useEffect(() => {
-    const updateDimensions = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      
-      // Increased padding for better "breathing room"
-      const padding = 120; // 60px each side
-      const availW = Math.max(100, rect.width - padding);
-      const availH = Math.max(100, rect.height - padding);
-      
-      if (aspectRatio === 0) {
-        setBoxDimensions({ width: availW, height: availH });
-        return;
-      }
+  const previewRuntime = useLocalPilotRuntimePreview({
+    assetPath,
+    document: document as unknown as CardGameLayoutDocument,
+    gameId: loadedAsset.gameId,
+    playerCount,
+  });
 
-      const containerAspect = availW / availH;
-      
-      if (aspectRatio > containerAspect) {
-        // Target is wider than container -> limited by width
-        setBoxDimensions({
-          width: availW,
-          height: availW / aspectRatio
-        });
-      } else {
-        // Target is taller than container -> limited by height
-        setBoxDimensions({
-          width: availH * aspectRatio,
-          height: availH
-        });
-      }
-    };
-
-    updateDimensions();
-    const ro = new ResizeObserver(updateDimensions);
-    if (containerRef.current) ro.observe(containerRef.current);
-    return () => ro.disconnect();
-  }, [aspectRatio]);
+  const resolutionLabel = useMemo(() => {
+    if (resolution === 'fit') {
+      return `${simulationViewport.w} x ${simulationViewport.h}`;
+    }
+    if (resolution === 'custom') {
+      return `${simulationViewport.w} x ${simulationViewport.h}`;
+    }
+    return resolution.replace(/[()]/g, '').replace('x', ' x ');
+  }, [resolution, simulationViewport.h, simulationViewport.w]);
+  const showEditorBounds = useMemo(
+    () => Object.values(editorOverlayVisibility).some(Boolean),
+    [editorOverlayVisibility],
+  );
+  const showEditorGuides = showHandles || showArenaGuide || showEditorBounds;
 
   const stageContent = (
     <CardGameTemplatePage
       embedded
       document={document as unknown as CardGameLayoutDocument}
       playerCount={playerCount}
-      surfaceMode="editorCanvas"
+      surfaceMode={showEditorGuides ? (reflectionOnly ? 'editorEmbedded' : 'editorCanvas') : 'play'}
+      viewerPerspective={{ mode: 'rotateToLocal', localSeatId: 0 }}
       headerProps={headerProps}
-      headerTitle={loadedAsset.displayName || loadedAsset.gameId}
-      headerTagline={`${loadedAsset.gameId} layout preview`}
-      footerVersion="Editor"
-      editableSeats={showHandles}
+      headerTitle={runtimePreviewTitle}
+      headerTagline="Local Pilot"
+      footerVersion="1.0.0-dev"
+      showLocalSeat
+      seatPresentationById={previewRuntime.seatPresentationById}
+      zonePresentationById={previewRuntime.zonePresentationById}
+      scoreboardPresentation={previewRuntime.scoreboardPresentation}
+      cardStripPresentation={previewRuntime.cardStripPresentation}
+      hudControlsOverride={previewRuntime.runtimeHudControls}
+      onHudButtonClick={previewRuntime.onHudButtonClick}
+      arenaOverlay={previewRuntime.arenaOverlay}
+      stageOverlay={previewRuntime.stageOverlay}
+      editableSeats={!reflectionOnly && showHandles}
       onSeatsChange={handleSeatsChange}
       showArenaGuide={showArenaGuide}
+      showAuthoringGuides={showEditorGuides}
       assetPath={assetPath}
       showHeaderDebugControls={false}
       onIsolateRequest={handleIsolateRequest}
+      editorIsolationVisibility={editorLayerVisibility}
+      editorOverlayVisibility={editorOverlayVisibility}
     />
   );
 
@@ -855,99 +712,36 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
 
   return (
     <div className={`standalone-panel-page ${LayoutClasses.EDITOR_PREVIEW}`} style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
-      {!hideTools && (
-        <StandaloneCanvasMenuBar
-          playerCount={playerCount}
-          minPlayerCount={playerRange?.minPlayers ?? 2}
-          maxPlayerCount={playerRange?.maxPlayers ?? 10}
-          showHandles={showHandles}
-          onPlayerCountChange={handlePlayerCountChange}
-          onShowHandlesChange={setShowHandles}
-          onCopyPreset={handleCopyPreset}
-          showArenaGuide={showArenaGuide}
-          onShowArenaGuideChange={setShowArenaGuide}
-          resolution={resolution}
-          onResolutionChange={setResolution}
-          showStudio={showStudio}
-          onShowStudioChange={setShowStudio}
-          isPortrait={isPortrait}
-          onIsPortraitChange={setIsPortrait}
-          customWidth={customWidth}
-          onCustomWidthChange={setCustomWidth}
-          customHeight={customHeight}
-          onCustomHeightChange={setCustomHeight}
-          resolutions={resolutions}
-          onAddCustomDevice={handleAddCustomDevice}
-          onShowLayers={() => setShowHudEditor(true)}
-        />
-      )}
-      <div 
-        className="standalone-canvas-viewport"
-        style={{ 
-          display: 'flex', 
-          flex: 1, 
-          minHeight: 0, 
-          position: 'relative', 
-          padding: '40px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          background: '#02040a',
-          overflow: 'hidden'
-        }} 
-        ref={containerRef}
+      <StandaloneEditorCanvas
+        assetPath={assetPath}
+        playerCount={playerCount}
+        minPlayerCount={playerRange?.minPlayers ?? 2}
+        maxPlayerCount={playerRange?.maxPlayers ?? 10}
+        showHandles={showHandles}
+        onPlayerCountChange={handlePlayerCountChange}
+        onShowHandlesChange={setShowHandles}
+        onCopyPreset={handleCopyPreset}
+        showArenaGuide={showArenaGuide}
+        onShowArenaGuideChange={setShowArenaGuide}
+        resolution={resolution}
+        onResolutionChange={setResolution}
+        showStudio={showStudio}
+        onShowStudioChange={setShowStudio}
+        isPortrait={isPortrait}
+        onIsPortraitChange={setIsPortrait}
+        customWidth={customWidth}
+        onCustomWidthChange={setCustomWidth}
+        customHeight={customHeight}
+        onCustomHeightChange={setCustomHeight}
+        resolutions={resolutions}
+        onAddCustomDevice={handleAddCustomDevice}
+        onShowEditorView={() => setShowHudEditor(true)}
+        viewport={simulationViewport}
+        resolutionLabel={resolutionLabel}
+        hideTools={hideTools}
       >
-        {/* Resolution & Orientation Label */}
-        <div style={{
-          position: 'absolute',
-          top: 'calc(50% - ' + (boxDimensions.height / 2 + 10) + 'px)',
-          left: 'calc(50% - ' + (boxDimensions.width / 2) + 'px)',
-          transform: 'translateY(-100%)',
-          paddingBottom: '6px',
-          fontSize: '11px',
-          fontWeight: '600',
-          color: '#4ade80',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          opacity: 0.8,
-          pointerEvents: 'none',
-          whiteSpace: 'nowrap'
-        }}>
-          {(() => {
-            if (resolution === 'fit') return 'Auto Fit';
-            let displayRes = resolution;
-            if (resolution === 'custom') displayRes = `${customWidth}x${customHeight}`;
-            
-            // Extract numbers and swap if portrait
-            const matches = displayRes.match(/(\d+)\D+(\d+)/);
-            if (matches && isPortrait) {
-              const [_, w, h] = matches;
-              if (parseInt(w) > parseInt(h)) {
-                return `${h} × ${w}`;
-              }
-            }
-            return displayRes.replace(/[()]/g, '').replace('x', ' × ');
-          })()}
-          <span style={{ opacity: 0.6, marginLeft: '8px' }}>
-            [ {isPortrait ? 'portrait' : 'landscape'} ]
-          </span>
-        </div>
-        <div 
-          style={{ 
-            width: `${boxDimensions.width}px`,
-            height: `${boxDimensions.height}px`,
-            border: '2px solid #4ade80',
-            boxShadow: '0 0 40px rgba(74, 222, 128, 0.15)',
-            borderRadius: '4px',
-            background: '#050814',
-            position: 'relative',
-            boxSizing: 'border-box',
-            overflow: 'hidden',
-            transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}
-        >
-          {stageContent}
-        </div>
-      </div>
+        {stageContent}
+      </StandaloneEditorCanvas>
 
       <Suspense fallback={null}>
         {showHudEditor && (
@@ -957,15 +751,14 @@ const StandaloneCardGamePreviewCanvas: React.FC<{
             document={document as unknown as CardGameLayoutDocument}
             onChange={handleChange}
             initialWorkspaceSection="layerSplit"
+            editorLayerVisibility={editorLayerVisibility}
+            onEditorLayerVisibilityChange={handleEditorLayerVisibilityChange}
+            editorOverlayVisibility={editorOverlayVisibility}
+            onEditorOverlayVisibilityChange={handleEditorOverlayVisibilityChange}
           />
         )}
       </Suspense>
 
-      {/* 
-        Temporarily disabled for step-by-step refinement:
-        - CardGameTemplatePage
-        - CardGameDesignStudio
-      */}
     </div>
   );
 };
@@ -1068,3 +861,4 @@ export const StandalonePanelPage: React.FC = () => {
     </div>
   );
 };
+

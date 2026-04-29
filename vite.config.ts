@@ -47,6 +47,8 @@ export default defineConfig(async ({ mode, command }) => {
       packages: [
         { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, 'packages/core-ui') },
         { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, 'packages/card-game-ui') },
+        { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, 'packages/app-assets') },
+        { name: '@ocentra/game-layout-domain', rootDir: path.resolve(__dirname, 'packages/game-layout-domain') },
       ],
     }),
     {
@@ -78,6 +80,7 @@ export default defineConfig(async ({ mode, command }) => {
     '@ocentra/game-layout-domain',
     '@ocentra/game-ui-types',
     '@ocentra/core-ui',
+    '@ocentra/app-assets',
     '@ocentra/asset-domain',
     '@ocentra/app-core',
     '@ocentra/boundary-domain',

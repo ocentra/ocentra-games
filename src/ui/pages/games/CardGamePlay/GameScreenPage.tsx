@@ -8,14 +8,27 @@ import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { useNavigate } from 'react-router-dom';
 import { AppScreenToken, buildHomePath } from '@/ui/navigation/appRoutes';
 import { CardGameTemplatePage } from '@ocentra/card-game-ui/CardGameTemplatePage';
-import type { CardGameSeatPresentation } from '@ocentra/card-game-ui/CardGamePreviewSurface';
+import type {
+  CardGameSeatPresentation,
+  CardGameZonePresentation,
+} from '@ocentra/card-game-ui/CardGamePreviewSurface';
+import {
+  LocalPilotArenaOverlay,
+  LocalPilotStageOverlay,
+} from '@ocentra/card-game-ui/localPilot/LocalPilotRuntimePresentation';
+import {
+  buildLocalPilotCardStripPresentation,
+  buildLocalPilotHudActions,
+  buildLocalPilotHudControls,
+  buildLocalPilotScoreboardPresentation,
+  buildLocalPilotSeatPresentation,
+  buildLocalPilotZonePresentation,
+  getLocalPilotWinnerText,
+  type LocalPilotHudActionDescriptor,
+} from '@ocentra/card-game-ui/localPilot/localPilotRuntimeHelpers';
 import type { HudArtworkControls } from '@ocentra/card-game-ui/scene/HudArtwork.types';
-import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import './GameScreenPage.css';
 import {
-  describePlayer,
-  formatCardLabel,
-  getCurrentMechanicsPhase,
   getLegalActions,
   loadLocalPlayableGame,
   type LocalPlayableGameBundle,
@@ -25,42 +38,11 @@ interface GameScreenPageProps {
   gameModeId: string;
 }
 
-interface HudActionDescriptor {
-  label: string;
-  onClick: () => void;
-}
-
 const LOCAL_PILOT_PLAYER_COUNT = 2;
 const AUTO_START_COUNTDOWN_SECONDS = 3;
 
 function getSeatName(index: number): string {
   return index === 0 ? 'You' : `Seat ${index + 1}`;
-}
-
-function formatCardShortLabel(card: Card): string {
-  const valueMap: Record<number, string> = {
-    14: 'A',
-    13: 'K',
-    12: 'Q',
-    11: 'J',
-  };
-  const suitMap: Record<string, string> = {
-    spades: 'SP',
-    hearts: 'HE',
-    diamonds: 'DI',
-    clubs: 'CL',
-  };
-
-  return `${valueMap[card.value] ?? String(card.value)} ${suitMap[card.suit] ?? card.suit.slice(0, 2).toUpperCase()}`;
-}
-
-function getWinningPlayers(players: Player[]): Player[] {
-  if (players.length === 0) {
-    return [];
-  }
-
-  const topScore = Math.max(...players.map((player) => player.score));
-  return players.filter((player) => player.score === topScore);
 }
 
 function cloneGameStateSnapshot(state: GameState | null): GameState | null {
@@ -115,6 +97,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const [seed, setSeed] = useState(42);
   const [startingMatch, setStartingMatch] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [timerNow, setTimerNow] = useState(() => Date.now());
   const engineRef = useRef<GameEngine | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const autoStartArmedRef = useRef(false);
@@ -168,11 +151,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     hideLoading?.();
   }, []);
 
-  const currentPhase = useMemo(
-    () => (bundle ? getCurrentMechanicsPhase(bundle.spec, gameState) : null),
-    [bundle, gameState],
-  );
-
   const legalActions = useMemo(
     () => (bundle ? getLegalActions(bundle.spec, gameState) : []),
     [bundle, gameState],
@@ -195,7 +173,10 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     return gameState.players.filter((player) => !revealed.has(player.id) && !folded.has(player.id));
   }, [gameState]);
 
-  const winners = useMemo(() => (gameState ? getWinningPlayers(gameState.players) : []), [gameState]);
+  const winnersText = useMemo(
+    () => (gameState ? getLocalPilotWinnerText(gameState.players) : null),
+    [gameState],
+  );
 
   const handleHome = () => {
     if (window.history && window.history.pushState) {
@@ -320,90 +301,50 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     };
   }, [bundle, error, gameState, loading, startMatch, startingMatch]);
 
-  const hudActions = useMemo<HudActionDescriptor[]>(() => {
-    if (!bundle || !gameState || !currentPlayer) {
-      return [];
-    }
-
-    const actions: HudActionDescriptor[] = [];
-
-    if (legalActions.includes('declare') && currentPlayer.declaredSuit === null) {
-      distinctDeclareSuits.forEach((suit) => {
-        actions.push({
-          label: `Declare ${suit.slice(0, 3).toUpperCase()}`,
-          onClick: () => handleDeclare(suit),
-        });
-      });
-    }
-
-    if (legalActions.includes('pick_up')) {
-      currentPlayer.hand.forEach((card) => {
-        actions.push({
-          label: `Pick ${formatCardShortLabel(card)}`,
-          onClick: () => dispatchAction('pick_up', currentPlayer.id, { discardCardId: card.id }),
-        });
-      });
-    }
-
-    if (legalActions.includes('call_showdown')) {
-      actions.push({
-        label: 'Showdown',
-        onClick: () => handleSimpleAction('call_showdown'),
-      });
-    }
-
-    if (legalActions.includes('reveal_hand')) {
-      revealablePlayers.forEach((player) => {
-        actions.push({
-          label: `Reveal ${player.name}`,
-          onClick: () => handleReveal(player.id),
-        });
-      });
-    }
-
-    if (legalActions.includes('pass')) {
-      actions.push({
-        label: 'Pass',
-        onClick: () => handleSimpleAction('pass'),
-      });
-    }
-
-    return actions.slice(0, 6);
-  }, [
-    bundle,
+  const hudActions = useMemo<LocalPilotHudActionDescriptor[]>(() => buildLocalPilotHudActions({
     currentPlayer,
-    dispatchAction,
     distinctDeclareSuits,
-    gameState,
-    handleDeclare,
-    handleReveal,
-    handleSimpleAction,
     legalActions,
     revealablePlayers,
-  ]);
+  }), [currentPlayer, distinctDeclareSuits, legalActions, revealablePlayers]);
 
   const runtimeHudControls = useMemo<HudArtworkControls | undefined>(() => {
     if (!bundle) {
       return undefined;
     }
-
-    const nextDocument = cloneCardGameLayoutDocument(bundle.layoutDocument);
-    const nextLabels = Array.from({ length: 6 }, (_, index) => hudActions[index]?.label ?? '');
-    nextDocument.hud.buttonLabels = nextLabels;
-    nextDocument.hud.buttonCount = Math.max(1, Math.min(6, hudActions.length || 1));
-    nextDocument.hud.showDebugGuides = false;
-    nextDocument.hud.layerVisibility = {
-      ...nextDocument.hud.layerVisibility,
-      table: true,
-      seats: true,
-      tools: false,
-    };
-    return nextDocument.hud;
+    return buildLocalPilotHudControls(bundle.layoutDocument, hudActions);
   }, [bundle, hudActions]);
 
   const handleHudButtonClick = useCallback((index: number) => {
-    hudActions[index]?.onClick();
-  }, [hudActions]);
+    const action = hudActions[index];
+    if (!action || !currentPlayer) {
+      return;
+    }
+
+    if (action.kind === 'declare' && action.suit) {
+      handleDeclare(action.suit);
+      return;
+    }
+
+    if (action.kind === 'pick_up' && action.cardId) {
+      dispatchAction('pick_up', currentPlayer.id, { discardCardId: action.cardId });
+      return;
+    }
+
+    if (action.kind === 'call_showdown') {
+      handleSimpleAction('call_showdown');
+      return;
+    }
+
+    if (action.kind === 'reveal_hand' && action.playerId) {
+      handleReveal(action.playerId);
+      return;
+    }
+
+    if (action.kind === 'pass') {
+      handleSimpleAction('pass');
+    }
+  }, [currentPlayer, dispatchAction, handleDeclare, handleReveal, handleSimpleAction, hudActions]);
 
   useEffect(() => {
     if (gameState || startingMatch) {
@@ -411,24 +352,69 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     }
   }, [gameState, startingMatch]);
 
-  const seatPresentationById = useMemo<Partial<Record<number, CardGameSeatPresentation>>>(() => {
-    const presentations: Partial<Record<number, CardGameSeatPresentation>> = {};
+  useEffect(() => {
+    if (!gameState || isGameOver) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setTimerNow(Date.now());
+    }, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [gameState, isGameOver]);
+
+  const activeTurnTimer = useMemo(() => {
+    const timerSeconds = bundle?.spec.turnPolicy.timerSeconds;
+    if (!gameState || !timerSeconds || timerSeconds <= 0 || isGameOver) {
+      return null;
+    }
+
+    const elapsedSeconds = Math.max(0, (timerNow - gameState.lastAction.getTime()) / 1000);
+    const remainingSeconds = Math.max(0, timerSeconds - elapsedSeconds);
+    return {
+      label: `${Math.ceil(remainingSeconds)}s`,
+      progress: remainingSeconds / timerSeconds,
+    };
+  }, [bundle?.spec.turnPolicy.timerSeconds, gameState, isGameOver, timerNow]);
+
+  const seatPresentationById = useMemo<Partial<Record<number, CardGameSeatPresentation>>>(() => (
+    buildLocalPilotSeatPresentation({
+      gameState,
+      playerCount: bundle?.playerCount ?? LOCAL_PILOT_PLAYER_COUNT,
+      turnTimerLabel: activeTurnTimer?.label,
+      turnTimerProgress: activeTurnTimer?.progress,
+    })
+  ), [activeTurnTimer, bundle?.playerCount, gameState]);
+
+  const zonePresentationById = useMemo<Partial<Record<string, CardGameZonePresentation>>>(() => {
     if (!bundle) {
-      return presentations;
+      return {};
     }
-
-    for (let seatId = 0; seatId < bundle.playerCount; seatId += 1) {
-      const player = gameState?.players[seatId] ?? null;
-      const details = player ? describePlayer(player, gameState) : [];
-      presentations[seatId] = {
-        labelText: player?.name ?? getSeatName(seatId),
-        infoBoxText: [seatId === gameState?.currentPlayer ? 'Turn' : '', ...details].filter(Boolean).join(' | '),
-        cardTokens: (player?.hand ?? []).map((card) => formatCardShortLabel(card)),
-        state: player ? (seatId === gameState?.currentPlayer ? 'active' : 'default') : 'placeholder',
-      };
+    return buildLocalPilotZonePresentation({
+      deckSize: bundle.deckSize,
+      document: bundle.layoutDocument,
+      gameState,
+    });
+  }, [bundle, gameState]);
+  const scoreboardPresentation = useMemo(() => {
+    if (!bundle) {
+      return undefined;
     }
-
-    return presentations;
+    return buildLocalPilotScoreboardPresentation({
+      document: bundle.layoutDocument,
+      gameMode: bundle.gameMode,
+      gameState,
+    });
+  }, [bundle, gameState]);
+  const cardStripPresentation = useMemo(() => {
+    if (!bundle) {
+      return undefined;
+    }
+    return buildLocalPilotCardStripPresentation({
+      document: bundle.layoutDocument,
+      gameMode: bundle.gameMode,
+      gameState,
+    });
   }, [bundle, gameState]);
 
   return (
@@ -440,155 +426,40 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         viewerPerspective={{ mode: 'rotateToLocal', localSeatId: 0 }}
         headerProps={headerProps}
         headerTitle={bundle?.displayName || gameModeId}
-        headerTagline="Local Pilot"
-        footerVersion="1.0.0-dev"
+        headerTagline=""
         onHomeClick={handleHome}
         showLocalSeat
         seatPresentationById={seatPresentationById}
+        zonePresentationById={zonePresentationById}
+        scoreboardPresentation={scoreboardPresentation}
+        cardStripPresentation={cardStripPresentation}
         hudControlsOverride={runtimeHudControls}
         onHudButtonClick={(index) => handleHudButtonClick(index)}
         showHeaderDebugControls={false}
         arenaOverlay={bundle ? (
-          <>
-            <div className="playable-table-center" data-testid="claim-pilot-table">
-              <div className="playable-table-row">
-                <div className="playable-table-item playable-table-item--deck" data-testid="claim-pilot-deck-zone">
-                  <span className="playable-table-item__label">Deck</span>
-                  <span className="playable-table-item__value">{gameState?.deck.length ?? bundle.deckSize}</span>
-                </div>
-                <div className="playable-table-item playable-table-item--floor" data-testid="claim-pilot-floor-zone">
-                  <span className="playable-table-item__label">Floor Card</span>
-                  <span className="playable-table-item__value playable-table-item__value--accent">
-                    {gameState?.floorCard ? formatCardLabel(gameState.floorCard) : 'Waiting'}
-                  </span>
-                </div>
-                <div className="playable-table-item playable-table-item--discard" data-testid="claim-pilot-discard-zone">
-                  <span className="playable-table-item__label">Discard</span>
-                  <span className="playable-table-item__value">
-                    {gameState?.discardPile.length
-                      ? formatCardLabel(gameState.discardPile[gameState.discardPile.length - 1])
-                      : 'Empty'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="playable-table-row">
-                <div className="playable-table-item playable-table-item--pot" data-testid="claim-pilot-pot-zone">
-                  <span className="playable-table-item__label">Pot</span>
-                  <span className="playable-table-item__value">{gameState?.mechanicsContext?.roundPot ?? 0}</span>
-                </div>
-                <div className="playable-table-item playable-table-item--trick">
-                  <span className="playable-table-item__label">Table Cards</span>
-                  <div className="playable-table-item__cards">
-                    {gameState?.mechanicsContext?.tableCards?.length
-                      ? gameState.mechanicsContext.tableCards.map((entry) => (
-                        <div key={entry.playerId} className="playable-table-trick-card">
-                          <span className="playable-table-trick-card__id">{entry.playerId}</span>
-                          <span className="playable-table-trick-card__val">{formatCardShortLabel(entry.card)}</span>
-                        </div>
-                      ))
-                      : <span className="playable-table-item__value">None</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {!gameState ? (
-              <div className="playable-table-stage__empty">
-                <h2>Starting local pilot</h2>
-                <p>
-                  {loading
-                    ? 'Loading Claim assets...'
-                    : countdown && countdown > 0
-                      ? `Dealing a 2-player test table in ${countdown}...`
-                  : 'Preparing the first deal.'}
-                </p>
-              </div>
-            ) : null}
-          </>
+          <LocalPilotArenaOverlay
+            countdown={countdown}
+            displayName={bundle.displayName || gameModeId}
+            hasGameState={Boolean(gameState)}
+            loading={loading}
+            playerCount={bundle.playerCount}
+          />
         ) : null}
         stageOverlay={(
-          <>
-            <div className="playable-template-status">
-              <span className="playable-template-status__item playable-template-status__item--accent">
-                {isGameOver ? 'Game Over' : currentPhase?.label || (loading ? 'Loading' : 'Standby')}
-              </span>
-              <span className="playable-template-status__item">2P Local Pilot</span>
-              <span className="playable-template-status__item">Round {gameState?.round ?? 1}</span>
-              <span className="playable-template-status__item">
-                {startingMatch
-                  ? 'Dealing...'
-                  : gameState
-                    ? `${currentPlayer?.name || 'Seat'} to act`
-                    : countdown && countdown > 0
-                      ? `Starting in ${countdown}`
-                      : 'Booting table'}
-              </span>
-            </div>
-
-            <aside className="playable-pilot-panel">
-              <div className="playable-pilot-panel__header">
-                <div>
-                  <p className="playable-pilot-panel__eyebrow">Local Pilot</p>
-                  <h2>{bundle?.displayName || gameModeId}</h2>
-                </div>
-                <button
-                  type="button"
-                  className="playable-pilot-panel__restart"
-                  onClick={() => {
-                    autoStartArmedRef.current = true;
-                    setCountdown(null);
-                    void startMatch();
-                  }}
-                  disabled={!bundle || startingMatch}
-                >
-                  {startingMatch ? 'Starting...' : gameState ? 'Redeal' : 'Start Now'}
-                </button>
-              </div>
-
-              <label className="playable-pilot-panel__field">
-                <span>Seed</span>
-                <input
-                  data-testid="claim-pilot-seed"
-                  type="number"
-                  value={seed}
-                  onChange={(event) => setSeed(Number(event.target.value) || 1)}
-                />
-              </label>
-
-              {error ? (
-                <div className="playable-pilot-panel__error">
-                  {error}
-                </div>
-              ) : null}
-
-              {isGameOver ? (
-                <div className="playable-pilot-panel__section">
-                  <strong>Result</strong>
-                  <p>
-                    {winners.length > 1
-                      ? `Tie game between ${winners.map((player) => player.name).join(', ')}.`
-                      : `Winner: ${winners[0]?.name ?? 'Unknown'}.`}
-                  </p>
-                </div>
-              ) : null}
-
-              <div className="playable-pilot-panel__section">
-                <strong>Current Hand</strong>
-                <div className="playable-pilot-panel__cards" data-testid="claim-pilot-current-hand">
-                  {currentPlayer?.hand.length ? currentPlayer.hand.map((card) => (
-                    <span key={card.id} className="playable-pilot-panel__card">
-                      {formatCardLabel(card)}
-                    </span>
-                  )) : (
-                    <span className="playable-pilot-panel__chip playable-pilot-panel__chip--muted">
-                      {loading ? 'Loading...' : 'Waiting for first deal'}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </aside>
-          </>
+          <LocalPilotStageOverlay
+            countdown={countdown}
+            error={error}
+            isGameOver={Boolean(isGameOver)}
+            loading={loading}
+            restartDisabled={!bundle || startingMatch}
+            startingMatch={startingMatch}
+            winnersText={winnersText}
+            onRestart={() => {
+              autoStartArmedRef.current = true;
+              setCountdown(null);
+              void startMatch();
+            }}
+          />
         )}
       />
     </div>
