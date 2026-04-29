@@ -18,7 +18,7 @@ import type { CreatedAsset, AssetCreationContext } from '@ocentra/game-asset-dom
 import type { SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { tryGameId, type AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
-import { createStandard52CardRankingReference, createStandard52DeckEntry } from '@/adapters/assets/gameModeAssetDefaults';
+import { createStandard52CardRankingEntry, createStandard52CardRankingReference, createStandard52DeckEntry } from '@/adapters/assets/gameModeAssetDefaults';
 
 export interface CreateGameModeBundleOptions {
   gameId: string;
@@ -182,6 +182,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
   };
 
   const linkedDeckAsset = options.linkedDeckAsset ?? createStandard52DeckEntry();
+  const linkedCardRankingAsset = createStandard52CardRankingEntry();
   if (!linkedDeckAsset) {
     throw new Error('No linked deck asset available for game mode bundle creation');
   }
@@ -234,6 +235,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     gameInfo: createEntryFromBundleFile<GameInfo>(childFilesByKey.get('gameInfo')!),
     layout: createEntryFromBundleFile<CardGameLayout>(childFilesByKey.get('layout')!),
     deck: linkedDeckAsset,
+    cardRanking: linkedCardRankingAsset,
     carouselImages: createEntryFromBundleFile<ImageCarousel>(childFilesByKey.get('carouselImages')!),
     mechanics: createEntryFromBundleFile<CardGameMechanics>(childFilesByKey.get('mechanics')!),
   } satisfies CardGameAssetLinks;

@@ -9,16 +9,16 @@
     treePath: 'Resources/GameMode/CardGames/Games/Claim/claimStrategy.asset',
   },
   data: {
-    LLM: '- Evaluate hand strength before picking up the floor card\n- Consider opponent actions and declared suits when making decisions\n- Track cards played to estimate remaining high cards in each suit\n- Use bluffing strategically but be aware of the risks\n- Manage risk vs reward when declaring intent to win\n- Consider suit priority when cards are tied in value\n- Watch for patterns in opponent behavior\n- Balance aggressive play with conservative hand management\n',
-    Player: '- Evaluate hand strength before picking up the floor card\n- Consider opponent actions and declared suits when making decisions\n- Track cards played to estimate remaining high cards in each suit\n- Use bluffing strategically but be aware of the risks\n- Manage risk vs reward when declaring intent to win\n- Consider suit priority when cards are tied in value\n- Watch for patterns in opponent behavior\n- Balance aggressive play with conservative hand management\n',
+    LLM: '- Declare once you can protect a suit plan; every acted undeclared turn adds persistent debt.\n- Use discard-only turns to dump off-suit liability while staying above the three-card minimum.\n- Taking from discard is public information and can reveal what suit you are chasing.\n- Holding off-suit cards can block opponents, but those cards score against you at showdown.\n- A declared player should call showdown when final score is safely at least 27 after off-suit negatives and debt.\n- Watch stock and discard exhaustion because the round auto-showdowns when both are empty.\n',
+    Player: '- Pick one suit to collect and declare it before debt gets too expensive.\n- Discard cards from other suits unless you are deliberately blocking someone.\n- You can take from stock or discard once per turn and discard once per turn.\n- Keep at least three cards. There is no maximum hand size, but big mixed hands can score badly.\n- Call Showdown only when your declared hand is worth at least 27 after penalties.\n',
     aggressiveness: 0.6,
     riskTolerance: 0.5,
     bluffFrequency: 0.25,
     bluffSettings: {
-      default: 'Players can declare intent even without strong cards in that suit',
-      frequency: 'Bluffing frequency should be moderate (20-30% of intent declarations)',
-      success: 'Successful bluffs reward risk-taking',
-      failure: 'Failed bluffs result in point loss',
+      default: 'A declaration is secret, so bluffing mostly happens through public stock/discard behavior.',
+      frequency: 'Moderate deception should come from taking blockers and delaying obvious suit signals.',
+      success: 'Successful misdirection can deny opponents key cards or trigger a profitable showdown.',
+      failure: 'Failed deception leaves off-suit cards and undeclared debt in the player hand.',
     },
   },
 }

@@ -96,36 +96,48 @@ function createClaimBundle() {
     },
     seats: [
       { id: 0, label: 'p1', position: { x: 0.5, y: 0.84 }, rotation: 0, scale: 0.5 },
-      { id: 1, label: 'p2', position: { x: 0.5, y: 0.16 }, rotation: 0, scale: 0.5 },
+      { id: 1, label: 'p2', position: { x: 0.12, y: 0.5 }, rotation: 0, scale: 0.5 },
+      { id: 2, label: 'p3', position: { x: 0.5, y: 0.16 }, rotation: 0, scale: 0.5 },
+      { id: 3, label: 'p4', position: { x: 0.88, y: 0.5 }, rotation: 0, scale: 0.5 },
     ],
   };
 
   const spec: MechanicsSpec = {
     familyKernel: 'claim',
-    kernelVersion: '1.0.0',
+    kernelVersion: 'claim-hoarder@2.0.0',
     playerConfig: {
       playerMode: 'multiplayer',
-      minPlayers: 2,
-      maxPlayers: 2,
-      optimalPlayers: 2,
+      minPlayers: 4,
+      maxPlayers: 4,
+      optimalPlayers: 4,
       dealerRotates: true,
     },
     phases: [
       {
-        id: 'turn_loop',
-        label: 'Turn Loop',
-        actor: 'current_player',
-        legalActions: ['pass', 'pick_up', 'declare', 'call_showdown'],
-        nextPhase: 'showdown',
+        id: 'setup_round',
+        label: 'Setup Round',
+        actor: 'system',
+        legalActions: ['setup_round'],
+        nextPhase: 'turn_loop',
         isMandatory: true,
         conditionalNext: [],
         cardVisibilityChanges: {},
       },
       {
-        id: 'showdown',
-        label: 'Showdown',
+        id: 'turn_loop',
+        label: 'Turn',
         actor: 'current_player',
-        legalActions: ['reveal_hand'],
+        legalActions: ['take_stock', 'take_discard', 'discard_card', 'declare_suit', 'end_turn', 'call_showdown'],
+        nextPhase: null,
+        isMandatory: true,
+        conditionalNext: [],
+        cardVisibilityChanges: {},
+      },
+      {
+        id: 'score_round',
+        label: 'Score Round',
+        actor: 'system',
+        legalActions: ['score_round'],
         nextPhase: null,
         isMandatory: true,
         conditionalNext: [],
@@ -137,31 +149,77 @@ function createClaimBundle() {
     zones: [],
     turnPolicy: {
       direction: 'clockwise',
-      startsWith: 'dealer_left',
+      startsWith: 'left_of_dealer',
       timerSeconds: 60,
     },
     endConditions: [],
     deckType: 'Standard 52',
     suitSet: 'French',
+    familyConfig: {
+      maxRounds: 10,
+      minHandSize: 3,
+      showdownMinimum: 27,
+      startingBankroll: 1352,
+    },
   };
 
   return {
     gameId: 'claim',
     displayName: 'Claim',
     familyKernel: 'claim',
-    playerCount: 2,
+    playerCount: 4,
     deckSize: 52,
     gameMode: {
-      baseBet: 15000,
-      maxRounds: 11,
+      baseBet: 10,
+      maxRounds: 10,
     } as never,
     mechanics: {} as never,
     spec,
     layoutDocument: normalizeCardGameLayoutDocument({
-      defaultPlayerCount: 2,
-      presets: { '2': layoutPreset },
+      defaultPlayerCount: 4,
+      presets: { '4': layoutPreset },
       gameplay: {},
       extensions: {},
+      cardStrip: {
+        slots: [
+          {
+            id: 'stock_top',
+            label: 'STOCK',
+            previewFaceUp: false,
+            binding: 'gameState.deck.0',
+          },
+          {
+            id: 'discard_top',
+            label: 'DISCARD',
+            previewFaceUp: false,
+            binding: 'gameState.discardPile',
+          },
+        ],
+      },
+      zones: [
+        {
+          id: 'discard',
+          label: 'Discard Top',
+          type: 'card',
+          position: { x: 0.43, y: 0.5 },
+          size: { width: 0.15, height: 0.22 },
+          scale: 1,
+          rotation: 0,
+          engineBinding: 'discardPile',
+          emptyText: 'No Discard',
+        },
+        {
+          id: 'stock_top',
+          label: 'Stock Top',
+          type: 'card',
+          position: { x: 0.57, y: 0.5 },
+          size: { width: 0.15, height: 0.22 },
+          scale: 1,
+          rotation: 0,
+          engineBinding: 'deck.0',
+          emptyText: 'Empty',
+        },
+      ],
     }),
     layoutPreset,
     createDeckProvider: vi.fn(() => ({
@@ -182,16 +240,50 @@ function createActiveClaimState(): GameState {
       createPlayer(
         'p1',
         'You',
-        [createCard('14_of_hearts', Suit.HEARTS, 14), createCard('11_of_spades', Suit.SPADES, 11)],
+        [
+          createCard('14_of_hearts', Suit.HEARTS, 14),
+          createCard('13_of_hearts', Suit.HEARTS, 13),
+          createCard('12_of_hearts', Suit.HEARTS, 12),
+          createCard('11_of_spades', Suit.SPADES, 11),
+        ],
         3,
         Suit.HEARTS,
       ),
-      createPlayer('p2', 'Seat 2', [createCard('7_of_clubs', Suit.CLUBS, 7)], 1),
+      createPlayer(
+        'p2',
+        'Seat 2',
+        [
+          createCard('7_of_clubs', Suit.CLUBS, 7),
+          createCard('8_of_clubs', Suit.CLUBS, 8),
+          createCard('9_of_clubs', Suit.CLUBS, 9),
+        ],
+        1,
+      ),
+      createPlayer(
+        'p3',
+        'Seat 3',
+        [
+          createCard('2_of_spades', Suit.SPADES, 2),
+          createCard('3_of_spades', Suit.SPADES, 3),
+          createCard('4_of_spades', Suit.SPADES, 4),
+        ],
+        0,
+      ),
+      createPlayer(
+        'p4',
+        'Seat 4',
+        [
+          createCard('5_of_diamonds', Suit.DIAMONDS, 5),
+          createCard('6_of_diamonds', Suit.DIAMONDS, 6),
+          createCard('7_of_diamonds', Suit.DIAMONDS, 7),
+        ],
+        0,
+      ),
     ],
     currentPlayer: 0,
     phase: GamePhase.PLAYER_ACTION,
     deck: [createCard('3_of_spades', Suit.SPADES, 3), createCard('4_of_spades', Suit.SPADES, 4)],
-    floorCard: createCard('2_of_hearts', Suit.HEARTS, 2),
+    floorCard: null,
     discardPile: [createCard('5_of_clubs', Suit.CLUBS, 5)],
     round: 2,
     startTime: new Date('2026-04-17T00:00:00.000Z'),
@@ -201,12 +293,34 @@ function createActiveClaimState(): GameState {
       dealerIndex: 0,
       showdownCallerId: null,
       revealedPlayerIds: [],
-      lastMechanicsAction: 'declare',
-      tableCards: [{ playerId: 'p1', card: createCard('8_of_hearts', Suit.HEARTS, 8) }],
+      lastMechanicsAction: 'declare_suit',
+      tableCards: [],
       capturedCardsByPlayerId: {},
       foldedPlayerIds: [],
-      roundPot: 6,
+      roundPot: 0,
       trumpCard: null,
+      familyState: {
+        bankrollByPlayerId: {
+          p1: 1352,
+          p2: 1352,
+          p3: 1352,
+          p4: 1352,
+        },
+        declaredSuitByPlayerId: {
+          p1: Suit.HEARTS,
+        },
+        eliminatedPlayerIds: [],
+        undeclaredDebtByPlayerId: {
+          p1: 0,
+          p2: 0,
+          p3: 0,
+          p4: 0,
+        },
+        turn: {
+          discarded: false,
+          taken: false,
+        },
+      },
     },
   };
 }
@@ -271,7 +385,7 @@ describe('GameScreenPage', () => {
 
     expect(await screen.findByTestId('claim-pilot-table')).toBeTruthy();
     expect(screen.getByText(/Preparing Table/i)).toBeTruthy();
-    expect(screen.getByText(/Dealing a 2-player table in 3/i)).toBeTruthy();
+    expect(screen.getByText(/Dealing a 4-player table in 3/i)).toBeTruthy();
     expect(screen.getByTestId('claim-pilot-redeal')).toBeTruthy();
   });
 
@@ -288,7 +402,7 @@ describe('GameScreenPage', () => {
       await Promise.resolve();
       await Promise.resolve();
     });
-    expect(screen.getByText(/Dealing a 2-player table in 3/i)).toBeTruthy();
+    expect(screen.getByText(/Dealing a 4-player table in 3/i)).toBeTruthy();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(3100);
@@ -297,13 +411,15 @@ describe('GameScreenPage', () => {
     });
 
     expect(screen.getByTestId('claim-pilot-redeal')).toBeTruthy();
-    expect(screen.getByTestId('claim-pilot-floor-zone')).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-stock_top-zone')).toBeTruthy();
+    expect(screen.getByTestId('claim-pilot-discard-zone')).toBeTruthy();
     expect(screen.queryByText('Turn Loop')).toBeNull();
     expect(document.querySelector('.turn-timer__progress')).toBeTruthy();
-    expect(screen.getByText('Pot')).toBeTruthy();
+    expect(screen.queryByText('Table Cards')).toBeNull();
+    expect(screen.queryByText('Floor Card')).toBeNull();
     expect(screen.getByRole('img', { name: 'Scoreboard' })).toBeTruthy();
     expect(screen.getByText('BET')).toBeTruthy();
-    expect(screen.getByText('15000')).toBeTruthy();
+    expect(screen.getAllByText('10').length).toBeGreaterThan(0);
     expect(processPlayerActionMock).not.toHaveBeenCalled();
   });
 });

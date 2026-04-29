@@ -71,6 +71,7 @@ function evaluateBragHand(cards: Card[]): BragHandValue {
 
 export class VyingFamilyResolver implements MechanicsFamilyResolver {
   family = 'vying';
+  executorId = 'vying.betting.v1';
 
   supports(spec: MechanicsSpec): boolean {
     return spec.familyKernel === 'three-card-brag' || spec.familyKernel === 'teen-patti';

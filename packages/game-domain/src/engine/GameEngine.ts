@@ -85,6 +85,9 @@ function cloneGameState(state: GameState): GameState {
           ),
           foldedPlayerIds: [...state.mechanicsContext.foldedPlayerIds],
           trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
+          familyState: state.mechanicsContext.familyState
+            ? JSON.parse(JSON.stringify(state.mechanicsContext.familyState)) as Record<string, unknown>
+            : undefined,
         }
       : undefined,
   };
@@ -175,6 +178,7 @@ export class GameEngine {
         foldedPlayerIds: [],
         roundPot: 0,
         trumpCard: null,
+        familyState: undefined,
       },
     };
 

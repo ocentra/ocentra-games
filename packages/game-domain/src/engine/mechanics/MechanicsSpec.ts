@@ -67,9 +67,44 @@ export interface MechanicsEndCondition {
   appliesToPhase?: string | null;
 }
 
+export interface MechanicsAssetReference {
+  path?: string;
+  guid?: string;
+  assetType?: string;
+  displayName?: string;
+  [key: string]: unknown;
+}
+
+export interface MechanicsEnabledModule {
+  id: string;
+  kind: string;
+  executorId: string;
+  enabled?: boolean;
+  config?: Record<string, unknown>;
+  assetRefs?: Record<string, MechanicsAssetReference>;
+  [key: string]: unknown;
+}
+
+export interface MechanicsRuntimeIntegration {
+  resolverName?: string;
+  requiredEngineCapabilities?: string[];
+  deterministicSeed?: boolean;
+  authority?: string;
+  multiplayerSyncModel?: string;
+  replaySnapshotCompatible?: boolean;
+  [key: string]: unknown;
+}
+
 export interface MechanicsSpec {
+  gameId?: string;
+  mechanicsId?: string;
+  mechanicsVersion?: string;
   familyKernel: string;
+  familyVariant?: string;
   kernelVersion: string;
+  inheritsFrom?: string | null;
+  enabledModules?: MechanicsEnabledModule[];
+  assetRefs?: Record<string, MechanicsAssetReference>;
   playerConfig: MechanicsPlayerConfig;
   phases: MechanicsPhase[];
   actions: Record<string, MechanicsAction>;
@@ -98,6 +133,7 @@ export interface MechanicsSpec {
   bankingConfig?: Record<string, unknown> | null;
   roundConfig?: Record<string, unknown> | null;
   constants?: Record<string, unknown>;
+  familyConfig?: Record<string, unknown> | null;
   finalHandSize?: number;
   deckCount?: number;
   implementationHints?: {
@@ -105,6 +141,21 @@ export interface MechanicsSpec {
     authoritativeServer: boolean;
     customLogicNeeded: string[];
   };
+  playerModel?: Record<string, unknown>;
+  sessionModel?: Record<string, unknown>;
+  deckModel?: Record<string, unknown>;
+  zoneModel?: Record<string, unknown>;
+  setupModel?: Record<string, unknown>;
+  turnModel?: Record<string, unknown>;
+  actionModel?: Record<string, unknown>;
+  ruleModel?: Record<string, unknown>;
+  scoringModel?: Record<string, unknown>;
+  strategyHooks?: Record<string, unknown>;
+  stateModel?: Record<string, unknown>;
+  eventModel?: Record<string, unknown>;
+  validationSuites?: unknown[];
+  runtimeIntegration?: MechanicsRuntimeIntegration;
+  examples?: unknown[];
   progression?: unknown[];
   roles?: unknown[];
   determinismNotes?: string;

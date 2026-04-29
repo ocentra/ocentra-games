@@ -14,7 +14,16 @@ import type { HudArtworkControls } from '../scene/HudArtwork.types';
 
 export interface LocalPilotHudActionDescriptor {
   cardId?: string;
-  kind: 'call_showdown' | 'declare' | 'pass' | 'pick_up' | 'reveal_hand';
+  kind:
+    | 'call_showdown'
+    | 'declare'
+    | 'discard_card'
+    | 'end_turn'
+    | 'pass'
+    | 'pick_up'
+    | 'reveal_hand'
+    | 'take_discard'
+    | 'take_stock';
   label: string;
   playerId?: string;
   suit?: string;
@@ -23,6 +32,7 @@ export interface LocalPilotHudActionDescriptor {
 interface BuildLocalPilotHudActionsOptions {
   currentPlayer: Player | null;
   distinctDeclareSuits: string[];
+  gameState: GameState | null;
   legalActions: string[];
   revealablePlayers: Player[];
 }
@@ -83,6 +93,18 @@ function resolveBindingValue(source: unknown, path: string | undefined): unknown
 
     return (current as Record<string, unknown>)[segment];
   }, source);
+}
+
+function selectTopCardBindingValue(value: unknown, path: string | undefined): unknown {
+  if (!Array.isArray(value)) {
+    return value;
+  }
+
+  if (path?.toLowerCase().includes('discard')) {
+    return value[value.length - 1];
+  }
+
+  return value[0] ?? value[value.length - 1];
 }
 
 function formatScoreboardBindingValue(value: unknown): string | undefined {
@@ -204,8 +226,26 @@ export function formatLocalPilotCardLabel(card: Card): string {
 
 export function describeLocalPilotPlayer(player: Player, gameState: GameState | null): string[] {
   const details: string[] = [];
-  if (player.declaredSuit) {
-    details.push(`Declared: ${player.declaredSuit}`);
+  const familyState = gameState?.mechanicsContext?.familyState as {
+    bankrollByPlayerId?: Record<string, number>;
+    declaredSuitByPlayerId?: Record<string, string>;
+    eliminatedPlayerIds?: string[];
+    undeclaredDebtByPlayerId?: Record<string, number>;
+  } | undefined;
+  const declaredSuit = familyState?.declaredSuitByPlayerId?.[player.id] ?? player.declaredSuit;
+  const bankroll = familyState?.bankrollByPlayerId?.[player.id];
+  const debt = familyState?.undeclaredDebtByPlayerId?.[player.id] ?? 0;
+  if (typeof bankroll === 'number') {
+    details.push(`Bank: ${Math.round(bankroll)}`);
+  }
+  if (declaredSuit) {
+    details.push(`Declared: ${declaredSuit}`);
+  }
+  if (debt > 0) {
+    details.push(`Debt: ${debt}`);
+  }
+  if (familyState?.eliminatedPlayerIds?.includes(player.id)) {
+    details.push('Observer');
   }
   if (gameState?.mechanicsContext?.foldedPlayerIds?.includes(player.id)) {
     details.push('Folded');
@@ -231,6 +271,7 @@ export function getLocalPilotWinnerText(players: Player[]): string | null {
 export function buildLocalPilotHudActions({
   currentPlayer,
   distinctDeclareSuits,
+  gameState,
   legalActions,
   revealablePlayers,
 }: BuildLocalPilotHudActionsOptions): LocalPilotHudActionDescriptor[] {
@@ -238,11 +279,19 @@ export function buildLocalPilotHudActions({
     return [];
   }
 
-  const actions: LocalPilotHudActionDescriptor[] = [];
+  const primaryActions: LocalPilotHudActionDescriptor[] = [];
+  const cardChoiceActions: LocalPilotHudActionDescriptor[] = [];
+  const terminalActions: LocalPilotHudActionDescriptor[] = [];
+  const familyState = gameState?.mechanicsContext?.familyState as {
+    declaredSuitByPlayerId?: Record<string, string>;
+    turn?: { discarded?: boolean; taken?: boolean };
+  } | undefined;
+  const declaredSuit = familyState?.declaredSuitByPlayerId?.[currentPlayer.id] ?? currentPlayer.declaredSuit;
+  const turn = familyState?.turn;
 
-  if (legalActions.includes('declare') && currentPlayer.declaredSuit === null) {
+  if ((legalActions.includes('declare_suit') || legalActions.includes('declare')) && !declaredSuit) {
     distinctDeclareSuits.forEach((suit) => {
-      actions.push({
+      primaryActions.push({
         kind: 'declare',
         label: `Declare ${suit.slice(0, 3).toUpperCase()}`,
         suit,
@@ -250,9 +299,35 @@ export function buildLocalPilotHudActions({
     });
   }
 
+  if (legalActions.includes('take_stock') && !turn?.taken && (gameState?.deck.length ?? 0) > 0) {
+    const topCard = gameState?.deck[0];
+    primaryActions.push({
+      kind: 'take_stock',
+      label: topCard ? `Stock ${formatLocalPilotCardShortLabel(topCard)}` : 'Take Stock',
+    });
+  }
+
+  if (legalActions.includes('take_discard') && !turn?.taken && (gameState?.discardPile.length ?? 0) > 0) {
+    const topCard = gameState?.discardPile[(gameState?.discardPile.length ?? 1) - 1];
+    primaryActions.push({
+      kind: 'take_discard',
+      label: topCard ? `Discard ${formatLocalPilotCardShortLabel(topCard)}` : 'Take Discard',
+    });
+  }
+
+  if (legalActions.includes('discard_card') && !turn?.discarded && currentPlayer.hand.length > 3) {
+    currentPlayer.hand.forEach((card) => {
+      cardChoiceActions.push({
+        cardId: card.id,
+        kind: 'discard_card',
+        label: `Drop ${formatLocalPilotCardShortLabel(card)}`,
+      });
+    });
+  }
+
   if (legalActions.includes('pick_up')) {
     currentPlayer.hand.forEach((card) => {
-      actions.push({
+      cardChoiceActions.push({
         cardId: card.id,
         kind: 'pick_up',
         label: `Pick ${formatLocalPilotCardShortLabel(card)}`,
@@ -261,7 +336,7 @@ export function buildLocalPilotHudActions({
   }
 
   if (legalActions.includes('call_showdown')) {
-    actions.push({
+    terminalActions.push({
       kind: 'call_showdown',
       label: 'Showdown',
     });
@@ -269,7 +344,7 @@ export function buildLocalPilotHudActions({
 
   if (legalActions.includes('reveal_hand')) {
     revealablePlayers.forEach((player) => {
-      actions.push({
+      terminalActions.push({
         kind: 'reveal_hand',
         label: `Reveal ${player.name}`,
         playerId: player.id,
@@ -278,13 +353,27 @@ export function buildLocalPilotHudActions({
   }
 
   if (legalActions.includes('pass')) {
-    actions.push({
+    terminalActions.push({
       kind: 'pass',
       label: 'Pass',
     });
   }
 
-  return actions.slice(0, 6);
+  if (legalActions.includes('end_turn')) {
+    terminalActions.push({
+      kind: 'end_turn',
+      label: 'Done',
+    });
+  }
+
+  const primaryCapacity = Math.max(0, 6 - terminalActions.length);
+  const resolvedPrimaryActions = primaryActions.slice(0, primaryCapacity);
+  const cardChoiceCapacity = Math.max(0, 6 - terminalActions.length - resolvedPrimaryActions.length);
+  return [
+    ...resolvedPrimaryActions,
+    ...cardChoiceActions.slice(0, cardChoiceCapacity),
+    ...terminalActions,
+  ].slice(0, 6);
 }
 
 export function buildLocalPilotHudControls(
@@ -350,7 +439,8 @@ export function buildLocalPilotZonePresentation({
     (runtimeDocument.zones ?? []).map((zone) => {
       const rawValue = resolveBindingValue(source, zone.engineBinding);
       let presentation: CardGameZonePresentation = {
-        emptyText: zone.emptyText,
+        emptyText: '',
+        showLabel: false,
         testId: `claim-pilot-${zone.id}-zone`,
       };
 
@@ -400,16 +490,15 @@ export function buildLocalPilotZonePresentation({
           items,
         };
       } else if (zone.type === 'card') {
-        const valueCard = rawValue && typeof rawValue === 'object'
-          ? toCardStripCardToken(rawValue)
+        const cardSource = selectTopCardBindingValue(rawValue, zone.engineBinding);
+        const valueCard = cardSource && typeof cardSource === 'object'
+          ? toCardStripCardToken(cardSource)
           : null;
         presentation = {
           ...presentation,
           valueAccent: true,
           valueCard,
-          valueText: rawValue && typeof rawValue === 'object'
-            ? formatLocalPilotCardLabel(rawValue as Card)
-            : undefined,
+          valueText: valueCard ? formatLocalPilotCardTokenShortLabel(valueCard) : undefined,
         };
       } else if (zone.type === 'deck' || zone.type === 'pot') {
         presentation = {
@@ -507,7 +596,7 @@ export function buildLocalPilotCardStripPresentation({
     slotsById: Object.fromEntries(
       runtimeDocument.cardStrip.slots.map((slot) => {
         const rawValue = resolveBindingValue(source, slot.binding);
-        const card = toCardStripCardToken(rawValue);
+        const card = toCardStripCardToken(selectTopCardBindingValue(rawValue, slot.binding));
         if (card) {
           return [slot.id, {
             card,

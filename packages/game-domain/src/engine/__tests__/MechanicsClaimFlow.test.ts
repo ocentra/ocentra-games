@@ -1,243 +1,395 @@
 import { describe, expect, it } from 'vitest';
 import { GameEngine } from '@/engine/GameEngine';
+import { calculateClaimPlayerScore, createClaimBotAction } from '@/engine/mechanics/family/ClaimFamilyResolver';
+import type { IDeckProvider } from '@/interfaces/IDeckProvider';
 import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
-import { GamePhase } from '@/types/game';
+import { GamePhase, Suit, type Card, type CardValue, type Player } from '@/types/game';
 
-function createClaimLikeSpec(): MechanicsSpec {
+class OrderedDeckProvider implements IDeckProvider {
+  private readonly deck: Card[];
+  private seed = 1;
+
+  constructor(deck: Card[]) {
+    this.deck = deck;
+  }
+
+  async createStandardDeck(): Promise<Card[]> {
+    return [...this.deck];
+  }
+
+  shuffleDeck(deck: Card[]): Card[] {
+    return [...deck];
+  }
+
+  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
+    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
+    const remainingDeck = [...deck];
+
+    for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
+      for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
+        const card = remainingDeck.shift();
+        if (card) {
+          hands[playerIndex].push(card);
+        }
+      }
+    }
+
+    return { hands, remainingDeck };
+  }
+
+  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
+    const remainingDeck = [...deck];
+    return {
+      card: remainingDeck.shift() ?? null,
+      remainingDeck,
+    };
+  }
+
+  getSeed(): number {
+    return this.seed;
+  }
+
+  setSeed(seed: number): void {
+    this.seed = seed;
+  }
+}
+
+function card(suit: Suit, value: CardValue): Card {
   return {
-    familyKernel: 'claim',
-    kernelVersion: 'test@1.0.0',
-    playerConfig: {
-      playerMode: 'multiplayer',
-      minPlayers: 2,
-      maxPlayers: 2,
-      optimalPlayers: 2,
-      dealerRotates: true,
+    id: `${value}_of_${suit}`,
+    suit,
+    value,
+  };
+}
+
+function createPlayer(hand: Card[], declaredSuit: Suit | null = null): Player {
+  return {
+    aiPersonality: undefined,
+    avatar: '',
+    declaredSuit,
+    hand,
+    id: 'p1',
+    intentCard: null,
+    isAI: false,
+    isConnected: true,
+    name: 'Player 1',
+    score: 1352,
+  };
+}
+
+function createClaimSpec(maxRounds = 1): MechanicsSpec {
+  return {
+    actions: {
+      call_showdown: {
+        description: 'Call showdown.',
+        effectHints: {},
+        effectType: 'call_showdown',
+        isTerminating: true,
+        supported: true,
+      },
+      declare_suit: {
+        description: 'Secretly declare a suit.',
+        effectHints: {},
+        effectType: 'declare',
+        isTerminating: false,
+        supported: true,
+      },
+      discard_card: {
+        description: 'Discard one card.',
+        effectHints: {},
+        effectType: 'discard',
+        isTerminating: false,
+        supported: true,
+      },
+      end_turn: {
+        description: 'End the current turn.',
+        effectHints: {},
+        effectType: 'pass',
+        isTerminating: true,
+        supported: true,
+      },
+      take_discard: {
+        description: 'Take the top discard.',
+        effectHints: {},
+        effectType: 'draw',
+        isTerminating: false,
+        supported: true,
+      },
+      take_stock: {
+        description: 'Take the top stock card.',
+        effectHints: {},
+        effectType: 'draw',
+        isTerminating: false,
+        supported: true,
+      },
+      timeout_turn: {
+        description: 'Resolve a timed-out turn.',
+        effectHints: {},
+        effectType: 'timeout',
+        isTerminating: true,
+        supported: true,
+      },
     },
+    constants: {
+      maxRounds,
+      minHandSize: 3,
+      showdownMinimum: 27,
+      startingBankroll: 1352,
+    },
+    customActions: [
+      {
+        description: 'Deal fresh Claim round.',
+        effectHints: {},
+        effectType: 'setup_round',
+        id: 'setup_round',
+        isTerminating: false,
+        supported: true,
+      },
+      {
+        description: 'Score Claim round.',
+        effectHints: {},
+        effectType: 'score_round',
+        id: 'score_round',
+        isTerminating: false,
+        supported: true,
+      },
+    ],
+    deckCount: 1,
+    deckType: 'Standard 52',
+    enabledModules: [
+      {
+        id: 'claim.runtime',
+        kind: 'family',
+        executorId: 'claim.hoarder.v1',
+        enabled: true,
+      },
+    ],
+    endConditions: [],
+    familyConfig: {
+      maxRounds,
+      minHandSize: 3,
+      showdownMinimum: 27,
+      startingBankroll: 1352,
+    },
+    familyKernel: 'claim',
+    finalHandSize: 0,
+    initialHandSize: 3,
+    kernelVersion: 'test@2.0.0',
     phases: [
       {
-        id: 'setup_round',
-        label: 'Setup Round',
         actor: 'system',
+        cardVisibilityChanges: {},
+        conditionalNext: [],
+        id: 'setup_round',
+        isMandatory: true,
+        label: 'Setup Round',
         legalActions: ['setup_round'],
         nextPhase: 'turn_loop',
-        isMandatory: true,
-        loopIndex: null,
         totalLoops: null,
-        conditionalNext: [],
-        cardVisibilityChanges: {},
+        loopIndex: null,
       },
       {
-        id: 'turn_loop',
-        label: 'Turn Loop',
         actor: 'current_player',
-        legalActions: ['declare', 'pass', 'pick_up', 'call_showdown'],
-        nextPhase: null,
-        isMandatory: true,
-        loopIndex: null,
-        totalLoops: null,
-        conditionalNext: [
-          {
-            condition: 'showdown_called',
-            nextPhase: 'showdown',
-          },
-        ],
         cardVisibilityChanges: {},
-      },
-      {
-        id: 'showdown',
-        label: 'Showdown',
-        actor: 'all_simultaneous',
-        legalActions: ['reveal_hand', 'rebuttal'],
-        nextPhase: 'score_round',
-        isMandatory: true,
-        loopIndex: null,
-        totalLoops: null,
         conditionalNext: [],
-        cardVisibilityChanges: {},
+        id: 'turn_loop',
+        isMandatory: true,
+        label: 'Turn Loop',
+        legalActions: ['take_stock', 'take_discard', 'discard_card', 'declare_suit', 'end_turn', 'timeout_turn', 'call_showdown'],
+        nextPhase: null,
+        totalLoops: null,
+        loopIndex: null,
       },
       {
-        id: 'score_round',
-        label: 'Score Round',
         actor: 'system',
-        legalActions: ['score_round'],
-        nextPhase: null,
-        isMandatory: true,
-        loopIndex: null,
-        totalLoops: null,
+        cardVisibilityChanges: {},
         conditionalNext: [
           {
             condition: 'game_end_reached',
             nextPhase: null,
           },
+          {
+            condition: 'start_next_round',
+            nextPhase: 'setup_round',
+          },
         ],
-        cardVisibilityChanges: {},
-      },
-    ],
-    actions: {
-      declare: {
-        supported: true,
-        description: 'Declare a suit.',
-        effectType: 'declare',
-        effectHints: {},
-        isTerminating: true,
-      },
-      pass: {
-        supported: true,
-        description: 'Pass on the floor card.',
-        effectType: 'pass',
-        effectHints: {},
-        isTerminating: true,
-      },
-      pick_up: {
-        supported: true,
-        description: 'Pick up the floor card and discard.',
-        effectType: 'pick_up',
-        effectHints: {},
-        isTerminating: true,
-      },
-      reveal_hand: {
-        supported: true,
-        description: 'Reveal hand.',
-        effectType: 'reveal',
-        effectHints: {},
-        isTerminating: false,
-      },
-    },
-    customActions: [
-      {
-        id: 'setup_round',
-        supported: true,
-        description: 'Deal cards and reveal floor card.',
-        effectType: 'setup_round',
-        effectHints: {},
-        isTerminating: false,
-      },
-      {
-        id: 'call_showdown',
-        supported: true,
-        description: 'Call showdown.',
-        effectType: 'call_showdown',
-        effectHints: {
-          minimumScore: 0,
-        },
-        isTerminating: true,
-      },
-      {
         id: 'score_round',
-        supported: true,
-        description: 'Score the round.',
-        effectType: 'score_round',
-        effectHints: {},
-        isTerminating: false,
-      },
-      {
-        id: 'rebuttal',
-        supported: true,
-        description: 'Respond during showdown.',
-        effectType: 'rebuttal',
-        effectHints: {},
-        isTerminating: false,
+        isMandatory: true,
+        label: 'Score Round',
+        legalActions: ['score_round'],
+        nextPhase: null,
+        totalLoops: null,
+        loopIndex: null,
       },
     ],
-    zones: [
-      { id: 'stock', type: 'stack', owner: 'table', visibility: 'hidden', capacity: 52 },
-      { id: 'hand', type: 'hand', owner: 'player', visibility: 'private', capacity: 52 },
-      { id: 'floor', type: 'slot', owner: 'table', visibility: 'public', capacity: 1 },
-      { id: 'discard', type: 'stack', owner: 'table', visibility: 'public', capacity: 52 },
-    ],
+    playerConfig: {
+      dealerRotates: true,
+      maxPlayers: 4,
+      minPlayers: 4,
+      optimalPlayers: 4,
+      playerMode: 'multiplayer',
+    },
+    rankSet: 'Standard_52',
+    roundConfig: {
+      maxRounds,
+    },
+    runtimeIntegration: {
+      resolverName: 'claim.hoarder.v1',
+    },
+    suitSet: 'French',
     turnPolicy: {
       direction: 'clockwise',
       startsWith: 'left_of_dealer',
-      timerSeconds: null,
+      timerSeconds: 60,
     },
-    endConditions: [],
-    drawConfig: {
-      floorCardCount: 1,
-      replenishesFloorAfterPickUp: true,
-    },
-    discardConfig: {
-      requiredAfterPickUp: true,
-    },
-    deckType: 'Standard 52',
-    suitSet: 'French',
-    rankSet: 'Standard_52',
-    initialHandSize: 3,
-    roundConfig: {
-      maxRounds: 1,
-    },
-    constants: {
-      showdownMinimum: 0,
-    },
+    zones: [],
   };
 }
 
+describe('Claim hoarder scoring', () => {
+  it('scores circular Ace runs as one maximal run with singles counted once', () => {
+    const player = createPlayer([
+      card(Suit.SPADES, 13),
+      card(Suit.SPADES, 14),
+      card(Suit.SPADES, 2),
+      card(Suit.SPADES, 3),
+      card(Suit.HEARTS, 9),
+    ], Suit.SPADES);
+
+    const score = calculateClaimPlayerScore(player, Suit.SPADES, 4);
+
+    expect(score.positive).toBe((13 + 14 + 2 + 3) * 4);
+    expect(score.negative).toBe(9);
+    expect(score.finalScore).toBe(128 - 9 - 4);
+  });
+
+  it('scores undeclared hands entirely negative', () => {
+    const player = createPlayer([
+      card(Suit.SPADES, 2),
+      card(Suit.SPADES, 3),
+      card(Suit.SPADES, 4),
+      card(Suit.CLUBS, 11),
+    ]);
+
+    const score = calculateClaimPlayerScore(player, null, 13);
+
+    expect(score.positive).toBe(0);
+    expect(score.negative).toBe(27 + 11);
+    expect(score.finalScore).toBe(-51);
+  });
+});
+
 describe('GameEngine Claim mechanics flow', () => {
-  it('runs a full single-round mechanics flow to game end', async () => {
-    const engine = new GameEngine();
-    await engine.initializeGame({ maxPlayers: 2, enablePhysics: false, seed: 42 });
-    engine.loadMechanicsSpec(createClaimLikeSpec());
-    engine.addPlayer({ id: 'p1', name: 'Player 1' });
-    engine.addPlayer({ id: 'p2', name: 'Player 2' });
+  it('does not add debt when an undeclared player ends a no-action turn', async () => {
+    const deck = [
+      card(Suit.HEARTS, 5), card(Suit.SPADES, 13), card(Suit.CLUBS, 7), card(Suit.DIAMONDS, 9),
+      card(Suit.CLUBS, 8), card(Suit.SPADES, 14), card(Suit.HEARTS, 6), card(Suit.DIAMONDS, 10),
+      card(Suit.DIAMONDS, 4), card(Suit.SPADES, 2), card(Suit.CLUBS, 11), card(Suit.HEARTS, 12),
+      card(Suit.SPADES, 3), card(Suit.HEARTS, 2),
+    ];
+    const engine = new GameEngine({
+      deckProvider: new OrderedDeckProvider(deck),
+    });
+    await engine.initializeGame({ maxPlayers: 4, enablePhysics: false, seed: 1 });
+    engine.loadMechanicsSpec(createClaimSpec(2));
+    ['p1', 'p2', 'p3', 'p4'].forEach((id, index) => {
+      engine.addPlayer({ id, name: `Player ${index + 1}` });
+    });
+
+    await engine.startGame();
+    const startedState = engine.getGameState()!;
+    const result = engine.processPlayerAction({
+      playerId: 'p2',
+      timestamp: new Date(startedState.lastAction.getTime() + 1000),
+      type: 'end_turn',
+    });
+
+    expect(result.isValid).toBe(true);
+    const nextState = engine.getGameState()!;
+    const claimState = nextState.mechanicsContext?.familyState as {
+      undeclaredDebtByPlayerId?: Record<string, number>;
+    };
+    expect(claimState.undeclaredDebtByPlayerId?.p2).toBe(0);
+  });
+
+  it('creates deterministic bot actions from the Claim executor', async () => {
+    const deck = [
+      card(Suit.HEARTS, 5), card(Suit.SPADES, 13), card(Suit.CLUBS, 7), card(Suit.DIAMONDS, 9),
+      card(Suit.CLUBS, 8), card(Suit.SPADES, 14), card(Suit.HEARTS, 6), card(Suit.DIAMONDS, 10),
+      card(Suit.DIAMONDS, 4), card(Suit.SPADES, 2), card(Suit.CLUBS, 11), card(Suit.HEARTS, 12),
+      card(Suit.SPADES, 3), card(Suit.HEARTS, 2),
+    ];
+    const engine = new GameEngine({
+      deckProvider: new OrderedDeckProvider(deck),
+    });
+    const spec = createClaimSpec(2);
+    await engine.initializeGame({ maxPlayers: 4, enablePhysics: false, seed: 1 });
+    engine.loadMechanicsSpec(spec);
+    ['p1', 'p2', 'p3', 'p4'].forEach((id, index) => {
+      engine.addPlayer({ id, name: `Player ${index + 1}`, isAI: index > 0 });
+    });
+
+    await engine.startGame();
+    const action = createClaimBotAction(engine.getGameState()!, spec, 'p2', { seed: 42 });
+
+    expect(action).toMatchObject({
+      playerId: 'p2',
+      type: 'declare_suit',
+      data: { suit: Suit.SPADES },
+    });
+  });
+
+  it('plays a secret-declare showdown and applies raw plus winner-difference settlement', async () => {
+    const deck = [
+      card(Suit.HEARTS, 5), card(Suit.SPADES, 13), card(Suit.CLUBS, 7), card(Suit.DIAMONDS, 9),
+      card(Suit.CLUBS, 8), card(Suit.SPADES, 14), card(Suit.HEARTS, 6), card(Suit.DIAMONDS, 10),
+      card(Suit.DIAMONDS, 4), card(Suit.SPADES, 2), card(Suit.CLUBS, 11), card(Suit.HEARTS, 12),
+      card(Suit.SPADES, 3), card(Suit.HEARTS, 2),
+    ];
+    const engine = new GameEngine({
+      deckProvider: new OrderedDeckProvider(deck),
+    });
+    await engine.initializeGame({ maxPlayers: 4, enablePhysics: false, seed: 1 });
+    engine.loadMechanicsSpec(createClaimSpec(1));
+    ['p1', 'p2', 'p3', 'p4'].forEach((id, index) => {
+      engine.addPlayer({ id, name: `Player ${index + 1}` });
+    });
 
     await engine.startGame();
 
-    const startedState = engine.getGameState();
-    expect(startedState?.mechanicsPhaseId).toBe('turn_loop');
-    expect(startedState?.phase).toBe(GamePhase.PLAYER_ACTION);
-    expect(startedState?.floorCard).not.toBeNull();
-    expect(startedState?.players.every((player) => player.hand.length === 3)).toBe(true);
-
-    const activePlayer = startedState!.players[startedState!.currentPlayer];
-    const declaredSuit = activePlayer.hand[0].suit;
+    const startedState = engine.getGameState()!;
+    expect(startedState.mechanicsPhaseId).toBe('turn_loop');
+    expect(startedState.phase).toBe(GamePhase.PLAYER_ACTION);
+    expect(startedState.currentPlayer).toBe(1);
+    expect(startedState.floorCard).toBeNull();
+    expect(startedState.discardPile).toHaveLength(0);
+    expect(startedState.players[1].hand.map((entry) => entry.value)).toEqual([13, 14, 2]);
 
     const declareResult = engine.processPlayerAction({
-      type: 'declare',
-      playerId: activePlayer.id,
-      data: { suit: declaredSuit },
-      timestamp: new Date(startedState!.lastAction.getTime() + 1000),
+      data: { suit: Suit.SPADES },
+      playerId: 'p2',
+      timestamp: new Date(startedState.lastAction.getTime() + 1000),
+      type: 'declare_suit',
     });
     expect(declareResult.isValid).toBe(true);
 
-    const afterDeclare = engine.getGameState()!;
-    const secondPlayer = afterDeclare.players[afterDeclare.currentPlayer];
-
-    const passResult = engine.processPlayerAction({
-      type: 'pass',
-      playerId: secondPlayer.id,
-      timestamp: new Date(afterDeclare.lastAction.getTime() + 1000),
-    });
-    expect(passResult.isValid).toBe(true);
-
-    const beforeShowdown = engine.getGameState()!;
-    const showdownCaller = beforeShowdown.players[beforeShowdown.currentPlayer];
-
+    const showdownState = engine.getGameState()!;
     const showdownResult = engine.processPlayerAction({
+      playerId: 'p2',
+      timestamp: new Date(showdownState.lastAction.getTime() + 1000),
       type: 'call_showdown',
-      playerId: showdownCaller.id,
-      timestamp: new Date(beforeShowdown.lastAction.getTime() + 1000),
     });
     expect(showdownResult.isValid).toBe(true);
-    expect(engine.getGameState()?.phase).toBe(GamePhase.SHOWDOWN);
-
-    const revealState = engine.getGameState()!;
-    const firstReveal = engine.processPlayerAction({
-      type: 'reveal_hand',
-      playerId: revealState.players[0].id,
-      timestamp: new Date(revealState.lastAction.getTime() + 1000),
-    });
-    expect(firstReveal.isValid).toBe(true);
-
-    const secondRevealState = engine.getGameState()!;
-    const secondReveal = engine.processPlayerAction({
-      type: 'reveal_hand',
-      playerId: secondRevealState.players[1].id,
-      timestamp: new Date(secondRevealState.lastAction.getTime() + 1000),
-    });
-    expect(secondReveal.isValid).toBe(true);
 
     const endedState = engine.getGameState()!;
+    const claimState = endedState.mechanicsContext?.familyState as {
+      roundScoresByPlayerId?: Record<string, { finalScore: number }>;
+      settlementByPlayerId?: Record<string, { totalDelta: number }>;
+    };
+
     expect(endedState.phase).toBe(GamePhase.GAME_END);
-    expect(endedState.round).toBe(2);
+    expect(claimState.roundScoresByPlayerId?.p2?.finalScore).toBe((13 + 14 + 2) * 3);
+    expect(claimState.settlementByPlayerId?.p2?.totalDelta).toBeGreaterThan(claimState.roundScoresByPlayerId?.p2?.finalScore ?? 0);
+    expect(endedState.players[1].score).toBe(1352 + (claimState.settlementByPlayerId?.p2?.totalDelta ?? 0));
   });
 });

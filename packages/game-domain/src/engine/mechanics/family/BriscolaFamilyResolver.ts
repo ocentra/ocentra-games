@@ -76,6 +76,7 @@ function nextPlayerIndex(gameState: GameState, currentIndex: number): number {
 
 export class BriscolaFamilyResolver implements MechanicsFamilyResolver {
   family = 'briscola';
+  executorId = 'briscola.trick.v1';
 
   supports(spec: MechanicsSpec): boolean {
     return spec.familyKernel === 'briscola' || spec.trickConfig?.hasTricks === true;

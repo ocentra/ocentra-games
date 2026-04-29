@@ -5,6 +5,11 @@ import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import { PhaseActor } from '@ocentra/game-domain/game/phaseActor';
 import { PlayerMode } from '@ocentra/game-domain/game/playerMode';
 import { TurnDirection, TurnStartsWith } from '@ocentra/game-domain/game/turnOrder';
+import type {
+  MechanicsAssetReference,
+  MechanicsEnabledModule,
+  MechanicsRuntimeIntegration,
+} from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
 import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
@@ -183,13 +188,20 @@ class MechanicsImplementationHints {
   category: AssetTypeCategory.Game,
 })
 export class CardGameMechanics extends ScriptableObject {
-  static schemaVersion = 1;
+  static schemaVersion = 2;
   static readonly requiresInspector = true;
 
   static createTemplate(): Record<string, unknown> {
     return {
+      gameId: 'custom',
+      mechanicsId: 'custom-mechanics',
+      mechanicsVersion: '2.0.0',
       familyKernel: 'custom',
+      familyVariant: 'default',
       kernelVersion: '1.0',
+      inheritsFrom: null,
+      enabledModules: [],
+      assetRefs: {},
       playerConfig: {
         playerMode: 'multiplayer',
         minPlayers: 2,
@@ -252,6 +264,7 @@ export class CardGameMechanics extends ScriptableObject {
       bankingConfig: null,
       roundConfig: null,
       constants: {},
+      familyConfig: null,
       finalHandSize: 0,
       deckCount: 1,
       implementationHints: {
@@ -259,17 +272,53 @@ export class CardGameMechanics extends ScriptableObject {
         authoritativeServer: false,
         customLogicNeeded: [],
       },
+      playerModel: {},
+      sessionModel: {},
+      deckModel: {},
+      zoneModel: {},
+      setupModel: {},
+      turnModel: {},
+      actionModel: {},
+      ruleModel: {},
+      scoringModel: {},
+      strategyHooks: {},
+      stateModel: {},
+      eventModel: {},
+      validationSuites: [],
+      runtimeIntegration: {},
+      examples: [],
       progression: [],
       roles: [],
       determinismNotes: '',
     };
   }
 
+  @serializable({ label: 'Game ID' })
+  gameId: string = '';
+
+  @serializable({ label: 'Mechanics ID' })
+  mechanicsId: string = '';
+
+  @serializable({ label: 'Mechanics Version' })
+  mechanicsVersion: string = '2.0.0';
+
   @serializable({ label: 'Family Kernel' })
   familyKernel: string = '';
 
+  @serializable({ label: 'Family Variant' })
+  familyVariant: string = '';
+
   @serializable({ label: 'Kernel Version' })
   kernelVersion: string = '1.0';
+
+  @serializable({ label: 'Inherits From' })
+  inheritsFrom: string | null = null;
+
+  @serializable({ label: 'Enabled Modules' })
+  enabledModules: MechanicsEnabledModule[] = [];
+
+  @serializable({ label: 'Linked Assets' })
+  assetRefs: Record<string, MechanicsAssetReference> = {};
 
   @serializable({ label: 'Player Config', elementType: MechanicsPlayerConfig })
   playerConfig: MechanicsPlayerConfig = new MechanicsPlayerConfig();
@@ -355,6 +404,9 @@ export class CardGameMechanics extends ScriptableObject {
   @serializable({ label: 'Constants' })
   constants: Record<string, unknown> = {};
 
+  @serializable({ label: 'Family Config' })
+  familyConfig: Record<string, unknown> | null = null;
+
   @serializable({ label: 'Final Hand Size' })
   finalHandSize: number = 0;
 
@@ -363,6 +415,51 @@ export class CardGameMechanics extends ScriptableObject {
 
   @serializable({ label: 'Implementation Hints' })
   implementationHints: MechanicsImplementationHints = new MechanicsImplementationHints();
+
+  @serializable({ label: 'Player Model' })
+  playerModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Session Model' })
+  sessionModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Deck Model' })
+  deckModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Zone Model' })
+  zoneModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Setup Model' })
+  setupModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Turn Model' })
+  turnModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Action Model' })
+  actionModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Rule Model' })
+  ruleModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Scoring Model' })
+  scoringModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Strategy Hooks' })
+  strategyHooks: Record<string, unknown> = {};
+
+  @serializable({ label: 'State Model' })
+  stateModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Event Model' })
+  eventModel: Record<string, unknown> = {};
+
+  @serializable({ label: 'Validation Suites' })
+  validationSuites: unknown[] = [];
+
+  @serializable({ label: 'Runtime Integration' })
+  runtimeIntegration: MechanicsRuntimeIntegration = {};
+
+  @serializable({ label: 'Examples' })
+  examples: unknown[] = [];
 
   @serializable({ label: 'Progression' })
   progression: unknown[] = [];

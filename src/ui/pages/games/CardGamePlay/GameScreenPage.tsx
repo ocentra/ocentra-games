@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
-import type { Card, GameState, Player, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
-import { GamePhase } from '@ocentra/game-domain/types/game';
+import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
+import type { Card, GameState, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
+import { AIPersonality, GamePhase } from '@ocentra/game-domain/types/game';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
@@ -38,8 +39,9 @@ interface GameScreenPageProps {
   gameModeId: string;
 }
 
-const LOCAL_PILOT_PLAYER_COUNT = 2;
+const LOCAL_PILOT_PLAYER_COUNT = 4;
 const AUTO_START_COUNTDOWN_SECONDS = 3;
+const BOT_ACTION_DELAY_MS = 350;
 
 function getSeatName(index: number): string {
   return index === 0 ? 'You' : `Seat ${index + 1}`;
@@ -82,6 +84,9 @@ function cloneGameStateSnapshot(state: GameState | null): GameState | null {
           ),
           foldedPlayerIds: [...state.mechanicsContext.foldedPlayerIds],
           trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
+          familyState: state.mechanicsContext.familyState
+            ? JSON.parse(JSON.stringify(state.mechanicsContext.familyState)) as Record<string, unknown>
+            : undefined,
         }
       : undefined,
   };
@@ -101,6 +106,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const engineRef = useRef<GameEngine | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
   const autoStartArmedRef = useRef(false);
+  const botActionKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -121,6 +127,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
         setError(result.error);
         setCountdown(result.bundle ? AUTO_START_COUNTDOWN_SECONDS : null);
         autoStartArmedRef.current = false;
+        botActionKeyRef.current = null;
       } catch (loadError) {
         if (cancelled) {
           return;
@@ -213,6 +220,8 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       for (let index = 0; index < bundle.playerCount; index += 1) {
         engine.addPlayer({
           id: `p${index + 1}`,
+          aiPersonality: index > 0 ? AIPersonality.ADAPTIVE : undefined,
+          isAI: index > 0,
           name: getSeatName(index),
         });
       }
@@ -222,6 +231,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       });
 
       engineRef.current = engine;
+      botActionKeyRef.current = null;
       await engine.startGame();
       setGameState(cloneGameStateSnapshot(engine.getGameState()));
     } catch (nextError) {
@@ -230,6 +240,64 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
       setStartingMatch(false);
     }
   }, [bundle, seed]);
+
+  useEffect(() => {
+    if (!bundle || !gameState || isGameOver || startingMatch) {
+      return undefined;
+    }
+
+    const currentBot = gameState.players[gameState.currentPlayer] ?? null;
+    if (!currentBot?.isAI) {
+      botActionKeyRef.current = null;
+      return undefined;
+    }
+
+    const actionKey = [
+      gameState.id,
+      gameState.round,
+      gameState.currentPlayer,
+      gameState.lastAction.getTime(),
+      gameState.mechanicsContext?.lastMechanicsAction ?? '',
+      gameState.mechanicsContext?.familyState
+        ? JSON.stringify(gameState.mechanicsContext.familyState)
+        : '',
+    ].join(':');
+    if (botActionKeyRef.current === actionKey) {
+      return undefined;
+    }
+    botActionKeyRef.current = actionKey;
+
+    const timeoutId = window.setTimeout(() => {
+      const engine = engineRef.current;
+      const state = engine?.getGameState();
+      if (!engine || !state) {
+        return;
+      }
+
+      const botPlayer = state.players[state.currentPlayer] ?? null;
+      if (!botPlayer?.isAI) {
+        return;
+      }
+
+      const action = createClaimBotAction(state, bundle.spec, botPlayer.id, { seed });
+      if (!action) {
+        return;
+      }
+
+      const result = engine.processPlayerAction(action);
+      if (!result?.isValid) {
+        setError(result?.errors.join('\n') || 'Bot action failed.');
+        return;
+      }
+
+      setError(null);
+      setGameState(cloneGameStateSnapshot(engine.getGameState()));
+    }, BOT_ACTION_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [bundle, gameState, isGameOver, seed, startingMatch]);
 
   const dispatchAction = useCallback((type: PlayerActionTypeValue, playerId: string, data?: unknown) => {
     const engine = engineRef.current;
@@ -253,14 +321,6 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     setError(null);
     setGameState(cloneGameStateSnapshot(engine.getGameState()));
   }, []);
-
-  const handleDeclare = useCallback((suit: string) => {
-    if (!currentPlayer) {
-      return;
-    }
-
-    dispatchAction('declare', currentPlayer.id, { suit });
-  }, [currentPlayer, dispatchAction]);
 
   const handleSimpleAction = useCallback((type: PlayerActionTypeValue) => {
     if (!currentPlayer) {
@@ -304,9 +364,10 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const hudActions = useMemo<LocalPilotHudActionDescriptor[]>(() => buildLocalPilotHudActions({
     currentPlayer,
     distinctDeclareSuits,
+    gameState,
     legalActions,
     revealablePlayers,
-  }), [currentPlayer, distinctDeclareSuits, legalActions, revealablePlayers]);
+  }), [currentPlayer, distinctDeclareSuits, gameState, legalActions, revealablePlayers]);
 
   const runtimeHudControls = useMemo<HudArtworkControls | undefined>(() => {
     if (!bundle) {
@@ -322,12 +383,27 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
     }
 
     if (action.kind === 'declare' && action.suit) {
-      handleDeclare(action.suit);
+      dispatchAction(legalActions.includes('declare_suit') ? 'declare_suit' : 'declare', currentPlayer.id, { suit: action.suit });
       return;
     }
 
     if (action.kind === 'pick_up' && action.cardId) {
       dispatchAction('pick_up', currentPlayer.id, { discardCardId: action.cardId });
+      return;
+    }
+
+    if (action.kind === 'take_stock') {
+      dispatchAction('take_stock', currentPlayer.id);
+      return;
+    }
+
+    if (action.kind === 'take_discard') {
+      dispatchAction('take_discard', currentPlayer.id);
+      return;
+    }
+
+    if (action.kind === 'discard_card' && action.cardId) {
+      dispatchAction('discard_card', currentPlayer.id, { cardId: action.cardId });
       return;
     }
 
@@ -343,8 +419,13 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 
     if (action.kind === 'pass') {
       handleSimpleAction('pass');
+      return;
     }
-  }, [currentPlayer, dispatchAction, handleDeclare, handleReveal, handleSimpleAction, hudActions]);
+
+    if (action.kind === 'end_turn') {
+      handleSimpleAction('end_turn');
+    }
+  }, [currentPlayer, dispatchAction, handleReveal, handleSimpleAction, hudActions, legalActions]);
 
   useEffect(() => {
     if (gameState || startingMatch) {

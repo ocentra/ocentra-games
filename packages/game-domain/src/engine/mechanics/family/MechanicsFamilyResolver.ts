@@ -5,7 +5,9 @@ import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
 
 export interface MechanicsFamilyResolver {
   family: string;
+  executorId?: string;
   supports(spec: MechanicsSpec): boolean;
+  runSetupRound?(gameState: GameState, spec: MechanicsSpec, deckProvider: IDeckProvider): boolean;
   onSetupRound?(gameState: GameState, spec: MechanicsSpec, deckProvider: IDeckProvider): void;
   validateAction?(gameState: GameState, action: PlayerAction, spec: MechanicsSpec): ValidationResult | null;
   processAction?(gameState: GameState, action: PlayerAction, spec: MechanicsSpec, deckProvider: IDeckProvider): boolean;

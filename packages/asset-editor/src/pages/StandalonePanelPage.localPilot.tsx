@@ -22,9 +22,11 @@ import type { HudArtworkControls } from '@ocentra/card-game-ui/scene/HudArtwork.
 import { CardGameMechanics } from '@ocentra/game-asset-domain/game/gameMechanics/CardGameMechanics';
 import { toMechanicsSpec } from '@ocentra/game-asset-domain/game/gameMechanics/MechanicsTranslator';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
+import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
 import type { IDeckProvider } from '@ocentra/game-domain/interfaces/IDeckProvider';
 import {
+  AIPersonality,
   GamePhase,
   Suit,
   type Card,
@@ -41,6 +43,7 @@ const SUPPORTED_LOCAL_PILOT_ID = 'claim';
 const AUTO_START_COUNTDOWN_SECONDS = 3;
 const DEFAULT_SEED = 42;
 const PREVIEW_LOAD_TIMEOUT_MS = 5000;
+const BOT_ACTION_DELAY_MS = 350;
 
 const FRENCH_CARD_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] as CardValue[];
 const ITALIAN_BRISCOLA_VALUES = [2, 3, 4, 5, 6, 7, 11, 12, 13, 14] as CardValue[];
@@ -205,6 +208,9 @@ function cloneGameStateSnapshot(state: GameState | null): GameState | null {
             playerId: entry.playerId,
           })),
           trumpCard: state.mechanicsContext.trumpCard ? { ...state.mechanicsContext.trumpCard } : null,
+          familyState: state.mechanicsContext.familyState
+            ? JSON.parse(JSON.stringify(state.mechanicsContext.familyState)) as Record<string, unknown>
+            : undefined,
         }
       : undefined,
     players: state.players.map((player) => ({
@@ -473,13 +479,17 @@ export function useLocalPilotRuntimePreview({
   const [timerNow, setTimerNow] = useState(() => Date.now());
   const autoStartArmedRef = useRef(false);
   const engineRef = useRef<GameEngine | null>(null);
+  const botActionKeyRef = useRef<string | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
+
+  const isGameOver = gameState?.phase === GamePhase.GAME_END;
 
   useEffect(() => {
     let cancelled = false;
     unsubscribeRef.current?.();
     unsubscribeRef.current = null;
     engineRef.current = null;
+    botActionKeyRef.current = null;
 
     const load = async () => {
       setBundle(null);
@@ -546,6 +556,8 @@ export function useLocalPilotRuntimePreview({
       for (let index = 0; index < playerCount; index += 1) {
         engine.addPlayer({
           id: `p${index + 1}`,
+          aiPersonality: index > 0 ? AIPersonality.ADAPTIVE : undefined,
+          isAI: index > 0,
           name: getSeatName(index),
         });
       }
@@ -555,6 +567,7 @@ export function useLocalPilotRuntimePreview({
       });
 
       engineRef.current = engine;
+      botActionKeyRef.current = null;
       await engine.startGame();
       setGameState(cloneGameStateSnapshot(engine.getGameState()));
     } catch (nextError) {
@@ -563,6 +576,64 @@ export function useLocalPilotRuntimePreview({
       setStartingMatch(false);
     }
   }, [bundle, playerCount, seed]);
+
+  useEffect(() => {
+    if (!bundle || !gameState || isGameOver || startingMatch) {
+      return undefined;
+    }
+
+    const currentBot = gameState.players[gameState.currentPlayer] ?? null;
+    if (!currentBot?.isAI) {
+      botActionKeyRef.current = null;
+      return undefined;
+    }
+
+    const actionKey = [
+      gameState.id,
+      gameState.round,
+      gameState.currentPlayer,
+      gameState.lastAction.getTime(),
+      gameState.mechanicsContext?.lastMechanicsAction ?? '',
+      gameState.mechanicsContext?.familyState
+        ? JSON.stringify(gameState.mechanicsContext.familyState)
+        : '',
+    ].join(':');
+    if (botActionKeyRef.current === actionKey) {
+      return undefined;
+    }
+    botActionKeyRef.current = actionKey;
+
+    const timeoutId = window.setTimeout(() => {
+      const engine = engineRef.current;
+      const state = engine?.getGameState();
+      if (!engine || !state) {
+        return;
+      }
+
+      const botPlayer = state.players[state.currentPlayer] ?? null;
+      if (!botPlayer?.isAI) {
+        return;
+      }
+
+      const action = createClaimBotAction(state, bundle.spec, botPlayer.id, { seed });
+      if (!action) {
+        return;
+      }
+
+      const result = engine.processPlayerAction(action);
+      if (!result?.isValid) {
+        setError(result?.errors.join('\n') || 'Bot action failed.');
+        return;
+      }
+
+      setError(null);
+      setGameState(cloneGameStateSnapshot(engine.getGameState()));
+    }, BOT_ACTION_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [bundle, gameState, isGameOver, seed, startingMatch]);
 
   const dispatchAction = useCallback((type: string, playerId: string, data?: unknown) => {
     const engine = engineRef.current;
@@ -619,7 +690,6 @@ export function useLocalPilotRuntimePreview({
     [bundle, gameState],
   );
   const currentPlayer = gameState ? gameState.players[gameState.currentPlayer] ?? null : null;
-  const isGameOver = gameState?.phase === GamePhase.GAME_END;
   useEffect(() => {
     if (!gameState || isGameOver) {
       return undefined;
@@ -661,9 +731,10 @@ export function useLocalPilotRuntimePreview({
   const hudActions = useMemo<LocalPilotHudActionDescriptor[]>(() => buildLocalPilotHudActions({
     currentPlayer,
     distinctDeclareSuits,
+    gameState,
     legalActions,
     revealablePlayers,
-  }), [currentPlayer, distinctDeclareSuits, legalActions, revealablePlayers]);
+  }), [currentPlayer, distinctDeclareSuits, gameState, legalActions, revealablePlayers]);
 
   const runtimeHudControls = useMemo(
     () => (bundle ? buildLocalPilotHudControls(document, hudActions) : undefined),
@@ -751,12 +822,27 @@ export function useLocalPilotRuntimePreview({
     }
 
     if (action.kind === 'declare' && action.suit) {
-      dispatchAction('declare', currentPlayer.id, { suit: action.suit });
+      dispatchAction(legalActions.includes('declare_suit') ? 'declare_suit' : 'declare', currentPlayer.id, { suit: action.suit });
       return;
     }
 
     if (action.kind === 'pick_up' && action.cardId) {
       dispatchAction('pick_up', currentPlayer.id, { discardCardId: action.cardId });
+      return;
+    }
+
+    if (action.kind === 'take_stock') {
+      dispatchAction('take_stock', currentPlayer.id);
+      return;
+    }
+
+    if (action.kind === 'take_discard') {
+      dispatchAction('take_discard', currentPlayer.id);
+      return;
+    }
+
+    if (action.kind === 'discard_card' && action.cardId) {
+      dispatchAction('discard_card', currentPlayer.id, { cardId: action.cardId });
       return;
     }
 
@@ -772,8 +858,13 @@ export function useLocalPilotRuntimePreview({
 
     if (action.kind === 'pass') {
       dispatchAction('pass', currentPlayer.id);
+      return;
     }
-  }, [currentPlayer, dispatchAction, hudActions]);
+
+    if (action.kind === 'end_turn') {
+      dispatchAction('end_turn', currentPlayer.id);
+    }
+  }, [currentPlayer, dispatchAction, hudActions, legalActions]);
 
   return {
     arenaOverlay,

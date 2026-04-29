@@ -70,6 +70,31 @@ const EndConditionSchema = z.object({
   appliesToPhase: z.string().min(1).nullable().optional(),
 });
 
+const AssetReferenceSchema = z.object({
+  path: z.string().min(1).optional(),
+  guid: z.string().min(1).optional(),
+  assetType: z.string().min(1).optional(),
+  displayName: z.string().min(1).optional(),
+}).passthrough();
+
+const EnabledModuleSchema = z.object({
+  id: z.string().min(1),
+  kind: z.string().min(1),
+  executorId: z.string().min(1),
+  enabled: z.boolean().optional(),
+  config: z.record(z.unknown()).optional(),
+  assetRefs: z.record(AssetReferenceSchema).optional(),
+}).passthrough();
+
+const RuntimeIntegrationSchema = z.object({
+  resolverName: z.string().min(1).optional(),
+  requiredEngineCapabilities: z.array(z.string()).default([]).optional(),
+  deterministicSeed: z.boolean().optional(),
+  authority: z.string().min(1).optional(),
+  multiplayerSyncModel: z.string().min(1).optional(),
+  replaySnapshotCompatible: z.boolean().optional(),
+}).passthrough();
+
 const ImplementationHintsSchema = z.object({
   rngUsed: z.array(z.string()).default([]),
   authoritativeServer: z.boolean().default(false),
@@ -85,8 +110,15 @@ const PlayerConfigSchema = z.object({
 });
 
 export const CardGameMechanicsDataSchema = z.object({
+  gameId: z.string().min(1).optional(),
+  mechanicsId: z.string().min(1).optional(),
+  mechanicsVersion: z.string().min(1).optional(),
   familyKernel: z.string().min(1),
+  familyVariant: z.string().min(1).optional(),
   kernelVersion: z.string().min(1),
+  inheritsFrom: z.string().min(1).nullable().optional(),
+  enabledModules: z.array(EnabledModuleSchema).default([]),
+  assetRefs: z.record(AssetReferenceSchema).default({}),
   playerConfig: PlayerConfigSchema,
   phases: z.array(PhaseSchema).min(1),
   actions: z.record(ActionSchema).optional(),
@@ -115,14 +147,34 @@ export const CardGameMechanicsDataSchema = z.object({
   bankingConfig: z.record(z.unknown()).nullable().optional(),
   roundConfig: z.record(z.unknown()).nullable().optional(),
   constants: z.record(z.unknown()).default({}),
+  familyConfig: z.record(z.unknown()).nullable().optional(),
   finalHandSize: z.number().int().min(0).optional(),
   deckCount: z.number().int().min(1).optional(),
   implementationHints: ImplementationHintsSchema.optional(),
+  playerModel: z.record(z.unknown()).default({}),
+  sessionModel: z.record(z.unknown()).default({}),
+  deckModel: z.record(z.unknown()).default({}),
+  zoneModel: z.record(z.unknown()).default({}),
+  setupModel: z.record(z.unknown()).default({}),
+  turnModel: z.record(z.unknown()).default({}),
+  actionModel: z.record(z.unknown()).default({}),
+  ruleModel: z.record(z.unknown()).default({}),
+  scoringModel: z.record(z.unknown()).default({}),
+  strategyHooks: z.record(z.unknown()).default({}),
+  stateModel: z.record(z.unknown()).default({}),
+  eventModel: z.record(z.unknown()).default({}),
+  validationSuites: z.array(z.unknown()).default([]),
+  runtimeIntegration: RuntimeIntegrationSchema.default({}),
+  examples: z.array(z.unknown()).default([]),
   progression: z.array(z.unknown()).default([]),
   roles: z.array(z.unknown()).default([]),
   determinismNotes: z.string().optional(),
 }).superRefine((data, ctx) => {
   const phaseIds = new Set(data.phases.map((phase) => phase.id));
+  const actionIds = new Set([
+    ...Object.keys(data.actions ?? {}).filter((actionId) => data.actions?.[actionId]?.supported !== false),
+    ...data.customActions.filter((action) => action.supported !== false).map((action) => action.id),
+  ]);
 
   data.phases.forEach((phase, index) => {
     if (phase.nextPhase && !phaseIds.has(phase.nextPhase)) {
@@ -139,6 +191,16 @@ export const CardGameMechanicsDataSchema = z.object({
           code: z.ZodIssueCode.custom,
           path: ['phases', index, 'conditionalNext', idx, 'nextPhase'],
           message: `conditional next phase must reference an existing phase ID`,
+        });
+      }
+    });
+
+    phase.legalActions.forEach((actionId, actionIndex) => {
+      if (!actionIds.has(actionId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phases', index, 'legalActions', actionIndex],
+          message: `legal action must reference a supported action or custom action ID, got "${actionId}"`,
         });
       }
     });

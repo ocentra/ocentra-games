@@ -10,6 +10,7 @@ import {
 import type { ValidationResult } from '@/engine/logic/StateValidator';
 import { ScoreCalculator } from '@/engine/logic/ScoreCalculator';
 import { BriscolaFamilyResolver } from '@/engine/mechanics/family/BriscolaFamilyResolver';
+import { ClaimFamilyResolver } from '@/engine/mechanics/family/ClaimFamilyResolver';
 import type { MechanicsFamilyResolver } from '@/engine/mechanics/family/MechanicsFamilyResolver';
 import { VyingFamilyResolver } from '@/engine/mechanics/family/VyingFamilyResolver';
 import type { MechanicsCustomAction, MechanicsPhase, MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
@@ -23,6 +24,9 @@ function clonePlayers(players: Player[]): Player[] {
 }
 
 function cloneContext(context: MechanicsRuntimeContext | undefined): MechanicsRuntimeContext {
+  const familyState = context?.familyState
+    ? JSON.parse(JSON.stringify(context.familyState)) as Record<string, unknown>
+    : undefined;
   return {
     dealerIndex: context?.dealerIndex ?? 0,
     showdownCallerId: context?.showdownCallerId ?? null,
@@ -41,6 +45,7 @@ function cloneContext(context: MechanicsRuntimeContext | undefined): MechanicsRu
     foldedPlayerIds: [...(context?.foldedPlayerIds ?? [])],
     roundPot: context?.roundPot ?? 0,
     trumpCard: context?.trumpCard ? { ...context.trumpCard } : null,
+    familyState,
   };
 }
 
@@ -51,6 +56,7 @@ export class MechanicsRuntime {
   constructor(scoreCalculator: ScoreCalculator = new ScoreCalculator()) {
     this.scoreCalculator = scoreCalculator;
     this.familyResolvers = [
+      new ClaimFamilyResolver(),
       new BriscolaFamilyResolver(),
       new VyingFamilyResolver(),
     ];
@@ -114,26 +120,6 @@ export class MechanicsRuntime {
       gameState.players[gameState.currentPlayer]?.id !== action.playerId
     ) {
       errors.push('It is not this player’s turn');
-    }
-
-    if (spec.familyKernel === 'claim') {
-      switch (action.type) {
-        case 'declare':
-          this.validateDeclare(action, player, errors);
-          break;
-        case 'pick_up':
-          this.validatePickUp(action, gameState, player, spec, errors);
-          break;
-        case 'pass':
-          this.validatePass(gameState, errors);
-          break;
-        case 'call_showdown':
-          this.validateShowdown(gameState, player, spec, errors);
-          break;
-        case 'rebuttal':
-          this.validateReveal(gameState, player, errors);
-          break;
-      }
     }
 
     if (action.type === 'reveal_hand') {
@@ -446,7 +432,10 @@ export class MechanicsRuntime {
       }
 
       if (phase.legalActions.includes('setup_round')) {
-        this.runSetupRound(workingState, spec, deckProvider);
+        const handledByFamily = this.getFamilyResolver(spec)?.runSetupRound?.(workingState, spec, deckProvider) ?? false;
+        if (!handledByFamily) {
+          this.runSetupRound(workingState, spec, deckProvider);
+        }
       } else if (phase.legalActions.includes('score_round')) {
         this.runScoreRound(workingState, spec);
       }
@@ -740,7 +729,23 @@ export class MechanicsRuntime {
   }
 
   private getFamilyResolver(spec: MechanicsSpec): MechanicsFamilyResolver | null {
-    return this.familyResolvers.find((resolver) => resolver.supports(spec)) ?? null;
+    const preferredExecutorIds = new Set<string>();
+    if (spec.runtimeIntegration?.resolverName) {
+      preferredExecutorIds.add(spec.runtimeIntegration.resolverName);
+    }
+
+    spec.enabledModules
+      ?.filter((module) => module.enabled !== false)
+      .forEach((module) => {
+        preferredExecutorIds.add(module.executorId);
+      });
+
+    const explicitResolver = this.familyResolvers.find((resolver) => {
+      const executorId = resolver.executorId ?? resolver.family;
+      return preferredExecutorIds.has(executorId) || preferredExecutorIds.has(resolver.family);
+    });
+
+    return explicitResolver ?? this.familyResolvers.find((resolver) => resolver.supports(spec)) ?? null;
   }
 
   private getRevealTargetCount(gameState: GameState): number {

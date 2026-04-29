@@ -30,6 +30,7 @@ export interface CardGameZonePresentation {
   items?: CardGameZoneItemPresentation[];
   emptyText?: string;
   hidden?: boolean;
+  showLabel?: boolean;
   testId?: string;
   deckTray?: CardGameDeckTrayPresentation;
 }
@@ -268,7 +269,7 @@ export default function TableZonesLayer({
           return null;
         }
 
-        const showLabel = authoringMode || !hasCards;
+        const showLabel = presentation?.showLabel ?? (authoringMode || !hasCards);
 
         return (
           <div

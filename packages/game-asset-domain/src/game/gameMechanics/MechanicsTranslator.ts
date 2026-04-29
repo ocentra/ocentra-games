@@ -1,10 +1,18 @@
 import type { CardGameMechanicsData } from '@/schemas/asset/card-game-mechanics-data.schema';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
+import { decodeMechanicsSpec } from '@ocentra/game-domain/schema/mechanics';
 
 export function toMechanicsSpec(data: CardGameMechanicsData): MechanicsSpec {
-  return {
+  return decodeMechanicsSpec({
+    gameId: data.gameId,
+    mechanicsId: data.mechanicsId,
+    mechanicsVersion: data.mechanicsVersion,
     familyKernel: data.familyKernel,
+    familyVariant: data.familyVariant,
     kernelVersion: data.kernelVersion,
+    inheritsFrom: data.inheritsFrom ?? null,
+    enabledModules: data.enabledModules,
+    assetRefs: data.assetRefs,
     playerConfig: {
       playerMode: data.playerConfig.playerMode,
       minPlayers: data.playerConfig.minPlayers,
@@ -51,11 +59,27 @@ export function toMechanicsSpec(data: CardGameMechanicsData): MechanicsSpec {
     bankingConfig: data.bankingConfig ?? null,
     roundConfig: data.roundConfig ?? null,
     constants: data.constants,
+    familyConfig: data.familyConfig ?? null,
     finalHandSize: data.finalHandSize,
     deckCount: data.deckCount,
     implementationHints: data.implementationHints,
+    playerModel: data.playerModel,
+    sessionModel: data.sessionModel,
+    deckModel: data.deckModel,
+    zoneModel: data.zoneModel,
+    setupModel: data.setupModel,
+    turnModel: data.turnModel,
+    actionModel: data.actionModel,
+    ruleModel: data.ruleModel,
+    scoringModel: data.scoringModel,
+    strategyHooks: data.strategyHooks,
+    stateModel: data.stateModel,
+    eventModel: data.eventModel,
+    validationSuites: data.validationSuites,
+    runtimeIntegration: data.runtimeIntegration,
+    examples: data.examples,
     progression: data.progression,
     roles: data.roles,
     determinismNotes: data.determinismNotes,
-  };
+  });
 }

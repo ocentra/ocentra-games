@@ -4,7 +4,7 @@ import { TurnBasedGameMode } from '@/gameMode/core/TurnBasedGameMode';
 import { CardGameScoring } from '@/game/scoring/CardGameScoring';
 import { CardGameRules } from '@/game/gameRules/CardGameRules';
 import { TrumpBonusValues } from '@/game/gameRules/TrumpBonusValues';
-import type { CardRanking } from '@/card/cardRanking/CardRanking';
+import { CardRanking } from '@/card/cardRanking/CardRanking';
 import type { BaseBonusRule } from '@/game/rules/BaseBonusRule';
 import { Strategy } from '@/game/strategy/Strategy';
 import { GameInfo } from '@/game/gameInfo/GameInfo';
@@ -63,6 +63,7 @@ export interface CardGameAssetLinks {
   gameInfo: AssetResourceEntry<GameInfo>;
   layout: AssetResourceEntry<CardGameLayout>;
   deck: AssetResourceEntry<Deck>;
+  cardRanking?: AssetResourceEntry<CardRanking>;
   carouselImages: AssetResourceEntry<ImageCarousel>;
   mechanics: AssetResourceEntry<CardGameMechanics>;
 }
@@ -84,6 +85,7 @@ export class CardGameMode extends TurnBasedGameMode {
     this.strategyAsset = new AssetResourceEntry<Strategy>(Strategy.assetType! as AssetType);
     this.gameInfoAsset = new AssetResourceEntry<GameInfo>(GameInfo.assetType! as AssetType);
     this.layoutAsset = new AssetResourceEntry<CardGameLayout>(CardGameLayout.assetType! as AssetType);
+    this.cardRankingAsset = new AssetResourceEntry<CardRanking>(CardRanking.assetType! as AssetType);
     this.carouselImagesAsset = new AssetResourceEntry<ImageCarousel>(ImageCarousel.assetType! as AssetType);
     this.mechanicsAsset = new AssetResourceEntry<CardGameMechanics>(CardGameMechanics.assetType! as AssetType);
   }
@@ -105,6 +107,7 @@ export class CardGameMode extends TurnBasedGameMode {
       strategyAsset: null,
       gameInfoAsset: null,
       layoutAsset: null,
+      cardRankingAsset: null,
       carouselImagesAsset: null,
       mechanicsAsset: null,
       minPlayers: 2,
@@ -157,6 +160,8 @@ export class CardGameMode extends TurnBasedGameMode {
   @serializable({ label: 'Deck Asset', group: 'Asset References', elementType: AssetResourceEntry })
   deckAsset!: AssetResourceEntry<Deck>;
 
+  @serializable({ label: 'Card Ranking Asset', group: 'Asset References', elementType: AssetResourceEntry })
+  cardRankingAsset!: AssetResourceEntry<CardRanking>;
 
   @required('Layout Asset is required for game mode to function')
   @serializable({ label: 'Layout Asset', group: 'Asset References', elementType: AssetResourceEntry })
@@ -221,6 +226,13 @@ export class CardGameMode extends TurnBasedGameMode {
   }
 
   async getCardRanking(): Promise<CardRanking | null> {
+    if (this.cardRankingAsset?.guid) {
+      const ranking = await this.cardRankingAsset.load(CardRanking);
+      if (ranking) {
+        return ranking;
+      }
+    }
+
     const scoring = await this.getScoringAsset();
     if (!scoring) return null;
     return scoring.getCardRanking();
@@ -720,6 +732,7 @@ export class CardGameMode extends TurnBasedGameMode {
       gameInfoAsset: links.gameInfo,
       layoutAsset: links.layout,
       deckAsset: links.deck,
+      cardRankingAsset: links.cardRanking ?? null,
       carouselImagesAsset: links.carouselImages,
       mechanicsAsset: links.mechanics,
       category,
