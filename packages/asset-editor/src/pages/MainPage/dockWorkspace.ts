@@ -1,7 +1,7 @@
 import type { AssetData } from '@/types/assets'
 import type { TabBase, TabData } from 'rc-dock'
 
-export type DockPanelKind = 'resources' | 'games' | 'preview' | 'inspector'
+export type DockPanelKind = 'resources' | 'games' | 'pages' | 'preview' | 'inspector'
 
 export interface LockedAssetSnapshot {
   assetPath: string | null
@@ -16,7 +16,7 @@ export interface WorkspaceTabData extends TabData {
   instanceId?: string
   baseTab?: boolean
   lockedSnapshot?: LockedAssetSnapshot | null
-  resourceView?: 'all' | 'games'
+  resourceView?: 'all' | 'games' | 'pages'
 }
 
 export interface WorkspaceTabBase extends TabBase {
@@ -24,7 +24,7 @@ export interface WorkspaceTabBase extends TabBase {
   instanceId?: string
   baseTab?: boolean
   lockedSnapshot?: LockedAssetSnapshot | null
-  resourceView?: 'all' | 'games'
+  resourceView?: 'all' | 'games' | 'pages'
 }
 
 export function isWorkspaceTab(value: TabBase | TabData | undefined): value is WorkspaceTabData {
@@ -44,9 +44,11 @@ export function getWorkspaceTabTitle(
       ? 'Resources'
       : kind === 'games'
         ? 'Games'
-      : kind === 'preview'
-        ? 'Preview'
-        : 'Inspector'
+        : kind === 'pages'
+          ? 'Pages'
+          : kind === 'preview'
+            ? 'Preview'
+            : 'Inspector'
 
   if (!snapshot?.assetLabel) {
     return baseTitle

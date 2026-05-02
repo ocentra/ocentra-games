@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { AssetData } from '@/types/assets'
 import { loadAssetFromNetwork } from './loadAssetFromNetwork'
 import type { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject'
@@ -21,9 +21,28 @@ export function useAssetLoader() {
   const [assetInstance] = useState<ScriptableObject | null>(null)
   const [isLoadingAsset, setIsLoadingAsset] = useState(false)
   const [assetError, setAssetError] = useState<string | null>(null)
+  const loadRequestIdRef = useRef(0)
 
   const loadAsset = useCallback(
     async (identifier: string) => {
+      const requestId = loadRequestIdRef.current + 1
+      loadRequestIdRef.current = requestId
+      const isCurrentRequest = () => loadRequestIdRef.current === requestId
+      const commitAssetData = (data: AssetData | null) => {
+        if (isCurrentRequest()) setAssetData(data)
+      }
+      const commitAssetPath = (path: string | null) => {
+        if (isCurrentRequest()) setAssetPath(path)
+      }
+      const commitAssetRawContent = (content: string | null) => {
+        if (isCurrentRequest()) setAssetRawContent(content)
+      }
+      const commitAssetError = (error: string | null) => {
+        if (isCurrentRequest()) setAssetError(error)
+      }
+      const commitIsLoadingAsset = (loading: boolean) => {
+        if (isCurrentRequest()) setIsLoadingAsset(loading)
+      }
       const loadStart = performance.now()
       log.logInfo(
         '[useAssetLoader] loadAsset START',
@@ -38,8 +57,8 @@ export function useAssetLoader() {
 
       if (identifierClean === 'virtual:GameRegistry') {
         try {
-          setIsLoadingAsset(true)
-          setAssetError(null)
+          commitIsLoadingAsset(true)
+          commitAssetError(null)
           log.logInfo(
             '[useAssetLoader] Loading GameRegistry',
             getStackTrace(),
@@ -73,11 +92,11 @@ export function useAssetLoader() {
             },
           }
 
-          setAssetData(assetData)
-          setAssetPath('virtual:GameRegistry')
-          setAssetRawContent(null)
-          setAssetError(null)
-          setIsLoadingAsset(false)
+          commitAssetData(assetData)
+          commitAssetPath('virtual:GameRegistry')
+          commitAssetRawContent(null)
+          commitAssetError(null)
+          commitIsLoadingAsset(false)
 
           const loadEnd = performance.now()
           log.logInfo(
@@ -88,20 +107,20 @@ export function useAssetLoader() {
           )
           return
         } catch (error) {
-          setAssetError(
+          commitAssetError(
             error instanceof Error
               ? error.message
               : 'Failed to load GameRegistry'
           )
-          setIsLoadingAsset(false)
+          commitIsLoadingAsset(false)
           return
         }
       }
 
       if (identifierClean === 'virtual:AssetCatalog') {
         try {
-          setIsLoadingAsset(true)
-          setAssetError(null)
+          commitIsLoadingAsset(true)
+          commitAssetError(null)
 
           const assetData: AssetData = {
             system: {
@@ -113,27 +132,27 @@ export function useAssetLoader() {
             data: {},
           }
 
-          setAssetData(assetData)
-          setAssetPath('virtual:AssetCatalog')
-          setAssetRawContent(null)
-          setAssetError(null)
-          setIsLoadingAsset(false)
+          commitAssetData(assetData)
+          commitAssetPath('virtual:AssetCatalog')
+          commitAssetRawContent(null)
+          commitAssetError(null)
+          commitIsLoadingAsset(false)
           return
         } catch (error) {
-          setAssetError(
+          commitAssetError(
             error instanceof Error
               ? error.message
               : 'Failed to load asset catalog'
           )
-          setIsLoadingAsset(false)
+          commitIsLoadingAsset(false)
           return
         }
       }
 
       if (identifierClean === 'virtual:DeckManager') {
         try {
-          setIsLoadingAsset(true)
-          setAssetError(null)
+          commitIsLoadingAsset(true)
+          commitAssetError(null)
           log.logInfo(
             '[useAssetLoader] Loading DeckManager',
             getStackTrace(),
@@ -155,11 +174,11 @@ export function useAssetLoader() {
             },
           }
 
-          setAssetData(assetData)
-          setAssetPath('virtual:DeckManager')
-          setAssetRawContent(null)
-          setAssetError(null)
-          setIsLoadingAsset(false)
+          commitAssetData(assetData)
+          commitAssetPath('virtual:DeckManager')
+          commitAssetRawContent(null)
+          commitAssetError(null)
+          commitIsLoadingAsset(false)
 
           const loadEnd = performance.now()
           log.logInfo(
@@ -170,18 +189,18 @@ export function useAssetLoader() {
           )
           return
         } catch (error) {
-          setAssetError(
+          commitAssetError(
             error instanceof Error
               ? error.message
               : 'Failed to load DeckManager'
           )
-          setIsLoadingAsset(false)
+          commitIsLoadingAsset(false)
           return
         }
       }
 
-      setIsLoadingAsset(true)
-      setAssetError(null)
+      commitIsLoadingAsset(true)
+      commitAssetError(null)
       log.logInfo(
         '[useAssetLoader] Loading asset from network',
         getStackTrace(),
@@ -191,11 +210,11 @@ export function useAssetLoader() {
 
       await loadAssetFromNetwork(
         identifier,
-        setAssetData,
-        setAssetPath,
-        setAssetRawContent,
-        setAssetError,
-        setIsLoadingAsset
+        commitAssetData,
+        commitAssetPath,
+        commitAssetRawContent,
+        commitAssetError,
+        commitIsLoadingAsset
       )
 
       const loadEnd = performance.now()

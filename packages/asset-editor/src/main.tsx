@@ -29,6 +29,7 @@ const profileTimeToMainMs = typeof window !== 'undefined' ? Math.round(performan
 initAssetEditorLogging();
 pushBoot('post initLogging');
 TypeRegistry.configure({ assetTypeMap, assetConstructorLoaders });
+initTauriAssetEventHandler();
 pushBoot('pre render');
 
 const rootEl = document.getElementById('root');

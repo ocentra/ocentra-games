@@ -93,5 +93,6 @@ export const assetConstructorLoaders: Record<string, () => Promise<unknown>> = {
   "PlayingCardRanking": () => import("@ocentra/game-asset-domain/playingCard/PlayingCardRanking"),
   "CardGameLayout": () => import("@ocentra/game-asset-domain/ui/layout/CardGameLayout"),
   "Layout": () => import("@ocentra/game-asset-domain/ui/layout/Layout"),
+  "PageLayout": () => import("@ocentra/game-asset-domain/ui/pageLayout/PageLayout"),
   "UIComponent": () => import("@ocentra/game-asset-domain/ui/UIComponent")
 };

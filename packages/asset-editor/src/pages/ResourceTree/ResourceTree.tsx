@@ -27,6 +27,7 @@ export const ResourceTree: React.FC<ResourceTreeProps> = ({
   onRefreshRequested,
   rootPath,
   rootLabel,
+  assetTypeFilter,
 }) => {
   const {
     nodes,
@@ -42,6 +43,7 @@ export const ResourceTree: React.FC<ResourceTreeProps> = ({
     pageSize: 100,
     rootPath,
     rootLabel,
+    assetTypeFilter,
   });
 
   const containerRef = useRef<HTMLDivElement>(null);

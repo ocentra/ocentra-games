@@ -9,6 +9,7 @@ import { getAssetEditorLogDir, wipeAssetEditorLogs } from './scripts/asset-edito
 import { createAppLogStorage } from '@ocentra/logging-domain/app-log/createAppLogStorage';
 import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
+import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
 import { loadWorkspaceEnv } from '../../scripts/shared/loadWorkspaceEnv';
 import { workspaceSourceResolver } from '../../vite/plugins/workspaceSourceResolver';
 import JSON5 from 'json5';
@@ -24,6 +25,7 @@ const echoLogsToTerminal = process.env.VITE_ECHO_LOGS_TO_TERMINAL === '1';
 
 const rootDir = path.resolve(__dirname, '../..');
 const assetEditorResourcesDir = path.resolve(__dirname, 'Resources');
+const coreUiHeaderProfilesDir = path.resolve(__dirname, '../core-ui/src/Header/profiles');
 loadWorkspaceEnv(__dirname, rootDir);
 
 const workspaceSourcePackages = [
@@ -91,6 +93,7 @@ let cachedBrowserAssetIndex:
       entries: BrowserAssetIndexEntry[];
     }
   | null = null;
+const BROWSER_ASSET_INDEX_CACHE_TTL_MS = 30000;
 
 function normalizeResourceUrlPath(relPath: string): string {
   const normalized = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
@@ -102,7 +105,10 @@ function sha256Hex(buffer: Buffer): string {
 }
 
 function buildBrowserAssetIndexEntries(): BrowserAssetIndexEntry[] {
-  if (cachedBrowserAssetIndex && Date.now() - cachedBrowserAssetIndex.builtAtMs < 2000) {
+  if (
+    cachedBrowserAssetIndex &&
+    Date.now() - cachedBrowserAssetIndex.builtAtMs < BROWSER_ASSET_INDEX_CACHE_TTL_MS
+  ) {
     return cachedBrowserAssetIndex.entries;
   }
 
@@ -188,6 +194,11 @@ function readBody(req: Connect.IncomingMessage): Promise<string> {
     req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
     req.on('error', reject);
   });
+}
+
+function normalizeHeaderProfileName(name: string): string {
+  const normalized = name.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+  return normalized || 'main_screen';
 }
 
 function parseNdjson(body: string): Array<Omit<LogEntry, 'id' | 'origin'>> {
@@ -327,6 +338,87 @@ export default defineConfig(({ command }) => ({
             res.statusCode = 400;
             res.end();
           }
+        });
+      },
+    },
+    {
+      name: 'asset-editor-header-config',
+      configureServer(server) {
+        server.middlewares.use(LocalApiEndpoint.HeaderConfig, async (req, res, next) => {
+          if (req.method === 'OPTIONS') {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.statusCode = 200;
+            res.end();
+            return;
+          }
+
+          if (req.method === 'GET') {
+            res.setHeader('Content-Type', 'application/json');
+            try {
+              if (!fs.existsSync(coreUiHeaderProfilesDir)) {
+                res.statusCode = 200;
+                res.end(JSON.stringify([]));
+                return;
+              }
+
+              const requestUrl = new URL(req.url ?? '', 'http://localhost');
+              const requestedName = requestUrl.searchParams.get('name');
+              if (requestedName) {
+                const profileName = normalizeHeaderProfileName(requestedName);
+                const profilePath = path.join(coreUiHeaderProfilesDir, `${profileName}.json`);
+                if (!fs.existsSync(profilePath)) {
+                  res.statusCode = 404;
+                  res.end(JSON.stringify({ error: 'Profile not found' }));
+                  return;
+                }
+
+                res.statusCode = 200;
+                res.end(fs.readFileSync(profilePath, 'utf8'));
+                return;
+              }
+
+              const profiles = fs.readdirSync(coreUiHeaderProfilesDir)
+                .filter((entry) => entry.endsWith('.json'))
+                .map((entry) => path.basename(entry, '.json'))
+                .sort();
+              res.statusCode = 200;
+              res.end(JSON.stringify(profiles));
+              return;
+            } catch (error) {
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+              return;
+            }
+          }
+
+          if (req.method === 'POST') {
+            res.setHeader('Content-Type', 'application/json');
+            try {
+              const body = JSON.parse(await readBody(req)) as { name?: unknown; content?: unknown };
+              const profileName = normalizeHeaderProfileName(String(body.name ?? 'main_screen'));
+              const content = typeof body.content === 'string' ? body.content : '';
+              if (!content) {
+                res.statusCode = 400;
+                res.end(JSON.stringify({ error: 'Missing profile content' }));
+                return;
+              }
+
+              fs.mkdirSync(coreUiHeaderProfilesDir, { recursive: true });
+              const profilePath = path.join(coreUiHeaderProfilesDir, `${profileName}.json`);
+              fs.writeFileSync(profilePath, `${content.trim()}\n`, 'utf8');
+              res.statusCode = 200;
+              res.end(JSON.stringify({ ok: true, profile: profileName }));
+              return;
+            } catch (error) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+              return;
+            }
+          }
+
+          next();
         });
       },
     },

@@ -9,12 +9,40 @@ import { ImageBatchLoadRequestEvent, ImageLoadPriority } from '@ocentra/eventing
 import { ImageBatchLoadedEvent } from '@ocentra/eventing-domain/events/image/ImageBatchLoadedEvent';
 import { ImageVariant } from '@/lib/cache/editorImageTypes';
 import { createGuid } from '@ocentra/app-core/guid';
+import {
+  getDiskResourceEntriesFromTauri,
+  isTauri,
+} from '@/adapters/assets/TauriAssetAdapter';
 
 function hashKey(h: ImageHash): string {
   return typeof h === 'string' ? h : JSON.stringify(h);
 }
 
 const resolvedImageUrlCache = new Map<string, string>();
+let browserImageUrlIndexPromise: Promise<Map<string, string>> | null = null;
+
+function getBrowserImageUrlIndex(): Promise<Map<string, string>> {
+  if (browserImageUrlIndexPromise) {
+    return browserImageUrlIndexPromise;
+  }
+
+  browserImageUrlIndexPromise = getDiskResourceEntriesFromTauri().then((entries) => {
+    const index = new Map<string, string>();
+    for (const entry of entries) {
+      if (entry.resourceEntryType !== 'ImageResourceEntry') {
+        continue;
+      }
+      const normalizedPath = entry.path.replace(/\\/g, '/').replace(/^\/+/, '');
+      const url = normalizedPath.startsWith('Resources/')
+        ? `/${normalizedPath}`
+        : `/Resources/${normalizedPath}`;
+      index.set(entry.hash, url);
+    }
+    return index;
+  });
+
+  return browserImageUrlIndexPromise;
+}
 
 function getCachedMap(hashes: ImageHash[]): Record<string, string> {
   const cached: Record<string, string> = {};
@@ -83,6 +111,32 @@ export function useResolveImageUrl(data: {
     data,
   ]);
 
+  const resolveBrowserHashes = useCallback((nextHashes: ImageHash[]) => {
+    if (isTauri() || nextHashes.length === 0) {
+      return;
+    }
+
+    void getBrowserImageUrlIndex().then((index) => {
+      setMap(prev => {
+        let changed = false;
+        const next = { ...prev };
+        for (const hash of nextHashes) {
+          const key = hashKey(hash);
+          const url = index.get(key);
+          if (!url) {
+            continue;
+          }
+          resolvedImageUrlCache.set(key, url);
+          if (next[key] !== url) {
+            next[key] = url;
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    }).catch(() => {});
+  }, []);
+
   useEffect(() => {
     const subscriberId = subscriberIdRef.current;
     const handleBatchLoaded = (event: ImageBatchLoadedEvent) => {
@@ -107,6 +161,11 @@ export function useResolveImageUrl(data: {
   }, []);
 
   const requestHashes = useCallback((nextHashes: ImageHash[]) => {
+    if (!isTauri()) {
+      resolveBrowserHashes(nextHashes);
+      return;
+    }
+
     const requests: Array<{
       hash: ImageHash;
       variant: ImageVariant;
@@ -131,7 +190,7 @@ export function useResolveImageUrl(data: {
     EventBus.instance.publish(
       new ImageBatchLoadRequestEvent(requests, subscriberIdRef.current, true)
     );
-  }, []);
+  }, [resolveBrowserHashes]);
 
   useEffect(() => {
     if (hashes.length === 0) return;

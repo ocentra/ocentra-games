@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { AssetData } from '@/types/assets';
 import { EditorImageCache } from '@/lib/cache/EditorImageCache';
 import { ImageVariant } from '@/lib/cache/editorImageTypes';
@@ -26,6 +26,11 @@ export function useAssetNavigation(
 ) {
   const [navigationHistory, setNavigationHistory] = useState<Array<{ path: string; name: string }>>([]);
   const isNavigatingRef = useRef(false);
+  const selectedAssetRef = useRef(selectedAsset);
+
+  useEffect(() => {
+    selectedAssetRef.current = selectedAsset;
+  }, [selectedAsset]);
 
   const handleAssetSelect = useCallback((info: AssetSelectInfo | string) => {
     const selectStart = performance.now();
@@ -62,12 +67,14 @@ export function useAssetNavigation(
       return;
     }
 
+    selectedAssetRef.current = normalizedNew;
     setSelectedAsset(normalizedNew);
     if (setAssetError) setAssetError(null);
 
     if (typeof info === 'object' && info.meta?.imageHash) {
       const imageCache = EditorImageCache.getInstance();
       void imageCache.getCachedImageByHash(info.meta.imageHash, ImageVariant.Full).then((cached) => {
+        if (selectedAssetRef.current !== normalizedNew) return;
         if (cached && info.meta) {
           const fileName = typeof info === 'object' && info.meta?.guid ? info.meta.guid : (identifier.split('/').pop() || 'image');
           const imageData: AssetData = {
@@ -94,6 +101,7 @@ export function useAssetNavigation(
     } else if (typeof info === 'object' && info.hash) {
       const imageCache = EditorImageCache.getInstance();
       void imageCache.getCachedImageByHash(info.hash, ImageVariant.Full).then((cached) => {
+        if (selectedAssetRef.current !== normalizedNew) return;
         if (cached) {
           const fileName = identifier.split('/').pop() || 'image';
           const imageData: AssetData = {
@@ -116,6 +124,7 @@ export function useAssetNavigation(
           void loadAsset(normalizedNew);
         }
       }).catch(() => {
+        if (selectedAssetRef.current !== normalizedNew) return;
         void loadAsset(normalizedNew);
       });
     } else {
@@ -204,4 +213,3 @@ export function useAssetNavigation(
     handleBack,
   };
 }
-

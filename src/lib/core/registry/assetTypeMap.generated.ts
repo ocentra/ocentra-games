@@ -659,6 +659,14 @@ const rawAssetTypeMap = {
     "category": "UI",
     "commonType": "Assets"
   },
+  "PageLayout": {
+    "importPath": "@ocentra/game-asset-domain/ui/pageLayout/PageLayout",
+    "assetType": "PageLayout",
+    "displayName": "Page Layout",
+    "icon": "Page",
+    "category": "UI",
+    "commonType": "Assets"
+  },
   "UIComponent": {
     "importPath": "@ocentra/game-asset-domain/ui/UIComponent",
     "assetType": "UIComponent",

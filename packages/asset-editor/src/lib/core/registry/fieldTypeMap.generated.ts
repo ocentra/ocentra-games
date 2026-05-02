@@ -693,6 +693,14 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
   "Layout": {
     "layout": "LayoutStructure"
   },
+  "PageLayout": {
+    "pageId": "String",
+    "routePath": "String",
+    "title": "String",
+    "kind": "PageLayoutKind",
+    "slices": "Array",
+    "layout": "LayoutStructure"
+  },
   "UIComponent": {
     "component": "ComponentType",
     "styles": "ComponentStyles",

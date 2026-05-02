@@ -70,10 +70,31 @@ export async function loadAsset(identifier: {
   guid?: string
   path?: string
   hash?: string
+  assetType?: string
 }): Promise<Response> {
-  const { guid, path, hash } = identifier
+  const { guid, path, hash, assetType } = identifier
 
   let resolvedPath = path
+  if (guid && !resolvedPath && !isTauri()) {
+    try {
+      const entry = await getResourceByGuidDb(guid)
+      if (entry?.resourceEntryType === 'AssetResourceEntry') {
+        resolvedPath = entry.path
+      }
+    } catch {
+      resolvedPath = undefined
+    }
+  }
+  if (assetType && !resolvedPath) {
+    try {
+      const entry = await getResourceByAssetTypeDb(assetType)
+      if (entry?.resourceEntryType === 'AssetResourceEntry') {
+        resolvedPath = entry.path
+      }
+    } catch {
+      resolvedPath = undefined
+    }
+  }
   if (hash && !resolvedPath) {
     try {
       resolvedPath = await resolvePathByHash(hash)
@@ -94,7 +115,7 @@ export async function loadAsset(identifier: {
         ? { guid: null, path: null, hash }
         : null
   if (!input) {
-    throw new Error('loadAsset: exactly one of guid, path or hash required')
+    throw new Error('loadAsset: exactly one of guid, path, hash or assetType required')
   }
   if (!isTauri()) {
     if (!resolvedPath) {
@@ -356,6 +377,25 @@ export async function getResourceByGuidDb(
   } catch (error) {
     throw new Error(toErrorMessage(error))
   }
+}
+
+function normalizeAssetTypeForLookup(value: string): string {
+  return value.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+}
+
+export async function getResourceByAssetTypeDb(
+  assetType: string
+): Promise<AssetIndexEntry | null> {
+  const requested = normalizeAssetTypeForLookup(assetType)
+  const entries = await getDiskResourceEntriesFromTauri()
+  return (
+    entries.find((entry) => {
+      if (entry.resourceEntryType !== 'AssetResourceEntry') {
+        return false
+      }
+      return normalizeAssetTypeForLookup(entry.assetType) === requested
+    }) ?? null
+  )
 }
 
 export async function getResourceByHashDb(

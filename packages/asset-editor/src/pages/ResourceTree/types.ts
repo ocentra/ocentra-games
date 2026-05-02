@@ -54,4 +54,5 @@ export interface ResourceTreeProps {
   onRefreshRequested?: boolean;
   rootPath?: string;
   rootLabel?: string;
+  assetTypeFilter?: string | string[];
 }

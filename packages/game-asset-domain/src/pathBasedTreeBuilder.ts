@@ -146,6 +146,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTre
     let guid: string | undefined;
     let hash: string | undefined;
     let resourceType: ResourceEntryType | undefined;
+    let assetType: string | undefined;
 
     if (resource instanceof AssetResourceEntry || isAsset) {
       resourceType = ResourceEntryType.AssetResourceEntry;
@@ -155,6 +156,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTre
       }
       nodeId = entry.guid;
       guid = entry.guid;
+      assetType = entry.assetType;
     } else if (resource instanceof ImageResourceEntry || isImage) {
       resourceType = ResourceEntryType.ImageResourceEntry;
       const entry = resource as ImageResourceEntry;
@@ -181,6 +183,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTre
       guid,
       hash,
       resourceType,
+      assetType,
       depth,
       isExpanded: false,
       isLoaded: true,
@@ -213,6 +216,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTre
       name: 'GameRegistry',
       id: 'virtual:GameRegistry',
       resourceType: ResourceEntryType.AssetResourceEntry,
+      assetType: 'GameRegistry',
       displayName: 'Game Registry',
       isFolder: false,
       depth: gameModeFolder.depth + 1,
@@ -266,6 +270,7 @@ export function buildTreeFromPaths(resources: ResourceEntry[], options: BuildTre
       name: 'DeckManager',
       id: 'virtual:DeckManager',
       resourceType: ResourceEntryType.AssetResourceEntry,
+      assetType: 'DeckManager',
       displayName: 'Deck Manager',
       isFolder: false,
       depth: cardGamesFolder.depth + 1,

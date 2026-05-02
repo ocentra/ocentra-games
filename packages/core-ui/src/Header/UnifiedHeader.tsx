@@ -624,6 +624,9 @@ export interface UnifiedHeaderProps {
     path: string;
     matchPrefixes?: string[];
   }>;
+  placement?: 'fixed' | 'contained';
+  defaultShowDebugControlsOpen?: boolean;
+  debugControlsOnly?: boolean;
   onResolvedConfigChange?: (config: UnifiedHeaderConfig) => void;
 }
 
@@ -942,9 +945,12 @@ export function UnifiedHeader({
   rightSuffixContent,
   dynamicData = {},
   showPrimaryNavigation = true,
-  showDebugControls = ENABLE_HEADER_DEBUG_CONTROLS,
+  showDebugControls = false,
   includeAdminNavigation = false,
   primaryNavigationItems,
+  placement = 'fixed',
+  defaultShowDebugControlsOpen = false,
+  debugControlsOnly = false,
   onResolvedConfigChange,
 }: UnifiedHeaderProps) {
   const derivedConfig = useMemo<UnifiedHeaderConfigInput>(() => {
@@ -979,7 +985,7 @@ export function UnifiedHeader({
   }, [profileName]);
   const [initialConfig, setInitialConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
   const [config, setConfig] = useState<UnifiedHeaderConfig>(defaultEditableConfig);
-  const [showControls, setShowControls] = useState(false);
+  const [showControls, setShowControls] = useState(defaultShowDebugControlsOpen);
   const [footerDebugDockHost, setFooterDebugDockHost] = useState<HTMLElement | null>(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showPictureModal, setShowPictureModal] = useState(false);
@@ -1818,12 +1824,23 @@ export function UnifiedHeader({
 
   const shouldKeepCollapsedLoginText = !right.isProfile && Boolean(right.onClick) && (right.text || '').trim().length > 0;
 
+  if (debugControlsOnly) {
+    return (
+      <div className={styles.debugControlsOnly}>
+        {renderDebugPanel()}
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center' }}>
       {leftContent}
       <div
         ref={wrapRef}
-        className={styles.unifiedHeaderWrapper}
+        className={[
+          styles.unifiedHeaderWrapper,
+          placement === 'contained' ? styles.unifiedHeaderWrapperContained : '',
+        ].filter(Boolean).join(' ')}
         style={{
           flex: 1,
           maxWidth: layout.maxWidth ? `${layout.maxWidth}px` : 'none',

@@ -1,5 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { MemoryRouter } from 'react-router-dom';
 import { PreviewPanel } from '@/pages/PreviewPanel/PreviewPanel';
 import { InspectorPanel } from '@/pages/InspectorPanel/InspectorPanel';
 import { loadAssetFromNetwork } from '@/pages/MainPage/loadAssetFromNetwork';
@@ -61,6 +62,12 @@ import {
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
 import { HomeShowcaseFrameControlsPanel } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrameControls';
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
+import type {
+  CenterLogoRenderArgs,
+  UnifiedHeaderConfigInput,
+} from '@ocentra/core-ui/Header/UnifiedHeader.config';
+import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   serializeHomeShowcaseFrameControls,
@@ -1013,7 +1020,102 @@ const StandaloneFeaturedShowcaseControls: React.FC = () => (
   </div>
 );
 
-type HomepageLayoutControlTab = 'about' | 'featured' | 'comingSoon';
+function HeaderProfileControlsPanel() {
+  const headerConfig = useMemo<UnifiedHeaderConfigInput>(() => ({
+    center: {
+      modeA: {
+        logo: {
+          size: 44,
+          renderer: ({
+            cx,
+            cy,
+            size,
+            aspectCorrection,
+            strokeWidth,
+            innerOpacity,
+            color,
+          }: CenterLogoRenderArgs) => {
+            const logoH = size;
+            const logoW = logoH * aspectCorrection;
+            const outerRadius = size / 2;
+            const innerRadius = Math.max(
+              1,
+              outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5
+            );
+            return (
+              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={outerRadius}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  opacity={0.95}
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={innerRadius}
+                  fill={color}
+                  opacity={innerOpacity}
+                />
+                <image
+                  href={mlogoImageUrl}
+                  x={cx - logoW / 2}
+                  y={cy - logoH / 2}
+                  width={logoW}
+                  height={logoH}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </g>
+            );
+          },
+        },
+      },
+    },
+    right: {
+      isProfile: true,
+      isButton: true,
+      user: {
+        name: 'ocentra ai',
+        isLoggedIn: true,
+        isAdmin: true,
+      },
+    },
+  }), []);
+
+  return (
+    <div style={{ display: 'grid', gap: '1rem' }}>
+      <div
+        style={{
+          border: '1px solid rgba(103, 232, 249, 0.28)',
+          borderRadius: '0.75rem',
+          background: 'rgba(2, 6, 23, 0.72)',
+          minHeight: '8rem',
+          overflow: 'visible',
+        }}
+      >
+        <MemoryRouter initialEntries={['/']}>
+          <UnifiedHeader
+            config={headerConfig}
+            profileName="main_screen"
+            includeAdminNavigation
+            placement="contained"
+            showDebugControls
+            defaultShowDebugControlsOpen
+          />
+        </MemoryRouter>
+      </div>
+      <div style={{ color: '#bae6fd', fontSize: '0.8rem' }}>
+        Header profiles are edited here. Use the profile controls inside this panel to load and save page-matched header profiles.
+      </div>
+    </div>
+  );
+}
+
+type HomepageLayoutControlTab = 'header' | 'about' | 'featured' | 'comingSoon';
 
 const copyTextToClipboard = async (value: string) => {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -1032,7 +1134,7 @@ const copyTextToClipboard = async (value: string) => {
 };
 
 const StandaloneHomepageLayoutControls: React.FC = () => {
-  const [tab, setTab] = useState<HomepageLayoutControlTab>('about');
+  const [tab, setTab] = useState<HomepageLayoutControlTab>('header');
   const [aboutControls, setAboutControls] = useState<HomeShowcaseFrameControls>(
     DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS
   );
@@ -1067,6 +1169,7 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
   const comingSoonPreviewLayoutModeRef = useRef(comingSoonPreviewLayoutMode);
 
   const tabs: { id: HomepageLayoutControlTab; label: string }[] = [
+    { id: 'header', label: 'Header' },
     { id: 'about', label: 'About Us' },
     { id: 'featured', label: 'Featured' },
     { id: 'comingSoon', label: 'Coming Soon' },
@@ -1409,6 +1512,9 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
   ]);
 
   const handleResetBlock = useCallback(() => {
+    if (tab === 'header') {
+      return;
+    }
     if (tab === 'about') {
       updateAboutControls(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS);
       return;
@@ -1517,6 +1623,9 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
           <div style={{ color: '#bbf7d0', fontSize: '0.75rem' }}>
             {status}
           </div>
+        ) : null}
+        {tab === 'header' ? (
+          <HeaderProfileControlsPanel />
         ) : null}
         {tab === 'about' ? (
           <HomeShowcaseFrameControlsPanel

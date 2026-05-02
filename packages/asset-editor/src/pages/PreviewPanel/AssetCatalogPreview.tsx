@@ -1,5 +1,6 @@
 import React, {
   startTransition,
+  useCallback,
   useDeferredValue,
   useEffect,
   useMemo,
@@ -295,6 +296,8 @@ function AssetCatalogMainAppPreviewShell({ children }: { children: React.ReactNo
                 config={headerConfig}
                 profileName="main_screen"
                 includeAdminNavigation
+                placement="contained"
+                showDebugControls={false}
               />
             }
             footer={<GameFooter appVersion={ASSET_EDITOR_PREVIEW_APP_VERSION} />}
@@ -315,6 +318,7 @@ type AssetCatalogPreviewProps = {
   navigationHistory: Array<{ path: string; name: string }>
   onBack?: () => void
   onNavigateToAsset?: (identifier: AssetIdentifier) => void
+  mode?: 'catalog' | 'pageLayout'
 }
 
 function extractModeFromPath(path: string): string {
@@ -486,6 +490,35 @@ function toCatalogMontageImages(
     }))
 }
 
+const EMPTY_HOMEPAGE_PREVIEW_DATA: HomePageGamesDocument = {
+  featured: [],
+  recommended: [],
+  comingSoon: [],
+  catalogMontageImages: [],
+  availableNow: [],
+  featureBannerItems: [],
+}
+
+const HOMEPAGE_PREVIEW_CACHE_TTL_MS = 30000
+
+let cachedHomepagePreviewData: HomePageGamesDocument | null = null
+let cachedHomepagePreviewLoadedAtMs = 0
+
+function hasHomepagePreviewContent(data: HomePageGamesDocument | null): boolean {
+  if (!data) {
+    return false
+  }
+
+  return (
+    data.featured.length > 0 ||
+    data.recommended.length > 0 ||
+    data.availableNow.length > 0 ||
+    data.comingSoon.length > 0 ||
+    data.catalogMontageImages.length > 0 ||
+    data.featureBannerItems.length > 0
+  )
+}
+
 export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   assetId,
   assetData: _assetData,
@@ -494,23 +527,39 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   navigationHistory,
   onBack,
   onNavigateToAsset,
+  mode = 'catalog',
 }) => {
-  const [activeTab, setActiveTab] = useState<AssetCatalogTab>('homepage')
+  const isPageLayoutMode = mode === 'pageLayout'
+  const hasCachedHomepagePreview = hasHomepagePreviewContent(cachedHomepagePreviewData)
+  const [activeTab, setActiveTab] = useState<AssetCatalogTab>(
+    isPageLayoutMode ? 'homepage' : 'games'
+  )
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null)
-  const [homepageData, setHomepageData] = useState<HomePageGamesDocument>({
-    featured: [],
-    recommended: [],
-    comingSoon: [],
-    catalogMontageImages: [],
-    availableNow: [],
-    featureBannerItems: [],
-  })
+  const [homepageData, setHomepageDataState] = useState<HomePageGamesDocument>(
+    () => cachedHomepagePreviewData ?? EMPTY_HOMEPAGE_PREVIEW_DATA
+  )
+  const setHomepageData = useCallback(
+    (value: React.SetStateAction<HomePageGamesDocument>) => {
+      setHomepageDataState(prev => {
+        const next =
+          typeof value === 'function'
+            ? (value as (previous: HomePageGamesDocument) => HomePageGamesDocument)(prev)
+            : value
+        cachedHomepagePreviewData = next
+        if (hasHomepagePreviewContent(next)) {
+          cachedHomepagePreviewLoadedAtMs = Date.now()
+        }
+        return next
+      })
+    },
+    []
+  )
   const [isLoadingHomepageCatalog, setIsLoadingHomepageCatalog] =
-    useState(true)
+    useState(!hasCachedHomepagePreview)
   const [isLoadingHomepageComingSoon, setIsLoadingHomepageComingSoon] =
-    useState(true)
+    useState(!hasCachedHomepagePreview)
   const [isLoadingHomepageFeatureBanner, setIsLoadingHomepageFeatureBanner] =
-    useState(true)
+    useState(!hasCachedHomepagePreview)
   const [gameEntries, setGameEntries] = useState<
     AssetResourceEntry<GameMode>[]
   >([])
@@ -651,7 +700,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     let cancelled = false
@@ -671,7 +720,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     let cancelled = false
@@ -686,7 +735,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     const channel = new BroadcastChannel(FEATURED_SHOWCASE_CONTROLS_CHANNEL)
@@ -719,7 +768,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.removeEventListener('message', handler)
       channel.close()
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     const channel = new BroadcastChannel(HOME_SHOWCASE_FRAME_CONTROLS_CHANNEL)
@@ -753,7 +802,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.removeEventListener('message', handler)
       channel.close()
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     const channel = new BroadcastChannel(COMING_SOON_SHOWCASE_CONTROLS_CHANNEL)
@@ -786,7 +835,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.removeEventListener('message', handler)
       channel.close()
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     const channel = new BroadcastChannel(HOMEPAGE_LAYOUT_CONTROLS_CHANNEL)
@@ -813,7 +862,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.removeEventListener('message', handler)
       channel.close()
     }
-  }, [])
+  }, [setHomepageData])
 
   useEffect(() => {
     let isCancelled = false
@@ -847,9 +896,18 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
 
     const load = async () => {
-      setIsLoadingHomepageCatalog(true)
-      setIsLoadingHomepageComingSoon(true)
-      setIsLoadingHomepageFeatureBanner(true)
+      if (
+        hasHomepagePreviewContent(cachedHomepagePreviewData) &&
+        Date.now() - cachedHomepagePreviewLoadedAtMs < HOMEPAGE_PREVIEW_CACHE_TTL_MS
+      ) {
+        return
+      }
+
+      if (!hasHomepagePreviewContent(cachedHomepagePreviewData)) {
+        setIsLoadingHomepageCatalog(true)
+        setIsLoadingHomepageComingSoon(true)
+        setIsLoadingHomepageFeatureBanner(true)
+      }
 
       if (isTauri()) {
         void (async () => {
@@ -1018,7 +1076,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         }, prefetchHashes)
       } catch {
         if (!isCancelled) {
-          setHomepageData({ featured: [], recommended: [], comingSoon: [], catalogMontageImages: [], availableNow: [], featureBannerItems: [] })
+          setHomepageData(EMPTY_HOMEPAGE_PREVIEW_DATA)
         }
       } finally {
         if (!isCancelled) {
@@ -1033,7 +1091,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return () => {
       isCancelled = true
     }
-  }, [prefetchHashes])
+  }, [prefetchHashes, setHomepageData])
 
   useEffect(() => {
     if (!isTauri()) return
@@ -1502,31 +1560,32 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     quality: g.home.quality ?? 'complete',
   }))
 
-  const tabs: { id: AssetCatalogTab; label: string; count?: number }[] = [
-    { id: 'homepage', label: 'Homepage' },
-    {
+  const tabs: { id: AssetCatalogTab; label: string; count?: number }[] = isPageLayoutMode
+    ? []
+    : [
+      {
       id: 'games',
       label: 'Games',
       count: hasLoadedGames ? gamesWithMetadata.length : (tabCounts.games ?? undefined),
-    },
-    {
+      },
+      {
       id: 'selected-game',
       label: 'Selected Game',
       count: selectedGameId ? 1 : undefined,
-    },
-    {
+      },
+      {
       id: 'images',
       label: 'Images',
       count: hasLoadedImages ? imageResourceCount : (tabCounts.images ?? undefined),
-    },
-    { id: 'sound', label: 'Sound' },
-    { id: 'video', label: 'Video' },
-    {
+      },
+      { id: 'sound', label: 'Sound' },
+      { id: 'video', label: 'Video' },
+      {
       id: 'resources',
       label: 'All Resources',
       count: activeTab === 'resources' ? resourceRows.length : (tabCounts.resources ?? undefined),
-    },
-  ]
+      },
+    ]
 
   const handleTabChange = (tab: AssetCatalogTab) => {
     startTransition(() => setActiveTab(tab))
@@ -1559,13 +1618,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             )}
           </button>
         ))}
-        <button
-          type="button"
-          className="asset-catalog-preview__edit-featured-button"
-          onClick={handleOpenHomepageLayoutControls}
-        >
-          Edit
-        </button>
+        {isPageLayoutMode && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenHomepageLayoutControls}
+          >
+            Edit
+          </button>
+        )}
       </div>
       {activeTab === 'games' && (
         <div className="asset-catalog-preview__games-mode">
@@ -1609,7 +1670,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Export:{' '}
             <code>
               {activeTab === 'homepage'
-                ? 'index/home.json'
+                ? isPageLayoutMode ? 'pages/home.layout.json' : 'index/home.json'
                 : activeTab === 'games'
                   ? 'games.json'
                   : `${activeTab}.json`}
@@ -1634,7 +1695,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         toolbar={catalogHeaderToolbar}
         hideBreadcrumb
       />
-      <div className="preview-panel__content preview-panel__content--preview">
+      <div className="preview-panel__content preview-panel__content--preview asset-catalog-preview__viewport-region">
         <div className="asset-catalog-preview">
           {activeTab === 'homepage' && (
             <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">

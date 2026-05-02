@@ -13,6 +13,7 @@ import type { AssetSyncStatus } from '@/lib/core/inspector/types';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import type { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry';
+import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { ResourceEntryType } from '@ocentra/asset-domain/resourceEntry/types';
 import { isAsset, isFolder } from '@/pages/ResourceTree/types';
 import { treeReducer, createInitialState } from '@/pages/ResourceTree/treeReducer';
@@ -69,13 +70,23 @@ interface UseResourceTreeOptions {
   pageSize?: number;
   rootPath?: string;
   rootLabel?: string;
+  assetTypeFilter?: string | string[];
 }
 
 interface SyncStatus {
   status: string;
 }
 
-export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseResourceTreeOptions) {
+function filterResourcesByAssetType(resources: ResourceEntry[], assetTypeFilter?: string | string[]): ResourceEntry[] {
+  if (!assetTypeFilter) {
+    return resources;
+  }
+
+  const allowed = new Set(Array.isArray(assetTypeFilter) ? assetTypeFilter : [assetTypeFilter]);
+  return resources.filter((resource) => resource instanceof AssetResourceEntry && allowed.has(resource.assetType));
+}
+
+export function useResourceTree({ pageSize = 100, rootPath, rootLabel, assetTypeFilter }: UseResourceTreeOptions) {
   const [state, dispatch] = useReducer(treeReducer, '', createInitialState);
 
   const [syncStatus, setSyncStatus] = useState<Record<string, SyncStatus>>({});
@@ -112,7 +123,8 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
           allResources = await getResourcesForTree();
         }
 
-        const { allNodes: allNodesMap } = buildTreeFromPaths(allResources, {
+        const filteredResources = filterResourcesByAssetType(allResources, assetTypeFilter);
+        const { allNodes: allNodesMap } = buildTreeFromPaths(filteredResources, {
           rootPath,
           rootLabel,
         });
@@ -155,7 +167,7 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
         return { nodes: [], hasMore: false };
       }
     },
-    [pageSize, rootPath, rootLabel]
+    [pageSize, rootPath, rootLabel, assetTypeFilter]
   );
 
   const initTree = useCallback(async (preserveExpandedFolderIds?: string[]) => {
@@ -168,7 +180,7 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
 
     try {
       const resourcesFromSource = await getResourcesForTree();
-      const resources = resourcesFromSource;
+      const resources = filterResourcesByAssetType(resourcesFromSource, assetTypeFilter);
 
       const { rootNode, allNodes } = buildTreeFromPaths(resources, {
         rootPath,
@@ -220,7 +232,7 @@ export function useResourceTree({ pageSize = 100, rootPath, rootLabel }: UseReso
       dispatch({ type: 'INIT_ERROR' });
       initRef.current = false;
     }
-  }, [rootPath, rootLabel]);
+  }, [rootPath, rootLabel, assetTypeFilter]);
 
   const loadFolder = useCallback(
     async (folderId: string, append: boolean = false) => {

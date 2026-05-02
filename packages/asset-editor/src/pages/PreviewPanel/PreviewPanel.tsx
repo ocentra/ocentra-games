@@ -26,6 +26,7 @@ log.register(import.meta.url);
 const GAME_INFO_TIMEOUT_MS = 6000;
 const PREVIEW_ASSET_TYPE = {
   assetCatalog: 'AssetCatalog',
+  pageLayout: 'PageLayout',
   gameRegistry: 'GameRegistry',
   deckManager: 'DeckManager',
   deck: assetTypeMap.Deck.assetType,
@@ -321,6 +322,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       return (
         <Suspense fallback={<div className="preview-panel"><PreviewPanelLoading message="Loading asset catalog..." /></div>}>
           <LazyAssetCatalogPreview
+            key="asset-catalog-preview"
             assetId={assetId}
             assetData={assetData}
             viewMode={viewMode}
@@ -328,6 +330,25 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
             navigationHistory={navigationHistory}
             onBack={onBack}
             onNavigateToAsset={onNavigateToAsset}
+            mode="catalog"
+          />
+        </Suspense>
+      );
+    }
+
+    if (assetType === PREVIEW_ASSET_TYPE.pageLayout) {
+      return (
+        <Suspense fallback={<div className="preview-panel"><PreviewPanelLoading message="Loading page layout..." /></div>}>
+          <LazyAssetCatalogPreview
+            key={`page-layout-preview:${assetPath}`}
+            assetId={assetId}
+            assetData={assetData}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            navigationHistory={navigationHistory}
+            onBack={onBack}
+            onNavigateToAsset={onNavigateToAsset}
+            mode="pageLayout"
           />
         </Suspense>
       );

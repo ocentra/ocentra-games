@@ -141,6 +141,23 @@ function getGameDescription(game: FeaturedGameItem): string {
   return game.description || game.shortDescription || '';
 }
 
+function createPlaceholderGame(label: string, tabId: ShowcaseTabId): FeaturedGameItem {
+  const normalizedLabel = label.trim() || 'Featured';
+  const id = `placeholder-${tabId}`;
+  return {
+    gameId: id,
+    guid: id,
+    name: normalizedLabel,
+    enabled: true,
+    tags: [],
+    tagline: 'Catalog preview',
+    shortDescription: 'Catalog entries will render here as soon as they are available.',
+    description: 'Catalog entries will render here as soon as they are available.',
+    featuredTopBadges: [],
+    featuredBottomBadges: [],
+  };
+}
+
 function normalizeBadgeTone(value: unknown, fallback: BadgeTone): BadgeTone {
   return typeof value === 'string' && badgeTones.includes(value as BadgeTone)
     ? value as BadgeTone
@@ -1061,9 +1078,24 @@ export const FeaturedGameShowcase: React.FC<FeaturedGameShowcaseProps> = ({
     { id: 'featured' as const, label: featuredLabel, games: featured.filter((game) => game.enabled !== false) },
     { id: 'recommended' as const, label: recommendedLabel, games: recommended.filter((game) => game.enabled !== false) },
   ], [featured, featuredLabel, recommended, recommendedLabel]);
-  const activeGames = tabs.find((tab) => tab.id === activeTabId)?.games ?? tabs[0].games;
+  const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
+  const placeholderGame = useMemo(
+    () => {
+      const next = createPlaceholderGame(activeTab.label, activeTab.id);
+      if (isLoading) {
+        return {
+          ...next,
+          shortDescription: 'Catalog entries are loading.',
+          description: 'Catalog entries are loading.',
+        };
+      }
+      return next;
+    },
+    [activeTab.id, activeTab.label, isLoading],
+  );
+  const activeGames = activeTab.games.length > 0 ? activeTab.games : [placeholderGame];
   const currentSlideIndex = activeGames.length > 0 ? Math.min(activeSlideIndex, activeGames.length - 1) : 0;
-  const currentGame = activeGames[currentSlideIndex];
+  const currentGame = activeGames[currentSlideIndex] ?? placeholderGame;
   const currentImages = currentGame ? getGameImages(currentGame) : [];
   const playbackImageCount = currentGame
     ? getBannerPlaybackImageCount(currentImages.length, currentGame.carouselPlaybackMode)
@@ -1228,26 +1260,6 @@ export const FeaturedGameShowcase: React.FC<FeaturedGameShowcaseProps> = ({
   const bottomBadgeY = bodyY + topH - c.sideA.bottomBadgeBottom;
   const learnMoreX = bodyX + leftW - c.sideA.learnMoreW - c.sideA.learnMoreRight;
   const learnMoreY = bodyY + topH - c.sideA.learnMoreH - c.sideA.learnMoreBottom;
-
-  if (isLoading && featured.length === 0 && recommended.length === 0) {
-    return (
-      <div ref={wrapperRef} className={className} style={wrapperStyle}>
-        <div style={{ minHeight: '18rem', display: 'grid', placeItems: 'center', border: '1px solid rgba(100, 181, 246, 0.3)', borderRadius: '0.75rem' }}>
-          Loading games...
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentGame) {
-    return (
-      <div ref={wrapperRef} className={className} style={wrapperStyle}>
-        <div style={{ minHeight: '18rem', display: 'grid', placeItems: 'center', border: '1px solid rgba(100, 181, 246, 0.3)', borderRadius: '0.75rem' }}>
-          No featured or recommended games available
-        </div>
-      </div>
-    );
-  }
 
   const mediaSlot: FeaturedShowcaseMediaSlot = {
     game: currentGame,

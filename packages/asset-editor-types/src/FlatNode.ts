@@ -8,6 +8,7 @@ export interface FlatNode {
   hash?: string;
   isFolder?: boolean;
   resourceType?: ResourceEntryType;
+  assetType?: string;
   displayName?: string;
   gameId?: string | null;
   depth: number;
