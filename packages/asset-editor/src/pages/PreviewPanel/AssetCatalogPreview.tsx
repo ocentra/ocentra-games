@@ -13,6 +13,7 @@ import { toAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier'
 import type { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry'
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode'
 import type { GameHome } from '@ocentra/game-asset-domain/schemas/game-home-schema'
+import type { PageLayoutDocument } from '@ocentra/game-asset-domain/ui/pageLayout/PageLayout'
 import {
   HomePageGamesDocumentSchema,
   type HomepageLayoutControlsData,
@@ -219,7 +220,13 @@ const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
 
 const ASSET_EDITOR_PREVIEW_APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
 
-function AssetCatalogMainAppPreviewShell({ children }: { children: React.ReactNode }) {
+function AssetCatalogMainAppPreviewShell({
+  children,
+  routePath = '/',
+}: {
+  children: React.ReactNode
+  routePath?: string
+}) {
   const rotationControlRef = useRef<RotationControlAPI | null>(null)
   const headerConfig = useMemo(() => ({
     center: {
@@ -284,7 +291,7 @@ function AssetCatalogMainAppPreviewShell({ children }: { children: React.ReactNo
 
   return (
     <div className="asset-catalog-preview__main-app-host">
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[routePath]}>
         <ThreeBaseProvider>
           <UnifiedPageShell
             embedded
@@ -319,6 +326,59 @@ type AssetCatalogPreviewProps = {
   onBack?: () => void
   onNavigateToAsset?: (identifier: AssetIdentifier) => void
   mode?: 'catalog' | 'pageLayout'
+}
+
+type PageLayoutPreviewData = Partial<PageLayoutDocument>
+
+function readPageLayoutData(assetData: { data?: unknown }): PageLayoutPreviewData {
+  return assetData.data && typeof assetData.data === 'object'
+    ? (assetData.data as PageLayoutPreviewData)
+    : {}
+}
+
+function PageLayoutMainAppPreview({ document }: { document: PageLayoutPreviewData }) {
+  const title = document.title || document.pageId || 'Page Layout'
+  const routePath = document.routePath || '/'
+  const enabledSlices = (document.slices ?? [])
+    .filter(slice => slice.enabled !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+  return (
+    <AssetCatalogMainAppPreviewShell routePath={routePath}>
+      <main className="asset-catalog-preview__page-layout-stage">
+        <section className="asset-catalog-preview__page-layout-hero">
+          <div>
+            <span className="asset-catalog-preview__page-layout-eyebrow">Page Layout</span>
+            <h1>{title}</h1>
+            <p>{routePath}</p>
+          </div>
+          <div className="asset-catalog-preview__page-layout-kind">
+            {(document.kind ?? 'generic').toString()}
+          </div>
+        </section>
+        <section className="asset-catalog-preview__page-layout-slices">
+          {enabledSlices.length > 0 ? (
+            enabledSlices.map(slice => (
+              <article key={slice.id} className="asset-catalog-preview__page-layout-slice">
+                <div>
+                  <span>{slice.type}</span>
+                  <h2>{slice.title || slice.id}</h2>
+                </div>
+                {slice.sourceAssetPath ? <code>{slice.sourceAssetPath}</code> : null}
+              </article>
+            ))
+          ) : (
+            <article className="asset-catalog-preview__page-layout-slice">
+              <div>
+                <span>empty</span>
+                <h2>No page slices configured</h2>
+              </div>
+            </article>
+          )}
+        </section>
+      </main>
+    </AssetCatalogMainAppPreviewShell>
+  )
 }
 
 function extractModeFromPath(path: string): string {
@@ -521,7 +581,7 @@ function hasHomepagePreviewContent(data: HomePageGamesDocument | null): boolean 
 
 export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   assetId,
-  assetData: _assetData,
+  assetData,
   viewMode,
   setViewMode,
   navigationHistory,
@@ -530,6 +590,14 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   mode = 'catalog',
 }) => {
   const isPageLayoutMode = mode === 'pageLayout'
+  const pageLayoutData = useMemo(
+    () => isPageLayoutMode ? readPageLayoutData(assetData) : null,
+    [assetData, isPageLayoutMode]
+  )
+  const isHomePageLayout =
+    !isPageLayoutMode ||
+    pageLayoutData?.kind === 'home' ||
+    pageLayoutData?.pageId === 'home'
   const hasCachedHomepagePreview = hasHomepagePreviewContent(cachedHomepagePreviewData)
   const [activeTab, setActiveTab] = useState<AssetCatalogTab>(
     isPageLayoutMode ? 'homepage' : 'games'
@@ -1403,6 +1471,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
 
   const rawJsonForTab = useMemo(() => {
     if (activeTab === 'homepage') {
+      if (isPageLayoutMode && !isHomePageLayout) {
+        return JSON.stringify(pageLayoutData ?? {}, null, 2)
+      }
+
       return JSON.stringify(
         {
           featured: homepageData.featured,
@@ -1482,6 +1554,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     aboutShowcaseControls,
     comingSoonShowcaseControls,
     homepageLayoutControls,
+    isHomePageLayout,
+    isPageLayoutMode,
+    pageLayoutData,
     filteredGamesWithMeta,
     selectedGameId,
     selectedGame,
@@ -1618,7 +1693,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             )}
           </button>
         ))}
-        {isPageLayoutMode && (
+        {isPageLayoutMode && isHomePageLayout && (
           <button
             type="button"
             className="asset-catalog-preview__edit-featured-button"
@@ -1670,7 +1745,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Export:{' '}
             <code>
               {activeTab === 'homepage'
-                ? isPageLayoutMode ? 'pages/home.layout.json' : 'index/home.json'
+                ? isPageLayoutMode
+                  ? `pages/${pageLayoutData?.pageId ?? 'home'}.layout.json`
+                  : 'index/home.json'
                 : activeTab === 'games'
                   ? 'games.json'
                   : `${activeTab}.json`}
@@ -1699,64 +1776,68 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         <div className="asset-catalog-preview">
           {activeTab === 'homepage' && (
             <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
-              <AssetCatalogMainAppPreviewShell>
-                <div className="home-work-math">
-                  {ImageLoaders}
-                  <div className="scrollable-content-container">
-                    <div
-                      ref={homepageContentFrameRef}
-                      className={`home-content asset-catalog-preview__homepage-content-frame ${
-                        homepageLayoutControls.contentBoundsOverlay
-                          ? 'asset-catalog-preview__homepage-content-frame--bounds'
-                          : ''
-                      }`}
-                    >
-                      <section className="about-us-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
-                        <FeatureBannerSection
-                          featureBannerItems={homepageData.featureBannerItems}
-                          resolveImageUrl={resolveImageUrl}
-                          controls={aboutShowcaseControls}
-                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                          allowDebugBounds
-                        />
-                      </section>
-                      <section className="featured-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
-                        <FeaturedGameShowcase
-                          featured={homepageData.featured}
-                          recommended={homepageData.recommended ?? []}
-                          isLoading={isLoadingHomepageCatalog}
-                          controls={featuredShowcaseControls}
-                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                          onLearnMore={handleGameClick}
-                          resolveImageUrl={resolveImageUrl}
-                          allowDebugBounds
-                        />
-                      </section>
-                      <section className="games-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
-                        <ComingSoonShowcase
-                          comingSoon={homepageData.comingSoon}
-                          catalogMontageItems={homepageData.catalogMontageImages ?? []}
-                          availableNow={homepageData.availableNow}
-                          explorerGames={explorerGames}
-                          isLoading={
-                            isLoadingHomepageCatalog ||
-                            isLoadingHomepageComingSoon ||
-                            isLoadingHomepageFeatureBanner
-                          }
-                          onGameClick={handleGameClick}
-                          onExploreClick={() => handleTabChange('games')}
-                          resolveImageUrl={resolveImageUrl}
-                          showExploreTile
-                          controls={comingSoonShowcaseControls}
-                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                          allowDebugBounds
-                        />
-                      </section>
-                      <div className="content-spacer" />
+              {isHomePageLayout ? (
+                <AssetCatalogMainAppPreviewShell routePath={pageLayoutData?.routePath ?? '/'}>
+                  <div className="home-work-math">
+                    {ImageLoaders}
+                    <div className="scrollable-content-container">
+                      <div
+                        ref={homepageContentFrameRef}
+                        className={`home-content asset-catalog-preview__homepage-content-frame ${
+                          homepageLayoutControls.contentBoundsOverlay
+                            ? 'asset-catalog-preview__homepage-content-frame--bounds'
+                            : ''
+                        }`}
+                      >
+                        <section className="about-us-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
+                          <FeatureBannerSection
+                            featureBannerItems={homepageData.featureBannerItems}
+                            resolveImageUrl={resolveImageUrl}
+                            controls={aboutShowcaseControls}
+                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                            allowDebugBounds
+                          />
+                        </section>
+                        <section className="featured-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
+                          <FeaturedGameShowcase
+                            featured={homepageData.featured}
+                            recommended={homepageData.recommended ?? []}
+                            isLoading={isLoadingHomepageCatalog}
+                            controls={featuredShowcaseControls}
+                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                            onLearnMore={handleGameClick}
+                            resolveImageUrl={resolveImageUrl}
+                            allowDebugBounds
+                          />
+                        </section>
+                        <section className="games-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
+                          <ComingSoonShowcase
+                            comingSoon={homepageData.comingSoon}
+                            catalogMontageItems={homepageData.catalogMontageImages ?? []}
+                            availableNow={homepageData.availableNow}
+                            explorerGames={explorerGames}
+                            isLoading={
+                              isLoadingHomepageCatalog ||
+                              isLoadingHomepageComingSoon ||
+                              isLoadingHomepageFeatureBanner
+                            }
+                            onGameClick={handleGameClick}
+                            onExploreClick={() => handleTabChange('games')}
+                            resolveImageUrl={resolveImageUrl}
+                            showExploreTile
+                            controls={comingSoonShowcaseControls}
+                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                            allowDebugBounds
+                          />
+                        </section>
+                        <div className="content-spacer" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </AssetCatalogMainAppPreviewShell>
+                </AssetCatalogMainAppPreviewShell>
+              ) : (
+                <PageLayoutMainAppPreview document={pageLayoutData ?? {}} />
+              )}
             </div>
           )}
 

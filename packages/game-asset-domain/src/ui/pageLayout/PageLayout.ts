@@ -6,11 +6,15 @@ import { Layout, type LayoutStructure } from '@/ui/layout/Layout';
 export type PageLayoutKind =
   | 'home'
   | 'shop'
+  | 'social'
   | 'games'
   | 'tournaments'
   | 'leaderboard'
   | 'profile'
   | 'admin'
+  | 'settings'
+  | 'lobby'
+  | 'matchmaking'
   | 'generic';
 
 export type PageLayoutSliceType =
