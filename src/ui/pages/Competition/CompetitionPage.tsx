@@ -21,7 +21,8 @@ interface CompetitionPageProps {
 
 export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPageProps) {
   const { runWithAccount } = useAuthAccess();
-  const hasAccount = Boolean(user) && user.isGuest !== true;
+  const accountUserId = user && user.isGuest !== true ? user.uid : null;
+  const hasAccount = accountUserId !== null;
   const {
     loading,
     registering,
@@ -38,7 +39,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
     refreshLeaderboard,
     loadTournamentBracket,
     registerForTournament,
-  } = useCompetitionData(hasAccount ? user?.uid ?? null : null);
+  } = useCompetitionData(accountUserId);
 
   const handleLogout = () => {
     if (onLogoutClick) {

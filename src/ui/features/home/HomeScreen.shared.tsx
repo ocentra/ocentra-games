@@ -4,7 +4,6 @@ import type { UserProfile } from '@/adapters/firebase/service';
 import { FeaturedGameShowcase } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase';
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
-  type FeaturedGameShowcasePreviewLayoutMode,
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
 import { ComingSoonShowcase } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonShowcase';
@@ -87,6 +86,18 @@ function getMergedHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeS
   };
 }
 
+function toFeaturedShowcaseControls(
+  controls?: HomePageGamesDocument['featuredShowcaseControls'],
+): FeaturedShowcaseControls | undefined {
+  return controls ? getMergedFeaturedControls(controls as FeaturedShowcaseControls) : undefined;
+}
+
+function toHomeFrameControls(
+  controls?: HomePageGamesDocument['aboutShowcaseControls'],
+): HomeShowcaseFrameControls | undefined {
+  return controls ? getMergedHomeFrameControls(controls as HomeShowcaseFrameControls) : undefined;
+}
+
 function isFeaturedNarrowAtWidth(width: number, controls?: FeaturedShowcaseControls): boolean {
   const c = getMergedFeaturedControls(controls);
   const measuredContentWidth = width - c.overall.canvasInsetX * 2;
@@ -115,7 +126,13 @@ function isHomeFrameNarrowAtWidth(width: number, controls?: HomeShowcaseFrameCon
   );
 }
 
-interface HomePageGamesData extends HomePageGamesDocument {
+interface HomePageGamesData extends Omit<
+  HomePageGamesDocument,
+  'featuredShowcaseControls' | 'aboutShowcaseControls' | 'comingSoonShowcaseControls'
+> {
+  featuredShowcaseControls?: FeaturedShowcaseControls;
+  aboutShowcaseControls?: HomeShowcaseFrameControls;
+  comingSoonShowcaseControls?: FeaturedShowcaseControls;
   explorerGames: ExploreGameSummary[];
 }
 
@@ -228,9 +245,9 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           catalogMontageImages: homePageGames.catalogMontageImages ?? [],
           availableNow: homePageGames.availableNow,
           featureBannerItems: homePageGames.featureBannerItems ?? [],
-          featuredShowcaseControls: homePageGames.featuredShowcaseControls,
-          aboutShowcaseControls: homePageGames.aboutShowcaseControls,
-          comingSoonShowcaseControls: homePageGames.comingSoonShowcaseControls,
+          featuredShowcaseControls: toFeaturedShowcaseControls(homePageGames.featuredShowcaseControls),
+          aboutShowcaseControls: toHomeFrameControls(homePageGames.aboutShowcaseControls),
+          comingSoonShowcaseControls: toFeaturedShowcaseControls(homePageGames.comingSoonShowcaseControls),
           homepageLayoutControls: homePageGames.homepageLayoutControls,
           explorerGames,
         };

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
-import type { AvatarInfo } from '@/types/avatarInfo';
+import type { AvatarInfo } from '@ocentra/core-ui/types/avatarInfo';
 import type { UnifiedHeaderConfigInput } from '@ocentra/core-ui/Header/UnifiedHeader.config';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { isGuestIdentity } from '@/lib/auth/guestIdentity';

@@ -6,6 +6,7 @@ import {
   cloneCardGameLayoutDocument,
   hydrateCardGameLayoutAsset,
   normalizeCardGameLayoutDocument,
+  PLAIN_CARD_FRAME_DEFAULTS,
   resolveLayoutPreset as resolveLayoutPresetDomain,
   type SerializedCardGameLayoutAsset,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
@@ -88,7 +89,7 @@ export function readCardGameLayoutDocument(source: LooseRecord): NormalizedCardG
     deckTray: cloneRecord(normalized.deckTray),
     cardFan: cloneRecord(normalized.cardFan),
     cardVisuals: cloneRecord(normalized.cardVisuals),
-    cardFrame: cloneRecord(normalized.cardFrame ?? {}),
+    cardFrame: cloneRecord(normalized.cardFrame ?? PLAIN_CARD_FRAME_DEFAULTS),
     renderToggles: cloneRecord(normalized.renderToggles),
     tablePresentation: cloneRecord(normalized.tablePresentation),
     tableAttachments: cloneRecord(normalized.tableAttachments),

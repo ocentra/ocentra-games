@@ -82,14 +82,25 @@ export default defineConfig(async ({ mode, command }) => {
     '@ocentra/core-ui',
     '@ocentra/app-assets',
     '@ocentra/asset-domain',
+    '@ocentra/asset-editor-types',
     '@ocentra/app-core',
+    '@ocentra/auth-domain',
+    '@ocentra/behaviour-domain',
     '@ocentra/boundary-domain',
+    '@ocentra/contracts-domain',
+    '@ocentra/credentials-domain',
+    '@ocentra/crypto-domain',
     '@ocentra/logging-domain',
+    '@ocentra/network-domain',
+    '@ocentra/schema-domain',
     '@ocentra/endpoint-domain',
     '@ocentra/api-domain',
     '@ocentra/eventing-domain',
+    '@ocentra/solana-domain',
+    '@ocentra/storage-domain',
     '@ocentra/game-asset-domain',
-    '@ocentra/game-domain'
+    '@ocentra/game-domain',
+    '@ocentra/verification-domain'
   ];
 
   return {

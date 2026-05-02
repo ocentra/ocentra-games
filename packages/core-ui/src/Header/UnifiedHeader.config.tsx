@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { AvatarInfo } from '@/types/avatarInfo';
+import type { AvatarInfo } from '../types/avatarInfo';
 import { schema } from '@ocentra/schema-domain/effect-builder';
 
 export type SplitMode = 'first-letter' | 'first-token' | 'manual-pipe';

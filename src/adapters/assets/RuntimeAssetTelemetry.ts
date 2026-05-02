@@ -2,6 +2,7 @@ type RuntimeAssetOperationName =
   | 'entryIndex'
   | 'homePageGames'
   | 'gameCatalog'
+  | 'appPageSlice'
   | 'selectedGamePage'
   | 'gameEngine'
   | 'prefetchCoreSlices'

@@ -409,15 +409,17 @@ export async function getHomePageGamesInfos(): Promise<HomePageGamesDocument> {
   const featureBannerItems = await getFeatureBannerItems();
   const recommended = [...featured];
 
-  cachedHomePageData = {
+  const fallbackHomePageData: HomePageGamesDocument = {
     featured,
     recommended,
     comingSoon,
+    catalogMontageImages: [],
     availableNow,
     featureBannerItems,
   };
 
-  return cachedHomePageData;
+  cachedHomePageData = fallbackHomePageData;
+  return fallbackHomePageData;
 }
 
 export async function getSelectedGamePageInfos(identifier: string): Promise<GamePage | null> {

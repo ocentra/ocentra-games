@@ -11,8 +11,8 @@ export default defineConfig(async ({ command }) => {
   if (command === 'serve' && !isPreviewCli) {
     const { serveFromGameData, serveProcessedGames } = await import('@ocentra/card-games/server');
     plugins.push(
-      serveFromGameData({ logDir: path.join(process.cwd(), 'Log') }),
-      serveProcessedGames()
+      serveFromGameData({ logDir: path.join(process.cwd(), 'Log') }) as unknown as PluginOption,
+      serveProcessedGames() as unknown as PluginOption
     );
   }
   return {
