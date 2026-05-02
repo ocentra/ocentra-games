@@ -1,5 +1,6 @@
-import { type GameState, AIPersonality } from '@ocentra/game-domain/types/game';
-import { AIEngine, type AIConfig, type AIDecision } from '@ocentra/ai-domain/orchestration/AIEngine';
+import { type Card, type GameState, AIPersonality } from '@ocentra/game-domain/types/game';
+import { runtimePiecesToCards, asRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
+import { AIEngine, type AICard, type AIConfig, type AIDecision, type AIGameState } from '@ocentra/ai-domain/orchestration/AIEngine';
 import { ModelManager } from '@/lib/managers/ai/ModelManager';
 import { AIHelper } from '@ocentra/ai-domain/orchestration/AIHelper';
 import { GameModeFactory } from '@ocentra/game-asset-domain/factories/GameModeFactory';
@@ -35,6 +36,30 @@ const VALID_MODEL_ACTIONS: ReadonlyArray<string> = [
   PlayerActionType.CALL_SHOWDOWN,
   PlayerActionType.REBUTTAL,
 ];
+
+function toAICard(card: Card): AICard {
+  return {
+    id: card.id,
+    suit: card.suit,
+    value: card.value,
+  };
+}
+
+function toAIGameState(gameState: GameState): AIGameState {
+  return {
+    players: gameState.players.map((player) => ({
+      id: player.id,
+      name: player.name,
+      hand: runtimePiecesToCards(player.hand).map(toAICard),
+      declaredSuit: player.declaredSuit,
+      isAI: player.isAI,
+    })),
+    currentPlayer: gameState.currentPlayer,
+    phase: gameState.phase,
+    deck: runtimePiecesToCards(gameState.deck).map(toAICard),
+    floorCard: gameState.floorCard ? asRuntimeCard(gameState.floorCard) ? toAICard(asRuntimeCard(gameState.floorCard)!) : null : null,
+  };
+}
 
 export interface AIGameAdapterConfig {
   gameModeId: string;
@@ -74,7 +99,7 @@ export class AIGameAdapter {
 
     const handHandler = (event: RequestPlayerHandDetailEvent) => {
       const player = gameState.players.find((p) => p.id === event.playerId);
-      event.deferred.resolve(OperationResult.success(player?.hand ?? []));
+      event.deferred.resolve(OperationResult.success(runtimePiecesToCards(player?.hand ?? [])));
     };
     EventBus.instance.subscribe(RequestPlayerHandDetailEvent, handHandler);
     subs.push(() => EventBus.instance.unsubscribe(RequestPlayerHandDetailEvent, handHandler));
@@ -101,7 +126,7 @@ export class AIGameAdapter {
     subs.push(() => EventBus.instance.unsubscribe(RequestRemainingCardsCountEvent, remainingHandler));
 
     const floorHandler = (event: RequestFloorCardsDetailEvent) => {
-      event.deferred.resolve(OperationResult.success(gameState.floorCard ? [gameState.floorCard] : []));
+      event.deferred.resolve(OperationResult.success(runtimePiecesToCards(gameState.floorCard ? [gameState.floorCard] : [])));
     };
     EventBus.instance.subscribe(RequestFloorCardsDetailEvent, floorHandler);
     subs.push(() => EventBus.instance.unsubscribe(RequestFloorCardsDetailEvent, floorHandler));
@@ -119,7 +144,7 @@ export class AIGameAdapter {
     const engine = this.aiEngines.get(playerId);
     if (!engine) throw new Error(`No AI engine for ${playerId}`);
     const state = this.getGameState();
-    const decision: AIDecision = await engine.makeDecision(state);
+    const decision: AIDecision = await engine.makeDecision(toAIGameState(state));
     return {
       action: decision.action,
       data: decision.data,

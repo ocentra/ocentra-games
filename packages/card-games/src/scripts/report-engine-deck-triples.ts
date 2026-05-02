@@ -3,7 +3,7 @@
 import fs from "fs";
 import { PROCESSED_GAMES_DIR } from "@/paths";
 import { walkProcessedGameFiles } from "@/processed-game-files";
-import { GameSchema, type Game } from "@/schema/zod/game-schema";
+import { GameSchema, type Game } from "@/schema/effect/game-schema";
 
 type TripleKey = `${string}\0${string}\0${string}`;
 

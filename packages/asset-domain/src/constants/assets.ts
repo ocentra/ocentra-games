@@ -1,4 +1,5 @@
 import type { AssetCategory } from '@ocentra/boundary-domain/types/asset-category';
+import { Schema } from '@ocentra/schema-domain/effect';
 export { AssetTypeCategory, type AssetCategory } from '@ocentra/boundary-domain/types/asset-category';
 
 export const MimeTypes = {
@@ -39,7 +40,9 @@ export const AssetSchemaVersion = {
 
 export type AssetSchemaVersion = typeof AssetSchemaVersion[keyof typeof AssetSchemaVersion];
 
-export type ImportPath = string;
+export const ImportPathSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('ImportPath'));
+export type ImportPath = typeof ImportPathSchema.Type;
+export const decodeImportPath = Schema.decodeUnknownSync(ImportPathSchema);
 
 export interface AssetTypeMetadata {
   importPath: ImportPath;
@@ -67,4 +70,3 @@ export const CreateAssetError = {
   GameIdFromPathRequired: 'This asset type requires a game ID. Please create it within a game folder or provide a game ID',
   GameModeLinkRequired: 'Asset type "{assetType}" must be linked to a game mode. Please create it within a game folder',
 } as const;
-

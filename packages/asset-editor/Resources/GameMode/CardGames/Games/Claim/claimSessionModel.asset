@@ -1,0 +1,49 @@
+{
+  system: {
+    guid: '57d3c381-cf8e-4f64-9a3d-f9a1826dc102',
+    assetType: 'GameSessionModel',
+    schemaVersion: 1,
+    displayName: 'Claim Session Model',
+    category: 'Game',
+    gameId: 'claim',
+    treePath: 'Resources/GameMode/CardGames/Games/Claim/claimSessionModel.asset',
+  },
+  data: {
+    modelKind: 'session_model',
+    modelId: 'claim.session-model.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'claim',
+    familyVariant: 'hoarder',
+    sessionModel: {
+      matchType: 'direct_local_pilot',
+      roundCount: 10,
+      winCondition: 'highest_surviving_bankroll_after_10_rounds_or_last_active_player',
+      dealerRotation: 'clockwise_active_players',
+      bankrollPersistsAcrossRounds: true,
+    },
+    bankingConfig: {
+      hasBanker: false,
+      startingBankroll: 1352,
+      bankruptcyEliminates: true,
+    },
+    roundConfig: {
+      hasRounds: true,
+      minRounds: 1,
+      maxRounds: 10,
+      roundEndCondition: 'showdown_or_table_exhausted',
+      gameEndCondition: 'ten_rounds_or_one_active_player',
+    },
+    endConditions: [
+      {
+        id: 'round_end',
+        description: 'A declared player calls showdown, or stock and discard are exhausted.',
+        appliesToPhase: 'score_round',
+      },
+      {
+        id: 'game_end',
+        description: 'Ten rounds are scored, or only one active bankroll remains.',
+        appliesToPhase: 'score_round',
+      },
+    ],
+  },
+}

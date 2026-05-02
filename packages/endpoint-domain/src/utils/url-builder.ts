@@ -1,4 +1,5 @@
 import type { ApiPath, DOPath } from '@/types/brands';
+import { Schema } from '@ocentra/schema-domain/effect';
 import { CreditAction } from '@/constants/credits';
 import { ApiEndpoint } from '@/constants/cloudflare';
 import { DOBaseUrl } from '@/constants/cloudflare-do';
@@ -6,9 +7,29 @@ import { HttpScheme } from '@/constants/http';
 import { PathPlaceholder, PathSeparator } from '@/constants/paths';
 import { ErrorMessage } from '@/constants/errors';
 
-export type ApiURL = string & { readonly __brand: 'ApiURL' };
-export type FullURL = string & { readonly __brand: 'FullURL' };
-export type DORequestURL = string & { readonly __brand: 'DORequestURL' };
+const UrlString = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.filter((value) => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return 'Expected an absolute URL';
+    }
+  }),
+);
+
+export const ApiURLSchema = UrlString.pipe(Schema.brand('ApiURL'));
+export type ApiURL = typeof ApiURLSchema.Type;
+export const decodeApiURL = Schema.decodeUnknownSync(ApiURLSchema);
+
+export const FullURLSchema = UrlString.pipe(Schema.brand('FullURL'));
+export type FullURL = typeof FullURLSchema.Type;
+export const decodeFullURL = Schema.decodeUnknownSync(FullURLSchema);
+
+export const DORequestURLSchema = UrlString.pipe(Schema.brand('DORequestURL'));
+export type DORequestURL = typeof DORequestURLSchema.Type;
+export const decodeDORequestURL = Schema.decodeUnknownSync(DORequestURLSchema);
 
 export interface URLBuilderOptions {
   origin?: string;
@@ -46,12 +67,12 @@ export function buildDOUrl(path: DOPath | string): DORequestURL {
   if (!fullUrl.startsWith(HttpScheme.Http) && !fullUrl.startsWith(HttpScheme.Https)) {
     throw new Error(`${ErrorMessage.ConstructedDOUrlInvalid} "${fullUrl}"`);
   }
-  return fullUrl as DORequestURL;
+  return decodeDORequestURL(fullUrl);
 }
 
 export function buildApiUrl(endpoint: ApiPath | string, options?: URLBuilderOptions): ApiURL {
-  if (options?.baseUrl) return `${validateOrigin(options.baseUrl)}${endpoint}` as ApiURL;
-  if (options?.origin) return `${validateOrigin(options.origin)}${endpoint}` as ApiURL;
+  if (options?.baseUrl) return decodeApiURL(`${validateOrigin(options.baseUrl)}${endpoint}`);
+  if (options?.origin) return decodeApiURL(`${validateOrigin(options.origin)}${endpoint}`);
   throw new Error(ErrorMessage.BuildApiUrlRequiresOriginOrBaseUrl);
 }
 
@@ -60,8 +81,8 @@ export function buildApiUrlFromRequest(endpoint: ApiPath | string, requestUrl: s
 }
 
 export function buildLogsApiUrl(logsPath: string, options?: URLBuilderOptions): ApiURL {
-  if (options?.baseUrl) return `${validateOrigin(options.baseUrl)}${logsPath}` as ApiURL;
-  if (options?.origin) return `${validateOrigin(options.origin)}${logsPath}` as ApiURL;
+  if (options?.baseUrl) return decodeApiURL(`${validateOrigin(options.baseUrl)}${logsPath}`);
+  if (options?.origin) return decodeApiURL(`${validateOrigin(options.origin)}${logsPath}`);
   throw new Error(ErrorMessage.BuildLogsApiUrlRequiresOriginOrBaseUrl);
 }
 
@@ -74,8 +95,8 @@ export function buildFullUrl(path: string, options: URLBuilderOptions): FullURL 
   if (typeof path !== 'string') throw new Error(`${ErrorMessage.PathMustBeString} ${typeof path}`);
   const trimmed = path.trim();
   const normalizedPath = trimmed.startsWith(PathSeparator.ForwardSlash) ? trimmed : `${PathSeparator.ForwardSlash}${trimmed}`;
-  if (options.baseUrl) return `${validateOrigin(options.baseUrl)}${normalizedPath}` as FullURL;
-  if (options.origin) return `${validateOrigin(options.origin)}${normalizedPath}` as FullURL;
+  if (options.baseUrl) return decodeFullURL(`${validateOrigin(options.baseUrl)}${normalizedPath}`);
+  if (options.origin) return decodeFullURL(`${validateOrigin(options.origin)}${normalizedPath}`);
   throw new Error(ErrorMessage.BuildFullUrlRequiresOriginOrBaseUrl);
 }
 
@@ -94,7 +115,7 @@ export function buildApiUrlWithQueryParams(
   Object.entries(queryParams).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, String(value));
   });
-  return url.toString() as ApiURL;
+  return decodeApiURL(url.toString());
 }
 
 export function buildApiUrlWithQueryParamsFromRequest(
@@ -121,7 +142,7 @@ export function buildCreditsApiUrl(userId: string, action: CreditAction, options
   const baseUrl = options?.baseUrl || options?.origin;
   if (!baseUrl) throw new Error(ErrorMessage.BuildCreditsApiUrlRequiresOrigin);
   const path = CreditActionToPath[action as CreditAction](userId);
-  return new URL(`${validateOrigin(baseUrl)}${path}`).toString() as ApiURL;
+  return decodeApiURL(new URL(`${validateOrigin(baseUrl)}${path}`).toString());
 }
 
 export function buildCreditsApiUrlFromRequest(userId: string, action: CreditAction, requestUrl: string): ApiURL {
@@ -147,7 +168,7 @@ export function buildApiUrlWithPathParams(
       }
     }
   });
-  return new URL(`${validateOrigin(baseUrl)}${path}`).toString() as ApiURL;
+  return decodeApiURL(new URL(`${validateOrigin(baseUrl)}${path}`).toString());
 }
 
 export function buildApiUrlWithPathParamsFromRequest(
@@ -182,7 +203,7 @@ export function buildApiUrlWithPathAndQuery(
   Object.entries(queryParams).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') url.searchParams.set(key, String(value));
   });
-  return url.toString() as ApiURL;
+  return decodeApiURL(url.toString());
 }
 
 export function buildApiUrlWithPathAndQueryFromRequest(

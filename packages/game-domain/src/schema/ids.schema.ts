@@ -5,6 +5,15 @@ const NonEmptyString = Schema.String.pipe(Schema.minLength(1));
 export const GameId = NonEmptyString.pipe(Schema.brand('GameId'));
 export type GameId = typeof GameId.Type;
 
+export const MatchId = NonEmptyString.pipe(Schema.brand('MatchId'));
+export type MatchId = typeof MatchId.Type;
+
+export const UserId = NonEmptyString.pipe(Schema.brand('UserId'));
+export type UserId = typeof UserId.Type;
+
+export const IdempotencyKey = NonEmptyString.pipe(Schema.brand('IdempotencyKey'));
+export type IdempotencyKey = typeof IdempotencyKey.Type;
+
 export const MechanicsId = NonEmptyString.pipe(Schema.brand('MechanicsId'));
 export type MechanicsId = typeof MechanicsId.Type;
 
@@ -29,6 +38,9 @@ export type ScoringProfileId = typeof ScoringProfileId.Type;
 export const StrategyProfileId = NonEmptyString.pipe(Schema.brand('StrategyProfileId'));
 export type StrategyProfileId = typeof StrategyProfileId.Type;
 
+export const ExampleId = NonEmptyString.pipe(Schema.brand('ExampleId'));
+export type ExampleId = typeof ExampleId.Type;
+
 export const PhaseId = NonEmptyString.pipe(Schema.brand('PhaseId'));
 export type PhaseId = typeof PhaseId.Type;
 
@@ -48,12 +60,16 @@ export const SuitId = NonEmptyString.pipe(Schema.brand('SuitId'));
 export type SuitId = typeof SuitId.Type;
 
 export const decodeGameId = Schema.decodeUnknownSync(GameId);
+export const decodeMatchId = Schema.decodeUnknownSync(MatchId);
+export const decodeUserId = Schema.decodeUnknownSync(UserId);
+export const decodeIdempotencyKey = Schema.decodeUnknownSync(IdempotencyKey);
 export const decodeMechanicsId = Schema.decodeUnknownSync(MechanicsId);
 export const decodeMechanicsVersion = Schema.decodeUnknownSync(MechanicsVersion);
 export const decodeExecutorId = Schema.decodeUnknownSync(ExecutorId);
 export const decodeRuleId = Schema.decodeUnknownSync(RuleId);
 export const decodeScoringProfileId = Schema.decodeUnknownSync(ScoringProfileId);
 export const decodeStrategyProfileId = Schema.decodeUnknownSync(StrategyProfileId);
+export const decodeExampleId = Schema.decodeUnknownSync(ExampleId);
 export const decodePhaseId = Schema.decodeUnknownSync(PhaseId);
 export const decodeActionId = Schema.decodeUnknownSync(ActionId);
 export const decodeZoneId = Schema.decodeUnknownSync(ZoneId);

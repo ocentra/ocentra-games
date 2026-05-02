@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import type { PageSection } from './types';
 import { ContentBlockRenderer } from './ContentBlockRenderer';
 import { GameInfoCSSClasses } from '@/ui/components/GameInfo/constants';
@@ -6,9 +6,10 @@ import './GameInfoTabs.css';
 
 interface GameInfoTabsProps {
   sections: PageSection[];
+  sectionExtras?: Record<string, ReactNode>;
 }
 
-export const GameInfoTabs: React.FC<GameInfoTabsProps> = ({ sections }) => {
+export const GameInfoTabs: React.FC<GameInfoTabsProps> = ({ sections, sectionExtras = {} }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [activePage, setActivePage] = useState(0);
 
@@ -38,6 +39,9 @@ export const GameInfoTabs: React.FC<GameInfoTabsProps> = ({ sections }) => {
   const currentSection = sections[activeTab];
   const pages = currentSection?.pages || [];
   const currentPage = pages[activePage];
+  const sectionExtra = currentSection
+    ? sectionExtras[currentSection.tabLabel] ?? sectionExtras[currentSection.type]
+    : null;
 
   if (!sections || sections.length === 0) {
     return (
@@ -105,6 +109,7 @@ export const GameInfoTabs: React.FC<GameInfoTabsProps> = ({ sections }) => {
             <p className={GameInfoCSSClasses.TabSubtitle}>{currentPage.subtitle}</p>
           )}
           {renderContent()}
+          {sectionExtra}
         </div>
 
         {totalPages > 1 && (

@@ -1,47 +1,38 @@
-/**
- * Branded types for endpoint-domain.
- *
- * No raw strings for paths, identifiers, or HTTP primitives.
- * All branded types use TypeScript's intersection with unique brand property.
- */
+import { Schema } from '@ocentra/schema-domain/effect';
 
-/**
- * REST API path (Cloudflare, Local, Prod).
- * Use for all public API endpoint paths.
- */
-export type ApiPath = string & { readonly __brand: 'ApiPath' };
+const NonEmptyString = Schema.String.pipe(Schema.minLength(1));
+const SlashPathString = NonEmptyString.pipe(
+  Schema.filter((value) => value.startsWith('/') || 'Expected a path starting with /'),
+);
 
-/**
- * Durable Object path/ID.
- * Use for internal DO routing paths.
- */
-export type DOPath = string & { readonly __brand: 'DOPath' };
+export const ApiPathSchema = SlashPathString.pipe(Schema.brand('ApiPath'));
+export type ApiPath = typeof ApiPathSchema.Type;
 
-/**
- * Stable endpoint identifier for metrics, logging, and route registration.
- * Independent of path - remains stable even if path changes.
- */
-export type EndpointId = string & { readonly __brand: 'EndpointId' };
+export const DOPathSchema = SlashPathString.pipe(Schema.brand('DOPath'));
+export type DOPath = typeof DOPathSchema.Type;
 
-/**
- * Route handler identifier. Opaque key for Cloudflare handler map.
- * Domain defines keys; Cloudflare wires handlers. No raw strings.
- */
-export type HandlerKey = string & { readonly __brand: 'HandlerKey' };
+export const EndpointIdSchema = NonEmptyString.pipe(Schema.brand('EndpointId'));
+export type EndpointId = typeof EndpointIdSchema.Type;
 
-/**
- * Path segment for route matching (e.g. subpath includes check).
- */
-export type PathSegment = string & { readonly __brand: 'PathSegment' };
+export const HandlerKeySchema = NonEmptyString.pipe(Schema.brand('HandlerKey'));
+export type HandlerKey = typeof HandlerKeySchema.Type;
 
-/**
- * Query parameter name.
- * Use for query parameter keys to prevent raw strings.
- */
-export type QueryParam = string & { readonly __brand: 'QueryParam' };
+export const PathSegmentSchema = NonEmptyString.pipe(
+  Schema.filter((value) => !value.includes('/') || 'Expected one path segment without /'),
+  Schema.brand('PathSegment'),
+);
+export type PathSegment = typeof PathSegmentSchema.Type;
 
-/**
- * HTTP header name.
- * Use for header names to prevent raw strings.
- */
-export type HeaderName = string & { readonly __brand: 'HeaderName' };
+export const QueryParamSchema = NonEmptyString.pipe(Schema.brand('QueryParam'));
+export type QueryParam = typeof QueryParamSchema.Type;
+
+export const HeaderNameSchema = NonEmptyString.pipe(Schema.brand('HeaderName'));
+export type HeaderName = typeof HeaderNameSchema.Type;
+
+export const decodeApiPath = Schema.decodeUnknownSync(ApiPathSchema);
+export const decodeDOPath = Schema.decodeUnknownSync(DOPathSchema);
+export const decodeEndpointId = Schema.decodeUnknownSync(EndpointIdSchema);
+export const decodeHandlerKey = Schema.decodeUnknownSync(HandlerKeySchema);
+export const decodePathSegment = Schema.decodeUnknownSync(PathSegmentSchema);
+export const decodeQueryParam = Schema.decodeUnknownSync(QueryParamSchema);
+export const decodeHeaderName = Schema.decodeUnknownSync(HeaderNameSchema);

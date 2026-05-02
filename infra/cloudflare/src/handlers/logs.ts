@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env'
 import { getCorsHeaders } from '@/utils/cors'
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { HttpMethod, HttpHeader, HttpContentType, HttpAuthScheme, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { TestTokenPrefix } from '@ocentra/endpoint-domain/constants/auth';
@@ -351,7 +351,7 @@ export async function handleLogsRequest(request: Request, env: Env, executionCon
 
   try {
     if (pathname === ApiEndpoint.Logs.Base && request.method === HttpMethod.Post) {
-      const validation = await validateZodBody(request, env, LogsBatchRequestSchema);
+      const validation = await validateSchemaBody(request, env, LogsBatchRequestSchema);
       if (validation.errorResponse) return validation.errorResponse;
       const body = validation.data!;
 

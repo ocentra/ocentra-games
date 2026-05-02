@@ -1,13 +1,27 @@
 
-export type Brand<T, K> = T & { readonly __brand: K };
-export type MatchId = Brand<string, 'MatchId'>;
-export type UserId = Brand<string, 'UserId'>;
-export type DisputeId = Brand<string, 'DisputeId'>;
-export type RoomId = Brand<string, 'RoomId'>;
-export type TransactionId = Brand<string, 'TransactionId'>;
-export type OperationId = Brand<string, 'OperationId'>;
-export type TicketId = Brand<string, 'TicketId'>;
-export type NotificationId = Brand<string, 'NotificationId'>;
-export type ConversationId = Brand<string, 'ConversationId'>;
-export type BadgeId = Brand<string, 'BadgeId'>;
-export type AssetId = Brand<string, 'AssetId'>;
+import type { schema } from '@ocentra/schema-domain/effect-builder';
+import type {
+  AssetIdSchema,
+  BadgeIdSchema,
+  ConversationIdSchema,
+  DisputeIdSchema,
+  MatchIdSchema,
+  NotificationIdSchema,
+  OperationIdSchema,
+  RoomIdSchema,
+  TicketIdSchema,
+  TransactionIdSchema,
+  UserIdSchema,
+} from '@/schemas/common';
+
+export type MatchId = schema.infer<typeof MatchIdSchema>;
+export type UserId = schema.infer<typeof UserIdSchema>;
+export type DisputeId = schema.infer<typeof DisputeIdSchema>;
+export type RoomId = schema.infer<typeof RoomIdSchema>;
+export type TransactionId = schema.infer<typeof TransactionIdSchema>;
+export type OperationId = schema.infer<typeof OperationIdSchema>;
+export type TicketId = schema.infer<typeof TicketIdSchema>;
+export type NotificationId = schema.infer<typeof NotificationIdSchema>;
+export type ConversationId = schema.infer<typeof ConversationIdSchema>;
+export type BadgeId = schema.infer<typeof BadgeIdSchema>;
+export type AssetId = schema.infer<typeof AssetIdSchema>;

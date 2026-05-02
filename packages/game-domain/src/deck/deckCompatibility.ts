@@ -52,6 +52,7 @@ export const ALLOWED_TRIPLES: readonly DeckTriple[] = [
   ['Tarot 42', 'Industrie_und_Glueck', 'Tarot_42'],
   ['Cego 38', 'Cego', 'Cego_38'],
   ['Tarocco Bolognese 62', 'Italian', 'Tarocco_Bolognese_62'],
+  ['Tarocco Siciliano 63', 'Italian', 'Tarocco_Sicilian_63'],
   ['Tarocco Siciliano 64', 'Italian', 'Tarocco_Sicilian_64'],
   ['500 deck 63', 'French', 'FiveHundred_63'],
   ['Double-6 Dominoes', 'Dominoes', 'Domino_double6'],

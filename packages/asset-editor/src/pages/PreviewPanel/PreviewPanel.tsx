@@ -6,9 +6,7 @@ import { PreviewPanelHeader } from './PreviewPanelHeader';
 import { usePreviewPanel } from './usePreviewPanel';
 import { ASSET_TYPE } from './constants';
 import type { ImageListEntry } from '@ocentra/game-asset-domain/content/imageList/ImageList';
-import type { CarouselSlide } from '@ocentra/game-asset-domain/content/imageCarousel/ImageCarousel';
 import type { PageSection } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
-import type { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import type { Card } from '@ocentra/game-asset-domain/card/cardBase/Card';
 import type { CardRanking } from '@ocentra/game-asset-domain/card/cardRanking/CardRanking';
 import type { MetaData } from '@ocentra/eventing-domain/types/meta';
@@ -31,6 +29,10 @@ const PREVIEW_ASSET_TYPE = {
   gameRegistry: 'GameRegistry',
   deckManager: 'DeckManager',
   deck: assetTypeMap.Deck.assetType,
+  playingCardDeck: assetTypeMap.PlayingCardDeck.assetType,
+  dominoDeck: assetTypeMap.DominoDeck.assetType,
+  hanafudaDeck: assetTypeMap.HanafudaDeck.assetType,
+  mahjongDeck: assetTypeMap.MahjongDeck.assetType,
   card: assetTypeMap.Card.assetType,
   cardRanking: assetTypeMap.CardRanking.assetType,
   gameInfo: assetTypeMap.GameInfo.assetType,
@@ -39,6 +41,14 @@ const PREVIEW_ASSET_TYPE = {
   cardGameLayout: assetTypeMap.CardGameLayout.assetType,
   cardGameMechanics: assetTypeMap.CardGameMechanics.assetType,
 } as const;
+
+const DECK_PREVIEW_ASSET_TYPES = new Set<string>([
+  PREVIEW_ASSET_TYPE.deck,
+  PREVIEW_ASSET_TYPE.playingCardDeck,
+  PREVIEW_ASSET_TYPE.dominoDeck,
+  PREVIEW_ASSET_TYPE.hanafudaDeck,
+  PREVIEW_ASSET_TYPE.mahjongDeck,
+]);
 
 const LazyAssetCatalogPreview = React.lazy(async () => ({
   default: (await import('./AssetCatalogPreview')).AssetCatalogPreview,
@@ -354,7 +364,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       );
     }
 
-    if (assetType === PREVIEW_ASSET_TYPE.deck) {
+    if (DECK_PREVIEW_ASSET_TYPES.has(assetType)) {
       return (
         <div className="preview-panel">
           <PreviewPanelHeader
@@ -369,7 +379,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           <Suspense fallback={<PreviewPanelLoading message="Loading deck preview..." />}>
             <LazyDeckPreview
               assetId={assetId}
-              assetInstance={assetInstance as Deck | null}
+              assetInstance={assetInstance}
               assetData={assetData}
             />
           </Suspense>
@@ -511,9 +521,9 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           />
           <Suspense fallback={<PreviewPanelLoading message="Loading image carousel preview..." />}>
             <LazyImageCarouselPreview
-              slides={data.slides as CarouselSlide[]}
-              autoplayIntervalMs={(data.autoplayIntervalMs as number) || 5000}
               assetId={assetId}
+              assetData={assetData}
+              onAssetUpdate={onAssetUpdate}
             />
           </Suspense>
         </div>

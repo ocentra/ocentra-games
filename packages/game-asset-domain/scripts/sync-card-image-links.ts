@@ -183,6 +183,30 @@ function cardIdToCegoFile(cardId: string): string | null {
   return null;
 }
 
+function cardIdToCegoReuseFiles(cardId: string): string[] {
+  const court = cardId.match(/^cego_(clubs|diamonds|hearts|spades)_(king|queen|cavalier|jack)$/);
+  if (!court) {
+    return [];
+  }
+  const suit = court[1];
+  const rank = court[2];
+  const standardRankMap: Record<string, string> = {
+    king: 'king',
+    queen: 'queen',
+    jack: 'jack',
+  };
+  if (standardRankMap[rank]) {
+    return [`Resources/GameMode/CardGames/Images/standard/${standardRankMap[rank]}_of_${suit}.png`];
+  }
+  const knightSuitMap: Record<string, string> = {
+    clubs: 'Club',
+    diamonds: 'Diamond',
+    hearts: 'Heart',
+    spades: 'spade',
+  };
+  return [`Resources/GameMode/CardGames/Images/French_Tarock/French_Tarock_knight_of_${knightSuitMap[suit]}.png`];
+}
+
 function cardIdToStandardFile(cardId: string): string | null {
   const face = cardId.match(/^(11|12|13|14)_of_(clubs|diamonds|hearts|spades)$/);
   if (face) {
@@ -321,7 +345,8 @@ function cardIdToTaroccoSicilianoFile(cardId: string): string | null {
     horse: 'Knight',
     king: 'King',
   };
-  return `Tarocco_Sicilian_${rankMap[suit[2]]}_of_${suitMap[suit[1]]}.png`;
+  const suitName = suit[1] === 'spade' && (suit[2] === '2' || suit[2] === 'ace') ? 'Sword' : suitMap[suit[1]];
+  return `Tarocco_Sicilian_${rankMap[suit[2]]}_of_${suitName}.png`;
 }
 
 function cardIdToTaroccoBologneseFile(cardId: string): string | null {
@@ -375,6 +400,32 @@ function cardIdToTaroccoBologneseFile(cardId: string): string | null {
   return `Tarocco_Bolognese_${suitMap[suit[1]]}_${normalizedRank}.png`;
 }
 
+function cardIdToItalianBologneseReuseFile(cardId: string): string | null {
+  const suit = cardId.match(/^italian_(bastoni|coppe|denari|spade)_(\d+|ace|king|queen|cavalier|jack)$/);
+  if (!suit) {
+    return null;
+  }
+  const suitMap: Record<string, string> = {
+    bastoni: 'Bastoni',
+    coppe: 'Coppe',
+    denari: 'Denari',
+    spade: 'Spade',
+  };
+  const rankMap: Record<string, string> = {
+    ace: '1',
+    '14': '1',
+    king: 'King',
+    '13': 'King',
+    queen: 'Queen',
+    '12': 'Queen',
+    cavalier: 'Cavalier',
+    jack: 'Knave',
+    '11': 'Knave',
+  };
+  const normalizedRank = rankMap[suit[2]] ?? suit[2];
+  return `Tarocco_Bolognese_${suitMap[suit[1]]}_${normalizedRank}.png`;
+}
+
 function sourceFolderFromCardPath(relCardPath: string): string[] {
   const out: string[] = [];
   if (relCardPath.includes('/Cards/Tarot_78_(French_Tarock)/')) {
@@ -387,6 +438,12 @@ function sourceFolderFromCardPath(relCardPath: string): string[] {
     out.push('Resources/GameMode/CardGames/Images/Cego');
   }
   if (relCardPath.includes('/Cards/Tarocco_Bolognese_62/')) {
+    out.push('Resources/GameMode/CardGames/Images/Tarocco_Bolognese');
+  }
+  if (
+    relCardPath.includes('/Cards/Standard_52_+_Joker(s)_(Italian)/') ||
+    relCardPath.includes('/Cards/Standard_52_+_Joker(s) (Italian)/')
+  ) {
     out.push('Resources/GameMode/CardGames/Images/Tarocco_Bolognese');
   }
   return out;
@@ -438,10 +495,16 @@ function candidateImagePaths(ctx: CandidateContext): string[] {
       candidates.push(`${source}/${cego}`);
       candidates.push(`Resources/GameMode/CardGames/Images/Cego/${cego}`);
     }
+    candidates.push(...cardIdToCegoReuseFiles(ctx.cardId));
     const bolognese = cardIdToTaroccoBologneseFile(ctx.cardId);
     if (bolognese) {
       candidates.push(`${source}/${bolognese}`);
       candidates.push(`Resources/GameMode/CardGames/Images/Tarocco_Bolognese/${bolognese}`);
+    }
+    const italianBolognese = cardIdToItalianBologneseReuseFile(ctx.cardId);
+    if (italianBolognese) {
+      candidates.push(`${source}/${italianBolognese}`);
+      candidates.push(`Resources/GameMode/CardGames/Images/Tarocco_Bolognese/${italianBolognese}`);
     }
     const piemontese = cardIdToTaroccoPiemonteseFile(ctx.cardId);
     if (piemontese) {

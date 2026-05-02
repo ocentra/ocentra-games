@@ -1,6 +1,6 @@
 /* Tabbed Information Section */
 .game-info-tabs {
-  width: 95%;
+  width: min(95%, 72rem);
   margin: 0 auto 1rem;
   animation: fadeInUp 0.8s ease 0.4s both;
 }
@@ -17,12 +17,14 @@
 
 .tabs-list {
   display: flex;
-  gap: 0;
-  justify-content: center;
+  gap: 0.35rem;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .tab-button {
-  flex: 1;
+  flex: 0 0 auto;
   padding: 0.5rem 1rem;
   background: transparent;
   color: rgba(255, 255, 255, 0.6);
@@ -69,17 +71,11 @@
   border-radius: 0 0 20px 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding: 1.25rem 1.5rem;
-  height: 38vh;
-  min-height: 320px;
-  max-height: 500px;
-  display: flex;
-  flex-direction: column;
+  min-height: 0;
 }
 
 .tab-panel {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 1rem;
+  overflow: visible;
   animation: fadeIn 0.4s ease;
 }
 
@@ -201,8 +197,8 @@
 
 .setup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
   margin-top: 1rem;
 }
 
@@ -211,7 +207,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.4rem;
-  padding: 1rem;
+  padding: 0.85rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
@@ -227,9 +223,12 @@
   text-align: center;
 }
 
-.setup-detail {
+.setup-detail,
+.setup-item p {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.75rem;
+  margin: 0.25rem 0 0;
+  text-align: center;
 }
 
 /* Rule blocks */
@@ -256,17 +255,35 @@
 }
 
 .card-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  justify-content: center;
+  display: block;
   margin: 1rem 0;
+  overflow-x: auto;
 }
 
-.card-values span {
+.card-values table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.card-values th,
+.card-values td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.card-values th {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-values td {
   background: rgba(255, 255, 255, 0.1);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
   font-weight: 600;
   color: white;
   font-size: 0.85rem;

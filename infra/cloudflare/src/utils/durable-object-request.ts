@@ -1,10 +1,9 @@
 import { HttpMethod, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import type { DurableObjectStub } from '@cloudflare/workers-types';
-import type { DORequestURL } from '@ocentra/endpoint-domain/utils/url-builder';
+import { decodeDORequestURL, type DORequestURL } from '@ocentra/endpoint-domain/utils/url-builder';
+import { decodeDOPath, type DOPath } from '@ocentra/endpoint-domain/types/brands';
 
 const DO_BASE_URL = 'http://dummy';
-
-export type DOPath = string & { readonly __brand: 'DOPath' };
 
 export interface DORequestOptions {
   method: HttpMethod;
@@ -28,7 +27,7 @@ function createDOPath(path: string): DOPath {
     throw new Error(`DO path must start with '/', got: "${path}"`);
   }
 
-  return trimmedPath as DOPath;
+  return decodeDOPath(trimmedPath);
 }
 
 function createDORequestURL(path: DOPath): DORequestURL {
@@ -39,7 +38,7 @@ function createDORequestURL(path: DOPath): DORequestURL {
   if (queryString) {
     url.search = queryString;
   }
-  return url.toString() as DORequestURL;
+  return decodeDORequestURL(url.toString());
 }
 
 export function createDORequest(

@@ -1,58 +1,58 @@
 /**
- * Data management endpoint Zod schemas.
+ * Data management endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { MatchIdSchema, UserIdSchema, TimestampSchema } from './common';
 
 // ============================================================================
 // Query Parameters
 // ============================================================================
 
-export const SignedUrlQuerySchema = z.object({
-  expires: z.number().int().positive().optional(),
+export const SignedUrlQuerySchema = schema.object({
+  expires: schema.number().int().positive().optional(),
 });
 
-export const DataExportQuerySchema = z.object({
-  format: z.enum(['json', 'csv']).optional(),
+export const DataExportQuerySchema = schema.object({
+  format: schema.enum(['json', 'csv']).optional(),
 });
 
 // ============================================================================
 // Request Bodies
 // ============================================================================
 
-export const DataDeletionRequestSchema = z.object({
+export const DataDeletionRequestSchema = schema.object({
   user_id: UserIdSchema,
-  reason: z.string().optional(),
-  confirmation: z.literal(true),
+  reason: schema.string().optional(),
+  confirmation: schema.literal(true),
 });
 
 // ============================================================================
 // Response Bodies
 // ============================================================================
 
-export const SignedUrlResponseSchema = z.object({
-  signedUrl: z.string().url(),
+export const SignedUrlResponseSchema = schema.object({
+  signedUrl: schema.string().url(),
   expires_at: TimestampSchema,
   match_id: MatchIdSchema,
 });
 
-export const DataExportResponseSchema = z.object({
-  export_id: z.string(),
-  status: z.enum(['pending', 'ready', 'expired']),
-  download_url: z.string().url().optional(),
+export const DataExportResponseSchema = schema.object({
+  export_id: schema.string(),
+  status: schema.enum(['pending', 'ready', 'expired']),
+  download_url: schema.string().url().optional(),
   expires_at: TimestampSchema.optional(),
 });
 
-export const DataDeletionResponseSchema = z.object({
-  success: z.boolean(),
-  deletion_id: z.string(),
+export const DataDeletionResponseSchema = schema.object({
+  success: schema.boolean(),
+  deletion_id: schema.string(),
   estimated_completion: TimestampSchema,
 });
 
-export const ArchiveResponseSchema = z.object({
-  success: z.boolean(),
+export const ArchiveResponseSchema = schema.object({
+  success: schema.boolean(),
   match_id: MatchIdSchema,
   archived_at: TimestampSchema,
-  archive_url: z.string().url().optional(),
+  archive_url: schema.string().url().optional(),
 });

@@ -22,6 +22,7 @@ import {
   fetchJsonSlice,
   runWithConcurrency,
   DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY,
+  type JsonSliceFetchOptions,
 } from '@/adapters/assets/PlatformAssetRuntimeShared';
 
 export type {
@@ -38,20 +39,22 @@ async function fetchEntryIndexFromSlices(url: string) {
 
 async function fetchValidatedSlice<T>(
   url: string,
-  parse: (payload: unknown) => T | null
+  parse: (payload: unknown) => T | null,
+  options?: JsonSliceFetchOptions
 ): Promise<T | null> {
   if (!url) {
     return null;
   }
-  const payload = await fetchJsonSlice<unknown>(url);
+  const payload = await fetchJsonSlice<unknown>(url, options);
   return parse(payload);
 }
 
 async function fetchMobileJsonSlice<T>(
   url: string,
-  parse: (payload: unknown) => T | null
+  parse: (payload: unknown) => T | null,
+  options?: JsonSliceFetchOptions
 ): Promise<T | null> {
-  return await fetchValidatedSlice(url, parse);
+  return await fetchValidatedSlice(url, parse, options);
 }
 
 async function fetchMobileAssetResponse(
@@ -112,7 +115,8 @@ class WebPlatformAssetRuntime implements IPlatformAssetRuntime {
     return await measureRuntimeAssetOperation('web', 'homePageGames', async () =>
       fetchValidatedSlice(
         getSliceUrl(storageConfig, ApiEndpoint.Slices.Home),
-        parseHomePageGamesPayload
+        parseHomePageGamesPayload,
+        { bypassCache: true }
       )
     );
   }
@@ -244,7 +248,8 @@ class MobilePlatformAssetRuntime extends WebPlatformAssetRuntime {
     return await measureRuntimeAssetOperation('mobile', 'homePageGames', async () =>
       fetchMobileJsonSlice(
         getSliceUrl(storageConfig, ApiEndpoint.Slices.Home),
-        parseHomePageGamesPayload
+        parseHomePageGamesPayload,
+        { bypassCache: true }
       )
     );
   }

@@ -5,6 +5,7 @@ import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { GameBadgesOverlay } from '../GameBadgesOverlay/GameBadgesOverlay';
 import { CarouselImage } from '../CarouselImage/CarouselImage';
 import { GameBannerImage } from '../GameBannerImage/GameBannerImage';
+import { getBannerPlaybackImageCount, getBannerPlaybackImages } from './bannerPlayback';
 import './FeaturedGameCarousel.css';
 
 const TabType = { Featured: 'featured', Recommended: 'recommended' } as const;
@@ -30,6 +31,239 @@ interface FeaturedGameCarouselState {
   isTransitioning: boolean;
   direction: 'left' | 'right';
 }
+
+export type FeaturedBannerComposition = Pick<FeaturedGameItem,
+  'carouselPlaybackMode' |
+  'carouselTransitionType' |
+  'carouselTransitionDurationMs' |
+  'bannerLogoImage' |
+  'bannerLogoAlt' |
+  'bannerLogoStartMs' |
+  'bannerLogoDurationMs' |
+  'bannerLogoScaleFrom' |
+  'bannerLogoScaleTo' |
+  'bannerLogoOpacityFrom' |
+  'bannerLogoOpacityTo' |
+  'bannerLogoVisibleFromIndex' |
+  'bannerLogoVisibleToIndex' |
+  'bannerTitleText' |
+  'bannerTitleColor' |
+  'bannerTitleStartMs' |
+  'bannerTitleDurationMs' |
+  'bannerTitleScaleFrom' |
+  'bannerTitleScaleTo' |
+  'bannerTitleOpacityFrom' |
+  'bannerTitleOpacityTo' |
+  'bannerTitleVisibleFromIndex' |
+  'bannerTitleVisibleToIndex' |
+  'bannerOverlayTintColor' |
+  'bannerOverlayTintOpacity' |
+  'bannerVignetteOpacity' |
+  'bannerFadeToBlackOpacity'
+> & {
+  gameId: string;
+  name: string;
+};
+
+export interface FeaturedGameBannerStageProps {
+  game: FeaturedBannerComposition;
+  images: ImageHash[];
+  currentImageIndex: number;
+  prevImageIndex: number | null;
+  resolveImageUrl: (hash: ImageHash) => string | null;
+  className?: string;
+  emptyMessage?: string;
+  children?: React.ReactNode;
+}
+
+function getCarouselTransitionClass(game: FeaturedBannerComposition): string {
+  switch (game.carouselTransitionType) {
+    case 'swipe':
+      return 'featured-carousel-transition-swipe';
+    case 'cut':
+      return 'featured-carousel-transition-cut';
+    default:
+      return 'featured-carousel-transition-cross-dissolve';
+  }
+}
+
+function getCompositionStyle(game: FeaturedBannerComposition): React.CSSProperties {
+  return {
+    '--featured-banner-transition-duration': `${game.carouselTransitionDurationMs ?? 1500}ms`,
+    '--featured-banner-overlay-color': game.bannerOverlayTintColor ?? 'transparent',
+    '--featured-banner-overlay-opacity': String(game.bannerOverlayTintOpacity ?? 0),
+    '--featured-banner-vignette-opacity': String(game.bannerVignetteOpacity ?? 0),
+    '--featured-banner-fade-opacity': String(game.bannerFadeToBlackOpacity ?? 0),
+    '--featured-banner-logo-delay': `${game.bannerLogoStartMs ?? 0}ms`,
+    '--featured-banner-logo-duration': `${game.bannerLogoDurationMs ?? 1600}ms`,
+    '--featured-banner-logo-scale-from': String(game.bannerLogoScaleFrom ?? 1),
+    '--featured-banner-logo-scale-to': String(game.bannerLogoScaleTo ?? 1),
+    '--featured-banner-logo-opacity-from': String(game.bannerLogoOpacityFrom ?? 1),
+    '--featured-banner-logo-opacity-to': String(game.bannerLogoOpacityTo ?? 1),
+    '--featured-banner-title-color': game.bannerTitleColor ?? 'rgba(255, 255, 255, 0.96)',
+    '--featured-banner-title-delay': `${game.bannerTitleStartMs ?? game.bannerLogoStartMs ?? 0}ms`,
+    '--featured-banner-title-duration': `${game.bannerTitleDurationMs ?? game.bannerLogoDurationMs ?? 1600}ms`,
+    '--featured-banner-title-scale-from': String(game.bannerTitleScaleFrom ?? game.bannerLogoScaleFrom ?? 1),
+    '--featured-banner-title-scale-to': String(game.bannerTitleScaleTo ?? game.bannerLogoScaleTo ?? 1),
+    '--featured-banner-title-opacity-from': String(game.bannerTitleOpacityFrom ?? game.bannerLogoOpacityFrom ?? 1),
+    '--featured-banner-title-opacity-to': String(game.bannerTitleOpacityTo ?? game.bannerLogoOpacityTo ?? 1),
+  } as React.CSSProperties;
+}
+
+function hasBannerComposition(game: FeaturedBannerComposition): boolean {
+  return !!game.bannerLogoImage ||
+    !!game.bannerTitleText ||
+    (game.bannerOverlayTintOpacity ?? 0) > 0 ||
+    (game.bannerVignetteOpacity ?? 0) > 0 ||
+    (game.bannerFadeToBlackOpacity ?? 0) > 0;
+}
+
+function hasFrameVisibility(from?: number, to?: number): boolean {
+  return typeof from === 'number' || typeof to === 'number';
+}
+
+function isFrameVisible(index: number, from?: number, to?: number): boolean {
+  if (!hasFrameVisibility(from, to)) return true;
+  const start = from ?? 0;
+  const end = to ?? Number.MAX_SAFE_INTEGER;
+  return start <= end
+    ? index >= start && index <= end
+    : index >= start || index <= end;
+}
+
+function getPlayerDisplay(game: FeaturedGameItem): string | undefined {
+  if (game.playersDisplay) return game.playersDisplay;
+  if (typeof game.minPlayers !== 'number' && typeof game.maxPlayers !== 'number') return undefined;
+  if (game.minPlayers === game.maxPlayers && typeof game.minPlayers === 'number') return `${game.minPlayers} Players`;
+  if (typeof game.minPlayers === 'number' && typeof game.maxPlayers === 'number') return `${game.minPlayers}-${game.maxPlayers} Players`;
+  if (typeof game.maxPlayers === 'number') return `Up to ${game.maxPlayers} Players`;
+  return undefined;
+}
+
+function formatDataLabel(value: string): string {
+  return value
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[-_]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toUpperCase();
+}
+
+function getFeatureRows(game: FeaturedGameItem): Array<{ label: string; value: string }> {
+  const rows: Array<{ label: string; value: string }> = [];
+  const playerDisplay = getPlayerDisplay(game);
+  if (playerDisplay) rows.push({ label: 'Players', value: playerDisplay });
+  if (game.duration) rows.push({ label: 'Duration', value: game.duration });
+  if (game.deck) rows.push({ label: 'Deck', value: game.deck });
+  if (game.difficulty) rows.push({ label: 'Difficulty', value: game.difficulty });
+  if (game.releaseStatus) rows.push({ label: 'Status', value: formatDataLabel(String(game.releaseStatus)) });
+  return rows.slice(0, 2);
+}
+
+function getTimelineClass(isTimeline: boolean, visible: boolean): string {
+  if (!isTimeline) return '';
+  return visible
+    ? ' featured-game-composition-timeline featured-game-composition-timeline-visible'
+    : ' featured-game-composition-timeline featured-game-composition-timeline-hidden';
+}
+
+export const FeaturedGameBannerStage: React.FC<FeaturedGameBannerStageProps> = ({
+  game,
+  images,
+  currentImageIndex,
+  prevImageIndex,
+  resolveImageUrl,
+  className,
+  emptyMessage,
+  children,
+}) => {
+  const transitionClass = getCarouselTransitionClass(game);
+  const bannerCompositionStyle = getCompositionStyle(game);
+  const playbackImages = getBannerPlaybackImages(images, game.carouselPlaybackMode);
+  const activeImageIndex = playbackImages.length > 0
+    ? Math.min(currentImageIndex, playbackImages.length - 1)
+    : 0;
+  const previousImageIndex = prevImageIndex !== null && prevImageIndex < playbackImages.length
+    ? prevImageIndex
+    : null;
+  const imageEntries = playbackImages.map((img, displayIndex) => ({ img, displayIndex }));
+  const logoUsesFrameVisibility = hasFrameVisibility(
+    game.bannerLogoVisibleFromIndex,
+    game.bannerLogoVisibleToIndex,
+  );
+  const logoFrameVisible = isFrameVisible(
+    activeImageIndex,
+    game.bannerLogoVisibleFromIndex,
+    game.bannerLogoVisibleToIndex,
+  );
+  const titleUsesFrameVisibility = hasFrameVisibility(
+    game.bannerTitleVisibleFromIndex,
+    game.bannerTitleVisibleToIndex,
+  );
+  const titleFrameVisible = isFrameVisible(
+    activeImageIndex,
+    game.bannerTitleVisibleFromIndex,
+    game.bannerTitleVisibleToIndex,
+  );
+
+  return (
+    <div className={`featured-game-image ${transitionClass} ${className ?? ''}`} style={bannerCompositionStyle}>
+      {playbackImages.length === 0 ? (
+        <div className="featured-game-banner-loading">{emptyMessage ?? `No images available for ${game.name}`}</div>
+      ) : (
+        <div className="featured-game-image-animated-wrapper">
+          {previousImageIndex !== null && previousImageIndex !== activeImageIndex ? (() => {
+            const priorImage = playbackImages[previousImageIndex];
+            return priorImage ? (
+              <CarouselImage
+                key={`${game.gameId}-${previousImageIndex}-hold`}
+                src={priorImage}
+                alt={game.name}
+                className="featured-game-banner hold-active"
+                resolveImageUrl={resolveImageUrl}
+              />
+            ) : null;
+          })() : null}
+          {imageEntries.map(({ img, displayIndex }) => {
+            const imgActive = displayIndex === activeImageIndex;
+            const imgWasActive = displayIndex === previousImageIndex;
+
+            return (
+              <CarouselImage
+                key={`${game.gameId}-${displayIndex}`}
+                src={img}
+                alt={game.name}
+                className={`featured-game-banner ${imgActive ? 'active' : ''} ${imgWasActive ? 'was-active' : ''}`}
+                resolveImageUrl={resolveImageUrl}
+              />
+            );
+          })}
+        </div>
+      )}
+
+      {hasBannerComposition(game) && (
+        <div className="featured-game-composition-overlays">
+          <div className="featured-game-composition-layer featured-game-overlay-tint" />
+          <div className="featured-game-composition-layer featured-game-overlay-vignette" />
+          <div className="featured-game-composition-layer featured-game-overlay-fade" />
+          {game.bannerLogoImage ? (
+            <GameBannerImage
+              src={game.bannerLogoImage as ImageHash}
+              alt={game.bannerLogoAlt ?? game.name}
+              className={`featured-game-logo-overlay${getTimelineClass(logoUsesFrameVisibility, logoFrameVisible)}`}
+              resolveImageUrl={resolveImageUrl}
+            />
+          ) : game.bannerTitleText ? (
+            <div className={`featured-game-title-overlay${getTimelineClass(titleUsesFrameVisibility, titleFrameVisible)}`}>
+              {game.bannerTitleText}
+            </div>
+          ) : null}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+};
 
 export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, FeaturedGameCarouselState> {
   private behaviour: ReactBehaviour<FeaturedGameCarouselProps>;
@@ -152,9 +386,10 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
     if (!currentGame) return;
 
     const currentGameImages = this.getGameImages(currentGame.gameId);
-    if (currentGameImages.length <= 1) return;
+    const imageCount = getBannerPlaybackImageCount(currentGameImages.length, currentGame.carouselPlaybackMode);
+    if (imageCount <= 1) return;
 
-    const maxIndex = currentGameImages.length - 1;
+    const maxIndex = imageCount - 1;
     let duration: number;
 
     const lastImageDuration = currentGame.carouselLastImageDurationMs ?? 5000;
@@ -181,10 +416,11 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
     if (!currentGame) return;
 
     const gameImages = this.getGameImages(currentGame.gameId);
-    if (gameImages.length === 0) return;
+    const imageCount = getBannerPlaybackImageCount(gameImages.length, currentGame.carouselPlaybackMode);
+    if (imageCount === 0) return;
 
     this.setState((prevState) => {
-      const nextImageIndex = (prevState.currentImageIndex + 1) % gameImages.length;
+      const nextImageIndex = (prevState.currentImageIndex + 1) % imageCount;
 
       if (nextImageIndex === 0 && currentGames.length > 1) {
         const slideTransitionDelay = currentGame?.carouselSlideTransitionDelayMs;
@@ -269,7 +505,7 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
       );
     }
 
-    const { resolveImageUrl, solanaImgSrc, debugLayout } = this.props;
+    const { resolveImageUrl, debugLayout } = this.props;
 
     return (
       <div className="featured-carousel">
@@ -340,54 +576,21 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
                   ) : (
                   <>
                   <div className="featured-game-left">
-                    <div className="featured-game-image">
-                      {gameImagesList.length === 0 ? (
-                        <div className="featured-game-banner-loading">No images available for {game.name}</div>
-                      ) : (
-                        <div className="featured-game-image-animated-wrapper">
-                          {gameImagesList.map((img: ImageHash, displayIndex: number) => {
-                            const imgActive = displayIndex === this.state.currentImageIndex;
-                            const imgWasActive = displayIndex === this.state.prevImageIndex;
-
-                            return (
-                              <CarouselImage
-                                key={`${game.gameId}-${displayIndex}`}
-                                src={img}
-                                alt={game.name}
-                                className={`featured-game-banner ${imgActive ? 'active' : ''} ${imgWasActive ? 'was-active' : ''}`}
-                                resolveImageUrl={resolveImageUrl}
-                              />
-                            );
-                          })}
-                        </div>
-                      )}
-
+                    <FeaturedGameBannerStage
+                      game={game}
+                      images={gameImagesList}
+                      currentImageIndex={this.state.currentImageIndex}
+                      prevImageIndex={this.state.prevImageIndex}
+                      resolveImageUrl={resolveImageUrl}
+                    >
                       <div className="featured-tags-overlay">
-                        {game.tags?.includes('Card Game') && (
-                          <span className="featured-tag-overlay">Card Game</span>
-                        )}
-                        {game.tags?.includes('Strategy') && (
-                          <span className="featured-tag-overlay">Strategy</span>
-                        )}
-                        {game.tags?.includes('Multiplayer') ? (
-                          <>
-                            <span className="featured-tag-overlay">Single player</span>
-                            <span className="featured-tag-overlay">Multiplayer</span>
-                          </>
-                        ) : (
-                          <span className="featured-tag-overlay">Single player</span>
-                        )}
-                        <span className="featured-tag-overlay">Players Vs AI</span>
-                        <span className="featured-tag-overlay">AI Vs AI</span>
+                        {(game.tags ?? []).slice(0, 6).map((tag) => (
+                          <span key={tag} className="featured-tag-overlay">{tag}</span>
+                        ))}
                       </div>
 
                       <GameBadgesOverlay
                         availableNow={!game.comingSoon}
-                        freeToPlay={!game.comingSoon}
-                        solanaVerified={!!solanaImgSrc}
-                        solanaImgSrc={solanaImgSrc}
-                        aiBenchmark={true}
-                        leaderboard={true}
                         trailingContent={this.props.onLearnMore ? (
                           <button
                             className="featured-learn-more-button"
@@ -400,7 +603,7 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
                           </button>
                         ) : undefined}
                       />
-                    </div>
+                    </FeaturedGameBannerStage>
                   </div>
 
                   <div className="featured-game-right">
@@ -436,22 +639,18 @@ export class FeaturedGameCarousel extends Component<FeaturedGameCarouselProps, F
                         </div>
 
                         <p className="featured-game-description">
-                          {game.description || 'Experience this exciting multiplayer game.'}
+                          {game.description || game.shortDescription || ''}
                         </p>
 
                         <div className="featured-features">
-                          <div className="feature-item">
-                            <span className="feature-text">
-                              <span className="feature-label">Money Matches</span>
-                              <span className="badge badge-coming-soon">Coming Soon</span>
-                            </span>
-                          </div>
-                          <div className="feature-item">
-                            <span className="feature-text">
-                              <span className="feature-label">Tournaments</span>
-                              <span className="badge badge-coming-soon">Coming Soon</span>
-                            </span>
-                          </div>
+                          {getFeatureRows(game).map((row) => (
+                            <div key={row.label} className="feature-item">
+                              <span className="feature-text">
+                                <span className="feature-label">{row.label}</span>
+                                <span className="badge badge-coming-soon">{row.value}</span>
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>

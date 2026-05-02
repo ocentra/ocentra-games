@@ -66,7 +66,18 @@ export async function requireAuth(
       env.DISABLE_AUTH === QueryValue.True
     );
 
-    console.log(`[requireAuth] path=${new URL(request.url).pathname} method=${request.method} env=${env.ENVIRONMENT} disableAuth=${env.DISABLE_AUTH} isDevWithAuthDisabled=${isDevWithAuthDisabled}`);
+    logDebug(
+      '[AdminAuthFlow:E] requireAuth mode evaluated',
+      getStackTrace(),
+      {
+        path: new URL(request.url).pathname,
+        method: request.method,
+        environment: env.ENVIRONMENT,
+        disableAuth: env.DISABLE_AUTH === QueryValue.True,
+        isDevWithAuthDisabled,
+      },
+      authTraceEnabled
+    );
 
     if (isDevWithAuthDisabled) {
       logInfo(

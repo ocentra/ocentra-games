@@ -3,8 +3,10 @@ import {
   getActiveMainAppAssetTarget,
   MainAppAssetTarget,
 } from '@/services/storage/assetTarget';
+import { clearContentSliceCache } from '@/adapters/assets/ContentSliceCache';
 import { clearEntryIndexCache } from '@/adapters/assets/EntryIndexService';
 import { ApiPathPrefix } from '@ocentra/endpoint-domain/constants/versions';
+import { clearAssetDownloadUrlResolveCache } from '@ocentra/endpoint-domain/utils/resolve-asset-download-url';
 
 const POLL_INTERVAL_MS = 15_000;
 export const ASSETS_INVALIDATED_EVENT = 'ocentra:assets-invalidated';
@@ -27,6 +29,8 @@ export function startLocalAssetVersionPoll(): void {
       if (version === null) return;
       if (lastVersion !== null && lastVersion !== version) {
         clearEntryIndexCache();
+        clearAssetDownloadUrlResolveCache();
+        await clearContentSliceCache();
         window.dispatchEvent(new CustomEvent(ASSETS_INVALIDATED_EVENT, { detail: { version } }));
       }
       lastVersion = version;

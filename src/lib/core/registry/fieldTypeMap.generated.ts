@@ -58,54 +58,20 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "cardIdentity": "CardIdentity",
     "imageHash": "ImageHash",
     "cardId": "String",
+    "rankingAsset": "AssetResourceEntry<DeckRanking>",
     "cardRankingAsset": "AssetResourceEntry<CardRanking>"
   },
   "CardSuitEntry": {
     "SuitName": "String",
     "SuitSymbol": "String",
     "SuitColor": "SuitColor",
-    "DisplayOrder": "Number",
-    "CardName": "String",
-    "Value": "Number",
-    "CardSymbol": "String",
-    "id": "String",
-    "copies": "Number",
-    "suit": "string | null",
-    "rank": "string | number | null",
-    "label": "string | null",
-    "order": "number | null",
-    "points": "number | null",
-    "kind": "string | null",
-    "deckType": "DeckType",
-    "expectedCardCount": "Number",
-    "includesJokers": "Boolean",
-    "backCardCount": "Number",
-    "deckFamily": "DeckFamily",
-    "cardEntries": "Array",
-    "familyPayload": "Array",
-    "cardIdentities": "Array"
+    "DisplayOrder": "Number"
   },
   "CardRankingEntry": {
     "CardName": "String",
     "Value": "Number",
     "CardSymbol": "String",
-    "DisplayOrder": "Number",
-    "id": "String",
-    "copies": "Number",
-    "suit": "string | null",
-    "rank": "string | number | null",
-    "label": "string | null",
-    "order": "number | null",
-    "points": "number | null",
-    "kind": "string | null",
-    "deckType": "DeckType",
-    "expectedCardCount": "Number",
-    "includesJokers": "Boolean",
-    "backCardCount": "Number",
-    "deckFamily": "DeckFamily",
-    "cardEntries": "Array",
-    "familyPayload": "Array",
-    "cardIdentities": "Array"
+    "DisplayOrder": "Number"
   },
   "CardRankingExplicitEntry": {
     "id": "String",
@@ -115,15 +81,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "label": "string | null",
     "order": "number | null",
     "points": "number | null",
-    "kind": "string | null",
-    "deckType": "DeckType",
-    "expectedCardCount": "Number",
-    "includesJokers": "Boolean",
-    "backCardCount": "Number",
-    "deckFamily": "DeckFamily",
-    "cardEntries": "Array",
-    "familyPayload": "Array",
-    "cardIdentities": "Array"
+    "kind": "string | null"
   },
   "CardRanking": {
     "deckType": "DeckType",
@@ -138,35 +96,40 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
   "SupportedDeckTriple": {
     "deckType": "String",
     "suitSet": "String",
-    "rankSet": "String",
-    "cardTemplate": "AssetResourceEntry<Card>",
-    "copies": "Number",
-    "name": "String",
-    "supportedTriples": "Array",
-    "cardTemplates": "Array",
-    "cardComposition": "Array",
-    "backCardHash": "ImageHash",
-    "imageSourceFolderPath": "String",
-    "cardOutputPath": "String",
-    "backCardSourceFolderPath": "String",
-    "cardRankingAsset": "AssetResourceEntry<CardRanking>"
+    "rankSet": "String"
   },
   "DeckCardMember": {
     "cardTemplate": "AssetResourceEntry<Card>",
+    "copies": "Number"
+  },
+  "DeckPieceMember": {
+    "pieceTemplate": "AssetResourceEntry<ScriptableObject>",
     "copies": "Number",
-    "name": "String",
-    "supportedTriples": "Array",
-    "cardTemplates": "Array",
-    "cardComposition": "Array",
-    "backCardHash": "ImageHash",
-    "imageSourceFolderPath": "String",
-    "cardOutputPath": "String",
-    "backCardSourceFolderPath": "String",
-    "cardRankingAsset": "AssetResourceEntry<CardRanking>"
+    "logicalId": "String",
+    "role": "String",
+    "tags": "Array"
+  },
+  "DeckPresentation": {
+    "backImageHash": "ImageHash",
+    "previewLayoutHint": "String",
+    "defaultOrientation": "'portrait' | 'landscape' | 'square'",
+    "defaultShape": "String"
+  },
+  "DeckRuntimePolicy": {
+    "shufflePolicy": "String",
+    "drawDirection": "String",
+    "multiplicity": "Number",
+    "visibilityDefaults": "Record<string, unknown>"
   },
   "Deck": {
     "name": "String",
+    "deckFamily": "String",
+    "pieceKind": "String",
     "supportedTriples": "Array",
+    "composition": "Array",
+    "rankingAsset": "AssetResourceEntry<DeckRanking>",
+    "presentation": "DeckPresentationRecord",
+    "runtimePolicy": "DeckRuntimePolicyRecord",
     "cardTemplates": "Array",
     "cardComposition": "Array",
     "backCardHash": "ImageHash",
@@ -182,21 +145,96 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "fastRotationDurationMs": "Number",
     "defaultRotationDurationMs": "Number",
     "fastRotationThreshold": "Number",
-    "slideTransitionDelayMs": "Number"
+    "slideTransitionDelayMs": "Number",
+    "playbackMode": "BannerPlaybackModeValue",
+    "transitionType": "BannerTransitionTypeValue",
+    "transitionDurationMs": "Number",
+    "logoImageHash": "ImageHash",
+    "logoAlt": "String",
+    "logoStartMs": "Number",
+    "logoDurationMs": "Number",
+    "logoScaleFrom": "Number",
+    "logoScaleTo": "Number",
+    "logoOpacityFrom": "Number",
+    "logoOpacityTo": "Number",
+    "logoVisibleFromIndex": "Number",
+    "logoVisibleToIndex": "Number",
+    "titleText": "String",
+    "titleTextColor": "String",
+    "titleTextStartMs": "Number",
+    "titleTextDurationMs": "Number",
+    "titleTextScaleFrom": "Number",
+    "titleTextScaleTo": "Number",
+    "titleTextOpacityFrom": "Number",
+    "titleTextOpacityTo": "Number",
+    "titleTextVisibleFromIndex": "Number",
+    "titleTextVisibleToIndex": "Number",
+    "overlayTintColor": "String",
+    "overlayTintOpacity": "Number",
+    "vignetteOpacity": "Number",
+    "fadeToBlackOpacity": "Number"
   },
   "ImageList": {
     "images": "Array"
   },
+  "DeckRankingAxisEntry": {
+    "key": "String",
+    "label": "String",
+    "symbol": "String",
+    "icon": "String",
+    "imageHash": "String",
+    "imagePath": "String",
+    "color": "String",
+    "order": "Number"
+  },
+  "DeckRankingLayoutCell": {
+    "pieceId": "String",
+    "rowKey": "String",
+    "columnKey": "String"
+  },
+  "DeckRankingLayoutSection": {
+    "id": "String",
+    "title": "String",
+    "kind": "'matrix' | 'grid'",
+    "rows": "Array",
+    "columns": "Array",
+    "pieceIds": "Array",
+    "cells": "Array"
+  },
+  "DeckRanking": {
+    "rankingFamily": "DeckRankingFamily",
+    "expectedPieceCount": "Number",
+    "layout": "Array",
+    "order": "Array",
+    "scoringHints": "Record<string, unknown>",
+    "legacyPayload": "Record<string, unknown>"
+  },
+  "DominoDeckTileMember": {
+    "tileTemplate": "AssetResourceEntry<DominoTile>",
+    "copies": "Number",
+    "logicalTileId": "String"
+  },
+  "DominoDeck": {
+    "name": "String",
+    "supportedTriples": "Array",
+    "tileTemplates": "Array",
+    "tileComposition": "Array",
+    "dominoRankingAsset": "AssetResourceEntry<DominoRanking>"
+  },
+  "DominoRanking": {
+    "maxPip": "Number",
+    "expectedTileCount": "Number",
+    "tileIds": "Array"
+  },
+  "DominoTile": {
+    "pieceKind": "PieceKind",
+    "leftPips": "Number",
+    "rightPips": "Number",
+    "tileId": "String",
+    "imageHash": "ImageHash",
+    "imagePath": "String"
+  },
   "CardGameMechanics": {
-    "familyKernel": "String",
-    "kernelVersion": "String",
-    "playerConfig": "MechanicsPlayerConfig",
-    "phases": "Array",
-    "actions": "Record<string, MechanicsAction>",
-    "customActions": "Array",
-    "zones": "Array",
-    "turnPolicy": "MechanicsTurnPolicy",
-    "endConditions": "Array",
     "cardVisibility": "Record<string, unknown>",
     "drawConfig": "Record<string, unknown> | null",
     "discardConfig": "Record<string, unknown> | null",
@@ -215,15 +253,99 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "shedding": "Record<string, unknown> | null",
     "fishingConfig": "Record<string, unknown> | null",
     "patienceConfig": "Record<string, unknown> | null",
-    "bankingConfig": "Record<string, unknown> | null",
-    "roundConfig": "Record<string, unknown> | null",
+    "deckModel": "Record<string, unknown>",
+    "deckCount": "Number"
+  },
+  "GameMechanics": {
+    "gameId": "String",
+    "mechanicsId": "String",
+    "mechanicsVersion": "String",
+    "familyKernel": "String",
+    "familyVariant": "String",
+    "kernelVersion": "String",
+    "inheritsFrom": "string | null",
+    "enabledModules": "Array",
+    "assetRefs": "Record<string, MechanicsAssetReference>",
+    "modelRefs": "Record<string, MechanicsAssetReference>",
     "constants": "Record<string, unknown>",
-    "finalHandSize": "Number",
-    "deckCount": "Number",
+    "familyConfig": "Record<string, unknown> | null",
     "implementationHints": "MechanicsImplementationHints",
-    "progression": "Array",
+    "ruleModel": "Record<string, unknown>",
+    "scoringModel": "Record<string, unknown>",
+    "strategyHooks": "Record<string, unknown>",
+    "stateModel": "Record<string, unknown>",
+    "eventModel": "Record<string, unknown>",
+    "validationSuites": "Array",
+    "runtimeIntegration": "MechanicsRuntimeIntegration",
+    "examples": "Array",
     "roles": "Array",
     "determinismNotes": "String"
+  },
+  "TurnBasedGameMechanics": {
+    "playerConfig": "MechanicsPlayerConfig",
+    "phases": "Array",
+    "actions": "Record<string, MechanicsAction>",
+    "customActions": "Array",
+    "zones": "Array",
+    "turnPolicy": "MechanicsTurnPolicy",
+    "endConditions": "Array",
+    "bankingConfig": "Record<string, unknown> | null",
+    "roundConfig": "Record<string, unknown> | null",
+    "finalHandSize": "Number",
+    "playerModel": "Record<string, unknown>",
+    "sessionModel": "Record<string, unknown>",
+    "zoneModel": "Record<string, unknown>",
+    "setupModel": "Record<string, unknown>",
+    "turnModel": "Record<string, unknown>",
+    "actionModel": "Record<string, unknown>",
+    "progression": "Array"
+  },
+  "GamePlayerModel": {
+    "playerConfig": "MechanicsPlayerConfig",
+    "playerModel": "Record<string, unknown>"
+  },
+  "GameSessionModel": {
+    "sessionModel": "Record<string, unknown>",
+    "bankingConfig": "Record<string, unknown> | null",
+    "roundConfig": "Record<string, unknown> | null",
+    "endConditions": "Array"
+  },
+  "CardGameDeckModel": {
+    "deckType": "String",
+    "suitSet": "String",
+    "rankSet": "String",
+    "deckCount": "Number",
+    "initialHandSize": "Number",
+    "drawConfig": "Record<string, unknown>",
+    "discardConfig": "Record<string, unknown>",
+    "deckModel": "Record<string, unknown>",
+    "handRanks": "Record<string, unknown>",
+    "specialCards": "Record<string, unknown>"
+  },
+  "GameZoneModel": {
+    "zones": "Array",
+    "zoneModel": "Record<string, unknown>",
+    "cardVisibility": "Record<string, unknown>"
+  },
+  "GamePhaseFlowModel": {
+    "phases": "Array",
+    "turnPolicy": "MechanicsTurnPolicy",
+    "setupModel": "Record<string, unknown>",
+    "turnModel": "Record<string, unknown>",
+    "runtimeIntegration": "Record<string, unknown>",
+    "progression": "Array"
+  },
+  "GameActionSet": {
+    "actionModel": "Record<string, unknown>",
+    "actions": "Record<string, MechanicsAction>",
+    "customActions": "Array"
+  },
+  "GameStateEventModel": {
+    "stateModel": "Record<string, unknown>",
+    "eventModel": "Record<string, unknown>"
+  },
+  "GameValidationFixtures": {
+    "validationSuites": "Array"
   },
   "CardGameRules": {
     "bonusRuleGuids": "Array",
@@ -367,6 +489,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "scoringDirection": "ScoringDirection"
   },
   "Scoring": {
+    "rankingAsset": "AssetReference | string | null",
     "cardRankingAsset": "AssetReference | string | null",
     "scoringFormula": "String",
     "scoringRules": "Record<string, unknown> | null",
@@ -395,6 +518,8 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "strategyAsset": "AssetResourceEntry<Strategy>",
     "gameInfoAsset": "AssetResourceEntry<GameInfo>",
     "deckAsset": "AssetResourceEntry<Deck>",
+    "rankingAsset": "AssetResourceEntry<DeckRanking>",
+    "cardRankingAsset": "AssetResourceEntry<CardRanking>",
     "layoutAsset": "AssetResourceEntry<CardGameLayout>",
     "carouselImagesAsset": "AssetResourceEntry<ImageCarousel>",
     "mechanicsAsset": "AssetResourceEntry<CardGameMechanics>",
@@ -423,6 +548,83 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
   "GameRulesContainer": {
     "LLM": "String",
     "Player": "String"
+  },
+  "HanafudaCard": {
+    "pieceKind": "PieceKind",
+    "month": "Number",
+    "slot": "Number",
+    "group": "HanafudaGroup",
+    "points": "Number",
+    "cardId": "String",
+    "imageHash": "ImageHash"
+  },
+  "HanafudaDeck": {
+    "name": "String",
+    "supportedTriples": "Array",
+    "cardTemplates": "Array",
+    "hanafudaRankingAsset": "AssetResourceEntry<HanafudaRanking>"
+  },
+  "HanafudaRankingSlot": {
+    "slot": "Number",
+    "cardId": "String"
+  },
+  "HanafudaRankingMonth": {
+    "month": "Number",
+    "slots": "Array"
+  },
+  "HanafudaRanking": {
+    "expectedCardCount": "Number",
+    "months": "Array"
+  },
+  "MahjongDeckTileMember": {
+    "tile": "AssetResourceEntry<MahjongTile>",
+    "count": "Number"
+  },
+  "MahjongDeck": {
+    "name": "String",
+    "supportedTriples": "Array",
+    "tiles": "Array",
+    "mahjongRankingAsset": "AssetResourceEntry<MahjongRanking>"
+  },
+  "MahjongRankingExtraTile": {
+    "tileId": "String",
+    "count": "Number"
+  },
+  "MahjongRanking": {
+    "includeBonusTiles": "Boolean",
+    "expectedTileCount": "Number",
+    "extraTiles": "Array"
+  },
+  "MahjongTile": {
+    "pieceKind": "PieceKind",
+    "tileKind": "MahjongTileKind",
+    "tileId": "String",
+    "imageHash": "ImageHash",
+    "imagePath": "String",
+    "suit": "MahjongSuit",
+    "rank": "Number",
+    "wind": "MahjongWind",
+    "dragon": "MahjongDragon",
+    "bonusIndex": "Number"
+  },
+  "PlayingCard": {
+    "pieceKind": "PieceKind",
+    "cardId": "String",
+    "imageHash": "ImageHash",
+    "playingCardRankingAsset": "AssetResourceEntry<PlayingCardRanking>"
+  },
+  "PlayingCardDeck": {
+    "name": "String",
+    "supportedTriples": "Array",
+    "cardTemplates": "Array",
+    "playingCardRankingAsset": "AssetResourceEntry<PlayingCardRanking>"
+  },
+  "PlayingCardRankingEntry": {
+    "cardId": "String"
+  },
+  "PlayingCardRanking": {
+    "expectedCardCount": "Number",
+    "cards": "Array"
   },
   "CardGameLayout": {
     "defaultPlayerCount": "Number",

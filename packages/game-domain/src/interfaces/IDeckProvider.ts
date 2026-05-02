@@ -1,14 +1,17 @@
-import type { Card } from '@/types/game';
+import type { Card, RuntimePiece } from '@/types/game';
+import type { RuntimeDeckProvider } from '@/deck/runtimeDeck';
 
-export interface IDeckProvider {
+export interface IDeckProvider extends RuntimeDeckProvider {
+  createDeck(): Promise<RuntimePiece[]>;
   createStandardDeck(): Promise<Card[]>;
-  shuffleDeck(deck: Card[]): Card[];
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[];
   dealInitialHands(
-    deck: Card[],
+    deck: RuntimePiece[],
     playerCount: number,
     handSize: number
-  ): { hands: Card[][]; remainingDeck: Card[] };
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] };
+  ): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] };
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] };
+  drawCard(deck: RuntimePiece[]): { card: RuntimePiece | null; remainingDeck: RuntimePiece[] };
   getSeed(): number;
   setSeed(seed: number): void;
 }

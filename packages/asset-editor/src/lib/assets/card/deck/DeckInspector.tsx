@@ -29,14 +29,6 @@ log.register(import.meta.url);
 const LOG_DECK_INSPECTOR = true;
 const LOG_DECK_PERF = true;
 
-const BATCH_KEY_AUTO_ENSURE = 'DeckInspector.autoEnsure';
-
-AssetEditorLogger.instance.registerBatchContext(BATCH_KEY_AUTO_ENSURE, {
-  enabled: true,
-  batchSize: 10,
-  flushInterval: 1000,
-});
-
 const BATCH_KEY_LOADING_CARDS = 'DeckInspector.loadingCards';
 const BATCH_KEY_CARD_LOADED = 'DeckInspector.cardLoaded';
 
@@ -129,8 +121,6 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   const [imageAssignmentCallback, setImageAssignmentCallback] = useState<(() => Promise<{ updated: number; warnings: string[] }>) | null>(null);
   const [populationWarnings, setPopulationWarnings] = useState<string[]>([]);
   const [_, setDummyState] = useState({});
-  // For loading optimization
-  const hasAutoEnsuredRef = useRef<boolean>(false);
   const isProcessingImagesRef = useRef<boolean>(false);
 
   const cardFolderInputRef = useRef<HTMLInputElement>(null);
@@ -172,62 +162,10 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
   }, [assetGuid, cardsOutputPath]);
 
   useEffect(() => {
-    hasAutoEnsuredRef.current = false;
-  }, [assetGuid]);
-
-  useEffect(() => {
     lastGuidsRef.current = '';
     hasLoadedRef.current = false;
     isLoadingRef.current = false;
   }, [assetGuid]);
-
-  useEffect(() => {
-    const autoEnsureCards = async () => {
-      if (!assetGuid || hasAutoEnsuredRef.current) return;
-
-      try {
-        const guid = AssetGUID.from(assetGuid);
-        const deckInstance = await ScriptableObject.loadByGuid(Deck, guid);
-
-        if (!deckInstance) {
-          if (LOG_DECK_INSPECTOR) {
-            log.logWarn('[DeckInspector] Cannot auto-ensure: deck not loaded', getStackTrace());
-          }
-          return;
-        }
-
-        hasAutoEnsuredRef.current = true;
-
-        const validation = await deckInstance.quickValidateCards();
-
-        if (validation.isValid) {
-          if (LOG_DECK_INSPECTOR) {
-            log.logInfo('[DeckInspector] Cards validated: all present, skipping auto-ensure', getStackTrace(), {
-              expectedCount: validation.expectedCount
-            }, LOG_DECK_INSPECTOR, BATCH_KEY_AUTO_ENSURE);
-          }
-          return;
-        }
-
-        if (LOG_DECK_INSPECTOR) {
-          log.logInfo('[DeckInspector] Auto-ensuring cards', getStackTrace(), {
-            missingCount: validation.missingCount,
-            expectedCount: validation.expectedCount
-          }, LOG_DECK_INSPECTOR, BATCH_KEY_AUTO_ENSURE);
-        }
-
-        setShowEnsureDialog(true);
-      } catch (error) {
-        log.logError('[DeckInspector] Failed to auto-ensure cards', getStackTrace(), error);
-        hasAutoEnsuredRef.current = false;
-      }
-    };
-
-    if (assetGuid) {
-      autoEnsureCards();
-    }
-  }, [assetGuid]);
-
 
   const handleEnsureComplete = async (results: { created: number; total: number }) => {
     setShowEnsureDialog(false);
@@ -688,6 +626,15 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
           >
             {isPopulating ? 'Processing...' : 'Populate All Images'}
           </button>
+          <button
+            type="button"
+            className="deck-inspector__scan-button"
+            onClick={() => setShowEnsureDialog(true)}
+            disabled={isPopulating || !assetGuid}
+            style={{ marginTop: '8px', width: '100%' }}
+          >
+            Ensure Card Assets
+          </button>
           <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--text-color-secondary, #999)' }}>
             Processes both main cards and back cards from configured folders
           </div>
@@ -1088,8 +1035,6 @@ export const DeckInspector: InspectorComponent<Deck | Record<string, unknown>> =
     </div>
   );
 };
-
-
 
 
 

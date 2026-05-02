@@ -12,7 +12,7 @@ import {
   computeAssetHash,
   getDiskResourceEntriesFromTauri,
 } from '@/adapters/assets/TauriAssetAdapter'
-import { z } from 'zod'
+import type { Infer } from '@ocentra/schema-domain/effect';
 import { AssetIndexEntrySchema } from '@/lib/validation/schemas'
 import { Timestamp } from '@ocentra/asset-domain/core/Timestamp'
 import type {
@@ -42,7 +42,7 @@ function asImageHash(s: string): ImageHash {
 }
 
 export function indexEntryToResourceEntry(
-  entry: z.infer<typeof AssetIndexEntrySchema>
+  entry: Infer<typeof AssetIndexEntrySchema>
 ): ResourceEntry {
   const path = toResourcesPath(entry.path)
   const now = nowTs()

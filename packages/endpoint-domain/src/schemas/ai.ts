@@ -1,52 +1,52 @@
 /**
- * AI endpoint Zod schemas.
+ * AI endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
 // ============================================================================
 // Request Bodies
 // ============================================================================
 
-export const AIRequestSchema = z.object({
-  model: z.string(),
-  prompt: z.string(),
-  context: z.record(z.unknown()).optional(),
-  max_tokens: z.number().int().positive().optional(),
-  temperature: z.number().min(0).max(2).optional(),
+export const AIRequestSchema = schema.object({
+  model: schema.string(),
+  prompt: schema.string(),
+  context: schema.record(schema.unknown()).optional(),
+  max_tokens: schema.number().int().positive().optional(),
+  temperature: schema.number().min(0).max(2).optional(),
 });
 
-export const AIEventRequestSchema = z.object({
-  event_type: z.enum(['match_start', 'match_end', 'player_action', 'dispute']),
-  match_id: z.string().optional(),
-  player_id: z.string().optional(),
-  event_data: z.record(z.unknown()),
+export const AIEventRequestSchema = schema.object({
+  event_type: schema.enum(['match_start', 'match_end', 'player_action', 'dispute']),
+  match_id: schema.string().optional(),
+  player_id: schema.string().optional(),
+  event_data: schema.record(schema.unknown()),
 });
 
 // ============================================================================
 // Response Bodies
 // ============================================================================
 
-export const TokenUsageSchema = z.object({
-  prompt_tokens: z.number().int().nonnegative(),
-  completion_tokens: z.number().int().nonnegative(),
-  total_tokens: z.number().int().nonnegative(),
+export const TokenUsageSchema = schema.object({
+  prompt_tokens: schema.number().int().nonnegative(),
+  completion_tokens: schema.number().int().nonnegative(),
+  total_tokens: schema.number().int().nonnegative(),
 });
 
-export const AIResponseSchema = z.object({
-  response: z.string(),
-  model: z.string(),
+export const AIResponseSchema = schema.object({
+  response: schema.string(),
+  model: schema.string(),
   usage: TokenUsageSchema,
-  finish_reason: z.string(),
+  finish_reason: schema.string(),
 });
 
-export const AIActionSchema = z.object({
-  action_type: z.enum(['notify', 'analyze', 'flag']),
-  target: z.string(),
-  payload: z.record(z.unknown()).optional(),
+export const AIActionSchema = schema.object({
+  action_type: schema.enum(['notify', 'analyze', 'flag']),
+  target: schema.string(),
+  payload: schema.record(schema.unknown()).optional(),
 });
 
-export const AIEventResponseSchema = z.object({
-  success: z.boolean(),
-  actions: z.array(AIActionSchema).optional(),
+export const AIEventResponseSchema = schema.object({
+  success: schema.boolean(),
+  actions: schema.array(AIActionSchema).optional(),
 });

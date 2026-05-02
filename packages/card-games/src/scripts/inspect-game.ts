@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import fs from "fs";
-import { GameSchema, type Game } from "@/schema/zod/game-schema";
+import { GameSchema, type Game } from "@/schema/effect/game-schema";
 
 const file = process.argv[2];
 if (!file) {

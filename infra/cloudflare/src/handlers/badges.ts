@@ -17,7 +17,7 @@ import {
   type BadgeRarity as BadgeRarityValue,
 } from '@/constants/badges'
 import { getCorsHeaders } from '@/utils/cors'
-import { validateZodBody } from '@/utils/zod-validation'
+import { validateSchemaBody } from '@/utils/schema-validation'
 import { requireAuth } from '@/utils/auth-middleware'
 import { ParamName } from '@ocentra/endpoint-domain/constants/paths'
 import { extractAndValidateIdFromPath } from '@ocentra/endpoint-domain/utils/path-parser'
@@ -551,7 +551,7 @@ export async function handleBadgesRequest(
       action === BadgeAction.Active &&
       request.method === HttpMethod.Post
     ) {
-      const validation = await validateZodBody(request, env, BadgesSetActiveRequestSchema)
+      const validation = await validateSchemaBody(request, env, BadgesSetActiveRequestSchema)
       if (validation.errorResponse) return validation.errorResponse
       const body = validation.data!
 
@@ -621,7 +621,7 @@ export async function handleBadgesRequest(
         )
       }
 
-      const validation = await validateZodBody(
+      const validation = await validateSchemaBody(
         request,
         env,
         BadgeClaimRequestSchema

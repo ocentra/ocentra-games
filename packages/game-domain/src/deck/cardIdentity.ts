@@ -1,4 +1,5 @@
 import type { Suit, CardValue } from '../types/game';
+import * as Schema from 'effect/Schema';
 
 export const DECK_FAMILY_FRENCH = 'French' as const;
 export const DECK_FAMILY_TAROT = 'Tarot' as const;
@@ -29,22 +30,24 @@ export interface GenericCardIdentity {
 
 export type CardIdentity = FrenchCardIdentity | TarotTrumpIdentity | TarotFoolIdentity | GenericCardIdentity;
 
-export type CardPieceId = string;
+export const CardPieceIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('CardPieceId'));
+export type CardPieceId = typeof CardPieceIdSchema.Type;
+export const decodeCardPieceId = Schema.decodeUnknownSync(CardPieceIdSchema);
 
 export function computeCardPieceId(identity: CardIdentity): CardPieceId {
   if (identity.family === DECK_FAMILY_FRENCH && 'suit' in identity && 'value' in identity) {
-    return `${identity.value}_of_${identity.suit}` as CardPieceId;
+    return decodeCardPieceId(`${identity.value}_of_${identity.suit}`);
   }
   if ('kind' in identity && identity.family === DECK_FAMILY_TAROT && identity.kind === 'trump') {
-    return `tarot_trump_${identity.number}` as CardPieceId;
+    return decodeCardPieceId(`tarot_trump_${identity.number}`);
   }
   if ('kind' in identity && identity.family === DECK_FAMILY_TAROT && identity.kind === 'fool') {
-    return 'tarot_fool' as CardPieceId;
+    return decodeCardPieceId('tarot_fool');
   }
   if ('id' in identity) {
-    return identity.id as CardPieceId;
+    return decodeCardPieceId(identity.id);
   }
-  return '' as CardPieceId;
+  return decodeCardPieceId('unknown_card_piece');
 }
 
 export function frenchCardIdentity(suit: Suit, value: CardValue): FrenchCardIdentity {

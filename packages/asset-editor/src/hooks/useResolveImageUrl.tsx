@@ -14,10 +14,25 @@ function hashKey(h: ImageHash): string {
   return typeof h === 'string' ? h : JSON.stringify(h);
 }
 
+const resolvedImageUrlCache = new Map<string, string>();
+
+function getCachedMap(hashes: ImageHash[]): Record<string, string> {
+  const cached: Record<string, string> = {};
+  for (const hash of hashes) {
+    const key = hashKey(hash);
+    const url = resolvedImageUrlCache.get(key);
+    if (url) {
+      cached[key] = url;
+    }
+  }
+  return cached;
+}
+
 function extractHashes(data: {
   featured?: FeaturedGameItem[];
   recommended?: FeaturedGameItem[];
   comingSoon?: ComingSoonItem[];
+  catalogMontageImages?: ComingSoonItem[];
   availableNow?: FeaturedGameItem[];
   featureBannerItems?: FeatureBannerItem[];
 }): ImageHash[] {
@@ -32,18 +47,18 @@ function extractHashes(data: {
       }
     }
   };
-  for (const g of data.featured ?? []) {
+  const addGame = (g: FeaturedGameItem) => {
     add(g.bannerImage);
+    add(g.gameIcon);
     add(g.textImageUrl);
+    add(g.bannerLogoImage);
     for (const c of g.carouselImages ?? []) add(c);
-  }
-  for (const g of data.recommended ?? []) {
-    add(g.bannerImage);
-    add(g.textImageUrl);
-    for (const c of g.carouselImages ?? []) add(c);
-  }
+  };
+  for (const g of data.featured ?? []) addGame(g);
+  for (const g of data.recommended ?? []) addGame(g);
   for (const t of data.comingSoon ?? []) add(t.bannerImage);
-  for (const g of data.availableNow ?? []) add(g.bannerImage);
+  for (const t of data.catalogMontageImages ?? []) add(t.bannerImage);
+  for (const g of data.availableNow ?? []) addGame(g);
   for (const item of data.featureBannerItems ?? []) add(item.imageHash);
   return out;
 }
@@ -52,6 +67,7 @@ export function useResolveImageUrl(data: {
   featured?: FeaturedGameItem[];
   recommended?: FeaturedGameItem[];
   comingSoon?: ComingSoonItem[];
+  catalogMontageImages?: ComingSoonItem[];
   availableNow?: FeaturedGameItem[];
   featureBannerItems?: FeatureBannerItem[];
 }): {
@@ -59,8 +75,9 @@ export function useResolveImageUrl(data: {
   ImageLoaders: React.ReactNode;
   prefetchHashes: (hashes: ImageHash[]) => void;
 } {
-  const [map, setMap] = useState<Record<string, string>>({});
+  const [map, setMap] = useState<Record<string, string>>(() => getCachedMap(extractHashes(data)));
   const subscriberIdRef = useRef<string>(createGuid());
+  const requestedKeysRef = useRef<Set<string>>(new Set());
 
   const hashes = useMemo(() => extractHashes(data), [
     data,
@@ -73,8 +90,13 @@ export function useResolveImageUrl(data: {
       setMap(prev => {
         const next = { ...prev };
         for (const result of event.results) {
-          if (result.variant === ImageVariant.Full && result.blobUrl) {
-            next[hashKey(result.hash)] = result.blobUrl;
+          if (result.variant === ImageVariant.Full) {
+            const key = hashKey(result.hash);
+            requestedKeysRef.current.delete(key);
+            if (result.blobUrl) {
+              resolvedImageUrlCache.set(key, result.blobUrl);
+              next[key] = result.blobUrl;
+            }
           }
         }
         return next;
@@ -84,26 +106,50 @@ export function useResolveImageUrl(data: {
     return () => EventBus.instance.unsubscribe(ImageBatchLoadedEvent, handleBatchLoaded);
   }, []);
 
-  useEffect(() => {
-    if (hashes.length === 0) return;
-    const requests = hashes.map(h => ({
-      hash: h,
-      variant: ImageVariant.Full,
-      priority: ImageLoadPriority.HIGH,
-    }));
+  const requestHashes = useCallback((nextHashes: ImageHash[]) => {
+    const requests: Array<{
+      hash: ImageHash;
+      variant: ImageVariant;
+      priority: ImageLoadPriority;
+    }> = [];
+    const seen = new Set<string>();
+    for (const hash of nextHashes) {
+      if (!isImageHash(hash)) continue;
+      const key = hashKey(hash);
+      if (seen.has(key) || resolvedImageUrlCache.has(key) || requestedKeysRef.current.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      requestedKeysRef.current.add(key);
+      requests.push({
+        hash,
+        variant: ImageVariant.Full,
+        priority: ImageLoadPriority.HIGH,
+      });
+    }
+    if (requests.length === 0) return;
     EventBus.instance.publish(
       new ImageBatchLoadRequestEvent(requests, subscriberIdRef.current, true)
     );
-  }, [hashes]);
+  }, []);
+
+  useEffect(() => {
+    if (hashes.length === 0) return;
+    requestHashes(hashes);
+  }, [hashes, requestHashes]);
 
   const resolveImageUrl = useCallback(
-    (h: ImageHash) => map[hashKey(h)] ?? null,
+    (h: ImageHash) => map[hashKey(h)] ?? resolvedImageUrlCache.get(hashKey(h)) ?? null,
     [map]
   );
+
+  const prefetchHashes = useCallback((nextHashes: ImageHash[]) => {
+    requestHashes(nextHashes);
+  }, [requestHashes]);
 
   return {
     resolveImageUrl,
     ImageLoaders: null,
-    prefetchHashes: () => {},
+    prefetchHashes,
   };
 }

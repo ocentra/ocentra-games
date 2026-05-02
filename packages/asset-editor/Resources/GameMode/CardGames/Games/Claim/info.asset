@@ -13,13 +13,13 @@
     quality: 'complete',
     completeness: {
       overview: true,
-      history: false,
+      history: true,
       setup: true,
       rules: true,
       strategy: true,
-      variations: false,
-      ai: false,
-      sources: false,
+      variations: true,
+      ai: true,
+      sources: true,
     },
     hero: {
       title: 'CLAIM',
@@ -30,8 +30,113 @@
       lastSynthesizedAt: null,
       dependencies: [],
     },
-    LLM: 'Claim is a four-player original card game using the Standard_52 deck asset and StandardCardRanking. Each active player starts a round with three cards and tries to build score in one privately declared suit. Off-suit cards and undeclared hands score negative. A player may take from stock or discard, discard while keeping at least three cards, declare one suit, and call showdown when their final score is at least 27.',
-    Player: 'Claim is about choosing a suit, collecting that suit, and not getting trapped with cards you cannot score. You can wait to declare, but if you act while undeclared you collect debt that stays until showdown.',
+    mechanicsContract: {
+      gameId: 'claim',
+      mechanicsId: 'claim-hoarder',
+      mechanicsVersion: '2.0.0',
+      familyKernel: 'claim',
+      familyVariant: 'hoarder',
+      executorId: 'claim.hoarder.v1',
+      strategyExecutorId: 'claim.bot.deterministic.v1',
+      playerCount: { min: 4, max: 4, optimal: 4 },
+      pilotSeats: [
+        { seatId: 0, role: 'human', playerId: 'p1' },
+        { seatId: 1, role: 'deterministic_bot', playerId: 'p2' },
+        { seatId: 2, role: 'deterministic_bot', playerId: 'p3' },
+        { seatId: 3, role: 'deterministic_bot', playerId: 'p4' },
+      ],
+      linkedAssetKeys: {
+        rules: 'claimRules.asset',
+        scoring: 'claimScoring.asset',
+        strategy: 'claimStrategy.asset',
+        mechanics: 'claimMechanics.asset',
+        playerModel: 'claimPlayerModel.asset',
+        sessionModel: 'claimSessionModel.asset',
+        deckModel: 'claimDeckModel.asset',
+        zoneModel: 'claimZoneModel.asset',
+        phaseFlowModel: 'claimPhaseFlowModel.asset',
+        actionSet: 'claimActionSet.asset',
+        stateEventModel: 'claimStateEventModel.asset',
+        validationFixtures: 'claimValidationFixtures.asset',
+      },
+    },
+    historyContent: {
+      origins: 'Claim is an original Ocentra card game created as the first full pilot for the shared scriptable mechanics system. It is not a clone of a public ruleset. The rules were shaped around four suits, secret suit claims, risk from delayed declaration, and the cost of holding cards only to block opponents.',
+      timeline: [
+        'Concept: four players map naturally to the four standard French suits.',
+        'Core loop: draw or discard, decide when to declare, manage debt, and choose the right showdown timing.',
+        'Pilot target: direct-to-game local play with one human and three deterministic bots before lobby, matchmaking, or online sync.',
+        'Mechanics v2: rules, scoring, strategy, model assets, fixtures, and runtime integration are linked through claimMechanics.asset.',
+      ],
+      evolution: 'The early sketch was simply collect one suit. The current Hoarder variant adds secret declaration, undeclared debt, public stock/discard signals, no max hand size, and winner-difference settlement so hoarding and blocking are useful but dangerous.',
+      cultural: 'Claim uses familiar standard-card vocabulary, but its rules are creator-authored for Ocentra. The asset text treats creator decisions and executable fixtures as the source of truth.',
+    },
+    variationsContent: {
+      list: [
+        {
+          id: 'claim.hoarder.v2',
+          name: 'Hoarder Pilot',
+          description: 'Current canonical pilot: four players, secret declaration, 3-card initial deal, no max hand size, 60-second turns, persistent undeclared debt, showdown minimum 27, and ten-round bankroll match.',
+        },
+        {
+          id: 'claim.open-declare.future',
+          name: 'Open Declaration Variant',
+          description: 'Future tuning option where declarations become public immediately. This would lower bluffing and make discard reads more direct.',
+        },
+        {
+          id: 'claim.high-debt.future',
+          name: 'High Debt Variant',
+          description: 'Future tuning option where undeclared debt can stack more aggressively, making late declaration a sharper risk.',
+        },
+        {
+          id: 'claim.short-match.future',
+          name: 'Short Match Variant',
+          description: 'Future tuning option for fewer rounds or smaller bankrolls when the game needs a faster table loop.',
+        },
+      ],
+    },
+    aiContent: {
+      difficulty: {
+        easy: 'Prefer declaring early, taking visible discard only when it improves the declared suit, and dumping off-suit cards quickly.',
+        medium: 'Balance suit projection, debt avoidance, visible discard information, and blocker value.',
+        hard: 'Model opponent suit intent from public discard/stock behavior, hold blockers only when their denial value beats their negative score, and call showdown only when final score survives debt and off-suit liability.',
+      },
+      considerations: [
+        'The v1 pilot uses deterministic bots only; no LLM call is made during gameplay.',
+        'Bots evaluate public state, their private hand, declared suit, undeclared debt, discard top, stock count, and turn flags.',
+        'The strategy profile is seeded for reproducible tests and uses aggressiveness, risk tolerance, bluff frequency, blocker value, and showdown confidence.',
+        'Frontend strategy panels should explain that taking from discard leaks suit intent because the discard top is public.',
+        'LLM-facing text exists for explanation and future AI prompt material, not for live v1 decisions.',
+      ],
+    },
+    sourcesContent: {
+      primary: [
+        {
+          name: 'Creator-authored Claim rules captured in claimRules.asset',
+          url: 'asset://Resources/GameMode/CardGames/Games/Claim/claimRules.asset',
+        },
+        {
+          name: 'Executable mechanics manifest in claimMechanics.asset',
+          url: 'asset://Resources/GameMode/CardGames/Games/Claim/claimMechanics.asset',
+        },
+        {
+          name: 'Scoring profile and fixture references in claimScoring.asset',
+          url: 'asset://Resources/GameMode/CardGames/Games/Claim/claimScoring.asset',
+        },
+        {
+          name: 'Executable validation examples in claimValidationFixtures.asset',
+          url: 'asset://Resources/GameMode/CardGames/Games/Claim/claimValidationFixtures.asset',
+        },
+      ],
+      additional: [
+        'Standard_52.asset supplies the physical deck model.',
+        'StandardCardRanking.asset supplies rank values used by Claim scoring.',
+        'claimStrategy.asset supplies deterministic bot policy and tuning weights.',
+        'There is no external public-rules source because Claim is an original Ocentra pilot game.',
+      ],
+    },
+    LLM: 'Claim is a four-player original card game backed by the claim-hoarder mechanics v2 asset set. It uses the Standard_52 deck asset and StandardCardRanking. Each active player starts a round with three cards and tries to build score in one privately declared suit. Off-suit cards and undeclared hands score negative. A player may take from stock or discard, discard while keeping at least three cards, declare one suit, and call showdown when their final score is at least 27.',
+    Player: 'Claim is about choosing a suit, collecting that suit, and not getting trapped with cards you cannot score. You can wait to declare, but if you act while undeclared you collect debt that stays until showdown. This pilot starts directly at the table with one human and three deterministic bots.',
     sections: [
       {
         type: 'about',
@@ -56,6 +161,30 @@
                   {
                     type: 'paragraph',
                     text: 'Claim is locked to four players. A player who runs out of bankroll becomes an observer. The match ends after ten rounds or when only one active player remains.',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Executable Assets',
+            subtitle: 'What powers this pilot',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'Claim is driven by claimMechanics.asset with linked player, session, deck, zone, phase-flow, action-set, state-event, and validation model assets. The local pilot uses the claim.hoarder.v1 executor with one human seat and three deterministic bot seats.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'Rules live in claimRules.asset and provide rule IDs, action links, and player-facing text.' },
+                      { text: 'Scoring lives in claimScoring.asset and provides the scoring profile, formulas, settlement policy, and executable fixtures.' },
+                      { text: 'Bot behavior lives in claimStrategy.asset and feeds claim.bot.deterministic.v1.' },
+                    ],
                   },
                 ],
               },
@@ -204,6 +333,135 @@
               },
             ],
           },
+          {
+            title: 'Origin And Design Intent',
+            subtitle: 'Why this game works the way it does',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'Claim is an original Ocentra game designed around the four suits of a standard deck. The four-player lock is intentional: each table always has the same suit economy, the same pressure on public discard signals, and the same race to build a declared hand.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'Secret declaration creates timing pressure: declare early to avoid debt, or wait and risk a worse final score.' },
+                      { text: 'No max hand size allows greedy hoarding and blocking, but mixed hands can collapse under negative off-suit scoring.' },
+                      { text: 'Public stock and discard tops make every take/discard a signal that bots and humans can read.' },
+                      { text: 'Winner-difference settlement rewards strong positive wins without hiding the pain of raw negative scores.' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Scoring Examples',
+            subtitle: 'Executable examples used by validation and UI',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'These examples are mirrored in claimValidationFixtures.asset and referenced from claimScoring.asset. The frontend can list and evaluate them through the mechanics example service.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'A K Q of Spades, declared Spades: (14 + 13 + 12) * 3 = 117.' },
+                      { text: '5 6 of Hearts, declared Hearts: (5 + 6) * 2 = 22.' },
+                      { text: '8 9 10 of Clubs, declared Clubs: (8 + 9 + 10) * 3 = 81.' },
+                      { text: 'A K Q of Spades plus 5 of Hearts, declared Spades: 117 - 5 = 112.' },
+                      { text: 'Undeclared A K Q of Spades: -117.' },
+                      { text: 'A K Q and 8 9 10 of Spades plus 5 6 of Hearts, declared Spades: 117 + 81 - 22 = 176.' },
+                      { text: 'A K Q of Spades with 14 debt, declared Spades: 117 - 14 = 103.' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Bot Strategy',
+            subtitle: 'Deterministic pilot AI',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'The v1 pilot uses claim.bot.deterministic.v1. It does not call an LLM during gameplay. The bot reads its own hand, public stock/discard state, declaration/debt state, and turn flags, then chooses legal actions using seeded weights from claimStrategy.asset.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'Preferred suit is selected from projected same-suit score.' },
+                      { text: 'Discard priority starts with lowest-liability off-suit cards unless blocker value justifies holding them.' },
+                      { text: 'Discard-top takes are preferred when the card helps the bot suit plan, but this public action exposes intent.' },
+                      { text: 'Showdown is called when final score clears the minimum after risk tolerance, aggressiveness, debt, and off-suit liability.' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Variants And Tuning',
+            subtitle: 'Current canonical version and future levers',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'The current playable version is claim.hoarder.v2. Other variants are documented as future tuning targets, not active runtime modes.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'Hoarder Pilot: secret declaration, no max hand size, persistent debt, 60-second turns, ten-round bankroll match.' },
+                      { text: 'Open Declaration: declarations would be public immediately, reducing bluff and blocker ambiguity.' },
+                      { text: 'High Debt: late declaration would punish more sharply for faster, harsher tables.' },
+                      { text: 'Short Match: smaller bankroll or fewer rounds for faster sessions once lobby/matchmaking exists.' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            title: 'Sources And Provenance',
+            subtitle: 'Where the frontend should treat truth as coming from',
+            content: [
+              {
+                type: 'rule-block',
+                content: [
+                  {
+                    type: 'paragraph',
+                    text: 'Claim is creator-authored for Ocentra. The source of truth is the local scriptable asset set, not an external rules page.',
+                  },
+                  {
+                    type: 'list',
+                    style: 'unordered',
+                    items: [
+                      { text: 'claimMechanics.asset links the executable manifest, model refs, actions, phases, and runtime integration.' },
+                      { text: 'claimRules.asset owns rule IDs, rule groups, action links, edge cases, and human/LLM-facing rule text.' },
+                      { text: 'claimScoring.asset owns formulas, card values, settlement, and references to executable examples.' },
+                      { text: 'claimValidationFixtures.asset owns the examples used for validation, UI explanation, and future AI prompt material.' },
+                      { text: 'claimStrategy.asset owns deterministic bot inputs, policy, and tuning weights.' },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
         ],
       },
     ],
@@ -217,6 +475,19 @@
       'Strategy',
       'Multiplayer',
       'Original',
+    ],
+    featuredTopBadges: [
+      { label: 'Card Game', tone: 'bannerBlue' },
+      { label: 'Strategy', tone: 'bannerPurple' },
+      { label: 'Multiplayer', tone: 'bannerGreen' },
+      { label: 'Original', tone: 'bannerGold' },
+    ],
+    featuredBottomBadges: [
+      { label: 'Available Now', tone: 'blue' },
+      { label: 'Free To Play', tone: 'green' },
+      { label: 'Solana Verified', tone: 'purple' },
+      { label: 'AI Benchmark', tone: 'pink' },
+      { label: 'Leaderboard', tone: 'gold' },
     ],
     minPlayers: 4,
     maxPlayers: 4,

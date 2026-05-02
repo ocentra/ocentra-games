@@ -3,10 +3,7 @@ import { serializable, serializableClass, required } from '@ocentra/asset-domain
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import type { AssetReference } from '@ocentra/asset-domain/AssetReference';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import type { SynthesisContext } from '@ocentra/eventing-domain/types/app-stubs';
 import type { IContentSynthesisProvider } from '@/game/gameInfo/GameInfo';
@@ -14,8 +11,6 @@ import type { ContentBlock } from '@/game/gameInfo/GameInfo';
 import { ContentBlockType } from '@/constants/content-block-type';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
 
 @serializableClass({
@@ -35,11 +30,15 @@ export class Scoring extends ScriptableObject implements IContentSynthesisProvid
   }
 
   @required('Card Ranking Asset is required for scoring to function')
+  @serializable({ label: 'Ranking Asset' })
+  rankingAsset!: AssetReference | string | null;
+
   @serializable({ label: 'Card Ranking Asset' })
-  cardRankingAsset!: AssetReference | string | null;
+  cardRankingAsset?: AssetReference | string | null;
 
   constructor() {
     super();
+    this.rankingAsset = null;
     this.cardRankingAsset = null;
   }
 
@@ -49,14 +48,14 @@ export class Scoring extends ScriptableObject implements IContentSynthesisProvid
   }
 
   private async initializeDefaultCardRanking(): Promise<void> {
-    if (this.cardRankingAsset) {
+    if (this.rankingAsset || this.cardRankingAsset) {
       return;
     }
 
     try {
       const defaultCardRanking = await CardRanking.getDefault();
       if (defaultCardRanking) {
-        this.cardRankingAsset = defaultCardRanking.guid.toString();
+        this.rankingAsset = defaultCardRanking.guid.toString();
       }
     } catch (error) {
       MainAppLogger.instance.logError('[Scoring] Failed to load default CardRanking', getStackTrace(), error);
@@ -92,30 +91,7 @@ export class Scoring extends ScriptableObject implements IContentSynthesisProvid
   }
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[Scoring] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'Scoring',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[Scoring] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'Scoring',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('Scoring', context.gameId);
     const assetId = `${context.gameId}-scoring`;
     const data: Record<string, unknown> = {
       scoringRules: {},
@@ -129,4 +105,3 @@ export class Scoring extends ScriptableObject implements IContentSynthesisProvid
     };
   }
 }
-

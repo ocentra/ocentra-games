@@ -608,7 +608,7 @@ Already owns:
 Must own:
 
 - asset-envelope validation
-- per-asset Zod schema validation
+- per-asset Effect Schema schema validation
 - cross-asset validation
 - readiness checks for imported asset bundles
 
@@ -641,7 +641,7 @@ So before large-scale import work, we need a schema-alignment pass:
 
 1. actual serialized asset shape
 2. class fields
-3. Zod validation schema
+3. Effect Schema validation schema
 4. bundle/factory output
 5. editor inspector expectations
 
@@ -769,7 +769,7 @@ Exit criteria:
 Deliverables:
 
 - finalize `CardGameMechanics` asset class
-- finalize Zod schema
+- finalize Effect Schema schema
 - add cross-asset validation rules
 - define import mapping from `engine.*` processed JSON into mechanics asset data
 

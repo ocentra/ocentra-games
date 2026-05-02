@@ -1,45 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
-import { CardGridMatrix } from '@ocentra/core-ui/Common/CardGridMatrix/CardGridMatrix';
-import { getGameMode } from '@/adapters/assets/GameCatalogService';
+import { useEffect, useState } from 'react';
+import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import {
+  buildDeckPreviewModel,
+  collectDeckPreviewRefs,
+  uniqueDeckPreviewRefs,
+  type DeckPreviewAxis,
+  type DeckPreviewCell,
+  type DeckPreviewModel,
+  type DeckPreviewReference,
+} from '@ocentra/game-asset-domain/deckPreview/DeckPreviewModel';
+import { DeckPreviewView } from '@ocentra/core-ui/Common/DeckPreview/DeckPreviewView';
+import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
+import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 import { useImageUrl } from '@/hooks/useImageUrl';
-import type { Card } from '@ocentra/game-asset-domain/card/cardBase/Card';
-import { CardGameMode } from '@ocentra/game-asset-domain/gameMode/cardGameMode/CardGameMode';
 
 interface GameCardDeckPreviewProps {
   gameIdentifier: string;
 }
 
-function GameCardCell({ card }: { card?: Card }) {
-  const hash = card?.imageHash ?? null;
-  const { imageUrl } = useImageUrl(hash);
-
-  if (!card) {
-    return <span style={{ opacity: 0.45 }}>-</span>;
-  }
-
-  if (!imageUrl) {
-    return <span style={{ fontSize: '0.75rem', opacity: 0.85 }}>{card.getCardId()}</span>;
-  }
-
-  return (
-    <img
-      src={imageUrl}
-      alt={card.getCardId()}
-      style={{ width: '100%', maxWidth: '56px', height: '74px', objectFit: 'cover', borderRadius: '4px' }}
-      onError={(event) => {
-        (event.target as HTMLImageElement).style.display = 'none';
-      }}
-    />
-  );
-}
+const DECK_PREVIEW_LOAD_TIMEOUT_MS = 15000;
 
 export function GameCardDeckPreview({ gameIdentifier }: GameCardDeckPreviewProps) {
   const normalizedIdentifier = gameIdentifier.includes(':') ? gameIdentifier.split(':')[0] : gameIdentifier;
-  const [cards, setCards] = useState<Card[]>([]);
-  const [suitOrder, setSuitOrder] = useState<string[]>([]);
-  const [rankOrder, setRankOrder] = useState<number[]>([]);
-  const [rankLabels, setRankLabels] = useState<Record<number, string>>({});
-  const [suitLabels, setSuitLabels] = useState<Record<string, string>>({});
+  const [model, setModel] = useState<DeckPreviewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,55 +32,35 @@ export function GameCardDeckPreview({ gameIdentifier }: GameCardDeckPreviewProps
       setIsLoading(true);
       try {
         if (!normalizedIdentifier) {
-          setCards([]);
-          setIsLoading(false);
-          return;
-        }
-        const gameMode = await getGameMode(normalizedIdentifier);
-        if (!(gameMode instanceof CardGameMode)) {
-          setCards([]);
-          setIsLoading(false);
-          return;
-        }
-        const deck = await gameMode?.getDeckAsset();
-        if (!deck || cancelled) {
-          setCards([]);
-          setIsLoading(false);
+          setModel(null);
           return;
         }
 
-        const [allCards, ranking, suits, ranks] = await Promise.all([
-          deck.getAllCards(),
-          deck.getCardRanking(),
-          deck.getSuitOrder(),
-          deck.getRankOrder(),
-        ]);
+        const deck = await withTimeout(loadDeckFromGameIdentifier(normalizedIdentifier));
+        if (!deck || cancelled) {
+          setModel(null);
+          return;
+        }
+
+        const refs = collectDeckPreviewRefs(deck);
+        const loadedRefs = await withTimeout(Promise.all([
+          loadRefs(uniqueDeckPreviewRefs(refs.pieceRefs)),
+          loadRefs(refs.rankingRefs),
+        ]));
+        const [pieces, rankings] = loadedRefs ?? [[], []];
 
         if (cancelled) {
           return;
         }
 
-        const nextRankLabels: Record<number, string> = {};
-        const nextSuitLabels: Record<string, string> = {};
-        for (const rank of ranks) {
-          nextRankLabels[rank] = ranking.getRankSymbol(rank) || String(rank);
-        }
-        for (const suit of suits) {
-          nextSuitLabels[suit] = ranking.getSuitSymbol(suit) || suit;
-        }
-
-        setCards(allCards);
-        setSuitOrder(suits);
-        setRankOrder(ranks);
-        setRankLabels(nextRankLabels);
-        setSuitLabels(nextSuitLabels);
+        setModel(buildDeckPreviewModel({
+          deck,
+          pieces,
+          rankings,
+        }));
       } catch {
         if (!cancelled) {
-          setCards([]);
-          setSuitOrder([]);
-          setRankOrder([]);
-          setRankLabels({});
-          setSuitLabels({});
+          setModel(null);
         }
       } finally {
         if (!cancelled) {
@@ -112,49 +75,170 @@ export function GameCardDeckPreview({ gameIdentifier }: GameCardDeckPreviewProps
     };
   }, [normalizedIdentifier]);
 
-  const cardMap = useMemo(() => {
-    const map = new Map<string, Card>();
-    for (const card of cards) {
-      const identity = card.cardIdentity;
-      if (!('suit' in identity) || !('value' in identity)) {
-        continue;
-      }
-      map.set(`${identity.suit}_${identity.value}`, card);
-    }
-    return map;
-  }, [cards]);
-
   if (isLoading) {
     return <div style={{ marginBottom: '1rem', opacity: 0.8 }}>Loading deck preview...</div>;
   }
 
-  if (cards.length === 0) {
+  if (!model) {
     return null;
   }
 
   return (
     <section style={{ marginBottom: '1rem' }}>
-      <h3 style={{ margin: '0 0 0.5rem 0' }}>Deck Preview</h3>
-      <p style={{ margin: '0 0 0.75rem 0', opacity: 0.8 }}>{cards.length} cards loaded</p>
-      <CardGridMatrix
-        rows={suitOrder.map((suit) => ({ key: suit, label: suitLabels[suit] || suit }))}
-        columns={rankOrder.map((rank) => ({ key: String(rank), label: rankLabels[rank] || String(rank) }))}
-        renderCell={(suit, rank) => <GameCardCell card={cardMap.get(`${suit}_${Number(rank)}`)} />}
-        emptyMessage="No standard suit/rank matrix available."
+      <DeckPreviewView
+        model={model}
+        renderPiece={(cell) => <GameDeckPieceCell cell={cell} />}
+        renderAxis={(axis) => axis.imageHash ? <GameDeckAxisImage axis={axis} /> : undefined}
+        renderBack={(imageHash) => <GameDeckBackCell hash={imageHash as ImageHash} />}
       />
-      <div style={{ marginTop: '0.75rem' }}>
-        <h4 style={{ margin: '0 0 0.5rem 0' }}>Card Ranking</h4>
-        <CardGridMatrix
-          rows={suitOrder.map((suit) => ({ key: suit, label: suitLabels[suit] || suit }))}
-          columns={rankOrder.map((rank) => ({ key: String(rank), label: rankLabels[rank] || String(rank) }))}
-          renderCell={(suit, rank) => (
-            <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-              {(rankLabels[Number(rank)] || rank)}{suitLabels[suit] || suit}
-            </span>
-          )}
-          emptyMessage="No ranking matrix available."
-        />
-      </div>
     </section>
+  );
+}
+
+async function withTimeout<T>(promise: Promise<T>): Promise<T | null> {
+  let timeoutId: number | null = null;
+  const timeout = new Promise<null>((resolve) => {
+    timeoutId = window.setTimeout(() => resolve(null), DECK_PREVIEW_LOAD_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+    }
+  }
+}
+
+async function loadDeckFromGameIdentifier(identifier: string): Promise<unknown | null> {
+  const resources = await getEntryIndexResourceEntries();
+  const gameEntry = resources.find((resource) => (
+    resource.guid === identifier ||
+    resource.gameId === identifier
+  ));
+  if (!gameEntry?.guid) {
+    return null;
+  }
+  const gameDocument = await loadRawAssetDocumentByGuid(gameEntry.guid);
+  const deckRef = dataRecord(gameDocument).deckAsset;
+  return await loadDeckFromRef(deckRef);
+}
+
+async function loadDeckFromRef(ref: unknown): Promise<unknown | null> {
+  const refRecord = recordOf(ref);
+  const assetType = textOf(refRecord.assetType) || 'Deck';
+  const guid = await resolveReferenceGuid({
+    assetType,
+    guid: textOf(refRecord.guid),
+    path: textOf(refRecord.path),
+  });
+  if (!guid) {
+    return null;
+  }
+  return await loadRawAssetDocumentByGuid(guid);
+}
+
+function recordOf(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function dataRecord(value: unknown): Record<string, unknown> {
+  return recordOf(recordOf(value).data);
+}
+
+function textOf(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+async function loadRefs(refs: DeckPreviewReference[]): Promise<unknown[]> {
+  const results = await Promise.all(refs.map(loadRef));
+  return results.filter((asset): asset is unknown => asset !== null);
+}
+
+async function loadRef(ref: DeckPreviewReference): Promise<unknown | null> {
+  const guid = await resolveReferenceGuid(ref);
+  if (!guid) {
+    return null;
+  }
+  return await loadRawAssetDocumentByGuid(guid);
+}
+
+async function resolveReferenceGuid(ref: DeckPreviewReference): Promise<string | null> {
+  if (ref.guid) {
+    return ref.guid;
+  }
+  if (!ref.path) {
+    return null;
+  }
+
+  const normalizedPath = normalizeReferencePath(ref.path);
+  const resources = await getEntryIndexResourceEntries();
+  const match = resources.find((resource) => (
+    resource.guid &&
+    normalizeReferencePath(resource.path ?? '') === normalizedPath &&
+    (!ref.assetType || resource.assetType === ref.assetType)
+  ));
+  return match?.guid ?? null;
+}
+
+function normalizeReferencePath(path: string): string {
+  return path.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
+}
+
+function GameDeckAxisImage({ axis }: { axis: DeckPreviewAxis }) {
+  const { imageUrl } = useImageUrl((axis.imageHash || null) as ImageHash | null);
+
+  if (!imageUrl) {
+    return null;
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={axis.label}
+      title={axis.label}
+      style={{ width: '1.35rem', height: '1.35rem', objectFit: 'contain', display: 'block' }}
+      onError={(event) => {
+        (event.target as HTMLImageElement).style.display = 'none';
+      }}
+    />
+  );
+}
+
+function GameDeckPieceCell({ cell }: { cell: DeckPreviewCell }) {
+  const { imageUrl } = useImageUrl((cell.imageHash || null) as ImageHash | null);
+
+  if (!imageUrl) {
+    return <span style={{ fontSize: '0.72rem', opacity: 0.85, overflowWrap: 'anywhere' }}>{cell.label}</span>;
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={cell.label}
+      style={{ width: '100%', maxWidth: '3.5rem', height: '4.75rem', objectFit: 'contain', borderRadius: '0.25rem' }}
+      onError={(event) => {
+        (event.target as HTMLImageElement).style.display = 'none';
+      }}
+    />
+  );
+}
+
+function GameDeckBackCell({ hash }: { hash: ImageHash }) {
+  const { imageUrl } = useImageUrl(hash);
+
+  if (!imageUrl) {
+    return <span style={{ fontSize: '0.72rem', opacity: 0.85 }}>Back</span>;
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt="Back"
+      style={{ width: '100%', maxWidth: '3.5rem', height: '4.75rem', objectFit: 'contain', borderRadius: '0.25rem' }}
+      onError={(event) => {
+        (event.target as HTMLImageElement).style.display = 'none';
+      }}
+    />
   );
 }

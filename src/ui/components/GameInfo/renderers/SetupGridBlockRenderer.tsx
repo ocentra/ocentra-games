@@ -10,10 +10,10 @@ export const SetupGridBlockRenderer: React.FC<SetupGridBlockRendererProps> = ({ 
     <div className={GameInfoCSSClasses.SetupGrid}>
       {block.items.map((item, index) => (
         <div key={index} className={GameInfoCSSClasses.SetupItem}>
-          <span>{item.icon}</span>
+          {item.icon && <span>{item.icon}</span>}
           <div>
             <strong>{item.label}</strong>
-            <p>{item.detail}</p>
+            <p>{item.detail ?? (item as { value?: string }).value}</p>
           </div>
         </div>
       ))}

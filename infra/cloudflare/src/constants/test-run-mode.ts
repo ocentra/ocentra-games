@@ -1,9 +1,20 @@
-export type TestRunMode = string & { readonly __brand: 'TestRunMode' };
+import { Schema } from '@ocentra/schema-domain/effect';
+
+export const TestRunModeSchema = Schema.String.pipe(
+  Schema.filter((value) => ['pool', 'unstable', 'production'].includes(value.trim().toLowerCase()) || 'TestRunMode must be pool, unstable, or production'),
+  Schema.transform(Schema.String, {
+    decode: (value) => value.trim().toLowerCase(),
+    encode: (value) => value,
+  }),
+  Schema.brand('TestRunMode'),
+);
+export type TestRunMode = typeof TestRunModeSchema.Type;
+export const decodeTestRunMode = Schema.decodeUnknownSync(TestRunModeSchema);
 
 export const TestRunMode = {
-  Pool: 'pool' as TestRunMode,
-  Unstable: 'unstable' as TestRunMode,
-  Production: 'production' as TestRunMode,
+  Pool: decodeTestRunMode('pool'),
+  Unstable: decodeTestRunMode('unstable'),
+  Production: decodeTestRunMode('production'),
 } as const;
 
 export type TestRunModeValue = (typeof TestRunMode)[keyof typeof TestRunMode];
@@ -24,7 +35,7 @@ export function asTestRunMode(value: string): TestRunMode {
       `TestRunMode must be one of: ${VALID_MODES.join(', ')}, got: "${value}"`
     );
   }
-  return normalized as TestRunMode;
+  return decodeTestRunMode(normalized);
 }
 
 export function asTestRunModeOrNull(
@@ -34,5 +45,5 @@ export function asTestRunModeOrNull(
     return null;
   }
   const normalized = value.trim().toLowerCase();
-  return VALID_MODES.includes(normalized) ? (normalized as TestRunMode) : null;
+  return VALID_MODES.includes(normalized) ? decodeTestRunMode(normalized) : null;
 }

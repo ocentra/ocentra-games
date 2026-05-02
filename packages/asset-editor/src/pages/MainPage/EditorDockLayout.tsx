@@ -408,6 +408,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   } = useEditorState();
   const [savedLayout] = useState(() => loadSavedLayout());
   const dockRef = useRef<DockLayout | null>(null);
+  const [isPanelDragOutActive, setIsPanelDragOutActive] = useState(false);
 
   const getCurrentSnapshot = useCallback((): LockedAssetSnapshot | null => {
     if (!assetPath || !assetData) {
@@ -768,6 +769,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     const onDragState = (dragging: boolean | null) => {
       const dockId = dockRef.current ?? undefined
       if (dragging) {
+        setIsPanelDragOutActive(false)
         if (!dockId) return
         const tab = DragState.getData('tab', dockId) as WorkspaceTabData | undefined
         const panel = DragState.getData('panel', dockId) as { activeId?: string; tabs?: WorkspaceTabData[] } | undefined
@@ -775,6 +777,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
         dragOutRef.current.panelTabCount = panel?.tabs?.length ?? 0
         if (at?.panelKind === 'preview' || at?.panelKind === 'inspector') {
           dragOutRef.current.activeTab = at
+          setIsPanelDragOutActive(true)
         }
         const onUp = (e: PointerEvent) => {
           dragOutRef.current.lastX = e.clientX
@@ -785,6 +788,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
           document.removeEventListener('pointerup', onUp, true)
         }
       } else {
+        setIsPanelDragOutActive(false)
         ;(dragOutRef as { _cleanup?: () => void })._cleanup?.()
         ;(dragOutRef as { _cleanup?: () => void })._cleanup = undefined
         const { lastX, lastY, activeTab, panelTabCount = 0 } = dragOutRef.current
@@ -877,7 +881,11 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
       style={{ position: 'absolute', inset: 0 }}
     />
     {isTauri() && (
-      <div ref={fallbackDropRef} className="dock-fallback-new-window" aria-hidden />
+      <div
+        ref={fallbackDropRef}
+        className={isPanelDragOutActive ? 'dock-fallback-new-window dock-fallback-new-window--active' : 'dock-fallback-new-window'}
+        aria-hidden
+      />
     )}
     </div>
   );

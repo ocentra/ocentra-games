@@ -8,7 +8,8 @@ import {
   cloneCardGameLayoutDocument,
   normalizeCardGameLayoutDocument,
 } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
-import type { Card, GameState, Player } from '@ocentra/game-domain/types/game';
+import { asRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
+import type { Card, GameState, Player, RuntimePiece } from '@ocentra/game-domain/types/game';
 import type { CardGameSeatPresentation, CardGameZonePresentation } from '../CardGamePreviewSurface';
 import type { HudArtworkControls } from '../scene/HudArtwork.types';
 
@@ -162,7 +163,11 @@ function toCardStripCardToken(value: unknown): CardGameCardStripCardToken | null
   };
 }
 
-export function formatLocalPilotCardShortLabel(card: Card): string {
+export function formatLocalPilotCardShortLabel(piece: Card | RuntimePiece): string {
+  const card = asRuntimeCard(piece);
+  if (!card) {
+    return piece.logicalId || piece.id;
+  }
   const valueMap: Record<number, string> = {
     14: 'A',
     13: 'K',
@@ -201,7 +206,11 @@ function formatLocalPilotCardTokenShortLabel(card: CardGameCardStripCardToken): 
   return [value, suit].filter(Boolean).join(' ');
 }
 
-export function formatLocalPilotCardLabel(card: Card): string {
+export function formatLocalPilotCardLabel(piece: Card | RuntimePiece): string {
+  const card = asRuntimeCard(piece);
+  if (!card) {
+    return piece.logicalId || piece.id;
+  }
   const valueMap: Record<number, string> = {
     14: 'A',
     13: 'K',
@@ -448,7 +457,7 @@ export function buildLocalPilotZonePresentation({
         const items = Array.isArray(rawValue)
           ? rawValue.map((entry, index) => {
               if (entry && typeof entry === 'object' && 'card' in entry) {
-                const record = entry as { card?: Card; playerId?: string };
+                const record = entry as { card?: Card | RuntimePiece; playerId?: string };
                 const card = record.card ? toCardStripCardToken(record.card) : null;
                 const detail = record.playerId ? playerNameById[record.playerId] ?? record.playerId : undefined;
                 return {

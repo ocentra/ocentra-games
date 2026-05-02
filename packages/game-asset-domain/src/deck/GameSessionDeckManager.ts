@@ -1,3 +1,4 @@
+import { createRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
 import { type Card, Suit } from '@ocentra/game-domain/types/game';
 import { Deck } from '../card/deck/Deck';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
@@ -67,11 +68,11 @@ export class GameSessionDeckManager {
       const deck: Card[] = cardAssets.map(cardAsset => {
         const identity = cardAsset.cardIdentity;
         const isFrench = identity.family === 'French' && 'suit' in identity && 'value' in identity;
-        return {
+        return createRuntimeCard({
           suit: isFrench ? identity.suit : ('' as Suit),
           value: isFrench ? identity.value : 2,
           id: cardAsset.getCardId(),
-        };
+        });
       });
 
       const physicalDeck = materializePhysicalCards(deck);
@@ -94,11 +95,11 @@ export class GameSessionDeckManager {
 
     for (const suit of suits) {
       for (const value of values) {
-        deck.push({
+        deck.push(createRuntimeCard({
           suit,
           value,
           id: `${value}_of_${suit}`,
-        });
+        }));
       }
     }
 

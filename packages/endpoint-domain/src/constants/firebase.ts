@@ -1,8 +1,12 @@
-export type FirebaseCallableName = string & { readonly __brand: 'FirebaseCallableName' };
+import { Schema } from '@ocentra/schema-domain/effect';
+
+export const FirebaseCallableNameSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('FirebaseCallableName'));
+export type FirebaseCallableName = typeof FirebaseCallableNameSchema.Type;
+export const decodeFirebaseCallableName = Schema.decodeUnknownSync(FirebaseCallableNameSchema);
 
 export const FirebaseCallable = {
-  CheckAdminStatus: 'checkAdminStatus' as FirebaseCallableName,
-  SetAdminStatus: 'setAdminStatus' as FirebaseCallableName,
+  CheckAdminStatus: decodeFirebaseCallableName('checkAdminStatus'),
+  SetAdminStatus: decodeFirebaseCallableName('setAdminStatus'),
 } as const;
 
 export type FirebaseCallable = typeof FirebaseCallable[keyof typeof FirebaseCallable];

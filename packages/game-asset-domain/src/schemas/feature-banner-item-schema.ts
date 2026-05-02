@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
-export const FeatureBannerItemSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  imageHash: z.string(),
+export const FeatureBannerItemSchema = schema.object({
+  title: schema.string(),
+  description: schema.string(),
+  imageHash: schema.string(),
 });
 
-export type FeatureBannerItem = z.infer<typeof FeatureBannerItemSchema>;
+export type FeatureBannerItem = schema.infer<typeof FeatureBannerItemSchema>;

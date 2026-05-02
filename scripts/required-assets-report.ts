@@ -1,6 +1,6 @@
 /**
  * Enumerates required CardRanking, Deck, and Card .assets from game-domain catalog,
- * validates existing .asset files with Zod, and reports gaps. No fake green:
+ * validates existing .asset files with Effect Schema, and reports gaps. No fake green:
  * missing or invalid assets cause exit 1 so gaps are visible and fixable.
  *
  * Usage: npx tsx scripts/required-assets-report.ts [glob] [--check-images]
@@ -149,7 +149,7 @@ function main(): void {
   const pattern = args.filter((a) => !a.startsWith('--'))[0] ?? 'packages/asset-editor/Resources/**/*.asset';
 
   (async () => {
-    console.log('\n\x1b[36m\x1b[1mRequired assets report (catalog vs on-disk, strict Zod)\x1b[0m\n');
+    console.log('\n\x1b[36m\x1b[1mRequired assets report (catalog vs on-disk, strict Effect Schema)\x1b[0m\n');
     const required = requiredFromCatalog();
     console.log(`\x1b[90mRequired from catalog:\x1b[0m`);
     console.log(`  CardRankings (unique suitSet+rankSet): ${required.rankingKeys.size}`);
@@ -169,7 +169,7 @@ function main(): void {
     const cardValid = valid.filter((a) => a.assetType === 'Card');
 
     console.log(`\x1b[90mOn-disk (pattern: ${pattern}):\x1b[0m`);
-    console.log(`  Valid (Zod): ${valid.length} | Invalid (Zod): ${invalid.length}`);
+    console.log(`  Valid (Effect Schema): ${valid.length} | Invalid (Effect Schema): ${invalid.length}`);
     console.log('');
 
     let exitCode = 0;
@@ -244,7 +244,7 @@ function main(): void {
     }
 
     console.error('\x1b[33m\x1b[1mDecks\x1b[0m');
-    console.error(`  Required: ${required.deckTypes.size} deck types. You have: ${deckValid.length} Deck .asset(s) that passed Zod.`);
+    console.error(`  Required: ${required.deckTypes.size} deck types. You have: ${deckValid.length} Deck .asset(s) that passed Effect Schema.`);
     console.error('  (Deck .asset does not yet store deckType; add deckType to Deck schema to verify per-type coverage.)\n');
 
     for (const [key, cardIds] of required.cardsByRankingKey) {
@@ -276,7 +276,7 @@ function main(): void {
     if (exitCode === 0) {
       console.log('\x1b[32mNo gaps reported (invalid assets and missing required sets are zero).\x1b[0m\n');
     } else {
-      console.error('\x1b[31mReport complete: there are invalid or missing assets. Fix Zod first, then add missing CardRanking/Deck/Card .assets.\x1b[0m\n');
+      console.error('\x1b[31mReport complete: there are invalid or missing assets. Fix schema validation first, then add missing CardRanking/Deck/Card .assets.\x1b[0m\n');
     }
     process.exit(exitCode);
   })().catch((err) => {

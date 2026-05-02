@@ -26,6 +26,32 @@ const rootDir = path.resolve(__dirname, '../..');
 const assetEditorResourcesDir = path.resolve(__dirname, 'Resources');
 loadWorkspaceEnv(__dirname, rootDir);
 
+const workspaceSourcePackages = [
+  { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, '../app-assets') },
+  { name: '@ocentra/app-core', rootDir: path.resolve(__dirname, '../app-core') },
+  { name: '@ocentra/asset-domain', rootDir: path.resolve(__dirname, '../asset-domain') },
+  { name: '@ocentra/asset-editor-types', rootDir: path.resolve(__dirname, '../asset-editor-types') },
+  { name: '@ocentra/boundary-domain', rootDir: path.resolve(__dirname, '../boundary-domain') },
+  { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, '../card-game-ui') },
+  { name: '@ocentra/card-games', rootDir: path.resolve(__dirname, '../card-games') },
+  { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, '../core-ui') },
+  { name: '@ocentra/endpoint-domain', rootDir: path.resolve(__dirname, '../endpoint-domain') },
+  { name: '@ocentra/eventing-domain', rootDir: path.resolve(__dirname, '../eventing-domain') },
+  { name: '@ocentra/game-asset-domain', rootDir: path.resolve(__dirname, '../game-asset-domain') },
+  { name: '@ocentra/game-domain', rootDir: path.resolve(__dirname, '../game-domain') },
+  { name: '@ocentra/game-layout-domain', rootDir: path.resolve(__dirname, '../game-layout-domain') },
+  { name: '@ocentra/game-ui-types', rootDir: path.resolve(__dirname, '../game-ui-types') },
+  { name: '@ocentra/logging-domain', rootDir: path.resolve(__dirname, '../logging-domain') },
+  { name: '@ocentra/schema-domain', rootDir: path.resolve(__dirname, '../schema-domain') },
+];
+
+const workspaceTsconfigProjects = [
+  './tsconfig.json',
+  ...workspaceSourcePackages.map(({ rootDir: packageRoot }) =>
+    path.relative(__dirname, path.join(packageRoot, 'tsconfig.json')).replace(/\\/g, '/')
+  ),
+];
+
 type BrowserAssetIndexEntry =
   | {
       resourceEntryType: 'AssetResourceEntry';
@@ -201,12 +227,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     workspaceSourceResolver({
       enabled: command === 'serve',
-      packages: [
-        { name: '@ocentra/core-ui', rootDir: path.resolve(__dirname, '../core-ui') },
-        { name: '@ocentra/card-game-ui', rootDir: path.resolve(__dirname, '../card-game-ui') },
-        { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, '../app-assets') },
-        { name: '@ocentra/game-layout-domain', rootDir: path.resolve(__dirname, '../game-layout-domain') },
-      ],
+      packages: workspaceSourcePackages,
     }),
     react({
       babel: {
@@ -223,7 +244,7 @@ export default defineConfig(({ command }) => ({
       ],
     }),
     tsconfigPaths({
-      projects: ['./tsconfig.json', '../logging-domain/tsconfig.json', '../endpoint-domain/tsconfig.json']
+      projects: workspaceTsconfigProjects,
     }),
     {
       name: 'asset-editor-logs',
@@ -341,11 +362,7 @@ export default defineConfig(({ command }) => ({
   ],
   optimizeDeps: {
     exclude: [
-      '@ocentra/card-game-ui',
-      '@ocentra/app-assets',
-      '@ocentra/game-layout-domain',
-      '@ocentra/game-ui-types',
-      '@ocentra/core-ui',
+      ...workspaceSourcePackages.map(({ name }) => name),
     ],
   },
   server: {

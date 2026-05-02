@@ -53,8 +53,8 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Manages real-time spectator feeds and chat filtering.
 - **Test | Validation** :
     - **A unit | integration | e2e** : Integration (`match-coordinator-do.test.ts`), WebSocket E2E (`match-ws-*`).
-    - **B zod | schemathesis | k6** : Zod (Move validation), Schemathesis (API surface), k6 (WS load placeholders).
-    - **C Schemathesis Flow** : Fuzzes `/api/v1/matches/{matchId}` (DELETE), `{matchId}/transparency`, and replay verify endpoints. Currently identifies schema-violating acceptance on transparency/verify responses (needs Zod tightening).
+    - **B effect-schema | schemathesis | k6** : Effect Schema (Move validation), Schemathesis (API surface), k6 (WS load placeholders).
+    - **C Schemathesis Flow** : Fuzzes `/api/v1/matches/{matchId}` (DELETE), `{matchId}/transparency`, and replay verify endpoints. Currently identifies schema-violating acceptance on transparency/verify responses (needs Effect Schema tightening).
 - **Violation Found** : **Orchestration Leak.** The handler `handleMatchRequest` coordinates its own rate limiting, signature verification, and "Active vs Finalized" logic. The DO directly calls `CreditsDO` for batch awards.
 - **Resolution** : Move `awardPlayersViaBatch` to `MatchFinalizationFlow`. Slim the handler to just target the DO for active matches.
 
@@ -65,14 +65,14 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Transaction journaling and R2 archiving.
 - **Test | Validation** :
     - **A unit | integration | contract** : Integration (`credits.test.ts`, `credits-batch-award.test.ts`), Contract (`credits.contract.test.ts`).
-    - **B zod | schemathesis** : Zod (Branded Transaction types), Schemathesis (API coverage).
+    - **B effect-schema | schemathesis** : Effect Schema (Branded Transaction types), Schemathesis (API coverage).
     - **C Schemathesis Flow** : Fuzzes `{userId}/balance` and `{userId}/earn`. Log identifies 401/403 Auth requirements and schema constraints mismatches (validation is stricter than documented).
 - **Violation Found** : **Logic Bloat.** `handleCreditsRequest` performs complex promo redemption and purchase/consume orchestration. It manually handles idempotency fallbacks. The handler directly interacts with `env.MATCHES_BUCKET`.
 - **Resolution** : Move purchase/consume sequencing to `CreditTransactionFlow`. The DO should only expose `adjustBalance(opId, amount)`.
 
 - **Test | Validation** :
     - **A unit | integration | contract** : Unit (`payment-do.test.ts`), Integration (`payment.test.ts`, `stripe-webhooks.test.ts`).
-    - **B zod | schemathesis** : Zod (Payment schemas), Schemathesis coverage.
+    - **B effect-schema | schemathesis** : Effect Schema (Payment schemas), Schemathesis coverage.
     - **C Schemathesis Flow** : Fuzzes payment intent creation and state transitions. Currently focuses on webhook signature verification and checkout session mapping.
 - **Violation Found** : **Handler Orchestration.** The handler directly creates Stripe sessions and coordinates transitions: `InitPayment` -> `Create Checkout` -> `Transition State`.
 - **Resolution** : Move Stripe interaction and DO state stepping into `PaymentCheckoutFlow`.
@@ -84,7 +84,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Authoritative queue management and skill-based scoring.
 - **Test | Validation** :
     - **A integration | stress** : Integration (`presence.test.ts`), Stress (k6 room aggregation).
-    - **B zod | schemathesis** : Zod (Room/Ticket schemas), Schemathesis coverage.
+    - **B effect-schema | schemathesis** : Effect Schema (Room/Ticket schemas), Schemathesis coverage.
     - **C Schemathesis Flow** : Fuzzes ticket creation and room discovery. Hits `/api/v1/badges/{userId}/claim` as part of feature handler stress. Currently identifies 404s on ticket polling (requires pre-seeded tickets).
 - **Violation Found** : **Infrastructure Leak.** `handleLobbyRequest` manually loops over 64 shards to aggregate rooms. Matchmaking lacks a flow to handle "Ticket Created -> Match Found -> Move to Coordinator".
 - **Resolution** : Implement `MatchDiscoveryFlow` to aggregate shards and `MatchmakingWorkflow` to handle transitions.
@@ -95,7 +95,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - XP/Level management and Reward claim logic.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`progression-rewards.test.ts`).
-    - **B zod | schemathesis** : Zod (XP curve validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (XP curve validation), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes XP granting and streak freezing. Monitors for overflow in level-up logic during high-velocity point grants.
 - **Violation Found** : **Distributed Query Violation.** `handlePersonalizationRequest` calls both DOs sequentially to build a UI snapshot. `RewardDO` calls `CreditsDO` directly.
 - **Resolution** : Create `UserLevelUpFlow` and `RewardClaimFlow`. Use a standard `ProjectionService` for UI snapshots.
@@ -106,7 +106,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Trust score tracking and ban FSM.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`penalty-enhanced.test.ts`, `anticheat-enhanced.test.ts`).
-    - **B zod | schemathesis** : Zod (Ban logic), Schemathesis coverage.
+    - **B effect-schema | schemathesis** : Effect Schema (Ban logic), Schemathesis coverage.
     - **C Schemathesis Flow** : Fuzzes ban reason codes and duration math. Validates path parsing for sharded penalty records.
 - **Violation Found** : **Mixed Concerns.** The handler manages complex path parsing and sharding for penalties.
 - **Resolution** : Slim handler to a standard `SecurityFlow` entry point.
@@ -132,7 +132,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Shards status synchronization across 256 instances.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`presence.test.ts`, `social-hub.test.ts`).
-    - **B zod | k6** : Zod (Status constants), k6 (Heartbeat stress).
+    - **B effect-schema | k6** : Effect Schema (Status constants), k6 (Heartbeat stress).
     - **C Schemathesis Flow** : Fuzzes status updates and blocking transitions. Monitors for state desync during high-concurrency availability toggles.
 - **Violation Found** : Social Logic Bloat.
     - **What** : Manages heartbeats, blocking, and typing indicators.
@@ -146,7 +146,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Manages skill-tree progression and achievement progress tracking.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`progression-rewards.test.ts`).
-    - **B zod | schemathesis** : Zod (XP curve validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (XP curve validation), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes XP history and skill unlocking. Validates level increment safety during concurrent grants.
 - **Violation Found** : Math Leakage.
     - **What** : DO calculates levels and XP curves internally.
@@ -161,7 +161,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - **Leaky logic**: Directly calls CreditsDO and ProgressionDO upon claim.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`progression-rewards.test.ts`).
-    - **B zod | schemathesis** : Zod (Reward claim IDs), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Reward claim IDs), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes log-in streaks and streak-freeze logic. Identifies temporal race conditions in claim eligibility.
 - **Violation Found** : Critical Orchestration Leak.
     - **What** : Directly calls `CreditsDO` and `ProgressionDO`.
@@ -175,7 +175,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Logic for "Open Pack" and equipping/unequipping cosmetics.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`profile-settings-inventory.test.ts`).
-    - **B zod | schemathesis** : Zod (Item uniqueness schemas), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Item uniqueness schemas), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes "Open Pack" and cosmetic equipping. Currently 404s on item lookup; requires pre-seeding of gacha catalog.
 - **Violation Found** : Gacha Logic Bloat.
     - **What** : "Open Pack" logic and item serialization live here.
@@ -189,7 +189,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Manages profile privacy and social relationship metadata.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`players.test.ts`).
-    - **B zod | schemathesis** : Zod (DisplayName sanitization), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (DisplayName sanitization), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes profile metadata and relationship settings. Validates XSS sanitization on display names.
 - **Violation Found** : None (State Purist).
     - **Status** : Healthy. Focus remains on user-metadata storage.
@@ -201,7 +201,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Implements Merkle Chaining to provide tamper-proof log integrity.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`audit.test.ts`, `audit-trail-service.test.ts`).
-    - **B zod | integrity-check** : Zod (Audit event schema), Custom Merkle verifier.
+    - **B effect-schema | integrity-check** : Effect Schema (Audit event schema), Custom Merkle verifier.
     - **C Schemathesis Flow** : Fuzzes audit event ingestion. Monitors for Merkle chain breakage under heavy event load.
 - **Violation Found** : None (Infrastructure Purist).
     - **Status** : Healthy. Correctly focused on append-only integrity.
@@ -212,7 +212,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Manages bans, mutes, and suspension duration/expiration.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`penalty-enhanced.test.ts`).
-    - **B zod | schemathesis** : Zod (Penalty reason validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Penalty reason validation), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes suspension sequences and duration calculations. Hits `/api/v1/disputes/{disputeId}` to validate dispute correlation.
 - **Violation Found** : Policy Logic Leak.
     - **What** : Expiration and suspension duration logic live in the DO.
@@ -226,7 +226,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Flags players for manual review on move-velocity anomalies.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`anticheat-enhanced.test.ts`).
-    - **B zod | k6** : Zod (Telemetry schema), k6 (Ingest stress).
+    - **B effect-schema | k6** : Effect Schema (Telemetry schema), k6 (Ingest stress).
     - **C Schemathesis Flow** : Fuzzes telemetry timing payloads. Identifies thresholds for false-positive anomaly detection.
 - **Violation Found** : Heuristic Logic Leak.
     - **What** : Calculates trust scores within the DO.
@@ -240,7 +240,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Provides friend-only slices for social competition.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`leaderboard.test.ts`).
-    - **B zod | schemathesis** : Zod (Rank update schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Rank update schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes `{gameType}/user/{userId}`. Currently 404s; requires pre-seeding of leaderboard entries to reach core logic.
 - **Violation Found** : Projection Anti-Pattern.
     - **What** : DO sorts global rankings synchronously.
@@ -253,7 +253,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Social action fan-out (level ups, high scores, friend activity).
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`activity-feed.test.ts`).
-    - **B zod | schemathesis** : Zod (Activity type validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Activity type validation), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes feed event types and visibility rules. Validates fan-out constraints during massive friend-graph updates.
 - **Violation Found** : Fan-Out Orchestration Leak.
     - **What** : Triggers achievments and item drops during feed updates.
@@ -266,7 +266,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - History and delivery tracking for DM and Group chats.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`social-hub.test.ts`).
-    - **B zod | k6** : Zod (Message schema), k6 (Chat load).
+    - **B effect-schema | k6** : Effect Schema (Message schema), k6 (Chat load).
     - **C Schemathesis Flow** : Fuzzes chat message payloads and unread counters. Validates message sequencing across sharded message stores.
 - **Violation Found** : Counter Bloat.
     - **What** : Synchronous unread counting for massive group chats.
@@ -279,7 +279,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Tracking of push notification delivery status and user read-state.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`social-hub.test.ts`).
-    - **B zod | schemathesis** : Zod (Notification schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Notification schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes notification delivery tokens and retry settings. Validates read-state tracking accuracy.
 - **Violation Found** : Delivery Logic Leak.
     - **What** : Manages push notification retry logic.
@@ -292,7 +292,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Manages temporary group state (invite, join, ready-up status).
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`social-hub.test.ts`).
-    - **B zod | schemathesis** : Zod (Party action validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Party action validation), Schemathesis.
 - **Violation Found** : None (State Purist).
     - **Status** : Healthy. Correct focus on group membership and transient state.
 
@@ -302,7 +302,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Handles P2P item listings, auctions, and purchase settlement logic.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`marketplace-tournament.test.ts`).
-    - **B zod | schemathesis** : Zod (Listing schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Listing schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes `/api/v1/marketplace/buy`. Currently 404s due to missing valid listing IDs in test-runner config. High sensitivity to component mutation (schema mutation detection).
 - **Violation Found** : High-Risk Orchestration.
     - **What** : Settlement logic (Escrow to Credits) is handled inside the Marketplace DO.
@@ -315,7 +315,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Bracket management, scoring, and round-robin scheduling.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`marketplace-tournament.test.ts`).
-    - **B zod | schemathesis** : Zod (Bracket schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Bracket schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes `{tournamentId}`. Currently 404s (missing IDs). Validates bracket mutation schema constraints.
 - **Violation Found** : Game Design Leak.
     - **What** : Tournament bracket logic and round timing live here.
@@ -328,7 +328,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Encrypted per-user storage for AI provider API keys.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`ai-keys.test.ts`).
-    - **B zod | schemathesis** : Zod (Key metadata validation), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Key metadata validation), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes AI provider key storage and rotation endpoints. Validates encryption envelope integrity during update operations.
 - **Violation Found** : None (State Purist).
     - **Status** : Healthy. Focus on encrypted storage is correct.
@@ -339,7 +339,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Brokering ICE candidates and SDP offers for P2P WebRTC data channels.
 - **Test | Validation** :
     - **A integration | e2e** : Integration (`signaling.test.ts`).
-    - **B zod | k6** : Zod (Signaling envelope), k6 (Latency checks).
+    - **B effect-schema | k6** : Effect Schema (Signaling envelope), k6 (Latency checks).
     - **C Schemathesis Flow** : Fuzzes WebRTC signaling envelopes. Validates SDP offer/answer pair consistency under data-channel stress.
 - **Violation Found** : None (Infrastructure Purist).
     - **Status** : Healthy. Essential for P2P topology.
@@ -350,7 +350,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Detects spending velocity anomalies and cross-player credit theft patterns.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`fraud-detection-enhanced.test.ts`).
-    - **B zod | schemathesis** : Zod (Analysis scoring schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Analysis scoring schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes high-velocity transaction payloads. Identifies spending anomalies that trigger automated escrow holds.
 - **Violation Found** : Heavy Computation at the Edge.
     - **What** : Spending velocity checks on large histories.
@@ -363,7 +363,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Global feature flags and per-user preference overrides.
 - **Test | Validation** :
     - **A integration | contract** : Integration (`profile-settings-inventory.test.ts`).
-    - **B zod | schemathesis** : Zod (Settings schema), Schemathesis.
+    - **B effect-schema | schemathesis** : Effect Schema (Settings schema), Schemathesis.
     - **C Schemathesis Flow** : Fuzzes feature-flag overrides and localization settings. Validates priority-override logic for nested flags.
 - **Violation Found** : None (State Purist).
     - **Status** : Healthy.
@@ -394,7 +394,7 @@ This section provides a formal inventory of all 27 Durable Objects, their primar
     - Ensures consistency across sharded DOs during state hand-offs.
 - **Test | Validation** :
     - **A integration | consistency** : Integration (`sync.test.ts`, `desync.test.ts`).
-    - **B zod | contract** : Zod (Sync envelope schema), Schemathesis.
+    - **B effect-schema | contract** : Effect Schema (Sync envelope schema), Schemathesis.
 - **Violation Found** : None (Coordination Instrument).
     - **Status** : Healthy for infrastructure consistency.
 
@@ -436,7 +436,7 @@ Flows MUST sequence **Authoritative work** (Critical state changes) before **Pro
 The use of raw string literals for infrastructure or cross-domain boundaries is strictly forbidden.
 - **Constants first**: Path segments, bucket names, and collection names must be imported from domain packages (`boundary-domain`, `endpoint-domain`).
 - **Branded Types**: Any variable representing an ID (e.g., `UserId`, `MatchId`, `ListingId`) must use **Branded Types** from `@ocentra/endpoint-domain/types/entities`. No "naked" strings.
-- **Centralized Zod**: Every handler must use the centralized Request/Response schemas from `@ocentra/endpoint-domain/schemas/worker-contracts`. Do not define ad-hoc validation logic inside handlers.
+- **Centralized Effect Schema**: Every handler must use the centralized Request/Response schemas from `@ocentra/endpoint-domain/schemas/worker-contracts`. Do not define ad-hoc validation logic inside handlers.
 
 
 ---
@@ -452,7 +452,7 @@ We adopt this strict boundary for three reasons:
 ### 3. Target Layering Policy
 | Layer | Responsibility | Directory |
 |-------|----------------|-----------|
-| **Handlers** | **Thin Adapters**: Parse HTTP, validate Zod, call one Flow. | `src/handlers/` |
+| **Handlers** | **Thin Adapters**: Parse HTTP, validate Effect Schema, call one Flow. | `src/handlers/` |
 | **Flows** | **The Conductor**: Logic sequencing, cross-DO calls, failure management. | `src/flows/` |
 | **Durable Objects** | **The Instrument**: State isolation, local invariants, journaling. | `src/durable-objects/` |
 | **Projections** | **Side Effects**: Post-authority Feed, Leaderboards, Notifications. | `src/logic/projections/` |
@@ -483,7 +483,7 @@ We adopt this strict boundary for three reasons:
 4. **Standardize Type Hardening**:
    - [ ] Audit all new handlers for raw string literals; replace with domain constants.
    - [ ] Convert all ID handling to use Branded Types (`UserId`, `MatchId`).
-   - [ ] Refactor all `validateZodBody` calls to use centralized schemas from `@ocentra/endpoint-domain`.
+   - [ ] Refactor all `validateSchemaBody` calls to use centralized schemas from `@ocentra/endpoint-domain`.
 
 
 

@@ -1,8 +1,9 @@
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
 import type { ValidationResult } from '@/engine/logic/StateValidator';
-import type { GameState, PlayerAction, Suit, Card } from '@/types/game';
+import type { GameState, PlayerAction, Suit, RuntimePiece } from '@/types/game';
 import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
 import type { MechanicsFamilyResolver } from '@/engine/mechanics/family/MechanicsFamilyResolver';
+import { asRuntimeCard } from '@/deck/runtimeDeck';
 
 const BRISCOLA_POINTS: Record<number, number> = {
   14: 11,
@@ -40,11 +41,16 @@ function getCardId(action: PlayerAction): string | null {
 function determineTrickWinner(
   leadSuit: Suit,
   trumpSuit: Suit | null,
-  trickCards: Array<{ playerId: string; card: Card }>,
+  trickCards: Array<{ playerId: string; card: RuntimePiece }>,
 ): string {
   const winningEntry = trickCards.reduce((best, current) => {
-    const bestTrump = trumpSuit !== null && best.card.suit === trumpSuit;
-    const currentTrump = trumpSuit !== null && current.card.suit === trumpSuit;
+    const bestCard = asRuntimeCard(best.card);
+    const currentCard = asRuntimeCard(current.card);
+    if (!bestCard || !currentCard) {
+      return best;
+    }
+    const bestTrump = trumpSuit !== null && bestCard.suit === trumpSuit;
+    const currentTrump = trumpSuit !== null && currentCard.suit === trumpSuit;
 
     if (currentTrump && !bestTrump) {
       return current;
@@ -53,11 +59,11 @@ function determineTrickWinner(
       return best;
     }
 
-    if (current.card.suit === best.card.suit) {
-      return BRISCOLA_ORDER[current.card.value] > BRISCOLA_ORDER[best.card.value] ? current : best;
+    if (currentCard.suit === bestCard.suit) {
+      return BRISCOLA_ORDER[currentCard.value] > BRISCOLA_ORDER[bestCard.value] ? current : best;
     }
 
-    if (!bestTrump && current.card.suit === leadSuit && best.card.suit !== leadSuit) {
+    if (!bestTrump && currentCard.suit === leadSuit && bestCard.suit !== leadSuit) {
       return current;
     }
 
@@ -83,12 +89,12 @@ export class BriscolaFamilyResolver implements MechanicsFamilyResolver {
   }
 
   onSetupRound(gameState: GameState, _spec: MechanicsSpec, deckProvider: IDeckProvider): void {
-    const { card, remainingDeck } = deckProvider.drawCard(gameState.deck);
-    gameState.floorCard = card;
+    const { piece, remainingDeck } = deckProvider.drawPiece(gameState.deck);
+    gameState.floorCard = piece;
     gameState.deck = remainingDeck;
     gameState.mechanicsContext = {
       ...gameState.mechanicsContext!,
-      trumpCard: card,
+      trumpCard: piece,
       tableCards: [],
       capturedCardsByPlayerId: Object.fromEntries(gameState.players.map((player) => [player.id, []])),
       foldedPlayerIds: [],
@@ -154,8 +160,8 @@ export class BriscolaFamilyResolver implements MechanicsFamilyResolver {
       return true;
     }
 
-    const leadSuit = gameState.mechanicsContext!.tableCards[0]?.card.suit;
-    const trumpSuit = gameState.mechanicsContext!.trumpCard?.suit ?? null;
+    const leadSuit = asRuntimeCard(gameState.mechanicsContext!.tableCards[0]?.card)?.suit;
+    const trumpSuit = asRuntimeCard(gameState.mechanicsContext!.trumpCard)?.suit ?? null;
     if (!leadSuit) {
       return true;
     }
@@ -176,12 +182,12 @@ export class BriscolaFamilyResolver implements MechanicsFamilyResolver {
       }
       const drawIndex = (gameState.currentPlayer + drawOffset) % gameState.players.length;
       if (gameState.deck.length > 0) {
-        const { card, remainingDeck } = deckProvider.drawCard(gameState.deck);
+        const { piece, remainingDeck } = deckProvider.drawPiece(gameState.deck);
         gameState.deck = remainingDeck;
-        if (card) {
+        if (piece) {
           gameState.players[drawIndex] = {
             ...gameState.players[drawIndex],
-            hand: [...gameState.players[drawIndex].hand, card],
+            hand: [...gameState.players[drawIndex].hand, piece],
           };
         }
       } else if (gameState.floorCard) {
@@ -205,7 +211,7 @@ export class BriscolaFamilyResolver implements MechanicsFamilyResolver {
   onScoreRound(gameState: GameState): boolean {
     const captured = gameState.mechanicsContext?.capturedCardsByPlayerId ?? {};
     gameState.players = gameState.players.map((player) => {
-      const points = (captured[player.id] ?? []).reduce((total, card) => total + (BRISCOLA_POINTS[card.value] ?? 0), 0);
+      const points = (captured[player.id] ?? []).reduce((total, piece) => total + (BRISCOLA_POINTS[asRuntimeCard(piece)?.value ?? 0] ?? 0), 0);
       return {
         ...player,
         score: player.score + points,

@@ -690,7 +690,7 @@ flowchart TB
         Keys["constants/cloudflare-route-keys.ts<br/>Handler keys"]
         Http["constants/http.ts<br/>Methods, headers, status"]
         Types["types/cloudflare/*.ts<br/>Request/response types"]
-        Schemas["schemas/*.ts<br/>Zod validation schemas"]
+        Schemas["schemas/*.ts<br/>Effect Schema validation schemas"]
     end
     
     subgraph Cloudflare["infra/cloudflare"]
@@ -717,7 +717,7 @@ flowchart TB
 - **Single source of truth** for API paths and types
 - **Type safety** across frontend and backend
 - **No hardcoded strings** - all paths from `ApiEndpoint`
-- **Automatic validation** - Zod schemas shared
+- **Automatic validation** - Effect Schema schemas shared
 
 **Full API architecture:** See [`packages/endpoint-domain/docs/ARCHITECTURE.md`](../../packages/endpoint-domain/docs/ARCHITECTURE.md)
 

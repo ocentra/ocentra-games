@@ -1,5 +1,5 @@
 import type { Env } from '@/constants/env';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
@@ -47,7 +47,7 @@ const logWarn = (message: string, stackTrace: ReturnType<typeof getStackTrace>, 
 
 async function handleAdminModerationReportRequest(request: Request, env: Env, kv: KVNamespace | undefined): Promise<Response> {
   if (!kv) return stubJson(env, { error: 'Moderation not configured' }, HttpStatus.ServiceUnavailable);
-  const { data: modReportData, errorResponse: modReportErr } = await validateZodBody(request.clone(), env, AdminModerationReportRequestSchema);
+  const { data: modReportData, errorResponse: modReportErr } = await validateSchemaBody(request.clone(), env, AdminModerationReportRequestSchema);
   if (modReportErr) return modReportErr;
   const body = modReportData! as { reporterId: string; targetId: string; reason: string; category?: string };
   const { reporterId, targetId, reason } = body;
@@ -63,7 +63,7 @@ async function handleAdminUserStatusRequest(request: Request, env: Env, adminChe
   if (!targetUserId || !OPENAPI_USER_ID_PATTERN.test(targetUserId)) {
     return stubJson(env, { error: 'Target user ID is required' }, HttpStatus.BadRequest);
   }
-  const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminUserStatusRequestSchema);
+  const { data, errorResponse: bodyResultError } = await validateSchemaBody(request, env, AdminUserStatusRequestSchema);
   if (bodyResultError) return bodyResultError;
   const body = data!;
   if (typeof body.isAdmin !== 'boolean') {
@@ -236,7 +236,7 @@ async function handleAdminModerationResolveRequest(request: Request, env: Env, k
   const reportId = parts[0] === 'moderation' && parts[2] === 'resolve' ? parts[1] : null;
   const reportKey = reportId ? `${KvKeyPrefix.ReportPending}${reportId}` : '';
   if (!kv || !reportId) return stubJson(env, { error: 'Report ID required' }, HttpStatus.BadRequest);
-  const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminModerationResolveRequestSchema);
+  const { data, errorResponse: bodyResultError } = await validateSchemaBody(request, env, AdminModerationResolveRequestSchema);
   if (bodyResultError) return bodyResultError;
   const body = data!;
   const raw = await kv.get(reportKey);
@@ -298,7 +298,7 @@ export async function handleComplianceRequest(request: Request, env: Env, _path:
   let body: { startDate?: string; endDate?: string; reportType?: 'pci' | 'gdpr' | 'soc2' } = {};
 
   if (request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request.clone(), env, ComplianceReportRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request.clone(), env, ComplianceReportRequestSchema);
     if (errorResponse) return errorResponse;
     body = data! as typeof body;
   } else {
@@ -342,7 +342,7 @@ async function handleAdminCreditsPlanRequest(request: Request, env: Env): Promis
   if (!env.CREDITS_DO) {
     return stubJson(env, { error: 'Credits DO not configured' }, HttpStatus.ServiceUnavailable);
   }
-  const { data: planBody, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminCreditsPlanRequestSchema);
+  const { data: planBody, errorResponse: bodyResultError } = await validateSchemaBody(request, env, AdminCreditsPlanRequestSchema);
   if (bodyResultError) return bodyResultError;
   const { userId, tier } = planBody!;
   if (!userId || !tier) {
@@ -361,7 +361,7 @@ async function handleAdminAICatalogRequest(request: Request, env: Env): Promise<
   if (!env.AI_CATALOG_KV) {
     return stubJson(env, { error: 'AI catalog KV not configured' }, HttpStatus.ServiceUnavailable);
   }
-  const { data: body, errorResponse: bodyResultError } = await validateZodBody(request, env, AdminAICatalogRequestSchema);
+  const { data: body, errorResponse: bodyResultError } = await validateSchemaBody(request, env, AdminAICatalogRequestSchema);
   if (bodyResultError) return bodyResultError;
   const toMerge: AICatalogProviderEntry[] = (body!.providers
     ? body!.providers
@@ -437,7 +437,7 @@ export async function handleAdminRequest(request: Request, env: Env, path: strin
     });
   }
   if (path === ApiEndpoint.Admin.Base && request.method === HttpMethod.Post) {
-    const { errorResponse } = await validateZodBody(request.clone(), env, AdminBaseRequestSchema);
+    const { errorResponse } = await validateSchemaBody(request.clone(), env, AdminBaseRequestSchema);
     if (errorResponse) return errorResponse;
   }
   const adminPathParts = extractPathParts(path, ApiEndpoint.Admin.Base);

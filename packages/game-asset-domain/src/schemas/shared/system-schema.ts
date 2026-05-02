@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import {
   AssetGuidSchema,
@@ -7,18 +7,18 @@ import {
   AssetCategorySchema,
 } from '@/schemas/asset/shared/brand-schemas';
 
-export const AssetSystemSchema = z.object({
+export const AssetSystemSchema = schema.object({
   guid: AssetGuidSchema,
-  assetType: z.string().min(1, { message: 'system.assetType is required' }),
-  schemaVersion: z.number().int().min(1),
-  displayName: z.string().min(1, { message: 'system.displayName is required' }),
+  assetType: schema.string().min(1, { message: 'system.assetType is required' }),
+  schemaVersion: schema.number().int().min(1),
+  displayName: schema.string().min(1, { message: 'system.displayName is required' }),
   category: AssetCategorySchema
-    .or(z.nativeEnum(AssetTypeCategory, { message: 'system.category must be a valid AssetTypeCategory' })),
-  icon: z.string().optional(),
+    .or(schema.nativeEnum(AssetTypeCategory, { message: 'system.category must be a valid AssetTypeCategory' })),
+  icon: schema.string().optional(),
   treePath: AssetTreePathSchema,
-  gameId: z.string().nullable().optional(),
-  gameModeCategory: z.string().optional(),
-  variant: z.string().nullable().optional(),
+  gameId: schema.string().nullable().optional(),
+  gameModeCategory: schema.string().optional(),
+  variant: schema.string().nullable().optional(),
   parentPath: AssetFolderPathSchema.optional(),
 }).strict().superRefine((s, ctx) => {
   if (s.parentPath) {
@@ -26,7 +26,7 @@ export const AssetSystemSchema = z.object({
     const expectedPrefix = `${s.parentPath}/`;
     if (!treePath.startsWith(expectedPrefix)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: schema.IssueCode.custom,
         path: ['treePath'],
         message: `treePath must be under parentPath (${expectedPrefix})`,
       });

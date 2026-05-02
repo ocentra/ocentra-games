@@ -5,7 +5,7 @@
 Turn authored `CardGameMechanics` assets into executable round flow inside `packages/game-domain`, with a real smoke path from:
 
 1. `.asset` file
-2. Zod validation
+2. Effect Schema validation
 3. `MechanicsSpec` translation
 4. `GameEngine` execution
 5. repeatable tests

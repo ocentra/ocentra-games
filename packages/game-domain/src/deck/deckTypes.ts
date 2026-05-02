@@ -31,6 +31,7 @@ export const DECK_TYPE_VALUES = [
   'Tarot 42',
   'Cego 38',
   'Tarocco Bolognese 62',
+  'Tarocco Siciliano 63',
   'Tarocco Siciliano 64',
   '500 deck 63',
   'Double-6 Dominoes',

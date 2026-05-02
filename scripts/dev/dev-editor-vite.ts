@@ -7,6 +7,7 @@ import { runManagedVite, runCheckedCommand } from './vite-dev-manager';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const EDITOR_DIR = path.join(ROOT, 'packages/asset-editor');
+const force = process.argv.includes('--force') || process.env.FORCE === 'true' || process.env.VITE_FORCE === 'true';
 
 function log(message: string): void {
   console.log(`[dev:editor:vite] ${message}`);
@@ -24,6 +25,9 @@ function formatDurationMs(ms: number): string {
 
 async function main(): Promise<void> {
   const startedAt = Date.now();
+  if (force) {
+    log('Starting Vite with --force.');
+  }
   await runManagedVite({
     preferredPort: 5174,
     rangeStart: 5174,
@@ -31,7 +35,7 @@ async function main(): Promise<void> {
     lockFile: path.join(ROOT, '.vite-asset-editor.lock'),
     cwd: EDITOR_DIR,
     spawnCommand: 'npm',
-    spawnArgs: ['run', 'dev:raw'],
+    spawnArgs: ['run', 'dev:raw', ...(force ? ['--', '--force'] : [])],
     spawnEnv:
       process.env.VITE_EDITOR_DEV_AUTH !== undefined
         ? {

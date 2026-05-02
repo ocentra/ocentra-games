@@ -76,13 +76,14 @@ export async function loadAsset(identifier: {
   let resolvedPath = path
   if (hash && !resolvedPath) {
     try {
-      const entry = await getResourceByHashDb(hash)
-      if (entry) {
-        resolvedPath = entry.path
-      }
+      resolvedPath = await resolvePathByHash(hash)
     } catch {
-      // Ignore DB errors and try hash directly
+      resolvedPath = undefined
     }
+  }
+
+  if (hash && !resolvedPath && isTauri()) {
+    throw new Error(`Unable to resolve image hash in local resource index: ${hash}`)
   }
 
   const input = guid
@@ -106,10 +107,30 @@ export async function loadAsset(identifier: {
     return fetch(browserPath)
   }
   const bytes = await invoke<number[]>('load_asset', { input })
-  const contentType = path ? inferMimeType(path) : 'application/json'
+  const responsePathForMime = resolvedPath ?? path ?? ''
+  const contentType = responsePathForMime
+    ? inferMimeType(responsePathForMime)
+    : 'application/json'
   return new Response(new Uint8Array(bytes), {
     headers: { 'Content-Type': contentType },
   })
+}
+
+async function resolvePathByHash(hash: string): Promise<string | undefined> {
+  const entry = await getResourceByHashDb(hash)
+  if (entry?.resourceEntryType === 'ImageResourceEntry') {
+    return entry.path
+  }
+
+  if (!isTauri()) {
+    return undefined
+  }
+
+  await rebuildIndex()
+  const refreshedEntry = await getResourceByHashDb(hash)
+  return refreshedEntry?.resourceEntryType === 'ImageResourceEntry'
+    ? refreshedEntry.path
+    : undefined
 }
 
 export async function writeAsset(
@@ -368,8 +389,52 @@ export interface TauriHomepageFeaturedGame {
   name: string
   enabled: boolean
   releaseStatus?: string
+  tags?: string[]
+  featuredTopBadges?: { label: string; tone?: string }[]
+  featuredBottomBadges?: { label: string; tone?: string }[]
+  tagline?: string
+  tagline2?: string
+  shortDescription?: string
+  description?: string
+  minPlayers?: number
+  maxPlayers?: number
+  gameCategory?: string
+  subcategory?: string | null
+  difficulty?: string
+  duration?: string
+  deck?: string
+  playersDisplay?: string
+  quality?: string
   bannerImage?: string
   gameIcon?: string
+  carouselImages?: string[]
+  carouselPlaybackMode?: string
+  carouselTransitionType?: string
+  carouselTransitionDurationMs?: number
+  bannerLogoImage?: string
+  bannerLogoAlt?: string
+  bannerLogoStartMs?: number
+  bannerLogoDurationMs?: number
+  bannerLogoScaleFrom?: number
+  bannerLogoScaleTo?: number
+  bannerLogoOpacityFrom?: number
+  bannerLogoOpacityTo?: number
+  bannerLogoVisibleFromIndex?: number
+  bannerLogoVisibleToIndex?: number
+  bannerTitleText?: string
+  bannerTitleColor?: string
+  bannerTitleStartMs?: number
+  bannerTitleDurationMs?: number
+  bannerTitleScaleFrom?: number
+  bannerTitleScaleTo?: number
+  bannerTitleOpacityFrom?: number
+  bannerTitleOpacityTo?: number
+  bannerTitleVisibleFromIndex?: number
+  bannerTitleVisibleToIndex?: number
+  bannerOverlayTintColor?: string
+  bannerOverlayTintOpacity?: number
+  bannerVignetteOpacity?: number
+  bannerFadeToBlackOpacity?: number
 }
 
 export interface TauriComingSoonTeaser {

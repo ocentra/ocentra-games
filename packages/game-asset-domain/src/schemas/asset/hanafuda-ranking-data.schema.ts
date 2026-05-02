@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
-export const HanafudaRankingDataSchema = z.object({
-  expectedCardCount: z.number().int().min(1),
-  months: z.array(
-    z.object({
-      month: z.number().int().min(1).max(12),
-      slots: z.array(
-        z.object({
-          slot: z.number().int().min(1).max(8),
-          cardId: z.string().min(1),
+export const HanafudaRankingDataSchema = schema.object({
+  expectedCardCount: schema.number().int().min(1),
+  months: schema.array(
+    schema.object({
+      month: schema.number().int().min(1).max(12),
+      slots: schema.array(
+        schema.object({
+          slot: schema.number().int().min(1).max(8),
+          cardId: schema.string().min(1),
         })
       ).min(1),
     })
@@ -17,7 +17,7 @@ export const HanafudaRankingDataSchema = z.object({
   const expected = d.months.reduce((total, month) => total + month.slots.length, 0);
   if (d.expectedCardCount !== expected) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['expectedCardCount'],
       message: `expectedCardCount must equal the total month-slot identities (${expected})`,
     });
@@ -27,7 +27,7 @@ export const HanafudaRankingDataSchema = z.object({
   for (const month of d.months) {
     if (monthSet.has(month.month)) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: schema.IssueCode.custom,
         path: ['months'],
         message: `duplicate month entry found for month ${month.month}`,
       });
@@ -38,7 +38,7 @@ export const HanafudaRankingDataSchema = z.object({
     for (const slot of month.slots) {
       if (slotSet.has(slot.slot)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: ['months'],
           message: `duplicate slot ${slot.slot} found for month ${month.month}`,
         });

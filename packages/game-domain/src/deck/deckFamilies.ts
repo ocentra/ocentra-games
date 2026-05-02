@@ -62,6 +62,7 @@ export const RANK_SET_VALUES = [
   'Tarot_66',
   'Tarot_42',
   'Tarocco_Bolognese_62',
+  'Tarocco_Sicilian_63',
   'Tarocco_Sicilian_64',
   'FiveHundred_63',
   'Cego_38',

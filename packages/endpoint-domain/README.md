@@ -3,7 +3,7 @@
 ## What this domain is
 
 `@ocentra/endpoint-domain` is the single source of truth for the project’s **external request contracts**:
-it defines canonical endpoint paths, the branded primitives used to represent them safely, the Zod request/response validation schemas, and the typed client/route adapter utilities used by consumers.
+it defines canonical endpoint paths, the branded primitives used to represent them safely, the Effect Schema request/response validation schemas, and the typed client/route adapter utilities used by consumers.
 
 This keeps the Cloudflare Worker, main app, Vite-local dev endpoints, Firebase callers, and third-party service clients (tokens/stripe/solana) from drifting into “each one hardcodes paths differently”.
 
@@ -23,7 +23,7 @@ That drift eventually becomes a security and correctness problem (wrong route, w
 This domain owns anything “endpoint-related”:
 
 - canonical path constants for each scope (public REST, local dev, firebase callables, token/stripe/solana paths)
-- request/response types and Zod schemas
+- request/response types and Effect Schema schemas
 - route manifest/key tables for the Worker router
 - typed thin clients/adapters and URL building helpers
 - validators and shared error/message constants used at endpoint boundaries
@@ -41,7 +41,7 @@ The package is organized by purpose:
   - branded primitives (e.g. `ApiPath`, `DOPath`, `EndpointId`, query/header brands)
   - request/response types per scope (e.g. `types/cloudflare/*`)
 - `src/schemas/*`  
-  - Zod validation schemas per scope (matches/credits/players/logs/etc.)
+  - Effect Schema validation schemas per scope (matches/credits/players/logs/etc.)
 - `src/client/*`  
   - typed thin clients (browser/client and worker internal DO clients)
 - `src/utils/*`  

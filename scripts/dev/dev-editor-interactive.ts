@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from 'child_process';
-import { createWriteStream, mkdirSync, existsSync } from 'fs';
+import { createWriteStream, mkdirSync, existsSync, rmSync } from 'fs';
 import { createInterface } from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -118,6 +118,23 @@ function run(
   });
 }
 
+function isForceRequested(): boolean {
+  return process.argv.slice(2).includes('--force');
+}
+
+function clearViteCacheForForce(): void {
+  for (const cacheDir of [
+    path.join(ROOT, 'node_modules', '.vite'),
+    path.join(ROOT, 'packages', 'asset-editor', 'node_modules', '.vite'),
+  ]) {
+    if (!existsSync(cacheDir)) {
+      continue;
+    }
+    console.log(`[force] Clearing Vite optimize cache: ${cacheDir}`);
+    rmSync(cacheDir, { recursive: true, force: true });
+  }
+}
+
 function parsePresetFromArgv(): { backend?: EditorBackend; output?: OutputChoice } {
   const argv = process.argv.slice(2);
   let backend: EditorBackend | undefined;
@@ -134,6 +151,11 @@ function parsePresetFromArgv(): { backend?: EditorBackend; output?: OutputChoice
 }
 
 async function main(): Promise<void> {
+  const force = isForceRequested();
+  if (force) {
+    clearViteCacheForForce();
+  }
+
   const preset = parsePresetFromArgv();
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
@@ -149,9 +171,13 @@ async function main(): Promise<void> {
 
   const env: Record<string, string> = {};
   if (output.profile) env.VITE_PROFILE = '1';
+  if (force) {
+    env.FORCE = 'true';
+    env.VITE_FORCE = 'true';
+  }
 
   const script = backend === 'local' ? 'scripts/dev/dev-editor-tauri.ts' : 'scripts/dev/dev-editor-tauri-production.ts';
-  const code = await run('npx', ['tsx', script], env, output.teeToFile);
+  const code = await run('npx', ['tsx', script, ...(force ? ['--force'] : [])], env, output.teeToFile);
   process.exit(code);
 }
 

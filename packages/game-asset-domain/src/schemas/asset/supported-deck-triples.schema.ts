@@ -1,17 +1,17 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { isValidDeckTriple } from '@ocentra/game-domain/deck/deckCompatibility';
 import { DECK_TYPE_VALUES } from '@ocentra/game-domain/deck/deckTypes';
 import { SUIT_SET_VALUES, RANK_SET_VALUES } from '@ocentra/game-domain/deck/deckFamilies';
 
-export const SupportedDeckTripleSchema = z.object({
-  deckType: z.enum(DECK_TYPE_VALUES),
-  suitSet: z.enum(SUIT_SET_VALUES),
-  rankSet: z.enum(RANK_SET_VALUES),
+export const SupportedDeckTripleSchema = schema.object({
+  deckType: schema.enum(DECK_TYPE_VALUES),
+  suitSet: schema.enum(SUIT_SET_VALUES),
+  rankSet: schema.enum(RANK_SET_VALUES),
 });
 
-export type SupportedDeckTriple = z.infer<typeof SupportedDeckTripleSchema>;
+export type SupportedDeckTriple = schema.infer<typeof SupportedDeckTripleSchema>;
 
-export const SupportedDeckTriplesSchema = z
+export const SupportedDeckTriplesSchema = schema
   .array(SupportedDeckTripleSchema)
   .min(1)
   .superRefine((triples, ctx) => {
@@ -23,7 +23,7 @@ export const SupportedDeckTriplesSchema = z
 
       if (!isValidDeckTriple(triple.deckType, triple.suitSet, triple.rankSet)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: [index],
           message: `supportedTriples[${index}] must be a valid [deckType, suitSet, rankSet] entry from ALLOWED_TRIPLES`,
         });
@@ -32,7 +32,7 @@ export const SupportedDeckTriplesSchema = z
       const key = `${triple.deckType}\0${triple.suitSet}\0${triple.rankSet}`;
       if (seen.has(key)) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: [index],
           message: 'supportedTriples must not contain duplicate deck triples',
         });
@@ -42,7 +42,7 @@ export const SupportedDeckTriplesSchema = z
 
     if (deckTypes.size > 1) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: schema.IssueCode.custom,
         path: [],
         message: 'supportedTriples for a single deck asset must all use the same deckType',
       });

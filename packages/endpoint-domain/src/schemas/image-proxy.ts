@@ -1,16 +1,16 @@
 /**
- * Image proxy endpoint Zod schemas.
+ * Image proxy endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
 // ============================================================================
 // Query Parameters
 // ============================================================================
 
-export const ImageProxyQuerySchema = z.object({
-  url: z.string().url(),
-  width: z.number().int().positive().optional(),
-  height: z.number().int().positive().optional(),
-  format: z.enum(['webp', 'jpeg', 'png']).optional(),
+export const ImageProxyQuerySchema = schema.object({
+  url: schema.string().url(),
+  width: schema.number().int().positive().optional(),
+  height: schema.number().int().positive().optional(),
+  format: schema.enum(['webp', 'jpeg', 'png']).optional(),
 });

@@ -3,17 +3,28 @@ import type { CSSProperties, ReactNode } from 'react';
 export interface CardGridMatrixColumn {
   key: string;
   label: string;
+  symbol?: string;
+  icon?: string;
+  imageHash?: string;
+  imagePath?: string;
+  color?: string;
 }
 
 export interface CardGridMatrixRow {
   key: string;
   label: string;
+  symbol?: string;
+  icon?: string;
+  imageHash?: string;
+  imagePath?: string;
+  color?: string;
 }
 
 export interface CardGridMatrixProps {
   rows: CardGridMatrixRow[];
   columns: CardGridMatrixColumn[];
   renderCell: (rowKey: string, columnKey: string) => ReactNode;
+  renderAxis?: (axis: CardGridMatrixColumn | CardGridMatrixRow) => ReactNode;
   emptyMessage?: string;
 }
 
@@ -63,6 +74,20 @@ const styles = {
     padding: '4px',
     textAlign: 'center',
   } as CSSProperties,
+  axisGlyph: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '1.25rem',
+    fontSize: '1.15rem',
+    lineHeight: 1,
+  } as CSSProperties,
+  axisImage: {
+    width: '1.35rem',
+    height: '1.35rem',
+    objectFit: 'contain',
+    display: 'block',
+  } as CSSProperties,
   cell: {
     minHeight: '56px',
     borderRight: '1px solid rgba(120, 120, 120, 0.2)',
@@ -80,7 +105,53 @@ const styles = {
   } as CSSProperties,
 };
 
-export function CardGridMatrix({ rows, columns, renderCell, emptyMessage = 'No matrix data available.' }: CardGridMatrixProps) {
+function resolveAxisColor(color?: string): string | undefined {
+  const normalized = color?.trim().toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  if (normalized === 'red') {
+    return '#ef4444';
+  }
+  if (normalized === 'black') {
+    return 'rgba(235, 235, 235, 0.92)';
+  }
+  return color;
+}
+
+function AxisHeader({
+  axis,
+  renderAxis,
+}: {
+  axis: CardGridMatrixColumn | CardGridMatrixRow;
+  renderAxis?: (axis: CardGridMatrixColumn | CardGridMatrixRow) => ReactNode;
+}) {
+  const custom = renderAxis?.(axis);
+  if (custom !== null && custom !== undefined) {
+    return <>{custom}</>;
+  }
+
+  if (axis.imagePath) {
+    return <img src={axis.imagePath} alt={axis.label} title={axis.label} style={styles.axisImage} />;
+  }
+
+  const glyph = axis.symbol || axis.icon;
+  if (glyph) {
+    return (
+      <span
+        aria-label={axis.label}
+        title={axis.label}
+        style={{ ...styles.axisGlyph, color: resolveAxisColor(axis.color) }}
+      >
+        {glyph}
+      </span>
+    );
+  }
+
+  return <>{axis.label}</>;
+}
+
+export function CardGridMatrix({ rows, columns, renderCell, renderAxis, emptyMessage = 'No matrix data available.' }: CardGridMatrixProps) {
   if (rows.length === 0 || columns.length === 0) {
     return <div style={styles.empty}>{emptyMessage}</div>;
   }
@@ -91,13 +162,15 @@ export function CardGridMatrix({ rows, columns, renderCell, emptyMessage = 'No m
         <div style={styles.corner}></div>
         {columns.map((column) => (
           <div key={column.key} style={styles.headerCell}>
-            {column.label}
+            <AxisHeader axis={column} renderAxis={renderAxis} />
           </div>
         ))}
       </div>
       {rows.map((row) => (
         <div key={row.key} style={{ ...styles.row, ['--card-grid-col-count' as string]: String(columns.length) }}>
-          <div style={styles.rowHeaderCell}>{row.label}</div>
+          <div style={styles.rowHeaderCell}>
+            <AxisHeader axis={row} renderAxis={renderAxis} />
+          </div>
           {columns.map((column) => (
             <div key={`${row.key}:${column.key}`} style={styles.cell}>
               {renderCell(row.key, column.key)}

@@ -1,0 +1,39 @@
+{
+  "name": "@ocentra/schema-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared Effect Schema validation helpers.",
+  "exports": {
+    ".": {
+      "import": "./dist/effect.js",
+      "types": "./dist/effect.d.ts"
+    },
+    "./effect": {
+      "import": "./dist/effect.js",
+      "types": "./dist/effect.d.ts"
+    },
+    "./effect-builder": {
+      "import": "./dist/effect-builder.js",
+      "types": "./dist/effect-builder.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node ../../scripts/fix-esm-imports.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "node -e \"const cmd = process.env.TURBO_HASH ? 'npm run lint:exec' : 'npx turbo run lint:exec --filter=@ocentra/schema-domain'; require('child_process').spawnSync(cmd.split(' ')[0], cmd.split(' ').slice(1), { stdio: 'inherit', shell: true });\"",
+    "lint:exec": "eslint --cache src && tsc --noEmit",
+    "lint:eslint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix"
+  },
+  "dependencies": {
+    "effect": "^3.21.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0"
+  }
+}

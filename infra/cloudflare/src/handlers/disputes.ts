@@ -26,7 +26,7 @@ import {
   UpdateDisputeRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/disputes';
 import { DisputeIdSchema } from '@ocentra/endpoint-domain/schemas/common';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -321,7 +321,7 @@ export async function handleDisputeRequest(
   }
 
   if (request.method === HttpMethod.Put) {
-    const validation = await validateZodBody(
+    const validation = await validateSchemaBody(
       request,
       env,
       UpdateDisputeRequestSchema
@@ -753,7 +753,7 @@ async function handleCreateDispute(
       });
     }
 
-    const validation = await validateZodBody(request, env, CreateDisputeRequestSchema);
+    const validation = await validateSchemaBody(request, env, CreateDisputeRequestSchema);
 
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;

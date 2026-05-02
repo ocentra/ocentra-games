@@ -1,8 +1,8 @@
 /**
- * Assets endpoint Zod schemas.
+ * Assets endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { AssetIdSchema, TimestampSchema, PaginationParamsSchema } from './common';
 
 // ============================================================================
@@ -10,37 +10,37 @@ import { AssetIdSchema, TimestampSchema, PaginationParamsSchema } from './common
 // ============================================================================
 
 export const ListAssetsQuerySchema = PaginationParamsSchema.extend({
-  prefix: z.string().optional(),
+  prefix: schema.string().optional(),
 });
 
 // ============================================================================
 // Response Bodies
 // ============================================================================
 
-export const AssetSchema = z.object({
-  key: z.string(),
-  size: z.number().int().nonnegative(),
-  etag: z.string(),
+export const AssetSchema = schema.object({
+  key: schema.string(),
+  size: schema.number().int().nonnegative(),
+  etag: schema.string(),
   uploaded: TimestampSchema,
-  httpEtag: z.string(),
-  contentType: z.string().optional(),
+  httpEtag: schema.string(),
+  contentType: schema.string().optional(),
 });
 
-export const ListAssetsResponseSchema = z.object({
-  objects: z.array(AssetSchema),
-  truncated: z.boolean(),
-  cursor: z.string().optional(),
-  delimitedPrefixes: z.array(z.string()).optional(),
+export const ListAssetsResponseSchema = schema.object({
+  objects: schema.array(AssetSchema),
+  truncated: schema.boolean(),
+  cursor: schema.string().optional(),
+  delimitedPrefixes: schema.array(schema.string()).optional(),
 });
 
-export const UploadAssetResponseSchema = z.object({
-  success: z.boolean(),
+export const UploadAssetResponseSchema = schema.object({
+  success: schema.boolean(),
   assetId: AssetIdSchema,
-  path: z.string(),
-  url: z.string(),
+  path: schema.string(),
+  url: schema.string(),
 });
 
-export const DeleteAssetResponseSchema = z.object({
-  success: z.boolean(),
+export const DeleteAssetResponseSchema = schema.object({
+  success: schema.boolean(),
   assetId: AssetIdSchema,
 });

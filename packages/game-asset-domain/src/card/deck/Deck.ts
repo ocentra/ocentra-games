@@ -24,6 +24,7 @@ import { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry
 import { createAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
+import { DeckRanking } from '@/deck/DeckRanking';
 import type { AssetType } from '@ocentra/asset-domain/types/assetType';
 import { ImageCache } from '@ocentra/storage-domain/caches/ImageCacheService';
 import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -96,6 +97,67 @@ export class DeckCardMemberRecord {
 }
 
 @serializableClass({
+  assetType: 'DeckPieceMember',
+  displayName: 'Deck Piece Member',
+  icon: 'ðŸƒ',
+  category: AssetTypeCategory.Game,
+})
+export class DeckPieceMemberRecord {
+  @serializable({ label: 'Piece Template', elementType: AssetResourceEntry })
+  pieceTemplate: AssetResourceEntry<ScriptableObject> = new AssetResourceEntry<ScriptableObject>('' as AssetType);
+
+  @serializable({ label: 'Copies' })
+  copies: number = 1;
+
+  @serializable({ label: 'Logical ID' })
+  logicalId?: string;
+
+  @serializable({ label: 'Role' })
+  role?: string;
+
+  @serializable({ label: 'Tags' })
+  tags: string[] = [];
+}
+
+@serializableClass({
+  assetType: 'DeckPresentation',
+  displayName: 'Deck Presentation',
+  category: AssetTypeCategory.Game,
+})
+export class DeckPresentationRecord {
+  @serializable({ label: 'Back Image Hash' })
+  backImageHash: ImageHash = '' as ImageHash;
+
+  @serializable({ label: 'Preview Layout Hint' })
+  previewLayoutHint: string = '';
+
+  @serializable({ label: 'Default Orientation' })
+  defaultOrientation: 'portrait' | 'landscape' | 'square' = 'portrait';
+
+  @serializable({ label: 'Default Shape' })
+  defaultShape: string = 'card';
+}
+
+@serializableClass({
+  assetType: 'DeckRuntimePolicy',
+  displayName: 'Deck Runtime Policy',
+  category: AssetTypeCategory.Game,
+})
+export class DeckRuntimePolicyRecord {
+  @serializable({ label: 'Shuffle Policy' })
+  shufflePolicy: string = 'seeded_round_shuffle';
+
+  @serializable({ label: 'Draw Direction' })
+  drawDirection: string = 'top_is_index_0';
+
+  @serializable({ label: 'Multiplicity' })
+  multiplicity: number = 1;
+
+  @serializable({ label: 'Visibility Defaults' })
+  visibilityDefaults: Record<string, unknown> = {};
+}
+
+@serializableClass({
   schemaVersion: AssetSchemaVersion.V1,
   assetType: 'Deck',
   displayName: 'Deck',
@@ -111,7 +173,23 @@ export class Deck extends ScriptableObject {
   static override createTemplate(): Record<string, unknown> {
     return {
       name: 'NewDeck',
+      deckFamily: 'french_cards',
+      pieceKind: 'card',
       supportedTriples: [],
+      composition: [],
+      rankingAsset: undefined,
+      presentation: {
+        backImageHash: '',
+        previewLayoutHint: 'matrix',
+        defaultOrientation: 'portrait',
+        defaultShape: 'card',
+      },
+      runtimePolicy: {
+        shufflePolicy: 'seeded_round_shuffle',
+        drawDirection: 'top_is_index_0',
+        multiplicity: 1,
+        visibilityDefaults: {},
+      },
       cardTemplates: [],
       cardComposition: [],
       backCardHash: '',
@@ -124,9 +202,28 @@ export class Deck extends ScriptableObject {
   @serializable({ label: 'Deck Name' })
   name: string = '';
 
+  @serializable({ label: 'Deck Family' })
+  deckFamily: string = 'french_cards';
+
+  @serializable({ label: 'Piece Kind' })
+  pieceKind: string = 'card';
+
   @required('Supported triples are required for deck to function properly')
   @serializable({ label: 'Supported Triples', elementType: SupportedDeckTripleRecord })
   supportedTriples!: SupportedDeckTripleRecord[];
+
+  @serializable({ label: 'Composition', elementType: DeckPieceMemberRecord })
+  composition!: DeckPieceMemberRecord[];
+
+  @required('Ranking asset is required for deck ordering and preview')
+  @serializable({ label: 'Ranking Asset', elementType: AssetResourceEntry })
+  rankingAsset!: AssetResourceEntry<DeckRanking>;
+
+  @serializable({ label: 'Presentation', elementType: DeckPresentationRecord })
+  presentation!: DeckPresentationRecord;
+
+  @serializable({ label: 'Runtime Policy', elementType: DeckRuntimePolicyRecord })
+  runtimePolicy!: DeckRuntimePolicyRecord;
 
   @required('Card Templates are required for deck to function properly')
   @serializable({ label: 'Card Templates', elementType: AssetResourceEntry })
@@ -153,12 +250,18 @@ export class Deck extends ScriptableObject {
 
   @required('Card Ranking Asset is required for deck to function properly')
   @serializable({ label: 'Card Ranking Asset', elementType: AssetResourceEntry })
-  cardRankingAsset!: AssetResourceEntry<CardRanking>;
+  cardRankingAsset?: AssetResourceEntry<CardRanking>;
 
   constructor() {
     super();
     const template = Deck.createTemplate();
+    this.deckFamily = template.deckFamily as string;
+    this.pieceKind = template.pieceKind as string;
+    this.composition = template.composition as DeckPieceMemberRecord[];
+    this.rankingAsset = new AssetResourceEntry<DeckRanking>(DeckRanking.assetType! as AssetType);
     this.cardRankingAsset = new AssetResourceEntry<CardRanking>(CardRanking.assetType! as AssetType);
+    this.presentation = Object.assign(new DeckPresentationRecord(), template.presentation);
+    this.runtimePolicy = Object.assign(new DeckRuntimePolicyRecord(), template.runtimePolicy);
     this.supportedTriples = template.supportedTriples as SupportedDeckTripleRecord[];
     this.cardTemplates = template.cardTemplates as AssetResourceEntry<Card>[];
     this.cardComposition = template.cardComposition as DeckCardMemberRecord[];
@@ -178,12 +281,41 @@ export class Deck extends ScriptableObject {
   }
 
   getExpandedCardTemplateRefs(): AssetResourceEntry<Card>[] {
+    if (this.composition && this.composition.length > 0) {
+      return this.composition.flatMap((entry) =>
+        entry.pieceTemplate.assetType === Card.assetType
+          ? Array.from({ length: Math.max(1, entry.copies) }, () => entry.pieceTemplate as AssetResourceEntry<Card>)
+          : [],
+      );
+    }
     if (this.cardComposition && this.cardComposition.length > 0) {
       return this.cardComposition.flatMap((entry) =>
         Array.from({ length: Math.max(1, entry.copies) }, () => entry.cardTemplate),
       );
     }
     return this.cardTemplates ?? [];
+  }
+
+  getExpandedPieceTemplateRefs(): AssetResourceEntry<ScriptableObject>[] {
+    if (this.composition && this.composition.length > 0) {
+      return this.composition.flatMap((entry) =>
+        Array.from({ length: Math.max(1, entry.copies) }, () => entry.pieceTemplate),
+      );
+    }
+    return this.getExpandedCardTemplateRefs() as AssetResourceEntry<ScriptableObject>[];
+  }
+
+  getDistinctPieceTemplateRefs(): AssetResourceEntry<ScriptableObject>[] {
+    const refs = this.getExpandedPieceTemplateRefs();
+    const seen = new Set<string>();
+    return refs.filter((ref) => {
+      const key = ref.guid || ref.path || ref.displayName || '';
+      if (!key || seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
   }
 
   getDistinctCardTemplateRefs(): AssetResourceEntry<Card>[] {
@@ -228,10 +360,10 @@ export class Deck extends ScriptableObject {
 
     if (LOG_DECK) {
       log.logInfo(`[Deck] getCardRanking() called for ${this.name}`, getStackTrace(), {
-        hasCardRankingAsset: !!this.cardRankingAsset,
-        cardRankingAssetGuid: this.cardRankingAsset?.guid || 'no-guid',
-        cardRankingAssetType: this.cardRankingAsset?.assetType || 'no-type',
-        cardRankingAssetIsInstance: this.cardRankingAsset instanceof AssetResourceEntry,
+        hasCardRankingAsset: !!this.cardRankingAsset || !!this.rankingAsset,
+        cardRankingAssetGuid: this.cardRankingAsset?.guid || this.rankingAsset?.guid || 'no-guid',
+        cardRankingAssetType: this.cardRankingAsset?.assetType || this.rankingAsset?.assetType || 'no-type',
+        cardRankingAssetIsInstance: this.cardRankingAsset instanceof AssetResourceEntry || this.rankingAsset instanceof AssetResourceEntry,
       }, LOG_DECK);
     }
 
@@ -243,7 +375,12 @@ export class Deck extends ScriptableObject {
     }
 
     try {
-      ranking = await this.cardRankingAsset.load(CardRanking);
+      if (this.rankingAsset?.guid) {
+        ranking = await this.rankingAsset.load(DeckRanking);
+      }
+      if (!ranking && this.cardRankingAsset?.guid) {
+        ranking = await this.cardRankingAsset.load(CardRanking);
+      }
 
       if (LOG_DECK_PERF && rankingLoadStart) {
         const rankingLoadEnd = performance.now();
@@ -268,7 +405,7 @@ export class Deck extends ScriptableObject {
     if (!ranking) {
       if (LOG_DECK) {
         log.logWarn(`[Deck] cardRankingAsset.load() returned null for ${this.name}, attempting fallback`, getStackTrace(), {
-          cardRankingAssetGuid: this.cardRankingAsset?.guid || 'no-guid',
+          cardRankingAssetGuid: this.cardRankingAsset?.guid || this.rankingAsset?.guid || 'no-guid',
         }, LOG_DECK);
       }
       log.logInfo(`[Deck] Using default CardRanking fallback for ${this.name}`, getStackTrace(), undefined, LOG_DECK);
@@ -456,11 +593,12 @@ export class Deck extends ScriptableObject {
         const suit = this.getSuitFromName(suitName);
         const rank = this.getRankFromId(cardId, cardRanking);
 
+        const cardRankingRef = (this.cardRankingAsset ?? this.rankingAsset) as AssetResourceEntry<CardRanking>;
         const card = CardFactory.create({
           suit,
           rank: rank as CardValue,
           imageHash: '' as ImageHash,
-          cardRanking: this.cardRankingAsset,
+          cardRanking: cardRankingRef,
         });
 
         if (LOG_DECK) {

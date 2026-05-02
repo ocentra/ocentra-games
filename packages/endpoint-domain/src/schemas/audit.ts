@@ -1,53 +1,53 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { UUIDSchema } from './common';
 
-export const AuditActorSchema = z.object({
-  type: z.enum(['user', 'system', 'ai', 'admin']),
-  id: z.string(),
-  ip: z.string().optional(),
-  userAgent: z.string().optional(),
-  sessionId: z.string().optional(),
+export const AuditActorSchema = schema.object({
+  type: schema.enum(['user', 'system', 'ai', 'admin']),
+  id: schema.string(),
+  ip: schema.string().optional(),
+  userAgent: schema.string().optional(),
+  sessionId: schema.string().optional(),
 });
 
-export const AuditTargetSchema = z.object({
-  type: z.string(),
-  id: z.string(),
-  resource: z.string().optional(),
+export const AuditTargetSchema = schema.object({
+  type: schema.string(),
+  id: schema.string(),
+  resource: schema.string().optional(),
 });
 
-export const AuditActionSchema = z.object({
-  type: z.string(),
-  status: z.enum(['success', 'failure', 'attempt']),
-  details: z.record(z.unknown()).optional(),
+export const AuditActionSchema = schema.object({
+  type: schema.string(),
+  status: schema.enum(['success', 'failure', 'attempt']),
+  details: schema.record(schema.unknown()).optional(),
 });
 
-export const AuditContextSchema = z.object({
-  timestamp: z.number(),
-  timezone: z.string().optional(),
-  region: z.string().optional(),
-  requestId: z.string().optional(),
-  traceId: z.string().optional(),
+export const AuditContextSchema = schema.object({
+  timestamp: schema.number(),
+  timezone: schema.string().optional(),
+  region: schema.string().optional(),
+  requestId: schema.string().optional(),
+  traceId: schema.string().optional(),
 });
 
-export const AuditClassificationSchema = z.object({
-  sensitivity: z.string().optional(),
-  retention: z.string().optional(),
-  piiFields: z.array(z.string()).optional(),
-  complianceFlags: z.array(z.string()).optional(),
+export const AuditClassificationSchema = schema.object({
+  sensitivity: schema.string().optional(),
+  retention: schema.string().optional(),
+  piiFields: schema.array(schema.string()).optional(),
+  complianceFlags: schema.array(schema.string()).optional(),
 });
 
-export const AuditIntegritySchema = z.object({
-  previousHash: z.string().optional(),
-  currentHash: z.string(),
-  signature: z.string().optional(),
-  chainId: z.string().optional(),
+export const AuditIntegritySchema = schema.object({
+  previousHash: schema.string().optional(),
+  currentHash: schema.string(),
+  signature: schema.string().optional(),
+  chainId: schema.string().optional(),
 });
 
-export const AuditEventSchema = z.object({
+export const AuditEventSchema = schema.object({
   eventId: UUIDSchema,
-  eventType: z.string(),
-  category: z.string(),
-  version: z.string().optional(),
+  eventType: schema.string(),
+  category: schema.string(),
+  version: schema.string().optional(),
   actor: AuditActorSchema,
   target: AuditTargetSchema,
   action: AuditActionSchema,
@@ -56,17 +56,17 @@ export const AuditEventSchema = z.object({
   integrity: AuditIntegritySchema.optional(),
 });
 
-export type AuditEvent = z.infer<typeof AuditEventSchema>;
-export type AuditIntegrity = z.infer<typeof AuditIntegritySchema>;
+export type AuditEvent = schema.infer<typeof AuditEventSchema>;
+export type AuditIntegrity = schema.infer<typeof AuditIntegritySchema>;
 
-export const AuditQueryFiltersSchema = z.object({
-  actorId: z.string().optional(),
-  category: z.string().optional(),
-  startTime: z.number().optional(),
-  endTime: z.number().optional(),
-  targetId: z.string().optional(),
-  limit: z.number().min(1).max(500).optional(),
-  cursor: z.string().optional(),
+export const AuditQueryFiltersSchema = schema.object({
+  actorId: schema.string().optional(),
+  category: schema.string().optional(),
+  startTime: schema.number().optional(),
+  endTime: schema.number().optional(),
+  targetId: schema.string().optional(),
+  limit: schema.number().min(1).max(500).optional(),
+  cursor: schema.string().optional(),
 });
 
-export type AuditQueryFilters = z.infer<typeof AuditQueryFiltersSchema>;
+export type AuditQueryFilters = schema.infer<typeof AuditQueryFiltersSchema>;

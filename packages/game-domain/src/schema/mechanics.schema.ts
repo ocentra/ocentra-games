@@ -134,6 +134,20 @@ export const MechanicsRuntimeIntegrationSchema = Schema.asSchema(
   }).pipe(Schema.extend(UnknownRecord))
 );
 
+export const MechanicsDeckModelSchema = Schema.asSchema(
+  Schema.Struct({
+    deckAssetRef: NonEmptyString,
+    rankingAssetRef: Schema.optional(NonEmptyString),
+    deckCount: Schema.optional(PositiveInteger),
+    initialHandSize: Schema.optional(HandSize),
+    shufflePolicy: Schema.optional(NonEmptyString),
+    drawDirection: Schema.optional(NonEmptyString),
+    drawConfig: OptionalUnknownRecord,
+    discardConfig: OptionalUnknownRecord,
+    runtimePolicy: OptionalUnknownRecord,
+  }).pipe(Schema.extend(UnknownRecord))
+);
+
 export const MechanicsImplementationHintsSchema = Schema.Struct({
   rngUsed: Schema.Array(NonEmptyString),
   authoritativeServer: Schema.Boolean,
@@ -150,6 +164,7 @@ export const MechanicsManifestSchema = Schema.Struct({
   inheritsFrom: Schema.optional(Schema.NullOr(NonEmptyString)),
   enabledModules: Schema.optional(Schema.Array(MechanicsEnabledModuleSchema)),
   assetRefs: Schema.optional(Schema.Record({ key: Schema.String, value: MechanicsAssetReferenceSchema })),
+  modelRefs: Schema.optional(Schema.Record({ key: Schema.String, value: MechanicsAssetReferenceSchema })),
   playerConfig: MechanicsPlayerConfigSchema,
   phases: Schema.Array(MechanicsPhaseSchema),
   actions: Schema.optional(Schema.Record({ key: Schema.String, value: MechanicsActionSchema })),
@@ -184,7 +199,7 @@ export const MechanicsManifestSchema = Schema.Struct({
   implementationHints: Schema.optional(MechanicsImplementationHintsSchema),
   playerModel: OptionalUnknownRecord,
   sessionModel: OptionalUnknownRecord,
-  deckModel: OptionalUnknownRecord,
+  deckModel: Schema.optional(MechanicsDeckModelSchema),
   zoneModel: OptionalUnknownRecord,
   setupModel: OptionalUnknownRecord,
   turnModel: OptionalUnknownRecord,
@@ -268,7 +283,7 @@ export const decodeMechanicsManifestEither = Schema.decodeUnknownEither(Mechanic
 export const encodeMechanicsManifestEither = Schema.encodeEither(MechanicsManifestSchema);
 
 export function decodeMechanicsManifest(input: unknown): MechanicsManifest {
-  return assertMechanicsConsistency(Schema.decodeUnknownSync(MechanicsManifestSchema)(input));
+  return assertMechanicsConsistency(Schema.decodeUnknownSync(MechanicsManifestSchema)(normalizeMechanicsManifestBoundaryInput(input)));
 }
 
 export function encodeMechanicsManifest(input: MechanicsManifest): MechanicsManifestEncoded {
@@ -279,6 +294,143 @@ function copyAssetRefs(
   refs: Readonly<Record<string, typeof MechanicsAssetReferenceSchema.Type>> | undefined
 ): Record<string, MechanicsAssetReference> {
   return Object.fromEntries(Object.entries(refs ?? {}).map(([key, value]) => [key, { ...value }]));
+}
+
+function normalizeMechanicsManifestBoundaryInput(input: unknown): unknown {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return input;
+  }
+
+  const record = { ...(input as Record<string, unknown>) };
+  normalizeLegacyOptionalTextFields(record, [
+    'gameId',
+    'mechanicsId',
+    'mechanicsVersion',
+    'familyVariant',
+  ]);
+  if (isLegacyAbsentText(record.determinismNotes)) {
+    delete record.determinismNotes;
+  }
+  normalizeLegacyNullableRecordFields(record, [
+    'drawConfig',
+    'discardConfig',
+    'trumpConfig',
+    'meldConfig',
+    'trickConfig',
+    'declarationMechanism',
+    'handRanks',
+    'buyCosts',
+    'marketConfig',
+    'specialCards',
+    'shedding',
+    'fishingConfig',
+    'patienceConfig',
+    'bankingConfig',
+    'roundConfig',
+    'familyConfig',
+  ]);
+  normalizeLegacyOptionalRecordFields(record, [
+    'cardVisibility',
+    'constants',
+    'playerModel',
+    'sessionModel',
+    'deckModel',
+    'zoneModel',
+    'setupModel',
+    'turnModel',
+    'actionModel',
+    'ruleModel',
+    'scoringModel',
+    'strategyHooks',
+    'stateModel',
+    'eventModel',
+  ]);
+
+  if (Array.isArray(record.phases)) {
+    record.phases = record.phases.map((phase) => {
+      if (!phase || typeof phase !== 'object' || Array.isArray(phase)) {
+        return phase;
+      }
+      const phaseRecord = { ...(phase as Record<string, unknown>) };
+      if (isLegacyAbsentText(phaseRecord.notes)) {
+        delete phaseRecord.notes;
+      }
+      return phaseRecord;
+    });
+  }
+
+  if (record.actions && typeof record.actions === 'object' && !Array.isArray(record.actions)) {
+    record.actions = Object.fromEntries(Object.entries(record.actions as Record<string, unknown>).map(([actionId, action]) => {
+      if (!action || typeof action !== 'object' || Array.isArray(action)) {
+        return [actionId, action];
+      }
+      const actionRecord = { ...(action as Record<string, unknown>) };
+      if (isLegacyAbsentText(actionRecord.constraints)) {
+        delete actionRecord.constraints;
+      }
+      if (isLegacyAbsentText(actionRecord.reason)) {
+        delete actionRecord.reason;
+      }
+      return [actionId, actionRecord];
+    }));
+  }
+
+  if (record.deckModel && typeof record.deckModel === 'object' && !Array.isArray(record.deckModel)) {
+    const deckModel = { ...(record.deckModel as Record<string, unknown>) };
+    if (typeof deckModel.cardRankingAssetRef === 'string' && typeof deckModel.rankingAssetRef !== 'string') {
+      deckModel.rankingAssetRef = deckModel.cardRankingAssetRef;
+    }
+    if (deckModel.rankingAssetRef === 'cardRanking') {
+      deckModel.rankingAssetRef = 'ranking';
+    }
+    if (typeof deckModel.deckAssetRef !== 'string') {
+      deckModel.deckAssetRef = 'deck';
+    }
+    if (typeof deckModel.rankingAssetRef !== 'string' && record.assetRefs && typeof record.assetRefs === 'object' && !Array.isArray(record.assetRefs)) {
+      const refs = record.assetRefs as Record<string, unknown>;
+      if (refs.ranking) {
+        deckModel.rankingAssetRef = 'ranking';
+      } else if (refs.cardRanking) {
+        deckModel.rankingAssetRef = 'cardRanking';
+      }
+    }
+    record.deckModel = deckModel;
+  }
+
+  return record;
+}
+
+function isLegacyAbsentText(value: unknown): boolean {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const normalized = value.trim().toUpperCase();
+  return normalized === '' || normalized === 'NA' || normalized === 'N/A' || normalized === 'NONE' || normalized === 'NULL';
+}
+
+function normalizeLegacyNullableRecordFields(record: Record<string, unknown>, fields: readonly string[]): void {
+  for (const field of fields) {
+    if (isLegacyAbsentText(record[field])) {
+      record[field] = null;
+    }
+  }
+}
+
+function normalizeLegacyOptionalRecordFields(record: Record<string, unknown>, fields: readonly string[]): void {
+  for (const field of fields) {
+    if (isLegacyAbsentText(record[field])) {
+      delete record[field];
+    }
+  }
+}
+
+function normalizeLegacyOptionalTextFields(record: Record<string, unknown>, fields: readonly string[]): void {
+  for (const field of fields) {
+    if (isLegacyAbsentText(record[field])) {
+      delete record[field];
+    }
+  }
 }
 
 function copyEnabledModules(modules: readonly (typeof MechanicsEnabledModuleSchema.Type)[] | undefined): MechanicsEnabledModule[] {
@@ -378,6 +530,7 @@ export function mechanicsManifestToSpec(manifest: MechanicsManifest): MechanicsS
     inheritsFrom: manifest.inheritsFrom ?? null,
     enabledModules: copyEnabledModules(manifest.enabledModules),
     assetRefs: copyAssetRefs(manifest.assetRefs),
+    modelRefs: copyAssetRefs(manifest.modelRefs),
     playerConfig: copyPlayerConfig(manifest.playerConfig),
     phases: copyPhases(manifest.phases),
     actions: copyActions(manifest.actions),
@@ -412,7 +565,7 @@ export function mechanicsManifestToSpec(manifest: MechanicsManifest): MechanicsS
     implementationHints: copyImplementationHints(manifest.implementationHints),
     playerModel: manifest.playerModel ? { ...manifest.playerModel } : {},
     sessionModel: manifest.sessionModel ? { ...manifest.sessionModel } : {},
-    deckModel: manifest.deckModel ? { ...manifest.deckModel } : {},
+    deckModel: manifest.deckModel ? { ...manifest.deckModel } : undefined,
     zoneModel: manifest.zoneModel ? { ...manifest.zoneModel } : {},
     setupModel: manifest.setupModel ? { ...manifest.setupModel } : {},
     turnModel: manifest.turnModel ? { ...manifest.turnModel } : {},

@@ -21,12 +21,50 @@ const uuidSequence = [
   '00000000-0000-4000-8000-000000000010',
   '00000000-0000-4000-8000-000000000011',
   '00000000-0000-4000-8000-000000000012',
+  '00000000-0000-4000-8000-000000000013',
+  '00000000-0000-4000-8000-000000000014',
+  '00000000-0000-4000-8000-000000000015',
+  '00000000-0000-4000-8000-000000000016',
+  '00000000-0000-4000-8000-000000000017',
+  '00000000-0000-4000-8000-000000000018',
+  '00000000-0000-4000-8000-000000000019',
+  '00000000-0000-4000-8000-000000000020',
+  '00000000-0000-4000-8000-000000000021',
+  '00000000-0000-4000-8000-000000000022',
+  '00000000-0000-4000-8000-000000000023',
+  '00000000-0000-4000-8000-000000000024',
 ];
+
+const requiredAssetTypes = [
+  'CardGameMode',
+  'CardGameRules',
+  'Strategy',
+  'CardGameScoring',
+  'GameInfo',
+  'CardGameLayout',
+  'ImageCarousel',
+  'CardGameMechanics',
+  'GamePlayerModel',
+  'GameSessionModel',
+  'CardGameDeckModel',
+  'GameZoneModel',
+  'GamePhaseFlowModel',
+  'GameActionSet',
+  'GameStateEventModel',
+  'GameValidationFixtures',
+] as const;
+
+function formatValidationResult(result: ReturnType<typeof validateAssetFile>): string {
+  if (result.success) {
+    return 'valid';
+  }
+  return result.error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('; ');
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '../../../../..');
-const threeCardBragPath = path.join(repoRoot, 'packages/card-games/src/processed-games/three-card-brag.json');
+const threeCardBragPath = path.join(repoRoot, 'packages/card-games/src/processed-games/vying/brag-3-card.json');
 
 describe('createGameModeBundle', () => {
   const originalCrypto = globalThis.crypto;
@@ -53,8 +91,8 @@ describe('createGameModeBundle', () => {
       category: 'CardGames',
     });
 
-    expect(bundle.files).toHaveLength(8);
-    expect(bundle.mainAssetGuid).toBe(uuidSequence[7]);
+    expect(bundle.files).toHaveLength(16);
+    expect(bundle.mainAssetGuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/claim/claim.asset');
 
     const paths = bundle.files.map((file) => file.path).sort();
@@ -64,6 +102,14 @@ describe('createGameModeBundle', () => {
       'Resources/GameMode/CardGames/claim/info.asset',
       'Resources/GameMode/CardGames/claim/claimLayout.asset',
       'Resources/GameMode/CardGames/claim/claimMechanics.asset',
+      'Resources/GameMode/CardGames/claim/claimPlayerModel.asset',
+      'Resources/GameMode/CardGames/claim/claimSessionModel.asset',
+      'Resources/GameMode/CardGames/claim/claimDeckModel.asset',
+      'Resources/GameMode/CardGames/claim/claimZoneModel.asset',
+      'Resources/GameMode/CardGames/claim/claimPhaseFlowModel.asset',
+      'Resources/GameMode/CardGames/claim/claimActionSet.asset',
+      'Resources/GameMode/CardGames/claim/claimStateEventModel.asset',
+      'Resources/GameMode/CardGames/claim/claimValidationFixtures.asset',
       'Resources/GameMode/CardGames/claim/claimRules.asset',
       'Resources/GameMode/CardGames/claim/claimScoring.asset',
       'Resources/GameMode/CardGames/claim/claimStrategy.asset',
@@ -80,10 +126,7 @@ describe('createGameModeBundle', () => {
     expect(parsedSystem.gameId).toBe('claim');
     expect(parsedSystem.displayName).toBe('Claim');
 
-    const mainJson = mainAsset!.content;
-    for (let index = 0; index <= 7; index++) {
-      expect(mainJson).toContain(uuidSequence[index]);
-    }
+    expect(parsedSystem.guid).toBe(bundle.mainAssetGuid);
   });
 
   it('applies copy-from-template fields to the main game asset', async () => {
@@ -118,18 +161,7 @@ describe('createGameModeBundle', () => {
       category: 'CardGames',
     });
 
-    expect(bundle.files).toHaveLength(8);
-
-    const requiredAssetTypes = [
-      'CardGameMode',
-      'CardGameRules',
-      'Strategy',
-      'CardGameScoring',
-      'GameInfo',
-      'CardGameLayout',
-      'ImageCarousel',
-      'CardGameMechanics',
-    ];
+    expect(bundle.files).toHaveLength(16);
 
     const filesByType = new Map<string, { path: string; content: string }>();
     for (const file of bundle.files) {
@@ -139,7 +171,7 @@ describe('createGameModeBundle', () => {
         : file.metadata?.assetType;
       expect(assetType).toBeDefined();
       const validation = validateAssetFile(parsed);
-      expect(validation.success, file.path).toBe(true);
+      expect(validation.success, `${file.path}: ${formatValidationResult(validation)}`).toBe(true);
       filesByType.set(assetType as string, { path: file.path, content: file.content });
     }
 
@@ -180,7 +212,10 @@ describe('createGameModeBundle', () => {
         }
       }
     };
-    collectGuids(data);
+    for (const file of bundle.files) {
+      const parsed = JSON5.parse(file.content) as { data?: unknown };
+      collectGuids(parsed.data);
+    }
 
     const subAssetGuids = new Set(
       bundle.files
@@ -193,7 +228,7 @@ describe('createGameModeBundle', () => {
     );
 
     for (const guid of subAssetGuids) {
-      expect(refGuids.has(guid), `Main game should reference sub-asset guid ${guid}`).toBe(true);
+      expect(refGuids.has(guid), `Asset graph should reference sub-asset guid ${guid}`).toBe(true);
     }
 
     expect(bundle.mainAssetPath).toMatch(/\/solitaire\.asset$/);
@@ -207,26 +242,21 @@ describe('createGameModeBundle', () => {
       processedGamePath: threeCardBragPath,
     });
 
-    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Imported/three-card-brag/three-card-brag.asset');
-    expect(bundle.files).toHaveLength(8);
+    expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Imported/brag-3-card/brag-3-card.asset');
+    expect(bundle.files).toHaveLength(16);
 
     const assetTypes = bundle.files.map((file) => {
       const parsed = JSON5.parse(file.content) as { system?: { assetType?: string } };
       const validation = validateAssetFile(parsed);
-      expect(validation.success, file.path).toBe(true);
+      expect(validation.success, `${file.path}: ${formatValidationResult(validation)}`).toBe(true);
       return parsed.system?.assetType;
     });
 
-    expect(assetTypes).toContain('CardGameMode');
-    expect(assetTypes).toContain('CardGameRules');
-    expect(assetTypes).toContain('Strategy');
-    expect(assetTypes).toContain('CardGameScoring');
-    expect(assetTypes).toContain('GameInfo');
-    expect(assetTypes).toContain('CardGameLayout');
-    expect(assetTypes).toContain('ImageCarousel');
-    expect(assetTypes).toContain('CardGameMechanics');
+    for (const assetType of requiredAssetTypes) {
+      expect(assetTypes).toContain(assetType);
+    }
 
-    const mainAsset = bundle.files.find((file) => file.path.endsWith('/three-card-brag.asset'));
+    const mainAsset = bundle.files.find((file) => file.path.endsWith('/brag-3-card.asset'));
     expect(mainAsset).toBeDefined();
 
     const parsedMain = JSON5.parse(mainAsset!.content) as {

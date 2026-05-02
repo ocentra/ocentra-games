@@ -1,20 +1,69 @@
-import type { ImageHash, GameId, AssetGUIDType } from '@ocentra/boundary-domain/types/asset-identifiers';
+import { Schema } from '@ocentra/schema-domain/effect';
+import {
+  decodeAssetGUID,
+  decodeGameId,
+  decodeImageHash,
+  type ImageHash,
+  type GameId,
+  type AssetGUIDType,
+} from '@ocentra/boundary-domain/types/asset-identifiers';
 export type { ImageHash, GameId, AssetGUIDType } from '@ocentra/boundary-domain/types/asset-identifiers';
-
-export type AssetHash = string & { readonly __brand: 'AssetHash' };
-export type AssetChecksum = string & { readonly __brand: 'AssetChecksum' };
-export type SoundHash = string & { readonly __brand: 'SoundHash' };
-export type VideoHash = string & { readonly __brand: 'VideoHash' };
-export type AssetURL = string & { readonly __brand: 'AssetURL' };
-export type AssetPath = string & { readonly __brand: 'AssetPath' };
-export type ModelPath = string & { readonly __brand: 'ModelPath' };
-export type QuantPath = string & { readonly __brand: 'QuantPath' };
-
-export type AssetIdentifier = AssetGUIDType | AssetHash | AssetChecksum | ImageHash;
 
 const HASH_REGEX = /^[a-f0-9]{64}$/i;
 const CHECKSUM_REGEX = /^[a-f0-9]{32,64}$/i;
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const NonEmptyString = Schema.String.pipe(Schema.minLength(1));
+const HashString = Schema.String.pipe(
+  Schema.filter((value) => HASH_REGEX.test(value) || 'Expected a 64-character hex hash'),
+);
+
+export const AssetHashSchema = HashString.pipe(Schema.brand('AssetHash'));
+export type AssetHash = typeof AssetHashSchema.Type;
+
+export const AssetChecksumSchema = Schema.String.pipe(
+  Schema.filter((value) => CHECKSUM_REGEX.test(value) && !HASH_REGEX.test(value) || 'Expected a 32-63 character checksum'),
+  Schema.brand('AssetChecksum'),
+);
+export type AssetChecksum = typeof AssetChecksumSchema.Type;
+
+export const SoundHashSchema = HashString.pipe(Schema.brand('SoundHash'));
+export type SoundHash = typeof SoundHashSchema.Type;
+
+export const VideoHashSchema = HashString.pipe(Schema.brand('VideoHash'));
+export type VideoHash = typeof VideoHashSchema.Type;
+
+export const AssetURLSchema = NonEmptyString.pipe(
+  Schema.filter((value) => {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return 'Expected an absolute asset URL';
+    }
+  }),
+  Schema.brand('AssetURL'),
+);
+export type AssetURL = typeof AssetURLSchema.Type;
+
+export const AssetPathSchema = NonEmptyString.pipe(Schema.brand('AssetPath'));
+export type AssetPath = typeof AssetPathSchema.Type;
+
+export const ModelPathSchema = NonEmptyString.pipe(Schema.brand('ModelPath'));
+export type ModelPath = typeof ModelPathSchema.Type;
+
+export const QuantPathSchema = NonEmptyString.pipe(Schema.brand('QuantPath'));
+export type QuantPath = typeof QuantPathSchema.Type;
+
+export const decodeAssetHash = Schema.decodeUnknownSync(AssetHashSchema);
+export const decodeAssetChecksum = Schema.decodeUnknownSync(AssetChecksumSchema);
+export const decodeSoundHash = Schema.decodeUnknownSync(SoundHashSchema);
+export const decodeVideoHash = Schema.decodeUnknownSync(VideoHashSchema);
+export const decodeAssetURL = Schema.decodeUnknownSync(AssetURLSchema);
+export const decodeAssetPath = Schema.decodeUnknownSync(AssetPathSchema);
+export const decodeModelPath = Schema.decodeUnknownSync(ModelPathSchema);
+export const decodeQuantPath = Schema.decodeUnknownSync(QuantPathSchema);
+
+export type AssetIdentifier = AssetGUIDType | AssetHash | AssetChecksum | ImageHash;
 
 export function isAssetGUID(value: string): value is AssetGUIDType {
   return UUID_REGEX.test(value);
@@ -46,16 +95,16 @@ export function isAssetIdentifier(value: string): value is AssetIdentifier {
 
 export function toAssetIdentifier(value: string): AssetIdentifier {
   if (isAssetGUID(value)) {
-    return value as AssetGUIDType;
+    return decodeAssetGUID(value);
   }
   if (isImageHash(value)) {
-    return value as ImageHash;
+    return decodeImageHash(value);
   }
   if (isAssetHash(value)) {
-    return value as AssetHash;
+    return decodeAssetHash(value);
   }
   if (isAssetChecksum(value)) {
-    return value as AssetChecksum;
+    return decodeAssetChecksum(value);
   }
   throw new Error(`Invalid asset identifier format: ${value}. Must be GUID, hash (64 hex chars), or checksum (32-64 hex chars).`);
 }
@@ -81,7 +130,7 @@ export function asGameId(value: string): GameId {
   if (!GAME_ID_REGEX.test(trimmed)) {
     throw new Error(`Invalid GameId format: "${value}". Must start with a letter and contain only letters/numbers (e.g., "Claim", "ThreeCardBrag").`);
   }
-  return trimmed as GameId;
+  return decodeGameId(trimmed);
 }
 
 export function tryGameId(value: string): GameId | null {

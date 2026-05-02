@@ -8,13 +8,13 @@
 .dock-panel {
   background: #1e1e1e;
   border: 1px solid #333;
-  min-width: 150px !important; /* Minimum width that allows 'icon-only' tabs to be visible without squashing content */
+  min-width: 120px !important; /* Minimum width that allows icon-only tabs without blocking narrow previews */
   container-type: inline-size; /* Enable container queries for responsive tab content */
 }
 
 /* Specific minimums for the main workspace area to prevent it from disappearing */
 .dock-panel:has(.preview-panel) {
-  min-width: 400px !important; 
+  min-width: 240px !important;
 }
 
 /* Allow sidebar/inspector to go smaller only if they specifically support it, 
@@ -69,16 +69,22 @@
 /* Resize dividers — 8px grab area, 1px visual line via ::before */
 .dock-hbox > .dock-divider {
   transform: scaleX(1) !important;
-  flex: 0 0 8px !important;
+  flex: 0 0 10px !important;
   background: transparent !important;
+  cursor: col-resize;
   position: relative;
+  z-index: 20;
+  touch-action: none;
 }
 
 .dock-vbox > .dock-divider {
   transform: scaleY(1) !important;
-  flex: 0 0 8px !important;
+  flex: 0 0 10px !important;
   background: transparent !important;
+  cursor: row-resize;
   position: relative;
+  z-index: 20;
+  touch-action: none;
 }
 
 .dock-hbox > .dock-divider::before {
@@ -298,20 +304,18 @@
   height: 100%;
 }
 
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(1),
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(2) {
+.editor-dock-container--hide-inspector
+  > .dock-layout
+  > .dock-box.dock-hbox:first-child
+  > .dock-panel:has(.inspector-panel),
+.editor-dock-container--hide-inspector
+  > .dock-layout
+  > .dock-box.dock-hbox:first-child
+  > .dock-divider:has(+ .dock-panel .inspector-panel) {
   display: none !important;
   flex: 0 0 0 !important;
   min-width: 0 !important;
   overflow: hidden !important;
-}
-
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-child(1) {
-  flex: 0 0 25% !important;
-}
-
-.editor-dock-container--hide-inspector .dock-layout .dock-hbox > *:nth-last-child(3) {
-  flex: 1 1 auto !important;
 }
 
 .dock-fallback-new-window {
@@ -321,6 +325,6 @@
   pointer-events: none;
 }
 
-body.dock-dragging .dock-fallback-new-window {
+.dock-fallback-new-window--active {
   pointer-events: auto;
 }

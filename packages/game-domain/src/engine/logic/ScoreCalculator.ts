@@ -1,4 +1,5 @@
 import { type Card, type Player, type GameState } from '@/types/game';
+import { runtimePiecesToCards } from '@/deck/runtimeDeck';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -53,9 +54,10 @@ export class ScoreCalculator {
 
   private calculateDeclaredScore(player: Player): ScoreBreakdown {
     const declaredSuit = player.declaredSuit!;
+    const hand = runtimePiecesToCards(player.hand);
 
-    const suitCards = player.hand.filter((card) => card.suit === declaredSuit);
-    const penaltyCards = player.hand.filter((card) => card.suit !== declaredSuit);
+    const suitCards = hand.filter((card) => card.suit === declaredSuit);
+    const penaltyCards = hand.filter((card) => card.suit !== declaredSuit);
 
     const declaredSuitSequences = this.findSequences(suitCards);
     const penaltySequences = this.findSequences(penaltyCards);
@@ -103,7 +105,7 @@ export class ScoreCalculator {
   }
 
   private calculateUndeclaredPenalty(player: Player): ScoreBreakdown {
-    const allSequences = this.findSequences(player.hand);
+    const allSequences = this.findSequences(runtimePiecesToCards(player.hand));
     const sequencePoints = this.calculateSequencePoints(allSequences);
     const handSize = player.hand.length;
     const totalScore = -(sequencePoints * handSize);

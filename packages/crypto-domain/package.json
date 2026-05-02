@@ -20,7 +20,8 @@
   "scripts": {
     "build": "tsc && tsc-alias && node ../../scripts/fix-esm-imports.mjs",
     "type-check": "tsc --noEmit",
-    "lint": "eslint --cache src tests && tsc --noEmit",
+    "lint": "npm run lint:exec && npm run type-check",
+    "lint:exec": "eslint --cache src tests",
     "lint:eslint": "eslint --cache src tests",
     "lint:fix": "eslint --cache src tests --fix",
     "test": "vitest run",

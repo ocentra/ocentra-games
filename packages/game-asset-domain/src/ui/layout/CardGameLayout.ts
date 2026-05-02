@@ -2,14 +2,7 @@ import 'reflect-metadata';
 import { serializable, serializableClass } from '@ocentra/asset-domain/serialization/decorators';
 import { Layout } from '@/ui/layout/Layout';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import type { CardGameLayoutDocument, LayoutPreset } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import { cloneCardGameLayoutDocument, createDefaultCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
@@ -86,30 +79,7 @@ export class CardGameLayout extends Layout {
   extensions: Record<string, unknown> = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT).extensions;
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[CardGameLayout] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'CardGameLayout',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[CardGameLayout] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'CardGameLayout',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('CardGameLayout', context.gameId);
     const assetId = `${context.gameId}-layout`;
     const data = cloneCardGameLayoutDocument(DEFAULT_DOCUMENT) as unknown as Record<string, unknown>;
 

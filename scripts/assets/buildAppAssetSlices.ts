@@ -17,7 +17,7 @@ import {
   type GameCatalogDocument,
   type GameCatalogEntry,
 } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
-import { GameHomeSchema, type GameHome } from '@ocentra/game-asset-domain/schemas/game-home-schema';
+import { GameHomeSchema, type GameHome, type GameHomeBadge } from '@ocentra/game-asset-domain/schemas/game-home-schema';
 import { GamePageSchema, type GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
 import { GameEngineSchema, type GameEngine } from '@ocentra/game-asset-domain/schemas/game-engine-schema';
 import {
@@ -28,6 +28,16 @@ import {
   FeatureBannerItemSchema,
   type FeatureBannerItem,
 } from '@ocentra/game-asset-domain/schemas/feature-banner-item-schema';
+import {
+  FeaturedShowcaseControlsSchema,
+  HomeShowcaseFrameControlsSchema,
+  HomepageLayoutControlsSchema,
+  HomePageGamesDocumentSchema,
+  type FeaturedShowcaseControlsData,
+  type HomeShowcaseFrameControlsData,
+  type HomepageLayoutControlsData,
+  type HomePageGamesDocument,
+} from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
 
 type AssetDocument = {
   system?: Record<string, unknown>;
@@ -44,12 +54,7 @@ type BuiltAppAssetSlices = {
   resourcesDir: string;
   outDir: string;
   entryIndex: EntryIndexDocument;
-  home: {
-    featured: GameHome[];
-    comingSoon: ComingSoonTeaser[];
-    availableNow: GameHome[];
-    featureBannerItems: FeatureBannerItem[];
-  };
+  home: HomePageGamesDocument;
   games: GameCatalogDocument;
   pages: Record<string, GamePage>;
   engines: Record<string, GameEngine>;
@@ -72,6 +77,20 @@ function asStringArray(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) return undefined;
   const filtered = value.filter((item): item is string => typeof item === 'string' && item.length > 0);
   return filtered.length > 0 ? filtered : undefined;
+}
+
+function asGameHomeBadges(value: unknown): GameHomeBadge[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const badges = value
+    .map((item) => {
+      const record = asRecord(item);
+      const label = asString(record?.label);
+      if (!label) return null;
+      const tone = asString(record?.tone);
+      return tone ? { label, tone } : { label };
+    })
+    .filter((item): item is GameHomeBadge => item !== null);
+  return badges.length > 0 ? badges : undefined;
 }
 
 function asNumber(value: unknown): number | undefined {
@@ -313,6 +332,33 @@ function buildCarouselHashes(carouselDoc: AssetDocument | null): {
   defaultRotationDurationMs: number | undefined;
   fastRotationThreshold: number | undefined;
   slideTransitionDelayMs: number | undefined;
+  playbackMode: string | undefined;
+  transitionType: string | undefined;
+  transitionDurationMs: number | undefined;
+  logoImageHash: string | undefined;
+  logoAlt: string | undefined;
+  logoStartMs: number | undefined;
+  logoDurationMs: number | undefined;
+  logoScaleFrom: number | undefined;
+  logoScaleTo: number | undefined;
+  logoOpacityFrom: number | undefined;
+  logoOpacityTo: number | undefined;
+  logoVisibleFromIndex: number | undefined;
+  logoVisibleToIndex: number | undefined;
+  titleText: string | undefined;
+  titleTextColor: string | undefined;
+  titleTextStartMs: number | undefined;
+  titleTextDurationMs: number | undefined;
+  titleTextScaleFrom: number | undefined;
+  titleTextScaleTo: number | undefined;
+  titleTextOpacityFrom: number | undefined;
+  titleTextOpacityTo: number | undefined;
+  titleTextVisibleFromIndex: number | undefined;
+  titleTextVisibleToIndex: number | undefined;
+  overlayTintColor: string | undefined;
+  overlayTintOpacity: number | undefined;
+  vignetteOpacity: number | undefined;
+  fadeToBlackOpacity: number | undefined;
 } {
   const carouselData = carouselDoc?.data ?? null;
   const slides = Array.isArray(carouselData?.slides) ? carouselData.slides : [];
@@ -327,6 +373,33 @@ function buildCarouselHashes(carouselDoc: AssetDocument | null): {
     defaultRotationDurationMs: asNumber(carouselData?.defaultRotationDurationMs),
     fastRotationThreshold: asNumber(carouselData?.fastRotationThreshold),
     slideTransitionDelayMs: asNumber(carouselData?.slideTransitionDelayMs),
+    playbackMode: asString(carouselData?.playbackMode),
+    transitionType: asString(carouselData?.transitionType),
+    transitionDurationMs: asNumber(carouselData?.transitionDurationMs),
+    logoImageHash: asString(carouselData?.logoImageHash),
+    logoAlt: asString(carouselData?.logoAlt),
+    logoStartMs: asNumber(carouselData?.logoStartMs),
+    logoDurationMs: asNumber(carouselData?.logoDurationMs),
+    logoScaleFrom: asNumber(carouselData?.logoScaleFrom),
+    logoScaleTo: asNumber(carouselData?.logoScaleTo),
+    logoOpacityFrom: asNumber(carouselData?.logoOpacityFrom),
+    logoOpacityTo: asNumber(carouselData?.logoOpacityTo),
+    logoVisibleFromIndex: asNumber(carouselData?.logoVisibleFromIndex),
+    logoVisibleToIndex: asNumber(carouselData?.logoVisibleToIndex),
+    titleText: asString(carouselData?.titleText),
+    titleTextColor: asString(carouselData?.titleTextColor),
+    titleTextStartMs: asNumber(carouselData?.titleTextStartMs),
+    titleTextDurationMs: asNumber(carouselData?.titleTextDurationMs),
+    titleTextScaleFrom: asNumber(carouselData?.titleTextScaleFrom),
+    titleTextScaleTo: asNumber(carouselData?.titleTextScaleTo),
+    titleTextOpacityFrom: asNumber(carouselData?.titleTextOpacityFrom),
+    titleTextOpacityTo: asNumber(carouselData?.titleTextOpacityTo),
+    titleTextVisibleFromIndex: asNumber(carouselData?.titleTextVisibleFromIndex),
+    titleTextVisibleToIndex: asNumber(carouselData?.titleTextVisibleToIndex),
+    overlayTintColor: asString(carouselData?.overlayTintColor),
+    overlayTintOpacity: asNumber(carouselData?.overlayTintOpacity),
+    vignetteOpacity: asNumber(carouselData?.vignetteOpacity),
+    fadeToBlackOpacity: asNumber(carouselData?.fadeToBlackOpacity),
   };
 }
 
@@ -393,6 +466,8 @@ async function buildGameArtifacts(
     tagline2: asString(gameInfoData.tagline2),
     shortDescription: asString(gameInfoData.shortDescription),
     description: asString(gameInfoData.description),
+    featuredTopBadges: asGameHomeBadges(gameInfoData.featuredTopBadges),
+    featuredBottomBadges: asGameHomeBadges(gameInfoData.featuredBottomBadges),
     textImageUrl: asString(gameInfoData.gameIconImage),
     minPlayers: asNumber(gameInfoData.minPlayers) ?? asNumber(gameData.minPlayers),
     maxPlayers: asNumber(gameInfoData.maxPlayers) ?? asNumber(gameData.maxPlayers),
@@ -401,6 +476,33 @@ async function buildGameArtifacts(
     carouselDefaultRotationDurationMs: carouselMeta.defaultRotationDurationMs,
     carouselFastRotationThreshold: carouselMeta.fastRotationThreshold,
     carouselSlideTransitionDelayMs: carouselMeta.slideTransitionDelayMs,
+    carouselPlaybackMode: carouselMeta.playbackMode,
+    carouselTransitionType: carouselMeta.transitionType,
+    carouselTransitionDurationMs: carouselMeta.transitionDurationMs,
+    bannerLogoImage: carouselMeta.logoImageHash,
+    bannerLogoAlt: carouselMeta.logoAlt,
+    bannerLogoStartMs: carouselMeta.logoStartMs,
+    bannerLogoDurationMs: carouselMeta.logoDurationMs,
+    bannerLogoScaleFrom: carouselMeta.logoScaleFrom,
+    bannerLogoScaleTo: carouselMeta.logoScaleTo,
+    bannerLogoOpacityFrom: carouselMeta.logoOpacityFrom,
+    bannerLogoOpacityTo: carouselMeta.logoOpacityTo,
+    bannerLogoVisibleFromIndex: carouselMeta.logoVisibleFromIndex,
+    bannerLogoVisibleToIndex: carouselMeta.logoVisibleToIndex,
+    bannerTitleText: carouselMeta.titleText,
+    bannerTitleColor: carouselMeta.titleTextColor,
+    bannerTitleStartMs: carouselMeta.titleTextStartMs,
+    bannerTitleDurationMs: carouselMeta.titleTextDurationMs,
+    bannerTitleScaleFrom: carouselMeta.titleTextScaleFrom,
+    bannerTitleScaleTo: carouselMeta.titleTextScaleTo,
+    bannerTitleOpacityFrom: carouselMeta.titleTextOpacityFrom,
+    bannerTitleOpacityTo: carouselMeta.titleTextOpacityTo,
+    bannerTitleVisibleFromIndex: carouselMeta.titleTextVisibleFromIndex,
+    bannerTitleVisibleToIndex: carouselMeta.titleTextVisibleToIndex,
+    bannerOverlayTintColor: carouselMeta.overlayTintColor,
+    bannerOverlayTintOpacity: carouselMeta.overlayTintOpacity,
+    bannerVignetteOpacity: carouselMeta.vignetteOpacity,
+    bannerFadeToBlackOpacity: carouselMeta.fadeToBlackOpacity,
     gameCategory: asString(gameInfoData.gameCategory) ?? asString(gameSystem.gameModeCategory),
     subcategory: asNullableString(gameInfoData.subcategory),
     difficulty: asString(gameInfoData.difficulty),
@@ -485,6 +587,90 @@ async function buildFeatureBannerItems(
   });
 }
 
+function buildCatalogMontageImages(resources: AssetIndexResourceEntry[]): ComingSoonTeaser[] {
+  return resources
+    .filter((resource) => {
+      const normalizedPath = resource.path.replace(/\\/g, '/');
+      return (
+        resource.resourceEntryType === 'ImageResourceEntry' &&
+        normalizedPath.includes('AppAssets/PlaceHolders/') &&
+        typeof resource.hash === 'string' &&
+        resource.hash.length > 0
+      );
+    })
+    .map((resource) => {
+      const fileName = path.basename(resource.path);
+      const name = fileName
+        .replace(/\.[^.]+$/, '')
+        .replace(/[_-]+/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+      return ComingSoonTeaserSchema.parse({
+        id: resource.hash,
+        name,
+        bannerImage: resource.hash,
+        alt: name,
+      });
+    });
+}
+
+async function readFeaturedShowcaseControls(
+  resourcesDir: string,
+  fileName = 'featuredShowcaseControls.json'
+): Promise<FeaturedShowcaseControlsData | undefined> {
+  try {
+    const raw = await fs.readFile(
+      path.join(resourcesDir, 'Content', 'Home', fileName),
+      'utf8'
+    );
+    const parsed = FeaturedShowcaseControlsSchema.parse(JSON5.parse(raw));
+    return {
+      ...parsed,
+      overall: {
+        ...parsed.overall,
+        debugBounds: false,
+      },
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+async function readHomeShowcaseFrameControls(
+  resourcesDir: string,
+  fileName: string
+): Promise<HomeShowcaseFrameControlsData | undefined> {
+  try {
+    const raw = await fs.readFile(
+      path.join(resourcesDir, 'Content', 'Home', fileName),
+      'utf8'
+    );
+    const parsed = HomeShowcaseFrameControlsSchema.parse(JSON5.parse(raw));
+    return {
+      ...parsed,
+      overall: {
+        ...parsed.overall,
+        debugBounds: false,
+      },
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+async function readHomepageLayoutControls(
+  resourcesDir: string
+): Promise<HomepageLayoutControlsData | undefined> {
+  try {
+    const raw = await fs.readFile(
+      path.join(resourcesDir, 'Content', 'Home', 'homepageLayoutControls.json'),
+      'utf8'
+    );
+    return HomepageLayoutControlsSchema.parse(JSON5.parse(raw));
+  } catch {
+    return undefined;
+  }
+}
+
 async function cleanOutputDir(outDir: string): Promise<void> {
   await fs.rm(outDir, { recursive: true, force: true });
   await ensureDir(outDir);
@@ -522,18 +708,36 @@ export async function buildAppAssetSlices(
   });
   const comingSoon = await buildComingSoonTeasers(resourcesDir, resources);
   const featureBannerItems = await buildFeatureBannerItems(resourcesDir, resources);
+  const catalogMontageImages = buildCatalogMontageImages(resources);
+  const featuredShowcaseControls = await readFeaturedShowcaseControls(resourcesDir);
+  const aboutShowcaseControls = await readHomeShowcaseFrameControls(
+    resourcesDir,
+    'aboutShowcaseControls.json'
+  );
+  const comingSoonShowcaseControls = await readFeaturedShowcaseControls(
+    resourcesDir,
+    'comingSoonShowcaseControls.json'
+  );
+  const homepageLayoutControls = await readHomepageLayoutControls(resourcesDir);
   const featured = builtGames
     .map((artifact) => artifact.home)
     .filter((game) => game.enabled);
   const availableNow = featured.filter((game) => game.releaseStatus === 'Available');
   const recommended = [...featured];
-  const home = {
+  const home = HomePageGamesDocumentSchema.parse({
     featured,
     recommended,
     comingSoon,
+    catalogMontageImages,
     availableNow,
     featureBannerItems,
-  };
+    ...(featuredShowcaseControls ? { featuredShowcaseControls } : {}),
+    ...(aboutShowcaseControls ? { aboutShowcaseControls } : {}),
+    ...(comingSoonShowcaseControls || featuredShowcaseControls
+      ? { comingSoonShowcaseControls: comingSoonShowcaseControls ?? featuredShowcaseControls }
+      : {}),
+    ...(homepageLayoutControls ? { homepageLayoutControls } : {}),
+  });
 
   await cleanOutputDir(outDir);
   await writeJsonFile(path.join(outDir, AssetContentSlicePath.EntryIndex), entryIndex);

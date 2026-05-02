@@ -1,5 +1,5 @@
 import type { Env } from '@/constants/env';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
 import { verifyAuth } from '@/utils/auth';
@@ -134,7 +134,7 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   if (request.method === HttpMethod.Post) {
     const isCreateRoom = path.includes(LobbyDOSegment.Rooms) && !isJoin && !isLeave && !isSpectate;
     if (isCreateRoom) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, RoomCreateRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, RoomCreateRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       const roomId = body.roomId ?? crypto.randomUUID();
@@ -150,7 +150,7 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
       return new Response(JSON.stringify(dataCreate), { status: resCreate.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
     }
     if (isJoin || isLeave) {
-      const { data, errorResponse } = await validateZodBody(
+      const { data, errorResponse } = await validateSchemaBody(
         request.clone(),
         env,
         isJoin ? RoomJoinRequestSchema : RoomLeaveRequestSchema
@@ -159,7 +159,7 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
       bodyText = JSON.stringify(data!);
     }
     if (isSpectate) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, RoomSpectateRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, RoomSpectateRequestSchema);
       if (errorResponse) return errorResponse;
       bodyText = JSON.stringify(data!);
     }
@@ -217,7 +217,7 @@ export async function handleMatchmakingRequest(request: Request, env: Env, path:
   let validatedBody: string | undefined;
   if (method === HttpMethod.Post || method === HttpMethod.Put) {
     if (isLeave) {
-      const { data, errorResponse } = await validateZodBody(
+      const { data, errorResponse } = await validateSchemaBody(
         request.clone(),
         env,
         MatchmakingLeaveRequestSchema
@@ -226,7 +226,7 @@ export async function handleMatchmakingRequest(request: Request, env: Env, path:
       const body = data!;
       validatedBody = JSON.stringify({ userId: body.userId, ticketId: body.ticketId });
     } else {
-      const { data, errorResponse } = await validateZodBody(
+      const { data, errorResponse } = await validateSchemaBody(
         request.clone(),
         env,
         MatchmakingQueueRequestSchema
@@ -268,7 +268,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     if (!ns) return stubJson(env, { friends: [] });
     const stub = ns.get(ns.idFromName(shardKey));
     const doPath = PresenceDOPaths.Block(shardKey);
-    const { data: bData, errorResponse: bErr } = await validateZodBody(request.clone(), env, PresenceBlockRequestSchema);
+    const { data: bData, errorResponse: bErr } = await validateSchemaBody(request.clone(), env, PresenceBlockRequestSchema);
     if (bErr) return bErr;
     const res = await doFetch(stub, doPath, { method: HttpMethod.Post, body: JSON.stringify({ ...bData, userId, targetId }) });
     const data = await res.json().catch(() => ({}));
@@ -305,7 +305,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     const stub = ns.get(ns.idFromName(shardKey));
     if (request.method === HttpMethod.Post) {
       const doPath = PresenceDOPaths.Friends(shardKey);
-      const { data: fPData, errorResponse: fPErr } = await validateZodBody(request.clone(), env, PresenceFriendRequestSchema);
+      const { data: fPData, errorResponse: fPErr } = await validateSchemaBody(request.clone(), env, PresenceFriendRequestSchema);
       if (fPErr) return fPErr;
       const res = await doFetch(stub, doPath, { method: HttpMethod.Post, body: JSON.stringify({ ...fPData, userId, friendId }) });
       const data = await res.json().catch(() => ({}));
@@ -316,7 +316,7 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
     }
     if (request.method === HttpMethod.Delete) {
       const doPath = PresenceDOPaths.Friends(shardKey);
-      const { data: fDData, errorResponse: fDErr } = await validateZodBody(request.clone(), env, PresenceFriendDeleteRequestSchema);
+      const { data: fDData, errorResponse: fDErr } = await validateSchemaBody(request.clone(), env, PresenceFriendDeleteRequestSchema);
       if (fDErr) return fDErr;
       const res = await doFetch(stub, doPath, { method: HttpMethod.Delete, body: JSON.stringify({ ...fDData, userId, friendId }) });
       const data = await res.json().catch(() => ({}));
@@ -345,7 +345,7 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for typing');
     if (authResult instanceof Response) return authResult;
     const fromUserId = authResult.userId;
-    const { data, errorResponse: bodyResultError } = await validateZodBody(request, env, PresenceTypingRequestSchema); if (bodyResultError) return bodyResultError;
+    const { data, errorResponse: bodyResultError } = await validateSchemaBody(request, env, PresenceTypingRequestSchema); if (bodyResultError) return bodyResultError;
     const body = data!;
     const conversationId = body.conversationId ?? '';
     if (!conversationId) return stubJson(env, { delivered: 0 });
@@ -376,15 +376,15 @@ export async function handlePresenceRequest(request: Request, env: Env, path: st
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (path.endsWith(PresenceDOSegment.Friends)) {
-      const { data: friendBody, errorResponse: friendError } = await validateZodBody(request.clone(), env, PresenceFriendPathRequestSchema);
+      const { data: friendBody, errorResponse: friendError } = await validateSchemaBody(request.clone(), env, PresenceFriendPathRequestSchema);
       if (friendError) return friendError;
       validatedGenericBody = JSON.stringify(friendBody);
     } else if (path.endsWith(PresenceDOSegment.Block)) {
-      const { data: blockBody, errorResponse: blockError } = await validateZodBody(request.clone(), env, PresenceBlockPathRequestSchema);
+      const { data: blockBody, errorResponse: blockError } = await validateSchemaBody(request.clone(), env, PresenceBlockPathRequestSchema);
       if (blockError) return blockError;
       validatedGenericBody = JSON.stringify(blockBody);
     } else {
-      const { data: statusBody, errorResponse: statusError } = await validateZodBody(request.clone(), env, PresenceStatusUpdateRequestSchema);
+      const { data: statusBody, errorResponse: statusError } = await validateSchemaBody(request.clone(), env, PresenceStatusUpdateRequestSchema);
       if (statusError) return statusError;
       validatedGenericBody = JSON.stringify(statusBody);
     }
@@ -447,7 +447,7 @@ export async function handleAuditRequest(request: Request, env: Env, path: strin
       const bodyText = await request.clone().text();
       validatedGenericBody = bodyText.trim().length > 0 ? bodyText : JSON.stringify({ filters: {} });
     } else {
-      const { data: eventData, errorResponse: eventError } = await validateZodBody(request.clone(), env, AuditEventSchema);
+      const { data: eventData, errorResponse: eventError } = await validateSchemaBody(request.clone(), env, AuditEventSchema);
       if (eventError) return eventError;
       validatedGenericBody = JSON.stringify(eventData);
     }
@@ -491,7 +491,7 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (doPath === ProgressionDOPaths.Xp) {
-      const { data: xpData, errorResponse: xpError } = await validateZodBody(request.clone(), env, ProgressionXpRequestSchema);
+      const { data: xpData, errorResponse: xpError } = await validateSchemaBody(request.clone(), env, ProgressionXpRequestSchema);
       if (xpError) return xpError;
       const amount = typeof xpData?.amount === 'number' ? xpData.amount : typeof xpData?.xpAwarded === 'number' ? xpData.xpAwarded : 0;
       validatedGenericBody = JSON.stringify({
@@ -502,7 +502,7 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
     } else if (doPath === ProgressionDOPaths.UnlockSkill || doPath === ProgressionDOPaths.UpdateAchievement) {
       validatedGenericBody = await request.clone().text();
     } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, EmptyObjectSchema);
+      const { data: genData, errorResponse: genError } = await validateSchemaBody(request.clone(), env, EmptyObjectSchema);
       if (genError) return genError;
       validatedGenericBody = JSON.stringify(genData);
     }
@@ -622,7 +622,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
       });
     }
     if (request.method === HttpMethod.Post) {
-      const { data, errorResponse } = await validateZodBody(request, env, SecurityPenaltyIssueRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request, env, SecurityPenaltyIssueRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       const issueUserId = body.userId ?? authUserId;
@@ -667,7 +667,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
   }
 
   if (pathParts[0] === 'penalty' && pathParts[1] === 'issue' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, SecurityPenaltyIssueRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, SecurityPenaltyIssueRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     const issueUserId = body.userId;
@@ -688,7 +688,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
   }
 
   if (pathParts[0] === 'appeal' && pathParts[1] !== 'review' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, PenaltyAppealRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, PenaltyAppealRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) {
@@ -711,7 +711,7 @@ export async function handleSecurityRequest(request: Request, env: Env, path: st
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const { data, errorResponse } = await validateZodBody(request, env, PenaltyAppealReviewRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, PenaltyAppealReviewRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) {
@@ -798,7 +798,7 @@ export async function handleFraudRequest(request: Request, env: Env, path: strin
       });
     }
     if (request.method === HttpMethod.Post) {
-      const { data, errorResponse } = await validateZodBody(request, env, FraudCheckPreviewRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request, env, FraudCheckPreviewRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       if (!ns) return stubJson(env, { risk: 'low', score: 0 });
@@ -820,7 +820,7 @@ export async function handleFraudRequest(request: Request, env: Env, path: strin
   }
 
   if (pathParts[0] === 'check' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, FraudCheckRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, FraudCheckRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) return stubJson(env, { risk: 'low', score: 0 });
@@ -887,7 +887,7 @@ export async function handleAntiCheatRequest(request: Request, env: Env, path: s
       });
     }
     if (request.method === HttpMethod.Post) {
-      const { data, errorResponse } = await validateZodBody(request, env, AntiCheatAnalyzeRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request, env, AntiCheatAnalyzeRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       if (!ns) return stubJson(env, { risk: 'low', score: 0, trustScore: 100 });
@@ -902,7 +902,7 @@ export async function handleAntiCheatRequest(request: Request, env: Env, path: s
   }
 
   if (pathParts[0] === 'analyze' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, AntiCheatAnalyzeRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, AntiCheatAnalyzeRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     if (!ns) return stubJson(env, { risk: 'low', score: 0, trustScore: 100 });
@@ -916,7 +916,7 @@ export async function handleAntiCheatRequest(request: Request, env: Env, path: s
   }
 
   if (pathParts[0] === 'report' && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, AntiCheatReportRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, AntiCheatReportRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     const payload = { reporterId: authUserId, ...body };
@@ -957,7 +957,7 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   const stub = ns.get(ns.idFromName(profileUserId));
 
   if (!pathParts[1] && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, ProfileUpdateRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileUpdateRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, ProfileDOPaths.Update, { method: HttpMethod.Post, body: JSON.stringify(data) });
     const result = await res.json().catch(() => ({}));
@@ -968,7 +968,7 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === ProfileDOSegment.Update && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, ProfileUpdateRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileUpdateRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, ProfileDOPaths.Update, { method: HttpMethod.Post, body: JSON.stringify(data) });
     const result = await res.json().catch(() => ({}));
@@ -979,7 +979,7 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === ProfileDOSegment.Avatar && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, ProfileAvatarRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileAvatarRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, ProfileDOPaths.Avatar, { method: HttpMethod.Post, body: JSON.stringify(data) });
     const result = await res.json().catch(() => ({}));
@@ -1002,7 +1002,7 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === ProfileDOSegment.AddBadge && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, ProfileBadgeRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileBadgeRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, ProfileDOPaths.AddBadge, { method: HttpMethod.Post, body: JSON.stringify(data) });
     const result = await res.json().catch(() => ({}));
@@ -1013,7 +1013,7 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === ProfileDOSegment.UpdateStats && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, ProfileStatsRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileStatsRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, ProfileDOPaths.UpdateStats, { method: HttpMethod.Post, body: JSON.stringify(data) });
     const result = await res.json().catch(() => ({}));
@@ -1055,7 +1055,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   const stub = ns.get(ns.idFromName(conversationId));
 
   if (!pathParts[1] && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, MessageSendRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, MessageSendRequestSchema);
     if (errorResponse) return errorResponse;
     const blockedTargets = parseConversationTargets(conversationId, authUserId);
     for (const targetUserId of blockedTargets) {
@@ -1078,7 +1078,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === MessageDOSegment.Send && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, MessageSendRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, MessageSendRequestSchema);
     if (errorResponse) return errorResponse;
     const blockedTargets = parseConversationTargets(conversationId, authUserId);
     for (const targetUserId of blockedTargets) {
@@ -1101,7 +1101,7 @@ export async function handleMessageRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === MessageDOSegment.ReadReceipt && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, MessageReadReceiptRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, MessageReadReceiptRequestSchema);
     if (errorResponse) return errorResponse;
     const res = await doFetch(stub, MessageDOPaths.ReadReceipt, {
       method: HttpMethod.Post,

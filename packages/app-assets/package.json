@@ -39,7 +39,8 @@
   "scripts": {
     "build": "tsc && node ../../scripts/fix-esm-imports.mjs && node scripts/fix-asset-imports.mjs && node scripts/copy-assets.mjs",
     "type-check": "tsc --noEmit",
-    "lint": "tsc --noEmit"
+    "lint": "npm run lint:exec && npm run type-check",
+    "lint:exec": "node -e \"process.exit(0)\""
   },
   "devDependencies": {
     "typescript": "^6.0.2"

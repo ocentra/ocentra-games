@@ -1,8 +1,19 @@
-export type StorageType = string & { readonly __brand: 'StorageType' };
+import { Schema } from '@ocentra/schema-domain/effect';
+
+export const StorageTypeSchema = Schema.String.pipe(
+  Schema.filter((value) => ['ephemeral', 'persistent'].includes(value.trim().toLowerCase()) || 'StorageType must be ephemeral or persistent'),
+  Schema.transform(Schema.String, {
+    decode: (value) => value.trim().toLowerCase(),
+    encode: (value) => value,
+  }),
+  Schema.brand('StorageType'),
+);
+export type StorageType = typeof StorageTypeSchema.Type;
+export const decodeStorageType = Schema.decodeUnknownSync(StorageTypeSchema);
 
 export const StorageType = {
-  Ephemeral: 'ephemeral' as StorageType,
-  Persistent: 'persistent' as StorageType,
+  Ephemeral: decodeStorageType('ephemeral'),
+  Persistent: decodeStorageType('persistent'),
 } as const;
 
 export type StorageTypeValue = (typeof StorageType)[keyof typeof StorageType];
@@ -22,7 +33,7 @@ export function asStorageType(value: string): StorageType {
       `StorageType must be one of: ${VALID_STORAGE.join(', ')}, got: "${value}"`
     );
   }
-  return normalized as StorageType;
+  return decodeStorageType(normalized);
 }
 
 export function asStorageTypeOrNull(
@@ -32,5 +43,5 @@ export function asStorageTypeOrNull(
     return null;
   }
   const normalized = value.trim().toLowerCase();
-  return VALID_STORAGE.includes(normalized) ? (normalized as StorageType) : null;
+  return VALID_STORAGE.includes(normalized) ? decodeStorageType(normalized) : null;
 }

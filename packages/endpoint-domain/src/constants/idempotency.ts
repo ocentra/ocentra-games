@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@/constants/errors';
 import { ValidationPattern } from '@/constants/validation-patterns';
+import { Schema } from '@ocentra/schema-domain/effect';
 
 export const IdempotencyKeyFormat = {
   UuidV4: 'uuid-v4',
@@ -40,7 +41,17 @@ export const MetadataField = {
 
 export type MetadataField = typeof MetadataField[keyof typeof MetadataField];
 
-export type IdempotencyKey = string & { readonly __brand: 'IdempotencyKey' };
+export const IdempotencyKeySchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.filter((value) => value.trim().length > 0 || ErrorMessage.IdempotencyKeyCannotBeEmpty),
+  Schema.filter((value) => value === value.trim() || ErrorMessage.IdempotencyKeyCannotHaveWhitespace),
+  Schema.filter((value) => value.length <= IdempotencyKeyLimits.MaxLength || `${ErrorMessage.IdempotencyKeyMustNotExceed} ${IdempotencyKeyLimits.MaxLength}${ErrorMessage.CharacterUnit.Plural}`),
+  Schema.filter((value) => IdempotencyKeyPattern.AllowedCharacters.test(value) || ErrorMessage.IdempotencyKeyMustContainOnly),
+  Schema.filter((value) => IdempotencyKeyPattern.UuidV4.test(value) || value.length >= IdempotencyKeyLimits.CustomMinLength || `${ErrorMessage.CustomIdempotencyKeyMinLength} ${IdempotencyKeyLimits.CustomMinLength}${ErrorMessage.CharacterUnit.Plural}`),
+  Schema.brand('IdempotencyKey'),
+);
+export type IdempotencyKey = typeof IdempotencyKeySchema.Type;
+export const decodeIdempotencyKey = Schema.decodeUnknownSync(IdempotencyKeySchema);
 
 export function asIdempotencyKey(value: string): IdempotencyKey {
   if (!value || typeof value !== 'string') {
@@ -68,5 +79,5 @@ export function asIdempotencyKey(value: string): IdempotencyKey {
     throw new Error(`${ErrorMessage.CustomIdempotencyKeyMinLength} ${IdempotencyKeyLimits.CustomMinLength}${ErrorMessage.CharacterUnit.Plural}`);
   }
 
-  return value as IdempotencyKey;
+  return decodeIdempotencyKey(value);
 }

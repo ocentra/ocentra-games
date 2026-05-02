@@ -1,7 +1,17 @@
 import { IdempotencyKeyPattern, IdempotencyKeyLimits } from './idempotency';
 import { ErrorMessage } from './errors';
+import { Schema } from '@ocentra/schema-domain/effect';
 
-export type MatchId = string & { readonly __brand: 'MatchId' };
+export const MatchIdSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.filter((value) => value.trim().length > 0 || ErrorMessage.MatchIdCannotBeEmpty),
+  Schema.filter((value) => value === value.trim() || ErrorMessage.MatchIdCannotHaveWhitespace),
+  Schema.filter((value) => value.length === IdempotencyKeyLimits.UuidV4Length || `${ErrorMessage.MatchIdMustBeExactLength} ${IdempotencyKeyLimits.UuidV4Length}${ErrorMessage.MatchIdCharactersUuidV4Format}`),
+  Schema.filter((value) => IdempotencyKeyPattern.UuidV4.test(value) || ErrorMessage.MatchIdMustBeValidUuidV4),
+  Schema.brand('MatchId'),
+);
+export type MatchId = typeof MatchIdSchema.Type;
+export const decodeMatchId = Schema.decodeUnknownSync(MatchIdSchema);
 
 export function asMatchId(value: string): MatchId {
   if (!value || typeof value !== 'string') {
@@ -25,7 +35,7 @@ export function asMatchId(value: string): MatchId {
     throw new Error(ErrorMessage.MatchIdMustBeValidUuidV4);
   }
 
-  return trimmed as MatchId;
+  return decodeMatchId(trimmed);
 }
 
 export function validateMatchId(value: string): { valid: boolean; matchId?: MatchId; error?: string } {

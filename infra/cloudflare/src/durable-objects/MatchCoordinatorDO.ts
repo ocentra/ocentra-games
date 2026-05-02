@@ -32,6 +32,7 @@ import type {
   MatchWSSyncMessage,
   MatchWSVoiceTextMessage,
 } from '@ocentra/endpoint-domain/types/cloudflare/matches';
+import { decodeUserId } from '@ocentra/endpoint-domain/types/cloudflare/common';
 
 export interface MatchState {
   matchId: MatchId;
@@ -385,7 +386,7 @@ export class MatchCoordinatorDO implements DurableObject {
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server, [this.getMatchTag(parsed.matchId)]);
     const attachment: MatchWSAttachment = {
-      userId: authResult.userId,
+      userId: decodeUserId(authResult.userId),
       matchId: parsed.matchId,
       connectedAt: Date.now(),
       playerIndex,
@@ -664,7 +665,7 @@ export class MatchCoordinatorDO implements DurableObject {
     const senderType = senderIsAi ? PlayerType.Ai : PlayerType.Human;
     const chatMessage: MatchChatMessage = {
       messageId: crypto.randomUUID(),
-      senderId,
+      senderId: decodeUserId(senderId),
       senderType,
       content,
       timestamp: now,

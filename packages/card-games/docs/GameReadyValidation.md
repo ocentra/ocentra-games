@@ -127,7 +127,7 @@ The `engine` object drives the game implementation. **If engine fields are NA/Un
 
 ## Engine Fields — Must Be Filled With Real Intelligence
 
-**NA everywhere = unplayable.** The engine needs real values to implement the game. See Zod schema in `src/schema/zod/game-schema.ts` for full spec.
+**NA everywhere = unplayable.** The engine needs real values to implement the game. See Effect Schema schema in `src/schema/effect/game-schema.ts` for full spec.
 
 ### engine.playerActions (CRITICAL)
 
@@ -210,7 +210,7 @@ Result: every game uses a named deck/suit/rank from the type files and compatibi
 |------|---------|
 | `packages/card-games/src/processed-games/` | Game JSON. Read and write. Fill gaps here. |
 | `packages/card-games/src/SourceHtml/` | Pre-downloaded source HTML. Use when available. |
-| `packages/card-games/src/schema/` | Zod game schema; [game_names_pagat.txt](src/schema/game_names_pagat.txt) |
+| `packages/card-games/src/schema/` | Effect Schema game schema; [game_names_pagat.txt](src/schema/game_names_pagat.txt) |
 | `packages/card-games/src/scripts/` | `validate-with-ts-schema.ts` — run via `npm run validate`. |
 
 ### Source lookup order
@@ -256,7 +256,7 @@ npm run validate
 
 ### Inspect & source lookup (steps 2–4)
 
-- Read JSON + Zod schema (game-schema.ts)
+- Read JSON + Effect Schema schema (game-schema.ts)
 - List gaps: validation errors + Unknown/NA/empty per heuristics
 - Check game_names_pagat.txt (src/schema/) for name + URL
 - Source order: game_names_pagat.txt → SourceHtml → web search
@@ -283,7 +283,7 @@ npm run validate
 - [ ] `sources.primary[].id` and `retrievedAt` (ISO date) set; URL correct
 - [ ] Engine-facing fields have no avoidable `Unknown` or empty strings
 - [ ] **engine.playerActions / customActions**: every action in phases.legalActions has supported=true with real description, constraints, effectType, cost — no NA for actions the game uses
-- [ ] `npm run validate` passes (Zod schema: validate-with-ts-schema.ts)
+- [ ] `npm run validate` passes (Effect Schema schema: validate-with-ts-schema.ts)
 - [ ] `extraction.status` = `validated` when complete
 - [ ] Commit every 10–15 files
 

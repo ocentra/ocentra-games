@@ -2,7 +2,7 @@
 
 import fs from "fs";
 import path from "path";
-import { GameSchema } from "@/schema/zod/game-schema";
+import { GameSchema } from "@/schema/effect/game-schema";
 
 const file = process.argv[2];
 if (!file) {

@@ -1,7 +1,7 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 
 import { 
   SyncFromSolanaRequestSchema, 
@@ -65,7 +65,7 @@ export async function handleSyncRequest(
   if (path === ApiEndpoint.Sync.FromSolana && request.method === HttpMethod.Post) {
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for sync');
     if (authResult instanceof Response) return authResult;
-    const validation = await validateZodBody(request, env, SyncFromSolanaRequestSchema);
+    const validation = await validateSchemaBody(request, env, SyncFromSolanaRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     const matchId = body.matchId ?? '';
@@ -112,7 +112,7 @@ export async function handleSyncRequest(
   if (path === ApiEndpoint.Sync.Reconcile && request.method === HttpMethod.Post) {
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for sync');
     if (authResult instanceof Response) return authResult;
-    const validation = await validateZodBody(request, env, SyncReconcileRequestSchema);
+    const validation = await validateSchemaBody(request, env, SyncReconcileRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     const report = await sync.reconcile(body.matchId);

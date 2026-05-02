@@ -1,45 +1,45 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { UUIDSchema } from '@/schemas/common';
 
-export const AIEscrowStatusSchema = z.enum(['RESERVED', 'CONSUMED', 'SETTLED', 'EXPIRED', 'FAILED']);
+export const AIEscrowStatusSchema = schema.enum(['RESERVED', 'CONSUMED', 'SETTLED', 'EXPIRED', 'FAILED']);
 
-export type AIEscrowStatus = z.infer<typeof AIEscrowStatusSchema>;
+export type AIEscrowStatus = schema.infer<typeof AIEscrowStatusSchema>;
 
-export const AIEscrowSchema = z.object({
+export const AIEscrowSchema = schema.object({
   escrowId: UUIDSchema,
-  userId: z.string(),
-  reservedAmount: z.number().positive(),
-  reservedAt: z.number(),
-  expiresAt: z.number(),
-  actualTokensUsed: z.number().optional(),
-  actualCost: z.number().optional(),
-  chargedAmount: z.number().optional(),
-  refundedAmount: z.number().optional(),
-  modelVersion: z.string(),
-  promptHash: z.string(),
+  userId: schema.string(),
+  reservedAmount: schema.number().positive(),
+  reservedAt: schema.number(),
+  expiresAt: schema.number(),
+  actualTokensUsed: schema.number().optional(),
+  actualCost: schema.number().optional(),
+  chargedAmount: schema.number().optional(),
+  refundedAmount: schema.number().optional(),
+  modelVersion: schema.string(),
+  promptHash: schema.string(),
   status: AIEscrowStatusSchema,
-  createdAt: z.number(),
-  settledAt: z.number().optional(),
+  createdAt: schema.number(),
+  settledAt: schema.number().optional(),
 });
 
-export type AIEscrow = z.infer<typeof AIEscrowSchema>;
+export type AIEscrow = schema.infer<typeof AIEscrowSchema>;
 
-export const AIEscrowReserveRequestSchema = z.object({
-  userId: z.string().optional(),
-  modelVersion: z.string(),
-  estimatedInputTokens: z.number().int().nonnegative(),
-  estimatedOutputTokens: z.number().int().nonnegative(),
-  idempotencyKey: z.string(),
+export const AIEscrowReserveRequestSchema = schema.object({
+  userId: schema.string().optional(),
+  modelVersion: schema.string(),
+  estimatedInputTokens: schema.number().int().nonnegative(),
+  estimatedOutputTokens: schema.number().int().nonnegative(),
+  idempotencyKey: schema.string(),
 });
 
-export type AIEscrowReserveRequest = z.infer<typeof AIEscrowReserveRequestSchema>;
+export type AIEscrowReserveRequest = schema.infer<typeof AIEscrowReserveRequestSchema>;
 
-export const AIEscrowConsumeRequestSchema = z.object({
-  escrowId: z.string().uuid(),
-  userId: z.string().optional(),
-  actualInputTokens: z.number().int().nonnegative(),
-  actualOutputTokens: z.number().int().nonnegative(),
-  idempotencyKey: z.string().optional(),
+export const AIEscrowConsumeRequestSchema = schema.object({
+  escrowId: schema.string().uuid(),
+  userId: schema.string().optional(),
+  actualInputTokens: schema.number().int().nonnegative(),
+  actualOutputTokens: schema.number().int().nonnegative(),
+  idempotencyKey: schema.string().optional(),
 });
 
-export type AIEscrowConsumeRequest = z.infer<typeof AIEscrowConsumeRequestSchema>;
+export type AIEscrowConsumeRequest = schema.infer<typeof AIEscrowConsumeRequestSchema>;

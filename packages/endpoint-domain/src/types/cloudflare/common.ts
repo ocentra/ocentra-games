@@ -1,55 +1,46 @@
-/**
- * Common types shared across Cloudflare API endpoints.
- */
+import { Schema } from '@ocentra/schema-domain/effect';
 
-/**
- * UUID string type.
- */
-export type UUID = string;
+export const UUIDSchema = Schema.String.pipe(
+  Schema.filter((value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) || 'Expected UUID'),
+  Schema.brand('UUID'),
+);
+export type UUID = typeof UUIDSchema.Type;
+export const decodeUUID = Schema.decodeUnknownSync(UUIDSchema);
 
-/**
- * ISO 8601 timestamp string.
- */
-export type Timestamp = string;
+export const TimestampSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('Timestamp'));
+export type Timestamp = typeof TimestampSchema.Type;
+export const decodeTimestamp = Schema.decodeUnknownSync(TimestampSchema);
 
-/**
- * Match identifier.
- */
-export type MatchId = UUID;
+const NonEmptyString = Schema.String.pipe(Schema.minLength(1));
 
-/**
- * User identifier.
- */
-export type UserId = UUID;
+export const MatchIdSchema = NonEmptyString.pipe(Schema.brand('MatchId'));
+export type MatchId = typeof MatchIdSchema.Type;
+export const decodeMatchId = Schema.decodeUnknownSync(MatchIdSchema);
 
-/**
- * Dispute identifier.
- */
-export type DisputeId = string;
+export const UserIdSchema = NonEmptyString.pipe(Schema.brand('UserId'));
+export type UserId = typeof UserIdSchema.Type;
+export const decodeUserId = Schema.decodeUnknownSync(UserIdSchema);
 
-/**
- * Tournament identifier.
- */
-export type TournamentId = string;
+export const DisputeIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('DisputeId'));
+export type DisputeId = typeof DisputeIdSchema.Type;
+export const decodeDisputeId = Schema.decodeUnknownSync(DisputeIdSchema);
 
-/**
- * Transaction identifier.
- */
-export type TransactionId = UUID;
+export const TournamentIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('TournamentId'));
+export type TournamentId = typeof TournamentIdSchema.Type;
+export const decodeTournamentId = Schema.decodeUnknownSync(TournamentIdSchema);
 
-/**
- * Badge identifier.
- */
-export type BadgeId = string;
+export const TransactionIdSchema = NonEmptyString.pipe(Schema.brand('TransactionId'));
+export type TransactionId = typeof TransactionIdSchema.Type;
+export const decodeTransactionId = Schema.decodeUnknownSync(TransactionIdSchema);
 
-/**
- * Asset identifier.
- */
-export type AssetId = string;
+export const BadgeIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('BadgeId'));
+export type BadgeId = typeof BadgeIdSchema.Type;
+export const decodeBadgeId = Schema.decodeUnknownSync(BadgeIdSchema);
 
-/**
- * Game type identifier (numeric).
- */
+export const AssetIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('AssetId'));
+export type AssetId = typeof AssetIdSchema.Type;
+export const decodeAssetId = Schema.decodeUnknownSync(AssetIdSchema);
+
 export type GameType = number;
 
 /**

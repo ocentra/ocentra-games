@@ -18,6 +18,10 @@ import { AppScreenToken, buildCardGameTemplatePath, buildGameMatchmakingPath, bu
 import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
 import { getLocalPilotStatus } from '@/ui/pages/games/CardGamePlay/localPilotCatalog';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
+import {
+  loadGameDetailAssetContent,
+  type GameDetailAssetSummary,
+} from '@/ui/pages/games/SelectedGame/gameDetailAssetSections';
 import './SelectedGamePage.css';
 
 interface SelectedGamePageProps {
@@ -31,6 +35,8 @@ interface ParsedGameId {
   name: string;
   guid: AssetGUIDType;
 }
+
+const GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS = 10000;
 
 function parseGameIdentifier(identifier: string): ParsedGameId | null {
   const parts = identifier.split(':');
@@ -52,10 +58,27 @@ function parseGameIdentifier(identifier: string): ParsedGameId | null {
   return { name, guid: guidStr };
 }
 
+async function withPageLoadTimeout<T>(promise: Promise<T>): Promise<T | null> {
+  let timer: ReturnType<typeof globalThis.setTimeout> | null = null;
+  const timeout = new Promise<null>((resolve) => {
+    timer = globalThis.setTimeout(() => resolve(null), GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timer !== null) {
+      globalThis.clearTimeout(timer);
+    }
+  }
+}
+
 export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: SelectedGamePageProps) {
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [gameInfo, setGameInfo] = useState<GamePage | null>(null);
+  const [assetSections, setAssetSections] = useState<PageSection[]>([]);
+  const [assetSummary, setAssetSummary] = useState<GameDetailAssetSummary | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [parsedGameName, setParsedGameName] = useState<string>('');
   const handleLogout = () => {
@@ -79,14 +102,20 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       }
 
       setParsedGameName(parsed.name);
+      setAssetSections([]);
+      setAssetSummary(null);
 
       try {
         const loadedInfo =
-          await getSelectedGamePageInfos(parsed.name) ??
-          await getSelectedGamePageInfos(parsed.guid);
+          await withPageLoadTimeout(getSelectedGamePageInfos(parsed.name)) ??
+          await withPageLoadTimeout(getSelectedGamePageInfos(parsed.guid));
+        const fallbackSections = (loadedInfo?.sections ?? []) as unknown as PageSection[];
+        const enriched = await withPageLoadTimeout(loadGameDetailAssetContent(parsed.guid, fallbackSections).catch(() => null));
 
-        if (loadedInfo) {
-          setGameInfo(loadedInfo);
+        if (loadedInfo || enriched?.sections.length) {
+          setGameInfo(loadedInfo ?? null);
+          setAssetSections(enriched?.sections ?? fallbackSections);
+          setAssetSummary(enriched?.summary ?? null);
           setIsValid(true);
         } else {
           setIsValid(false);
@@ -119,8 +148,17 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     return <GameNotFound user={user} onLogout={onLogout} onLogoutClick={onLogoutClick} message={errorMessage} />;
   }
 
+  const localPilotStatus = getLocalPilotStatus(parsedGameName || gameId);
+
+  const handlePlayLocalGame = () => {
+    EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(parsedGameName)));
+  };
+
   const handlePlaySinglePlayer = (config: { aiCount: number; aiModel: string }) => {
     void config;
+    if (localPilotStatus.isReady) {
+      handlePlayLocalGame();
+    }
   };
 
   const handlePlayMultiplayer = (config: { humans: number; ai: number; aiModel: string }) => {
@@ -148,12 +186,15 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
-  const displayName = formatGameName(parsedGameName || gameId);
-  const localPilotStatus = getLocalPilotStatus(parsedGameName || gameId);
+  const formatAvailabilityMessage = (message: string): string =>
+    message.replace(/\blocal pilot\b/gi, 'local match').replace(/\bpilot\b/gi, 'match');
 
-  const handlePlayLocalPilot = () => {
-    EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(parsedGameName)));
-  };
+  const displayName = assetSummary?.title || formatGameName(parsedGameName || gameId);
+  const detailSubtitle = assetSummary?.subtitle || gameInfo?.tagline || "Simple Rules. Deadly Game.";
+  const detailDescription = assetSummary?.description || gameInfo?.description || '';
+  const detailSections = assetSections.length > 0
+    ? assetSections
+    : (gameInfo?.sections ?? []) as unknown as PageSection[];
 
   const handleOpenTemplate = () => {
     EventBus.instance.publish(new ShowScreenEvent(buildCardGameTemplatePath()));
@@ -167,7 +208,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
           showPrimaryNavigation={false}
           dynamicData={{
             gameName: displayName,
-            tagline: "Simple Rules. Deadly Game."
+            tagline: detailSubtitle
           }}
           config={{
             right: headerRightConfig,
@@ -181,30 +222,35 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     >
       <div className="generic-game-main">
         {localPilotStatus.isReady && (
-          <section className="local-pilot-card">
+          <section className="game-detail-hero">
             <div>
-              <p className="local-pilot-card__eyebrow">Playable Pilot</p>
-              <h2>Start a local mechanics session</h2>
+              <p className="game-detail-hero__eyebrow">Available now</p>
+              <h2>{displayName}</h2>
               <p>
-                Launch the minimum viable playable table for {displayName}. This runs locally with visible hands so you can validate the engine flow end to end.
+                {detailDescription || `Launch a ${displayName} table with one human seat and three deterministic opponents.`}
               </p>
+              <div className="game-detail-hero__meta">
+                {(assetSummary?.metrics ?? []).map((item) => (
+                  <span key={item.label}>{item.label}: {item.value}</span>
+                ))}
+              </div>
             </div>
-            <div className="local-pilot-card__actions">
-              <button type="button" className="local-pilot-card__button" onClick={handlePlayLocalPilot}>
-                Play Local Pilot
+            <div className="game-detail-hero__actions">
+              <button type="button" className="game-detail-hero__button" onClick={handlePlayLocalGame}>
+                Play {displayName}
               </button>
-              <button type="button" className="local-pilot-card__button local-pilot-card__button--secondary" onClick={handleOpenTemplate}>
-                Open Card Game Template
+              <button type="button" className="game-detail-hero__button game-detail-hero__button--secondary" onClick={handleOpenTemplate}>
+                View Table Preview
               </button>
             </div>
           </section>
         )}
         {localPilotStatus.isKnown && !localPilotStatus.isReady && (
-          <section className="local-pilot-card local-pilot-card--disabled">
+          <section className="game-detail-hero game-detail-hero--disabled">
             <div>
-              <p className="local-pilot-card__eyebrow">Local Pilot</p>
-              <h2>Playable pilot not ready</h2>
-              <p>{localPilotStatus.message}</p>
+              <p className="game-detail-hero__eyebrow">In development</p>
+              <h2>{displayName}</h2>
+              <p>{formatAvailabilityMessage(localPilotStatus.message)}</p>
             </div>
           </section>
         )}
@@ -214,9 +260,12 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
           onPlayMultiplayer={handlePlayMultiplayer}
         />
 
-        <GameCardDeckPreview gameIdentifier={parsedGameName || gameId} />
-
-        <GameInfoTabs sections={(gameInfo?.sections ?? []) as unknown as PageSection[]} />
+        <GameInfoTabs
+          sections={detailSections}
+          sectionExtras={{
+            'Deck & Ranking': <GameCardDeckPreview gameIdentifier={parsedGameName || gameId} />,
+          }}
+        />
       </div>
     </UnifiedPageShell>
   );

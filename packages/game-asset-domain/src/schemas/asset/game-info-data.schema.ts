@@ -1,70 +1,77 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { NoPlaceholdersValid } from '../shared/validation-guards';
 
-const textSchema = z.string().trim().min(1).and(NoPlaceholdersValid);
+const textSchema = schema.string().trim().min(1).and(NoPlaceholdersValid);
 
-const contentBlockSchema = z.object({
-  type: z.string().min(1),
+const contentBlockSchema = schema.object({
+  type: schema.string().min(1),
 }).passthrough();
 
-const pageSchema = z.object({
+const pageSchema = schema.object({
   title: textSchema,
-  subtitle: z.string().trim().optional(),
-  content: z.array(contentBlockSchema).optional(),
-  linkedAssets: z.array(z.string().uuid()).optional(),
-  assetRefs: z.array(z.record(z.unknown())).optional(),
+  subtitle: schema.string().trim().optional(),
+  content: schema.array(contentBlockSchema).optional(),
+  linkedAssets: schema.array(schema.string().uuid()).optional(),
+  assetRefs: schema.array(schema.record(schema.unknown())).optional(),
 }).passthrough();
 
-const sectionSchema = z.object({
-  type: z.string().min(1),
-  tabLabel: z.string().min(1),
-  pages: z.array(pageSchema).optional(),
-  subtitle: z.string().optional(),
-  title: z.string().optional(),
-  content: z.string().optional(),
+const sectionSchema = schema.object({
+  type: schema.string().min(1),
+  tabLabel: schema.string().min(1),
+  pages: schema.array(pageSchema).optional(),
+  subtitle: schema.string().optional(),
+  title: schema.string().optional(),
+  content: schema.string().optional(),
 }).passthrough();
 
-export const GameInfoDataSchema = z.object({
-  hero: z.object({
+const featuredBadgeSchema = schema.object({
+  label: schema.string().trim().min(1),
+  tone: schema.string().trim().optional(),
+});
+
+export const GameInfoDataSchema = schema.object({
+  hero: schema.object({
     title: textSchema,
-    subtitle: z.string().trim().optional(),
-    backgroundImageRef: z.union([z.string(), z.record(z.unknown())]).optional(),
-    ctaButtons: z.array(z.record(z.unknown())).optional(),
+    subtitle: schema.string().trim().optional(),
+    backgroundImageRef: schema.union([schema.string(), schema.record(schema.unknown())]).optional(),
+    ctaButtons: schema.array(schema.record(schema.unknown())).optional(),
   }).optional(),
-  sections: z.array(sectionSchema).optional(),
-  description: z.string().trim().optional(),
-  tags: z.array(z.string().trim().min(1)).optional(),
-  comingSoon: z.boolean().optional(),
-  minPlayers: z.number().int().nullable().optional(),
-  maxPlayers: z.number().int().nullable().optional(),
-  routePath: z.string().optional(),
-  LLM: z.string().trim().optional(),
-  Player: z.string().trim().optional(),
-  tagline: z.string().trim().optional(),
-  tagline2: z.string().trim().optional(),
-  shortDescription: z.string().trim().optional(),
-  gameIconImage: z.string().optional(),
-  gameCategory: z.string().optional(),
-  subcategory: z.union([z.string(), z.null()]).optional(),
-  playerMode: z.string().optional(),
-  difficulty: z.string().optional(),
-  duration: z.string().optional(),
-  origin: z.string().optional(),
-  deck: z.string().optional(),
-  alsoKnownAs: z.array(z.string().trim()).optional(),
-  playersDisplay: z.string().optional(),
-  historyContent: z.record(z.unknown()).nullable().optional(),
-  setupContent: z.record(z.unknown()).nullable().optional(),
-  variationsContent: z.record(z.unknown()).nullable().optional(),
-  aiContent: z.record(z.unknown()).nullable().optional(),
-  sourcesContent: z.record(z.unknown()).nullable().optional(),
-  quality: z.union([z.string(), z.null()]).optional(),
-  completeness: z.record(z.boolean()).nullable().optional(),
-  synthesisManifest: z.object({
-    lastSynthesizedAt: z.union([z.string(), z.null()]).optional(),
-    dependencies: z.array(z.object({
-      guid: z.string().uuid(),
-      checksum: z.string(),
+  sections: schema.array(sectionSchema).optional(),
+  description: schema.string().trim().optional(),
+  tags: schema.array(schema.string().trim().min(1)).optional(),
+  featuredTopBadges: schema.array(featuredBadgeSchema).optional(),
+  featuredBottomBadges: schema.array(featuredBadgeSchema).optional(),
+  comingSoon: schema.boolean().optional(),
+  minPlayers: schema.number().int().nullable().optional(),
+  maxPlayers: schema.number().int().nullable().optional(),
+  routePath: schema.string().optional(),
+  LLM: schema.string().trim().optional(),
+  Player: schema.string().trim().optional(),
+  tagline: schema.string().trim().optional(),
+  tagline2: schema.string().trim().optional(),
+  shortDescription: schema.string().trim().optional(),
+  gameIconImage: schema.string().optional(),
+  gameCategory: schema.string().optional(),
+  subcategory: schema.union([schema.string(), schema.null()]).optional(),
+  playerMode: schema.string().optional(),
+  difficulty: schema.string().optional(),
+  duration: schema.string().optional(),
+  origin: schema.string().optional(),
+  deck: schema.string().optional(),
+  alsoKnownAs: schema.array(schema.string().trim()).optional(),
+  playersDisplay: schema.string().optional(),
+  historyContent: schema.record(schema.unknown()).nullable().optional(),
+  setupContent: schema.record(schema.unknown()).nullable().optional(),
+  variationsContent: schema.record(schema.unknown()).nullable().optional(),
+  aiContent: schema.record(schema.unknown()).nullable().optional(),
+  sourcesContent: schema.record(schema.unknown()).nullable().optional(),
+  quality: schema.union([schema.string(), schema.null()]).optional(),
+  completeness: schema.record(schema.boolean()).nullable().optional(),
+  synthesisManifest: schema.object({
+    lastSynthesizedAt: schema.union([schema.string(), schema.null()]).optional(),
+    dependencies: schema.array(schema.object({
+      guid: schema.string().uuid(),
+      checksum: schema.string(),
     })).optional(),
   }).optional(),
 }).passthrough();

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
-import type { Card, GameState, PlayerActionTypeValue } from '@ocentra/game-domain/types/game';
+import type { GameState, PlayerActionTypeValue, Suit } from '@ocentra/game-domain/types/game';
 import { AIPersonality, GamePhase } from '@ocentra/game-domain/types/game';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
@@ -99,7 +99,7 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [seed, setSeed] = useState(42);
+  const [seed] = useState(42);
   const [startingMatch, setStartingMatch] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [timerNow, setTimerNow] = useState(() => Date.now());
@@ -166,7 +166,11 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
   const currentPlayer = gameState ? gameState.players[gameState.currentPlayer] ?? null : null;
   const isGameOver = gameState?.phase === GamePhase.GAME_END;
   const distinctDeclareSuits = useMemo(
-    () => Array.from(new Set(currentPlayer?.hand.map((card) => card.suit) ?? [])),
+    () => Array.from(new Set(
+      currentPlayer?.hand
+        .map((card) => card.suit)
+        .filter((suit): suit is Suit => typeof suit === 'string' && suit.length > 0) ?? [],
+    )),
     [currentPlayer],
   );
 

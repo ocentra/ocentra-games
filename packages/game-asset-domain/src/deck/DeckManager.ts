@@ -11,6 +11,7 @@ import { ServiceRegistry } from '@ocentra/app-core/ServiceRegistry';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { DeckType } from '@/deck/DeckType';
+import { createRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
 import type { Card, CardValue } from '@ocentra/game-domain/types/game';
 import { Suit } from '@ocentra/game-domain/types/game';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
@@ -209,11 +210,11 @@ export class DeckManager extends ReactBehaviour {
       const deck: Card[] = cardAssets.map(cardAsset => {
         const identity = cardAsset.cardIdentity;
         const isFrench = identity.family === 'French' && 'suit' in identity && 'value' in identity;
-        return {
+        return createRuntimeCard({
           suit: isFrench ? identity.suit : ('' as Suit),
           value: isFrench ? identity.value : 2,
           id: cardAsset.getCardId(),
-        };
+        });
       });
 
       const physicalDeck = materializePhysicalCards(deck);
@@ -249,11 +250,11 @@ export class DeckManager extends ReactBehaviour {
           if (!suit) continue;
 
           for (const rankEntry of rankingsArray) {
-            deck.push({
+            deck.push(createRuntimeCard({
               suit,
               value: rankEntry.Value as CardValue,
               id: `${rankEntry.Value}_of_${suit}`,
-            });
+            }));
           }
         }
 
@@ -269,11 +270,11 @@ export class DeckManager extends ReactBehaviour {
 
     for (const suit of suits) {
       for (const value of values) {
-        deck.push({
+        deck.push(createRuntimeCard({
           suit,
           value,
           id: `${value}_of_${suit}`,
-        });
+        }));
       }
     }
 

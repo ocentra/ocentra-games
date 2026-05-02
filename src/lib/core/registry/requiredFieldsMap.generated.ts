@@ -10,25 +10,7 @@ export const requiredFieldsMap: Record<string, Record<string, string>> = {
     "cardIdentity": "Card Identity is required",
     "imageHash": "Image Hash is required for card to function properly",
     "cardId": "Card ID is required for card to function properly",
-    "cardRankingAsset": "Card Ranking Asset is required for card to function properly"
-  },
-  "CardSuitEntry": {
-    "deckType": "Deck Type is required for card ranking metadata",
-    "expectedCardCount": "Expected Card Count is required for card ranking metadata",
-    "includesJokers": "Includes Jokers flag is required for card ranking metadata",
-    "backCardCount": "Back Card Count is required for card ranking metadata"
-  },
-  "CardRankingEntry": {
-    "deckType": "Deck Type is required for card ranking metadata",
-    "expectedCardCount": "Expected Card Count is required for card ranking metadata",
-    "includesJokers": "Includes Jokers flag is required for card ranking metadata",
-    "backCardCount": "Back Card Count is required for card ranking metadata"
-  },
-  "CardRankingExplicitEntry": {
-    "deckType": "Deck Type is required for card ranking metadata",
-    "expectedCardCount": "Expected Card Count is required for card ranking metadata",
-    "includesJokers": "Includes Jokers flag is required for card ranking metadata",
-    "backCardCount": "Back Card Count is required for card ranking metadata"
+    "rankingAsset": "Card Ranking Asset is required for card to function properly"
   },
   "CardRanking": {
     "deckType": "Deck Type is required for card ranking metadata",
@@ -36,26 +18,9 @@ export const requiredFieldsMap: Record<string, Record<string, string>> = {
     "includesJokers": "Includes Jokers flag is required for card ranking metadata",
     "backCardCount": "Back Card Count is required for card ranking metadata"
   },
-  "SupportedDeckTriple": {
-    "supportedTriples": "Supported triples are required for deck to function properly",
-    "cardTemplates": "Card Templates are required for deck to function properly",
-    "backCardHash": "Back Card Hash is required for deck to function properly",
-    "imageSourceFolderPath": "Image Source Folder Path is required for deck to function properly",
-    "cardOutputPath": "Card Output Path is required for deck to function properly",
-    "backCardSourceFolderPath": "Back Card Source Folder Path is required for deck to function properly",
-    "cardRankingAsset": "Card Ranking Asset is required for deck to function properly"
-  },
-  "DeckCardMember": {
-    "supportedTriples": "Supported triples are required for deck to function properly",
-    "cardTemplates": "Card Templates are required for deck to function properly",
-    "backCardHash": "Back Card Hash is required for deck to function properly",
-    "imageSourceFolderPath": "Image Source Folder Path is required for deck to function properly",
-    "cardOutputPath": "Card Output Path is required for deck to function properly",
-    "backCardSourceFolderPath": "Back Card Source Folder Path is required for deck to function properly",
-    "cardRankingAsset": "Card Ranking Asset is required for deck to function properly"
-  },
   "Deck": {
     "supportedTriples": "Supported triples are required for deck to function properly",
+    "rankingAsset": "Ranking asset is required for deck ordering and preview",
     "cardTemplates": "Card Templates are required for deck to function properly",
     "backCardHash": "Back Card Hash is required for deck to function properly",
     "imageSourceFolderPath": "Image Source Folder Path is required for deck to function properly",
@@ -63,8 +28,25 @@ export const requiredFieldsMap: Record<string, Record<string, string>> = {
     "backCardSourceFolderPath": "Back Card Source Folder Path is required for deck to function properly",
     "cardRankingAsset": "Card Ranking Asset is required for deck to function properly"
   },
+  "DominoDeckTileMember": {
+    "tileTemplate": "Tile template is required",
+    "copies": "Copies are required"
+  },
+  "DominoDeck": {
+    "name": "Deck name is required",
+    "supportedTriples": "Supported triples are required",
+    "dominoRankingAsset": "Domino ranking asset is required"
+  },
+  "DominoRanking": {
+    "expectedTileCount": "Expected tile count is required"
+  },
+  "DominoTile": {
+    "pieceKind": "Piece kind is required",
+    "tileId": "Tile ID is required",
+    "imageHash": "Image Hash is required"
+  },
   "Scoring": {
-    "cardRankingAsset": "Card Ranking Asset is required for scoring to function"
+    "rankingAsset": "Card Ranking Asset is required for scoring to function"
   },
   "CardGameMode": {
     "scoringAsset": "Scoring Asset is required for game mode to function",
@@ -75,5 +57,75 @@ export const requiredFieldsMap: Record<string, Record<string, string>> = {
     "layoutAsset": "Layout Asset is required for game mode to function",
     "carouselImagesAsset": "Carousel Images Asset is required for game mode to function",
     "mechanicsAsset": "Mechanics Asset is required for game mode to function"
+  },
+  "HanafudaCard": {
+    "pieceKind": "Piece kind is required",
+    "month": "Month is required",
+    "slot": "Slot is required",
+    "group": "Group is required",
+    "points": "Points are required",
+    "cardId": "Card ID is required",
+    "imageHash": "Image Hash is required"
+  },
+  "HanafudaDeck": {
+    "name": "Deck name is required",
+    "supportedTriples": "Supported triples are required",
+    "cardTemplates": "Card templates are required",
+    "hanafudaRankingAsset": "Hanafuda ranking asset is required"
+  },
+  "HanafudaRankingSlot": {
+    "slot": "Slot is required",
+    "cardId": "Card ID is required"
+  },
+  "HanafudaRankingMonth": {
+    "month": "Month is required",
+    "slots": "Slots are required"
+  },
+  "HanafudaRanking": {
+    "expectedCardCount": "Expected card count is required",
+    "months": "Months are required"
+  },
+  "MahjongDeckTileMember": {
+    "tile": "Tile is required",
+    "count": "Count is required"
+  },
+  "MahjongDeck": {
+    "name": "Deck name is required",
+    "supportedTriples": "Supported triples are required",
+    "tiles": "Tiles are required",
+    "mahjongRankingAsset": "Mahjong ranking asset is required"
+  },
+  "MahjongRankingExtraTile": {
+    "tileId": "Tile ID is required",
+    "count": "Count is required"
+  },
+  "MahjongRanking": {
+    "includeBonusTiles": "Include bonus tiles flag is required",
+    "expectedTileCount": "Expected tile count is required"
+  },
+  "MahjongTile": {
+    "pieceKind": "Piece kind is required",
+    "tileKind": "Tile kind is required",
+    "tileId": "Tile ID is required",
+    "imageHash": "Image Hash is required"
+  },
+  "PlayingCard": {
+    "pieceKind": "Piece kind is required",
+    "cardId": "Card ID is required",
+    "imageHash": "Image Hash is required",
+    "playingCardRankingAsset": "Playing card ranking asset is required"
+  },
+  "PlayingCardDeck": {
+    "name": "Deck name is required",
+    "supportedTriples": "Supported triples are required",
+    "cardTemplates": "Card templates are required",
+    "playingCardRankingAsset": "Playing card ranking asset is required"
+  },
+  "PlayingCardRankingEntry": {
+    "cardId": "Card ID is required"
+  },
+  "PlayingCardRanking": {
+    "expectedCardCount": "Expected card count is required",
+    "cards": "Cards are required"
   }
 };

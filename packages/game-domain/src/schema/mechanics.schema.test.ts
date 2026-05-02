@@ -120,6 +120,43 @@ describe('mechanics Effect Schema codec', () => {
     ).toThrow();
   });
 
+  it('normalizes legacy absent sentinels before strict Effect decoding', () => {
+    const decoded = decodeMechanicsSpec({
+      ...validMechanicsManifest,
+      gameId: '',
+      mechanicsId: '',
+      mechanicsVersion: '',
+      familyVariant: '',
+      specialCards: 'NA',
+      constants: 'N/A',
+      determinismNotes: '',
+      phases: [
+        {
+          ...validMechanicsManifest.phases[0],
+          notes: 'NA',
+        },
+      ],
+      actions: {
+        take_stock: {
+          ...validMechanicsManifest.actions.take_stock,
+          constraints: 'NA',
+          reason: '',
+        },
+      },
+    });
+
+    expect(decoded.specialCards).toBeNull();
+    expect(decoded.gameId).toBeUndefined();
+    expect(decoded.mechanicsId).toBeUndefined();
+    expect(decoded.mechanicsVersion).toBeUndefined();
+    expect(decoded.familyVariant).toBeUndefined();
+    expect(decoded.constants).toEqual({});
+    expect(decoded.determinismNotes).toBeUndefined();
+    expect(decoded.phases[0]?.notes).toBeUndefined();
+    expect(decoded.actions.take_stock?.constraints).toBeUndefined();
+    expect(decoded.actions.take_stock?.reason).toBeUndefined();
+  });
+
   it('reports action and phase consistency issues with named validation logic', () => {
     const decoded = Schema.decodeUnknownSync(MechanicsManifestSchema)({
       ...validMechanicsManifest,

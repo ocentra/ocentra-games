@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GameSchema, type Game } from "@/schema/zod/game-schema";
+import { GameSchema, type Game } from "@/schema/effect/game-schema";
 import { PROCESSED_GAMES_DIR } from "@/paths";
 import { validateOverridePaths } from "@/schema/data/override-paths";
 
@@ -197,7 +197,7 @@ function parseArgs(argv: string[]): ParseArgsResult {
 Usage:
   npx tsx src/scripts/validate-with-ts-schema.ts <fileOrDir> [more...] [--fail-fast] [--quiet] [--json] [--list-failures[=N]] [--skip-url-check] [--schema-only]
 
-Validates game JSON files against the Zod schema. Uses game-schema.ts as single source of truth.
+Validates game JSON files against the Effect schema. Uses game-schema.ts as single source of truth.
 
 Options:
   --fail-fast        Stop on first failure

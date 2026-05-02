@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { BaseGameSchema } from '@/schemas/base-game-schema';
 import { AssetLinkSchema } from '@/schemas/asset-link-schema';
 
@@ -10,4 +10,4 @@ export const GameEngineSchema = BaseGameSchema.extend({
   mechanicsAsset: AssetLinkSchema.nullish(),
 });
 
-export type GameEngine = z.infer<typeof GameEngineSchema>;
+export type GameEngine = schema.infer<typeof GameEngineSchema>;

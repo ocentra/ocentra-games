@@ -20,6 +20,12 @@ import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/h
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
 import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { isImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import {
+  loadComingSoonShowcaseControlsFromDisk,
+  loadFeaturedShowcaseControlsFromDisk,
+} from '@/utils/featuredShowcaseControlsPersistence';
+import { loadHomeShowcaseFrameControlsFromDisk } from '@/utils/homeShowcaseFrameControlsPersistence';
+import { loadHomepageLayoutControlsFromDisk } from '@/utils/homepageLayoutControlsPersistence';
 
 const GAME_MODE_SUFFIX = 'GameMode';
 
@@ -28,6 +34,46 @@ function isGameModeEntry(r: ResourceEntry): r is AssetResourceEntry {
   const normalized = normalizeAssetType(r.assetType as string);
   if (r.inheritanceChain?.includes(GAME_MODE_SUFFIX)) return true;
   return normalized.endsWith(GAME_MODE_SUFFIX);
+}
+
+function displayNameFromPath(resourcePath: string): string {
+  const fileName = resourcePath.split('/').pop() ?? resourcePath;
+  return fileName
+    .replace(/\.[^.]+$/, '')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function buildCatalogMontageImagesFromEntries(
+  entries: ResourceEntry[]
+): ComingSoonTeaser[] {
+  const montageImages: ComingSoonTeaser[] = [];
+
+  for (const entry of entries) {
+    const record = entry as unknown as {
+      path?: unknown;
+      hash?: unknown;
+    };
+    const resourcePath = typeof record.path === 'string'
+      ? record.path.replace(/\\/g, '/')
+      : '';
+    const hash = typeof record.hash === 'string' ? record.hash : '';
+    if (
+      !resourcePath.includes('AppAssets/PlaceHolders/') ||
+      !isImageHash(hash)
+    ) {
+      continue;
+    }
+    const name = displayNameFromPath(resourcePath);
+    montageImages.push({
+      id: hash,
+      name,
+      bannerImage: hash,
+      alt: name,
+    });
+  }
+
+  return montageImages;
 }
 
 export type HomepageFromDisk = HomePageGamesDocument;
@@ -107,7 +153,23 @@ export async function loadGameArtifactBundlesFromDisk(): Promise<GameArtifactBun
 }
 
 export async function loadHomepageFromDisk(): Promise<HomepageFromDisk> {
-  const metadatas = (await loadGameArtifactBundlesFromDisk()).map((bundle) => bundle.home);
+  const [
+    entries,
+    bundles,
+    featuredShowcaseControls,
+    aboutShowcaseControls,
+    comingSoonShowcaseControls,
+    homepageLayoutControls,
+  ] = await Promise.all([
+    getDiskResourceEntries(),
+    loadGameArtifactBundlesFromDisk(),
+    loadFeaturedShowcaseControlsFromDisk(),
+    loadHomeShowcaseFrameControlsFromDisk('about'),
+    loadComingSoonShowcaseControlsFromDisk(),
+    loadHomepageLayoutControlsFromDisk(),
+  ]);
+  const metadatas = bundles.map((bundle) => bundle.home);
+  const catalogMontageImages = buildCatalogMontageImagesFromEntries(entries);
 
   const featured = metadatas.filter((g) => g.enabled);
   const availableNow = metadatas.filter(
@@ -144,7 +206,18 @@ export async function loadHomepageFromDisk(): Promise<HomepageFromDisk> {
     featureBannerItems = [];
   }
 
-  return { featured, recommended, comingSoon, availableNow, featureBannerItems };
+  return {
+    featured,
+    recommended,
+    comingSoon,
+    availableNow,
+    featureBannerItems,
+    catalogMontageImages,
+    featuredShowcaseControls,
+    aboutShowcaseControls,
+    comingSoonShowcaseControls,
+    homepageLayoutControls,
+  };
 }
 
 const HOMEPAGE_CHUNK_SIZE = 5;
@@ -153,7 +226,15 @@ export async function loadHomepageFromDiskIncremental(
   onBatch: (partial: HomePageGamesDocument) => void,
   onPrefetchHashes?: (hashes: ImageHash[]) => void
 ): Promise<HomepageFromDisk> {
-  const [entries, comingSoon, featureBannerItems] = await Promise.all([
+  const [
+    entries,
+    comingSoon,
+    featureBannerItems,
+    featuredShowcaseControls,
+    aboutShowcaseControls,
+    comingSoonShowcaseControls,
+    homepageLayoutControls,
+  ] = await Promise.all([
     getDiskResourceEntries(),
     (async (): Promise<ComingSoonTeaser[]> => {
       try {
@@ -186,11 +267,24 @@ export async function loadHomepageFromDiskIncremental(
       }
       return [];
     })(),
+    loadFeaturedShowcaseControlsFromDisk(),
+    loadHomeShowcaseFrameControlsFromDisk('about'),
+    loadComingSoonShowcaseControlsFromDisk(),
+    loadHomepageLayoutControlsFromDisk(),
   ]);
 
   if (onPrefetchHashes && featureBannerItems.length > 0) {
     const hashes = featureBannerItems
       .map((item) => item.imageHash)
+      .filter((hash): hash is ImageHash => isImageHash(hash));
+    if (hashes.length > 0) {
+      onPrefetchHashes(hashes);
+    }
+  }
+  const catalogMontageImages = buildCatalogMontageImagesFromEntries(entries);
+  if (onPrefetchHashes && catalogMontageImages.length > 0) {
+    const hashes = catalogMontageImages
+      .map((item) => item.bannerImage)
       .filter((hash): hash is ImageHash => isImageHash(hash));
     if (hashes.length > 0) {
       onPrefetchHashes(hashes);
@@ -222,16 +316,43 @@ export async function loadHomepageFromDiskIncremental(
       featured: [...featured],
       recommended,
       comingSoon,
+      catalogMontageImages,
       availableNow: [...availableNow],
       featureBannerItems,
+      featuredShowcaseControls,
+      aboutShowcaseControls,
+      comingSoonShowcaseControls,
+      homepageLayoutControls,
     });
   }
 
   if (gameModes.length === 0) {
-    onBatch({ featured: [], recommended: [], comingSoon, availableNow: [], featureBannerItems });
+    onBatch({
+      featured: [],
+      recommended: [],
+      comingSoon,
+      catalogMontageImages,
+      availableNow: [],
+      featureBannerItems,
+      featuredShowcaseControls,
+      aboutShowcaseControls,
+      comingSoonShowcaseControls,
+      homepageLayoutControls,
+    });
   }
 
-  return { featured, recommended, comingSoon, availableNow, featureBannerItems };
+  return {
+    featured,
+    recommended,
+    comingSoon,
+    catalogMontageImages,
+    availableNow,
+    featureBannerItems,
+    featuredShowcaseControls,
+    aboutShowcaseControls,
+    comingSoonShowcaseControls,
+    homepageLayoutControls,
+  };
 }
 
 export type GameWithMetadata = {

@@ -3,7 +3,7 @@ import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 
 import {
   CreditsEarnRequestSchema,
@@ -184,7 +184,7 @@ async function handleCreditsRedeem(
   userId: string,
   requestOrigin: string | null
 ): Promise<Response> {
-  const { data, errorResponse } = await validateZodBody(request, env, CreditsRedeemRequestSchema);
+  const { data, errorResponse } = await validateSchemaBody(request, env, CreditsRedeemRequestSchema);
   if (errorResponse) return errorResponse;
   const { code } = data!;
   const redeemResult = await redeemPromoLogic({ code, userId }, env);
@@ -433,7 +433,7 @@ export async function handleCreditsRequest(
         method: request.method
       }, LOG_CREDITS_OPERATIONS);
 
-      const { data: body, errorResponse: bodyError } = await validateZodBody(request, env, CreditsPurchaseRequestSchema);
+      const { data: body, errorResponse: bodyError } = await validateSchemaBody(request, env, CreditsPurchaseRequestSchema);
       if (bodyError) return bodyError;
       if (!env.CREDITS_DO) {
 
@@ -610,7 +610,7 @@ export async function handleCreditsRequest(
         method: request.method
       }, LOG_CREDITS_OPERATIONS);
 
-      const { data: body, errorResponse: bodyError } = await validateZodBody(request, env, CreditsConsumeRequestSchema);
+      const { data: body, errorResponse: bodyError } = await validateSchemaBody(request, env, CreditsConsumeRequestSchema);
       if (bodyError) return bodyError;
       if (!env.CREDITS_DO) {
 
@@ -875,7 +875,7 @@ export async function handleCreditsRequest(
         });
       }
 
-      const validation = await validateZodBody(request, env, CreditsEarnRequestSchema);
+      const validation = await validateSchemaBody(request, env, CreditsEarnRequestSchema);
 
       if (validation.errorResponse) return validation.errorResponse;
       const body = validation.data!;
@@ -988,7 +988,7 @@ export async function handleCreditsRequest(
         });
       }
 
-      const validation = await validateZodBody(request, env, CreditsConsumeGPRequestSchema);
+      const validation = await validateSchemaBody(request, env, CreditsConsumeGPRequestSchema);
 
       if (validation.errorResponse) return validation.errorResponse;
       const body = validation.data!;

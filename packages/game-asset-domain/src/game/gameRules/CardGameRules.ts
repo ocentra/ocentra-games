@@ -18,12 +18,7 @@ import type { ContentBlock } from '@/game/gameInfo/GameInfo';
 import { ContentBlockType } from '@/constants/content-block-type';
 import { ListStyleType } from '@/constants/list-style-type';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
-import { createAssetGuid } from '@/AssetCreation';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
+import { generateAssetGuid } from '@/AssetCreation';
 
 @serializableClass({
   assetType: 'CardGameRules',
@@ -146,29 +141,7 @@ export class CardGameRules extends GameRules implements IContentSynthesisProvide
   }
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      MainAppLogger.instance.logWarn('[CardGameRules] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'CardGameRules',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        MainAppLogger.instance.logWarn('[CardGameRules] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'CardGameRules',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('CardGameRules', context.gameId);
 
     return {
       assetId: `${context.gameId}-rules`,

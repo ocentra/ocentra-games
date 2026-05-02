@@ -2,7 +2,7 @@
 
 ## What this domain is
 
-`@ocentra/game-asset-domain` is the **game-asset layer**: serializable game-mode and card-game asset types (built on `@ocentra/asset-domain`), Zod schemas for game home/page/catalog and content slices, registries that wire the app to asset constructors and game listings, deck/session helpers, and small engine helpers (pattern evaluation, card scoring). It is consumed by the main app, asset editor flows, and validation scripts.
+`@ocentra/game-asset-domain` is the **game-asset layer**: serializable game-mode and card-game asset types (built on `@ocentra/asset-domain`), Effect Schema schemas for game home/page/catalog and content slices, registries that wire the app to asset constructors and game listings, deck/session helpers, and small engine helpers (pattern evaluation, card scoring). It is consumed by the main app, asset editor flows, and validation scripts.
 
 ## Why it exists
 
@@ -14,7 +14,7 @@ Without a dedicated package, game-mode assets, card/deck models, and page-schema
 
 - `GameMode` hierarchy (`gameMode/*`), game rules/scoring/strategy asset types (`game/*`), card/deck/ranking models (`card/*`, `deck/*`), content block types (`content/*`), UI layout asset types (`ui/*`).
 - Registries and factories: `GameRegistry`, `TypeRegistry`, `AssetRegistry`, `GameModeFactory`, related asset factories.
-- Zod schemas under `schemas/*` (game pages, home, catalog, content shapes, asset-linked JSON).
+- Effect Schema schemas under `schemas/*` (game pages, home, catalog, content shapes, asset-linked JSON).
 - Engine helpers: `engine/PatternEvaluator`, `engine/CardGameScoreCalculator`.
 - Constants used by those assets (`constants/*`).
 - Optional asset-family modules (e.g. `mahjong/*`, `hanafuda/*`, `domino/*`, `pieces/*`) where the repo routes those assets through this layer.
@@ -35,7 +35,7 @@ Without a dedicated package, game-mode assets, card/deck models, and page-schema
 - `game/` — `GameInfo`, `GameRules`, card rules, poker-style rule classes, scoring, strategy assets.
 - `card/`, `deck/` — `Card`, `Deck`, rankings, `DeckManager`, `GameSessionDeckManager`.
 - `content/`, `ui/` — serializable content blocks and layout types for game pages.
-- `schemas/` — Zod (and related) schemas for JSON assets and validation.
+- `schemas/` — Effect Schema (and related) schemas for JSON assets and validation.
 - `ai/` — AI model list assets and defaults.
 - `engine/` — scoring/pattern evaluation helpers for card games.
 - `factories/` — `GameModeFactory`, `GameModeAssetFactory`, `AIModelListAssetFactory`.

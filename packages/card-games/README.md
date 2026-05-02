@@ -19,8 +19,8 @@ Single source of truth for the **card games catalog**: types, schemas, and valid
 
 ## What it does
 
-- **Schema** – TypeScript/Zod schemas (`game-schema.ts`) for validating `processed-games/*.json`. Deck types/suit/rank come from `@ocentra/game-domain/deck/*`.
-- **Domain types** – (Planned) Zod schemas and TypeScript types for deserializing game JSON into typed objects.
+- **Schema** – TypeScript/Effect Schema schemas (`game-schema.ts`) for validating `processed-games/*.json`. Deck types/suit/rank come from `@ocentra/game-domain/deck/*`.
+- **Domain types** – (Planned) Effect Schema schemas and TypeScript types for deserializing game JSON into typed objects.
 - **Data explorer** – Temp dev app in `packages/data-explorer` for browsing the catalog, powered by DuckDB.
 
 ---
@@ -29,8 +29,8 @@ Single source of truth for the **card games catalog**: types, schemas, and valid
 
 | Path | Purpose |
 |------|---------|
-| `src/schema/` | Zod schemas, deck types, deck structure |
-| `src/` | Domain types, schemas (Zod/TS) |
+| `src/schema/` | Effect Schema schemas, deck types, deck structure |
+| `src/` | Domain types, schemas (Effect Schema/TS) |
 | `src/processed-games/` | Serialized game documents |
 | `src/scripts/` | validate-with-ts-schema, migration scripts |
 | `src/SourceHtml/` | Cached source HTML |

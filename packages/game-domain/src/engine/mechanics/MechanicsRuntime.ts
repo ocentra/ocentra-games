@@ -683,8 +683,8 @@ export class MechanicsRuntime {
       return;
     }
 
-    const { card, remainingDeck } = deckProvider.drawCard(gameState.deck);
-    gameState.floorCard = card;
+    const { piece, remainingDeck } = deckProvider.drawPiece(gameState.deck);
+    gameState.floorCard = piece;
     gameState.deck = remainingDeck;
   }
 

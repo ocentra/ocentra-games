@@ -2,14 +2,7 @@ import 'reflect-metadata';
 import { serializable, serializableClass } from '@ocentra/asset-domain/serialization/decorators';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import type { SynthesisContext } from '@ocentra/eventing-domain/types/app-stubs';
 import type { IContentSynthesisProvider } from '@/game/gameInfo/GameInfo';
@@ -128,30 +121,7 @@ export class Strategy extends ScriptableObject implements IContentSynthesisProvi
   }
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[Strategy] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'Strategy',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[Strategy] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'Strategy',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('Strategy', context.gameId);
     const assetId = `${context.gameId}-strategy`;
     const data: Record<string, unknown> = {
       LLM: `Strategy tips for ${context.displayName}.`,
@@ -172,5 +142,4 @@ export class Strategy extends ScriptableObject implements IContentSynthesisProvi
     };
   }
 }
-
 

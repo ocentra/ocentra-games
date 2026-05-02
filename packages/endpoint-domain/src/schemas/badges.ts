@@ -1,75 +1,75 @@
 /**
- * Badges endpoint Zod schemas.
+ * Badges endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { UserIdSchema, BadgeIdSchema, TimestampSchema } from './common';
 
 // ============================================================================
 // Query Parameters
 // ============================================================================
 
-export const ListBadgesQuerySchema = z.object({
-  category: z.string().optional(),
-  rarity: z.enum(['common', 'rare', 'epic', 'legendary']).optional(),
-  limit: z.number().int().positive().optional(),
+export const ListBadgesQuerySchema = schema.object({
+  category: schema.string().optional(),
+  rarity: schema.enum(['common', 'rare', 'epic', 'legendary']).optional(),
+  limit: schema.number().int().positive().optional(),
 });
 
 // ============================================================================
 // Request Bodies
 // ============================================================================
 
-export const AwardBadgeRequestSchema = z.object({
+export const AwardBadgeRequestSchema = schema.object({
   badge_id: BadgeIdSchema,
-  reason: z.string().optional(),
-  match_id: z.string().optional(),
+  reason: schema.string().optional(),
+  match_id: schema.string().optional(),
 });
 
 // ============================================================================
 // Response Bodies
 // ============================================================================
 
-export const BadgeRequirementSchema = z.object({
-  type: z.enum(['wins', 'games_played', 'score', 'streak', 'special']),
-  value: z.number().positive(),
-  description: z.string(),
+export const BadgeRequirementSchema = schema.object({
+  type: schema.enum(['wins', 'games_played', 'score', 'streak', 'special']),
+  value: schema.number().positive(),
+  description: schema.string(),
 });
 
-export const BadgeSchema = z.object({
+export const BadgeSchema = schema.object({
   badge_id: BadgeIdSchema,
-  name: z.string(),
-  description: z.string(),
-  category: z.string(),
-  rarity: z.enum(['common', 'rare', 'epic', 'legendary']),
-  icon_url: z.string().url(),
-  requirements: z.array(BadgeRequirementSchema),
+  name: schema.string(),
+  description: schema.string(),
+  category: schema.string(),
+  rarity: schema.enum(['common', 'rare', 'epic', 'legendary']),
+  icon_url: schema.string().url(),
+  requirements: schema.array(BadgeRequirementSchema),
 });
 
-export const BadgeProgressSchema = z.object({
+export const BadgeProgressSchema = schema.object({
   badge_id: BadgeIdSchema,
-  progress: z.number().min(0).max(100),
-  current_value: z.number(),
-  target_value: z.number().positive(),
+  progress: schema.number().min(0).max(100),
+  current_value: schema.number(),
+  target_value: schema.number().positive(),
   earned_at: TimestampSchema.optional(),
-  is_earned: z.boolean(),
+  is_earned: schema.boolean(),
 });
 
-export const ListBadgesResponseSchema = z.object({
-  badges: z.array(BadgeSchema),
-  total: z.number().int().nonnegative(),
+export const ListBadgesResponseSchema = schema.object({
+  badges: schema.array(BadgeSchema),
+  total: schema.number().int().nonnegative(),
 });
 
-export const UserBadgeProgressResponseSchema = z.object({
+export const UserBadgeProgressResponseSchema = schema.object({
   user_id: UserIdSchema,
-  badges: z.array(BadgeProgressSchema),
-  total_earned: z.number().int().nonnegative(),
-  total_available: z.number().int().nonnegative(),
+  badges: schema.array(BadgeProgressSchema),
+  total_earned: schema.number().int().nonnegative(),
+  total_available: schema.number().int().nonnegative(),
 });
 
-export const AwardBadgeResponseSchema = z.object({
-  success: z.boolean(),
+export const AwardBadgeResponseSchema = schema.object({
+  success: schema.boolean(),
   badge_id: BadgeIdSchema,
   user_id: UserIdSchema,
   awarded_at: TimestampSchema,
-  is_new: z.boolean(),
+  is_new: schema.boolean(),
 });

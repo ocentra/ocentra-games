@@ -1,6 +1,6 @@
 # @ocentra/game-asset-domain Architecture
 
-This package sits **above** `@ocentra/asset-domain` and **next to** `@ocentra/game-domain`: it defines **game-mode and card-game assets** as `ScriptableObject` subclasses, validates JSON with **Zod**, and exposes **registries** that connect the UI, editor, and asset pipeline through **events** and **service registration**.
+This package sits **above** `@ocentra/asset-domain` and **next to** `@ocentra/game-domain`: it defines **game-mode and card-game assets** as `ScriptableObject` subclasses, validates JSON with **Effect Schema**, and exposes **registries** that connect the UI, editor, and asset pipeline through **events** and **service registration**.
 
 ## Layers
 
@@ -12,7 +12,7 @@ flowchart TB
   end
 
   subgraph gad["@ocentra/game-asset-domain"]
-    SCH[schemas/*\nZod + validation]
+    SCH[schemas/*\nEffect Schema + validation]
     TYPES[gameMode, game, card, deck,\ncontent, ui, constants]
     REG[GameRegistry, TypeRegistry, AssetRegistry]
     FACT[factories/*]
@@ -59,7 +59,7 @@ flowchart LR
 
 ## NPM dependencies used in code
 
-- **zod**, **json5** — schema validation and JSON parsing where relevant.
+- **effect-schema**, **json5** — schema validation and JSON parsing where relevant.
 - **reflect-metadata** — required by decorators used with asset-domain serialization patterns.
 
 ## Scripts vs runtime

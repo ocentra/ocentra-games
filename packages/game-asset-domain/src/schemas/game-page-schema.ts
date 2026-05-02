@@ -1,22 +1,22 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { BaseGameSchema } from '@/schemas/base-game-schema';
 import { AssetLinkSchema } from '@/schemas/asset-link-schema';
 
 export const GamePageSchema = BaseGameSchema.extend({
-  description: z.string().optional(),
-  comingSoon: z.boolean().optional(),
-  bannerImage: z.string().optional(),
-  carouselImages: z.array(z.string()).optional(),
-  gameIcon: z.string().optional(),
-  tagline: z.string().optional(),
-  tagline2: z.string().optional(),
-  shortDescription: z.string().optional(),
-  textImageUrl: z.string().optional(),
-  minPlayers: z.number().default(2),
-  maxPlayers: z.number().default(4),
+  description: schema.string().optional(),
+  comingSoon: schema.boolean().optional(),
+  bannerImage: schema.string().optional(),
+  carouselImages: schema.array(schema.string()).optional(),
+  gameIcon: schema.string().optional(),
+  tagline: schema.string().optional(),
+  tagline2: schema.string().optional(),
+  shortDescription: schema.string().optional(),
+  textImageUrl: schema.string().optional(),
+  minPlayers: schema.number().default(2),
+  maxPlayers: schema.number().default(4),
   gameInfoAsset: AssetLinkSchema.optional(),
-  gameInfoAssetGuid: z.string().optional(),
-  sections: z.array(z.record(z.unknown())).optional(),
+  gameInfoAssetGuid: schema.string().optional(),
+  sections: schema.array(schema.record(schema.unknown())).optional(),
 });
 
-export type GamePage = z.infer<typeof GamePageSchema>;
+export type GamePage = schema.infer<typeof GamePageSchema>;

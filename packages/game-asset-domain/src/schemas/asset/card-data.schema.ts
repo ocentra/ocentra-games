@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { Suit } from '@ocentra/game-domain/types/game';
 import { PieceKind } from '@/pieces/PieceKind';
 import { ImageHashSchema } from '@/schemas/asset/shared/image-hash-schema';
@@ -7,34 +7,34 @@ import { CardIdSchema } from '@/schemas/asset/shared/card-id-schema';
 import { AssetResourceEntrySchema } from '@/schemas/asset/shared/brand-schemas';
 import { DECK_FAMILY_TAROT } from '@ocentra/game-domain/deck/cardIdentity';
 
-const FrenchCardIdentitySchema = z.object({
-  family: z.literal('French'),
-  suit: z.union([z.enum([Suit.SPADES, Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS]), z.literal('trumps')]),
-  value: z.number().int().min(2).max(14),
+const FrenchCardIdentitySchema = schema.object({
+  family: schema.literal('French'),
+  suit: schema.union([schema.enum([Suit.SPADES, Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS]), schema.literal('trumps')]),
+  value: schema.number().int().min(2).max(14),
 });
 
-const FrenchJokerIdentitySchema = z.object({
-  family: z.literal('French'),
-  joker: z.literal(true),
-  index: z.union([z.literal(1), z.literal(2)]),
+const FrenchJokerIdentitySchema = schema.object({
+  family: schema.literal('French'),
+  joker: schema.literal(true),
+  index: schema.union([schema.literal(1), schema.literal(2)]),
 });
 
-const TarotTrumpIdentitySchema = z.object({
-  family: z.literal(DECK_FAMILY_TAROT),
-  kind: z.literal('trump'),
-  number: z.number().int().min(1).max(21),
+const TarotTrumpIdentitySchema = schema.object({
+  family: schema.literal(DECK_FAMILY_TAROT),
+  kind: schema.literal('trump'),
+  number: schema.number().int().min(1).max(21),
 });
 
-const TarotMinorIdentitySchema = z.object({
-  family: z.literal(DECK_FAMILY_TAROT),
-  kind: z.literal('minor'),
-  suit: z.string().min(1),
-  value: z.number().int().min(1).max(15),
+const TarotMinorIdentitySchema = schema.object({
+  family: schema.literal(DECK_FAMILY_TAROT),
+  kind: schema.literal('minor'),
+  suit: schema.string().min(1),
+  value: schema.number().int().min(1).max(15),
 });
 
-const TarotFoolIdentitySchema = z.object({
-  family: z.literal(DECK_FAMILY_TAROT),
-  kind: z.literal('fool'),
+const TarotFoolIdentitySchema = schema.object({
+  family: schema.literal(DECK_FAMILY_TAROT),
+  kind: schema.literal('fool'),
 });
 
 const familyIdPattern = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
@@ -75,13 +75,13 @@ const allowedGenericFamilies = new Set([
   'Xiangqi_red_black',
 ]);
 
-const GenericIdentitySchema = z.object({
-  family: z.string().min(1),
-  id: z.string().regex(familyIdPattern),
+const GenericIdentitySchema = schema.object({
+  family: schema.string().min(1),
+  id: schema.string().regex(familyIdPattern),
 }).superRefine((value, ctx) => {
   if (!allowedGenericFamilies.has(value.family)) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['family'],
       message: `generic cardIdentity.family must be one of known non-French families: ${Array.from(allowedGenericFamilies).join(', ')}`,
     });
@@ -90,32 +90,35 @@ const GenericIdentitySchema = z.object({
   const prefix = familyPrefix(value.family);
   if (!value.id.startsWith(`${prefix}_`)) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['id'],
       message: `generic cardIdentity.id must start with "${prefix}_" for family "${value.family}"`,
     });
   }
 });
 
-const CardDataFieldsSchema = z.object({
-    pieceKind: z.literal(PieceKind.Card).optional(),
-    cardIdentity: z.union([FrenchJokerIdentitySchema, FrenchCardIdentitySchema, TarotTrumpIdentitySchema, TarotMinorIdentitySchema, TarotFoolIdentitySchema, GenericIdentitySchema]),
+const CardDataFieldsSchema = schema.object({
+    pieceKind: schema.literal(PieceKind.Card).optional(),
+    cardIdentity: schema.union([FrenchJokerIdentitySchema, FrenchCardIdentitySchema, TarotTrumpIdentitySchema, TarotMinorIdentitySchema, TarotFoolIdentitySchema, GenericIdentitySchema]),
     imageHash: ImageHashSchema,
     imagePath: ImagePathSchema.optional(),
     cardId: CardIdSchema,
+    rankingAsset: AssetResourceEntrySchema.extend({
+        assetType: schema.literal('DeckRanking'),
+    }).optional(),
     cardRankingAsset: AssetResourceEntrySchema.extend({
-        assetType: z.literal('CardRanking'),
-    }),
+        assetType: schema.literal('CardRanking'),
+    }).optional(),
 });
 
-type CardDataFields = z.infer<typeof CardDataFieldsSchema>;
+type CardDataFields = schema.infer<typeof CardDataFieldsSchema>;
 
 export const CardDataSchema = CardDataFieldsSchema.superRefine((d: CardDataFields, ctx) => {
     if ('kind' in d.cardIdentity && d.cardIdentity.family === DECK_FAMILY_TAROT && d.cardIdentity.kind === 'minor') {
       const expected = `${d.cardIdentity.value}_of_${d.cardIdentity.suit}`;
       if (d.cardId !== expected) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: ['cardId'],
           message: `cardId must equal "${expected}" for tarot cardIdentity`,
         });
@@ -128,7 +131,7 @@ export const CardDataSchema = CardDataFieldsSchema.superRefine((d: CardDataField
         : `tarot_trump_${d.cardIdentity.number}`;
       if (d.cardId !== expected) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: ['cardId'],
           message: `cardId must equal "${expected}" for tarot cardIdentity`,
         });
@@ -138,7 +141,7 @@ export const CardDataSchema = CardDataFieldsSchema.superRefine((d: CardDataField
     if ('id' in d.cardIdentity) {
       if (d.cardId !== d.cardIdentity.id) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: ['cardId'],
           message: `cardId must equal "${d.cardIdentity.id}" for generic cardIdentity`,
         });
@@ -149,7 +152,7 @@ export const CardDataSchema = CardDataFieldsSchema.superRefine((d: CardDataField
       const expected = `joker_${d.cardIdentity.index}`;
       if (d.cardId !== expected) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: schema.IssueCode.custom,
           path: ['cardId'],
           message: `cardId must equal "${expected}" for joker cardIdentity`,
         });
@@ -160,7 +163,7 @@ export const CardDataSchema = CardDataFieldsSchema.superRefine((d: CardDataField
     const expected = `${identity.value}_of_${identity.suit}`;
     if (d.cardId !== expected) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: schema.IssueCode.custom,
             path: ['cardId'],
             message: `cardId must equal "${expected}" for cardIdentity`,
         });

@@ -2,6 +2,7 @@ import type { ValidationResult } from '@/engine/logic/StateValidator';
 import type { Card, GameState, PlayerAction } from '@/types/game';
 import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
 import type { MechanicsFamilyResolver } from '@/engine/mechanics/family/MechanicsFamilyResolver';
+import { runtimePiecesToCards } from '@/deck/runtimeDeck';
 
 type BragRank =
   | 'trail'
@@ -155,8 +156,8 @@ export class VyingFamilyResolver implements MechanicsFamilyResolver {
       if (!best) {
         return current;
       }
-      const bestScore = evaluateBragHand(best.hand);
-      const currentScore = evaluateBragHand(current.hand);
+      const bestScore = evaluateBragHand(runtimePiecesToCards(best.hand));
+      const currentScore = evaluateBragHand(runtimePiecesToCards(current.hand));
       if (currentScore.score !== bestScore.score) {
         return currentScore.score > bestScore.score ? current : best;
       }

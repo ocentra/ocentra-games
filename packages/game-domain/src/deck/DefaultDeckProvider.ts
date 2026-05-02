@@ -1,6 +1,14 @@
-import type { Card, CardValue } from '@/types/game';
+import type { Card, CardValue, RuntimePiece } from '@/types/game';
 import { Suit } from '@/types/game';
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
+import {
+  createRuntimeCard,
+  dealRuntimePieces,
+  drawRuntimePiece,
+  materializeRuntimePieces,
+  runtimePiecesToCards,
+  shuffleRuntimePieces,
+} from '@/deck/runtimeDeck';
 
 export class DefaultDeckProvider implements IDeckProvider {
   private seed: number;
@@ -12,7 +20,11 @@ export class DefaultDeckProvider implements IDeckProvider {
   }
 
   async createStandardDeck(): Promise<Card[]> {
-    return this.createStandardDeckFallback();
+    return runtimePiecesToCards(await this.createDeck());
+  }
+
+  async createDeck(): Promise<RuntimePiece[]> {
+    return materializeRuntimePieces(this.createStandardDeckFallback());
   }
 
   private createStandardDeckFallback(): Card[] {
@@ -23,9 +35,11 @@ export class DefaultDeckProvider implements IDeckProvider {
     for (const suit of suits) {
       for (const value of values) {
         deck.push({
-          suit,
-          value,
-          id: `${value}_of_${suit}`,
+          ...createRuntimeCard({
+            suit,
+            value,
+            id: `${value}_of_${suit}`,
+          }),
         });
       }
     }
@@ -33,49 +47,26 @@ export class DefaultDeckProvider implements IDeckProvider {
     return deck;
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    const shuffled = [...deck];
-    let currentIndex = shuffled.length;
-
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[] {
     this.resetSeed();
-
-    while (currentIndex !== 0) {
-      const randomIndex = Math.floor(this.seededRandom() * currentIndex);
-      currentIndex--;
-
-      [shuffled[currentIndex], shuffled[randomIndex]] = [
-        shuffled[randomIndex],
-        shuffled[currentIndex],
-      ];
-    }
-
-    return shuffled;
+    return shuffleRuntimePieces(deck, this.seed);
   }
 
   dealInitialHands(
-    deck: Card[],
+    deck: RuntimePiece[],
     playerCount: number,
     handSize: number
-  ): { hands: Card[][]; remainingDeck: Card[] } {
-    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
-
-    for (let cardIndex = 0; cardIndex < handSize; cardIndex++) {
-      for (let playerIndex = 0; playerIndex < playerCount; playerIndex++) {
-        const card = remainingDeck.shift();
-        if (card) {
-          hands[playerIndex].push(card);
-        }
-      }
-    }
-
-    return { hands, remainingDeck };
+  ): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] } {
+    return dealRuntimePieces(deck, playerCount, handSize);
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
-    const card = remainingDeck.shift() ?? null;
-    return { card, remainingDeck };
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    return drawRuntimePiece(deck);
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    const { piece, remainingDeck } = this.drawPiece(deck);
+    return { card: piece, remainingDeck };
   }
 
   getSeed(): number {
@@ -84,11 +75,6 @@ export class DefaultDeckProvider implements IDeckProvider {
 
   setSeed(seed: number): void {
     this.seed = seed;
-  }
-
-  private seededRandom(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
   }
 
   private resetSeed(): void {

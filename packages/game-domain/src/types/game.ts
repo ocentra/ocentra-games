@@ -9,10 +9,32 @@ export type Suit = (typeof Suit)[keyof typeof Suit];
 
 export type CardValue = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14;
 
-export interface Card {
+export interface RuntimePieceAssetRef {
+  path?: string;
+  guid?: string;
+  assetType?: string;
+  displayName?: string;
+}
+
+export interface RuntimePiece {
+  id: string;
+  logicalId: string;
+  pieceKind: string;
+  family: string;
+  identity: Record<string, unknown>;
+  tags: string[];
+  assetRef?: RuntimePieceAssetRef;
+  imageHash?: string;
+  role?: string;
+  copyIndex: number;
+  suit?: Suit;
+  value?: CardValue;
+}
+
+export interface Card extends RuntimePiece {
   suit: Suit;
   value: CardValue;
-  id: string;
+  pieceKind: 'card';
 }
 
 export const GamePhase = {
@@ -39,9 +61,9 @@ export interface Player {
   id: string;
   name: string;
   avatar: string;
-  hand: Card[];
+  hand: RuntimePiece[];
   declaredSuit: Suit | null;
-  intentCard: Card | null;
+  intentCard: RuntimePiece | null;
   score: number;
   isConnected: boolean;
   isAI: boolean;
@@ -55,12 +77,12 @@ export interface MechanicsRuntimeContext {
   lastMechanicsAction: string | null;
   tableCards: Array<{
     playerId: string;
-    card: Card;
+    card: RuntimePiece;
   }>;
-  capturedCardsByPlayerId: Record<string, Card[]>;
+  capturedCardsByPlayerId: Record<string, RuntimePiece[]>;
   foldedPlayerIds: string[];
   roundPot: number;
-  trumpCard: Card | null;
+  trumpCard: RuntimePiece | null;
   familyState?: Record<string, unknown>;
 }
 
@@ -69,9 +91,9 @@ export interface GameState {
   players: Player[];
   currentPlayer: number;
   phase: GamePhase;
-  deck: Card[];
-  floorCard: Card | null;
-  discardPile: Card[];
+  deck: RuntimePiece[];
+  floorCard: RuntimePiece | null;
+  discardPile: RuntimePiece[];
   round: number;
   startTime: Date;
   lastAction: Date;

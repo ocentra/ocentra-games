@@ -1,27 +1,27 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { GameCatalogEntrySchema } from '@/schemas/game-catalog-entry-schema';
 
-export const AssetIndexResourceEntrySchema = z.object({
-  resourceEntryType: z.enum(['AssetResourceEntry', 'ImageResourceEntry', 'FileResourceEntry']),
-  path: z.string(),
-  guid: z.string().optional(),
-  hash: z.string().optional(),
-  checksum: z.string().optional(),
-  assetType: z.string().optional(),
-  displayName: z.string().optional(),
-  gameId: z.string().nullable().optional(),
-  category: z.string().nullable().optional(),
-  mimeType: z.string().nullable().optional(),
-  fileSize: z.number().optional(),
-  inheritanceChain: z.array(z.string()).nullable().optional(),
-  variant: z.string().nullable().optional(),
+export const AssetIndexResourceEntrySchema = schema.object({
+  resourceEntryType: schema.enum(['AssetResourceEntry', 'ImageResourceEntry', 'FileResourceEntry']),
+  path: schema.string(),
+  guid: schema.string().optional(),
+  hash: schema.string().optional(),
+  checksum: schema.string().optional(),
+  assetType: schema.string().optional(),
+  displayName: schema.string().optional(),
+  gameId: schema.string().nullable().optional(),
+  category: schema.string().nullable().optional(),
+  mimeType: schema.string().nullable().optional(),
+  fileSize: schema.number().optional(),
+  inheritanceChain: schema.array(schema.string()).nullable().optional(),
+  variant: schema.string().nullable().optional(),
 }).passthrough();
 
-export const EntryIndexSchema = z.object({
-  generatedAt: z.string(),
-  resources: z.array(AssetIndexResourceEntrySchema),
-  games: z.array(GameCatalogEntrySchema),
+export const EntryIndexSchema = schema.object({
+  generatedAt: schema.string(),
+  resources: schema.array(AssetIndexResourceEntrySchema),
+  games: schema.array(GameCatalogEntrySchema),
 });
 
-export type AssetIndexResourceEntry = z.infer<typeof AssetIndexResourceEntrySchema>;
-export type EntryIndexDocument = z.infer<typeof EntryIndexSchema>;
+export type AssetIndexResourceEntry = schema.infer<typeof AssetIndexResourceEntrySchema>;
+export type EntryIndexDocument = schema.infer<typeof EntryIndexSchema>;

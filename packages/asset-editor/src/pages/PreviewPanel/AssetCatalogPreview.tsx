@@ -3,6 +3,7 @@ import React, {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import type { ViewMode } from './types'
@@ -13,18 +14,29 @@ import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode
 import type { GameHome } from '@ocentra/game-asset-domain/schemas/game-home-schema'
 import {
   HomePageGamesDocumentSchema,
+  type HomepageLayoutControlsData,
   type HomePageGamesDocument,
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
 import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
-import { FeaturedGameCarousel } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameCarousel'
-import { ComingSoonCarousel } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonCarousel'
+import { FeaturedGameShowcase } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase'
+import {
+  DEFAULT_FEATURED_SHOWCASE_CONTROLS,
+  type FeaturedGameShowcasePreviewLayoutMode,
+  type FeaturedShowcaseControls,
+} from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types'
+import { ComingSoonShowcase } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonShowcase'
+import { FeatureBannerSection } from '@ocentra/core-ui/Common/FeatureBanner/FeatureBannerSection'
+import {
+  DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
+  type HomeShowcaseFrameControls,
+  type HomeShowcasePreviewLayoutMode,
+} from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types'
 import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerContentBar'
 import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar'
 import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard'
 import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow'
-import { solanaImageUrl } from '@ocentra/app-assets/commons'
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl'
 import { PreviewPanelHeader } from './PreviewPanelHeader'
 import {
@@ -37,7 +49,39 @@ import {
   queryResourcesFromTauri,
   isTauri,
   type AssetIndexEntry as TauriAssetIndexEntry,
+  type TauriHomepageFeaturedGame,
 } from '@/adapters/assets/TauriAssetAdapter'
+import { createPanelWindow } from '@/utils/createPanelWindow'
+import {
+  FEATURED_SHOWCASE_CONTROLS_CHANNEL,
+  type FeaturedShowcaseControlsMessage,
+} from '@/utils/featuredShowcaseControlsChannel'
+import {
+  COMING_SOON_SHOWCASE_CONTROLS_CHANNEL,
+  type ComingSoonShowcaseControlsMessage,
+} from '@/utils/comingSoonShowcaseControlsChannel'
+import {
+  loadComingSoonShowcaseControlsFromDisk,
+  loadFeaturedShowcaseControlsFromDisk,
+  normalizeFeaturedShowcaseControls,
+} from '@/utils/featuredShowcaseControlsPersistence'
+import {
+  HOME_SHOWCASE_FRAME_CONTROLS_CHANNEL,
+  type HomeShowcaseFrameControlsMessage,
+} from '@/utils/homeShowcaseFrameControlsChannel'
+import {
+  loadHomeShowcaseFrameControlsFromDisk,
+  normalizeHomeShowcaseFrameControls,
+} from '@/utils/homeShowcaseFrameControlsPersistence'
+import {
+  HOMEPAGE_LAYOUT_CONTROLS_CHANNEL,
+  type HomepageLayoutControlsMessage,
+} from '@/utils/homepageLayoutControlsChannel'
+import {
+  DEFAULT_HOMEPAGE_LAYOUT_CONTROLS,
+  loadHomepageLayoutControlsFromDisk,
+  normalizeHomepageLayoutControls,
+} from '@/utils/homepageLayoutControlsPersistence'
 import type { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry'
 import { AssetResourceEntry as AssetResourceEntryClass } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry'
 import { isImageHash } from '@ocentra/asset-domain/types/assetIdentifier'
@@ -66,6 +110,86 @@ type ImageResourceGroup = {
   items: CatalogResourceRecord[]
 }
 
+function mergeFeaturedControls(controls?: FeaturedShowcaseControls): FeaturedShowcaseControls {
+  if (!controls) return DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  return {
+    overall: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.overall, ...controls.overall },
+    arrows: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.arrows, ...controls.arrows },
+    header: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.header, ...controls.header },
+    body: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.body, ...controls.body },
+    sideA: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideA, ...controls.sideA },
+    sideB: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideB, ...controls.sideB },
+    footer: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.footer, ...controls.footer },
+    colors: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.colors, ...controls.colors },
+  }
+}
+
+function mergeHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeShowcaseFrameControls {
+  if (!controls) return DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS
+  return {
+    overall: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.overall, ...controls.overall },
+    body: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.body, ...controls.body },
+    sideA: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideA, ...controls.sideA },
+    sideB: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB, ...controls.sideB },
+    copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
+    footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
+    colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
+  }
+}
+
+function isFeaturedNarrowAtWidth(width: number, controls?: FeaturedShowcaseControls): boolean {
+  const c = mergeFeaturedControls(controls)
+  const measuredContentWidth = width - c.overall.canvasInsetX * 2
+  const stageW = c.overall.viewWidth - (c.overall.edgeInset + c.arrows.width + c.arrows.gap) * 2
+  const bodyW = stageW - c.body.insetX * 2
+  const renderScale = Math.min(1, Math.max(1, measuredContentWidth) / c.overall.viewWidth)
+  return (
+    (c.overall.narrowBreakpoint > 0 && measuredContentWidth <= c.overall.narrowBreakpoint) ||
+    bodyW * c.body.splitRatio * renderScale < c.body.minAWidth ||
+    bodyW * (1 - c.body.splitRatio) * renderScale < c.body.minBWidth
+  )
+}
+
+function isHomeFrameNarrowAtWidth(width: number, controls?: HomeShowcaseFrameControls): boolean {
+  const c = mergeHomeFrameControls(controls)
+  const measuredContentWidth = width - c.overall.canvasInsetX * 2
+  const stageW = c.overall.viewWidth - c.overall.stageInsetX * 2
+  const bodyW = stageW - c.body.insetX * 2
+  const renderScale = Math.min(1, Math.max(1, measuredContentWidth) / c.overall.viewWidth)
+  return (
+    (c.overall.narrowBreakpoint > 0 && measuredContentWidth <= c.overall.narrowBreakpoint) ||
+    bodyW * c.body.splitRatio * renderScale < c.body.minAWidth ||
+    bodyW * (1 - c.body.splitRatio) * renderScale < c.body.minBWidth
+  )
+}
+
+function resolveSyncedHomepageLayoutMode({
+  width,
+  aboutControls,
+  featuredControls,
+  comingSoonControls,
+  aboutMode,
+  featuredMode,
+  comingSoonMode,
+}: {
+  width: number | null
+  aboutControls: HomeShowcaseFrameControls
+  featuredControls: FeaturedShowcaseControls
+  comingSoonControls: FeaturedShowcaseControls
+  aboutMode: HomeShowcasePreviewLayoutMode
+  featuredMode: FeaturedGameShowcasePreviewLayoutMode
+  comingSoonMode: FeaturedGameShowcasePreviewLayoutMode
+}): HomeShowcasePreviewLayoutMode {
+  if (aboutMode === 'narrow' || featuredMode === 'narrow' || comingSoonMode === 'narrow') return 'narrow'
+  if (aboutMode === 'wide' || featuredMode === 'wide' || comingSoonMode === 'wide') return 'wide'
+  if (width === null) return 'auto'
+  return isHomeFrameNarrowAtWidth(width, aboutControls) ||
+    isFeaturedNarrowAtWidth(width, featuredControls) ||
+    isFeaturedNarrowAtWidth(width, comingSoonControls)
+    ? 'narrow'
+    : 'wide'
+}
+
 type GameWithMetadata = {
   home: GameHome
   path: string
@@ -78,6 +202,9 @@ const RELEASE_STATUSES = new Set<NonNullable<GameHome['releaseStatus']>>([
   'Maintenance',
   'Deprecated',
 ])
+
+const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
+  'virtual:AssetCatalog/FeaturedShowcaseControls'
 
 type AssetCatalogPreviewProps = {
   assetId: string
@@ -106,6 +233,71 @@ function toReleaseStatus(value: string | undefined): GameHome['releaseStatus'] {
     return value as GameHome['releaseStatus']
   }
   return undefined
+}
+
+function toGameHomeFromTauri(g: TauriHomepageFeaturedGame): GameHome {
+  return {
+    gameId: g.gameId,
+    guid: g.guid,
+    name: g.name,
+    enabled: g.enabled,
+    releaseStatus: toReleaseStatus(g.releaseStatus),
+    tags: g.tags,
+    featuredTopBadges: g.featuredTopBadges,
+    featuredBottomBadges: g.featuredBottomBadges,
+    tagline: g.tagline,
+    tagline2: g.tagline2,
+    shortDescription: g.shortDescription,
+    description: g.description,
+    minPlayers: g.minPlayers,
+    maxPlayers: g.maxPlayers,
+    gameCategory: g.gameCategory,
+    subcategory: g.subcategory,
+    difficulty: g.difficulty,
+    duration: g.duration,
+    deck: g.deck,
+    playersDisplay: g.playersDisplay,
+    quality: g.quality,
+    bannerImage: g.bannerImage,
+    gameIcon: g.gameIcon,
+    carouselImages: g.carouselImages,
+    carouselPlaybackMode: g.carouselPlaybackMode as GameHome['carouselPlaybackMode'],
+    carouselTransitionType: g.carouselTransitionType as GameHome['carouselTransitionType'],
+    carouselTransitionDurationMs: g.carouselTransitionDurationMs,
+    bannerLogoImage: g.bannerLogoImage,
+    bannerLogoAlt: g.bannerLogoAlt,
+    bannerLogoStartMs: g.bannerLogoStartMs,
+    bannerLogoDurationMs: g.bannerLogoDurationMs,
+    bannerLogoScaleFrom: g.bannerLogoScaleFrom,
+    bannerLogoScaleTo: g.bannerLogoScaleTo,
+    bannerLogoOpacityFrom: g.bannerLogoOpacityFrom,
+    bannerLogoOpacityTo: g.bannerLogoOpacityTo,
+    bannerLogoVisibleFromIndex: g.bannerLogoVisibleFromIndex,
+    bannerLogoVisibleToIndex: g.bannerLogoVisibleToIndex,
+    bannerTitleText: g.bannerTitleText,
+    bannerTitleColor: g.bannerTitleColor,
+    bannerTitleStartMs: g.bannerTitleStartMs,
+    bannerTitleDurationMs: g.bannerTitleDurationMs,
+    bannerTitleScaleFrom: g.bannerTitleScaleFrom,
+    bannerTitleScaleTo: g.bannerTitleScaleTo,
+    bannerTitleOpacityFrom: g.bannerTitleOpacityFrom,
+    bannerTitleOpacityTo: g.bannerTitleOpacityTo,
+    bannerTitleVisibleFromIndex: g.bannerTitleVisibleFromIndex,
+    bannerTitleVisibleToIndex: g.bannerTitleVisibleToIndex,
+    bannerOverlayTintColor: g.bannerOverlayTintColor,
+    bannerOverlayTintOpacity: g.bannerOverlayTintOpacity,
+    bannerVignetteOpacity: g.bannerVignetteOpacity,
+    bannerFadeToBlackOpacity: g.bannerFadeToBlackOpacity,
+  }
+}
+
+function getTauriHomepageHashes(g: TauriHomepageFeaturedGame): string[] {
+  return [
+    g.bannerImage,
+    g.gameIcon,
+    g.bannerLogoImage,
+    ...(g.carouselImages ?? []),
+  ].filter((hash): hash is string => typeof hash === 'string')
 }
 
 function toCatalogResourceRecord(
@@ -169,6 +361,30 @@ function toCatalogResourceRecord(
   }
 }
 
+function getDisplayNameFromResourceFile(fileName: string): string {
+  const withoutExtension = fileName.replace(/\.[^.]+$/, '')
+  return withoutExtension
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase())
+}
+
+function toCatalogMontageImages(
+  items: CatalogResourceRecord[]
+): HomePageGamesDocument['catalogMontageImages'] {
+  return items
+    .filter(item =>
+      item.kind === 'image' &&
+      isImageHash(item.id) &&
+      item.path.replace(/\\/g, '/').includes('AppAssets/PlaceHolders/')
+    )
+    .map(item => ({
+      id: item.id,
+      name: getDisplayNameFromResourceFile(item.fileName),
+      bannerImage: item.id,
+      alt: getDisplayNameFromResourceFile(item.fileName),
+    }))
+}
+
 export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   assetId,
   assetData: _assetData,
@@ -184,6 +400,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     featured: [],
     recommended: [],
     comingSoon: [],
+    catalogMontageImages: [],
     availableNow: [],
     featureBannerItems: [],
   })
@@ -211,6 +428,43 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [gamesModeFilter, setGamesModeFilter] = useState('all')
   const [gamesCategory, setGamesCategory] = useState('all')
   const [gamesView, setGamesView] = useState<'grid' | 'list'>('grid')
+  const [featuredShowcaseControls, setFeaturedShowcaseControls] = useState(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  )
+  const [featuredShowcasePreviewLayoutMode, setFeaturedShowcasePreviewLayoutMode] =
+    useState<FeaturedGameShowcasePreviewLayoutMode>('auto')
+  const [aboutShowcaseControls, setAboutShowcaseControls] = useState(
+    DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS
+  )
+  const [comingSoonShowcaseControls, setComingSoonShowcaseControls] = useState(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  )
+  const [aboutShowcasePreviewLayoutMode, setAboutShowcasePreviewLayoutMode] =
+    useState<HomeShowcasePreviewLayoutMode>('auto')
+  const [comingSoonShowcasePreviewLayoutMode, setComingSoonShowcasePreviewLayoutMode] =
+    useState<FeaturedGameShowcasePreviewLayoutMode>('auto')
+  const [homepageLayoutControls, setHomepageLayoutControls] =
+    useState<HomepageLayoutControlsData>(DEFAULT_HOMEPAGE_LAYOUT_CONTROLS)
+  const featuredShowcaseControlsRef = useRef<FeaturedShowcaseControls>(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  )
+  const featuredShowcasePreviewLayoutModeRef =
+    useRef<FeaturedGameShowcasePreviewLayoutMode>('auto')
+  const aboutShowcaseControlsRef = useRef<HomeShowcaseFrameControls>(
+    DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS
+  )
+  const comingSoonShowcaseControlsRef = useRef<FeaturedShowcaseControls>(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  )
+  const aboutShowcasePreviewLayoutModeRef =
+    useRef<HomeShowcasePreviewLayoutMode>('auto')
+  const comingSoonShowcasePreviewLayoutModeRef =
+    useRef<FeaturedGameShowcasePreviewLayoutMode>('auto')
+  const homepageLayoutControlsRef = useRef<HomepageLayoutControlsData>(
+    DEFAULT_HOMEPAGE_LAYOUT_CONTROLS
+  )
+  const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
+  const [homepageContentFrameWidth, setHomepageContentFrameWidth] = useState<number | null>(null)
   const [gamesCategoryExpanded, setGamesCategoryExpanded] = useState<
     Set<string>
   >(new Set())
@@ -227,6 +481,238 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
 
   const { resolveImageUrl, ImageLoaders, prefetchHashes } =
     useResolveImageUrl(homepageData)
+  const syncedHomepagePreviewLayoutMode = useMemo(() => resolveSyncedHomepageLayoutMode({
+    width: homepageContentFrameWidth,
+    aboutControls: aboutShowcaseControls,
+    featuredControls: featuredShowcaseControls,
+    comingSoonControls: comingSoonShowcaseControls,
+    aboutMode: aboutShowcasePreviewLayoutMode,
+    featuredMode: featuredShowcasePreviewLayoutMode,
+    comingSoonMode: comingSoonShowcasePreviewLayoutMode,
+  }), [
+    aboutShowcaseControls,
+    aboutShowcasePreviewLayoutMode,
+    comingSoonShowcaseControls,
+    comingSoonShowcasePreviewLayoutMode,
+    featuredShowcaseControls,
+    featuredShowcasePreviewLayoutMode,
+    homepageContentFrameWidth,
+  ])
+
+  useEffect(() => {
+    featuredShowcaseControlsRef.current = featuredShowcaseControls
+  }, [featuredShowcaseControls])
+
+  useEffect(() => {
+    featuredShowcasePreviewLayoutModeRef.current = featuredShowcasePreviewLayoutMode
+  }, [featuredShowcasePreviewLayoutMode])
+
+  useEffect(() => {
+    aboutShowcaseControlsRef.current = aboutShowcaseControls
+  }, [aboutShowcaseControls])
+
+  useEffect(() => {
+    comingSoonShowcaseControlsRef.current = comingSoonShowcaseControls
+  }, [comingSoonShowcaseControls])
+
+  useEffect(() => {
+    aboutShowcasePreviewLayoutModeRef.current = aboutShowcasePreviewLayoutMode
+  }, [aboutShowcasePreviewLayoutMode])
+
+  useEffect(() => {
+    comingSoonShowcasePreviewLayoutModeRef.current = comingSoonShowcasePreviewLayoutMode
+  }, [comingSoonShowcasePreviewLayoutMode])
+
+  useEffect(() => {
+    homepageLayoutControlsRef.current = homepageLayoutControls
+  }, [homepageLayoutControls])
+
+  useEffect(() => {
+    const node = homepageContentFrameRef.current
+    if (!node) return
+    const updateWidth = () => setHomepageContentFrameWidth(node.getBoundingClientRect().width || null)
+    updateWidth()
+    const observer = new ResizeObserver(updateWidth)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [activeTab])
+
+  useEffect(() => {
+    let cancelled = false
+    void loadFeaturedShowcaseControlsFromDisk().then(nextControls => {
+      if (cancelled) return
+      setFeaturedShowcaseControls(nextControls)
+      setHomepageData(prev => ({
+        ...prev,
+        featuredShowcaseControls: nextControls,
+      }))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    void Promise.all([
+      loadHomeShowcaseFrameControlsFromDisk('about'),
+      loadComingSoonShowcaseControlsFromDisk(),
+    ]).then(([nextAboutControls, nextComingSoonControls]) => {
+      if (cancelled) return
+      setAboutShowcaseControls(nextAboutControls)
+      setComingSoonShowcaseControls(nextComingSoonControls)
+      setHomepageData(prev => ({
+        ...prev,
+        aboutShowcaseControls: nextAboutControls,
+        comingSoonShowcaseControls: nextComingSoonControls,
+      }))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    void loadHomepageLayoutControlsFromDisk().then(nextControls => {
+      if (cancelled) return
+      setHomepageLayoutControls(nextControls)
+      setHomepageData(prev => ({
+        ...prev,
+        homepageLayoutControls: nextControls,
+      }))
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(FEATURED_SHOWCASE_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<FeaturedShowcaseControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: featuredShowcaseControlsRef.current,
+          previewLayoutMode: featuredShowcasePreviewLayoutModeRef.current,
+        } satisfies FeaturedShowcaseControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        const nextControls = event.data.controls
+        setFeaturedShowcaseControls(nextControls)
+        setHomepageData(prev => ({
+          ...prev,
+          featuredShowcaseControls: nextControls,
+        }))
+        return
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setFeaturedShowcasePreviewLayoutMode(event.data.previewLayoutMode)
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(HOME_SHOWCASE_FRAME_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<HomeShowcaseFrameControlsMessage>) => {
+      if (event.data.kind === 'about' && event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          kind: 'about',
+          controls: aboutShowcaseControlsRef.current,
+          previewLayoutMode: aboutShowcasePreviewLayoutModeRef.current,
+        } satisfies HomeShowcaseFrameControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        const nextControls = event.data.controls
+        setAboutShowcaseControls(nextControls)
+        setHomepageData(prev => ({
+          ...prev,
+          aboutShowcaseControls: nextControls,
+        }))
+        return
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setAboutShowcasePreviewLayoutMode(event.data.previewLayoutMode)
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(COMING_SOON_SHOWCASE_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<ComingSoonShowcaseControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: comingSoonShowcaseControlsRef.current,
+          previewLayoutMode: comingSoonShowcasePreviewLayoutModeRef.current,
+        } satisfies ComingSoonShowcaseControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        const nextControls = event.data.controls
+        setComingSoonShowcaseControls(nextControls)
+        setHomepageData(prev => ({
+          ...prev,
+          comingSoonShowcaseControls: nextControls,
+        }))
+        return
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setComingSoonShowcasePreviewLayoutMode(event.data.previewLayoutMode)
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(HOMEPAGE_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<HomepageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: homepageLayoutControlsRef.current,
+        } satisfies HomepageLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        const nextControls = event.data.controls
+        setHomepageLayoutControls(nextControls)
+        setHomepageData(prev => ({
+          ...prev,
+          homepageLayoutControls: nextControls,
+        }))
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
 
   useEffect(() => {
     let isCancelled = false
@@ -245,6 +731,13 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       setHomepageData(prev => ({ ...prev, comingSoon }))
     }
 
+    const setCatalogMontageData = (
+      catalogMontageImages: HomePageGamesDocument['catalogMontageImages']
+    ) => {
+      if (isCancelled) return
+      setHomepageData(prev => ({ ...prev, catalogMontageImages }))
+    }
+
     const setFeatureBannerData = (
       featureBannerItems: HomePageGamesDocument['featureBannerItems']
     ) => {
@@ -261,30 +754,12 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         void (async () => {
           try {
             const payload = await getHomepageCatalogFromTauri()
-            const featured = payload.featured.map(g => ({
-              gameId: g.gameId,
-              guid: g.guid,
-              name: g.name,
-              enabled: g.enabled,
-              releaseStatus: g.releaseStatus,
-              bannerImage: g.bannerImage,
-              gameIcon: g.gameIcon,
-              tags: [],
-            }))
+            const featured = payload.featured.map(toGameHomeFromTauri)
             const catalogData = HomePageGamesDocumentSchema.parse({
               featured,
               recommended: featured,
               comingSoon: [],
-              availableNow: payload.availableNow.map(g => ({
-                gameId: g.gameId,
-                guid: g.guid,
-                name: g.name,
-                enabled: g.enabled,
-                releaseStatus: g.releaseStatus,
-                bannerImage: g.bannerImage,
-                gameIcon: g.gameIcon,
-                tags: [],
-              })),
+              availableNow: payload.availableNow.map(toGameHomeFromTauri),
             })
             setCatalogData({
               featured: catalogData.featured,
@@ -292,16 +767,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
               availableNow: catalogData.availableNow,
             })
             const hashes = [
-              ...payload.featured.flatMap(g =>
-                [g.bannerImage, g.gameIcon].filter(
-                  (hash): hash is string => typeof hash === 'string'
-                )
-              ),
-              ...payload.availableNow.flatMap(g =>
-                [g.bannerImage, g.gameIcon].filter(
-                  (hash): hash is string => typeof hash === 'string'
-                )
-              ),
+              ...payload.featured.flatMap(getTauriHomepageHashes),
+              ...payload.availableNow.flatMap(getTauriHomepageHashes),
             ].filter(
               (
                 hash
@@ -348,6 +815,28 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
 
         void (async () => {
           try {
+            const payload = await queryResourcesFromTauri({
+              search: 'AppAssets/PlaceHolders',
+              resourceType: 'Image',
+            })
+            const montageImages = toCatalogMontageImages(payload.items)
+            setCatalogMontageData(montageImages)
+            const hashes = montageImages
+              .map(item => item.bannerImage)
+              .filter(
+                (
+                  hash
+                ): hash is import('@ocentra/asset-domain/types/assetIdentifier').ImageHash =>
+                  isImageHash(hash)
+              )
+            if (hashes.length > 0) prefetchHashes(hashes)
+          } catch {
+            setCatalogMontageData([])
+          }
+        })()
+
+        void (async () => {
+          try {
             const payload = await getHomepageFeatureBannerFromTauri()
             const featureBannerItems = HomePageGamesDocumentSchema.parse({
               featured: [],
@@ -380,14 +869,55 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         )
         await loadHomepageFromDiskIncremental(partial => {
           if (isCancelled) return
-          setHomepageData(partial)
+          let nextPartial = partial
+          if (partial.featuredShowcaseControls) {
+            const nextControls = normalizeFeaturedShowcaseControls(
+              partial.featuredShowcaseControls
+            )
+            setFeaturedShowcaseControls(nextControls)
+            nextPartial = {
+              ...partial,
+              featuredShowcaseControls: nextControls,
+            }
+          }
+          if (partial.aboutShowcaseControls) {
+            const nextAboutControls = normalizeHomeShowcaseFrameControls(
+              partial.aboutShowcaseControls
+            )
+            setAboutShowcaseControls(nextAboutControls)
+            nextPartial = {
+              ...nextPartial,
+              aboutShowcaseControls: nextAboutControls,
+            }
+          }
+          if (partial.comingSoonShowcaseControls) {
+            const nextComingSoonControls = normalizeFeaturedShowcaseControls(
+              partial.comingSoonShowcaseControls
+            )
+            setComingSoonShowcaseControls(nextComingSoonControls)
+            nextPartial = {
+              ...nextPartial,
+              comingSoonShowcaseControls: nextComingSoonControls,
+            }
+          }
+          if (partial.homepageLayoutControls) {
+            const nextHomepageLayoutControls = normalizeHomepageLayoutControls(
+              partial.homepageLayoutControls
+            )
+            setHomepageLayoutControls(nextHomepageLayoutControls)
+            nextPartial = {
+              ...nextPartial,
+              homepageLayoutControls: nextHomepageLayoutControls,
+            }
+          }
+          setHomepageData(nextPartial)
           setIsLoadingHomepageCatalog(false)
           setIsLoadingHomepageComingSoon(false)
           setIsLoadingHomepageFeatureBanner(false)
         }, prefetchHashes)
       } catch {
         if (!isCancelled) {
-          setHomepageData({ featured: [], recommended: [], comingSoon: [], availableNow: [], featureBannerItems: [] })
+          setHomepageData({ featured: [], recommended: [], comingSoon: [], catalogMontageImages: [], availableNow: [], featureBannerItems: [] })
         }
       } finally {
         if (!isCancelled) {
@@ -717,8 +1247,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       return JSON.stringify(
         {
           featured: homepageData.featured,
+          recommended: homepageData.recommended ?? [],
           comingSoon: homepageData.comingSoon,
+          catalogMontageImages: homepageData.catalogMontageImages ?? [],
           availableNow: homepageData.availableNow,
+          featureBannerItems: homepageData.featureBannerItems ?? [],
+          featuredShowcaseControls,
+          aboutShowcaseControls,
+          comingSoonShowcaseControls,
+          homepageLayoutControls,
         },
         null,
         2
@@ -782,6 +1319,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [
     activeTab,
     homepageData,
+    featuredShowcaseControls,
+    aboutShowcaseControls,
+    comingSoonShowcaseControls,
+    homepageLayoutControls,
     filteredGamesWithMeta,
     selectedGameId,
     selectedGame,
@@ -890,6 +1431,64 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     startTransition(() => setActiveTab(tab))
   }
 
+  const handleOpenHomepageLayoutControls = () => {
+    void createPanelWindow(
+      'homepage-layout-controls',
+      FEATURED_SHOWCASE_CONTROLS_ASSET_PATH,
+      'Homepage Layout Controls',
+      true
+    )
+  }
+
+  const catalogHeaderToolbar = (
+    <div className="asset-catalog-preview__tabs-row asset-catalog-preview__tabs-row--header">
+      <div className="asset-catalog-preview__tabs">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`asset-catalog-preview__tab ${activeTab === tab.id ? 'is-active' : ''}`}
+            onClick={() => handleTabChange(tab.id)}
+          >
+            {tab.label}
+            {tab.count != null && (
+              <span className="asset-catalog-preview__tab-count">
+                ({tab.count})
+              </span>
+            )}
+          </button>
+        ))}
+        <button
+          type="button"
+          className="asset-catalog-preview__edit-featured-button"
+          onClick={handleOpenHomepageLayoutControls}
+        >
+          Edit
+        </button>
+      </div>
+      {activeTab === 'games' && (
+        <div className="asset-catalog-preview__games-mode">
+          <label htmlFor="asset-catalog-games-mode">Mode</label>
+          <select
+            id="asset-catalog-games-mode"
+            value={gamesModeFilter}
+            onChange={e => setGamesModeFilter(e.target.value)}
+            aria-label="Filter by game mode"
+          >
+            <option value="all">All</option>
+            {gamesModeCounts
+              .filter(([k]) => k !== 'all')
+              .map(([mode, count]) => (
+                <option key={mode} value={mode}>
+                  {mode} ({count})
+                </option>
+              ))}
+          </select>
+        </div>
+      )}
+    </div>
+  )
+
   if (viewMode === 'raw') {
     return (
       <div className="preview-panel">
@@ -901,25 +1500,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           onBack={onBack}
           onNavigateToAsset={onNavigateToAsset}
           isNonAssetFile={false}
+          toolbar={catalogHeaderToolbar}
+          hideBreadcrumb
         />
         <div className="asset-catalog-preview asset-catalog-preview--raw">
-          <div className="asset-catalog-preview__tabs">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`asset-catalog-preview__tab ${activeTab === tab.id ? 'is-active' : ''}`}
-                onClick={() => handleTabChange(tab.id)}
-              >
-                {tab.label}
-                {tab.count != null && (
-                  <span className="asset-catalog-preview__tab-count">
-                    ({tab.count})
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
           <div className="asset-catalog-preview__raw-hint">
             Export:{' '}
             <code>
@@ -946,83 +1530,64 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         onBack={onBack}
         onNavigateToAsset={onNavigateToAsset}
         isNonAssetFile={false}
+        toolbar={catalogHeaderToolbar}
+        hideBreadcrumb
       />
       <div className="preview-panel__content preview-panel__content--preview">
         <div className="asset-catalog-preview">
-          <div className="asset-catalog-preview__tabs-row">
-            <div className="asset-catalog-preview__tabs">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  className={`asset-catalog-preview__tab ${activeTab === tab.id ? 'is-active' : ''}`}
-                  onClick={() => handleTabChange(tab.id)}
-                >
-                  {tab.label}
-                  {tab.count != null && (
-                    <span className="asset-catalog-preview__tab-count">
-                      ({tab.count})
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-            {activeTab === 'games' && (
-              <div className="asset-catalog-preview__games-mode">
-                <label htmlFor="asset-catalog-games-mode">Mode</label>
-                <select
-                  id="asset-catalog-games-mode"
-                  value={gamesModeFilter}
-                  onChange={e => setGamesModeFilter(e.target.value)}
-                  aria-label="Filter by game mode"
-                >
-                  <option value="all">All</option>
-                  {gamesModeCounts
-                    .filter(([k]) => k !== 'all')
-                    .map(([mode, count]) => (
-                      <option key={mode} value={mode}>
-                        {mode} ({count})
-                      </option>
-                    ))}
-                </select>
-              </div>
-            )}
-          </div>
-
           {activeTab === 'homepage' && (
             <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
               {ImageLoaders}
-              <div className="asset-catalog-preview__hint">
-                Export slice for <code>index/home.json</code>. Same layout as
-                main app homepage.
+              <div
+                ref={homepageContentFrameRef}
+                className={`asset-catalog-preview__homepage-content-frame ${
+                  homepageLayoutControls.contentBoundsOverlay
+                    ? 'asset-catalog-preview__homepage-content-frame--bounds'
+                    : ''
+                }`}
+              >
+                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
+                  <FeatureBannerSection
+                    featureBannerItems={homepageData.featureBannerItems}
+                    resolveImageUrl={resolveImageUrl}
+                    controls={aboutShowcaseControls}
+                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                    allowDebugBounds
+                  />
+                </section>
+                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
+                  <FeaturedGameShowcase
+                    featured={homepageData.featured}
+                    recommended={homepageData.recommended ?? []}
+                    isLoading={isLoadingHomepageCatalog}
+                    controls={featuredShowcaseControls}
+                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                    onLearnMore={handleGameClick}
+                    resolveImageUrl={resolveImageUrl}
+                    allowDebugBounds
+                  />
+                </section>
+                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
+                  <ComingSoonShowcase
+                    comingSoon={homepageData.comingSoon}
+                    catalogMontageItems={homepageData.catalogMontageImages ?? []}
+                    availableNow={homepageData.availableNow}
+                    explorerGames={explorerGames}
+                    isLoading={
+                      isLoadingHomepageCatalog ||
+                      isLoadingHomepageComingSoon ||
+                      isLoadingHomepageFeatureBanner
+                    }
+                    onGameClick={handleGameClick}
+                    onExploreClick={() => handleTabChange('games')}
+                    resolveImageUrl={resolveImageUrl}
+                    showExploreTile
+                    controls={comingSoonShowcaseControls}
+                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                    allowDebugBounds
+                  />
+                </section>
               </div>
-              <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
-                <FeaturedGameCarousel
-                  featured={homepageData.featured}
-                  recommended={homepageData.recommended ?? []}
-                  isLoading={isLoadingHomepageCatalog}
-                  onLearnMore={handleGameClick}
-                  resolveImageUrl={resolveImageUrl}
-                  solanaImgSrc={solanaImageUrl}
-                />
-              </section>
-              <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
-                <ComingSoonCarousel
-                  comingSoon={homepageData.comingSoon}
-                  availableNow={homepageData.availableNow}
-                  explorerGames={explorerGames}
-                  isLoading={
-                    isLoadingHomepageCatalog ||
-                    isLoadingHomepageComingSoon ||
-                    isLoadingHomepageFeatureBanner
-                  }
-                  onGameClick={handleGameClick}
-                  onExploreClick={() => handleTabChange('games')}
-                  resolveImageUrl={resolveImageUrl}
-                  showExploreTab={false}
-                  showExploreTile
-                />
-              </section>
             </div>
           )}
 

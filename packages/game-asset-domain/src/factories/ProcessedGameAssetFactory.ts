@@ -3,7 +3,7 @@ import path from 'path';
 import JSON5 from 'json5';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
-import { GameSchema, type Game } from '@ocentra/card-games/schema/zod/game-schema';
+import { GameSchema, type Game } from '@ocentra/card-games/schema/effect/game-schema';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 import type { AssetGUIDType, AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -249,12 +249,13 @@ function buildMoveValidityConditions(game: Game): Record<string, string> {
 }
 
 export function getCardRankingReference(deckEnvelope: AssetEnvelope): Record<string, unknown> {
-  const rankingReference = deckEnvelope.data.cardRankingAsset;
+  const rankingReference = deckEnvelope.data.rankingAsset ?? deckEnvelope.data.cardRankingAsset;
   if (!rankingReference || typeof rankingReference !== 'object') {
-    throw new Error('Resolved deck asset is missing cardRankingAsset');
+    throw new Error('Resolved deck asset is missing rankingAsset');
   }
-  const hydratedReference = {
+  const hydratedReference: Record<string, unknown> = {
     ...(rankingReference as Record<string, unknown>),
+    assetType: 'DeckRanking',
   };
   const rankingPath = typeof hydratedReference.path === 'string' ? hydratedReference.path : '';
   if (rankingPath.length > 0) {
@@ -342,7 +343,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const game = loadProcessedGame(options.processedGamePath);
   const slug = normalizeSlug(options.processedGamePath);
   const { linkedDeckAsset, deckEnvelope } = resolveDeckAsset(game);
-  const cardRankingAsset = getCardRankingReference(deckEnvelope);
+  const rankingAsset = getCardRankingReference(deckEnvelope);
 
   return {
     gameId: slug,
@@ -375,7 +376,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         })),
       },
       scoring: {
-        cardRankingAsset,
+        rankingAsset,
         scoringType: deriveScoringType(game),
         description: game.scoring.description,
         winCondition: game.scoring.winCondition,

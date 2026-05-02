@@ -1,29 +1,29 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { NoPlaceholdersValid } from '../shared/validation-guards';
 import { SupportedDeckTriplesSchema } from './supported-deck-triples.schema';
 
-const AssetResourceEntrySchema = z.object({
-  resourceEntryType: z.string().optional(),
-  path: z.string().min(1),
-  guid: z.string().uuid().optional(),
-  assetType: z.string().min(1),
-  displayName: z.string().min(1).and(NoPlaceholdersValid).optional(),
-  variant: z.string().nullable().optional(),
+const AssetResourceEntrySchema = schema.object({
+  resourceEntryType: schema.string().optional(),
+  path: schema.string().min(1),
+  guid: schema.string().uuid().optional(),
+  assetType: schema.string().min(1),
+  displayName: schema.string().min(1).and(NoPlaceholdersValid).optional(),
+  variant: schema.string().nullable().optional(),
 }).passthrough();
 
-export const HanafudaDeckDataSchema = z.object({
-  name: z.string().min(1).and(NoPlaceholdersValid),
+export const HanafudaDeckDataSchema = schema.object({
+  name: schema.string().min(1).and(NoPlaceholdersValid),
   supportedTriples: SupportedDeckTriplesSchema,
-  cardTemplates: z.array(
+  cardTemplates: schema.array(
     AssetResourceEntrySchema.extend({
-      path: z.string().min(1).refine(p => p.endsWith('.asset'), { message: 'Card template path must end in .asset' }),
-      assetType: z.literal('HanafudaCard'),
-      displayName: z.string().min(1).and(NoPlaceholdersValid),
+      path: schema.string().min(1).refine(p => p.endsWith('.asset'), { message: 'Card template path must end in .asset' }),
+      assetType: schema.literal('HanafudaCard'),
+      displayName: schema.string().min(1).and(NoPlaceholdersValid),
     })
   ).min(1),
   hanafudaRankingAsset: AssetResourceEntrySchema.extend({
-    assetType: z.literal('HanafudaRanking'),
-    guid: z.string().uuid(),
+    assetType: schema.literal('HanafudaRanking'),
+    guid: schema.string().uuid(),
   }),
 }).superRefine((data, ctx) => {
   for (const [index, triple] of data.supportedTriples.entries()) {
@@ -33,7 +33,7 @@ export const HanafudaDeckDataSchema = z.object({
       triple.suitSet === 'Kabufuda';
     if (!isHanafuda) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: schema.IssueCode.custom,
         path: ['supportedTriples', index],
         message: `HanafudaDeck assets may only support hanafuda/kabufuda triples, got ${triple.deckType}/${triple.suitSet}/${triple.rankSet}`,
       });

@@ -24,14 +24,28 @@ import { toMechanicsSpec } from '@ocentra/game-asset-domain/game/gameMechanics/M
 import { GameEngine } from '@ocentra/game-domain/engine/GameEngine';
 import { createClaimBotAction } from '@ocentra/game-domain/engine/mechanics/family/ClaimFamilyResolver';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
+import {
+  extractClaimStrategyProfile,
+  withClaimStrategyProfile,
+} from '@ocentra/game-domain/schema/claim';
+import { compileMechanicsWithModels } from '@ocentra/game-domain/schema/mechanics-model';
+import {
+  createRuntimeCard,
+  dealRuntimePieces,
+  drawRuntimePiece,
+  materializeRuntimePieces,
+  runtimePiecesToCards,
+  shuffleRuntimePieces,
+} from '@ocentra/game-domain/deck/runtimeDeck';
 import type { IDeckProvider } from '@ocentra/game-domain/interfaces/IDeckProvider';
 import {
   AIPersonality,
   GamePhase,
-  Suit,
   type Card,
   type CardValue,
   type GameState,
+  type RuntimePiece,
+  type Suit,
 } from '@ocentra/game-domain/types/game';
 import type { CardGameLayoutDocument } from '@ocentra/game-ui-types/cardGameLayoutTypes';
 import {
@@ -44,17 +58,6 @@ const AUTO_START_COUNTDOWN_SECONDS = 3;
 const DEFAULT_SEED = 42;
 const PREVIEW_LOAD_TIMEOUT_MS = 5000;
 const BOT_ACTION_DELAY_MS = 350;
-
-const FRENCH_CARD_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] as CardValue[];
-const ITALIAN_BRISCOLA_VALUES = [2, 3, 4, 5, 6, 7, 11, 12, 13, 14] as CardValue[];
-const FRENCH_SUITS = ['spades', 'hearts', 'diamonds', 'clubs'] as const;
-const ITALIAN_SUITS = ['coppe', 'denari', 'spade', 'bastoni'] as const;
-const ITALIAN_TO_RUNTIME_SUIT = {
-  bastoni: Suit.CLUBS,
-  coppe: Suit.HEARTS,
-  denari: Suit.DIAMONDS,
-  spade: Suit.SPADES,
-} as const;
 
 interface LocalPilotPreviewBundle {
   createDeckProvider: (seed: number) => IDeckProvider;
@@ -87,54 +90,40 @@ interface UseLocalPilotRuntimePreviewResult {
 }
 
 class StaticDeckProvider implements IDeckProvider {
-  private readonly baseDeck: Card[];
-  private originalSeed: number;
+  private readonly baseDeck: RuntimePiece[];
   private seed: number;
 
-  constructor(baseDeck: Card[], seed: number) {
-    this.baseDeck = [...baseDeck];
-    this.originalSeed = seed;
+  constructor(baseDeck: RuntimePiece[], seed: number) {
+    this.baseDeck = baseDeck.map((piece) => ({ ...piece, identity: { ...piece.identity }, tags: [...piece.tags] }));
     this.seed = seed;
   }
 
+  async createDeck(): Promise<RuntimePiece[]> {
+    return materializeRuntimePieces(this.baseDeck);
+  }
+
   async createStandardDeck(): Promise<Card[]> {
-    return [...this.baseDeck];
+    return runtimePiecesToCards(await this.createDeck());
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    const shuffled = [...deck];
-    let currentIndex = shuffled.length;
-    this.resetSeed();
-
-    while (currentIndex !== 0) {
-      const randomIndex = Math.floor(this.seededRandom() * currentIndex);
-      currentIndex -= 1;
-      [shuffled[currentIndex], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[currentIndex]];
-    }
-
-    return shuffled;
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[] {
+    return shuffleRuntimePieces(deck, this.seed);
   }
 
-  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
-    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
-
-    for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
-      for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
-        const card = remainingDeck.shift();
-        if (card) {
-          hands[playerIndex].push(card);
-        }
-      }
-    }
-
-    return { hands, remainingDeck };
+  dealInitialHands(deck: RuntimePiece[], playerCount: number, handSize: number): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] } {
+    return dealRuntimePieces(deck, playerCount, handSize);
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
-    const card = remainingDeck.shift() ?? null;
-    return { card, remainingDeck };
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    return drawRuntimePiece(deck);
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: Card | null; remainingDeck: RuntimePiece[] } {
+    const result = this.drawPiece(deck);
+    return {
+      card: result.piece ? runtimePiecesToCards([result.piece])[0] ?? null : null,
+      remainingDeck: result.remainingDeck,
+    };
   }
 
   getSeed(): number {
@@ -143,16 +132,6 @@ class StaticDeckProvider implements IDeckProvider {
 
   setSeed(seed: number): void {
     this.seed = seed;
-    this.originalSeed = seed;
-  }
-
-  private seededRandom(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
-  }
-
-  private resetSeed(): void {
-    this.seed = this.originalSeed;
   }
 }
 
@@ -222,29 +201,25 @@ function cloneGameStateSnapshot(state: GameState | null): GameState | null {
   };
 }
 
-function createCanonicalDeck(mechanics: CardGameMechanics): Card[] {
-  if (mechanics.deckType === 'Standard 40' && mechanics.suitSet === 'Italian') {
-    return ITALIAN_SUITS.flatMap((suit) =>
-      ITALIAN_BRISCOLA_VALUES.map((value) => ({
-        id: `italian_${suit}_${value}`,
-        suit: ITALIAN_TO_RUNTIME_SUIT[suit],
-        value,
-      })),
-    );
-  }
-
-  return FRENCH_SUITS.flatMap((suit) =>
-    FRENCH_CARD_VALUES.map((value) => ({
-      id: `${value}_of_${suit}`,
-      suit,
-      value,
-    })),
-  );
-}
-
 function getDataBlock(root: Record<string, unknown>): Record<string, unknown> {
   const data = root.data;
   return data && typeof data === 'object' && !Array.isArray(data) ? (data as Record<string, unknown>) : {};
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function arrayValue(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function positiveInteger(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0 ? value : fallback;
 }
 
 function normalizeResourcePath(path: string): string {
@@ -424,6 +399,151 @@ async function resolveAssetPathFromReference(record: Record<string, unknown>, ke
   };
 }
 
+async function resolveOptionalAssetPathFromReference(record: Record<string, unknown>, key: string): Promise<{ guid: string; path?: string | null } | null> {
+  return record[key] ? resolveAssetPathFromReference(record, key) : null;
+}
+
+function extractResourceReference(value: unknown): { guid: string; path?: string | null; assetType?: string; displayName?: string } | null {
+  const record = asRecord(value);
+  const guid = stringValue(record.guid);
+  if (!guid) {
+    return null;
+  }
+  const path = stringValue(record.path);
+  return {
+    guid,
+    path: path || null,
+    assetType: stringValue(record.assetType) || undefined,
+    displayName: stringValue(record.displayName) || undefined,
+  };
+}
+
+function getDeckCompositionEntries(deckData: Record<string, unknown>): Array<{
+  copies: number;
+  logicalId?: string;
+  ref: { guid: string; path?: string | null; assetType?: string; displayName?: string };
+  role?: string;
+  tags: string[];
+}> {
+  const composition = arrayValue(deckData.composition);
+  if (composition.length > 0) {
+    return composition.flatMap((entry) => {
+      const record = asRecord(entry);
+      const ref = extractResourceReference(record.pieceTemplate);
+      return ref ? [{
+        copies: positiveInteger(record.copies, 1),
+        logicalId: stringValue(record.logicalId) || undefined,
+        ref,
+        role: stringValue(record.role) || undefined,
+        tags: arrayValue(record.tags).map(stringValue).filter(Boolean),
+      }] : [];
+    });
+  }
+
+  return [];
+}
+
+function inferPieceKind(assetType: string, deckData: Record<string, unknown>): string {
+  const deckPieceKind = stringValue(deckData.pieceKind);
+  if (deckPieceKind) {
+    return deckPieceKind;
+  }
+  if (assetType === 'DominoTile') {
+    return 'domino_tile';
+  }
+  if (assetType === 'HanafudaCard') {
+    return 'hanafuda_card';
+  }
+  if (assetType === 'MahjongTile') {
+    return 'mahjong_tile';
+  }
+  return assetType === 'Card' ? 'card' : 'custom';
+}
+
+function runtimePieceFromAssetDocument(
+  document: Record<string, unknown>,
+  deckData: Record<string, unknown>,
+  entry: ReturnType<typeof getDeckCompositionEntries>[number],
+): RuntimePiece | null {
+  const system = asRecord(document.system);
+  const data = getDataBlock(document);
+  const assetType = stringValue(system.assetType) || entry.ref.assetType || '';
+  const cardIdentity = asRecord(data.cardIdentity);
+  const logicalId = entry.logicalId ||
+    stringValue(data.cardId) ||
+    stringValue(data.tileId) ||
+    stringValue(system.variant) ||
+    stringValue(system.displayName) ||
+    entry.ref.guid;
+  const imageHash = stringValue(data.imageHash) || undefined;
+
+  if (assetType === 'Card' && typeof cardIdentity.suit === 'string' && typeof cardIdentity.value === 'number') {
+    return {
+      ...createRuntimeCard({
+        id: logicalId,
+        logicalId,
+        suit: cardIdentity.suit as Suit,
+        value: cardIdentity.value as CardValue,
+        family: stringValue(deckData.deckFamily) || stringValue(cardIdentity.family) || 'french_cards',
+        imageHash,
+        assetRef: {
+          guid: entry.ref.guid,
+          path: entry.ref.path ?? undefined,
+          assetType: entry.ref.assetType,
+          displayName: entry.ref.displayName,
+        },
+        tags: entry.tags,
+      }),
+      role: entry.role,
+    };
+  }
+
+  return {
+    id: logicalId,
+    logicalId,
+    pieceKind: stringValue(data.pieceKind) || inferPieceKind(assetType, deckData),
+    family: stringValue(deckData.deckFamily) || stringValue(data.family) || assetType,
+    identity: {
+      ...data,
+      assetType,
+    },
+    tags: entry.tags,
+    assetRef: {
+      guid: entry.ref.guid,
+      path: entry.ref.path ?? undefined,
+      assetType: entry.ref.assetType,
+      displayName: entry.ref.displayName,
+    },
+    imageHash,
+    role: entry.role,
+    copyIndex: 1,
+  };
+}
+
+async function resolveRuntimeDeck(deckReference: { guid: string; path?: string | null } | null): Promise<RuntimePiece[]> {
+  if (!deckReference) {
+    throw new Error('Preview game mode is missing a deckAsset reference.');
+  }
+  const deckRoot = await withTimeout(loadRawAssetDocument(deckReference), 'Loading preview deck asset');
+  const deckData = getDataBlock(deckRoot);
+  const entries = getDeckCompositionEntries(deckData);
+  if (entries.length === 0) {
+    throw new Error('Preview Deck asset has no composition entries.');
+  }
+
+  const pieces = await Promise.all(entries.flatMap((entry) =>
+    Array.from({ length: entry.copies }, async () => {
+      const pieceRoot = await withTimeout(loadRawAssetDocument(entry.ref), `Loading deck piece ${entry.ref.displayName ?? entry.ref.guid}`);
+      return runtimePieceFromAssetDocument(pieceRoot, deckData, entry);
+    }),
+  ));
+  const runtimePieces = pieces.filter((piece): piece is RuntimePiece => piece !== null);
+  if (runtimePieces.length === 0) {
+    throw new Error('Preview Deck asset did not resolve any runtime pieces.');
+  }
+  return materializeRuntimePieces(runtimePieces);
+}
+
 async function loadLocalPilotBundle(gameId: string, assetPath: string): Promise<LocalPilotPreviewBundle> {
   if (gameId !== SUPPORTED_LOCAL_PILOT_ID) {
     throw new Error(`${gameId} local pilot is not ready yet. Claim is the first supported local pilot.`);
@@ -449,7 +569,21 @@ async function loadLocalPilotBundle(gameId: string, assetPath: string): Promise<
     throw new Error(`Claim is the only ready local pilot. "${gameId}" uses "${mechanics.familyKernel}".`);
   }
 
-  const runtimeDeck = createCanonicalDeck(mechanics);
+  const strategyReference = await resolveOptionalAssetPathFromReference(gameModeData, 'strategyAsset');
+  const strategyRoot = strategyReference
+    ? await withTimeout(loadRawAssetDocument(strategyReference), 'Loading preview strategy asset')
+    : null;
+  const deckReference = await resolveAssetPathFromReference(gameModeData, 'deckAsset');
+  const baseSpec = toMechanicsSpec(mechanics as unknown as Parameters<typeof toMechanicsSpec>[0]);
+  const modelAssets = await loadMechanicsModelAssets(baseSpec.modelRefs);
+  const compiled = compileMechanicsWithModels(baseSpec, modelAssets);
+  if (compiled.issues.length > 0) {
+    throw new Error(compiled.issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n'));
+  }
+  const spec = strategyRoot
+    ? withClaimStrategyProfile(compiled.spec, extractClaimStrategyProfile(strategyRoot))
+    : compiled.spec;
+  const runtimeDeck = await resolveRuntimeDeck(deckReference);
   return {
     createDeckProvider: (seed: number) => new StaticDeckProvider(runtimeDeck, seed),
     deckSize: runtimeDeck.length,
@@ -459,8 +593,20 @@ async function loadLocalPilotBundle(gameId: string, assetPath: string): Promise<
       baseBet: typeof gameModeData.baseBet === 'number' ? gameModeData.baseBet : null,
       maxRounds: typeof gameModeData.maxRounds === 'number' ? gameModeData.maxRounds : null,
     },
-    spec: toMechanicsSpec(mechanics),
+    spec,
   };
+}
+
+async function loadMechanicsModelAssets(modelRefs: MechanicsSpec['modelRefs']): Promise<unknown[]> {
+  return Promise.all(Object.values(modelRefs ?? {}).map(async (reference) => {
+    if (!reference.guid) {
+      throw new Error(`Mechanics model "${reference.displayName ?? reference.path ?? 'unknown'}" is missing a guid.`);
+    }
+    return withTimeout(loadRawAssetDocument({
+      guid: reference.guid,
+      path: reference.path,
+    }), `Loading mechanics model ${reference.displayName ?? reference.guid}`);
+  }));
 }
 
 export function useLocalPilotRuntimePreview({
@@ -715,7 +861,11 @@ export function useLocalPilotRuntimePreview({
     };
   }, [bundle?.spec.turnPolicy.timerSeconds, gameState, isGameOver, timerNow]);
   const distinctDeclareSuits = useMemo(
-    () => Array.from(new Set(currentPlayer?.hand.map((card) => card.suit) ?? [])),
+    () => Array.from(new Set(
+      currentPlayer?.hand
+        .map((card) => card.suit)
+        .filter((suit): suit is Suit => typeof suit === 'string' && suit.length > 0) ?? [],
+    )),
     [currentPlayer],
   );
   const revealablePlayers = useMemo(() => {

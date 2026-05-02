@@ -17,6 +17,7 @@ export interface UnifiedPageShellProps {
   className?: string;
   workClassName?: string;
   embedded?: boolean;
+  viewportLocked?: boolean;
 }
 
 type ShellMetrics = {
@@ -114,6 +115,7 @@ export function UnifiedPageShell({
   className,
   workClassName,
   embedded = false,
+  viewportLocked = false,
 }: UnifiedPageShellProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -176,6 +178,7 @@ export function UnifiedPageShell({
       ref={rootRef}
       className={[
         'oc-unified-shell',
+        viewportLocked ? 'oc-unified-shell--viewport-locked' : '',
         embedded ? 'oc-unified-shell--embedded' : '',
         className ?? '',
       ]

@@ -8,6 +8,8 @@ import { Timeout } from '@/constants/time';
 import type { Env } from '@/constants/env';
 import { alertJWKSFailure } from '@/monitoring/security';
 import { consumeResponseBody } from '@/utils/consume-response-body';
+import { Logger, getStackTrace } from '@/logging/domain-logger-init';
+import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
 export interface VerifiedToken {
   uid: string;
@@ -30,12 +32,24 @@ interface FirebaseJWKS {
   keys?: FirebaseJwk[];
 }
 
-type FirebasePublicKeyMap = Record<string, JsonWebKey>;
+type FirebasePublicCryptoKey = JsonWebKey & {
+  kid?: string;
+};
+
+type FirebasePublicKeyMap = Record<string, FirebasePublicCryptoKey>;
 
 let cachedPublicKeys: FirebasePublicKeyMap | null = null;
 let cacheExpiry = 0;
 const CACHE_TTL = 3600000;
 const FIREBASE_JWK_FALLBACK_URL = 'https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com';
+const LOG_AUTH_DEBUG = false;
+
+const log = Logger.instance;
+log.register(import.meta.url);
+
+const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
+  log.logDebug(message, stackTrace, data, enabled);
+};
 
 function validateJWKSStructure(keys: FirebaseJWKS): boolean {
   if (!keys || typeof keys !== 'object') {
@@ -313,12 +327,27 @@ export async function verifyAuth(
       return { userId: '', error: ErrorMessage.MissingAuthorizationHeaderOrToken };
     }
 
-    console.log(`[verifyAuth] token=${token ? (token.substring(0, 20) + '...') : 'null'} testMode=${env?.TEST_MODE}`);
+    logDebug(
+      '[AdminAuthFlow:H] verifyAuth token received',
+      getStackTrace(),
+      {
+        hasToken: true,
+        testMode: env?.TEST_MODE === QueryValue.True,
+      },
+      LOG_AUTH_DEBUG
+    );
 
     if (env?.TEST_MODE === QueryValue.True) {
       if (token.startsWith(TestTokenPrefix.Test)) {
         const testTokenMatch = token.match(new RegExp(`^${TestTokenPrefix.Test}([^:]+)(?::admin)?$`));
-        console.log(`[verifyAuth] testTokenMatch=${testTokenMatch ? 'match' : 'no-match'} userId=${testTokenMatch ? testTokenMatch[1] : 'n/a'}`);
+        logDebug(
+          '[AdminAuthFlow:I] verifyAuth test token evaluated',
+          getStackTrace(),
+          {
+            matched: Boolean(testTokenMatch),
+          },
+          LOG_AUTH_DEBUG
+        );
         if (testTokenMatch) {
           const userId = testTokenMatch[1];
           return { userId };

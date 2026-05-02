@@ -1,35 +1,24 @@
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
 import type { ValidationResult } from '@/engine/logic/StateValidator';
-import { GamePhase, type Card, type GameState, type Player, type PlayerAction, type Suit } from '@/types/game';
+import { GamePhase, type GameState, type Player, type PlayerAction, type RuntimePiece, type Suit } from '@/types/game';
+import { asRuntimeCard, runtimePiecesToCards } from '@/deck/runtimeDeck';
 import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
 import type { MechanicsFamilyResolver } from '@/engine/mechanics/family/MechanicsFamilyResolver';
+import {
+  calculateClaimPlayerScore,
+  type ClaimPlayerScore,
+} from '@/engine/mechanics/family/ClaimScoring';
+import { compileClaimRuntimeConfig, type ClaimBotProfile, type ClaimRuntimeConfig } from '@/schema/claim.schema';
+
+export { calculateClaimPlayerScore } from '@/engine/mechanics/family/ClaimScoring';
 
 const CLAIM_STARTING_BANKROLL = 1352;
-const CLAIM_SHOWDOWN_MINIMUM = 27;
-const CLAIM_MIN_HAND_SIZE = 3;
-const CLAIM_MAX_ROUNDS = 10;
-const RANK_CYCLE = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] as const;
 
 interface ClaimTurnState {
   acted: boolean;
   discarded: boolean;
   playerId: string;
   taken: boolean;
-}
-
-interface ClaimScoreGroup {
-  cards: Card[];
-  score: number;
-  sign: 'negative' | 'positive';
-  suit: Suit;
-}
-
-interface ClaimPlayerScore {
-  debt: number;
-  finalScore: number;
-  negative: number;
-  positive: number;
-  groups: ClaimScoreGroup[];
 }
 
 interface ClaimSettlement {
@@ -59,11 +48,7 @@ function createResult(isValid: boolean, errors: string[] = [], warnings: string[
   return { isValid, errors, warnings };
 }
 
-function cloneCard(card: Card): Card {
-  return { ...card };
-}
-
-function cloneClaimState(value: unknown, players: Player[]): ClaimFamilyState {
+function cloneClaimState(value: unknown, players: Player[], startingBankroll = CLAIM_STARTING_BANKROLL): ClaimFamilyState {
   const record = value && typeof value === 'object' && !Array.isArray(value)
     ? value as Partial<ClaimFamilyState>
     : {};
@@ -72,7 +57,7 @@ function cloneClaimState(value: unknown, players: Player[]): ClaimFamilyState {
 
   players.forEach((player) => {
     const bankroll = record.bankrollByPlayerId?.[player.id];
-    bankrollByPlayerId[player.id] = typeof bankroll === 'number' ? bankroll : CLAIM_STARTING_BANKROLL;
+    bankrollByPlayerId[player.id] = typeof bankroll === 'number' ? bankroll : startingBankroll;
     const debt = record.undeclaredDebtByPlayerId?.[player.id];
     undeclaredDebtByPlayerId[player.id] = typeof debt === 'number' ? debt : 0;
   });
@@ -148,89 +133,8 @@ function createTurnState(playerId: string): ClaimTurnState {
   };
 }
 
-function highestCardValue(cards: Card[]): number {
-  return cards.reduce((highest, card) => Math.max(highest, card.value), 0);
-}
-
-function readNumber(record: Record<string, unknown> | null | undefined, key: string, fallback: number): number {
-  const value = record?.[key];
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
-}
-
-function getClaimNumber(spec: MechanicsSpec, key: string, fallback: number): number {
-  const familyConfig = spec.familyConfig && typeof spec.familyConfig === 'object'
-    ? spec.familyConfig as Record<string, unknown>
-    : null;
-  return readNumber(familyConfig, key, readNumber(spec.constants, key, fallback));
-}
-
-function getNextValue(value: number): number {
-  return value === 14 ? 2 : value + 1;
-}
-
-function getPreviousValue(value: number): number {
-  return value === 2 ? 14 : value - 1;
-}
-
-function scoreCardGroups(cards: Card[], sign: 'negative' | 'positive'): ClaimScoreGroup[] {
-  const cardsBySuit = new Map<Suit, Card[]>();
-  cards.forEach((card) => {
-    const suitCards = cardsBySuit.get(card.suit) ?? [];
-    suitCards.push(card);
-    cardsBySuit.set(card.suit, suitCards);
-  });
-
-  return [...cardsBySuit.entries()].flatMap(([suit, suitCards]) => {
-    const cardByValue = new Map<number, Card>();
-    suitCards.forEach((card) => {
-      cardByValue.set(card.value, card);
-    });
-
-    if (cardByValue.size === RANK_CYCLE.length) {
-      const runCards = RANK_CYCLE.map((value) => cardByValue.get(value)).filter((card): card is Card => Boolean(card));
-      const score = runCards.reduce((total, card) => total + card.value, 0) * runCards.length;
-      return [{ cards: runCards.map(cloneCard), score, sign, suit }];
-    }
-
-    return RANK_CYCLE.filter((value) => cardByValue.has(value) && !cardByValue.has(getPreviousValue(value)))
-      .map((startValue) => {
-        const runCards: Card[] = [];
-        let currentValue: number = startValue;
-        while (cardByValue.has(currentValue)) {
-          const card = cardByValue.get(currentValue);
-          if (card) {
-            runCards.push(card);
-          }
-          currentValue = getNextValue(currentValue);
-        }
-
-        const sum = runCards.reduce((total, card) => total + card.value, 0);
-        const score = runCards.length > 1 ? sum * runCards.length : sum;
-        return {
-          cards: runCards.map(cloneCard),
-          score,
-          sign,
-          suit,
-        };
-      });
-  });
-}
-
-export function calculateClaimPlayerScore(player: Player, declaredSuit: Suit | null, debt: number): ClaimPlayerScore {
-  const positiveCards = declaredSuit ? player.hand.filter((card) => card.suit === declaredSuit) : [];
-  const negativeCards = declaredSuit ? player.hand.filter((card) => card.suit !== declaredSuit) : player.hand;
-  const positiveGroups = scoreCardGroups(positiveCards, 'positive');
-  const negativeGroups = scoreCardGroups(negativeCards, 'negative');
-  const positive = positiveGroups.reduce((total, group) => total + group.score, 0);
-  const negative = negativeGroups.reduce((total, group) => total + group.score, 0);
-
-  return {
-    debt,
-    finalScore: positive - negative - debt,
-    groups: [...positiveGroups, ...negativeGroups],
-    negative,
-    positive,
-  };
+function highestCardValue(pieces: RuntimePiece[]): number {
+  return runtimePiecesToCards(pieces).reduce((highest, card) => Math.max(highest, card.value), 0);
 }
 
 function scoreAllPlayers(gameState: GameState, claimState: ClaimFamilyState): Record<string, ClaimPlayerScore> {
@@ -307,7 +211,13 @@ function seededIndex(seed: number, count: number): number {
   return Math.abs(mixed) % count;
 }
 
-function choosePreferredSuit(cards: Card[], seed: number): Suit | null {
+function seededRatio(seed: number): number {
+  const mixed = Math.imul(seed ^ 0x85ebca6b, 2246822507);
+  return (Math.abs(mixed) % 10000) / 10000;
+}
+
+function choosePreferredSuit(pieces: RuntimePiece[], seed: number): Suit | null {
+  const cards = runtimePiecesToCards(pieces);
   const bySuit = new Map<Suit, { count: number; total: number }>();
   cards.forEach((card) => {
     const current = bySuit.get(card.suit) ?? { count: 0, total: 0 };
@@ -329,13 +239,36 @@ function choosePreferredSuit(cards: Card[], seed: number): Suit | null {
   return tied[seededIndex(seed, tied.length)]?.[0] ?? candidates[0]?.[0] ?? null;
 }
 
-function chooseDiscardCard(player: Player, declaredSuit: Suit | null, preferredSuit: Suit | null): Card | null {
+function chooseDiscardCard(
+  player: Player,
+  declaredSuit: Suit | null,
+  preferredSuit: Suit | null,
+  strategy: ClaimBotProfile,
+  seed: number,
+): RuntimePiece | null {
   const liabilitySuit = declaredSuit ?? preferredSuit;
   const candidates = liabilitySuit
-    ? player.hand.filter((card) => card.suit !== liabilitySuit)
+    ? player.hand.filter((piece) => asRuntimeCard(piece)?.suit !== liabilitySuit)
     : player.hand;
   const pool = candidates.length > 0 ? candidates : player.hand;
-  return [...pool].sort((left, right) => right.value - left.value || left.id.localeCompare(right.id))[0] ?? null;
+  if (liabilitySuit && candidates.length > 1 && seededRatio(seed) < strategy.bluffFrequency) {
+    return [...candidates].sort((left, right) => (asRuntimeCard(left)?.value ?? 0) - (asRuntimeCard(right)?.value ?? 0) || left.id.localeCompare(right.id))[0] ?? null;
+  }
+  return [...pool].sort((left, right) => (asRuntimeCard(right)?.value ?? 0) - (asRuntimeCard(left)?.value ?? 0) || left.id.localeCompare(right.id))[0] ?? null;
+}
+
+function resolveBotShowdownThreshold(minimum: number, strategy: ClaimBotProfile): number {
+  const riskAdjustment = Math.round((0.5 - strategy.riskTolerance) * 8);
+  const aggressionAdjustment = Math.round((0.5 - strategy.aggressiveness) * 10);
+  return Math.max(minimum, minimum + riskAdjustment + aggressionAdjustment);
+}
+
+function shouldDeclareForBot(player: Player, preferredSuit: Suit | null, turn: ClaimTurnState, strategy: ClaimBotProfile): boolean {
+  if (!preferredSuit) {
+    return false;
+  }
+  const preferredCount = player.hand.filter((piece) => asRuntimeCard(piece)?.suit === preferredSuit).length;
+  return preferredCount >= 2 || turn.acted || strategy.riskTolerance >= 0.5 || strategy.aggressiveness >= 0.7;
 }
 
 export function createClaimBotAction(
@@ -349,7 +282,8 @@ export function createClaimBotAction(
     return null;
   }
 
-  const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+  const config = compileClaimRuntimeConfig(spec);
+  const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
   if (claimState.eliminatedPlayerIds.includes(playerId)) {
     return null;
   }
@@ -359,8 +293,8 @@ export function createClaimBotAction(
   const seed = (options.seed ?? 0) + gameState.round + playerId.length + player.hand.length;
   const declaredSuit = claimState.declaredSuitByPlayerId[playerId] ?? player.declaredSuit ?? null;
   const preferredSuit = declaredSuit ?? choosePreferredSuit(player.hand, seed);
-  const minimumHandSize = getClaimNumber(spec, 'minHandSize', CLAIM_MIN_HAND_SIZE);
-  const showdownMinimum = getClaimNumber(spec, 'showdownMinimum', CLAIM_SHOWDOWN_MINIMUM);
+  const minimumHandSize = config.minHandSize;
+  const showdownMinimum = resolveBotShowdownThreshold(config.showdownMinimum, config.strategy);
 
   if (declaredSuit && legalActions.has('call_showdown')) {
     const score = calculateClaimPlayerScore(player, declaredSuit, claimState.undeclaredDebtByPlayerId[playerId] ?? 0);
@@ -369,12 +303,12 @@ export function createClaimBotAction(
     }
   }
 
-  if (!declaredSuit && preferredSuit && legalActions.has('declare_suit')) {
+  if (!declaredSuit && legalActions.has('declare_suit') && shouldDeclareForBot(player, preferredSuit, turn, config.strategy)) {
     return createAction(gameState, playerId, 'declare_suit', { suit: preferredSuit });
   }
 
   if (legalActions.has('discard_card') && !turn.discarded && player.hand.length > minimumHandSize) {
-    const cardToDiscard = chooseDiscardCard(player, declaredSuit, preferredSuit);
+    const cardToDiscard = chooseDiscardCard(player, declaredSuit, preferredSuit, config.strategy, seed);
     if (cardToDiscard) {
       return createAction(gameState, playerId, 'discard_card', { cardId: cardToDiscard.id });
     }
@@ -386,7 +320,7 @@ export function createClaimBotAction(
       legalActions.has('take_discard')
       && discardTopCard
       && preferredSuit
-      && discardTopCard.suit === preferredSuit
+      && asRuntimeCard(discardTopCard)?.suit === preferredSuit
     ) {
       return createAction(gameState, playerId, 'take_discard');
     }
@@ -420,10 +354,11 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
   }
 
   runSetupRound(gameState: GameState, spec: MechanicsSpec, deckProvider: IDeckProvider): boolean {
-    const currentState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+    const config = compileClaimRuntimeConfig(spec);
+    const currentState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
     const activePlayerIds = getActivePlayerIds(gameState, currentState);
     const activePlayers = gameState.players.filter((player) => activePlayerIds.includes(player.id));
-    const handSize = spec.initialHandSize ?? CLAIM_MIN_HAND_SIZE;
+    const handSize = config.minHandSize;
     const { hands, remainingDeck } = deckProvider.dealInitialHands(gameState.deck, activePlayers.length, handSize);
     let activeHandIndex = 0;
 
@@ -445,7 +380,7 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
         declaredSuit: null,
         hand,
         intentCard: null,
-        score: currentState.bankrollByPlayerId[player.id] ?? CLAIM_STARTING_BANKROLL,
+          score: currentState.bankrollByPlayerId[player.id] ?? config.startingBankroll,
       };
     });
 
@@ -487,7 +422,8 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
       return createResult(false, [`Player ${action.playerId} not found`]);
     }
 
-    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+    const config = compileClaimRuntimeConfig(spec);
+    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
     if (claimState.eliminatedPlayerIds.includes(player.id)) {
       return createResult(false, ['Eliminated players cannot act']);
     }
@@ -513,14 +449,14 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
         }
         break;
       case 'discard_card':
-        this.validateDiscard(player, action, turn, errors);
+        this.validateDiscard(player, action, turn, config.minHandSize, errors);
         break;
       case 'declare_suit':
       case 'declare':
         this.validateDeclare(player, action, claimState, errors);
         break;
       case 'call_showdown':
-        this.validateShowdown(player, spec, claimState, errors);
+        this.validateShowdown(player, config, claimState, errors);
         break;
       case 'end_turn':
       case 'pass':
@@ -534,7 +470,8 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
   }
 
   processAction(gameState: GameState, action: PlayerAction, spec: MechanicsSpec, deckProvider: IDeckProvider): boolean {
-    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+    const config = compileClaimRuntimeConfig(spec);
+    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
     const playerIndex = findPlayerIndex(gameState, action.playerId);
     if (playerIndex < 0) {
       return false;
@@ -576,8 +513,9 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
     return true;
   }
 
-  onScoreRound(gameState: GameState, _spec: MechanicsSpec): boolean {
-    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+  onScoreRound(gameState: GameState, spec: MechanicsSpec): boolean {
+    const config = compileClaimRuntimeConfig(spec);
+    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
     const roundScoresByPlayerId = scoreAllPlayers(gameState, claimState);
     const settlementByPlayerId = settleScores(gameState, claimState, roundScoresByPlayerId);
     const eliminatedPlayerIds = new Set(claimState.eliminatedPlayerIds);
@@ -613,16 +551,17 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
   }
 
   shouldEndGame(gameState: GameState, spec: MechanicsSpec): boolean | null {
-    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players);
+    const config = compileClaimRuntimeConfig(spec);
+    const claimState = cloneClaimState(gameState.mechanicsContext?.familyState, gameState.players, config.startingBankroll);
     const activePlayerCount = getActivePlayerIds(gameState, claimState).length;
-    const maxRounds = getClaimNumber(spec, 'maxRounds', CLAIM_MAX_ROUNDS);
+    const maxRounds = config.maxRounds;
     if (activePlayerCount <= 1) {
       return true;
     }
     return gameState.round > maxRounds;
   }
 
-  private validateDiscard(player: Player, action: PlayerAction, turn: ClaimTurnState, errors: string[]): void {
+  private validateDiscard(player: Player, action: PlayerAction, turn: ClaimTurnState, minimumHandSize: number, errors: string[]): void {
     const cardId = getCardId(action.data);
     if (!cardId) {
       errors.push('Discard requires cardId');
@@ -631,8 +570,8 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
     if (turn.discarded) {
       errors.push('Player has already discarded this turn');
     }
-    if (player.hand.length <= CLAIM_MIN_HAND_SIZE) {
-      errors.push(`Player must keep at least ${CLAIM_MIN_HAND_SIZE} cards`);
+    if (player.hand.length <= minimumHandSize) {
+      errors.push(`Player must keep at least ${minimumHandSize} cards`);
     }
     if (!player.hand.some((card) => card.id === cardId)) {
       errors.push(`Card ${cardId} is not in player hand`);
@@ -648,21 +587,21 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
     if (claimState.declaredSuitByPlayerId[player.id]) {
       errors.push('Player has already declared this round');
     }
-    if (!player.hand.some((card) => card.suit === suit)) {
+    if (!player.hand.some((piece) => asRuntimeCard(piece)?.suit === suit)) {
       errors.push(`Player does not hold ${suit}`);
     }
   }
 
-  private validateShowdown(player: Player, spec: MechanicsSpec, claimState: ClaimFamilyState, errors: string[]): void {
+  private validateShowdown(player: Player, config: ClaimRuntimeConfig, claimState: ClaimFamilyState, errors: string[]): void {
     const declaredSuit = claimState.declaredSuitByPlayerId[player.id] ?? null;
     if (!declaredSuit) {
       errors.push('Player must declare before calling showdown');
       return;
     }
-    if (player.hand.length < CLAIM_MIN_HAND_SIZE) {
-      errors.push(`Player needs at least ${CLAIM_MIN_HAND_SIZE} cards to call showdown`);
+    if (player.hand.length < config.minHandSize) {
+      errors.push(`Player needs at least ${config.minHandSize} cards to call showdown`);
     }
-    const minimum = getClaimNumber(spec, 'showdownMinimum', CLAIM_SHOWDOWN_MINIMUM);
+    const minimum = config.showdownMinimum;
     const score = calculateClaimPlayerScore(player, declaredSuit, claimState.undeclaredDebtByPlayerId[player.id] ?? 0);
     if (score.finalScore < minimum) {
       errors.push(`Player final score ${score.finalScore} is below showdown minimum ${minimum}`);
@@ -670,14 +609,14 @@ export class ClaimFamilyResolver implements MechanicsFamilyResolver {
   }
 
   private processTakeStock(gameState: GameState, playerIndex: number, claimState: ClaimFamilyState, deckProvider: IDeckProvider): void {
-    const { card, remainingDeck } = deckProvider.drawCard(gameState.deck);
-    if (!card) {
+    const { piece, remainingDeck } = deckProvider.drawPiece(gameState.deck);
+    if (!piece) {
       return;
     }
     gameState.deck = remainingDeck;
     gameState.players[playerIndex] = {
       ...gameState.players[playerIndex],
-      hand: [...gameState.players[playerIndex].hand, card],
+      hand: [...gameState.players[playerIndex].hand, piece],
     };
     claimState.turn = {
       ...(claimState.turn ?? createTurnState(gameState.players[playerIndex].id)),

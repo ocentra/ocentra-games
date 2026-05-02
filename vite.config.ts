@@ -126,7 +126,7 @@ export default defineConfig(async ({ mode, command }) => {
       ...aiDomainExportSubpaths,
       '@ocentra/endpoint-domain/constants/cloudflare',
       '@ocentra/card-games',
-      '@ocentra/card-games/schema/zod/game-schema',
+      '@ocentra/card-games/schema/effect/game-schema',
       '@ocentra/api-domain/httpClient',
       '@ocentra/api-domain/createApiClient',
       ...excludedOcentraPrefixes,

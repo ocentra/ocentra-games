@@ -1,6 +1,4 @@
 import JSON5 from 'json5';
-import { deserialize } from '@ocentra/asset-domain/Serializable';
-import { AssetGUID } from '@ocentra/asset-domain/AssetGUID';
 import { MimeTypes } from '@ocentra/asset-domain/constants/assets';
 import type { AssetMetadata } from '@ocentra/boundary-domain/types/asset-metadata';
 import { CardGameRules } from '@ocentra/game-asset-domain/game/gameRules/CardGameRules';
@@ -12,10 +10,21 @@ import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { ImageCarousel } from '@ocentra/game-asset-domain/content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '@ocentra/game-asset-domain/gameMode/cardGameMode/CardGameMode';
 import { CardGameMechanics } from '@ocentra/game-asset-domain/game/gameMechanics/CardGameMechanics';
+import {
+  CardGameDeckModel,
+  GameActionSet,
+  GamePhaseFlowModel,
+  GamePlayerModel,
+  GameSessionModel,
+  GameStateEventModel,
+  GameValidationFixtures,
+  GameZoneModel,
+  type GameMechanicsModelRefKey,
+} from '@ocentra/game-asset-domain/game/gameMechanics/GameMechanicsModel';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 import type { CreatedAsset, AssetCreationContext } from '@ocentra/game-asset-domain/AssetCreation';
-import type { SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
+import { getSerializableClassMetadata, type SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { tryGameId, type AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
 import { createStandard52CardRankingEntry, createStandard52CardRankingReference, createStandard52DeckEntry } from '@/adapters/assets/gameModeAssetDefaults';
@@ -26,6 +35,7 @@ export interface CreateGameModeBundleOptions {
   category: string;
   copyFromTemplate?: Record<string, unknown>;
   assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
+  mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
   linkedDeckAsset?: AssetResourceEntry<Deck>;
 }
 
@@ -46,6 +56,14 @@ export interface GameModeBundle {
   mainAssetGuid: string;
   mainAssetPath: string;
   files: GameModeBundleFile[];
+}
+
+interface MechanicsModelCreation {
+  key: GameMechanicsModelRefKey;
+  asset: CreatedAsset;
+  constructor: SerializableConstructor;
+  fallbackDisplayName: string;
+  fallbackCategory: string;
 }
 
 function createEntry<T extends ScriptableObject>(guid: string, type: string, displayName: string, path = ''): AssetResourceEntry<T> {
@@ -118,24 +136,34 @@ async function enrichSerializedAsset(
   fallbackCategory: string,
   gameId: string
 ): Promise<GameModeBundleFile> {
-  const instance = deserialize(constructor, asset.data) as ScriptableObject & { guid: AssetGUID };
-  instance.guid = AssetGUID.from(asset.guid);
-
-  const parsed = JSON5.parse(instance.serialize()) as Record<string, unknown>;
-  const system = parsed.system && typeof parsed.system === 'object'
-    ? (parsed.system as Record<string, unknown>)
-    : {};
-
-  system.guid = asset.guid;
-  system.treePath = path;
-  system.displayName = fallbackDisplayName;
-  if (typeof system.category !== 'string' || system.category.length === 0) {
-    system.category = fallbackCategory;
+  const constructorWithStatics = constructor as SerializableConstructor & {
+    assetType?: string;
+    schemaVersion?: number;
+    displayName?: string;
+    icon?: string;
+    category?: string;
+    name: string;
+  };
+  const classMetadata = getSerializableClassMetadata(constructor);
+  const assetType = classMetadata?.assetType ?? constructorWithStatics.assetType ?? constructorWithStatics.name;
+  const displayName = fallbackDisplayName || classMetadata?.displayName || constructorWithStatics.displayName || assetType;
+  const category = classMetadata?.category ?? constructorWithStatics.category ?? fallbackCategory;
+  const schemaVersion = classMetadata?.schemaVersion ?? constructorWithStatics.schemaVersion ?? 1;
+  const system: Record<string, unknown> = {
+    guid: asset.guid,
+    assetType,
+    schemaVersion,
+    displayName,
+    category,
+    treePath: path,
+    gameId,
+  };
+  const icon = classMetadata?.icon ?? constructorWithStatics.icon;
+  if (icon) {
+    system.icon = icon;
   }
-  system.gameId = gameId;
-  parsed.system = system;
 
-  const content = JSON5.stringify(parsed, null, 2);
+  const content = JSON5.stringify({ system, data: asset.data }, null, 2);
   const checksum = await computeChecksum(content);
   return {
     guid: asset.guid,
@@ -143,11 +171,11 @@ async function enrichSerializedAsset(
     content,
     checksum,
     metadata: {
-      assetType: typeof system.assetType === 'string' ? system.assetType : constructor.name,
-      displayName: typeof system.displayName === 'string' ? system.displayName : fallbackDisplayName,
-      category: typeof system.category === 'string' ? system.category : fallbackCategory,
+      assetType,
+      displayName,
+      category,
       gameId,
-      inheritanceChain: Array.isArray(system.inheritanceChain) ? (system.inheritanceChain as string[]) : null,
+      inheritanceChain: null,
       mimeType: MimeTypes.Json,
       fileSize: content.length,
     },
@@ -170,6 +198,92 @@ function createEntryFromBundleFile<T extends ScriptableObject>(file: GameModeBun
   return entry;
 }
 
+async function createMechanicsModelAssets(
+  context: AssetCreationContext,
+  overrides: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>> | undefined,
+): Promise<MechanicsModelCreation[]> {
+  return [
+    {
+      key: 'player',
+      asset: await GamePlayerModel.create(context, overrides?.player),
+      constructor: GamePlayerModel,
+      fallbackDisplayName: 'Player Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'session',
+      asset: await GameSessionModel.create(context, overrides?.session),
+      constructor: GameSessionModel,
+      fallbackDisplayName: 'Session Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'deck',
+      asset: await CardGameDeckModel.create(context, overrides?.deck),
+      constructor: CardGameDeckModel,
+      fallbackDisplayName: 'Deck Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'zones',
+      asset: await GameZoneModel.create(context, overrides?.zones),
+      constructor: GameZoneModel,
+      fallbackDisplayName: 'Zone Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'phaseFlow',
+      asset: await GamePhaseFlowModel.create(context, overrides?.phaseFlow),
+      constructor: GamePhaseFlowModel,
+      fallbackDisplayName: 'Phase Flow Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'actions',
+      asset: await GameActionSet.create(context, overrides?.actions),
+      constructor: GameActionSet,
+      fallbackDisplayName: 'Action Set',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'stateEvents',
+      asset: await GameStateEventModel.create(context, overrides?.stateEvents),
+      constructor: GameStateEventModel,
+      fallbackDisplayName: 'State Event Model',
+      fallbackCategory: 'Game',
+    },
+    {
+      key: 'validation',
+      asset: await GameValidationFixtures.create(context, overrides?.validation),
+      constructor: GameValidationFixtures,
+      fallbackDisplayName: 'Validation Fixtures',
+      fallbackCategory: 'Game',
+    },
+  ];
+}
+
+function createMechanicsModelRefs(
+  models: readonly MechanicsModelCreation[],
+  modelFilesByKey: ReadonlyMap<GameMechanicsModelRefKey, GameModeBundleFile>,
+): Record<GameMechanicsModelRefKey, { path: string; guid: string; assetType: string; displayName: string; checksum: string }> {
+  return models.reduce((refs, model) => {
+    const file = modelFilesByKey.get(model.key);
+    if (!file) {
+      throw new Error(`Missing mechanics model file for ${model.key}`);
+    }
+    return {
+      ...refs,
+      [model.key]: {
+        path: file.path,
+        guid: file.guid,
+        assetType: file.metadata.assetType,
+        displayName: file.metadata.displayName,
+        checksum: file.checksum,
+      },
+    };
+  }, {} as Record<GameMechanicsModelRefKey, { path: string; guid: string; assetType: string; displayName: string; checksum: string }>);
+}
+
 export async function createGameModeBundle(options: CreateGameModeBundleOptions): Promise<GameModeBundle> {
   const normalizedGameId = options.gameId.trim().toLowerCase();
   const category = options.category.trim() || 'CardGames';
@@ -187,7 +301,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     throw new Error('No linked deck asset available for game mode bundle creation');
   }
   const scoringOverrides = {
-    cardRankingAsset: createStandard52CardRankingReference(),
+    rankingAsset: createStandard52CardRankingReference(),
     ...options.assetDataOverrides?.scoring,
   };
 
@@ -197,7 +311,27 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
   const pageContent = applyDataOverrides(await GameInfo.create(context), options.assetDataOverrides?.gameInfo);
   const layout = applyDataOverrides(await CardGameLayout.create(context), options.assetDataOverrides?.layout);
   const carousel = applyDataOverrides(await ImageCarousel.create(context), options.assetDataOverrides?.carousel);
-  const mechanics = applyDataOverrides(await CardGameMechanics.create(context), options.assetDataOverrides?.mechanics);
+  const mechanicsModels = await createMechanicsModelAssets(context, options.mechanicsModelDataOverrides);
+  const modelFiles = await Promise.all(mechanicsModels.map(({ asset, constructor, fallbackDisplayName, fallbackCategory }) =>
+    enrichSerializedAsset(
+      asset,
+      constructor,
+      `Resources/${folder}/${asset.fileName}`,
+      fallbackDisplayName,
+      fallbackCategory,
+      normalizedGameId
+    )
+  ));
+  const modelFilesByKey = new Map<GameMechanicsModelRefKey, GameModeBundleFile>();
+  mechanicsModels.forEach((entry, index) => {
+    modelFilesByKey.set(entry.key, modelFiles[index]);
+  });
+  const mechanics = applyDataOverrides(
+    await CardGameMechanics.create(context, {
+      modelRefs: createMechanicsModelRefs(mechanicsModels, modelFilesByKey),
+    }),
+    options.assetDataOverrides?.mechanics,
+  );
 
   const childAssetMap: Array<{ key: keyof Omit<CardGameAssetLinks, 'deck'>; asset: CreatedAsset; constructor: SerializableConstructor; fallbackDisplayName: string; fallbackCategory: string }> = [
     { asset: rules, constructor: CardGameRules, fallbackDisplayName: 'Game Rules', fallbackCategory: 'Game' },
@@ -235,7 +369,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     gameInfo: createEntryFromBundleFile<GameInfo>(childFilesByKey.get('gameInfo')!),
     layout: createEntryFromBundleFile<CardGameLayout>(childFilesByKey.get('layout')!),
     deck: linkedDeckAsset,
-    cardRanking: linkedCardRankingAsset,
+    ranking: linkedCardRankingAsset,
     carouselImages: createEntryFromBundleFile<ImageCarousel>(childFilesByKey.get('carouselImages')!),
     mechanics: createEntryFromBundleFile<CardGameMechanics>(childFilesByKey.get('mechanics')!),
   } satisfies CardGameAssetLinks;
@@ -256,6 +390,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
   const files = [
     mainFile,
     ...childFiles,
+    ...modelFiles,
   ];
 
   return {

@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { PageSectionType } from '@/constants/page-section-type';
 import { ContentBlockType } from '@/constants/content-block-type';
 import { ListStyleType } from '@/constants/list-style-type';
 import { EmphasisType } from '@/constants/emphasis-type';
 
-const PageSectionTypeSchema = z.enum([
+const PageSectionTypeSchema = schema.enum([
   PageSectionType.About,
   PageSectionType.Rules,
   PageSectionType.Strategy,
@@ -14,112 +14,112 @@ const PageSectionTypeSchema = z.enum([
   PageSectionType.Custom,
 ]);
 
-const EmphasisTypeSchema = z.enum([EmphasisType.Bold, EmphasisType.Italic, EmphasisType.Strong]);
-const ListStyleTypeSchema = z.enum([ListStyleType.Unordered, ListStyleType.Ordered]);
+const EmphasisTypeSchema = schema.enum([EmphasisType.Bold, EmphasisType.Italic, EmphasisType.Strong]);
+const ListStyleTypeSchema = schema.enum([ListStyleType.Unordered, ListStyleType.Ordered]);
 
-const TextBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Text),
-  text: z.string(),
+const TextBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Text),
+  text: schema.string(),
   emphasis: EmphasisTypeSchema.optional(),
 });
 
-const ParagraphBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Paragraph),
-  text: z.string(),
+const ParagraphBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Paragraph),
+  text: schema.string(),
 });
 
-const HeadingBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Heading),
-  level: z.union([z.literal(3), z.literal(4)]),
-  text: z.string(),
-  icon: z.string().optional(),
+const HeadingBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Heading),
+  level: schema.union([schema.literal(3), schema.literal(4)]),
+  text: schema.string(),
+  icon: schema.string().optional(),
 });
 
-const ListItemSchema = z.object({
-  text: z.string(),
-  subItems: z.array(z.string()).optional(),
+const ListItemSchema = schema.object({
+  text: schema.string(),
+  subItems: schema.array(schema.string()).optional(),
 });
 
-const ListBlockSchema = z.object({
-  type: z.literal(ContentBlockType.List),
+const ListBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.List),
   style: ListStyleTypeSchema,
-  items: z.array(ListItemSchema),
+  items: schema.array(ListItemSchema),
 });
 
-const ExampleBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Example),
-  title: z.string().optional(),
-  text: z.string(),
-  result: z.string().optional(),
+const ExampleBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Example),
+  title: schema.string().optional(),
+  text: schema.string(),
+  result: schema.string().optional(),
 });
 
-const FormulaBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Formula),
-  formula: z.string(),
-  label: z.string().optional(),
+const FormulaBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Formula),
+  formula: schema.string(),
+  label: schema.string().optional(),
 });
 
-const SetupGridItemSchema = z.object({
-  icon: z.string(),
-  label: z.string(),
-  detail: z.string(),
+const SetupGridItemSchema = schema.object({
+  icon: schema.string(),
+  label: schema.string(),
+  detail: schema.string(),
 });
 
-const SetupGridBlockSchema = z.object({
-  type: z.literal(ContentBlockType.SetupGrid),
-  items: z.array(SetupGridItemSchema),
+const SetupGridBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.SetupGrid),
+  items: schema.array(SetupGridItemSchema),
 });
 
-const HighlightBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Highlight),
-  text: z.string(),
-  emphasis: z.boolean().optional(),
+const HighlightBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Highlight),
+  text: schema.string(),
+  emphasis: schema.boolean().optional(),
 });
 
-const CardValueSchema = z.object({
-  card: z.string(),
-  value: z.number(),
+const CardValueSchema = schema.object({
+  card: schema.string(),
+  value: schema.number(),
 });
 
-const CardValuesBlockSchema = z.object({
-  type: z.literal(ContentBlockType.CardValues),
-  values: z.array(CardValueSchema),
+const CardValuesBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.CardValues),
+  values: schema.array(CardValueSchema),
 });
 
-const CalculationStepSchema = z.object({
-  label: z.string(),
-  formula: z.string(),
-  result: z.string().optional(),
+const CalculationStepSchema = schema.object({
+  label: schema.string(),
+  formula: schema.string(),
+  result: schema.string().optional(),
 });
 
-const CalculationBlockSchema = z.object({
-  type: z.literal(ContentBlockType.Calculation),
-  steps: z.array(CalculationStepSchema),
-  total: z.string().optional(),
+const CalculationBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.Calculation),
+  steps: schema.array(CalculationStepSchema),
+  total: schema.string().optional(),
 });
 
-const RuleBlockSchema = z.object({
-  type: z.literal(ContentBlockType.RuleBlock),
-  title: z.string().optional(),
-  content: z.array(z.record(z.unknown())),
+const RuleBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.RuleBlock),
+  title: schema.string().optional(),
+  content: schema.array(schema.record(schema.unknown())),
 });
 
-const StrategyBlockSchema = z.object({
-  type: z.literal(ContentBlockType.StrategyBlock),
-  title: z.string(),
-  icon: z.string().optional(),
-  description: z.string(),
-  example: z
+const StrategyBlockSchema = schema.object({
+  type: schema.literal(ContentBlockType.StrategyBlock),
+  title: schema.string(),
+  icon: schema.string().optional(),
+  description: schema.string(),
+  example: schema
     .object({
-      type: z.literal(ContentBlockType.Example),
-      title: z.string().optional(),
-      text: z.string(),
-      result: z.string().optional(),
+      type: schema.literal(ContentBlockType.Example),
+      title: schema.string().optional(),
+      text: schema.string(),
+      result: schema.string().optional(),
     })
     .optional(),
 });
 
-const FullContentBlockSchema = z.union([
+const FullContentBlockSchema = schema.union([
   TextBlockSchema,
   ParagraphBlockSchema,
   HeadingBlockSchema,
@@ -134,29 +134,29 @@ const FullContentBlockSchema = z.union([
   CalculationBlockSchema,
 ]);
 
-const PageSchema = z
+const PageSchema = schema
   .object({
-    title: z.string(),
-    subtitle: z.string().optional(),
-    content: z.array(FullContentBlockSchema).default([]),
-    linkedAssets: z.array(z.string()).optional(),
+    title: schema.string(),
+    subtitle: schema.string().optional(),
+    content: schema.array(FullContentBlockSchema).default([]),
+    linkedAssets: schema.array(schema.string()).optional(),
   })
   .passthrough();
 
-export const PageSectionSchema = z
+export const PageSectionSchema = schema
   .object({
     type: PageSectionTypeSchema,
-    tabLabel: z.string().min(1, 'tabLabel must be non-empty'),
-    pages: z.array(PageSchema).optional(),
-    subtitle: z.string().optional(),
-    title: z.string().optional(),
-    content: z.string().optional(),
-    imageRefs: z.array(z.union([z.string(), z.record(z.unknown())])).optional(),
+    tabLabel: schema.string().min(1, 'tabLabel must be non-empty'),
+    pages: schema.array(PageSchema).optional(),
+    subtitle: schema.string().optional(),
+    title: schema.string().optional(),
+    content: schema.string().optional(),
+    imageRefs: schema.array(schema.union([schema.string(), schema.record(schema.unknown())])).optional(),
   })
   .passthrough();
 
-export const PageSectionsSchema = z.array(PageSectionSchema).default([]);
+export const PageSectionsSchema = schema.array(PageSectionSchema).default([]);
 
-export type ContentBlockValidated = z.infer<typeof FullContentBlockSchema>;
-export type PageValidated = z.infer<typeof PageSchema>;
-export type PageSectionValidated = z.infer<typeof PageSectionSchema>;
+export type ContentBlockValidated = schema.infer<typeof FullContentBlockSchema>;
+export type PageValidated = schema.infer<typeof PageSchema>;
+export type PageSectionValidated = schema.infer<typeof PageSectionSchema>;

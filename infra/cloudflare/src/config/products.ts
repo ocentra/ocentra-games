@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { Schema, type Infer, withParser } from '@ocentra/schema-domain/effect';
 import { KvKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes';
 
 /**
@@ -8,20 +8,20 @@ import { KvKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes'
  * No hardcoded products - single source of truth in KV.
  */
 
-export const ProductSchema = z.object({
-  productType: z.enum(['AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE']),
-  productId: z.string(),
-  stripePriceId: z.string(),
-  stripeProductId: z.string().optional(), // Set when created via admin
-  displayName: z.string(),
-  acAmount: z.number().positive().optional(),
-  unitPriceCents: z.number().int().nonnegative().optional(),
-  subscriptionTier: z.string().optional(),
-  currency: z.string().length(3).default('usd'),
-  active: z.boolean().default(true),
-});
+export const ProductSchema = withParser(Schema.Struct({
+  productType: Schema.Literal('AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE'),
+  productId: Schema.String,
+  stripePriceId: Schema.String,
+  stripeProductId: Schema.optional(Schema.String), // Set when created via admin
+  displayName: Schema.String,
+  acAmount: Schema.optional(Schema.Number.pipe(Schema.positive())),
+  unitPriceCents: Schema.optional(Schema.Number.pipe(Schema.int(), Schema.nonNegative())),
+  subscriptionTier: Schema.optional(Schema.String),
+  currency: Schema.optionalWith(Schema.String.pipe(Schema.length(3)), { default: () => 'usd' }),
+  active: Schema.optionalWith(Schema.Boolean, { default: () => true }),
+}));
 
-export type Product = z.infer<typeof ProductSchema>;
+export type Product = Infer<typeof ProductSchema>;
 
 /**
  * Validate product from request

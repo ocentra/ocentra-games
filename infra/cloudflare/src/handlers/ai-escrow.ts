@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import {
   HttpStatus,
@@ -84,7 +84,7 @@ export async function handleAIEscrowRequest(
   const creditsStub = env.CREDITS_DO.get(env.CREDITS_DO.idFromName(userId));
 
   if (path === ApiEndpoint.AI.EscrowReserve && request.method === HttpMethod.Post) {
-    const validation = await validateZodBody(request, env, AIEscrowReserveRequestSchema);
+    const validation = await validateSchemaBody(request, env, AIEscrowReserveRequestSchema);
       if (validation.errorResponse) return validation.errorResponse;
       const { modelVersion, estimatedInputTokens, estimatedOutputTokens, idempotencyKey } = validation.data!;
     if (!modelVersion?.trim()) {
@@ -163,7 +163,7 @@ export async function handleAIEscrowRequest(
   }
 
   if (path === ApiEndpoint.AI.EscrowConsume && request.method === HttpMethod.Post) {
-    const validationConsume = await validateZodBody(request, env, AIEscrowConsumeRequestSchema);
+    const validationConsume = await validateSchemaBody(request, env, AIEscrowConsumeRequestSchema);
       if (validationConsume.errorResponse) return validationConsume.errorResponse;
       const { escrowId, actualInputTokens, actualOutputTokens } = validationConsume.data!;
     const getRes = await doFetch(creditsStub, CreditsDOPaths.EscrowGet(escrowId));

@@ -129,7 +129,7 @@ packages/endpoint-domain/
 │   ├── types/               # Branded primitives + request/response
 │   │   ├── brands.ts        # ApiPath, DOPath, EndpointId
 │   │   └── cloudflare/      # Request/response per domain
-│   ├── schemas/             # Zod validation
+│   ├── schemas/             # Effect Schema validation
 │   ├── client/              # BrowserApiClient, CloudflareApiClient
 │   ├── durable-objects/
 │   └── openapi/
@@ -235,7 +235,7 @@ flowchart TB
     subgraph domain["In Domain (endpoint-domain)"]
         paths[Path constants]
         reqtypes[Request/response types]
-        zod[Zod schemas]
+        effect-schema[Effect Schema schemas]
         clientTypes[Client types]
         doPaths[DO path constants]
     end
@@ -255,7 +255,7 @@ flowchart TB
 |-----------|---------|
 | Endpoint path constants (branded ApiPath, DOPath) | Handler implementations |
 | Request/response types | Storage (R2, KV, DO) |
-| Zod validation schemas | Auth middleware |
+| Effect Schema validation schemas | Auth middleware |
 | Base client types | Base URL configuration |
 | DO path constants (cloudflare-do.ts) | CORS, rate limiting |
 

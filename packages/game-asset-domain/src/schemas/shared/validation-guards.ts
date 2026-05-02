@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
 export const PLACEHOLDER_PATTERNS: readonly RegExp[] = [
     /\[.{1,120}\]/,
@@ -67,11 +67,11 @@ export function containsBannedSourceMention(s: string | null | undefined): boole
     return s != null && typeof s === 'string' && BANNED_SOURCE_MENTION.test(s);
 }
 
-// Zod refinements
-export const NoPlaceholdersValid = z.string().superRefine((val, ctx) => {
+// Effect refinements
+export const NoPlaceholdersValid = schema.string().superRefine((val, ctx) => {
     if (containsPlaceholder(val)) {
         ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: schema.IssueCode.custom,
             message: 'Text must not contain placeholder text (e.g., TBD, TODO, or bracketed text)',
         });
     }

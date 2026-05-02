@@ -8,6 +8,7 @@ import type { CardIdentity } from '@ocentra/game-domain/deck/cardIdentity';
 import { frenchCardIdentity } from '@ocentra/game-domain/deck/cardIdentity';
 import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
+import { DeckRanking } from '@/deck/DeckRanking';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import JSON5 from 'json5';
 import { PieceKind } from '@/pieces/PieceKind';
@@ -34,6 +35,7 @@ export class Card extends ScriptableObject {
       cardIdentity: frenchCardIdentity(Suit.SPADES, 2),
       imageHash: '',
       cardId: '2_of_spades',
+      rankingAsset: undefined,
       cardRankingAsset: undefined,
     };
   }
@@ -44,6 +46,7 @@ export class Card extends ScriptableObject {
     this.cardIdentity = template.cardIdentity as CardIdentity;
     this.imageHash = template.imageHash as ImageHash;
     this.cardId = template.cardId as string;
+    this.rankingAsset = new AssetResourceEntry<DeckRanking>(DeckRanking.assetType! as AssetType);
     this.cardRankingAsset = new AssetResourceEntry<CardRanking>(CardRanking.assetType! as AssetType);
   }
 
@@ -60,8 +63,11 @@ export class Card extends ScriptableObject {
   cardId!: string;
 
   @required('Card Ranking Asset is required for card to function properly')
+  @serializable({ label: 'Ranking Asset', elementType: AssetResourceEntry })
+  rankingAsset!: AssetResourceEntry<DeckRanking>;
+
   @serializable({ label: 'Card Ranking Asset', elementType: AssetResourceEntry })
-  cardRankingAsset!: AssetResourceEntry<CardRanking>;
+  cardRankingAsset?: AssetResourceEntry<CardRanking>;
 
   get pieceKind(): PieceKind {
     return PieceKind.Card;
@@ -102,18 +108,19 @@ export class Card extends ScriptableObject {
   private async syncCardId(): Promise<void> {
     let cardRanking: CardRanking | undefined;
 
-    if (this.cardRankingAsset.guid) {
+    if (this.rankingAsset?.guid) {
       try {
-        const loaded = await this.cardRankingAsset.load(CardRanking);
+        const loaded = await this.rankingAsset.load(DeckRanking);
         cardRanking = loaded || undefined;
       } catch {
         cardRanking = undefined;
       }
     }
 
-    if (!cardRanking) {
+    if (!cardRanking && this.cardRankingAsset?.guid) {
       try {
-        cardRanking = await CardRanking.getDefault();
+        const loaded = await this.cardRankingAsset.load(CardRanking);
+        cardRanking = loaded || undefined;
       } catch {
         cardRanking = undefined;
       }

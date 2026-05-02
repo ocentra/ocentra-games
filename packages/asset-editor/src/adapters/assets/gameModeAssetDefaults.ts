@@ -1,6 +1,6 @@
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
-import type { CardRanking } from '@ocentra/game-asset-domain/card/cardRanking/CardRanking';
+import type { DeckRanking } from '@ocentra/game-asset-domain/deck/DeckRanking';
 import type { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 
 const STANDARD_52_DECK_GUID = '991b75fe-271a-4e16-99bf-02e4651a60fd';
@@ -23,10 +23,10 @@ export function createStandard52DeckEntry(): AssetResourceEntry<Deck> {
   return entry;
 }
 
-export function createStandard52CardRankingEntry(): AssetResourceEntry<CardRanking> {
-  const entry = AssetResourceEntry.fromGuid<CardRanking>(
+export function createStandard52CardRankingEntry(): AssetResourceEntry<DeckRanking> {
+  const entry = AssetResourceEntry.fromGuid<DeckRanking>(
     STANDARD_52_CARD_RANKING_GUID,
-    asAssetType('CardRanking'),
+    asAssetType('DeckRanking'),
     'StandardCardRanking',
   );
   entry.path = STANDARD_52_CARD_RANKING_PATH;
@@ -41,7 +41,7 @@ export function createStandard52CardRankingReference(): Record<string, unknown> 
   return {
     path: STANDARD_52_CARD_RANKING_PATH,
     guid: STANDARD_52_CARD_RANKING_GUID,
-    assetType: 'CardRanking',
+    assetType: 'DeckRanking',
     displayName: 'StandardCardRanking',
     resourceEntryType: 'AssetResourceEntry',
     variant: 'StandardCardRanking',

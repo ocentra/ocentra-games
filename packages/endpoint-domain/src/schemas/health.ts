@@ -1,15 +1,15 @@
 /**
- * Health endpoint Zod schemas.
+ * Health endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { TimestampSchema } from './common';
 
 /**
  * Health response schema.
  */
-export const HealthResponseSchema = z.object({
-  status: z.literal('ok'),
+export const HealthResponseSchema = schema.object({
+  status: schema.literal('ok'),
   timestamp: TimestampSchema.optional(),
-  version: z.string().optional(),
+  version: schema.string().optional(),
 });

@@ -1,4 +1,5 @@
-import { Suit, type Card, type CardValue } from '@ocentra/game-domain/types/game';
+import { Suit, type Card, type CardValue, type RuntimePiece } from '@ocentra/game-domain/types/game';
+import { createRuntimeCard, runtimePiecesToCards } from '@ocentra/game-domain/deck/runtimeDeck';
 import type { IDeckProvider } from '@ocentra/game-domain/interfaces/IDeckProvider';
 
 class SeededDeckProvider implements IDeckProvider {
@@ -16,8 +17,12 @@ class SeededDeckProvider implements IDeckProvider {
     return this.deckFactory();
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    const shuffled = [...deck];
+  async createDeck(): Promise<Card[]> {
+    return this.createStandardDeck();
+  }
+
+  shuffleDeck(deck: RuntimePiece[]): Card[] {
+    const shuffled = runtimePiecesToCards(deck);
     let currentIndex = shuffled.length;
     this.resetSeed();
 
@@ -30,9 +35,9 @@ class SeededDeckProvider implements IDeckProvider {
     return shuffled;
   }
 
-  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
+  dealInitialHands(deck: RuntimePiece[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
     const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
+    const remainingDeck = runtimePiecesToCards(deck);
 
     for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
       for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
@@ -46,8 +51,16 @@ class SeededDeckProvider implements IDeckProvider {
     return { hands, remainingDeck };
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
+  drawPiece(deck: RuntimePiece[]): { piece: Card | null; remainingDeck: Card[] } {
+    const result = this.drawCard(deck);
+    return {
+      piece: result.card,
+      remainingDeck: result.remainingDeck,
+    };
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: Card | null; remainingDeck: Card[] } {
+    const remainingDeck = runtimePiecesToCards(deck);
     const card = remainingDeck.shift() ?? null;
     return { card, remainingDeck };
   }
@@ -73,7 +86,7 @@ class SeededDeckProvider implements IDeckProvider {
 
 function createDeck(values: CardValue[]): Card[] {
   return [Suit.SPADES, Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS].flatMap((suit) =>
-    values.map((value) => ({
+    values.map((value) => createRuntimeCard({
       suit,
       value,
       id: `${value}_of_${suit}`,

@@ -5,6 +5,7 @@ import { CardGameScoring } from '@/game/scoring/CardGameScoring';
 import { CardGameRules } from '@/game/gameRules/CardGameRules';
 import { TrumpBonusValues } from '@/game/gameRules/TrumpBonusValues';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
+import { DeckRanking } from '@/deck/DeckRanking';
 import type { BaseBonusRule } from '@/game/rules/BaseBonusRule';
 import { Strategy } from '@/game/strategy/Strategy';
 import { GameInfo } from '@/game/gameInfo/GameInfo';
@@ -19,18 +20,16 @@ import { AssetPathSegment, deriveCategoryFromAssetType } from '@ocentra/asset-do
 import { GameModeStatus } from '@/constants/game-mode-status';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import type { AssetType } from '@ocentra/asset-domain/types/assetType';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import type { PlayerAction } from '@ocentra/game-domain/types/game';
 import type { GameId, AssetGUIDType, ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
-import { asGameId, isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
-import type { GameHome } from '@/schemas/game-home-schema';
+import { asGameId } from '@ocentra/asset-domain/types/assetIdentifier';
+import type { GameHome, GameHomeBadge } from '@/schemas/game-home-schema';
 import type { GamePage } from '@/schemas/game-page-schema';
 import type { GameEngine } from '@/schemas/game-engine-schema';
 import type { CarouselSlide } from '@/content/imageCarousel/ImageCarousel';
+import type { BannerPlaybackModeValue, BannerTransitionTypeValue } from '@/constants/banner-presentation';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import type { AssetLink } from '@/schemas/asset-link-schema';
@@ -56,6 +55,59 @@ function toAssetLink<T>(entry: AssetResourceEntry<T> | null | undefined): AssetL
   };
 }
 
+type CarouselPresentationData = {
+  slides?: CarouselSlide[];
+  lastImageDurationMs?: number;
+  fastRotationDurationMs?: number;
+  defaultRotationDurationMs?: number;
+  fastRotationThreshold?: number;
+  slideTransitionDelayMs?: number;
+  playbackMode?: BannerPlaybackModeValue;
+  transitionType?: BannerTransitionTypeValue;
+  transitionDurationMs?: number;
+  logoImageHash?: ImageHash;
+  logoAlt?: string;
+  logoStartMs?: number;
+  logoDurationMs?: number;
+  logoScaleFrom?: number;
+  logoScaleTo?: number;
+  logoOpacityFrom?: number;
+  logoOpacityTo?: number;
+  logoVisibleFromIndex?: number;
+  logoVisibleToIndex?: number;
+  titleText?: string;
+  titleTextColor?: string;
+  titleTextStartMs?: number;
+  titleTextDurationMs?: number;
+  titleTextScaleFrom?: number;
+  titleTextScaleTo?: number;
+  titleTextOpacityFrom?: number;
+  titleTextOpacityTo?: number;
+  titleTextVisibleFromIndex?: number;
+  titleTextVisibleToIndex?: number;
+  overlayTintColor?: string;
+  overlayTintOpacity?: number;
+  vignetteOpacity?: number;
+  fadeToBlackOpacity?: number;
+};
+
+function normalizeGameHomeBadges(value: unknown): GameHomeBadge[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const badges = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null;
+      const record = item as Record<string, unknown>;
+      const label = typeof record.label === 'string' ? record.label.trim() : '';
+      if (!label) return null;
+      const tone = typeof record.tone === 'string' && record.tone.trim().length > 0
+        ? record.tone.trim()
+        : undefined;
+      return tone ? { label, tone } : { label };
+    })
+    .filter((item): item is GameHomeBadge => item !== null);
+  return badges.length > 0 ? badges : undefined;
+}
+
 export interface CardGameAssetLinks {
   rules: AssetResourceEntry<CardGameRules>;
   strategy: AssetResourceEntry<Strategy>;
@@ -63,6 +115,7 @@ export interface CardGameAssetLinks {
   gameInfo: AssetResourceEntry<GameInfo>;
   layout: AssetResourceEntry<CardGameLayout>;
   deck: AssetResourceEntry<Deck>;
+  ranking?: AssetResourceEntry<DeckRanking>;
   cardRanking?: AssetResourceEntry<CardRanking>;
   carouselImages: AssetResourceEntry<ImageCarousel>;
   mechanics: AssetResourceEntry<CardGameMechanics>;
@@ -85,6 +138,7 @@ export class CardGameMode extends TurnBasedGameMode {
     this.strategyAsset = new AssetResourceEntry<Strategy>(Strategy.assetType! as AssetType);
     this.gameInfoAsset = new AssetResourceEntry<GameInfo>(GameInfo.assetType! as AssetType);
     this.layoutAsset = new AssetResourceEntry<CardGameLayout>(CardGameLayout.assetType! as AssetType);
+    this.rankingAsset = new AssetResourceEntry<DeckRanking>(DeckRanking.assetType! as AssetType);
     this.cardRankingAsset = new AssetResourceEntry<CardRanking>(CardRanking.assetType! as AssetType);
     this.carouselImagesAsset = new AssetResourceEntry<ImageCarousel>(ImageCarousel.assetType! as AssetType);
     this.mechanicsAsset = new AssetResourceEntry<CardGameMechanics>(CardGameMechanics.assetType! as AssetType);
@@ -107,7 +161,7 @@ export class CardGameMode extends TurnBasedGameMode {
       strategyAsset: null,
       gameInfoAsset: null,
       layoutAsset: null,
-      cardRankingAsset: null,
+      rankingAsset: null,
       carouselImagesAsset: null,
       mechanicsAsset: null,
       minPlayers: 2,
@@ -160,8 +214,11 @@ export class CardGameMode extends TurnBasedGameMode {
   @serializable({ label: 'Deck Asset', group: 'Asset References', elementType: AssetResourceEntry })
   deckAsset!: AssetResourceEntry<Deck>;
 
+  @serializable({ label: 'Ranking Asset', group: 'Asset References', elementType: AssetResourceEntry })
+  rankingAsset!: AssetResourceEntry<DeckRanking>;
+
   @serializable({ label: 'Card Ranking Asset', group: 'Asset References', elementType: AssetResourceEntry })
-  cardRankingAsset!: AssetResourceEntry<CardRanking>;
+  cardRankingAsset?: AssetResourceEntry<CardRanking>;
 
   @required('Layout Asset is required for game mode to function')
   @serializable({ label: 'Layout Asset', group: 'Asset References', elementType: AssetResourceEntry })
@@ -226,6 +283,13 @@ export class CardGameMode extends TurnBasedGameMode {
   }
 
   async getCardRanking(): Promise<CardRanking | null> {
+    if (this.rankingAsset?.guid) {
+      const ranking = await this.rankingAsset.load(DeckRanking);
+      if (ranking) {
+        return ranking;
+      }
+    }
+
     if (this.cardRankingAsset?.guid) {
       const ranking = await this.cardRankingAsset.load(CardRanking);
       if (ranking) {
@@ -434,6 +498,8 @@ export class CardGameMode extends TurnBasedGameMode {
     enabled: boolean;
     releaseStatus: GameModeStatus | undefined;
     tags: string[] | undefined;
+    featuredTopBadges: GameHomeBadge[] | undefined;
+    featuredBottomBadges: GameHomeBadge[] | undefined;
     comingSoon: boolean | undefined;
     bannerImage: ImageHash | undefined;
     carouselImages: ImageHash[] | undefined;
@@ -450,6 +516,33 @@ export class CardGameMode extends TurnBasedGameMode {
     carouselDefaultRotationDurationMs: number | undefined;
     carouselFastRotationThreshold: number | undefined;
     carouselSlideTransitionDelayMs: number | undefined;
+    carouselPlaybackMode: BannerPlaybackModeValue | undefined;
+    carouselTransitionType: BannerTransitionTypeValue | undefined;
+    carouselTransitionDurationMs: number | undefined;
+    bannerLogoImage: ImageHash | undefined;
+    bannerLogoAlt: string | undefined;
+    bannerLogoStartMs: number | undefined;
+    bannerLogoDurationMs: number | undefined;
+    bannerLogoScaleFrom: number | undefined;
+    bannerLogoScaleTo: number | undefined;
+    bannerLogoOpacityFrom: number | undefined;
+    bannerLogoOpacityTo: number | undefined;
+    bannerLogoVisibleFromIndex: number | undefined;
+    bannerLogoVisibleToIndex: number | undefined;
+    bannerTitleText: string | undefined;
+    bannerTitleColor: string | undefined;
+    bannerTitleStartMs: number | undefined;
+    bannerTitleDurationMs: number | undefined;
+    bannerTitleScaleFrom: number | undefined;
+    bannerTitleScaleTo: number | undefined;
+    bannerTitleOpacityFrom: number | undefined;
+    bannerTitleOpacityTo: number | undefined;
+    bannerTitleVisibleFromIndex: number | undefined;
+    bannerTitleVisibleToIndex: number | undefined;
+    bannerOverlayTintColor: string | undefined;
+    bannerOverlayTintOpacity: number | undefined;
+    bannerVignetteOpacity: number | undefined;
+    bannerFadeToBlackOpacity: number | undefined;
     gameCategory: string | undefined;
     subcategory: string | null | undefined;
     difficulty: string | undefined;
@@ -477,6 +570,8 @@ export class CardGameMode extends TurnBasedGameMode {
     let maxPlayers = this.maxPlayers ?? 4;
     let description: string | undefined;
     let tags: string[] | undefined;
+    let featuredTopBadges: GameHomeBadge[] | undefined;
+    let featuredBottomBadges: GameHomeBadge[] | undefined;
     let comingSoon = this.releaseStatus === GameModeStatus.ComingSoon;
     const enabled = this.releaseStatus !== GameModeStatus.Deprecated;
     let bannerImage: ImageHash | undefined;
@@ -491,6 +586,33 @@ export class CardGameMode extends TurnBasedGameMode {
     let carouselDefaultRotationDurationMs: number | undefined;
     let carouselFastRotationThreshold: number | undefined;
     let carouselSlideTransitionDelayMs: number | undefined;
+    let carouselPlaybackMode: BannerPlaybackModeValue | undefined;
+    let carouselTransitionType: BannerTransitionTypeValue | undefined;
+    let carouselTransitionDurationMs: number | undefined;
+    let bannerLogoImage: ImageHash | undefined;
+    let bannerLogoAlt: string | undefined;
+    let bannerLogoStartMs: number | undefined;
+    let bannerLogoDurationMs: number | undefined;
+    let bannerLogoScaleFrom: number | undefined;
+    let bannerLogoScaleTo: number | undefined;
+    let bannerLogoOpacityFrom: number | undefined;
+    let bannerLogoOpacityTo: number | undefined;
+    let bannerLogoVisibleFromIndex: number | undefined;
+    let bannerLogoVisibleToIndex: number | undefined;
+    let bannerTitleText: string | undefined;
+    let bannerTitleColor: string | undefined;
+    let bannerTitleStartMs: number | undefined;
+    let bannerTitleDurationMs: number | undefined;
+    let bannerTitleScaleFrom: number | undefined;
+    let bannerTitleScaleTo: number | undefined;
+    let bannerTitleOpacityFrom: number | undefined;
+    let bannerTitleOpacityTo: number | undefined;
+    let bannerTitleVisibleFromIndex: number | undefined;
+    let bannerTitleVisibleToIndex: number | undefined;
+    let bannerOverlayTintColor: string | undefined;
+    let bannerOverlayTintOpacity: number | undefined;
+    let bannerVignetteOpacity: number | undefined;
+    let bannerFadeToBlackOpacity: number | undefined;
     let gameCategory: string | undefined;
     let subcategory: string | null | undefined;
     let difficulty: string | undefined;
@@ -515,14 +637,41 @@ export class CardGameMode extends TurnBasedGameMode {
       assetGuid: (this.carouselImagesAsset as unknown as { guid?: string })?.guid,
     }, LOG_CAROUSEL_ASSET_LOADING);
 
-    const carouselData = this.carouselImagesAsset?.parsedData?.data || (this.carouselImagesAsset?.asset ? {
+    const carouselData = (this.carouselImagesAsset?.parsedData?.data || (this.carouselImagesAsset?.asset ? {
       slides: this.carouselImagesAsset.asset.slides,
       lastImageDurationMs: this.carouselImagesAsset.asset.lastImageDurationMs,
       fastRotationDurationMs: this.carouselImagesAsset.asset.fastRotationDurationMs,
       defaultRotationDurationMs: this.carouselImagesAsset.asset.defaultRotationDurationMs,
       fastRotationThreshold: this.carouselImagesAsset.asset.fastRotationThreshold,
       slideTransitionDelayMs: this.carouselImagesAsset.asset.slideTransitionDelayMs,
-    } : null) as { slides?: CarouselSlide[]; lastImageDurationMs?: number; fastRotationDurationMs?: number; defaultRotationDurationMs?: number; fastRotationThreshold?: number; slideTransitionDelayMs?: number } | null;
+      playbackMode: this.carouselImagesAsset.asset.playbackMode,
+      transitionType: this.carouselImagesAsset.asset.transitionType,
+      transitionDurationMs: this.carouselImagesAsset.asset.transitionDurationMs,
+      logoImageHash: this.carouselImagesAsset.asset.logoImageHash,
+      logoAlt: this.carouselImagesAsset.asset.logoAlt,
+      logoStartMs: this.carouselImagesAsset.asset.logoStartMs,
+      logoDurationMs: this.carouselImagesAsset.asset.logoDurationMs,
+      logoScaleFrom: this.carouselImagesAsset.asset.logoScaleFrom,
+      logoScaleTo: this.carouselImagesAsset.asset.logoScaleTo,
+      logoOpacityFrom: this.carouselImagesAsset.asset.logoOpacityFrom,
+      logoOpacityTo: this.carouselImagesAsset.asset.logoOpacityTo,
+      logoVisibleFromIndex: this.carouselImagesAsset.asset.logoVisibleFromIndex,
+      logoVisibleToIndex: this.carouselImagesAsset.asset.logoVisibleToIndex,
+      titleText: this.carouselImagesAsset.asset.titleText,
+      titleTextColor: this.carouselImagesAsset.asset.titleTextColor,
+      titleTextStartMs: this.carouselImagesAsset.asset.titleTextStartMs,
+      titleTextDurationMs: this.carouselImagesAsset.asset.titleTextDurationMs,
+      titleTextScaleFrom: this.carouselImagesAsset.asset.titleTextScaleFrom,
+      titleTextScaleTo: this.carouselImagesAsset.asset.titleTextScaleTo,
+      titleTextOpacityFrom: this.carouselImagesAsset.asset.titleTextOpacityFrom,
+      titleTextOpacityTo: this.carouselImagesAsset.asset.titleTextOpacityTo,
+      titleTextVisibleFromIndex: this.carouselImagesAsset.asset.titleTextVisibleFromIndex,
+      titleTextVisibleToIndex: this.carouselImagesAsset.asset.titleTextVisibleToIndex,
+      overlayTintColor: this.carouselImagesAsset.asset.overlayTintColor,
+      overlayTintOpacity: this.carouselImagesAsset.asset.overlayTintOpacity,
+      vignetteOpacity: this.carouselImagesAsset.asset.vignetteOpacity,
+      fadeToBlackOpacity: this.carouselImagesAsset.asset.fadeToBlackOpacity,
+    } : null)) as CarouselPresentationData | null;
 
     if (carouselData) {
       try {
@@ -580,6 +729,87 @@ export class CardGameMode extends TurnBasedGameMode {
         if ((carousel as { slideTransitionDelayMs?: number }).slideTransitionDelayMs !== undefined) {
           carouselSlideTransitionDelayMs = (carousel as { slideTransitionDelayMs: number }).slideTransitionDelayMs;
         }
+        if (carousel.playbackMode !== undefined) {
+          carouselPlaybackMode = carousel.playbackMode;
+        }
+        if (carousel.transitionType !== undefined) {
+          carouselTransitionType = carousel.transitionType;
+        }
+        if (carousel.transitionDurationMs !== undefined) {
+          carouselTransitionDurationMs = carousel.transitionDurationMs;
+        }
+        if (carousel.logoImageHash) {
+          bannerLogoImage = carousel.logoImageHash;
+        }
+        if (carousel.logoAlt) {
+          bannerLogoAlt = carousel.logoAlt;
+        }
+        if (carousel.logoStartMs !== undefined) {
+          bannerLogoStartMs = carousel.logoStartMs;
+        }
+        if (carousel.logoDurationMs !== undefined) {
+          bannerLogoDurationMs = carousel.logoDurationMs;
+        }
+        if (carousel.logoScaleFrom !== undefined) {
+          bannerLogoScaleFrom = carousel.logoScaleFrom;
+        }
+        if (carousel.logoScaleTo !== undefined) {
+          bannerLogoScaleTo = carousel.logoScaleTo;
+        }
+        if (carousel.logoOpacityFrom !== undefined) {
+          bannerLogoOpacityFrom = carousel.logoOpacityFrom;
+        }
+        if (carousel.logoOpacityTo !== undefined) {
+          bannerLogoOpacityTo = carousel.logoOpacityTo;
+        }
+        if (carousel.logoVisibleFromIndex !== undefined) {
+          bannerLogoVisibleFromIndex = carousel.logoVisibleFromIndex;
+        }
+        if (carousel.logoVisibleToIndex !== undefined) {
+          bannerLogoVisibleToIndex = carousel.logoVisibleToIndex;
+        }
+        if (carousel.titleText) {
+          bannerTitleText = carousel.titleText;
+        }
+        if (carousel.titleTextColor) {
+          bannerTitleColor = carousel.titleTextColor;
+        }
+        if (carousel.titleTextStartMs !== undefined) {
+          bannerTitleStartMs = carousel.titleTextStartMs;
+        }
+        if (carousel.titleTextDurationMs !== undefined) {
+          bannerTitleDurationMs = carousel.titleTextDurationMs;
+        }
+        if (carousel.titleTextScaleFrom !== undefined) {
+          bannerTitleScaleFrom = carousel.titleTextScaleFrom;
+        }
+        if (carousel.titleTextScaleTo !== undefined) {
+          bannerTitleScaleTo = carousel.titleTextScaleTo;
+        }
+        if (carousel.titleTextOpacityFrom !== undefined) {
+          bannerTitleOpacityFrom = carousel.titleTextOpacityFrom;
+        }
+        if (carousel.titleTextOpacityTo !== undefined) {
+          bannerTitleOpacityTo = carousel.titleTextOpacityTo;
+        }
+        if (carousel.titleTextVisibleFromIndex !== undefined) {
+          bannerTitleVisibleFromIndex = carousel.titleTextVisibleFromIndex;
+        }
+        if (carousel.titleTextVisibleToIndex !== undefined) {
+          bannerTitleVisibleToIndex = carousel.titleTextVisibleToIndex;
+        }
+        if (carousel.overlayTintColor) {
+          bannerOverlayTintColor = carousel.overlayTintColor;
+        }
+        if (carousel.overlayTintOpacity !== undefined) {
+          bannerOverlayTintOpacity = carousel.overlayTintOpacity;
+        }
+        if (carousel.vignetteOpacity !== undefined) {
+          bannerVignetteOpacity = carousel.vignetteOpacity;
+        }
+        if (carousel.fadeToBlackOpacity !== undefined) {
+          bannerFadeToBlackOpacity = carousel.fadeToBlackOpacity;
+        }
       } catch (error) {
         logError('Failed to process carouselImagesAsset:', error, false);
       }
@@ -598,6 +828,8 @@ export class CardGameMode extends TurnBasedGameMode {
       gameIconImage: this.gameInfoAsset.asset.gameIconImage,
       description: this.gameInfoAsset.asset.description,
       tags: this.gameInfoAsset.asset.tags,
+      featuredTopBadges: (this.gameInfoAsset.asset as unknown as Record<string, unknown>).featuredTopBadges,
+      featuredBottomBadges: (this.gameInfoAsset.asset as unknown as Record<string, unknown>).featuredBottomBadges,
       comingSoon: this.gameInfoAsset.asset.comingSoon,
       minPlayers: this.gameInfoAsset.asset.minPlayers,
       maxPlayers: this.gameInfoAsset.asset.maxPlayers,
@@ -634,6 +866,8 @@ export class CardGameMode extends TurnBasedGameMode {
         if (gameInfo.tags && Array.isArray(gameInfo.tags) && gameInfo.tags.length > 0) {
           tags = gameInfo.tags as string[];
         }
+        featuredTopBadges = normalizeGameHomeBadges((gameInfo as Record<string, unknown>).featuredTopBadges);
+        featuredBottomBadges = normalizeGameHomeBadges((gameInfo as Record<string, unknown>).featuredBottomBadges);
         if (gameInfo.comingSoon !== undefined && !this.releaseStatus) {
           comingSoon = gameInfo.comingSoon as boolean;
         }
@@ -668,6 +902,8 @@ export class CardGameMode extends TurnBasedGameMode {
       enabled,
       releaseStatus: this.releaseStatus,
       tags,
+      featuredTopBadges,
+      featuredBottomBadges,
       comingSoon: comingSoon ?? false,
       bannerImage,
       carouselImages,
@@ -684,6 +920,33 @@ export class CardGameMode extends TurnBasedGameMode {
       carouselDefaultRotationDurationMs,
       carouselFastRotationThreshold,
       carouselSlideTransitionDelayMs,
+      carouselPlaybackMode,
+      carouselTransitionType,
+      carouselTransitionDurationMs,
+      bannerLogoImage,
+      bannerLogoAlt,
+      bannerLogoStartMs,
+      bannerLogoDurationMs,
+      bannerLogoScaleFrom,
+      bannerLogoScaleTo,
+      bannerLogoOpacityFrom,
+      bannerLogoOpacityTo,
+      bannerLogoVisibleFromIndex,
+      bannerLogoVisibleToIndex,
+      bannerTitleText,
+      bannerTitleColor,
+      bannerTitleStartMs,
+      bannerTitleDurationMs,
+      bannerTitleScaleFrom,
+      bannerTitleScaleTo,
+      bannerTitleOpacityFrom,
+      bannerTitleOpacityTo,
+      bannerTitleVisibleFromIndex,
+      bannerTitleVisibleToIndex,
+      bannerOverlayTintColor,
+      bannerOverlayTintOpacity,
+      bannerVignetteOpacity,
+      bannerFadeToBlackOpacity,
       gameCategory,
       subcategory,
       difficulty,
@@ -696,30 +959,7 @@ export class CardGameMode extends TurnBasedGameMode {
   }
 
   static async create(context: AssetCreationContext, links: CardGameAssetLinks): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[CardGameMode] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'CardGameMode',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[CardGameMode] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'CardGameMode',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('CardGameMode', context.gameId);
 
     const category = deriveCategoryFromAssetType(CardGameMode.assetType!) || 'CardGames';
     const data: Record<string, unknown> = {
@@ -732,7 +972,7 @@ export class CardGameMode extends TurnBasedGameMode {
       gameInfoAsset: links.gameInfo,
       layoutAsset: links.layout,
       deckAsset: links.deck,
-      cardRankingAsset: links.cardRanking ?? null,
+      rankingAsset: links.ranking ?? links.cardRanking ?? null,
       carouselImagesAsset: links.carouselImages,
       mechanicsAsset: links.mechanics,
       category,

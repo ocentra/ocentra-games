@@ -3,15 +3,11 @@ import { serializable, serializableClass } from '@ocentra/asset-domain/serializa
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import type { ImageListEntry } from '../imageList/ImageList';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
+import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
+import { BannerPlaybackMode, BannerTransitionType } from '@/constants/banner-presentation';
+import type { BannerPlaybackModeValue, BannerTransitionTypeValue } from '@/constants/banner-presentation';
 export interface CarouselAction {
   label: string;
   href?: string;
@@ -43,6 +39,29 @@ export class ImageCarousel extends ScriptableObject {
       defaultRotationDurationMs: 3000,
       fastRotationThreshold: 4,
       slideTransitionDelayMs: 500,
+      playbackMode: BannerPlaybackMode.PingPong,
+      transitionType: BannerTransitionType.CrossDissolve,
+      transitionDurationMs: 1500,
+      logoImageHash: '',
+      logoAlt: '',
+      logoStartMs: 0,
+      logoDurationMs: 1600,
+      logoScaleFrom: 1,
+      logoScaleTo: 1,
+      logoOpacityFrom: 1,
+      logoOpacityTo: 1,
+      titleText: '',
+      titleTextColor: '#ffffff',
+      titleTextStartMs: 0,
+      titleTextDurationMs: 1600,
+      titleTextScaleFrom: 1,
+      titleTextScaleTo: 1,
+      titleTextOpacityFrom: 1,
+      titleTextOpacityTo: 1,
+      overlayTintColor: '',
+      overlayTintOpacity: 0,
+      vignetteOpacity: 0,
+      fadeToBlackOpacity: 0,
     };
   }
 
@@ -67,31 +86,89 @@ export class ImageCarousel extends ScriptableObject {
   @serializable({ label: 'Slide Transition Delay (ms)' })
   slideTransitionDelayMs!: number;
 
+  @serializable({ label: 'Playback Mode' })
+  playbackMode!: BannerPlaybackModeValue;
+
+  @serializable({ label: 'Transition Type' })
+  transitionType!: BannerTransitionTypeValue;
+
+  @serializable({ label: 'Transition Duration (ms)' })
+  transitionDurationMs!: number;
+
+  @serializable({ label: 'Logo Image Hash' })
+  logoImageHash?: ImageHash;
+
+  @serializable({ label: 'Logo Alt' })
+  logoAlt?: string;
+
+  @serializable({ label: 'Logo Start (ms)' })
+  logoStartMs!: number;
+
+  @serializable({ label: 'Logo Duration (ms)' })
+  logoDurationMs!: number;
+
+  @serializable({ label: 'Logo Scale From' })
+  logoScaleFrom!: number;
+
+  @serializable({ label: 'Logo Scale To' })
+  logoScaleTo!: number;
+
+  @serializable({ label: 'Logo Opacity From' })
+  logoOpacityFrom!: number;
+
+  @serializable({ label: 'Logo Opacity To' })
+  logoOpacityTo!: number;
+
+  @serializable({ label: 'Logo Visible From Frame' })
+  logoVisibleFromIndex?: number;
+
+  @serializable({ label: 'Logo Visible To Frame' })
+  logoVisibleToIndex?: number;
+
+  @serializable({ label: 'Title Text' })
+  titleText?: string;
+
+  @serializable({ label: 'Title Text Color' })
+  titleTextColor?: string;
+
+  @serializable({ label: 'Title Start (ms)' })
+  titleTextStartMs!: number;
+
+  @serializable({ label: 'Title Duration (ms)' })
+  titleTextDurationMs!: number;
+
+  @serializable({ label: 'Title Scale From' })
+  titleTextScaleFrom!: number;
+
+  @serializable({ label: 'Title Scale To' })
+  titleTextScaleTo!: number;
+
+  @serializable({ label: 'Title Opacity From' })
+  titleTextOpacityFrom!: number;
+
+  @serializable({ label: 'Title Opacity To' })
+  titleTextOpacityTo!: number;
+
+  @serializable({ label: 'Title Visible From Frame' })
+  titleTextVisibleFromIndex?: number;
+
+  @serializable({ label: 'Title Visible To Frame' })
+  titleTextVisibleToIndex?: number;
+
+  @serializable({ label: 'Overlay Tint Color' })
+  overlayTintColor?: string;
+
+  @serializable({ label: 'Overlay Tint Opacity' })
+  overlayTintOpacity!: number;
+
+  @serializable({ label: 'Vignette Opacity' })
+  vignetteOpacity!: number;
+
+  @serializable({ label: 'Fade To Black Opacity' })
+  fadeToBlackOpacity!: number;
+
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[ImageCarousel] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'ImageCarousel',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[ImageCarousel] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'ImageCarousel',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('ImageCarousel', context.gameId);
     const assetId = `${context.gameId}-carousel`;
     const data: Record<string, unknown> = {
       ...this.createTemplate(),

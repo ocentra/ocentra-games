@@ -2,7 +2,7 @@ import type { Env } from '@/constants/env';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
@@ -156,7 +156,7 @@ export async function handleTestRequest(
         },
       });
     }
-    const validation = await validateZodBody(request, env, TestPromoSeedRequestSchema);
+    const validation = await validateSchemaBody(request, env, TestPromoSeedRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';
@@ -302,7 +302,7 @@ export async function handleTestRequest(
           },
         });
       }
-      const validation = await validateZodBody(request, env, TestPromoSeedRequestSchema);
+      const validation = await validateSchemaBody(request, env, TestPromoSeedRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
       const code = typeof body.code === 'string' ? body.code.trim().toUpperCase() : '';

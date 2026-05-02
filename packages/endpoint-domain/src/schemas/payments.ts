@@ -1,7 +1,7 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { UUIDSchema } from '@/schemas/common';
 
-export const PaymentEventTypeSchema = z.enum([
+export const PaymentEventTypeSchema = schema.enum([
   'CHECKOUT_INITIATED',
   'CHECKOUT_CREATED',
   'PAYMENT_PENDING',
@@ -19,32 +19,32 @@ export const PaymentEventTypeSchema = z.enum([
   'SUBSCRIPTION_DELETED',
 ]);
 
-export type PaymentEventType = z.infer<typeof PaymentEventTypeSchema>;
+export type PaymentEventType = schema.infer<typeof PaymentEventTypeSchema>;
 
-export const PaymentEventSchema = z.object({
+export const PaymentEventSchema = schema.object({
   eventId: UUIDSchema,
-  stripeEventId: z.string().optional(),
+  stripeEventId: schema.string().optional(),
   type: PaymentEventTypeSchema,
-  paymentId: z.string(),
-  userId: z.string(),
-  amount: z.number().positive(),
-  currency: z.string().length(3),
-  metadata: z.object({
-    productType: z.enum(['AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE']),
-    productId: z.string(),
-    acAmount: z.number().optional(),
-    subscriptionTier: z.string().optional(),
+  paymentId: schema.string(),
+  userId: schema.string(),
+  amount: schema.number().positive(),
+  currency: schema.string().length(3),
+  metadata: schema.object({
+    productType: schema.enum(['AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE']),
+    productId: schema.string(),
+    acAmount: schema.number().optional(),
+    subscriptionTier: schema.string().optional(),
   }),
-  createdAt: z.number(),
-  processedAt: z.number(),
-  idempotencyKey: z.string(),
-  previousState: z.string().optional(),
-  currentState: z.string(),
+  createdAt: schema.number(),
+  processedAt: schema.number(),
+  idempotencyKey: schema.string(),
+  previousState: schema.string().optional(),
+  currentState: schema.string(),
 });
 
-export type PaymentEvent = z.infer<typeof PaymentEventSchema>;
+export type PaymentEvent = schema.infer<typeof PaymentEventSchema>;
 
-export const PaymentStateSchema = z.enum([
+export const PaymentStateSchema = schema.enum([
   'INITIATED',
   'CHECKOUT_CREATED',
   'PAYMENT_PENDING',
@@ -59,104 +59,104 @@ export const PaymentStateSchema = z.enum([
   'FAILED',
 ]);
 
-export type PaymentState = z.infer<typeof PaymentStateSchema>;
+export type PaymentState = schema.infer<typeof PaymentStateSchema>;
 
-export const CreateCheckoutRequestSchema = z.object({
-  productType: z.enum(['AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE']),
-  productId: z.string(),
-  quantity: z.number().int().positive(),
-  successUrl: z.string().url(),
-  cancelUrl: z.string().url(),
-  acAmount: z.number().positive().optional(),
-  subscriptionTier: z.enum(['pro', 'proplus']).optional(),
-  durationMonths: z.number().int().positive().optional(),
-  metadata: z.record(z.string()).optional(),
+export const CreateCheckoutRequestSchema = schema.object({
+  productType: schema.enum(['AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE']),
+  productId: schema.string(),
+  quantity: schema.number().int().positive(),
+  successUrl: schema.string().url(),
+  cancelUrl: schema.string().url(),
+  acAmount: schema.number().positive().optional(),
+  subscriptionTier: schema.enum(['pro', 'proplus']).optional(),
+  durationMonths: schema.number().int().positive().optional(),
+  metadata: schema.record(schema.string()).optional(),
 });
 
-export type CreateCheckoutRequest = z.infer<typeof CreateCheckoutRequestSchema>;
+export type CreateCheckoutRequest = schema.infer<typeof CreateCheckoutRequestSchema>;
 
-export const TestInitPaymentRequestSchema = z.object({
-  paymentId: z.string().uuid(),
-  amount: z.number().positive(),
+export const TestInitPaymentRequestSchema = schema.object({
+  paymentId: schema.string().uuid(),
+  amount: schema.number().positive(),
 });
 
-export type TestInitPaymentRequest = z.infer<typeof TestInitPaymentRequestSchema>;
+export type TestInitPaymentRequest = schema.infer<typeof TestInitPaymentRequestSchema>;
 
-export const StripeEventDataObjectSchema = z
+export const StripeEventDataObjectSchema = schema
   .object({
-    metadata: z.record(z.string()).optional(),
-    subscription_details: z
-      .object({ metadata: z.record(z.string()).optional() })
+    metadata: schema.record(schema.string()).optional(),
+    subscription_details: schema
+      .object({ metadata: schema.record(schema.string()).optional() })
       .optional(),
-    id: z.string().optional(),
-    client_reference_id: z.string().optional(),
-    amount_total: z.number().optional(),
+    id: schema.string().optional(),
+    client_reference_id: schema.string().optional(),
+    amount_total: schema.number().optional(),
   })
   .passthrough();
 
-export const StripeDisputeObjectSchema = z
-  .object({ charge: z.string().optional() })
+export const StripeDisputeObjectSchema = schema
+  .object({ charge: schema.string().optional() })
   .passthrough();
 
-export const StripePaymentIntentExpandedSchema = z
+export const StripePaymentIntentExpandedSchema = schema
   .object({
-    id: z.string().optional(),
-    metadata: z.record(z.string()).optional(),
+    id: schema.string().optional(),
+    metadata: schema.record(schema.string()).optional(),
   })
   .passthrough()
   .nullable();
 
-export const StripePaymentIntentLikeSchema = z
+export const StripePaymentIntentLikeSchema = schema
   .union([
-    z.string(),
-    z.object({
-      id: z.string().optional(),
-      metadata: z.record(z.string()).optional(),
+    schema.string(),
+    schema.object({
+      id: schema.string().optional(),
+      metadata: schema.record(schema.string()).optional(),
     }).passthrough(),
   ])
   .nullable();
 
-export type StripeEventDataObject = z.infer<typeof StripeEventDataObjectSchema>;
+export type StripeEventDataObject = schema.infer<typeof StripeEventDataObjectSchema>;
 
-export const PaymentDOIsProcessedResponseSchema = z.object({
-  processed: z.boolean().optional(),
+export const PaymentDOIsProcessedResponseSchema = schema.object({
+  processed: schema.boolean().optional(),
 });
 
-export type PaymentDOIsProcessedResponse = z.infer<typeof PaymentDOIsProcessedResponseSchema>;
+export type PaymentDOIsProcessedResponse = schema.infer<typeof PaymentDOIsProcessedResponseSchema>;
 
-export const PaymentDOListResponseSchema = z.object({
-  payments: z
+export const PaymentDOListResponseSchema = schema.object({
+  payments: schema
     .array(
-      z.object({
-        paymentId: z.string().optional(),
-        stripePaymentIntentId: z.string().optional(),
+      schema.object({
+        paymentId: schema.string().optional(),
+        stripePaymentIntentId: schema.string().optional(),
       })
     )
     .optional(),
 });
 
-export type PaymentDOListResponse = z.infer<typeof PaymentDOListResponseSchema>;
+export type PaymentDOListResponse = schema.infer<typeof PaymentDOListResponseSchema>;
 
-export const PaymentDOGetResponseSchema = z.object({
-  amount: z.number().optional(),
-  stripePaymentIntentId: z.string().optional(),
-  currentState: z.string().optional(),
+export const PaymentDOGetResponseSchema = schema.object({
+  amount: schema.number().optional(),
+  stripePaymentIntentId: schema.string().optional(),
+  currentState: schema.string().optional(),
 });
 
-export type PaymentDOGetResponse = z.infer<typeof PaymentDOGetResponseSchema>;
+export type PaymentDOGetResponse = schema.infer<typeof PaymentDOGetResponseSchema>;
 
-export const ReconcileRequestSchema = z
-  .object({ repair: z.boolean().optional() })
+export const ReconcileRequestSchema = schema
+  .object({ repair: schema.boolean().optional() })
   .strict();
 
-export type ReconcileRequest = z.infer<typeof ReconcileRequestSchema>;
+export type ReconcileRequest = schema.infer<typeof ReconcileRequestSchema>;
 
-export const StripeExpandableIdSchema = z
-  .union([z.string(), z.object({ id: z.string() }).passthrough()])
+export const StripeExpandableIdSchema = schema
+  .union([schema.string(), schema.object({ id: schema.string() }).passthrough()])
   .transform((x) => (typeof x === 'string' ? x : x.id));
 
-export const PaymentDOTransitionResponseSchema = z.object({
-  payments: z.array(z.unknown()).optional(),
+export const PaymentDOTransitionResponseSchema = schema.object({
+  payments: schema.array(schema.unknown()).optional(),
 }).passthrough();
 
-export type PaymentDOTransitionResponse = z.infer<typeof PaymentDOTransitionResponseSchema>;
+export type PaymentDOTransitionResponse = schema.infer<typeof PaymentDOTransitionResponseSchema>;

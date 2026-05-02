@@ -1,47 +1,45 @@
 import { describe, expect, it } from 'vitest';
 import { GameEngine } from '@/engine/GameEngine';
 import { calculateClaimPlayerScore, createClaimBotAction } from '@/engine/mechanics/family/ClaimFamilyResolver';
+import { evaluateMechanicsExample, listMechanicsExamples } from '@/engine/mechanics/MechanicsExampleService';
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
 import type { MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
-import { GamePhase, Suit, type Card, type CardValue, type Player } from '@/types/game';
+import { createRuntimeCard, dealRuntimePieces, drawRuntimePiece, materializeRuntimePieces, runtimePiecesToCards } from '@/deck/runtimeDeck';
+import { GamePhase, Suit, type Card, type CardValue, type GameState, type Player, type RuntimePiece } from '@/types/game';
 
 class OrderedDeckProvider implements IDeckProvider {
-  private readonly deck: Card[];
+  private readonly deck: RuntimePiece[];
   private seed = 1;
 
-  constructor(deck: Card[]) {
+  constructor(deck: RuntimePiece[]) {
     this.deck = deck;
   }
 
+  async createDeck(): Promise<RuntimePiece[]> {
+    return materializeRuntimePieces(this.deck);
+  }
+
   async createStandardDeck(): Promise<Card[]> {
-    return [...this.deck];
+    return runtimePiecesToCards(await this.createDeck());
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    return [...deck];
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[] {
+    return materializeRuntimePieces(deck);
   }
 
-  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
-    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
-
-    for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
-      for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
-        const card = remainingDeck.shift();
-        if (card) {
-          hands[playerIndex].push(card);
-        }
-      }
-    }
-
-    return { hands, remainingDeck };
+  dealInitialHands(deck: RuntimePiece[], playerCount: number, handSize: number): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] } {
+    return dealRuntimePieces(deck, playerCount, handSize);
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    return drawRuntimePiece(deck);
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: Card | null; remainingDeck: RuntimePiece[] } {
+    const result = this.drawPiece(deck);
     return {
-      card: remainingDeck.shift() ?? null,
-      remainingDeck,
+      card: result.piece ? runtimePiecesToCards([result.piece])[0] ?? null : null,
+      remainingDeck: result.remainingDeck,
     };
   }
 
@@ -55,11 +53,11 @@ class OrderedDeckProvider implements IDeckProvider {
 }
 
 function card(suit: Suit, value: CardValue): Card {
-  return {
+  return createRuntimeCard({
     id: `${value}_of_${suit}`,
     suit,
     value,
-  };
+  });
 }
 
 function createPlayer(hand: Card[], declaredSuit: Suit | null = null): Player {
@@ -246,7 +244,129 @@ function createClaimSpec(maxRounds = 1): MechanicsSpec {
   };
 }
 
+function createClaimSpecWithBotProfile(botProfile: Record<string, number>): MechanicsSpec {
+  return {
+    ...createClaimSpec(2),
+    strategyHooks: {
+      botProfile,
+    },
+  };
+}
+
+function createBotDecisionState(): GameState {
+  const players: Player[] = [
+    { ...createPlayer([]), id: 'p1', name: 'Player 1' },
+    {
+      ...createPlayer([
+        card(Suit.SPADES, 14),
+        card(Suit.HEARTS, 13),
+        card(Suit.CLUBS, 12),
+      ]),
+      id: 'p2',
+      isAI: true,
+      name: 'Player 2',
+    },
+    { ...createPlayer([]), id: 'p3', isAI: true, name: 'Player 3' },
+    { ...createPlayer([]), id: 'p4', isAI: true, name: 'Player 4' },
+  ];
+
+  return {
+    currentPlayer: 1,
+    deck: [card(Suit.SPADES, 2)],
+    discardPile: [],
+    floorCard: null,
+    id: 'claim-bot-decision',
+    lastAction: new Date('2026-01-01T00:00:00.000Z'),
+    mechanicsContext: {
+      capturedCardsByPlayerId: {},
+      dealerIndex: 0,
+      familyState: {
+        bankrollByPlayerId: Object.fromEntries(players.map((player) => [player.id, 1352])),
+        declaredSuitByPlayerId: {},
+        eliminatedPlayerIds: [],
+        roundScoresByPlayerId: {},
+        settlementByPlayerId: {},
+        showdownCallerId: null,
+        turn: {
+          acted: false,
+          discarded: false,
+          playerId: 'p2',
+          taken: false,
+        },
+        undeclaredDebtByPlayerId: Object.fromEntries(players.map((player) => [player.id, 0])),
+      },
+      foldedPlayerIds: [],
+      lastMechanicsAction: 'setup_round',
+      revealedPlayerIds: [],
+      roundPot: 0,
+      showdownCallerId: null,
+      tableCards: [],
+      trumpCard: null,
+    },
+    mechanicsPhaseId: 'turn_loop',
+    phase: GamePhase.PLAYER_ACTION,
+    players,
+    round: 1,
+    startTime: new Date('2026-01-01T00:00:00.000Z'),
+  };
+}
+
 describe('Claim hoarder scoring', () => {
+  it('exposes executable scoring examples for frontend consumers', () => {
+    const spec: MechanicsSpec = {
+      ...createClaimSpec(2),
+      mechanicsId: 'claim-hoarder',
+      validationSuites: [
+        {
+          id: 'claim.scoring.examples',
+          fixtures: [
+            {
+              id: 'claim.score.spades_akq',
+              title: 'A K Q of Spades',
+              purpose: 'scoring',
+              hand: ['A_spades', 'K_spades', 'Q_spades'],
+              declaredSuit: 'spades',
+              expectedFinalScore: 117,
+              explanation: '(14 + 13 + 12) * 3 = 117.',
+              linkedRuleIds: ['claim.score.declared_positive', 'claim.score.circular_runs'],
+              sourceAsset: 'claimValidationFixtures.asset',
+            },
+          ],
+        },
+      ],
+    };
+
+    const summaries = listMechanicsExamples(spec, { purpose: 'scoring' });
+    const evaluated = evaluateMechanicsExample(spec, { exampleId: 'claim.score.spades_akq' });
+
+    expect(summaries).toEqual([
+      {
+        familyKernel: 'claim',
+        id: 'claim.score.spades_akq',
+        linkedRuleIds: ['claim.score.declared_positive', 'claim.score.circular_runs'],
+        mechanicsId: 'claim-hoarder',
+        purpose: 'scoring',
+        sourceAsset: 'claimValidationFixtures.asset',
+        suiteId: 'claim.scoring.examples',
+        title: 'A K Q of Spades',
+      },
+    ]);
+    expect(evaluated).toMatchObject({
+      actual: 117,
+      declaredSuit: Suit.SPADES,
+      expected: 117,
+      explanation: '(14 + 13 + 12) * 3 = 117.',
+      passed: true,
+      scoreBreakdown: {
+        debt: 0,
+        finalScore: 117,
+        negative: 0,
+        positive: 117,
+      },
+      type: 'claim_scoring',
+    });
+  });
+
   it('scores circular Ace runs as one maximal run with singles counted once', () => {
     const player = createPlayer([
       card(Suit.SPADES, 13),
@@ -300,7 +420,7 @@ describe('GameEngine Claim mechanics flow', () => {
     const startedState = engine.getGameState()!;
     const result = engine.processPlayerAction({
       playerId: 'p2',
-      timestamp: new Date(startedState.lastAction.getTime() + 1000),
+      timestamp: new Date(startedState.lastAction.getTime() + 1000).toISOString(),
       type: 'end_turn',
     });
 
@@ -310,6 +430,35 @@ describe('GameEngine Claim mechanics flow', () => {
       undeclaredDebtByPlayerId?: Record<string, number>;
     };
     expect(claimState.undeclaredDebtByPlayerId?.p2).toBe(0);
+  });
+
+  it('rejects invalid Claim action payloads through the Effect Schema boundary', async () => {
+    const deck = [
+      card(Suit.HEARTS, 5), card(Suit.SPADES, 13), card(Suit.CLUBS, 7), card(Suit.DIAMONDS, 9),
+      card(Suit.CLUBS, 8), card(Suit.SPADES, 14), card(Suit.HEARTS, 6), card(Suit.DIAMONDS, 10),
+      card(Suit.DIAMONDS, 4), card(Suit.SPADES, 2), card(Suit.CLUBS, 11), card(Suit.HEARTS, 12),
+      card(Suit.SPADES, 3), card(Suit.HEARTS, 2),
+    ];
+    const engine = new GameEngine({
+      deckProvider: new OrderedDeckProvider(deck),
+    });
+    await engine.initializeGame({ maxPlayers: 4, enablePhysics: false, seed: 1 });
+    engine.loadMechanicsSpec(createClaimSpec(2));
+    ['p1', 'p2', 'p3', 'p4'].forEach((id, index) => {
+      engine.addPlayer({ id, name: `Player ${index + 1}` });
+    });
+
+    await engine.startGame();
+    const startedState = engine.getGameState()!;
+    const result = engine.processPlayerAction({
+      data: { suit: 'stars' },
+      playerId: 'p2',
+      timestamp: new Date(startedState.lastAction.getTime() + 1000).toISOString(),
+      type: 'declare_suit',
+    });
+
+    expect(result.isValid).toBe(false);
+    expect(result.errors[0]).toContain('Invalid action payload');
   });
 
   it('creates deterministic bot actions from the Claim executor', async () => {
@@ -334,6 +483,35 @@ describe('GameEngine Claim mechanics flow', () => {
 
     expect(action).toMatchObject({
       playerId: 'p2',
+      type: 'declare_suit',
+      data: { suit: Suit.SPADES },
+    });
+  });
+
+  it('drives deterministic bot decisions from the Claim strategy profile', () => {
+    const conservativeAction = createClaimBotAction(
+      createBotDecisionState(),
+      createClaimSpecWithBotProfile({
+        aggressiveness: 0.1,
+        riskTolerance: 0.1,
+        bluffFrequency: 0,
+      }),
+      'p2',
+      { seed: 42 },
+    );
+    const aggressiveAction = createClaimBotAction(
+      createBotDecisionState(),
+      createClaimSpecWithBotProfile({
+        aggressiveness: 0.8,
+        riskTolerance: 0.8,
+        bluffFrequency: 0,
+      }),
+      'p2',
+      { seed: 42 },
+    );
+
+    expect(conservativeAction).toMatchObject({ type: 'take_stock' });
+    expect(aggressiveAction).toMatchObject({
       type: 'declare_suit',
       data: { suit: Suit.SPADES },
     });

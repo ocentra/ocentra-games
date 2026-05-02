@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { serializable, serializableClass } from '@ocentra/asset-domain/serialization/decorators';
 import { Scoring } from '@/game/scoring/Scoring';
 import { CardRanking } from '@/card/cardRanking/CardRanking';
+import { DeckRanking } from '@/deck/DeckRanking';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { AssetGUID } from '@ocentra/asset-domain/AssetGUID';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
@@ -10,15 +11,8 @@ import type { ContentBlock } from '@/game/gameInfo/GameInfo';
 import { ContentBlockType } from '@/constants/content-block-type';
 import { ListStyleType } from '@/constants/list-style-type';
 import type { ScoringDirection } from '@ocentra/game-domain/game/scoring';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
 
 export const ScoringType = {
   PokerRanking: 'poker_ranking',
@@ -125,19 +119,20 @@ export class CardGameScoring extends Scoring {
   }
 
   async getCardRanking(): Promise<CardRanking | null> {
-    if (!this.cardRankingAsset) return null;
+    const rankingAsset = this.rankingAsset ?? this.cardRankingAsset;
+    if (!rankingAsset) return null;
 
     let guid: string;
-    if (typeof this.cardRankingAsset === 'string') {
-      guid = this.cardRankingAsset;
-    } else if (this.cardRankingAsset.assetRef) {
-      guid = this.cardRankingAsset.guid;
+    if (typeof rankingAsset === 'string') {
+      guid = rankingAsset;
+    } else if (rankingAsset.assetRef) {
+      guid = rankingAsset.guid;
     } else {
       return null;
     }
 
     const assetGUID = AssetGUID.from(guid);
-    return await ScriptableObject.loadByGuid(CardRanking, assetGUID);
+    return await ScriptableObject.loadByGuid(DeckRanking, assetGUID);
   }
 
   getMultiplier(patternType: string): number {
@@ -155,29 +150,7 @@ export class CardGameScoring extends Scoring {
   }
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      MainAppLogger.instance.logWarn('[CardGameScoring] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'CardGameScoring',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        MainAppLogger.instance.logWarn('[CardGameScoring] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'CardGameScoring',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('CardGameScoring', context.gameId);
 
     return {
       assetId: `${context.gameId}-scoring`,

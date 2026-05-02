@@ -413,7 +413,7 @@
   object-position: center center;
   display: block;
   position: absolute;
-  transition: opacity 1.5s ease-in-out;
+  transition: opacity var(--featured-banner-transition-duration, 1500ms) ease-in-out;
   opacity: 0;
   z-index: 1;
   will-change: opacity;
@@ -431,10 +431,162 @@
   z-index: 3;
 }
 
-.featured-game-banner.was-active {
+.featured-game-banner.hold-active {
   opacity: 1;
   z-index: 2;
-  transition: opacity 1.5s ease-in-out;
+  transition: none;
+}
+
+.featured-game-banner.was-active {
+  opacity: 0;
+  z-index: 1;
+  transition: none;
+}
+
+.featured-carousel-transition-cut .featured-game-banner {
+  transition: none;
+}
+
+.featured-carousel-transition-swipe .featured-game-banner {
+  transform: translate3d(6%, 0, 0);
+  transition:
+    opacity var(--featured-banner-transition-duration, 1500ms) ease-in-out,
+    transform var(--featured-banner-transition-duration, 1500ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.featured-carousel-transition-swipe .featured-game-banner.active {
+  transform: translate3d(0, 0, 0);
+}
+
+.featured-carousel-transition-swipe .featured-game-banner.was-active {
+  transform: translate3d(-6%, 0, 0);
+}
+
+.featured-game-composition-overlays {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.featured-game-composition-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.featured-game-overlay-tint {
+  z-index: 1;
+  background: var(--featured-banner-overlay-color, transparent);
+  opacity: var(--featured-banner-overlay-opacity, 0);
+  mix-blend-mode: soft-light;
+}
+
+.featured-game-overlay-vignette {
+  z-index: 2;
+  background: radial-gradient(circle at 50% 45%, transparent 26%, rgba(0, 0, 0, 0.74) 100%);
+  opacity: var(--featured-banner-vignette-opacity, 0);
+}
+
+.featured-game-overlay-fade {
+  z-index: 3;
+  background: #000;
+  opacity: var(--featured-banner-fade-opacity, 0);
+}
+
+.featured-game-logo-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(48%, 20rem);
+  max-height: 48%;
+  object-fit: contain;
+  z-index: 4;
+  opacity: var(--featured-banner-logo-opacity-to, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-logo-scale-to, 1));
+  filter: drop-shadow(0 0.45rem 1.4rem rgba(0, 0, 0, 0.72));
+  animation: featuredBannerLogoReveal var(--featured-banner-logo-duration, 1600ms) ease-out var(--featured-banner-logo-delay, 0ms) both;
+}
+
+.featured-game-title-overlay {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72%, 34rem);
+  z-index: 4;
+  color: var(--featured-banner-title-color, rgba(255, 255, 255, 0.96));
+  font-size: clamp(2rem, 5rem, 6.5rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: 0;
+  text-align: center;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  text-shadow:
+    0 0.25rem 0.55rem rgba(0, 0, 0, 0.85),
+    0 0 1.4rem rgba(255, 255, 255, 0.28);
+  opacity: var(--featured-banner-title-opacity-to, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-title-scale-to, 1));
+  animation: featuredBannerTitleReveal var(--featured-banner-title-duration, 1600ms) ease-out var(--featured-banner-title-delay, 0ms) both;
+}
+
+.featured-game-logo-overlay.featured-game-composition-timeline,
+.featured-game-title-overlay.featured-game-composition-timeline {
+  animation: none;
+  transition:
+    opacity var(--featured-banner-logo-duration, 1600ms) ease-in-out,
+    transform var(--featured-banner-logo-duration, 1600ms) ease-in-out;
+}
+
+.featured-game-title-overlay.featured-game-composition-timeline {
+  transition:
+    opacity var(--featured-banner-title-duration, 1600ms) ease-in-out,
+    transform var(--featured-banner-title-duration, 1600ms) ease-in-out;
+}
+
+.featured-game-logo-overlay.featured-game-composition-timeline-hidden {
+  opacity: var(--featured-banner-logo-opacity-from, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-logo-scale-from, 1));
+}
+
+.featured-game-logo-overlay.featured-game-composition-timeline-visible {
+  opacity: var(--featured-banner-logo-opacity-to, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-logo-scale-to, 1));
+}
+
+.featured-game-title-overlay.featured-game-composition-timeline-hidden {
+  opacity: var(--featured-banner-title-opacity-from, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-title-scale-from, 1));
+}
+
+.featured-game-title-overlay.featured-game-composition-timeline-visible {
+  opacity: var(--featured-banner-title-opacity-to, 1);
+  transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-title-scale-to, 1));
+}
+
+@keyframes featuredBannerLogoReveal {
+  from {
+    opacity: var(--featured-banner-logo-opacity-from, 1);
+    transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-logo-scale-from, 1));
+  }
+
+  to {
+    opacity: var(--featured-banner-logo-opacity-to, 1);
+    transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-logo-scale-to, 1));
+  }
+}
+
+@keyframes featuredBannerTitleReveal {
+  from {
+    opacity: var(--featured-banner-title-opacity-from, 1);
+    transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-title-scale-from, 1));
+  }
+
+  to {
+    opacity: var(--featured-banner-title-opacity-to, 1);
+    transform: translate3d(-50%, -50%, 0) scale(var(--featured-banner-title-scale-to, 1));
+  }
 }
 
 /* Ken Burns Effect */
@@ -495,7 +647,7 @@
   gap: 0.3rem;
   align-items: center;
   justify-content: flex-end;
-  z-index: 3;
+  z-index: 5;
   pointer-events: none;
   max-width: calc(100% - 2rem);
 }

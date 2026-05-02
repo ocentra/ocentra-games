@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { verifyTurnstileToken, TurnstileTokenHeader } from '@/utils/turnstile';
 import { createFlowContext } from '@/flows/core/FlowContext';
 import { FlowRunner } from '@/flows/core/FlowRunner';
@@ -84,7 +84,7 @@ export async function handlePaymentRequest(
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required');
     if (authResult instanceof Response) return authResult;
     const userId = authResult.userId;
-    const validation = await validateZodBody(request, env, TestInitPaymentRequestSchema);
+    const validation = await validateSchemaBody(request, env, TestInitPaymentRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const { paymentId, amount } = validation.data!;
     const flowResult = await flowRunner.run(
@@ -130,7 +130,7 @@ export async function handlePaymentRequest(
         HttpStatus.Forbidden
       );
     }
-    const validation = await validateZodBody(request, env, CreateCheckoutRequestSchema);
+    const validation = await validateSchemaBody(request, env, CreateCheckoutRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const { productType, productId, quantity, successUrl, cancelUrl } = validation.data!;
     const flowResult = await flowRunner.run(
@@ -251,7 +251,8 @@ export async function handlePaymentRequest(
         httpClient: (Stripe as { createFetchHttpClient?: () => unknown }).createFetchHttpClient?.() as never,
       });
       const pi = await stripe.paymentIntents.retrieve(stripePaymentIntentId);
-      const chargeId = StripeExpandableIdSchema.safeParse(pi.latest_charge).data ?? undefined;
+      const chargeIdResult = StripeExpandableIdSchema.safeParse(pi.latest_charge);
+      const chargeId = chargeIdResult.success ? chargeIdResult.data : undefined;
       if (!chargeId) {
         return new Response(JSON.stringify({ error: 'No charge found for payment' }), {
           status: HttpStatus.BadRequest,
@@ -332,7 +333,7 @@ export async function handlePaymentRequest(
       });
     }
     let repair = false;
-    const validation = await validateZodBody(request, env, ReconcileRequestSchema);
+    const validation = await validateSchemaBody(request, env, ReconcileRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     if (validation.data) repair = validation.data.repair === true;
     const result = await runReconciliation(env, { repair });

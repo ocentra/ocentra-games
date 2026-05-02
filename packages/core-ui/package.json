@@ -1,126 +1,166 @@
 {
-    "name":  "@ocentra/core-ui",
-    "version":  "1.0.0",
-    "type":  "module",
-    "description":  "Shared UI components: headers, footers. Used by main app and asset-editor.",
-    "exports":  {
-                    "./Footer/GameFooter":  {
-                                                "import":  "./dist/Footer/GameFooter.js",
-                                                "types":  "./dist/Footer/GameFooter.d.ts"
-                                            },
-                    "./Footer/UnifiedFooter":  {
-                                                   "import":  "./dist/Footer/UnifiedFooter.js",
-                                                   "types":  "./dist/Footer/UnifiedFooter.d.ts"
-                                               },
-                    "./Header/UnifiedHeader":  {
-                                                "import":  "./dist/Header/UnifiedHeader.js",
-                                                "types":  "./dist/Header/UnifiedHeader.d.ts"
-                                            },
-                    "./Header/UnifiedHeader.config":  {
-                                                           "import":  "./dist/Header/UnifiedHeader.config.js",
-                                                           "types":  "./dist/Header/UnifiedHeader.config.d.ts"
-                                                       },
-                    "./Shell/UnifiedPageShell":  {
-                                                      "import":  "./dist/Shell/UnifiedPageShell.js",
-                                                      "types":  "./dist/Shell/UnifiedPageShell.d.ts"
-                                                  },
-                    "./constants/layout":  {
-                                               "import":  "./dist/constants/layout.js",
-                                               "types":  "./dist/constants/layout.d.ts"
-                                           },
-                    "./types/userProfile":  {
-                                                "import":  "./dist/types/userProfile.js",
-                                                "types":  "./dist/types/userProfile.d.ts"
-                                            },
-                    "./types/avatarInfo":  {
-                                              "import":  "./dist/types/avatarInfo.js",
-                                              "types":  "./dist/types/avatarInfo.d.ts"
-                                          },
-                    "./Common/CardGridMatrix/CardGridMatrix":  {
-                                                                      "import":  "./dist/Common/CardGridMatrix/CardGridMatrix.js",
-                                                                      "types":  "./dist/Common/CardGridMatrix/CardGridMatrix.d.ts"
-                                                                  },
-                    "./Common/CarouselImage/CarouselImage":  {
-                                                                 "import":  "./dist/Common/CarouselImage/CarouselImage.js",
-                                                                 "types":  "./dist/Common/CarouselImage/CarouselImage.d.ts"
-                                                             },
-                    "./Common/ExploreGamesPanel/ExploreGamesPanel":  {
-                                                                        "import":  "./dist/Common/ExploreGamesPanel/ExploreGamesPanel.js",
-                                                                        "types":  "./dist/Common/ExploreGamesPanel/ExploreGamesPanel.d.ts"
-                                                                    },
-                    "./Common/GameBannerImage/GameBannerImage":  {
-                                                                     "import":  "./dist/Common/GameBannerImage/GameBannerImage.js",
-                                                                     "types":  "./dist/Common/GameBannerImage/GameBannerImage.d.ts"
-                                                                 },
-                    "./Common/GameBadgesOverlay/GameBadgesOverlay":  {
-                                                                          "import":  "./dist/Common/GameBadgesOverlay/GameBadgesOverlay.js",
-                                                                          "types":  "./dist/Common/GameBadgesOverlay/GameBadgesOverlay.d.ts"
-                                                                      },
-                    "./Common/FeaturedGameCarousel/FeaturedGameCarousel":  {
-                                                                               "import":  "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.js",
-                                                                               "types":  "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.d.ts"
-                                                                           },
-                    "./Common/ComingSoonCarousel/ComingSoonCarousel":  {
-                                                                           "import":  "./dist/Common/ComingSoonCarousel/ComingSoonCarousel.js",
-                                                                           "types":  "./dist/Common/ComingSoonCarousel/ComingSoonCarousel.d.ts"
-                                                                       },
-                    "./Common/types/ExploreGameSummary":  {
-                                                            "import":  "./dist/Common/types/ExploreGameSummary.js",
-                                                            "types":  "./dist/Common/types/ExploreGameSummary.d.ts"
-                                                        },
-                    "./GamesExplorer/types":  {
-                                                 "import":  "./dist/GamesExplorer/types.js",
-                                                 "types":  "./dist/GamesExplorer/types.d.ts"
-                                             },
-                    "./GamesExplorer/GameCard":  {
-                                                   "import":  "./dist/GamesExplorer/GameCard.js",
-                                                   "types":  "./dist/GamesExplorer/GameCard.d.ts"
-                                               },
-                    "./GamesExplorer/GameListRow":  {
-                                                      "import":  "./dist/GamesExplorer/GameListRow.js",
-                                                      "types":  "./dist/GamesExplorer/GameListRow.d.ts"
-                                                  },
-                    "./GamesExplorer/ExplorerContentBar":  {
-                                                             "import":  "./dist/GamesExplorer/ExplorerContentBar.js",
-                                                             "types":  "./dist/GamesExplorer/ExplorerContentBar.d.ts"
-                                                         },
-                    "./GamesExplorer/ExplorerSidebar":  {
-                                                          "import":  "./dist/GamesExplorer/ExplorerSidebar.js",
-                                                          "types":  "./dist/GamesExplorer/ExplorerSidebar.d.ts"
-                                                      },
-                    "./tokens.css":  "./dist/tokens.css"
-                },
-    "scripts":  {
-                    "build":  "node ../../scripts/clean-package-build.mjs . \u0026\u0026 tsc \u0026\u0026 node ../../scripts/fix-esm-imports.mjs \u0026\u0026 node scripts/copy-static-assets.mjs \u0026\u0026 node ../../scripts/verify-dist-relative-assets.mjs .",
-                    "type-check":  "tsc --noEmit",
-                    "lint":  "node -e \"const cmd = process.env.TURBO_HASH ? \u0027npm run lint:exec\u0027 : \u0027npx turbo run lint:exec --filter=@ocentra/core-ui\u0027; require(\u0027child_process\u0027).spawnSync(cmd.split(\u0027 \u0027)[0], cmd.split(\u0027 \u0027).slice(1), { stdio: \u0027inherit\u0027, shell: true });\"",
-                    "lint:eslint":  "eslint --cache src",
-                    "lint:fix":  "eslint --cache src --fix",
-                    "lint:exec":  "eslint --cache src \u0026\u0026 tsc --noEmit"
-                },
-    "peerDependencies":  {
-                             "@ocentra/app-assets":  "*",
-                             "@ocentra/asset-domain":  "*",
-                             "@ocentra/behaviour-domain":  "*",
-                             "@ocentra/game-asset-domain":  "*",
-                             "react":  "\u003e=18.0.0",
-                             "react-dom":  "\u003e=18.0.0",
-                             "react-router-dom":  "\u003e=7.0.0"
-                         },
-    "devDependencies":  {
-                            "@eslint/js":  "^9.15.0",
-                            "@ocentra/app-assets":  "file:../app-assets",
-                            "@ocentra/asset-domain":  "file:../asset-domain",
-                            "@ocentra/behaviour-domain":  "file:../behaviour-domain",
-                            "@ocentra/game-asset-domain":  "file:../game-asset-domain",
-                            "eslint":  "^9.15.0",
-                            "eslint-plugin-react-hooks":  "^7.1.1",
-                            "eslint-plugin-react-refresh":  "^0.5.2",
-                            "globals":  "^15.12.0",
-                            "react":  "^19.1.1",
-                            "react-dom":  "^19.1.1",
-                            "react-router-dom":  "^7.9.5",
-                            "typescript":  "^6.0.2",
-                            "typescript-eslint":  "^8.58.0"
-                        }
+  "name": "@ocentra/core-ui",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared UI components: headers, footers. Used by main app and asset-editor.",
+  "exports": {
+    "./Footer/GameFooter": {
+      "import": "./dist/Footer/GameFooter.js",
+      "types": "./dist/Footer/GameFooter.d.ts"
+    },
+    "./Footer/UnifiedFooter": {
+      "import": "./dist/Footer/UnifiedFooter.js",
+      "types": "./dist/Footer/UnifiedFooter.d.ts"
+    },
+    "./Header/UnifiedHeader": {
+      "import": "./dist/Header/UnifiedHeader.js",
+      "types": "./dist/Header/UnifiedHeader.d.ts"
+    },
+    "./Header/UnifiedHeader.config": {
+      "import": "./dist/Header/UnifiedHeader.config.js",
+      "types": "./dist/Header/UnifiedHeader.config.d.ts"
+    },
+    "./Shell/UnifiedPageShell": {
+      "import": "./dist/Shell/UnifiedPageShell.js",
+      "types": "./dist/Shell/UnifiedPageShell.d.ts"
+    },
+    "./constants/layout": {
+      "import": "./dist/constants/layout.js",
+      "types": "./dist/constants/layout.d.ts"
+    },
+    "./types/userProfile": {
+      "import": "./dist/types/userProfile.js",
+      "types": "./dist/types/userProfile.d.ts"
+    },
+    "./types/avatarInfo": {
+      "import": "./dist/types/avatarInfo.js",
+      "types": "./dist/types/avatarInfo.d.ts"
+    },
+    "./Common/CardGridMatrix/CardGridMatrix": {
+      "import": "./dist/Common/CardGridMatrix/CardGridMatrix.js",
+      "types": "./dist/Common/CardGridMatrix/CardGridMatrix.d.ts"
+    },
+    "./Common/DeckPreview/DeckPreviewView": {
+      "import": "./dist/Common/DeckPreview/DeckPreviewView.js",
+      "types": "./dist/Common/DeckPreview/DeckPreviewView.d.ts"
+    },
+    "./Common/CarouselImage/CarouselImage": {
+      "import": "./dist/Common/CarouselImage/CarouselImage.js",
+      "types": "./dist/Common/CarouselImage/CarouselImage.d.ts"
+    },
+    "./Common/ExploreGamesPanel/ExploreGamesPanel": {
+      "import": "./dist/Common/ExploreGamesPanel/ExploreGamesPanel.js",
+      "types": "./dist/Common/ExploreGamesPanel/ExploreGamesPanel.d.ts"
+    },
+    "./Common/GameBannerImage/GameBannerImage": {
+      "import": "./dist/Common/GameBannerImage/GameBannerImage.js",
+      "types": "./dist/Common/GameBannerImage/GameBannerImage.d.ts"
+    },
+    "./Common/GameBadgesOverlay/GameBadgesOverlay": {
+      "import": "./dist/Common/GameBadgesOverlay/GameBadgesOverlay.js",
+      "types": "./dist/Common/GameBadgesOverlay/GameBadgesOverlay.d.ts"
+    },
+    "./Common/FeaturedGameCarousel/FeaturedGameCarousel": {
+      "import": "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.js",
+      "types": "./dist/Common/FeaturedGameCarousel/FeaturedGameCarousel.d.ts"
+    },
+    "./Common/FeaturedGameCarousel/FeaturedGameShowcase": {
+      "import": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcase.js",
+      "types": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcase.d.ts"
+    },
+    "./Common/FeaturedGameCarousel/FeaturedGameShowcaseControls": {
+      "import": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcaseControls.js",
+      "types": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcaseControls.d.ts"
+    },
+    "./Common/FeaturedGameCarousel/FeaturedGameShowcase.types": {
+      "import": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcase.types.js",
+      "types": "./dist/Common/FeaturedGameCarousel/FeaturedGameShowcase.types.d.ts"
+    },
+    "./Common/FeaturedGameCarousel/bannerPlayback": {
+      "import": "./dist/Common/FeaturedGameCarousel/bannerPlayback.js",
+      "types": "./dist/Common/FeaturedGameCarousel/bannerPlayback.d.ts"
+    },
+    "./Common/ComingSoonCarousel/ComingSoonShowcase": {
+      "import": "./dist/Common/ComingSoonCarousel/ComingSoonShowcase.js",
+      "types": "./dist/Common/ComingSoonCarousel/ComingSoonShowcase.d.ts"
+    },
+    "./Common/HomeShowcaseFrame/HomeShowcaseFrame": {
+      "import": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrame.js",
+      "types": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrame.d.ts"
+    },
+    "./Common/HomeShowcaseFrame/HomeShowcaseFrameControls": {
+      "import": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrameControls.js",
+      "types": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrameControls.d.ts"
+    },
+    "./Common/HomeShowcaseFrame/HomeShowcaseFrame.types": {
+      "import": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrame.types.js",
+      "types": "./dist/Common/HomeShowcaseFrame/HomeShowcaseFrame.types.d.ts"
+    },
+    "./Common/FeatureBanner/FeatureBannerSection": {
+      "import": "./dist/Common/FeatureBanner/FeatureBannerSection.js",
+      "types": "./dist/Common/FeatureBanner/FeatureBannerSection.d.ts"
+    },
+    "./Common/types/ExploreGameSummary": {
+      "import": "./dist/Common/types/ExploreGameSummary.js",
+      "types": "./dist/Common/types/ExploreGameSummary.d.ts"
+    },
+    "./GamesExplorer/types": {
+      "import": "./dist/GamesExplorer/types.js",
+      "types": "./dist/GamesExplorer/types.d.ts"
+    },
+    "./GamesExplorer/GameCard": {
+      "import": "./dist/GamesExplorer/GameCard.js",
+      "types": "./dist/GamesExplorer/GameCard.d.ts"
+    },
+    "./GamesExplorer/GameListRow": {
+      "import": "./dist/GamesExplorer/GameListRow.js",
+      "types": "./dist/GamesExplorer/GameListRow.d.ts"
+    },
+    "./GamesExplorer/ExplorerContentBar": {
+      "import": "./dist/GamesExplorer/ExplorerContentBar.js",
+      "types": "./dist/GamesExplorer/ExplorerContentBar.d.ts"
+    },
+    "./GamesExplorer/ExplorerSidebar": {
+      "import": "./dist/GamesExplorer/ExplorerSidebar.js",
+      "types": "./dist/GamesExplorer/ExplorerSidebar.d.ts"
+    },
+    "./tokens.css": "./dist/tokens.css"
+  },
+  "scripts": {
+    "build": "node ../../scripts/clean-package-build.mjs . && tsc && node ../../scripts/fix-esm-imports.mjs && node scripts/copy-static-assets.mjs && node ../../scripts/verify-dist-relative-assets.mjs .",
+    "type-check": "tsc --noEmit",
+    "lint": "node -e \"const cmd = process.env.TURBO_HASH ? 'npm run lint:exec' : 'npx turbo run lint:exec --filter=@ocentra/core-ui'; require('child_process').spawnSync(cmd.split(' ')[0], cmd.split(' ').slice(1), { stdio: 'inherit', shell: true });\"",
+    "lint:eslint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix",
+    "lint:exec": "eslint --cache src && tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@ocentra/app-assets": "*",
+    "@ocentra/asset-domain": "*",
+    "@ocentra/behaviour-domain": "*",
+    "@ocentra/game-asset-domain": "*",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "react-router-dom": ">=7.0.0",
+    "@ocentra/schema-domain": "*",
+    "three": ">=0.181.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "@ocentra/app-assets": "file:../app-assets",
+    "@ocentra/asset-domain": "file:../asset-domain",
+    "@ocentra/behaviour-domain": "file:../behaviour-domain",
+    "@ocentra/game-asset-domain": "file:../game-asset-domain",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^15.12.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.5",
+    "three": "^0.181.0",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0",
+    "@ocentra/schema-domain": "file:../schema-domain"
+  }
 }

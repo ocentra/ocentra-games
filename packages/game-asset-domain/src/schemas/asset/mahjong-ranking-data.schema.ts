@@ -1,12 +1,12 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
-export const MahjongRankingDataSchema = z.object({
-  includeBonusTiles: z.boolean(),
-  expectedTileCount: z.number().int().min(1),
-  extraTiles: z.array(
-    z.object({
-      tileId: z.string().min(1),
-      count: z.number().int().min(1),
+export const MahjongRankingDataSchema = schema.object({
+  includeBonusTiles: schema.boolean(),
+  expectedTileCount: schema.number().int().min(1),
+  extraTiles: schema.array(
+    schema.object({
+      tileId: schema.string().min(1),
+      count: schema.number().int().min(1),
     })
   ).default([]),
 }).superRefine((d, ctx) => {
@@ -17,7 +17,7 @@ export const MahjongRankingDataSchema = z.object({
 
   if (uniqueTileIds.size !== d.extraTiles.length) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['extraTiles'],
       message: 'extraTiles tileIds must be unique',
     });
@@ -25,7 +25,7 @@ export const MahjongRankingDataSchema = z.object({
 
   if (d.expectedTileCount !== base + bonus + extra) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['expectedTileCount'],
       message: `expectedTileCount must equal base + bonus + extra tiles (${base + bonus + extra})`,
     });

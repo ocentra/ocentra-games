@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
 import {
@@ -162,7 +162,7 @@ export async function handleAdminProductRequest(
   // POST /api/v1/admin/products - Create new product
   if (path === ApiEndpoint.Admin.Products && request.method === HttpMethod.Post) {
     try {
-      const validation = await validateZodBody(request, env, ProductSchema);
+      const validation = await validateSchemaBody(request, env, ProductSchema);
       if (validation.errorResponse) return validation.errorResponse;
       const product = validation.data!;
 
@@ -238,7 +238,7 @@ export async function handleAdminProductRequest(
         });
       }
 
-      const validation = await validateZodBody(request, env, ProductSchema.partial());
+      const validation = await validateSchemaBody(request, env, ProductSchema.partial());
       if (validation.errorResponse) return validation.errorResponse;
       const updates = validation.data!;
       const updated = { ...existing, ...updates };

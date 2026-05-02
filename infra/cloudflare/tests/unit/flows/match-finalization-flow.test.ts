@@ -7,6 +7,7 @@ import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { PlayerType } from '@ocentra/endpoint-domain/constants/game';
 import { MatchWSChannel } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { asMatchId } from '@ocentra/endpoint-domain/constants/match';
+import { decodeUserId } from '@ocentra/endpoint-domain/types/cloudflare/common';
 import { Logger, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { MatchState } from '@/durable-objects/MatchCoordinatorDO';
 
@@ -45,7 +46,7 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
       get: vi.fn(() => creditsStub),
     } as unknown as DurableObjectNamespace;
     const flow = new MatchFinalizationFlow({
-      loadChatHistory: vi.fn(async () => [{ messageId: 'm1', senderId: 'player-1', senderType: PlayerType.Human, content: 'hi', timestamp: 1, channel: MatchWSChannel.Text }]),
+      loadChatHistory: vi.fn(async () => [{ messageId: 'm1', senderId: decodeUserId('player-1'), senderType: PlayerType.Human, content: 'hi', timestamp: 1, channel: MatchWSChannel.Text }]),
       loadAIDump: vi.fn(async () => ({ decisions: [{ move: 'a1' }] })),
     });
     const matchState: MatchState = {

@@ -7,6 +7,17 @@ import { Deck } from '../card/deck/Deck';
 import { ImageCarousel } from '../content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '../gameMode/cardGameMode/CardGameMode';
 import { CardGameMechanics } from '../game/gameMechanics/CardGameMechanics';
+import {
+  CardGameDeckModel,
+  GameActionSet,
+  GamePhaseFlowModel,
+  GamePlayerModel,
+  GameSessionModel,
+  GameStateEventModel,
+  GameValidationFixtures,
+  GameZoneModel,
+  type GameMechanicsModelRefKey,
+} from '../game/gameMechanics/GameMechanicsModel';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { GameMode } from '../gameMode/core/GameMode';
 import { AssetPathSegment } from '@ocentra/asset-domain/utils/assetTypeUtils';
@@ -70,6 +81,7 @@ export interface CreateGameModeOptions {
   category: string;
   copyFromTemplate?: Record<string, unknown>;
   assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
+  mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
   linkedDeckAsset?: AssetResourceEntry<Deck>;
 }
 
@@ -84,6 +96,13 @@ interface CreateResult {
   gameModePath: string;
   createdAssets: string[];
   error?: string;
+}
+
+interface MechanicsModelCreation {
+  key: GameMechanicsModelRefKey;
+  asset: CreatedAsset;
+  assetType: string;
+  displayName: string;
 }
 
 function applyDataOverrides(asset: CreatedAsset, overrides: Record<string, unknown> | undefined): CreatedAsset {
@@ -142,7 +161,7 @@ export class GameModeCreator {
       }
       const scoringOverrides = resolvedDeck
         ? {
-          cardRankingAsset: getCardRankingReference(resolvedDeck.deckEnvelope),
+          rankingAsset: getCardRankingReference(resolvedDeck.deckEnvelope),
           ...options.assetDataOverrides?.scoring,
         }
         : options.assetDataOverrides?.scoring;
@@ -153,7 +172,14 @@ export class GameModeCreator {
       const pageContent = applyDataOverrides(await GameInfo.create(context), options.assetDataOverrides?.gameInfo);
       const layout = applyDataOverrides(await CardGameLayout.create(context), options.assetDataOverrides?.layout);
       const carousel = applyDataOverrides(await ImageCarousel.create(context), options.assetDataOverrides?.carousel);
-      const mechanics = applyDataOverrides(await CardGameMechanics.create(context), options.assetDataOverrides?.mechanics);
+      const mechanicsModels = await this.createMechanicsModelAssets(context, options.mechanicsModelDataOverrides);
+      const mechanicsModelRefs = this.createMechanicsModelRefs(mechanicsModels, folder);
+      const mechanics = applyDataOverrides(
+        await CardGameMechanics.create(context, {
+          modelRefs: mechanicsModelRefs,
+        }),
+        options.assetDataOverrides?.mechanics,
+      );
 
       const createEntry = <T extends ScriptableObject>(guid: string, type: string, displayName: string, path: string = ''): AssetResourceEntry<T> => {
         const entry = AssetResourceEntry.fromGuid<T>(guid, asAssetType(type), displayName);
@@ -189,6 +215,10 @@ export class GameModeCreator {
         { asset: pageContent, constructor: GameInfo },
         { asset: layout, constructor: CardGameLayout },
         { asset: carousel, constructor: ImageCarousel },
+        ...mechanicsModels.map(({ asset, assetType }) => ({
+          asset,
+          constructor: this.getMechanicsModelConstructor(assetType),
+        })),
         { asset: mechanics, constructor: CardGameMechanics },
       ];
 
@@ -233,6 +263,100 @@ export class GameModeCreator {
       asset.fileName
     );
     return { asset, relativePath, absolutePath };
+  }
+
+  private async createMechanicsModelAssets(
+    context: AssetCreationContext,
+    overrides: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>> | undefined,
+  ): Promise<MechanicsModelCreation[]> {
+    return [
+      {
+        key: 'player',
+        asset: await GamePlayerModel.create(context, overrides?.player),
+        assetType: 'GamePlayerModel',
+        displayName: 'Player Model',
+      },
+      {
+        key: 'session',
+        asset: await GameSessionModel.create(context, overrides?.session),
+        assetType: 'GameSessionModel',
+        displayName: 'Session Model',
+      },
+      {
+        key: 'deck',
+        asset: await CardGameDeckModel.create(context, overrides?.deck),
+        assetType: 'CardGameDeckModel',
+        displayName: 'Deck Model',
+      },
+      {
+        key: 'zones',
+        asset: await GameZoneModel.create(context, overrides?.zones),
+        assetType: 'GameZoneModel',
+        displayName: 'Zone Model',
+      },
+      {
+        key: 'phaseFlow',
+        asset: await GamePhaseFlowModel.create(context, overrides?.phaseFlow),
+        assetType: 'GamePhaseFlowModel',
+        displayName: 'Phase Flow Model',
+      },
+      {
+        key: 'actions',
+        asset: await GameActionSet.create(context, overrides?.actions),
+        assetType: 'GameActionSet',
+        displayName: 'Action Set',
+      },
+      {
+        key: 'stateEvents',
+        asset: await GameStateEventModel.create(context, overrides?.stateEvents),
+        assetType: 'GameStateEventModel',
+        displayName: 'State Event Model',
+      },
+      {
+        key: 'validation',
+        asset: await GameValidationFixtures.create(context, overrides?.validation),
+        assetType: 'GameValidationFixtures',
+        displayName: 'Validation Fixtures',
+      },
+    ];
+  }
+
+  private createMechanicsModelRefs(
+    models: readonly MechanicsModelCreation[],
+    folder: string,
+  ): Record<GameMechanicsModelRefKey, { path: string; guid: string; assetType: string; displayName: string }> {
+    return models.reduce((refs, model) => ({
+      ...refs,
+      [model.key]: {
+        path: `Resources/${AssetPathSegment.GameMode}/${folder}/${model.asset.fileName}`,
+        guid: model.asset.guid,
+        assetType: model.assetType,
+        displayName: model.displayName,
+      },
+    }), {} as Record<GameMechanicsModelRefKey, { path: string; guid: string; assetType: string; displayName: string }>);
+  }
+
+  private getMechanicsModelConstructor(assetType: string): SerializableConstructor {
+    switch (assetType) {
+      case 'GamePlayerModel':
+        return GamePlayerModel;
+      case 'GameSessionModel':
+        return GameSessionModel;
+      case 'CardGameDeckModel':
+        return CardGameDeckModel;
+      case 'GameZoneModel':
+        return GameZoneModel;
+      case 'GamePhaseFlowModel':
+        return GamePhaseFlowModel;
+      case 'GameActionSet':
+        return GameActionSet;
+      case 'GameStateEventModel':
+        return GameStateEventModel;
+      case 'GameValidationFixtures':
+        return GameValidationFixtures;
+      default:
+        throw new Error(`Unsupported mechanics model asset type: ${assetType}`);
+    }
   }
 
   private getGameFolder(category: string, gameId: string): string {

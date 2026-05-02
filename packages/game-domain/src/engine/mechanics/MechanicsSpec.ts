@@ -95,6 +95,19 @@ export interface MechanicsRuntimeIntegration {
   [key: string]: unknown;
 }
 
+export interface MechanicsDeckModel {
+  deckAssetRef: string;
+  rankingAssetRef?: string;
+  deckCount?: number;
+  initialHandSize?: number;
+  shufflePolicy?: string;
+  drawDirection?: string;
+  drawConfig?: Record<string, unknown>;
+  discardConfig?: Record<string, unknown>;
+  runtimePolicy?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface MechanicsSpec {
   gameId?: string;
   mechanicsId?: string;
@@ -105,6 +118,7 @@ export interface MechanicsSpec {
   inheritsFrom?: string | null;
   enabledModules?: MechanicsEnabledModule[];
   assetRefs?: Record<string, MechanicsAssetReference>;
+  modelRefs?: Record<string, MechanicsAssetReference>;
   playerConfig: MechanicsPlayerConfig;
   phases: MechanicsPhase[];
   actions: Record<string, MechanicsAction>;
@@ -143,7 +157,7 @@ export interface MechanicsSpec {
   };
   playerModel?: Record<string, unknown>;
   sessionModel?: Record<string, unknown>;
-  deckModel?: Record<string, unknown>;
+  deckModel?: MechanicsDeckModel;
   zoneModel?: Record<string, unknown>;
   setupModel?: Record<string, unknown>;
   turnModel?: Record<string, unknown>;

@@ -15,7 +15,7 @@
 | **boundary-domain** | None | Direct per-file (no barrel) | No |
 | **storage-domain** | eventing-domain, logging-domain | Direct per-file | vitest |
 | **eventing-domain** | boundary-domain, logging-domain | Direct per-file | vitest |
-| **endpoint-domain** | zod | Direct per-file | No |
+| **endpoint-domain** | effect-schema | Direct per-file | No |
 
 ### 1.2 Shared Structure (All Domains)
 

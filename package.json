@@ -60,10 +60,10 @@
     "build": "npx tsx scripts/generate-exports-flattened.ts && npx tsx scripts/generate-registry-maps.ts && tsc -b && vite build && node scripts/build/verify-build.js",
     "build:analyze": "npx tsx scripts/generate-exports-flattened.ts && npx tsx scripts/generate-registry-maps.ts && tsc -b && cross-env VITE_ANALYZE=1 vite build",
     "build:verify": "node scripts/build/verify-build.js",
-    "lint": "turbo run lint:exec type-check",
-
+    "lint:schema-boundaries": "node scripts/check-no-zod-source.mjs && node scripts/check-no-naked-domain-strings.mjs",
+    "lint": "npm run lint:schema-boundaries && turbo run lint:exec type-check",
     "lint:local": "eslint src vite scripts vite.config.ts vitest.config.ts playwright.config.ts eslint.config.js --ignore-pattern \"scripts/test/monitoring/**\" && npx tsx --tsconfig tsconfig.node.json scripts/validate-required-fields.ts && npm run type-check",
-    "validate": "turbo run lint:exec type-check",
+    "validate": "npm run lint:schema-boundaries && turbo run lint:exec type-check",
     "validate:main": "turbo run lint:exec type-check --filter=!@ocentra/asset-editor",
     "validate:editor": "turbo run lint:exec type-check --filter=@ocentra/asset-editor...",
     "lint:fix": "eslint src vite scripts vite.config.ts vitest.config.ts playwright.config.ts eslint.config.js --ignore-pattern \"scripts/test/monitoring/**\" --fix",
@@ -186,7 +186,8 @@
     "sharp": "^0.34.4",
     "three": "^0.181.0",
     "three-stdlib": "^2.36.0",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "@ocentra/schema-domain": "file:./packages/schema-domain"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1022.0",

@@ -1,11 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { UserProfile } from '@/adapters/firebase/service';
-import { solanaImageUrl } from '@ocentra/app-assets/commons';
-import { FeaturedGameCarousel } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameCarousel';
-import { ComingSoonCarousel } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonCarousel';
+import { FeaturedGameShowcase } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase';
+import {
+  DEFAULT_FEATURED_SHOWCASE_CONTROLS,
+  type FeaturedGameShowcasePreviewLayoutMode,
+  type FeaturedShowcaseControls,
+} from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
+import { ComingSoonShowcase } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonShowcase';
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary';
-import { AboutUsSection } from '@/ui/components/Common/AboutUsSection/AboutUsSection';
+import { FeatureBannerSection } from '@ocentra/core-ui/Common/FeatureBanner/FeatureBannerSection';
+import {
+  DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
+  type HomeShowcaseFrameControls,
+  type HomeShowcasePreviewLayoutMode,
+} from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types';
 import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
@@ -41,13 +50,67 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled?: 
 log.register(import.meta.url);
 
 const DEBUG_LAYOUT = false;
-const DEBUG_FEATURED = false;
 const DEBUG_PAGE_STRUCTURE = false;
 
 const LOG_NAVIGATION = true;
 const LOG_CACHE = true;
 
 const GAMES_CACHE_KEY = 'homePageGames';
+
+function getMergedFeaturedControls(controls?: FeaturedShowcaseControls): FeaturedShowcaseControls {
+  if (!controls) return DEFAULT_FEATURED_SHOWCASE_CONTROLS;
+  return {
+    overall: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.overall, ...controls.overall },
+    arrows: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.arrows, ...controls.arrows },
+    header: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.header, ...controls.header },
+    body: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.body, ...controls.body },
+    sideA: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideA, ...controls.sideA },
+    sideB: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideB, ...controls.sideB },
+    footer: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.footer, ...controls.footer },
+    colors: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.colors, ...controls.colors },
+  };
+}
+
+function getMergedHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeShowcaseFrameControls {
+  if (!controls) return DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS;
+  return {
+    overall: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.overall, ...controls.overall },
+    body: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.body, ...controls.body },
+    sideA: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideA, ...controls.sideA },
+    sideB: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB, ...controls.sideB },
+    copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
+    footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
+    colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
+  };
+}
+
+function isFeaturedNarrowAtWidth(width: number, controls?: FeaturedShowcaseControls): boolean {
+  const c = getMergedFeaturedControls(controls);
+  const measuredContentWidth = width - c.overall.canvasInsetX * 2;
+  const vw = c.overall.viewWidth;
+  const stageW = vw - (c.overall.edgeInset + c.arrows.width + c.arrows.gap) * 2;
+  const bodyW = stageW - c.body.insetX * 2;
+  const renderScale = Math.min(1, Math.max(1, measuredContentWidth) / vw);
+  return (
+    (c.overall.narrowBreakpoint > 0 && measuredContentWidth <= c.overall.narrowBreakpoint) ||
+    bodyW * c.body.splitRatio * renderScale < c.body.minAWidth ||
+    bodyW * (1 - c.body.splitRatio) * renderScale < c.body.minBWidth
+  );
+}
+
+function isHomeFrameNarrowAtWidth(width: number, controls?: HomeShowcaseFrameControls): boolean {
+  const c = getMergedHomeFrameControls(controls);
+  const measuredContentWidth = width - c.overall.canvasInsetX * 2;
+  const vw = c.overall.viewWidth;
+  const stageW = vw - c.overall.stageInsetX * 2;
+  const bodyW = stageW - c.body.insetX * 2;
+  const renderScale = Math.min(1, Math.max(1, measuredContentWidth) / vw);
+  return (
+    (c.overall.narrowBreakpoint > 0 && measuredContentWidth <= c.overall.narrowBreakpoint) ||
+    bodyW * c.body.splitRatio * renderScale < c.body.minAWidth ||
+    bodyW * (1 - c.body.splitRatio) * renderScale < c.body.minBWidth
+  );
+}
 
 interface HomePageGamesData extends HomePageGamesDocument {
   explorerGames: ExploreGameSummary[];
@@ -76,18 +139,35 @@ function toExploreGameSummary(g: GameCatalogEntry): ExploreGameSummary {
 
 export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSharedProps) {
   const navigate = useNavigate();
+  const homepageContentRef = useRef<HTMLDivElement | null>(null);
   const [gamesData, setGamesData] = useState<HomePageGamesData>({
     featured: [],
     recommended: [],
     comingSoon: [],
+    catalogMontageImages: [],
     availableNow: [],
     featureBannerItems: [],
+    homepageLayoutControls: undefined,
     explorerGames: [],
   });
   const [isLoadingGames, setIsLoadingGames] = useState(true);
+  const [homepageContentWidth, setHomepageContentWidth] = useState<number | null>(null);
 
   const { resolveImageUrl, ImageLoaders } = useResolveImageUrl(gamesData);
   const explorerGamesForCarousel = useMemo(() => gamesData.explorerGames, [gamesData.explorerGames]);
+  const sharedHomepagePreviewLayoutMode = useMemo<HomeShowcasePreviewLayoutMode>(() => {
+    if (homepageContentWidth === null) return 'auto';
+    return isHomeFrameNarrowAtWidth(homepageContentWidth, gamesData.aboutShowcaseControls) ||
+      isFeaturedNarrowAtWidth(homepageContentWidth, gamesData.featuredShowcaseControls) ||
+      isFeaturedNarrowAtWidth(homepageContentWidth, gamesData.comingSoonShowcaseControls)
+      ? 'narrow'
+      : 'wide';
+  }, [
+    gamesData.aboutShowcaseControls,
+    gamesData.comingSoonShowcaseControls,
+    gamesData.featuredShowcaseControls,
+    homepageContentWidth,
+  ]);
 
   useEffect(() => {
     logInfo('HomePage mounted', { timestamp: Date.now() }, true);
@@ -98,6 +178,16 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       document.documentElement.classList.remove('home-page-active');
       document.body.classList.remove('home-page-active');
     };
+  }, []);
+
+  useEffect(() => {
+    const node = homepageContentRef.current;
+    if (!node) return;
+    const updateWidth = () => setHomepageContentWidth(node.getBoundingClientRect().width || null);
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -132,8 +222,13 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           featured: homePageGames.featured,
           recommended: homePageGames.recommended ?? [],
           comingSoon: homePageGames.comingSoon,
+          catalogMontageImages: homePageGames.catalogMontageImages ?? [],
           availableNow: homePageGames.availableNow,
           featureBannerItems: homePageGames.featureBannerItems ?? [],
+          featuredShowcaseControls: homePageGames.featuredShowcaseControls,
+          aboutShowcaseControls: homePageGames.aboutShowcaseControls,
+          comingSoonShowcaseControls: homePageGames.comingSoonShowcaseControls,
+          homepageLayoutControls: homePageGames.homepageLayoutControls,
           explorerGames,
         };
 
@@ -255,7 +350,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       <div className="home-work-math">
         {ImageLoaders}
         <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
-          <div className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
+          <div ref={homepageContentRef} className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
             {DEBUG_PAGE_STRUCTURE ? (
               <>
                 <div className="page-debug-top">top</div>
@@ -265,7 +360,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
             ) : DEBUG_LAYOUT ? (
               <>
                 <section className="about-us-section layout-debug-box" data-layout="about-us">
-                  <span>About Us (top)</span>
+                  <span>Feature banner</span>
                 </section>
                 <section className="featured-section layout-debug-box" data-layout="featured">
                   <span>Featured carousel</span>
@@ -277,31 +372,36 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
             ) : (
               <>
                 <section className="about-us-section">
-                  <AboutUsSection
+                  <FeatureBannerSection
                     featureBannerItems={gamesData.featureBannerItems}
                     resolveImageUrl={resolveImageUrl}
+                    controls={gamesData.aboutShowcaseControls}
+                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
                   />
                 </section>
                 <section className="featured-section">
-                  <FeaturedGameCarousel
+                  <FeaturedGameShowcase
                     featured={gamesData.featured}
                     recommended={gamesData.recommended}
                     isLoading={isLoadingGames}
+                    controls={gamesData.featuredShowcaseControls}
+                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
                     onLearnMore={handleLearnMore}
                     resolveImageUrl={resolveImageUrl}
-                    solanaImgSrc={solanaImageUrl}
-                    debugLayout={DEBUG_FEATURED}
                   />
                 </section>
                 <section className="games-section">
-                  <ComingSoonCarousel
+                  <ComingSoonShowcase
                     comingSoon={gamesData.comingSoon}
+                    catalogMontageItems={gamesData.catalogMontageImages}
                     availableNow={gamesData.availableNow}
                     explorerGames={explorerGamesForCarousel}
                     isLoading={isLoadingGames}
                     onGameClick={handlePlayGame}
                     onExploreClick={() => navigate('/CardGamesExplorer')}
                     resolveImageUrl={resolveImageUrl}
+                    controls={gamesData.comingSoonShowcaseControls}
+                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
                   />
                 </section>
               </>

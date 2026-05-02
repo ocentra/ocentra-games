@@ -1,16 +1,16 @@
-import { z } from 'zod';
+import { Schema, withParser } from '@ocentra/schema-domain/effect';
 import type { GenerationRequest } from '@/types/result';
 import { AIError, AIErrorCode } from '@/constants/errors';
 
-export const generationRequestSchema = z.object({
-  systemPrompt: z.string().min(1, 'System prompt is required'),
-  userPrompt: z.string().min(1, 'User prompt is required'),
-  model: z.string().optional(),
-  maxTokens: z.number().int().positive().optional(),
-  temperature: z.number().min(0).max(2).optional(),
-  topP: z.number().min(0).max(1).optional(),
-  stream: z.boolean().optional(),
-});
+export const generationRequestSchema = withParser(Schema.Struct({
+  systemPrompt: Schema.String.pipe(Schema.minLength(1, { message: () => 'System prompt is required' })),
+  userPrompt: Schema.String.pipe(Schema.minLength(1, { message: () => 'User prompt is required' })),
+  model: Schema.optional(Schema.String),
+  maxTokens: Schema.optional(Schema.Number.pipe(Schema.int(), Schema.positive())),
+  temperature: Schema.optional(Schema.Number.pipe(Schema.between(0, 2))),
+  topP: Schema.optional(Schema.Number.pipe(Schema.between(0, 1))),
+  stream: Schema.optional(Schema.Boolean),
+}));
 
 export function validateGenerationRequest(request: unknown): GenerationRequest {
   const result = generationRequestSchema.safeParse(request);

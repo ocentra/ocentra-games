@@ -14,6 +14,10 @@ import {
 } from '@/engine/logic/StateValidator';
 import type { MechanicsPhase, MechanicsSpec } from '@/engine/mechanics/MechanicsSpec';
 import { MechanicsRuntime } from '@/engine/mechanics/MechanicsRuntime';
+import {
+  decodeGenericPlayerAction,
+  decodeMechanicsPlayerAction,
+} from '@/schema/match.schema';
 import type { IAIManager } from '@/interfaces/IAIManager';
 import type { IDeckProvider } from '@/interfaces/IDeckProvider';
 import { DefaultDeckProvider } from '@/deck/DefaultDeckProvider';
@@ -153,7 +157,7 @@ export class GameEngine {
       this.deckProvider.setSeed(config.seed);
     }
 
-    const deck = await this.deckProvider.createStandardDeck();
+    const deck = await this.deckProvider.createDeck();
     const shuffledDeck = this.deckProvider.shuffleDeck(deck);
 
     this.gameState = {
@@ -361,14 +365,19 @@ export class GameEngine {
     logInfo('Starting multiplayer game with room:', roomId);
   }
 
-  processPlayerAction(action: PlayerAction): ValidationResult {
+  processPlayerAction(action: unknown): ValidationResult {
     if (!this.gameState) {
       throw new Error('Game not initialized');
     }
 
     if (this.mechanicsSpec) {
+      const decodedAction = this.decodeMechanicsAction(action);
+      if (!decodedAction.isValid) {
+        return decodedAction;
+      }
+
       const validation = this.mechanicsRuntime.validateAction(
-        action,
+        decodedAction.action,
         this.gameState,
         this.mechanicsSpec
       );
@@ -378,7 +387,7 @@ export class GameEngine {
 
       const stateUpdates = this.mechanicsRuntime.processAction(
         this.gameState,
-        action,
+        decodedAction.action,
         this.mechanicsSpec,
         this.deckProvider
       );
@@ -393,8 +402,13 @@ export class GameEngine {
       return validation;
     }
 
+    const decodedAction = this.decodeGenericAction(action);
+    if (!decodedAction.isValid) {
+      return decodedAction;
+    }
+
     const validation = this.stateValidator.validatePlayerAction(
-      action,
+      decodedAction.action,
       this.gameState
     );
     if (!validation.isValid) {
@@ -403,7 +417,7 @@ export class GameEngine {
     }
 
     const isLegal = this.ruleEngine.validateAction(
-      action,
+      decodedAction.action,
       this.gameState
     );
     if (!isLegal) {
@@ -416,14 +430,14 @@ export class GameEngine {
 
     const stateUpdates = this.turnManager.processTurnAction(
       this.gameState,
-      action
+      decodedAction.action
     );
 
     Object.assign(this.gameState, stateUpdates);
 
     const nextPhase = this.ruleEngine.getNextPhase(
       this.gameState.phase,
-      action
+      decodedAction.action
     );
     if (nextPhase !== this.gameState.phase) {
       this.gameState.phase = nextPhase;
@@ -441,6 +455,54 @@ export class GameEngine {
   loadMechanicsSpec(spec: MechanicsSpec): void {
     this.mechanicsSpec = spec;
     this.applyMechanicsStartPhase();
+  }
+
+  private decodeGenericAction(input: unknown): ValidationResult & { action: PlayerAction } {
+    try {
+      return {
+        action: decodeGenericPlayerAction(input),
+        isValid: true,
+        errors: [],
+        warnings: [],
+      };
+    } catch (error) {
+      return {
+        action: {
+          playerId: '',
+          timestamp: new Date(0),
+          type: '',
+        },
+        isValid: false,
+        errors: [`Invalid action payload: ${formatDecodeError(error)}`],
+        warnings: [],
+      };
+    }
+  }
+
+  private decodeMechanicsAction(action: unknown): ValidationResult & { action: PlayerAction } {
+    if (!this.mechanicsSpec) {
+      return this.decodeGenericAction(action);
+    }
+
+    try {
+      return {
+        action: decodeMechanicsPlayerAction(this.mechanicsSpec, action),
+        isValid: true,
+        errors: [],
+        warnings: [],
+      };
+    } catch (error) {
+      return {
+        action: {
+          playerId: '',
+          timestamp: new Date(0),
+          type: '',
+        },
+        isValid: false,
+        errors: [`Invalid action payload: ${formatDecodeError(error)}`],
+        warnings: [],
+      };
+    }
   }
 
   getCurrentMechanicsPhase(): MechanicsPhase | null {
@@ -489,10 +551,10 @@ export class GameEngine {
   private revealFloorCard(): void {
     if (!this.gameState) return;
 
-    const { card, remainingDeck } = this.deckProvider.drawCard(
+    const { piece, remainingDeck } = this.deckProvider.drawPiece(
       this.gameState.deck
     );
-    this.gameState.floorCard = card;
+    this.gameState.floorCard = piece;
     this.gameState.deck = remainingDeck;
   }
 
@@ -573,4 +635,8 @@ export class GameEngine {
       );
     }
   }
+}
+
+function formatDecodeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }

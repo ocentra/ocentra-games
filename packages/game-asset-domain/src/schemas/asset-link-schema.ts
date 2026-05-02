@@ -1,19 +1,19 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 
-export const AssetLinkSchema = z
+export const AssetLinkSchema = schema
   .object({
-    resourceEntryType: z.enum(['AssetResourceEntry', 'ImageResourceEntry', 'FileResourceEntry']).optional(),
-    path: z.string().default(''),
-    guid: z.string().optional(),
-    checksum: z.string().optional(),
-    assetType: z.string().optional(),
-    displayName: z.string().optional(),
-    gameId: z.string().nullable().optional(),
-    category: z.string().nullable().optional(),
-    mimeType: z.string().nullable().optional(),
-    fileSize: z.number().nullable().optional(),
-    inheritanceChain: z.array(z.string()).nullable().optional(),
-    variant: z.string().nullable().optional(),
+    resourceEntryType: schema.enum(['AssetResourceEntry', 'ImageResourceEntry', 'FileResourceEntry']).optional(),
+    path: schema.string().default(''),
+    guid: schema.string().optional(),
+    checksum: schema.string().optional(),
+    assetType: schema.string().optional(),
+    displayName: schema.string().optional(),
+    gameId: schema.string().nullable().optional(),
+    category: schema.string().nullable().optional(),
+    mimeType: schema.string().nullable().optional(),
+    fileSize: schema.number().nullable().optional(),
+    inheritanceChain: schema.array(schema.string()).nullable().optional(),
+    variant: schema.string().nullable().optional(),
   })
   .passthrough()
   .transform((value) => ({
@@ -31,4 +31,4 @@ export const AssetLinkSchema = z
     variant: value.variant,
   }));
 
-export type AssetLink = z.infer<typeof AssetLinkSchema>;
+export type AssetLink = schema.infer<typeof AssetLinkSchema>;

@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { Environment } from '@ocentra/endpoint-domain/constants/environment';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
@@ -257,7 +257,7 @@ export async function handleAssetsRequest(
   }
 
   if (path === ApiEndpoint.Assets.SyncDiff && request.method === HttpMethod.Post) {
-    const validation = await validateZodBody(request, env, AssetsSyncDiffRequestSchema);
+    const validation = await validateSchemaBody(request, env, AssetsSyncDiffRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const localIndexHash = validation.data!.localIndexHash || '';
     const { hash: cloudIndexHash, entryIndex } = await getEntryIndexHash(env);
@@ -272,7 +272,7 @@ export async function handleAssetsRequest(
     const authError = await requireAuth(request, env, undefined, ErrorMessage.AuthenticationRequired);
     if (authError instanceof Response) return authError;
 
-    const validation = await validateZodBody(request, env, AssetsUploadImageRequestSchema);
+    const validation = await validateSchemaBody(request, env, AssetsUploadImageRequestSchema);
     if (validation.errorResponse) return validation.errorResponse;
     const body = validation.data!;
     try {

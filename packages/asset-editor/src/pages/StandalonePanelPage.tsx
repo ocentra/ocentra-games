@@ -53,6 +53,50 @@ import {
   StandaloneEditorCanvas,
   type ResolutionOption,
 } from '@/pages/StandaloneCanvas/StandaloneEditorCanvas';
+import { FeaturedGameShowcaseControls } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcaseControls';
+import {
+  DEFAULT_FEATURED_SHOWCASE_CONTROLS,
+  serializeFeaturedShowcaseControls,
+  type FeaturedGameShowcasePreviewLayoutMode,
+  type FeaturedShowcaseControls,
+} from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
+import { HomeShowcaseFrameControlsPanel } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrameControls';
+import {
+  DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
+  serializeHomeShowcaseFrameControls,
+  type HomeShowcaseFrameControls,
+  type HomeShowcasePreviewLayoutMode,
+} from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types';
+import type { HomepageLayoutControlsData } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
+import {
+  FEATURED_SHOWCASE_CONTROLS_CHANNEL,
+  type FeaturedShowcaseControlsMessage,
+} from '@/utils/featuredShowcaseControlsChannel';
+import { COMING_SOON_SHOWCASE_CONTROLS_CHANNEL } from '@/utils/comingSoonShowcaseControlsChannel';
+import {
+  loadComingSoonShowcaseControlsFromDisk,
+  loadFeaturedShowcaseControlsFromDisk,
+  saveComingSoonShowcaseControlsToDisk,
+  saveFeaturedShowcaseControlsToDisk,
+} from '@/utils/featuredShowcaseControlsPersistence';
+import {
+  HOME_SHOWCASE_FRAME_CONTROLS_CHANNEL,
+  type HomeShowcaseFrameControlsMessage,
+} from '@/utils/homeShowcaseFrameControlsChannel';
+import {
+  loadHomeShowcaseFrameControlsFromDisk,
+  saveHomeShowcaseFrameControlsToDisk,
+} from '@/utils/homeShowcaseFrameControlsPersistence';
+import {
+  HOMEPAGE_LAYOUT_CONTROLS_CHANNEL,
+  type HomepageLayoutControlsMessage,
+} from '@/utils/homepageLayoutControlsChannel';
+import {
+  DEFAULT_HOMEPAGE_LAYOUT_CONTROLS,
+  loadHomepageLayoutControlsFromDisk,
+  normalizeHomepageLayoutControls,
+  saveHomepageLayoutControlsToDisk,
+} from '@/utils/homepageLayoutControlsPersistence';
 import './StandalonePanelPage.css';
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -64,7 +108,9 @@ type StandalonePanel =
   | 'inspector'
   | 'design-studio'
   | 'preview-canvas'
-  | 'isolation';
+  | 'isolation'
+  | 'featured-showcase-controls'
+  | 'homepage-layout-controls';
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -768,6 +814,709 @@ const LazyIsolationHubPage = React.lazy(async () => {
   return { default: m.IsolationHubPage };
 });
 
+type FeaturedShowcaseControlsSurfaceProps = {
+  channelName?: string;
+  loadControls?: () => Promise<FeaturedShowcaseControls>;
+  saveControls?: (controls: FeaturedShowcaseControls) => Promise<FeaturedShowcaseControls>;
+  logLabel?: string;
+  controlScope?: 'featured' | 'comingSoon';
+  title?: string;
+  description?: string;
+};
+
+const FeaturedShowcaseControlsSurface: React.FC<FeaturedShowcaseControlsSurfaceProps> = ({
+  channelName = FEATURED_SHOWCASE_CONTROLS_CHANNEL,
+  loadControls = loadFeaturedShowcaseControlsFromDisk,
+  saveControls = saveFeaturedShowcaseControlsToDisk,
+  logLabel = 'StandaloneFeaturedShowcaseControls',
+  controlScope = 'featured',
+  title = 'Featured Showcase Controls',
+  description = 'Shared SVG layout tuning for the homepage featured block.',
+}) => {
+  const [controls, setControls] = useState<FeaturedShowcaseControls>(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  );
+  const [previewLayoutMode, setPreviewLayoutMode] =
+    useState<FeaturedGameShowcasePreviewLayoutMode>('auto');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadControls().then((nextControls) => {
+      if (!cancelled) {
+        setControls(nextControls);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loadControls]);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(channelName);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<FeaturedShowcaseControlsMessage>) => {
+      if (event.data.type === 'state') {
+        setControls(event.data.controls);
+        setPreviewLayoutMode(event.data.previewLayoutMode);
+        return;
+      }
+
+      if (event.data.type === 'update') {
+        setControls(event.data.controls);
+        return;
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setPreviewLayoutMode(event.data.previewLayoutMode);
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies FeaturedShowcaseControlsMessage);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [channelName]);
+
+  const handleControlsChange = useCallback<React.Dispatch<React.SetStateAction<FeaturedShowcaseControls>>>((value) => {
+    setControls((previousControls) => {
+      const nextControls =
+        typeof value === 'function' ? value(previousControls) : value;
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: nextControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const handlePreviewLayoutModeChange = useCallback((mode: FeaturedGameShowcasePreviewLayoutMode) => {
+    setPreviewLayoutMode(mode);
+    channelRef.current?.postMessage({
+      type: 'preview-layout-mode',
+      previewLayoutMode: mode,
+    } satisfies FeaturedShowcaseControlsMessage);
+  }, []);
+
+  const handleSaveControls = useCallback(async (nextControls: FeaturedShowcaseControls) => {
+    try {
+      const savedControls = await saveControls(nextControls);
+      setControls(savedControls);
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: savedControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      const syncResult = await syncSavedLayoutAssetToR2();
+      return syncResult.message;
+    } catch (error) {
+      logError(`[${logLabel}] save failed`, error);
+      throw error;
+    }
+  }, [logLabel, saveControls]);
+
+  return (
+    <FeaturedGameShowcaseControls
+      title={title}
+      description={description}
+      controls={controls}
+      onControlsChange={handleControlsChange}
+      onSave={handleSaveControls}
+      previewLayoutMode={previewLayoutMode}
+      onPreviewLayoutModeChange={handlePreviewLayoutModeChange}
+      controlScope={controlScope}
+    />
+  );
+};
+
+const standaloneHomepageTabButtonStyle: React.CSSProperties = {
+  border: '1px solid rgba(103, 232, 249, 0.35)',
+  borderRadius: '0.55rem',
+  background: 'rgba(8, 47, 73, 0.72)',
+  color: '#cffafe',
+  padding: '0.65rem 0.85rem',
+  fontWeight: 800,
+  cursor: 'pointer',
+};
+
+const standaloneHomepageActiveTabButtonStyle: React.CSSProperties = {
+  ...standaloneHomepageTabButtonStyle,
+  background: '#67e8f9',
+  color: '#020617',
+};
+
+const standaloneHomepageToolbarStyle: React.CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: '0.5rem',
+  border: '1px solid rgba(103, 232, 249, 0.22)',
+  borderRadius: '0.75rem',
+  background: 'rgba(2, 6, 23, 0.72)',
+  padding: '0.75rem',
+};
+
+const standaloneHomepageToolbarSpacerStyle: React.CSSProperties = {
+  flex: '1 1 8rem',
+};
+
+const standaloneHomepageToolbarButtonStyle: React.CSSProperties = {
+  border: '1px solid rgba(103, 232, 249, 0.38)',
+  borderRadius: '0.5rem',
+  background: 'rgba(8, 47, 73, 0.72)',
+  color: '#cffafe',
+  padding: '0.55rem 0.8rem',
+  fontWeight: 800,
+  cursor: 'pointer',
+};
+
+const standaloneHomepageSavedButtonStyle: React.CSSProperties = {
+  ...standaloneHomepageToolbarButtonStyle,
+  background: 'rgba(21, 128, 61, 0.82)',
+  borderColor: 'rgba(134, 239, 172, 0.72)',
+  color: '#f0fdf4',
+};
+
+const standaloneHomepageDangerButtonStyle: React.CSSProperties = {
+  ...standaloneHomepageToolbarButtonStyle,
+  borderColor: 'rgba(251, 113, 133, 0.5)',
+  color: '#fecdd3',
+};
+
+const standaloneHomepageToggleLabelStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.45rem',
+  border: '1px solid rgba(168, 85, 247, 0.42)',
+  borderRadius: '0.5rem',
+  background: 'rgba(88, 28, 135, 0.34)',
+  color: '#f3e8ff',
+  padding: '0.55rem 0.75rem',
+  fontWeight: 800,
+};
+
+const StandaloneFeaturedShowcaseControls: React.FC = () => (
+  <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
+    <FeaturedShowcaseControlsSurface />
+  </div>
+);
+
+type HomepageLayoutControlTab = 'about' | 'featured' | 'comingSoon';
+
+const copyTextToClipboard = async (value: string) => {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+};
+
+const StandaloneHomepageLayoutControls: React.FC = () => {
+  const [tab, setTab] = useState<HomepageLayoutControlTab>('about');
+  const [aboutControls, setAboutControls] = useState<HomeShowcaseFrameControls>(
+    DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS
+  );
+  const [featuredControls, setFeaturedControls] = useState<FeaturedShowcaseControls>(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  );
+  const [comingSoonControls, setComingSoonControls] = useState<FeaturedShowcaseControls>(
+    DEFAULT_FEATURED_SHOWCASE_CONTROLS
+  );
+  const [homepageLayoutControls, setHomepageLayoutControls] =
+    useState<HomepageLayoutControlsData>(DEFAULT_HOMEPAGE_LAYOUT_CONTROLS);
+  const [aboutPreviewLayoutMode, setAboutPreviewLayoutMode] =
+    useState<HomeShowcasePreviewLayoutMode>('auto');
+  const [featuredPreviewLayoutMode, setFeaturedPreviewLayoutMode] =
+    useState<FeaturedGameShowcasePreviewLayoutMode>('auto');
+  const [comingSoonPreviewLayoutMode, setComingSoonPreviewLayoutMode] =
+    useState<FeaturedGameShowcasePreviewLayoutMode>('auto');
+  const [isSaving, setIsSaving] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
+
+  const aboutChannelRef = useRef<BroadcastChannel | null>(null);
+  const featuredChannelRef = useRef<BroadcastChannel | null>(null);
+  const comingSoonChannelRef = useRef<BroadcastChannel | null>(null);
+  const homepageLayoutChannelRef = useRef<BroadcastChannel | null>(null);
+  const aboutControlsRef = useRef(aboutControls);
+  const featuredControlsRef = useRef(featuredControls);
+  const comingSoonControlsRef = useRef(comingSoonControls);
+  const homepageLayoutControlsRef = useRef(homepageLayoutControls);
+  const aboutPreviewLayoutModeRef = useRef(aboutPreviewLayoutMode);
+  const featuredPreviewLayoutModeRef = useRef(featuredPreviewLayoutMode);
+  const comingSoonPreviewLayoutModeRef = useRef(comingSoonPreviewLayoutMode);
+
+  const tabs: { id: HomepageLayoutControlTab; label: string }[] = [
+    { id: 'about', label: 'About Us' },
+    { id: 'featured', label: 'Featured' },
+    { id: 'comingSoon', label: 'Coming Soon' },
+  ];
+
+  useEffect(() => {
+    aboutControlsRef.current = aboutControls;
+  }, [aboutControls]);
+
+  useEffect(() => {
+    featuredControlsRef.current = featuredControls;
+  }, [featuredControls]);
+
+  useEffect(() => {
+    comingSoonControlsRef.current = comingSoonControls;
+  }, [comingSoonControls]);
+
+  useEffect(() => {
+    homepageLayoutControlsRef.current = homepageLayoutControls;
+  }, [homepageLayoutControls]);
+
+  useEffect(() => {
+    aboutPreviewLayoutModeRef.current = aboutPreviewLayoutMode;
+  }, [aboutPreviewLayoutMode]);
+
+  useEffect(() => {
+    featuredPreviewLayoutModeRef.current = featuredPreviewLayoutMode;
+  }, [featuredPreviewLayoutMode]);
+
+  useEffect(() => {
+    comingSoonPreviewLayoutModeRef.current = comingSoonPreviewLayoutMode;
+  }, [comingSoonPreviewLayoutMode]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([
+      loadHomeShowcaseFrameControlsFromDisk('about'),
+      loadFeaturedShowcaseControlsFromDisk(),
+      loadComingSoonShowcaseControlsFromDisk(),
+      loadHomepageLayoutControlsFromDisk(),
+    ]).then(([nextAboutControls, nextFeaturedControls, nextComingSoonControls, nextHomepageControls]) => {
+      if (cancelled) {
+        return;
+      }
+      setAboutControls(nextAboutControls);
+      setFeaturedControls(nextFeaturedControls);
+      setComingSoonControls(nextComingSoonControls);
+      setHomepageLayoutControls(nextHomepageControls);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const aboutChannel = new BroadcastChannel(HOME_SHOWCASE_FRAME_CONTROLS_CHANNEL);
+    const featuredChannel = new BroadcastChannel(FEATURED_SHOWCASE_CONTROLS_CHANNEL);
+    const comingSoonChannel = new BroadcastChannel(COMING_SOON_SHOWCASE_CONTROLS_CHANNEL);
+    const homepageLayoutChannel = new BroadcastChannel(HOMEPAGE_LAYOUT_CONTROLS_CHANNEL);
+    aboutChannelRef.current = aboutChannel;
+    featuredChannelRef.current = featuredChannel;
+    comingSoonChannelRef.current = comingSoonChannel;
+    homepageLayoutChannelRef.current = homepageLayoutChannel;
+
+    const handleAboutMessage = (event: MessageEvent<HomeShowcaseFrameControlsMessage>) => {
+      if (event.data.kind !== 'about') {
+        return;
+      }
+
+      if (event.data.type === 'request-state') {
+        aboutChannel.postMessage({
+          type: 'state',
+          kind: 'about',
+          controls: aboutControlsRef.current,
+          previewLayoutMode: aboutPreviewLayoutModeRef.current,
+        } satisfies HomeShowcaseFrameControlsMessage);
+        return;
+      }
+
+      if (event.data.type === 'state') {
+        setAboutControls(event.data.controls);
+        setAboutPreviewLayoutMode(event.data.previewLayoutMode);
+        return;
+      }
+
+      if (event.data.type === 'update') {
+        setAboutControls(event.data.controls);
+        return;
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setAboutPreviewLayoutMode(event.data.previewLayoutMode);
+      }
+    };
+
+    const handleFeaturedMessage = (event: MessageEvent<FeaturedShowcaseControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        featuredChannel.postMessage({
+          type: 'state',
+          controls: featuredControlsRef.current,
+          previewLayoutMode: featuredPreviewLayoutModeRef.current,
+        } satisfies FeaturedShowcaseControlsMessage);
+        return;
+      }
+
+      if (event.data.type === 'state') {
+        setFeaturedControls(event.data.controls);
+        setFeaturedPreviewLayoutMode(event.data.previewLayoutMode);
+        return;
+      }
+
+      if (event.data.type === 'update') {
+        setFeaturedControls(event.data.controls);
+        return;
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setFeaturedPreviewLayoutMode(event.data.previewLayoutMode);
+      }
+    };
+
+    const handleComingSoonMessage = (event: MessageEvent<FeaturedShowcaseControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        comingSoonChannel.postMessage({
+          type: 'state',
+          controls: comingSoonControlsRef.current,
+          previewLayoutMode: comingSoonPreviewLayoutModeRef.current,
+        } satisfies FeaturedShowcaseControlsMessage);
+        return;
+      }
+
+      if (event.data.type === 'state') {
+        setComingSoonControls(event.data.controls);
+        setComingSoonPreviewLayoutMode(event.data.previewLayoutMode);
+        return;
+      }
+
+      if (event.data.type === 'update') {
+        setComingSoonControls(event.data.controls);
+        return;
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setComingSoonPreviewLayoutMode(event.data.previewLayoutMode);
+      }
+    };
+
+    const handleHomepageLayoutMessage = (event: MessageEvent<HomepageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        homepageLayoutChannel.postMessage({
+          type: 'state',
+          controls: homepageLayoutControlsRef.current,
+        } satisfies HomepageLayoutControlsMessage);
+        return;
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setHomepageLayoutControls(event.data.controls);
+      }
+    };
+
+    aboutChannel.addEventListener('message', handleAboutMessage);
+    featuredChannel.addEventListener('message', handleFeaturedMessage);
+    comingSoonChannel.addEventListener('message', handleComingSoonMessage);
+    homepageLayoutChannel.addEventListener('message', handleHomepageLayoutMessage);
+    aboutChannel.postMessage({ type: 'request-state', kind: 'about' } satisfies HomeShowcaseFrameControlsMessage);
+    featuredChannel.postMessage({ type: 'request-state' } satisfies FeaturedShowcaseControlsMessage);
+    comingSoonChannel.postMessage({ type: 'request-state' } satisfies FeaturedShowcaseControlsMessage);
+    homepageLayoutChannel.postMessage({ type: 'request-state' } satisfies HomepageLayoutControlsMessage);
+
+    return () => {
+      aboutChannel.removeEventListener('message', handleAboutMessage);
+      featuredChannel.removeEventListener('message', handleFeaturedMessage);
+      comingSoonChannel.removeEventListener('message', handleComingSoonMessage);
+      homepageLayoutChannel.removeEventListener('message', handleHomepageLayoutMessage);
+      aboutChannel.close();
+      featuredChannel.close();
+      comingSoonChannel.close();
+      homepageLayoutChannel.close();
+      aboutChannelRef.current = null;
+      featuredChannelRef.current = null;
+      comingSoonChannelRef.current = null;
+      homepageLayoutChannelRef.current = null;
+    };
+  }, []);
+
+  const updateAboutControls = useCallback<React.Dispatch<React.SetStateAction<HomeShowcaseFrameControls>>>((value) => {
+    setAboutControls((previousControls) => {
+      const nextControls =
+        typeof value === 'function' ? value(previousControls) : value;
+      aboutChannelRef.current?.postMessage({
+        type: 'update',
+        kind: 'about',
+        controls: nextControls,
+      } satisfies HomeShowcaseFrameControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const updateFeaturedControls = useCallback<React.Dispatch<React.SetStateAction<FeaturedShowcaseControls>>>((value) => {
+    setFeaturedControls((previousControls) => {
+      const nextControls =
+        typeof value === 'function' ? value(previousControls) : value;
+      featuredChannelRef.current?.postMessage({
+        type: 'update',
+        controls: nextControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const updateComingSoonControls = useCallback<React.Dispatch<React.SetStateAction<FeaturedShowcaseControls>>>((value) => {
+    setComingSoonControls((previousControls) => {
+      const nextControls =
+        typeof value === 'function' ? value(previousControls) : value;
+      comingSoonChannelRef.current?.postMessage({
+        type: 'update',
+        controls: nextControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const updateHomepageLayoutControls = useCallback((value: React.SetStateAction<HomepageLayoutControlsData>) => {
+    setHomepageLayoutControls((previousControls) => {
+      const nextControls = normalizeHomepageLayoutControls(
+        typeof value === 'function' ? value(previousControls) : value
+      );
+      homepageLayoutChannelRef.current?.postMessage({
+        type: 'update',
+        controls: nextControls,
+      } satisfies HomepageLayoutControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const combinedControls = useMemo(() => ({
+    homepageLayoutControls: normalizeHomepageLayoutControls(homepageLayoutControls),
+    aboutShowcaseControls: serializeHomeShowcaseFrameControls(aboutControls),
+    featuredShowcaseControls: serializeFeaturedShowcaseControls(featuredControls),
+    comingSoonShowcaseControls: serializeFeaturedShowcaseControls(comingSoonControls),
+  }), [aboutControls, comingSoonControls, featuredControls, homepageLayoutControls]);
+
+  const copyValue = useMemo(
+    () => JSON.stringify(combinedControls, null, 2),
+    [combinedControls]
+  );
+
+  const isCopyCurrent = copiedValue === copyValue;
+
+  const handleCopy = useCallback(async () => {
+    await copyTextToClipboard(copyValue);
+    setCopiedValue(copyValue);
+  }, [copyValue]);
+
+  const handleSaveAll = useCallback(async () => {
+    if (isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+    setStatus('Saving...');
+    try {
+      const [
+        savedHomepageControls,
+        savedAboutControls,
+        savedFeaturedControls,
+        savedComingSoonControls,
+      ] = await Promise.all([
+        saveHomepageLayoutControlsToDisk(combinedControls.homepageLayoutControls),
+        saveHomeShowcaseFrameControlsToDisk('about', combinedControls.aboutShowcaseControls),
+        saveFeaturedShowcaseControlsToDisk(combinedControls.featuredShowcaseControls),
+        saveComingSoonShowcaseControlsToDisk(combinedControls.comingSoonShowcaseControls),
+      ]);
+
+      setHomepageLayoutControls(savedHomepageControls);
+      setAboutControls(savedAboutControls);
+      setFeaturedControls(savedFeaturedControls);
+      setComingSoonControls(savedComingSoonControls);
+      homepageLayoutChannelRef.current?.postMessage({
+        type: 'update',
+        controls: savedHomepageControls,
+      } satisfies HomepageLayoutControlsMessage);
+      aboutChannelRef.current?.postMessage({
+        type: 'update',
+        kind: 'about',
+        controls: savedAboutControls,
+      } satisfies HomeShowcaseFrameControlsMessage);
+      featuredChannelRef.current?.postMessage({
+        type: 'update',
+        controls: savedFeaturedControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      comingSoonChannelRef.current?.postMessage({
+        type: 'update',
+        controls: savedComingSoonControls,
+      } satisfies FeaturedShowcaseControlsMessage);
+      const syncResult = await syncSavedLayoutAssetToR2();
+      setStatus(syncResult.message);
+    } catch (error) {
+      logError('[StandaloneHomepageLayoutControls] save failed', error);
+      setStatus(error instanceof Error ? error.message : 'Save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [combinedControls, isSaving]);
+
+  const handleFeaturedPreviewLayoutModeChange = useCallback((mode: FeaturedGameShowcasePreviewLayoutMode) => {
+    setFeaturedPreviewLayoutMode(mode);
+    featuredChannelRef.current?.postMessage({
+      type: 'preview-layout-mode',
+      previewLayoutMode: mode,
+    } satisfies FeaturedShowcaseControlsMessage);
+  }, []);
+
+  const handleComingSoonPreviewLayoutModeChange = useCallback((mode: FeaturedGameShowcasePreviewLayoutMode) => {
+    setComingSoonPreviewLayoutMode(mode);
+    comingSoonChannelRef.current?.postMessage({
+      type: 'preview-layout-mode',
+      previewLayoutMode: mode,
+    } satisfies FeaturedShowcaseControlsMessage);
+  }, []);
+
+  const handleAboutPreviewLayoutModeChange = useCallback((mode: HomeShowcasePreviewLayoutMode) => {
+    setAboutPreviewLayoutMode(mode);
+    aboutChannelRef.current?.postMessage({
+      type: 'preview-layout-mode',
+      kind: 'about',
+      previewLayoutMode: mode,
+    } satisfies HomeShowcaseFrameControlsMessage);
+  }, []);
+
+  const handleResetBlock = useCallback(() => {
+    if (tab === 'about') {
+      updateAboutControls(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS);
+      return;
+    }
+    if (tab === 'featured') {
+      updateFeaturedControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
+      return;
+    }
+    updateComingSoonControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
+  }, [tab, updateAboutControls, updateComingSoonControls, updateFeaturedControls]);
+
+  const handleResetAll = useCallback(() => {
+    updateHomepageLayoutControls(DEFAULT_HOMEPAGE_LAYOUT_CONTROLS);
+    updateAboutControls(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS);
+    updateFeaturedControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
+    updateComingSoonControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
+    handleAboutPreviewLayoutModeChange('auto');
+    handleFeaturedPreviewLayoutModeChange('auto');
+    handleComingSoonPreviewLayoutModeChange('auto');
+  }, [
+    handleAboutPreviewLayoutModeChange,
+    handleComingSoonPreviewLayoutModeChange,
+    handleFeaturedPreviewLayoutModeChange,
+    updateAboutControls,
+    updateComingSoonControls,
+    updateFeaturedControls,
+    updateHomepageLayoutControls,
+  ]);
+
+  return (
+    <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
+      <div style={{ display: 'grid', gap: '1rem', padding: '1rem' }}>
+        <div style={standaloneHomepageToolbarStyle}>
+          {tabs.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              style={tab === item.id ? standaloneHomepageActiveTabButtonStyle : standaloneHomepageTabButtonStyle}
+              onClick={() => setTab(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <label style={standaloneHomepageToggleLabelStyle}>
+            <input
+              type="checkbox"
+              checked={homepageLayoutControls.contentBoundsOverlay}
+              onChange={(event) => updateHomepageLayoutControls({
+                contentBoundsOverlay: event.target.checked,
+              })}
+            />
+            Home Bounds
+          </label>
+          <span style={standaloneHomepageToolbarSpacerStyle} />
+          <button
+            type="button"
+            style={standaloneHomepageToolbarButtonStyle}
+            onClick={handleResetBlock}
+          >
+            Reset Block
+          </button>
+          <button
+            type="button"
+            style={isCopyCurrent ? standaloneHomepageSavedButtonStyle : standaloneHomepageToolbarButtonStyle}
+            onClick={() => void handleCopy()}
+          >
+            {isCopyCurrent ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageSavedButtonStyle}
+            disabled={isSaving}
+            onClick={() => void handleSaveAll()}
+          >
+            {isSaving ? 'Saving...' : 'Save + Sync'}
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageDangerButtonStyle}
+            onClick={handleResetAll}
+          >
+            Reset All
+          </button>
+        </div>
+        {status ? (
+          <div style={{ color: '#bbf7d0', fontSize: '0.75rem' }}>
+            {status}
+          </div>
+        ) : null}
+        {tab === 'about' ? (
+          <HomeShowcaseFrameControlsPanel
+            title="About Us Showcase Controls"
+            description="Shared frame, A/B split, footer, and B-side copy tuning for the About block."
+            controls={aboutControls}
+            onControlsChange={updateAboutControls}
+            previewLayoutMode={aboutPreviewLayoutMode}
+            onPreviewLayoutModeChange={handleAboutPreviewLayoutModeChange}
+            showActions={false}
+          />
+        ) : null}
+        {tab === 'featured' ? (
+          <FeaturedGameShowcaseControls
+            title="Featured Showcase Controls"
+            description="Shared SVG layout tuning for the homepage featured block."
+            controls={featuredControls}
+            onControlsChange={updateFeaturedControls}
+            previewLayoutMode={featuredPreviewLayoutMode}
+            onPreviewLayoutModeChange={handleFeaturedPreviewLayoutModeChange}
+            controlScope="featured"
+            showActions={false}
+          />
+        ) : null}
+        {tab === 'comingSoon' ? (
+          <FeaturedGameShowcaseControls
+            title="Coming Soon Showcase Controls"
+            description="Same SVG shell as Featured, tuned for Coming Soon / Available Now cards and catalog montage."
+            controls={comingSoonControls}
+            onControlsChange={updateComingSoonControls}
+            previewLayoutMode={comingSoonPreviewLayoutMode}
+            onPreviewLayoutModeChange={handleComingSoonPreviewLayoutModeChange}
+            controlScope="comingSoon"
+            showActions={false}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
 export const StandalonePanelPage: React.FC = () => {
   const [params, setParams] = useState<{
     panel: StandalonePanel;
@@ -785,7 +1534,15 @@ export const StandalonePanelPage: React.FC = () => {
     if (
       panel &&
       assetPath &&
-      (panel === 'preview' || panel === 'inspector' || panel === 'design-studio' || panel === 'preview-canvas' || panel === 'isolation')
+      (
+        panel === 'preview' ||
+        panel === 'inspector' ||
+        panel === 'design-studio' ||
+        panel === 'preview-canvas' ||
+        panel === 'isolation' ||
+        panel === 'featured-showcase-controls' ||
+        panel === 'homepage-layout-controls'
+      )
     ) {
       return { panel, assetPath, locked, hideTools, reflectionOnly };
     }
@@ -810,7 +1567,14 @@ export const StandalonePanelPage: React.FC = () => {
     };
   }, [hasParams, isLocked]);
 
-  const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(params?.assetPath ?? null);
+  const shouldLoadStandaloneAsset =
+    params !== null &&
+    params.panel !== 'isolation' &&
+    params.panel !== 'featured-showcase-controls' &&
+    params.panel !== 'homepage-layout-controls';
+  const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(
+    shouldLoadStandaloneAsset ? params.assetPath : null
+  );
 
   if (!params) {
     return (
@@ -846,6 +1610,14 @@ export const StandalonePanelPage: React.FC = () => {
         <LazyIsolationHubPage />
       </Suspense>
     );
+  }
+
+  if (params.panel === 'featured-showcase-controls') {
+    return <StandaloneFeaturedShowcaseControls />;
+  }
+
+  if (params.panel === 'homepage-layout-controls') {
+    return <StandaloneHomepageLayoutControls />;
   }
 
   return (

@@ -14,7 +14,7 @@ const forbiddenLiterals = [
   "endsWith('buy')",
   "endsWith('sell')",
 ] as const;
-const forbiddenInlineSchemaPattern = /\bz\.(?:object|enum|union)\s*\(/;
+const forbiddenInlineContractPattern = /\b(?:schema|z)\.(?:object|enum|union)\s*\(/;
 
 function collectFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true });
@@ -51,7 +51,7 @@ function main(): void {
     ...collectFiles(path.join(cwd, 'tests')),
     ...collectFiles(path.join(cwd, 'test-runner', 'script')),
   ];
-  const contractSchemaOffenders = contractSchemaFiles.filter((file) => forbiddenInlineSchemaPattern.test(readText(file)));
+  const contractSchemaOffenders = contractSchemaFiles.filter((file) => forbiddenInlineContractPattern.test(readText(file)));
 
   const policyFiles = [
     ...collectFiles(path.join(srcRoot, 'handlers')),
@@ -79,7 +79,7 @@ function main(): void {
   }
   if (contractSchemaOffenders.length > 0) {
     errors.push(
-      `Inline Zod contract definitions found outside endpoint-domain:\n${contractSchemaOffenders.map((file) => `- ${file}`).join('\n')}`
+      `Inline schema contract definitions found outside endpoint-domain:\n${contractSchemaOffenders.map((file) => `- ${file}`).join('\n')}`
     );
   }
   if (literalOffenders.length > 0) {

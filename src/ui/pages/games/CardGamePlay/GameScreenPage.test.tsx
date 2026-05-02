@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GamePhase, Suit, type Card, type GameState, type Player } from '@ocentra/game-domain/types/game';
+import { createRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
 import { normalizeCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { GameScreenPage } from './GameScreenPage';
@@ -63,11 +64,11 @@ vi.mock('@ocentra/game-domain/engine/GameEngine', () => ({
 }));
 
 function createCard(id: string, suit: Suit, value: Card['value']): Card {
-  return {
+  return createRuntimeCard({
     id,
     suit,
     value,
-  };
+  });
 }
 
 function createPlayer(id: string, name: string, hand: Card[], score: number, declaredSuit: Suit | null = null): Player {

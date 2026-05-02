@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
 const EDITOR_DIR = path.join(ROOT, 'packages', 'asset-editor');
 const EDITOR_TARGET_DIR = path.join(EDITOR_DIR, 'src-tauri', 'target-editor');
+const force = process.argv.includes('--force') || process.env.FORCE === 'true' || process.env.VITE_FORCE === 'true';
 
 const EDITOR_TAURI_BIN_WIN = 'ocentraeditor.exe';
 const EDITOR_TAURI_BIN_UNIX = 'ocentraeditor';
@@ -34,7 +35,7 @@ async function main(): Promise<void> {
     VITE_EDITOR_SYNC_TARGET_DEFAULT: 'real-cloud',
   };
 
-  const viteProc = spawn('npm', ['run', 'dev:raw'], {
+  const viteProc = spawn('npm', ['run', 'dev:raw', ...(force ? ['--', '--force'] : [])], {
     cwd: EDITOR_DIR,
     stdio: 'ignore',
     shell: process.platform === 'win32',

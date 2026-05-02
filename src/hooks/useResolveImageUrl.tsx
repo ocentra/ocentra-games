@@ -14,6 +14,7 @@ function extractHashes(data: {
   featured?: GameHome[];
   recommended?: GameHome[];
   comingSoon?: ComingSoonTeaser[];
+  catalogMontageImages?: ComingSoonTeaser[];
   availableNow?: GameHome[];
   featureBannerItems?: FeatureBannerItem[];
 }): ImageHash[] {
@@ -39,6 +40,7 @@ function extractHashes(data: {
     for (const c of g.carouselImages ?? []) add(c);
   }
   for (const t of data.comingSoon ?? []) add(t.bannerImage);
+  for (const t of data.catalogMontageImages ?? []) add(t.bannerImage);
   for (const g of data.availableNow ?? []) add(g.bannerImage);
   for (const item of data.featureBannerItems ?? []) add(item.imageHash);
   return out;
@@ -48,6 +50,7 @@ export function useResolveImageUrl(data: {
   featured?: GameHome[];
   recommended?: GameHome[];
   comingSoon?: ComingSoonTeaser[];
+  catalogMontageImages?: ComingSoonTeaser[];
   availableNow?: GameHome[];
   featureBannerItems?: FeatureBannerItem[];
 }): {

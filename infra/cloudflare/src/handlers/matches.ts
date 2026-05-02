@@ -9,7 +9,7 @@ import { getCurrentContext } from '@/logging/request-context';
 import { checkMatchInDO } from '@/utils/match-query';
 import { isMatchFinalized } from '@/utils/match-state';
 import { consumeResponseBody } from '@/utils/consume-response-body';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 
 import { MatchUploadRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
 
@@ -491,7 +491,7 @@ async function uploadMatch(request: Request, env: Env, matchId: MatchId): Promis
     }
     
     // Validate that it's at least valid JSON and matches the basic structure
-    const { errorResponse: matchError } = await validateZodBody(
+    const { errorResponse: matchError } = await validateSchemaBody(
       new Request(request.url, { method: request.method, body: bodyText, headers: request.headers }),
       env,
       MatchUploadRequestSchema

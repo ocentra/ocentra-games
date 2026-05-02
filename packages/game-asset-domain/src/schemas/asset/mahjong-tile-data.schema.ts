@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { PieceKind } from '@/pieces/PieceKind';
 import { MahjongTileKind } from '@/mahjong/MahjongTileKind';
 import { MahjongSuit } from '@/mahjong/MahjongSuit';
@@ -6,9 +6,9 @@ import { MahjongWind, MahjongDragon } from '@/mahjong/MahjongHonor';
 import { ImageHashSchema } from '@/schemas/asset/shared/image-hash-schema';
 import { ImagePathSchema } from '@/schemas/asset/shared/image-path-schema';
 
-const MahjongTileDataSchemaBase = z.object({
-  pieceKind: z.literal(PieceKind.MahjongTile),
-  tileKind: z.enum([
+const MahjongTileDataSchemaBase = schema.object({
+  pieceKind: schema.literal(PieceKind.MahjongTile),
+  tileKind: schema.enum([
     MahjongTileKind.Suit,
     MahjongTileKind.Wind,
     MahjongTileKind.Dragon,
@@ -20,14 +20,14 @@ const MahjongTileDataSchemaBase = z.object({
     MahjongTileKind.Empress,
     MahjongTileKind.Joker,
   ]),
-  tileId: z.string().min(1),
+  tileId: schema.string().min(1),
   imageHash: ImageHashSchema,
   imagePath: ImagePathSchema.optional(),
-  suit: z.enum([MahjongSuit.Characters, MahjongSuit.Bamboos, MahjongSuit.Dots]).optional(),
-  rank: z.number().int().min(1).max(9).optional(),
-  wind: z.enum([MahjongWind.East, MahjongWind.South, MahjongWind.West, MahjongWind.North]).optional(),
-  dragon: z.enum([MahjongDragon.Red, MahjongDragon.Green, MahjongDragon.White]).optional(),
-  bonusIndex: z.number().int().min(1).max(4).optional(),
+  suit: schema.enum([MahjongSuit.Characters, MahjongSuit.Bamboos, MahjongSuit.Dots]).optional(),
+  rank: schema.number().int().min(1).max(9).optional(),
+  wind: schema.enum([MahjongWind.East, MahjongWind.South, MahjongWind.West, MahjongWind.North]).optional(),
+  dragon: schema.enum([MahjongDragon.Red, MahjongDragon.Green, MahjongDragon.White]).optional(),
+  bonusIndex: schema.number().int().min(1).max(4).optional(),
 }).passthrough();
 
 export const MahjongTileDataSchema = MahjongTileDataSchemaBase.superRefine((d, ctx) => {

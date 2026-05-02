@@ -5,6 +5,7 @@ import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import type { Card } from '@ocentra/game-domain/types/game';
 import { Suit } from '@ocentra/game-domain/types/game';
 import type { CardValue } from '@ocentra/game-domain/types/game';
+import { createRuntimeCard } from '@ocentra/game-domain/deck/runtimeDeck';
 import type { DeckFamily } from '@ocentra/game-domain/deck/deckFamily';
 import { DECK_FAMILY_FRENCH } from '@ocentra/game-domain/deck/cardIdentity';
 import { CardRankingType } from '@/card/cardRanking/CardRankingType';
@@ -241,11 +242,11 @@ export class CardRanking extends ScriptableObject {
       return null;
     }
 
-    return {
+    return createRuntimeCard({
       suit: suitEntry.SuitName as Suit,
       value: rankEntry.Value as CardValue,
       id: `${rankEntry.Value}_${suitSymbol}`,
-    };
+    });
   }
 
   getRandomSuit(): string {
@@ -350,4 +351,3 @@ export class CardRanking extends ScriptableObject {
     };
   }
 }
-

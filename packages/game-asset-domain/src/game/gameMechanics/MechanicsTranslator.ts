@@ -13,6 +13,7 @@ export function toMechanicsSpec(data: CardGameMechanicsData): MechanicsSpec {
     inheritsFrom: data.inheritsFrom ?? null,
     enabledModules: data.enabledModules,
     assetRefs: data.assetRefs,
+    modelRefs: data.modelRefs,
     playerConfig: {
       playerMode: data.playerConfig.playerMode,
       minPlayers: data.playerConfig.minPlayers,

@@ -129,13 +129,22 @@ export async function getCachedJsonSlice<T>(url: string): Promise<T | null> {
   return cached ?? null;
 }
 
-export async function fetchJsonSlice<T>(url: string): Promise<T | null> {
-  const cached = await getCachedJsonSlice<T>(url);
-  if (cached !== null) {
-    return cached;
+export interface JsonSliceFetchOptions {
+  bypassCache?: boolean;
+}
+
+export async function fetchJsonSlice<T>(
+  url: string,
+  options: JsonSliceFetchOptions = {}
+): Promise<T | null> {
+  if (!options.bypassCache) {
+    const cached = await getCachedJsonSlice<T>(url);
+    if (cached !== null) {
+      return cached;
+    }
   }
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, options.bypassCache ? { cache: 'no-store' } : undefined);
     if (!response.ok) {
       return null;
     }

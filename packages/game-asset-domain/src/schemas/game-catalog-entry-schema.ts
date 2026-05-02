@@ -1,41 +1,41 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { GameModeStatus } from '@/constants/game-mode-status';
 
-const GameModeStatusSchema = z.enum([
+const GameModeStatusSchema = schema.enum([
   GameModeStatus.Available,
   GameModeStatus.ComingSoon,
   GameModeStatus.Maintenance,
   GameModeStatus.Deprecated,
 ]);
 
-export const GameCatalogEntrySchema = z.object({
-  gameId: z.string(),
-  displayName: z.string(),
-  guid: z.string(),
-  path: z.string(),
-  assetType: z.string(),
-  mode: z.string(),
-  enabled: z.boolean().optional(),
+export const GameCatalogEntrySchema = schema.object({
+  gameId: schema.string(),
+  displayName: schema.string(),
+  guid: schema.string(),
+  path: schema.string(),
+  assetType: schema.string(),
+  mode: schema.string(),
+  enabled: schema.boolean().optional(),
   releaseStatus: GameModeStatusSchema.nullable().optional(),
-  tags: z.array(z.string()).optional(),
-  category: z.string().nullable().optional(),
-  subcategory: z.string().nullable().optional(),
-  difficulty: z.string().nullable().optional(),
-  duration: z.string().nullable().optional(),
-  deck: z.string().nullable().optional(),
-  playersDisplay: z.string().nullable().optional(),
-  playerMode: z.string().nullable().optional(),
-  quality: z.string().nullable().optional(),
-  completeness: z.record(z.string(), z.boolean()).optional(),
-  description: z.string().optional(),
+  tags: schema.array(schema.string()).optional(),
+  category: schema.string().nullable().optional(),
+  subcategory: schema.string().nullable().optional(),
+  difficulty: schema.string().nullable().optional(),
+  duration: schema.string().nullable().optional(),
+  deck: schema.string().nullable().optional(),
+  playersDisplay: schema.string().nullable().optional(),
+  playerMode: schema.string().nullable().optional(),
+  quality: schema.string().nullable().optional(),
+  completeness: schema.record(schema.string(), schema.boolean()).optional(),
+  description: schema.string().optional(),
 });
 
-const ImageUrlsSchema = z.record(z.string(), z.string());
+const ImageUrlsSchema = schema.record(schema.string(), schema.string());
 
-export const GameCatalogDocumentSchema = z.object({
-  games: z.array(GameCatalogEntrySchema),
+export const GameCatalogDocumentSchema = schema.object({
+  games: schema.array(GameCatalogEntrySchema),
   imageUrls: ImageUrlsSchema.optional(),
 });
 
-export type GameCatalogEntry = z.infer<typeof GameCatalogEntrySchema>;
-export type GameCatalogDocument = z.infer<typeof GameCatalogDocumentSchema>;
+export type GameCatalogEntry = schema.infer<typeof GameCatalogEntrySchema>;
+export type GameCatalogDocument = schema.infer<typeof GameCatalogDocumentSchema>;

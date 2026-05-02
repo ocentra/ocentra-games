@@ -1,6 +1,6 @@
 import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
@@ -102,7 +102,7 @@ async function handleStore(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  const validation = await validateZodBody(request, env, AIKeysStoreRequestSchema);
+  const validation = await validateSchemaBody(request, env, AIKeysStoreRequestSchema);
   if (validation.errorResponse) return validation.errorResponse;
   const { providerId, apiKey } = validation.data!;
 
@@ -169,7 +169,7 @@ async function handleStoreCustom(
   env: Env,
   requestOrigin: string | undefined
 ): Promise<Response> {
-  const validation = await validateZodBody(request, env, AIKeysStoreCustomRequestSchema);
+  const validation = await validateSchemaBody(request, env, AIKeysStoreCustomRequestSchema);
   if (validation.errorResponse) return validation.errorResponse;
   const { providerId, apiKey, baseUrl } = validation.data!;
   const catalog = await getCatalogFromEnv(env);

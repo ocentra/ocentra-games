@@ -7,7 +7,21 @@ import type { Layout } from '@ocentra/game-asset-domain/ui/layout/Layout';
 import type { CardGameLayout } from '@ocentra/game-asset-domain/ui/layout/CardGameLayout';
 import type { IDeckProvider } from '@ocentra/game-domain/interfaces/IDeckProvider';
 import type { MechanicsSpec } from '@ocentra/game-domain/engine/mechanics/MechanicsSpec';
-import { Suit, type Card, type CardValue, type GameState, type Player } from '@ocentra/game-domain/types/game';
+import {
+  asRuntimeCard,
+  createRuntimeCard,
+  dealRuntimePieces,
+  drawRuntimePiece,
+  materializeRuntimePieces,
+  runtimePiecesToCards,
+  shuffleRuntimePieces,
+} from '@ocentra/game-domain/deck/runtimeDeck';
+import {
+  extractClaimStrategyProfile,
+  withClaimStrategyProfile,
+} from '@ocentra/game-domain/schema/claim';
+import { compileMechanicsWithModels } from '@ocentra/game-domain/schema/mechanics-model';
+import { Suit, type Card, type CardValue, type GameState, type Player, type RuntimePiece } from '@ocentra/game-domain/types/game';
 import { getGameModeEntries } from '@/adapters/assets/GameCatalogService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 import {
@@ -21,17 +35,6 @@ import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 
 const SUPPORTED_PILOT_FAMILY = 'claim';
 const ASSET_LOAD_TIMEOUT_MS = 10000;
-
-const FRENCH_CARD_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] as CardValue[];
-const ITALIAN_BRISCOLA_VALUES = [2, 3, 4, 5, 6, 7, 11, 12, 13, 14] as CardValue[];
-const FRENCH_SUITS = ['spades', 'hearts', 'diamonds', 'clubs'] as const;
-const ITALIAN_SUITS = ['coppe', 'denari', 'spade', 'bastoni'] as const;
-const ITALIAN_TO_RUNTIME_SUIT = {
-  coppe: Suit.HEARTS,
-  denari: Suit.DIAMONDS,
-  spade: Suit.SPADES,
-  bastoni: Suit.CLUBS,
-} as const;
 
 interface ParsedIdentifier {
   slug: string;
@@ -54,57 +57,45 @@ interface LoadedPlayableGameMode {
   maxRounds?: number | null;
   mechanicsAsset: AssetResourceEntry<CardGameMechanics> | CardGameMechanics;
   layoutAsset?: AssetResourceEntry<Layout> | AssetResourceEntry<CardGameLayout> | CardGameLayout;
+  deckAsset?: AssetReference | null;
+  strategyAsset?: AssetReference | null;
 }
 
-class StaticDeckProvider implements IDeckProvider {
-  private readonly baseDeck: Card[];
+class AssetBackedDeckProvider implements IDeckProvider {
+  private readonly baseDeck: RuntimePiece[];
   private seed: number;
   private originalSeed: number;
 
-  constructor(baseDeck: Card[], seed: number) {
-    this.baseDeck = [...baseDeck];
+  constructor(baseDeck: RuntimePiece[], seed: number) {
+    this.baseDeck = baseDeck.map((piece) => ({ ...piece, identity: { ...piece.identity }, tags: [...piece.tags] }));
     this.seed = seed;
     this.originalSeed = seed;
   }
 
+  async createDeck(): Promise<RuntimePiece[]> {
+    return materializeRuntimePieces(this.baseDeck);
+  }
+
   async createStandardDeck(): Promise<Card[]> {
-    return [...this.baseDeck];
+    return runtimePiecesToCards(await this.createDeck());
   }
 
-  shuffleDeck(deck: Card[]): Card[] {
-    const shuffled = [...deck];
-    let currentIndex = shuffled.length;
+  shuffleDeck(deck: RuntimePiece[]): RuntimePiece[] {
     this.resetSeed();
-
-    while (currentIndex !== 0) {
-      const randomIndex = Math.floor(this.seededRandom() * currentIndex);
-      currentIndex -= 1;
-      [shuffled[currentIndex], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[currentIndex]];
-    }
-
-    return shuffled;
+    return shuffleRuntimePieces(deck, this.seed);
   }
 
-  dealInitialHands(deck: Card[], playerCount: number, handSize: number): { hands: Card[][]; remainingDeck: Card[] } {
-    const hands: Card[][] = Array.from({ length: playerCount }, () => []);
-    const remainingDeck = [...deck];
-
-    for (let cardIndex = 0; cardIndex < handSize; cardIndex += 1) {
-      for (let playerIndex = 0; playerIndex < playerCount; playerIndex += 1) {
-        const card = remainingDeck.shift();
-        if (card) {
-          hands[playerIndex].push(card);
-        }
-      }
-    }
-
-    return { hands, remainingDeck };
+  dealInitialHands(deck: RuntimePiece[], playerCount: number, handSize: number): { hands: RuntimePiece[][]; remainingDeck: RuntimePiece[] } {
+    return dealRuntimePieces(deck, playerCount, handSize);
   }
 
-  drawCard(deck: Card[]): { card: Card | null; remainingDeck: Card[] } {
-    const remainingDeck = [...deck];
-    const card = remainingDeck.shift() ?? null;
-    return { card, remainingDeck };
+  drawPiece(deck: RuntimePiece[]): { piece: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    return drawRuntimePiece(deck);
+  }
+
+  drawCard(deck: RuntimePiece[]): { card: RuntimePiece | null; remainingDeck: RuntimePiece[] } {
+    const { piece, remainingDeck } = this.drawPiece(deck);
+    return { card: piece, remainingDeck };
   }
 
   getSeed(): number {
@@ -114,11 +105,6 @@ class StaticDeckProvider implements IDeckProvider {
   setSeed(seed: number): void {
     this.seed = seed;
     this.originalSeed = seed;
-  }
-
-  private seededRandom(): number {
-    this.seed = (this.seed * 9301 + 49297) % 233280;
-    return this.seed / 233280;
   }
 
   private resetSeed(): void {
@@ -199,8 +185,35 @@ export async function loadLocalPlayableGame(
     };
   }
 
-  const runtimeDeck = buildRuntimeDeck(mechanics);
-  const spec = toMechanicsSpec(mechanics);
+  const baseSpec = toMechanicsSpec(mechanics as unknown as Parameters<typeof toMechanicsSpec>[0]);
+  const modelAssets = await withTimeout(
+    resolveMechanicsModelAssets(baseSpec.modelRefs),
+    `Game "${parsed.slug}" timed out loading mechanics model assets.`,
+  );
+  const compiled = compileMechanicsWithModels(baseSpec, modelAssets);
+  if (compiled.issues.length > 0) {
+    return {
+      bundle: null,
+      error: compiled.issues.map((issue) => `${issue.path}: ${issue.message}`).join('\n'),
+    };
+  }
+  const strategyProfile = await withTimeout(
+    resolveClaimStrategyProfile(gameMode.strategyAsset),
+    `Game "${parsed.slug}" timed out loading the strategy asset.`,
+  );
+  const spec = strategyProfile
+    ? withClaimStrategyProfile(compiled.spec, strategyProfile)
+    : compiled.spec;
+  const runtimeDeck = await withTimeout(
+    resolveRuntimeDeck(spec, gameMode.deckAsset),
+    `Game "${parsed.slug}" timed out loading the deck asset.`,
+  );
+  if (!runtimeDeck) {
+    return {
+      bundle: null,
+      error: `Game "${parsed.slug}" is missing a readable Deck asset.`,
+    };
+  }
   const playerCount = clamp(
     preferredPlayerCount ?? mechanics.playerConfig.optimalPlayers ?? mechanics.playerConfig.minPlayers,
     mechanics.playerConfig.minPlayers,
@@ -244,7 +257,7 @@ export async function loadLocalPlayableGame(
       spec,
       layoutDocument,
       layoutPreset,
-      createDeckProvider: (seed: number) => new StaticDeckProvider(runtimeDeck, seed),
+      createDeckProvider: (seed: number) => new AssetBackedDeckProvider(runtimeDeck, seed),
     },
     error: null,
   };
@@ -265,7 +278,11 @@ export function getLegalActions(spec: MechanicsSpec, gameState: GameState | null
   return getCurrentMechanicsPhase(spec, gameState)?.legalActions ?? [];
 }
 
-export function formatCardLabel(card: Card): string {
+export function formatCardLabel(piece: RuntimePiece): string {
+  const card = asRuntimeCard(piece);
+  if (!card) {
+    return piece.logicalId || piece.id;
+  }
   const valueMap: Record<number, string> = {
     14: 'A',
     13: 'K',
@@ -312,10 +329,6 @@ function parseIdentifier(identifier: string): ParsedIdentifier {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
-}
-
-function buildRuntimeDeck(mechanics: CardGameMechanics): Card[] {
-  return createCanonicalDeck(mechanics);
 }
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMessage: string): Promise<T> {
@@ -383,6 +396,8 @@ async function loadPlayableGameModeDocument(guid: string, fallbackGameId: string
 
   const mechanicsRef = extractResourceReference(data.mechanicsAsset);
   const layoutRef = extractResourceReference(data.layoutAsset);
+  const deckRef = extractResourceReference(data.deckAsset);
+  const strategyRef = extractResourceReference(data.strategyAsset);
   if (!mechanicsRef || !layoutRef) {
     return null;
   }
@@ -414,6 +429,8 @@ async function loadPlayableGameModeDocument(guid: string, fallbackGameId: string
     maxRounds: typeof data.maxRounds === 'number' ? data.maxRounds : null,
     mechanicsAsset: mechanicsEntry,
     layoutAsset: layoutEntry,
+    deckAsset: deckRef,
+    strategyAsset: strategyRef,
   };
 }
 
@@ -451,22 +468,175 @@ async function resolveMechanicsAsset(
   return null;
 }
 
-function createCanonicalDeck(mechanics: CardGameMechanics): Card[] {
-  if (mechanics.deckType === 'Standard 40' && mechanics.suitSet === 'Italian') {
-    return ITALIAN_SUITS.flatMap((suit) =>
-      ITALIAN_BRISCOLA_VALUES.map((value) => ({
-        id: `italian_${suit}_${value}`,
-        suit: ITALIAN_TO_RUNTIME_SUIT[suit],
-        value,
-      })),
-    );
+async function resolveClaimStrategyProfile(
+  strategyAsset: LoadedPlayableGameMode['strategyAsset'],
+): Promise<ReturnType<typeof extractClaimStrategyProfile> | null> {
+  if (!strategyAsset) {
+    return null;
   }
 
-  return FRENCH_SUITS.flatMap((suit) =>
-    FRENCH_CARD_VALUES.map((value) => ({
-      id: `${value}_of_${suit}`,
-      suit,
-      value,
-    })),
-  );
+  const raw = await loadRawAssetDocumentByGuid(strategyAsset.guid);
+  return raw ? extractClaimStrategyProfile(raw) : null;
+}
+
+async function resolveMechanicsModelAssets(
+  modelRefs: MechanicsSpec['modelRefs'],
+): Promise<unknown[]> {
+  const refs = Object.values(modelRefs ?? {}).filter((ref) => typeof ref.guid === 'string' && ref.guid.length > 0);
+  return Promise.all(refs.map(async (ref) => {
+    const raw = await loadRawAssetDocumentByGuid(String(ref.guid));
+    if (!raw) {
+      throw new Error(`Mechanics model "${ref.guid}" could not be loaded.`);
+    }
+    return raw;
+  }));
+}
+
+async function resolveRuntimeDeck(spec: MechanicsSpec, gameDeckAsset: AssetReference | null | undefined): Promise<RuntimePiece[] | null> {
+  const deckRef = extractResourceReference(spec.assetRefs?.deck) ?? gameDeckAsset ?? null;
+  if (!deckRef?.guid) {
+    return null;
+  }
+
+  const deckDocument = await loadRawAssetDocumentByGuid(deckRef.guid);
+  if (!deckDocument) {
+    return null;
+  }
+
+  const deckRoot = dataRecord(deckDocument);
+  const deckData = dataRecord(deckRoot.data);
+  const entries = getDeckCompositionEntries(deckData);
+  if (entries.length === 0) {
+    return null;
+  }
+
+  const pieces = await Promise.all(entries.flatMap((entry) =>
+    Array.from({ length: entry.copies }, async () => {
+      const pieceDocument = entry.ref.guid ? await loadRawAssetDocumentByGuid(entry.ref.guid) : null;
+      return pieceDocument ? runtimePieceFromAssetDocument(pieceDocument, deckData, entry) : null;
+    }),
+  ));
+
+  const runtimePieces = pieces.filter((piece): piece is RuntimePiece => piece !== null);
+  return runtimePieces.length > 0 ? materializeRuntimePieces(runtimePieces) : null;
+}
+
+function getDeckCompositionEntries(deckData: Record<string, unknown>): Array<{
+  copies: number;
+  logicalId?: string;
+  ref: AssetReference;
+  role?: string;
+  tags: string[];
+}> {
+  const composition = arrayValue(deckData.composition);
+  if (composition.length > 0) {
+    return composition.flatMap((entry) => {
+      const record = dataRecord(entry);
+      const ref = extractResourceReference(record.pieceTemplate);
+      return ref ? [{
+        copies: positiveInteger(record.copies, 1),
+        logicalId: stringValue(record.logicalId) || undefined,
+        ref,
+        role: stringValue(record.role) || undefined,
+        tags: arrayValue(record.tags).map(stringValue).filter(Boolean),
+      }] : [];
+    });
+  }
+
+  const cardComposition = arrayValue(deckData.cardComposition);
+  if (cardComposition.length > 0) {
+    return cardComposition.flatMap((entry) => {
+      const record = dataRecord(entry);
+      const ref = extractResourceReference(record.cardTemplate);
+      return ref ? [{
+        copies: positiveInteger(record.copies, 1),
+        ref,
+        tags: [],
+      }] : [];
+    });
+  }
+
+  return arrayValue(deckData.cardTemplates).flatMap((entry) => {
+    const ref = extractResourceReference(entry);
+    return ref ? [{ copies: 1, ref, tags: [] }] : [];
+  });
+}
+
+function runtimePieceFromAssetDocument(
+  document: Record<string, unknown>,
+  deckData: Record<string, unknown>,
+  entry: { logicalId?: string; ref: AssetReference; role?: string; tags: string[] },
+): RuntimePiece | null {
+  const root = dataRecord(document);
+  const system = dataRecord(root.system);
+  const data = dataRecord(root.data);
+  const assetType = stringValue(system.assetType) || entry.ref.assetType;
+  const cardIdentity = dataRecord(data.cardIdentity);
+  const logicalId = entry.logicalId || stringValue(data.cardId) || stringValue(data.tileId) || stringValue(system.variant) || stringValue(system.displayName) || entry.ref.guid;
+  const imageHash = stringValue(data.imageHash) || undefined;
+
+  if (assetType === 'Card' && typeof cardIdentity.suit === 'string' && typeof cardIdentity.value === 'number') {
+    return {
+      ...createRuntimeCard({
+        id: logicalId,
+        logicalId,
+        suit: cardIdentity.suit as Suit,
+        value: cardIdentity.value as CardValue,
+        family: stringValue(deckData.deckFamily) || stringValue(cardIdentity.family) || 'french_cards',
+        imageHash,
+        assetRef: entry.ref,
+        tags: entry.tags,
+      }),
+      role: entry.role,
+    };
+  }
+
+  return {
+    id: logicalId,
+    logicalId,
+    pieceKind: stringValue(data.pieceKind) || inferPieceKind(assetType, deckData),
+    family: stringValue(deckData.deckFamily) || stringValue(data.family) || assetType,
+    identity: {
+      ...data,
+      assetType,
+    },
+    tags: entry.tags,
+    assetRef: entry.ref,
+    imageHash,
+    role: entry.role,
+    copyIndex: 1,
+  };
+}
+
+function inferPieceKind(assetType: string, deckData: Record<string, unknown>): string {
+  const deckPieceKind = stringValue(deckData.pieceKind);
+  if (deckPieceKind) {
+    return deckPieceKind;
+  }
+  if (assetType === 'DominoTile') {
+    return 'domino_tile';
+  }
+  if (assetType === 'HanafudaCard') {
+    return 'hanafuda_card';
+  }
+  if (assetType === 'MahjongTile') {
+    return 'mahjong_tile';
+  }
+  return assetType === 'Card' ? 'card' : 'custom';
+}
+
+function dataRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function arrayValue(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+function positiveInteger(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0 ? value : fallback;
 }

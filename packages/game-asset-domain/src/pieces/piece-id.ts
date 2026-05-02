@@ -3,21 +3,27 @@ import type { CardIdentity } from '@ocentra/game-domain/deck/cardIdentity';
 import { computeCardPieceId as computeCardPieceIdFromIdentity } from '@ocentra/game-domain/deck/cardIdentity';
 import { frenchCardIdentity } from '@ocentra/game-domain/deck/cardIdentity';
 import { PieceKind } from '@/pieces/PieceKind';
+import { Schema } from '@ocentra/schema-domain/effect';
 
-export type PieceId = string & { readonly __brand: 'PieceId' };
-export type CardPieceId = string & { readonly __brand: 'CardPieceId' };
+export const PieceIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('PieceId'));
+export type PieceId = typeof PieceIdSchema.Type;
+export const decodePieceId = Schema.decodeUnknownSync(PieceIdSchema);
+
+export const CardPieceIdSchema = Schema.String.pipe(Schema.minLength(1), Schema.brand('CardPieceId'));
+export type CardPieceId = typeof CardPieceIdSchema.Type;
+export const decodeCardPieceId = Schema.decodeUnknownSync(CardPieceIdSchema);
 
 export function asPieceId(value: string): PieceId {
-  return value as PieceId;
+  return decodePieceId(value);
 }
 
 export function computeCardPieceId(identityOrSuit: CardIdentity | Suit, rank?: CardValue): CardPieceId {
   if (typeof identityOrSuit === 'object' && identityOrSuit !== null && 'family' in identityOrSuit) {
-    return computeCardPieceIdFromIdentity(identityOrSuit as CardIdentity) as CardPieceId;
+    return decodeCardPieceId(computeCardPieceIdFromIdentity(identityOrSuit as CardIdentity));
   }
   const suit = identityOrSuit as Suit;
   const value = rank ?? 2;
-  return computeCardPieceIdFromIdentity(frenchCardIdentity(suit, value)) as CardPieceId;
+  return decodeCardPieceId(computeCardPieceIdFromIdentity(frenchCardIdentity(suit, value)));
 }
 
 export function isPieceKind(value: string): value is (typeof PieceKind)[keyof typeof PieceKind] {

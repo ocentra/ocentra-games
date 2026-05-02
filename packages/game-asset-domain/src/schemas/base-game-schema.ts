@@ -1,20 +1,20 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { GameModeStatus } from '@/constants/game-mode-status';
 
-const GameModeStatusSchema = z.enum([
+const GameModeStatusSchema = schema.enum([
   GameModeStatus.Available,
   GameModeStatus.ComingSoon,
   GameModeStatus.Maintenance,
   GameModeStatus.Deprecated,
 ]);
 
-export const BaseGameSchema = z.object({
-  gameId: z.string(),
-  guid: z.string(),
-  name: z.string(),
-  enabled: z.boolean(),
+export const BaseGameSchema = schema.object({
+  gameId: schema.string(),
+  guid: schema.string(),
+  name: schema.string(),
+  enabled: schema.boolean(),
   releaseStatus: GameModeStatusSchema.optional(),
-  tags: z.array(z.string()).optional(),
+  tags: schema.array(schema.string()).optional(),
 });
 
-export type BaseGame = z.infer<typeof BaseGameSchema>;
+export type BaseGame = schema.infer<typeof BaseGameSchema>;

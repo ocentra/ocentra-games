@@ -1,6 +1,6 @@
 ﻿import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { requireAuth } from '@/utils/auth-middleware';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { UserKeysDO } from '@ocentra/endpoint-domain/constants/cloudflare-do';
@@ -212,7 +212,7 @@ export async function handleAIGenerateRequest(
   }
   const userId = authResult.userId;
 
-  const validation = await validateZodBody(
+  const validation = await validateSchemaBody(
     request,
     env,
     AIGenerateRequestSchema

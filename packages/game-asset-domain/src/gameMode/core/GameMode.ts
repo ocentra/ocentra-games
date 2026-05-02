@@ -11,7 +11,7 @@ import { GameModeStatus } from '@/constants/game-mode-status';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import type { GameInfo } from '@/game/gameInfo/GameInfo';
 import { Layout } from '@/ui/layout/Layout';
-import { CardGameMechanics } from '@/game/gameMechanics/CardGameMechanics';
+import { GameMechanics } from '@/game/gameMechanics/GameMechanics';
 import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { GameHome } from '@/schemas/game-home-schema';
 import type { GamePage } from '@/schemas/game-page-schema';
@@ -42,7 +42,7 @@ export abstract class GameMode extends ScriptableObject {
   abstract layoutAsset?: AssetResourceEntry<Layout>;
   abstract scoringAsset?: AssetResourceEntry<Scoring>;
   abstract carouselImagesAsset?: AssetResourceEntry<ImageCarousel>;
-  abstract mechanicsAsset?: AssetResourceEntry<CardGameMechanics>;
+  abstract mechanicsAsset?: AssetResourceEntry<GameMechanics>;
   protected abstract onInitialize(): void;
   protected abstract InitializeGameConfiguration(): void;
   abstract minPlayers: number;

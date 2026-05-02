@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "lint": "eslint --config ../eslint.config.mjs src && tsc --noEmit",
+    "lint": "npm run lint:exec && npm run type-check",
+    "lint:exec": "eslint --config ../eslint.config.mjs src",
     "lint:fix": "eslint --config ../eslint.config.mjs src --fix",
     "type-check": "tsc --noEmit",
     "serve": "npm run build && firebase emulators:start --only functions",

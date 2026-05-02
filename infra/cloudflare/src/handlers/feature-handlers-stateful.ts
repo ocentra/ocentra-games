@@ -1,5 +1,5 @@
 import type { Env } from '@/constants/env';
-import { validateZodBody } from '@/utils/zod-validation';
+import { validateSchemaBody } from '@/utils/schema-validation';
 import { getCorsHeaders } from '@/utils/cors';
 import { requireAuth } from '@/utils/auth-middleware';
 import { checkAdminStatus } from '@/utils/admin-check';
@@ -95,7 +95,7 @@ export async function handleRewardRequest(request: Request, env: Env, path: stri
   let parsedBody: Record<string, unknown> | undefined;
   if (request.method === HttpMethod.Post) {
     if (isDailyClaim) {
-      const { data: dailyData, errorResponse: dailyError } = await validateZodBody(request.clone(), env, RewardDailyClaimRequestSchema);
+      const { data: dailyData, errorResponse: dailyError } = await validateSchemaBody(request.clone(), env, RewardDailyClaimRequestSchema);
       if (dailyError) return dailyError;
       const dailyBody = (dailyData ?? {}) as { idempotencyKey?: string; userId?: string };
       const flowResult = await flowRunner.run(
@@ -299,7 +299,7 @@ export async function handleFeedRequest(request: Request, env: Env, path: string
     const authResult = await requireAuth(request, env, requestOrigin, 'Authentication required for feed fanout');
     if (authResult instanceof Response) return authResult;
     const actorId = authResult.userId;
-    const { data, errorResponse: bodyError } = await validateZodBody(request, env, FeedFanoutRequestSchema);
+    const { data, errorResponse: bodyError } = await validateSchemaBody(request, env, FeedFanoutRequestSchema);
     if (bodyError) return bodyError;
     const body = data!;
 
@@ -335,11 +335,11 @@ export async function handleFeedRequest(request: Request, env: Env, path: string
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (doPath === ActivityFeedDOPaths.Append) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, FeedAppendRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, FeedAppendRequestSchema);
       if (errorResponse) return errorResponse;
       validatedGenericBody = JSON.stringify(data);
     } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, FeedReportRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, FeedReportRequestSchema);
       if (errorResponse) return errorResponse;
       validatedGenericBody = JSON.stringify(data);
     }
@@ -360,7 +360,7 @@ export async function handlePartyRequest(request: Request, env: Env, path: strin
   const userId = authResult.userId;
   const partyId = extractIdFromPath(path, ApiEndpoint.Party.Base);
   if (!partyId && request.method === HttpMethod.Post) {
-    const { errorResponse: createBodyError } = await validateZodBody(request.clone(), env, PartyActionRequestSchema);
+    const { errorResponse: createBodyError } = await validateSchemaBody(request.clone(), env, PartyActionRequestSchema);
     if (createBodyError) return createBodyError;
     const newPartyId = crypto.randomUUID();
     const stub = ns.get(ns.idFromName(newPartyId));
@@ -373,7 +373,7 @@ export async function handlePartyRequest(request: Request, env: Env, path: strin
   if (!partyId) return stubJson(env, { partyId: '', members: [] });
   let partyBody = {};
   if (request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request, env, PartyActionRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, PartyActionRequestSchema);
     if (errorResponse) return errorResponse;
     partyBody = data || {};
   }
@@ -430,19 +430,19 @@ export async function handleNotificationRequest(request: Request, env: Env, path
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (doPath === NotificationDOPaths.Push) {
-      const { data: pushData, errorResponse: pushError } = await validateZodBody(request.clone(), env, NotificationPushRequestSchema);
+      const { data: pushData, errorResponse: pushError } = await validateSchemaBody(request.clone(), env, NotificationPushRequestSchema);
       if (pushError) return pushError;
       validatedGenericBody = JSON.stringify(pushData);
     } else if (doPath === NotificationDOPaths.MarkRead) {
-      const { data: markReadData, errorResponse: markReadError } = await validateZodBody(request.clone(), env, NotificationMarkReadRequestSchema);
+      const { data: markReadData, errorResponse: markReadError } = await validateSchemaBody(request.clone(), env, NotificationMarkReadRequestSchema);
       if (markReadError) return markReadError;
       validatedGenericBody = JSON.stringify(markReadData);
     } else if (doPath === NotificationDOPaths.Preferences) {
-      const { data: preferencesData, errorResponse: preferencesError } = await validateZodBody(request.clone(), env, NotificationPreferencesRequestSchema);
+      const { data: preferencesData, errorResponse: preferencesError } = await validateSchemaBody(request.clone(), env, NotificationPreferencesRequestSchema);
       if (preferencesError) return preferencesError;
       validatedGenericBody = JSON.stringify(preferencesData);
     } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, NotificationActionRequestSchema);
+      const { data: genData, errorResponse: genError } = await validateSchemaBody(request.clone(), env, NotificationActionRequestSchema);
       if (genError) return genError;
       validatedGenericBody = JSON.stringify(genData);
     }
@@ -536,7 +536,7 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
   const isList = path === ApiEndpoint.Inventory.List || path.endsWith(`/${InventoryDOSegment.List}`);
   if (request.method === HttpMethod.Post && (isGift || isTrade)) {
     if (isGift) {
-      const { data, errorResponse } = await validateZodBody(request, env, InventoryGiftRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request, env, InventoryGiftRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data! as { itemId: string; targetUserId: string; idempotencyKey?: string };
       const flowResult = await flowRunner.run(
@@ -557,7 +557,7 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const { data, errorResponse } = await validateZodBody(request, env, InventoryTradeRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request, env, InventoryTradeRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data! as { myItemId: string; theirItemId: string; targetUserId: string; idempotencyKey?: string };
     const flowResult = await flowRunner.run(
@@ -588,15 +588,15 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (isAddItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryAddItemRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryAddItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     } else if (isRemoveItem) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryRemoveItemRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryRemoveItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, InventoryEquipItemRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryEquipItemRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
     }
@@ -628,15 +628,15 @@ export async function handleMarketplaceRequest(request: Request, env: Env, path:
   let body: string | undefined;
   if (request.method === HttpMethod.Post) {
     if (buyPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceBuyRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, MarketplaceBuyRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify({ ...data, buyerId: authUserId });
     } else if (sellPath) {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceSellRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, MarketplaceSellRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify({ ...data, sellerId: authUserId });
     } else {
-      const { data, errorResponse } = await validateZodBody(request.clone(), env, MarketplaceEmptyRequestSchema);
+      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, MarketplaceEmptyRequestSchema);
       if (errorResponse || !data) return errorResponse!;
       body = JSON.stringify(data);
     }
@@ -737,7 +737,7 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (segment === TournamentDOSegment.Register) {
-      const { data: registerData, errorResponse: registerError } = await validateZodBody(request.clone(), env, TournamentRegisterRequestSchema);
+      const { data: registerData, errorResponse: registerError } = await validateSchemaBody(request.clone(), env, TournamentRegisterRequestSchema);
       if (registerError) return registerError;
       const body = registerData!;
       validatedGenericBody = JSON.stringify({
@@ -746,11 +746,11 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
         elo: body.elo,
       });
     } else if (segment === TournamentDOSegment.Start) {
-      const { errorResponse: startError } = await validateZodBody(request.clone(), env, TournamentStartRequestSchema);
+      const { errorResponse: startError } = await validateSchemaBody(request.clone(), env, TournamentStartRequestSchema);
       if (startError) return startError;
       validatedGenericBody = JSON.stringify({});
     } else {
-      const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, TournamentResultRequestSchema);
+      const { data: genData, errorResponse: genError } = await validateSchemaBody(request.clone(), env, TournamentResultRequestSchema);
       if (genError) return genError;
       validatedGenericBody = JSON.stringify(genData);
     }
@@ -771,7 +771,7 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
   const userId = authResult.userId;
   const stub = ns.get(ns.idFromName(userId));
   if (path === ApiEndpoint.Settings.Base && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateZodBody(request.clone(), env, SettingsUpdateRequestSchema);
+    const { data, errorResponse } = await validateSchemaBody(request.clone(), env, SettingsUpdateRequestSchema);
     if (errorResponse) return errorResponse;
     const body = data!;
     const settingsBody = {
@@ -792,7 +792,7 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
   const doPath = path.includes(SettingsDOSegment.Update) ? SettingsDOPaths.Update : SettingsDOPaths.Get;
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    const { data: genData, errorResponse: genError } = await validateZodBody(request.clone(), env, SettingsUpdateRequestSchema);
+    const { data: genData, errorResponse: genError } = await validateSchemaBody(request.clone(), env, SettingsUpdateRequestSchema);
     if (genError) return genError;
     const body = genData!;
     validatedGenericBody = JSON.stringify({

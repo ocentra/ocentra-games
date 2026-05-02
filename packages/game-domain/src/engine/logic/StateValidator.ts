@@ -2,10 +2,11 @@ import {
   type GameState,
   type Player,
   type PlayerAction,
-  type Card,
+  type RuntimePiece,
   GamePhase,
   Suit,
 } from '@/types/game';
+import { isRuntimeCard } from '@/deck/runtimeDeck';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -155,7 +156,7 @@ export class StateValidator {
 
     if (player.declaredSuit) {
       const hasCardOfSuit = player.hand.some(
-        (card) => card.suit === player.declaredSuit
+        (piece) => isRuntimeCard(piece) && piece.suit === player.declaredSuit
       );
       if (!hasCardOfSuit) {
         errors.push(
@@ -169,34 +170,28 @@ export class StateValidator {
     gameState: GameState,
     errors: string[]
   ): void {
-    const allCards: Card[] = [];
+    const allPieces: RuntimePiece[] = [];
 
     for (const player of gameState.players) {
-      allCards.push(...player.hand);
+      allPieces.push(...player.hand);
     }
 
-    allCards.push(...gameState.deck);
-    allCards.push(...gameState.discardPile);
+    allPieces.push(...gameState.deck);
+    allPieces.push(...gameState.discardPile);
 
     if (gameState.floorCard) {
-      allCards.push(gameState.floorCard);
+      allPieces.push(gameState.floorCard);
     }
 
-    if (allCards.length !== 52) {
-      errors.push(
-        `Invalid total card count: ${allCards.length}, expected 52`
-      );
+    const pieceIds = allPieces.map((piece) => piece.id);
+    const uniquePieceIds = new Set(pieceIds);
+    if (pieceIds.length !== uniquePieceIds.size) {
+      errors.push('Duplicate runtime pieces detected in game');
     }
 
-    const cardIds = allCards.map((card) => card.id);
-    const uniqueCardIds = new Set(cardIds);
-    if (cardIds.length !== uniqueCardIds.size) {
-      errors.push('Duplicate cards detected in game');
-    }
-
-    for (const card of allCards) {
-      if (!this.isValidCard(card)) {
-        errors.push(`Invalid card structure: ${JSON.stringify(card)}`);
+    for (const piece of allPieces) {
+      if (!this.isValidPiece(piece)) {
+        errors.push(`Invalid piece structure: ${JSON.stringify(piece)}`);
       }
     }
   }
@@ -396,7 +391,7 @@ export class StateValidator {
       );
     }
 
-    const data = action.data as { cards: Card[] };
+    const data = action.data as { cards: RuntimePiece[] };
     if (
       !data ||
       !Array.isArray(data.cards) ||
@@ -416,7 +411,7 @@ export class StateValidator {
     void gameState;
     void warnings;
     if (action.type === 'rebuttal') {
-      const data = action.data as { cards: Card[] };
+      const data = action.data as { cards: RuntimePiece[] };
       if (data && data.cards) {
         for (const card of data.cards) {
           const hasCard = player.hand.some(
@@ -438,13 +433,20 @@ export class StateValidator {
     }
   }
 
-  private isValidCard(card: Card): boolean {
-    return (
-      typeof card.id === 'string' &&
-      Object.values(Suit).includes(card.suit) &&
-      typeof card.value === 'number' &&
-      card.value >= 2 &&
-      card.value <= 14
-    );
+  private isValidPiece(piece: RuntimePiece): boolean {
+    if (
+      typeof piece.id !== 'string' ||
+      typeof piece.logicalId !== 'string' ||
+      typeof piece.pieceKind !== 'string' ||
+      typeof piece.family !== 'string'
+    ) {
+      return false;
+    }
+
+    if (piece.pieceKind !== 'card') {
+      return true;
+    }
+
+    return isRuntimeCard(piece) && piece.value >= 2 && piece.value <= 14;
   }
 }

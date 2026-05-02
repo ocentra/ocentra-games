@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-04-29
+**Last Updated:** 2026-05-02
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -79,6 +79,12 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 ### Testing
 - See [`.cursor/rules/ocentra-test-rules.mdc`](.cursor/rules/ocentra-test-rules.mdc)
 - All code must have tests where applicable
+
+### Card-game Layout / Local Pilot
+- For layout authoring, prefer the standalone design-studio / preview-canvas flow; saving a layout there already does the local save plus targeted R2 sync for that asset.
+- The local pilot runtime is currently ready for **Claim** only; treat other card-game local-pilot paths as not ready unless the asset/runtime explicitly says otherwise.
+- When debugging the local Claim play route, run the exact screen test first: `cmd /c npm exec -- vitest run src\ui\pages\games\CardGamePlay\GameScreenPage.test.tsx`, then rerun broader validation only after that warning/failure is clean.
+- After changing shared layout types in `packages/game-ui-types`, rebuild shared deps first (`npm run dev:prep:editor` or `npm run dev:prep:main`) before trusting downstream type-check failures.
 
 ---
 
@@ -189,10 +195,15 @@ npm run dev:prep:editor  # Prebuild shared workspace deps for asset editor
 npm run dev:prep:worker  # Prebuild shared workspace deps for Cloudflare worker
 npm run dev:compare      # Shared web stack + desktop/mobile compare targets
 npm run dev:editor:stack # Asset editor with shared backend/dev stack
+npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
 npm run dev:seed:assets  # Seed and verify local asset payloads
+npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
+npm run dev:seed:assets:force # Force re-upload during local asset seeding
 npm run build            # Production build
 npm test                 # Unit tests
+npm run test:editor      # Asset-editor package tests
 npm run test:e2e         # E2E tests
+npm run test:editor:prod-smoke # Prod-like asset-editor smoke test
 npm run lint             # ESLint + type check
 npm run validate:main    # Main-app focused lint + type-check
 npm run validate:editor  # Asset-editor focused lint + type-check
@@ -201,6 +212,8 @@ npm run logs:main:errors # Query local main-app errors
 npm run logs:main:stats  # Query local main-app log stats
 npm run logs:vite        # Query local Vite/dev-server logs
 npm run logs:vite:errors # Query local Vite/dev-server errors
+npm run logs:query       # Flexible local log queries (recent/errors/stats/search)
+npm run logs:db:rebuild  # Rebuild local log DuckDB from NDJSON files
 ```
 
 ---
@@ -212,12 +225,15 @@ npm run logs:vite:errors # Query local Vite/dev-server errors
 **Do:**
 1. **Query DuckDB** from `packages/card-games`: e.g. `npm run names-audit` → stdout is `{ "rows": [ { "slug", "display_name", "source_file" }, ... ], "total": N }`.
 2. **Edit only those files** indicated by the query (e.g. `src/processed-games/<slug>.json` for each affected slug).
-3. **Re-ingest** so the DB matches: `npm run ingest` (or use data-explorer Re-ingest).
+3. **Validate touched files first**: `npm run validate:one -- src/processed-games/<slug>.json` for a targeted check, or `npm run validate:list:n20` / `npm run validate:list:strict:n20` to inspect failures in batches without loading the whole catalog.
+4. **Re-ingest** so the DB matches: `npm run ingest` (or use data-explorer Re-ingest).
 
 Available queries (from card-games root):
 
 | Command | Purpose |
 |--------|--------|
+| `npm run db:init` | Create/reset the DuckDB catalog from migrations before first ingest or after a local reset. |
+| `npm run db:migrate` | Apply new card-games DB migrations. |
 | `npm run names-audit` | Rows where `name`/`alsoKnownAs` contain `(see …)`. Fix: strip that suffix in the listed JSONs, then ingest. |
 
 More queries can be added under `packages/card-games/db/` (same pattern: script runs SQL, prints JSON to stdout). See [packages/card-games/db/README.md](packages/card-games/db/README.md). The temp data-explorer UI lives in `packages/data-explorer`.
@@ -231,6 +247,10 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 - **`npx.ps1` / `npm.ps1` cannot be loaded because running scripts is disabled**: Invoke through `cmd /c` instead of the PowerShell shim, e.g. `cmd /c npx eslint path\to\file.tsx` or `cmd /c npm run lint`.
 
 - **Validation is noisy or blocked by unrelated tooling**: Prefer targeted checks before repo-wide commands. Typical order in this repo: file-level eslint via `cmd /c npx eslint ...`, package-level validation such as `cmd /c npm --prefix packages/core-ui run lint:exec`, then broader gates like `cmd /c npm run lint`.
+
+- **Card-game asset work needs validation without dragging the whole repo first**: Start with the package-level tests that match the asset contract you changed, then run the root gate. Current proven path: `cmd /c npm --prefix packages/asset-editor run test -- src/adapters/assets/createGameModeBundle.test.ts`, `cmd /c npm --prefix packages/game-asset-domain run test -- src/game/gameMechanics/MechanicsTranslator.test.ts src/schemas/asset/card-game-mechanics-data.schema.test.ts`, then `cmd /c npm run lint`.
+
+- **`logs:main` / `logs:vite` says the DB is missing or stale**: Rebuild from NDJSON first with `npm run logs:db:rebuild -- --scope main`, `npm run logs:db:rebuild -- --scope vite`, or `npm run logs:db:rebuild -- --scope all`, then retry the query. For ad hoc filtering, use `npm run logs:query -- search "<term>" --scope main --format json`.
 
 - **`yarn` is not recognized** or **`@stellar/stellar-sdk` command failed**: A transitive dependency (Stellar SDK, via Trezor wallet adapter) runs a lifecycle script that expects Yarn and Unix shell. Use:
   ```bash

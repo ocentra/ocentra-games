@@ -1,43 +1,43 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { NoPlaceholdersValid } from '../shared/validation-guards';
 import { SupportedDeckTriplesSchema } from './supported-deck-triples.schema';
 
-const AssetResourceEntrySchema = z.object({
-  resourceEntryType: z.string().optional(),
-  path: z.string().min(1),
-  guid: z.string().uuid().optional(),
-  assetType: z.string().min(1),
-  displayName: z.string().min(1).and(NoPlaceholdersValid).optional(),
-  variant: z.string().nullable().optional(),
+const AssetResourceEntrySchema = schema.object({
+  resourceEntryType: schema.string().optional(),
+  path: schema.string().min(1),
+  guid: schema.string().uuid().optional(),
+  assetType: schema.string().min(1),
+  displayName: schema.string().min(1).and(NoPlaceholdersValid).optional(),
+  variant: schema.string().nullable().optional(),
 }).passthrough();
 
 const DominoTileResourceEntrySchema = AssetResourceEntrySchema.extend({
-  path: z.string().min(1).refine(p => p.endsWith('.asset'), { message: 'Tile template path must end in .asset' }),
-  assetType: z.literal('DominoTile'),
-  displayName: z.string().min(1).and(NoPlaceholdersValid),
+  path: schema.string().min(1).refine(p => p.endsWith('.asset'), { message: 'Tile template path must end in .asset' }),
+  assetType: schema.literal('DominoTile'),
+  displayName: schema.string().min(1).and(NoPlaceholdersValid),
 });
 
-export const DominoDeckDataSchema = z.object({
-  name: z.string().min(1).and(NoPlaceholdersValid),
+export const DominoDeckDataSchema = schema.object({
+  name: schema.string().min(1).and(NoPlaceholdersValid),
   supportedTriples: SupportedDeckTriplesSchema,
-  tileTemplates: z.array(DominoTileResourceEntrySchema),
-  tileComposition: z.array(
-    z.object({
+  tileTemplates: schema.array(DominoTileResourceEntrySchema),
+  tileComposition: schema.array(
+    schema.object({
       tileTemplate: DominoTileResourceEntrySchema,
-      copies: z.number().int().min(1).default(1),
-      logicalTileId: z.string().min(1).optional(),
+      copies: schema.number().int().min(1).default(1),
+      logicalTileId: schema.string().min(1).optional(),
     })
   ).optional(),
   dominoRankingAsset: AssetResourceEntrySchema.extend({
-    assetType: z.literal('DominoRanking'),
-    guid: z.string().uuid(),
+    assetType: schema.literal('DominoRanking'),
+    guid: schema.string().uuid(),
   }),
 }).superRefine((data, ctx) => {
   const hasTemplates = data.tileTemplates.length > 0;
   const hasComposition = Array.isArray(data.tileComposition) && data.tileComposition.length > 0;
   if (!hasTemplates && !hasComposition) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: schema.IssueCode.custom,
       path: ['tileTemplates'],
       message: 'DominoDeck requires tileTemplates or tileComposition',
     });
@@ -51,7 +51,7 @@ export const DominoDeckDataSchema = z.object({
       triple.suitSet === 'E_awase';
     if (!isWestern) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: schema.IssueCode.custom,
         path: ['supportedTriples', index],
         message: `DominoDeck assets may only support domino-family triples, got ${triple.deckType}/${triple.suitSet}/${triple.rankSet}`,
       });

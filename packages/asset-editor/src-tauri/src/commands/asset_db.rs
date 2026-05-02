@@ -1434,6 +1434,14 @@ pub fn get_local_index_hash() -> Result<String, String> {
 
 #[derive(Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct HomepageBadge {
+    pub label: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tone: Option<String>,
+}
+
+#[derive(Clone, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct HomepageFeaturedGame {
     pub game_id: String,
     pub guid: String,
@@ -1441,10 +1449,98 @@ pub struct HomepageFeaturedGame {
     pub enabled: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release_status: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub featured_top_badges: Option<Vec<HomepageBadge>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub featured_bottom_badges: Option<Vec<HomepageBadge>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tagline: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tagline2: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub short_description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_players: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_players: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub game_category: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subcategory: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub difficulty: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub duration: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deck: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub players_display: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quality: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "bannerImage")]
     pub banner_image: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none", rename = "gameIcon")]
     pub game_icon: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub carousel_images: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub carousel_playback_mode: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub carousel_transition_type: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub carousel_transition_duration_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_image: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_alt: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_start_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_duration_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_scale_from: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_scale_to: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_opacity_from: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_opacity_to: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_visible_from_index: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_logo_visible_to_index: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_color: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_start_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_duration_ms: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_scale_from: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_scale_to: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_opacity_from: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_opacity_to: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_visible_from_index: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_title_visible_to_index: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_overlay_tint_color: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_overlay_tint_opacity: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_vignette_opacity: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub banner_fade_to_black_opacity: Option<f64>,
 }
 
 #[derive(serde::Serialize)]
@@ -1597,7 +1693,258 @@ fn load_feature_banner_items(
     Ok(out)
 }
 
+#[derive(Default)]
+struct HomepageCarouselFields {
+    carousel_images: Option<Vec<String>>,
+    carousel_playback_mode: Option<String>,
+    carousel_transition_type: Option<String>,
+    carousel_transition_duration_ms: Option<f64>,
+    banner_logo_image: Option<String>,
+    banner_logo_alt: Option<String>,
+    banner_logo_start_ms: Option<f64>,
+    banner_logo_duration_ms: Option<f64>,
+    banner_logo_scale_from: Option<f64>,
+    banner_logo_scale_to: Option<f64>,
+    banner_logo_opacity_from: Option<f64>,
+    banner_logo_opacity_to: Option<f64>,
+    banner_logo_visible_from_index: Option<f64>,
+    banner_logo_visible_to_index: Option<f64>,
+    banner_title_text: Option<String>,
+    banner_title_color: Option<String>,
+    banner_title_start_ms: Option<f64>,
+    banner_title_duration_ms: Option<f64>,
+    banner_title_scale_from: Option<f64>,
+    banner_title_scale_to: Option<f64>,
+    banner_title_opacity_from: Option<f64>,
+    banner_title_opacity_to: Option<f64>,
+    banner_title_visible_from_index: Option<f64>,
+    banner_title_visible_to_index: Option<f64>,
+    banner_overlay_tint_color: Option<String>,
+    banner_overlay_tint_opacity: Option<f64>,
+    banner_vignette_opacity: Option<f64>,
+    banner_fade_to_black_opacity: Option<f64>,
+}
+
+#[derive(Default)]
+struct HomepageInfoFields {
+    tags: Option<Vec<String>>,
+    featured_top_badges: Option<Vec<HomepageBadge>>,
+    featured_bottom_badges: Option<Vec<HomepageBadge>>,
+    tagline: Option<String>,
+    tagline2: Option<String>,
+    short_description: Option<String>,
+    description: Option<String>,
+    min_players: Option<f64>,
+    max_players: Option<f64>,
+    game_category: Option<String>,
+    subcategory: Option<String>,
+    difficulty: Option<String>,
+    duration: Option<String>,
+    deck: Option<String>,
+    players_display: Option<String>,
+    quality: Option<String>,
+}
+
+fn homepage_string(data: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<String> {
+    data.get(key)
+        .and_then(|x| x.as_str())
+        .filter(|s| !s.is_empty())
+        .map(String::from)
+}
+
+fn homepage_number(data: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<f64> {
+    data.get(key).and_then(|x| x.as_f64())
+}
+
+fn homepage_strings(
+    data: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<Vec<String>> {
+    let values: Vec<String> = data
+        .get(key)
+        .and_then(|x| x.as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|x| x.as_str())
+        .filter(|s| !s.is_empty())
+        .map(String::from)
+        .collect();
+    if values.is_empty() {
+        None
+    } else {
+        Some(values)
+    }
+}
+
+fn homepage_badges(
+    data: &serde_json::Map<String, serde_json::Value>,
+    key: &str,
+) -> Option<Vec<HomepageBadge>> {
+    let badges: Vec<HomepageBadge> = data
+        .get(key)
+        .and_then(|x| x.as_array())
+        .into_iter()
+        .flatten()
+        .filter_map(|item| {
+            let obj = item.as_object()?;
+            let label = obj.get("label").and_then(|x| x.as_str())?.trim();
+            if label.is_empty() {
+                return None;
+            }
+            let tone = obj
+                .get("tone")
+                .and_then(|x| x.as_str())
+                .map(str::trim)
+                .filter(|value| !value.is_empty())
+                .map(String::from);
+            Some(HomepageBadge {
+                label: label.to_string(),
+                tone,
+            })
+        })
+        .collect();
+    if badges.is_empty() {
+        None
+    } else {
+        Some(badges)
+    }
+}
+
+fn load_homepage_game_value(root: &Path, game_asset_path: &str) -> Option<serde_json::Value> {
+    let game_full = root.join(
+        game_asset_path
+            .strip_prefix("Resources/")
+            .unwrap_or(game_asset_path),
+    );
+    let game_text = fs::read_to_string(&game_full).ok()?;
+    json5::from_str::<serde_json::Value>(&game_text).ok()
+}
+
+fn load_homepage_carousel_fields(root: &Path, game_asset_path: &str) -> HomepageCarouselFields {
+    let mut fields = HomepageCarouselFields::default();
+    let Some(game_value) = load_homepage_game_value(root, game_asset_path) else {
+        return fields;
+    };
+    let Some(carousel_path) = game_value
+        .get("data")
+        .and_then(|d| d.get("carouselImagesAsset"))
+        .and_then(|entry| entry.get("path"))
+        .and_then(|path| path.as_str())
+    else {
+        return fields;
+    };
+    let carousel_full = root.join(
+        carousel_path
+            .strip_prefix("Resources/")
+            .unwrap_or(carousel_path),
+    );
+    let Ok(carousel_text) = fs::read_to_string(&carousel_full) else {
+        return fields;
+    };
+    let Ok(carousel_value) = json5::from_str::<serde_json::Value>(&carousel_text) else {
+        return fields;
+    };
+    let Some(data) = carousel_value.get("data").and_then(|d| d.as_object()) else {
+        return fields;
+    };
+
+    if let Some(slides) = data.get("slides").and_then(|x| x.as_array()) {
+        let images: Vec<String> = slides
+            .iter()
+            .filter_map(|slide| {
+                slide
+                    .get("imageHash")
+                    .and_then(|hash| hash.as_str())
+                    .filter(|hash| !hash.is_empty())
+                    .map(String::from)
+            })
+            .collect();
+        if !images.is_empty() {
+            fields.carousel_images = Some(images);
+        }
+    }
+
+    fields.carousel_playback_mode = homepage_string(data, "playbackMode");
+    fields.carousel_transition_type = homepage_string(data, "transitionType");
+    fields.carousel_transition_duration_ms = homepage_number(data, "transitionDurationMs");
+    fields.banner_logo_image = homepage_string(data, "logoImageHash");
+    fields.banner_logo_alt = homepage_string(data, "logoAlt");
+    fields.banner_logo_start_ms = homepage_number(data, "logoStartMs");
+    fields.banner_logo_duration_ms = homepage_number(data, "logoDurationMs");
+    fields.banner_logo_scale_from = homepage_number(data, "logoScaleFrom");
+    fields.banner_logo_scale_to = homepage_number(data, "logoScaleTo");
+    fields.banner_logo_opacity_from = homepage_number(data, "logoOpacityFrom");
+    fields.banner_logo_opacity_to = homepage_number(data, "logoOpacityTo");
+    fields.banner_logo_visible_from_index = homepage_number(data, "logoVisibleFromIndex");
+    fields.banner_logo_visible_to_index = homepage_number(data, "logoVisibleToIndex");
+    fields.banner_title_text = homepage_string(data, "titleText");
+    fields.banner_title_color = homepage_string(data, "titleTextColor");
+    fields.banner_title_start_ms = homepage_number(data, "titleTextStartMs");
+    fields.banner_title_duration_ms = homepage_number(data, "titleTextDurationMs");
+    fields.banner_title_scale_from = homepage_number(data, "titleTextScaleFrom");
+    fields.banner_title_scale_to = homepage_number(data, "titleTextScaleTo");
+    fields.banner_title_opacity_from = homepage_number(data, "titleTextOpacityFrom");
+    fields.banner_title_opacity_to = homepage_number(data, "titleTextOpacityTo");
+    fields.banner_title_visible_from_index = homepage_number(data, "titleTextVisibleFromIndex");
+    fields.banner_title_visible_to_index = homepage_number(data, "titleTextVisibleToIndex");
+    fields.banner_overlay_tint_color = homepage_string(data, "overlayTintColor");
+    fields.banner_overlay_tint_opacity = homepage_number(data, "overlayTintOpacity");
+    fields.banner_vignette_opacity = homepage_number(data, "vignetteOpacity");
+    fields.banner_fade_to_black_opacity = homepage_number(data, "fadeToBlackOpacity");
+    fields
+}
+
+fn load_homepage_info_fields(root: &Path, game_asset_path: &str) -> HomepageInfoFields {
+    let mut fields = HomepageInfoFields::default();
+    let Some(game_value) = load_homepage_game_value(root, game_asset_path) else {
+        return fields;
+    };
+    let Some(game_data) = game_value.get("data").and_then(|d| d.as_object()) else {
+        return fields;
+    };
+
+    fields.min_players = homepage_number(game_data, "minPlayers");
+    fields.max_players = homepage_number(game_data, "maxPlayers");
+
+    let Some(info_path) = game_data
+        .get("gameInfoAsset")
+        .and_then(|entry| entry.get("path"))
+        .and_then(|path| path.as_str())
+    else {
+        return fields;
+    };
+    let info_full = root.join(info_path.strip_prefix("Resources/").unwrap_or(info_path));
+    let Ok(info_text) = fs::read_to_string(&info_full) else {
+        return fields;
+    };
+    let Ok(info_value) = json5::from_str::<serde_json::Value>(&info_text) else {
+        return fields;
+    };
+    let Some(info_data) = info_value.get("data").and_then(|d| d.as_object()) else {
+        return fields;
+    };
+
+    fields.tags = homepage_strings(info_data, "tags");
+    fields.featured_top_badges = homepage_badges(info_data, "featuredTopBadges");
+    fields.featured_bottom_badges = homepage_badges(info_data, "featuredBottomBadges");
+    fields.tagline = homepage_string(info_data, "tagline");
+    fields.tagline2 = homepage_string(info_data, "tagline2");
+    fields.short_description = homepage_string(info_data, "shortDescription");
+    fields.description = homepage_string(info_data, "description");
+    fields.min_players = homepage_number(info_data, "minPlayers").or(fields.min_players);
+    fields.max_players = homepage_number(info_data, "maxPlayers").or(fields.max_players);
+    fields.game_category = homepage_string(info_data, "gameCategory");
+    fields.subcategory = homepage_string(info_data, "subcategory");
+    fields.difficulty = homepage_string(info_data, "difficulty");
+    fields.duration = homepage_string(info_data, "duration");
+    fields.deck = homepage_string(info_data, "deck");
+    fields.players_display = homepage_string(info_data, "playersDisplay");
+    fields.quality = homepage_string(info_data, "quality");
+    fields
+}
+
 fn load_homepage_catalog(conn: &Connection) -> Result<HomepageCatalogPayload, String> {
+    let root = resources_dir();
     let mut stmt = conn
         .prepare(
             "SELECT path, guid, asset_type, display_name, release_status, banner_image_hash, game_icon_hash, game_id
@@ -1644,14 +1991,60 @@ fn load_homepage_catalog(conn: &Connection) -> Result<HomepageCatalogPayload, St
             .unwrap_or(true);
         let game_id_val =
             game_id.unwrap_or_else(|| path.split('/').rev().nth(1).unwrap_or("").to_string());
+        let carousel_fields = load_homepage_carousel_fields(&root, &path);
+        let info_fields = load_homepage_info_fields(&root, &path);
         let game = HomepageFeaturedGame {
             game_id: game_id_val,
             guid: guid.clone(),
             name: display_name,
             enabled,
             release_status: release_status.clone(),
+            tags: info_fields.tags,
+            featured_top_badges: info_fields.featured_top_badges,
+            featured_bottom_badges: info_fields.featured_bottom_badges,
+            tagline: info_fields.tagline,
+            tagline2: info_fields.tagline2,
+            short_description: info_fields.short_description,
+            description: info_fields.description,
+            min_players: info_fields.min_players,
+            max_players: info_fields.max_players,
+            game_category: info_fields.game_category,
+            subcategory: info_fields.subcategory,
+            difficulty: info_fields.difficulty,
+            duration: info_fields.duration,
+            deck: info_fields.deck,
+            players_display: info_fields.players_display,
+            quality: info_fields.quality,
             banner_image: banner_image_hash,
             game_icon: game_icon_hash,
+            carousel_images: carousel_fields.carousel_images,
+            carousel_playback_mode: carousel_fields.carousel_playback_mode,
+            carousel_transition_type: carousel_fields.carousel_transition_type,
+            carousel_transition_duration_ms: carousel_fields.carousel_transition_duration_ms,
+            banner_logo_image: carousel_fields.banner_logo_image,
+            banner_logo_alt: carousel_fields.banner_logo_alt,
+            banner_logo_start_ms: carousel_fields.banner_logo_start_ms,
+            banner_logo_duration_ms: carousel_fields.banner_logo_duration_ms,
+            banner_logo_scale_from: carousel_fields.banner_logo_scale_from,
+            banner_logo_scale_to: carousel_fields.banner_logo_scale_to,
+            banner_logo_opacity_from: carousel_fields.banner_logo_opacity_from,
+            banner_logo_opacity_to: carousel_fields.banner_logo_opacity_to,
+            banner_logo_visible_from_index: carousel_fields.banner_logo_visible_from_index,
+            banner_logo_visible_to_index: carousel_fields.banner_logo_visible_to_index,
+            banner_title_text: carousel_fields.banner_title_text,
+            banner_title_color: carousel_fields.banner_title_color,
+            banner_title_start_ms: carousel_fields.banner_title_start_ms,
+            banner_title_duration_ms: carousel_fields.banner_title_duration_ms,
+            banner_title_scale_from: carousel_fields.banner_title_scale_from,
+            banner_title_scale_to: carousel_fields.banner_title_scale_to,
+            banner_title_opacity_from: carousel_fields.banner_title_opacity_from,
+            banner_title_opacity_to: carousel_fields.banner_title_opacity_to,
+            banner_title_visible_from_index: carousel_fields.banner_title_visible_from_index,
+            banner_title_visible_to_index: carousel_fields.banner_title_visible_to_index,
+            banner_overlay_tint_color: carousel_fields.banner_overlay_tint_color,
+            banner_overlay_tint_opacity: carousel_fields.banner_overlay_tint_opacity,
+            banner_vignette_opacity: carousel_fields.banner_vignette_opacity,
+            banner_fade_to_black_opacity: carousel_fields.banner_fade_to_black_opacity,
         };
         featured.push(game.clone());
         if release_status.as_deref() == Some("Available") {

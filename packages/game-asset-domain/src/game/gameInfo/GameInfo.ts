@@ -4,10 +4,7 @@ import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import type { AssetReference } from '@ocentra/asset-domain/AssetReference';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
-import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
-import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
-import { GenerateUniqueGuidEvent } from '@ocentra/eventing-domain/events/assets/GenerateUniqueGuidEvent';
-import { createAssetGuid } from '@/AssetCreation';
+import { generateAssetGuid } from '@/AssetCreation';
 import type { AssetCreationContext, CreatedAsset } from '@/AssetCreation';
 import type { GameMode } from '@/gameMode/core/GameMode';
 import { PageSectionType } from '@/constants/page-section-type';
@@ -19,8 +16,6 @@ import { EmphasisType } from '@/constants/emphasis-type';
 import type { SynthesisManifest } from '@ocentra/eventing-domain/types/app-stubs';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import type { AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
-import { isAssetGUID } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { Category, SubCategory } from '@ocentra/game-domain/game/categories';
 import type { Difficulty } from '@ocentra/game-domain/game/difficulty';
 import type { PlayerMode } from '@ocentra/game-domain/game/playerMode';
@@ -483,30 +478,7 @@ export class GameInfo extends ScriptableObject {
   }
 
   static async create(context: AssetCreationContext): Promise<CreatedAsset> {
-    const deferred = new OperationDeferred<string>();
-    const publishResult = await EventBus.instance.publishAsync(new GenerateUniqueGuidEvent(deferred));
-    let guid: AssetGUIDType;
-    if (!publishResult.isSuccess) {
-      guid = createAssetGuid();
-      const log = MainAppLogger.instance;
-      log.logWarn('[GameInfo] Event system unavailable, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-        assetType: 'GameInfo',
-        gameId: context.gameId,
-        fallbackGuid: guid,
-      });
-    } else {
-      const result = await deferred.promise;
-      const guidString = result.isSuccess && result.value ? result.value : createAssetGuid();
-      guid = (isAssetGUID(guidString) ? guidString : guidString) as AssetGUIDType;
-      if (!result.isSuccess || !result.value) {
-        const log = MainAppLogger.instance;
-        log.logWarn('[GameInfo] GUID generation failed, using fallback GUID (not uniqueness-checked)', getStackTrace(), {
-          assetType: 'GameInfo',
-          gameId: context.gameId,
-          fallbackGuid: guid,
-        });
-      }
-    }
+    const guid = await generateAssetGuid('GameInfo', context.gameId);
     const assetId = `${context.gameId}-info`;
     const routePath = context.gameId.toLowerCase();
     const data: Record<string, unknown> = {
@@ -565,4 +537,3 @@ export class GameInfo extends ScriptableObject {
     return gi;
   }
 }
-

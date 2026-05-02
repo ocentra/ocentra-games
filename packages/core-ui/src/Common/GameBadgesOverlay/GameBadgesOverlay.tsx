@@ -15,10 +15,10 @@ export interface GameBadgesOverlayProps {
 export function GameBadgesOverlay({
   availableNow = false,
   freeToPlay = false,
-  solanaVerified = true,
+  solanaVerified = false,
   solanaImgSrc,
-  aiBenchmark = true,
-  leaderboard = true,
+  aiBenchmark = false,
+  leaderboard = false,
   className = '',
   trailingContent,
 }: GameBadgesOverlayProps) {

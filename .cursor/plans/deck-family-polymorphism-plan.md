@@ -233,52 +233,52 @@ export type CardIdentity =
 
 ---
 
-## 10. .asset JSON validation: single source (Zod) – card-games, main app, asset-editor agree
+## 10. .asset JSON validation: single source (Effect Schema) – card-games, main app, asset-editor agree
 
-**.asset files are JSON; they need strict validation (Zod/schema) in one place so card-games, main app, and asset-editor all use the same definition.**
+**.asset files are JSON; they need strict validation (Effect Schema) in one place so card-games, main app, and asset-editor all use the same definition.**
 
 **10.1 Current spread**
 
-- **game-asset-domain** (`packages/game-asset-domain/src/schemas/asset/`): Zod schemas for .asset envelope (`AssetSystemSchema`) and per-asset-type `data` (Deck, Card, CardRanking, PlayingCard*, Hanafuda*, Domino*, Mahjong*, etc.). Entry: `validateAssetFile(json)` in `asset-file-schema.ts`. Used by: runtime (ScriptableObject via `registerRuntimeAssetValidation`), game-asset-domain scripts (validate-decks, validate-cards, etc.).
-- **scripts/assets/requiredFieldValidation.ts**: Separate, constructor-based validation (asset type map, `getSerializableFields`, `requiredFieldsMap`). Used by `scripts/validate-assets-only.ts` → asset-editor `npm run validate:assets` (and thus editor lint). So CI for assets does **not** use Zod today.
+- **game-asset-domain** (`packages/game-asset-domain/src/schemas/asset/`): Effect Schema schemas for .asset envelope (`AssetSystemSchema`) and per-asset-type `data` (Deck, Card, CardRanking, PlayingCard*, Hanafuda*, Domino*, Mahjong*, etc.). Entry: `validateAssetFile(json)` in `asset-file-schema.ts`. Used by: runtime (ScriptableObject via `registerRuntimeAssetValidation`), game-asset-domain scripts (validate-decks, validate-cards, etc.).
+- **scripts/assets/requiredFieldValidation.ts**: Separate, constructor-based validation (asset type map, `getSerializableFields`, `requiredFieldsMap`). Used by `scripts/validate-assets-only.ts` → asset-editor `npm run validate:assets` (and thus editor lint). So CI for assets does **not** use Effect Schema today.
 - **card-games**: Does not validate .asset files (only game JSON). When it ever does, it must use the same validator.
 
 **10.2 Single source of truth**
 
-- **All .asset JSON shape and strict validation:** Zod schemas in **game-asset-domain** (`schemas/asset/*`). Every asset type emitted by the editor must have a corresponding Zod data schema in `AssetTypeToDataSchema` in `asset-file-schema.ts`. Add or tighten schemas (e.g. `.strict()`, required fields) so “strict” is fully in Zod.
+- **All .asset JSON shape and strict validation:** Effect Schema schemas in **game-asset-domain** (`schemas/asset/*`). Every asset type emitted by the editor must have a corresponding Effect Schema data schema in `AssetTypeToDataSchema` in `asset-file-schema.ts`. Add or tighten schemas (e.g. `.strict()`, required fields) so “strict” is fully in Effect Schema.
 
-**10.3 Unify CI and editor on Zod**
+**10.3 Unify CI and editor on Effect Schema**
 
 - Make asset-editor `validate:assets` use game-asset-domain’s `validateAssetFile()`:
-  - Add a small script (e.g. in game-asset-domain or repo scripts) that: globs `.asset` files, parses JSON (JSON5 if needed), calls `validateAssetFile()` from `@ocentra/game-asset-domain/schemas/asset/asset-file-schema`, exits non-zero and prints Zod errors on failure.
+  - Add a small script (e.g. in game-asset-domain or repo scripts) that: globs `.asset` files, parses JSON (JSON5 if needed), calls `validateAssetFile()` from `@ocentra/game-asset-domain/schemas/asset/asset-file-schema`, exits non-zero and prints schema errors on failure.
   - Wire asset-editor `npm run validate:assets` to this script (e.g. pattern `packages/asset-editor/Resources/**/*.asset`).
-- Result: one code path for “is this .asset file valid?” → Zod in game-asset-domain.
+- Result: one code path for “is this .asset file valid?” → Effect Schema in game-asset-domain.
 
 **10.4 Constructor-based validation**
 
-- Once CI uses Zod, do **not** use the constructor/requiredFieldsMap path for file validation. Keep it only for editor UI (e.g. inspector “required” hints) if needed; derive or document from Zod where possible. Update `docs/asset-schema-changes.md`: .asset shape and strict validation are defined only in game-asset-domain Zod; new required fields go there first; producers (editor, Rust manifest, etc.) follow.
+- Once CI uses Effect Schema, do **not** use the constructor/requiredFieldsMap path for file validation. Keep it only for editor UI (e.g. inspector “required” hints) if needed; derive or document from Effect Schema where possible. Update `docs/asset-schema-changes.md`: .asset shape and strict validation are defined only in game-asset-domain Effect Schema; new required fields go there first; producers (editor, Rust manifest, etc.) follow.
 
 **10.5 Who uses the single source**
 
 - **Runtime:** Already uses game-asset-domain via `registerRuntimeAssetValidation`.
-- **asset-editor CI:** Switch to Zod-based script above.
+- **asset-editor CI:** Switch to Effect Schema-based script above.
 - **card-games:** No change until it validates .assets; then it must use `validateAssetFile()` from game-asset-domain (or a thin wrapper). Document in AGENTS.md or asset-validation doc.
 
 **10.6 Alignment with deck/card polymorphism**
 
-- When CardRanking and Card get `deckFamily` and `familyPayload` (and Card gets `cardIdentity`), their **Zod data schemas** in game-asset-domain are the only definition for those .asset types. Add/update schemas there as part of the polymorphism work so generated and hand-edited .assets stay valid.
+- When CardRanking and Card get `deckFamily` and `familyPayload` (and Card gets `cardIdentity`), their **Effect Schema data schemas** in game-asset-domain are the only definition for those .asset types. Add/update schemas there as part of the polymorphism work so generated and hand-edited .assets stay valid.
 
 **10.7 Required-assets report script (no fake green)**
 
 - **Script:** `scripts/required-assets-report.ts`. Run: `npm run validate:required-assets` or `npx tsx scripts/required-assets-report.ts [glob] [--check-images]`.
-- **Purpose:** Enumerate from game-domain catalog (ALLOWED_TRIPLES, getCardIds) every required CardRanking (per unique suitSet+rankSet), Deck (per deck type), and Card pool (per ranking). Validate existing .asset files with strict Zod. Report: invalid .assets (Zod failures), missing CardRankings, missing Decks (count), missing Cards per ranking. Option `--check-images`: fail when a Card .asset has no image ref so you know to provide images.
+- **Purpose:** Enumerate from game-domain catalog (ALLOWED_TRIPLES, getCardIds) every required CardRanking (per unique suitSet+rankSet), Deck (per deck type), and Card pool (per ranking). Validate existing .asset files with strict Effect Schema. Report: invalid .assets (schema failures), missing CardRankings, missing Decks (count), missing Cards per ranking. Option `--check-images`: fail when a Card .asset has no image ref so you know to provide images.
 - **Full inventory (mandatory):** The report must list **every** .asset of the relevant types, not just counts or samples. For each type, show the complete list so we know what we have and what to fix:
-  - **Every CardRanking .asset** — path and status: valid (Zod) or invalid (Zod error). Even if it fails, we see it and know what to do.
+  - **Every CardRanking .asset** — path and status: valid (Effect Schema) or invalid (Effect Schema error). Even if it fails, we see it and know what to do.
   - **Every Deck .asset** — path and status: valid or invalid + reason.
   - **Every Card .asset** — path and status: valid or invalid + reason (incomplete/troubled is fine to show; we need to know what to fill).
   So: no hiding. We see every CardRanking, every Deck, every Card; failures are explicit and actionable.
 - **Policy: let them fail.** No backward compatibility in scriptables; no fake green. Strict validation, no lenient fallbacks. If something fails (e.g. missing `cardIdentity`, missing `deckFamily`, no image for xyz), the script and `validate:assets` fail so gaps are visible and fixable. More real failures is desired: we let them fail so we can pass with correct implementation and gaps filled. No hand-waving, no shortcuts, no barrel, no re-export, no fake passing validation or tests.
-- **Deck .asset:** Deck schema does not yet store `deckType`; script reports required deck-type count vs. how many Deck .assets passed Zod. Add `deckType` to Deck data schema to verify per-type coverage when needed.
+- **Deck .asset:** Deck schema does not yet store `deckType`; script reports required deck-type count vs. how many Deck .assets passed Effect Schema. Add `deckType` to Deck data schema to verify per-type coverage when needed.
 
 **10.8 Philosophy: fail = good; visibility over fake green**
 
@@ -297,6 +297,6 @@ export type CardIdentity =
 - **Polymorphic card identity** (new module in game-domain): `CardIdentity` union so we can create cards and rankings for many deck types.  
 - **Scriptables:** Rearranged and fixed as needed; no obligation to preserve backward compatibility for .assets or inspectors. CardRanking and Card become family-aware; asset editor gets family-driven UI.  
 - **.asset for various decks:** Same Deck and CardRanking asset types; family and payload vary. We fix scriptables and .assets as we go.  
-- **.asset JSON validation (Section 10):** Single source = game-asset-domain Zod. asset-editor CI and main app runtime use it; card-games uses it when it ever validates .assets. No separate constructor-based file validation; one place so card-games, main app, and asset-editor all agree.
+- **.asset JSON validation (Section 10):** Single source = game-asset-domain Effect Schema. asset-editor CI and main app runtime use it; card-games uses it when it ever validates .assets. No separate constructor-based file validation; one place so card-games, main app, and asset-editor all agree.
 
-This keeps the 1000+ validated games safe and confines churn to scriptables and additive game-domain surface. Section 9 describes asset creation for all DECK_TYPE_VALUES; Section 10 ensures all .asset validation is strict Zod in one place and shared by all consumers.
+This keeps the 1000+ validated games safe and confines churn to scriptables and additive game-domain surface. Section 9 describes asset creation for all DECK_TYPE_VALUES; Section 10 ensures all .asset validation is strict Effect Schema in one place and shared by all consumers.

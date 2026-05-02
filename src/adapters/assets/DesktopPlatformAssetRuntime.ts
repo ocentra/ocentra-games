@@ -29,6 +29,7 @@ import {
   getEntryIndexUrl,
   runWithConcurrency,
   DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY,
+  type JsonSliceFetchOptions,
 } from '@/adapters/assets/PlatformAssetRuntimeShared';
 import { fetchJsonSlice } from '@/adapters/assets/PlatformAssetRuntimeShared';
 
@@ -52,15 +53,18 @@ async function invokeDesktopFetch(url: string, ifNoneMatch?: string | null): Pro
 
 async function fetchDesktopJsonSlice<T>(
   url: string,
-  parse: (payload: unknown) => T | null
+  parse: (payload: unknown) => T | null,
+  options: JsonSliceFetchOptions = {}
 ): Promise<T | null> {
   if (!url) {
     return null;
   }
 
-  const cached = await getCachedJsonSlice<T>(url);
-  if (cached !== null) {
-    return cached;
+  if (!options.bypassCache) {
+    const cached = await getCachedJsonSlice<T>(url);
+    if (cached !== null) {
+      return cached;
+    }
   }
 
   try {
@@ -144,7 +148,11 @@ class DesktopPlatformAssetRuntimeImpl implements PlatformAssetRuntime {
 
   async getHomePageGames(storageConfig: StorageConfig) {
     return await measureRuntimeAssetOperation('desktop', 'homePageGames', async () =>
-      fetchDesktopJsonSlice(getSliceUrl(storageConfig, ApiEndpoint.Slices.Home), parseHomePageGamesPayload)
+      fetchDesktopJsonSlice(
+        getSliceUrl(storageConfig, ApiEndpoint.Slices.Home),
+        parseHomePageGamesPayload,
+        { bypassCache: true }
+      )
     );
   }
 

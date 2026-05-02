@@ -1,8 +1,8 @@
 /**
- * Logs endpoint Zod schemas.
+ * Logs endpoint Effect schemas.
  */
 
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { TimestampSchema, PaginationParamsSchema } from './common';
 
 // ============================================================================
@@ -10,9 +10,9 @@ import { TimestampSchema, PaginationParamsSchema } from './common';
 // ============================================================================
 
 export const LogsQuerySchema = PaginationParamsSchema.extend({
-  level: z.enum(['debug', 'info', 'warn', 'error']).optional(),
-  source: z.string().optional(),
-  context: z.string().optional(),
+  level: schema.enum(['debug', 'info', 'warn', 'error']).optional(),
+  source: schema.string().optional(),
+  context: schema.string().optional(),
   start_time: TimestampSchema.optional(),
   end_time: TimestampSchema.optional(),
 });
@@ -21,51 +21,51 @@ export const LogsQuerySchema = PaginationParamsSchema.extend({
 // Request Bodies
 // ============================================================================
 
-export const LogsFilterSchema = z.object({
-  level: z.array(z.string()).optional(),
-  source: z.array(z.string()).optional(),
-  context: z.array(z.string()).optional(),
-  time_range: z.object({
+export const LogsFilterSchema = schema.object({
+  level: schema.array(schema.string()).optional(),
+  source: schema.array(schema.string()).optional(),
+  context: schema.array(schema.string()).optional(),
+  time_range: schema.object({
     from: TimestampSchema,
     to: TimestampSchema,
   }).optional(),
 });
 
-export const LogsQueryRequestSchema = z.object({
+export const LogsQueryRequestSchema = schema.object({
   filter: LogsFilterSchema,
-  limit: z.number().int().positive().optional(),
-  cursor: z.string().optional(),
+  limit: schema.number().int().positive().optional(),
+  cursor: schema.string().optional(),
 });
 
 // ============================================================================
 // Response Bodies
 // ============================================================================
 
-export const LogEntrySchema = z.object({
-  id: z.string(),
-  level: z.enum(['debug', 'info', 'warn', 'error']),
-  source: z.string(),
-  context: z.string(),
-  message: z.string(),
+export const LogEntrySchema = schema.object({
+  id: schema.string(),
+  level: schema.enum(['debug', 'info', 'warn', 'error']),
+  source: schema.string(),
+  context: schema.string(),
+  message: schema.string(),
   timestamp: TimestampSchema,
-  data: z.unknown().optional(),
-  correlation_id: z.string().optional(),
-  file: z.string().optional(),
-  line: z.number().int().optional(),
+  data: schema.unknown().optional(),
+  correlation_id: schema.string().optional(),
+  file: schema.string().optional(),
+  line: schema.number().int().optional(),
 });
 
-export const LogsResponseSchema = z.object({
-  entries: z.array(LogEntrySchema),
-  cursor: z.string().optional(),
-  has_more: z.boolean(),
-  total_count: z.number().int().nonnegative(),
+export const LogsResponseSchema = schema.object({
+  entries: schema.array(LogEntrySchema),
+  cursor: schema.string().optional(),
+  has_more: schema.boolean(),
+  total_count: schema.number().int().nonnegative(),
 });
 
-export const LogsStatsResponseSchema = z.object({
-  total_entries: z.number().int().nonnegative(),
-  by_level: z.record(z.number().int().nonnegative()),
-  by_source: z.record(z.number().int().nonnegative()),
-  time_range: z.object({
+export const LogsStatsResponseSchema = schema.object({
+  total_entries: schema.number().int().nonnegative(),
+  by_level: schema.record(schema.number().int().nonnegative()),
+  by_source: schema.record(schema.number().int().nonnegative()),
+  time_range: schema.object({
     earliest: TimestampSchema,
     latest: TimestampSchema,
   }),

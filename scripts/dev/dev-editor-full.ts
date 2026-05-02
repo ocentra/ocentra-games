@@ -11,6 +11,7 @@ import path from 'node:path';
 import { ensureTurboDevPrep } from './turbo-dev-prep';
 
 const registry = createManagedProcessRegistry();
+const force = process.argv.includes('--force') || process.env.FORCE === 'true' || process.env.VITE_FORCE === 'true';
 
 function log(message: string): void {
   console.log(`[dev:editor] ${message}`);
@@ -60,7 +61,7 @@ async function main(): Promise<void> {
   const vite = spawnManaged(
     registry,
     'npm',
-    ['run', 'dev:web'],
+    ['run', 'dev:web', ...(force ? ['--', '--force'] : [])],
     path.join(ROOT, 'packages/asset-editor'),
     'editor-vite',
     {
@@ -71,6 +72,7 @@ async function main(): Promise<void> {
       VITE_EDITOR_SYNC_LOCAL_CLAIM_STORAGE_URL: workerBase,
       VITE_EDITOR_SYNC_LOCAL_ASSETS_PUBLIC_URL: assetsPublicUrl,
       CARGO_TARGET_DIR: path.join(ROOT, 'packages', 'asset-editor', 'src-tauri', 'target-editor'),
+      ...(force ? { FORCE: 'true', VITE_FORCE: 'true' } : {}),
     }
   );
   vite.once('spawn', () => {

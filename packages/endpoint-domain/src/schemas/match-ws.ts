@@ -1,64 +1,64 @@
-import { z } from 'zod';
+import { schema } from '@ocentra/schema-domain/effect-builder';
 import { MatchIdSchema } from '@/schemas/common';
 import { MatchWSChannel, MatchWSMessageType } from '@/constants/cloudflare-do';
 import { PlayerType } from '@/constants/game';
 
-export const MatchWSSenderTypeSchema = z.enum([PlayerType.Human, PlayerType.Ai]);
+export const MatchWSSenderTypeSchema = schema.enum([PlayerType.Human, PlayerType.Ai]);
 
-export const MatchWSChannelSchema = z.enum([MatchWSChannel.Text, MatchWSChannel.Voice]);
+export const MatchWSChannelSchema = schema.enum([MatchWSChannel.Text, MatchWSChannel.Voice]);
 
-export const MatchWSMoveMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Move),
+export const MatchWSMoveMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Move),
   matchId: MatchIdSchema,
-  move: z.record(z.unknown()),
-  txSignature: z.string().min(1),
+  move: schema.record(schema.unknown()),
+  txSignature: schema.string().min(1),
 });
 
-export const MatchWSSyncMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Sync),
+export const MatchWSSyncMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Sync),
   matchId: MatchIdSchema,
-  onChainState: z.record(z.unknown()),
+  onChainState: schema.record(schema.unknown()),
 });
 
-export const MatchWSFinalizeMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Finalize),
+export const MatchWSFinalizeMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Finalize),
   matchId: MatchIdSchema,
-  matchHash: z.string().optional(),
-  hotUrl: z.string().optional(),
-  events: z.array(z.unknown()).optional(),
-  scores: z.array(z.number()).optional(),
-  winner: z.string().optional(),
+  matchHash: schema.string().optional(),
+  hotUrl: schema.string().optional(),
+  events: schema.array(schema.unknown()).optional(),
+  scores: schema.array(schema.number()).optional(),
+  winner: schema.string().optional(),
 });
 
-export const MatchWSChatMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Chat),
+export const MatchWSChatMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Chat),
   matchId: MatchIdSchema,
-  content: z.string().min(1).max(2000),
+  content: schema.string().min(1).max(2000),
   senderType: MatchWSSenderTypeSchema,
-  aiPlayerId: z.string().optional(),
+  aiPlayerId: schema.string().optional(),
 });
 
-export const MatchWSVoiceTextMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.VoiceText),
+export const MatchWSVoiceTextMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.VoiceText),
   matchId: MatchIdSchema,
-  content: z.string().min(1).max(2000),
+  content: schema.string().min(1).max(2000),
   senderType: MatchWSSenderTypeSchema,
-  aiPlayerId: z.string().optional(),
-  channel: z.literal(MatchWSChannel.Voice).optional(),
+  aiPlayerId: schema.string().optional(),
+  channel: schema.literal(MatchWSChannel.Voice).optional(),
 });
 
-export const MatchWSAiDumpMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.AiDump),
+export const MatchWSAiDumpMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.AiDump),
   matchId: MatchIdSchema,
-  decisions: z.array(z.record(z.unknown())),
+  decisions: schema.array(schema.record(schema.unknown())),
 });
 
-export const MatchWSPingMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Ping),
+export const MatchWSPingMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Ping),
   matchId: MatchIdSchema.optional(),
 });
 
-export const MatchWSIncomingMessageSchema = z.discriminatedUnion('type', [
+export const MatchWSIncomingMessageSchema = schema.discriminatedUnion('type', [
   MatchWSMoveMessageSchema,
   MatchWSSyncMessageSchema,
   MatchWSFinalizeMessageSchema,
@@ -68,45 +68,45 @@ export const MatchWSIncomingMessageSchema = z.discriminatedUnion('type', [
   MatchWSPingMessageSchema,
 ]);
 
-export const MatchWSChatBroadcastMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.ChatBroadcast),
+export const MatchWSChatBroadcastMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.ChatBroadcast),
   matchId: MatchIdSchema,
-  message: z.object({
-    messageId: z.string(),
-    senderId: z.string(),
+  message: schema.object({
+    messageId: schema.string(),
+    senderId: schema.string(),
     senderType: MatchWSSenderTypeSchema,
-    content: z.string(),
-    timestamp: z.number(),
+    content: schema.string(),
+    timestamp: schema.number(),
     channel: MatchWSChannelSchema,
   }),
 });
 
-export const MatchWSStateUpdateMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.StateUpdate),
+export const MatchWSStateUpdateMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.StateUpdate),
   matchId: MatchIdSchema,
-  matchState: z.unknown(),
+  matchState: schema.unknown(),
 });
 
-export const MatchWSCheckpointCreatedMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.CheckpointCreated),
+export const MatchWSCheckpointCreatedMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.CheckpointCreated),
   matchId: MatchIdSchema,
-  checkpoint: z.unknown(),
+  checkpoint: schema.unknown(),
 });
 
-export const MatchWSErrorMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Error),
+export const MatchWSErrorMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Error),
   matchId: MatchIdSchema.optional(),
-  code: z.string().optional(),
-  message: z.string(),
+  code: schema.string().optional(),
+  message: schema.string(),
 });
 
-export const MatchWSPongMessageSchema = z.object({
-  type: z.literal(MatchWSMessageType.Pong),
+export const MatchWSPongMessageSchema = schema.object({
+  type: schema.literal(MatchWSMessageType.Pong),
   matchId: MatchIdSchema.optional(),
-  timestamp: z.number(),
+  timestamp: schema.number(),
 });
 
-export const MatchWSOutgoingMessageSchema = z.discriminatedUnion('type', [
+export const MatchWSOutgoingMessageSchema = schema.discriminatedUnion('type', [
   MatchWSChatBroadcastMessageSchema,
   MatchWSStateUpdateMessageSchema,
   MatchWSCheckpointCreatedMessageSchema,
@@ -114,5 +114,5 @@ export const MatchWSOutgoingMessageSchema = z.discriminatedUnion('type', [
   MatchWSPongMessageSchema,
 ]);
 
-export type MatchWSIncomingMessage = z.infer<typeof MatchWSIncomingMessageSchema>;
-export type MatchWSOutgoingMessage = z.infer<typeof MatchWSOutgoingMessageSchema>;
+export type MatchWSIncomingMessage = schema.infer<typeof MatchWSIncomingMessageSchema>;
+export type MatchWSOutgoingMessage = schema.infer<typeof MatchWSOutgoingMessageSchema>;

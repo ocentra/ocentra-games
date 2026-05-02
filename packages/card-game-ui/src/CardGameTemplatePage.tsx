@@ -225,6 +225,7 @@ export const CardGameTemplatePage: React.FC<CardGameTemplatePageProps> = ({
       <UnifiedPageShell
         className={LayoutClasses.SHELL}
         embedded={embedded}
+        viewportLocked
         background={
           showBackgroundLayer ? (
             <div style={isolationVisibility.background === false ? hiddenLayerStyle : undefined}>
