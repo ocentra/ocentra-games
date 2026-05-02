@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
+import { DynamicBackground, type RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
@@ -20,7 +20,7 @@ import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
 
-import { ThreeBaseProvider } from '@/ui/components/Background/ThreeBaseContext';
+import { ThreeBaseProvider } from '@ocentra/core-ui/Background/ThreeBaseContext';
 
 export function CardGamesExplorerPage() {
   const navigate = useNavigate();

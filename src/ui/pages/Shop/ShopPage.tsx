@@ -5,7 +5,7 @@ import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 
-import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
+import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
 import { StripeEndpoint } from '@ocentra/endpoint-domain/constants/stripe';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';

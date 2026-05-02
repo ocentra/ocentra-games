@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
-import { DynamicBackground } from '@/ui/components/Background/DynamicBackground';
+import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';

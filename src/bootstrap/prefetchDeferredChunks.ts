@@ -9,8 +9,8 @@ function scheduleIdle(cb: () => void, timeoutMs = 3000): void {
 export function prefetchDeferredChunks(): void {
   scheduleIdle(() => {
     void Promise.all([
-      import('@/ui/components/Background/ThreeBaseContext'),
-      import('@/ui/components/Background/DynamicBackground'),
+  import('@ocentra/core-ui/Background/ThreeBaseContext'),
+  import('@ocentra/core-ui/Background/DynamicBackground'),
       import('@/adapters/solana/wallet/WalletAdapter'),
     ]);
   });

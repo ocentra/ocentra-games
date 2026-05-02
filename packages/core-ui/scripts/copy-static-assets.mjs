@@ -11,6 +11,8 @@ const fileCopies = [
   ['src/Header/ProfilePictureModal.module.css', 'dist/Header/'],
   ['src/Header/UnifiedHeader.module.css', 'dist/Header/'],
   ['src/Shell/UnifiedPageShell.css', 'dist/Shell/'],
+  ['src/Background/DynamicBackground2DFallback.css', 'dist/Background/'],
+  ['src/Background/DynamicBackground3D.css', 'dist/Background/'],
   ['src/Common/FeaturedGameCarousel/FeaturedGameCarousel.css', 'dist/Common/FeaturedGameCarousel/'],
   ['src/Common/HomeShowcaseFrame/HomeShowcaseFrame.css', 'dist/Common/HomeShowcaseFrame/'],
   ['src/Common/FeatureBanner/FeatureBannerSection.css', 'dist/Common/FeatureBanner/'],

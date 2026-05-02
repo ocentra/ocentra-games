@@ -13,7 +13,7 @@ import {
   ROUTE_FEATURES,
   RouteFeature,
 } from '@/config/platformFeatures';
-import { DynamicBackground, type RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
+import { DynamicBackground, type RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground';
 import LoginDialog from '@/ui/components/Auth/LoginDialog';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';

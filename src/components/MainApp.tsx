@@ -2,14 +2,14 @@ import React, { useState, useRef, Suspense, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { useAuth } from '@/providers/AuthProvider';
-import type { RotationControlAPI } from '@/ui/components/Background/DynamicBackground';
+import type { RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground';
 
 const LazyThreeBaseProvider = React.lazy(() =>
-  import('@/ui/components/Background/ThreeBaseContext').then((m) => ({ default: m.ThreeBaseProvider }))
+  import('@ocentra/core-ui/Background/ThreeBaseContext').then((m) => ({ default: m.ThreeBaseProvider }))
 );
 
 const LazyDynamicBackground = React.lazy(() =>
-  import('@/ui/components/Background/DynamicBackground').then((m) => ({ default: m.DynamicBackground }))
+  import('@ocentra/core-ui/Background/DynamicBackground').then((m) => ({ default: m.DynamicBackground }))
 );
 
 import { PlatformDesktopAssetWarmupBanner } from '@/ui/components/Loading/PlatformDesktopAssetWarmupBanner';

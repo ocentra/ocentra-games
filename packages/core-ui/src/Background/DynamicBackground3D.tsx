@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { useThreeBase } from './ThreeBaseContext';
 import * as THREE from 'three';
-import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
-import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import {
   cardGame256SpadeFilledImageUrl,
   cardGame256SpadeHollowImageUrl,
@@ -52,18 +50,9 @@ const CARD_ASSETS = {
   },
 } as const;
 
-const log = MainAppLogger.instance;
-log.register(import.meta.url);
+const logDebug = (_message: string, _data?: unknown) => undefined;
 
-const LOG_UI_BACKGROUND = false;
-
-const logDebug = (message: string, data?: unknown) => {
-    log.logDebug(`[DynamicBackground3D] ${message}`, getStackTrace(), data, LOG_UI_BACKGROUND);
-};
-
-const logError = (message: string, error?: unknown) => {
-    log.logError(`[DynamicBackground3D] ${message}`, getStackTrace(), error, LOG_UI_BACKGROUND);
-};
+const logError = (_message: string, _error?: unknown) => undefined;
 
 
 
@@ -992,6 +981,132 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
         shootingStarsRef.current.sharedSpriteMaterial = sharedSpriteMaterial;
         logDebug('Shooting star material created');
 
+        function updateCards(delta: number, elapsed: number) {
+            const data = cardsRef.current.data;
+            const sprites = cardsRef.current.sprites;
+
+            for (let i = 0; i < data.length; i++) {
+                const c = data[i];
+                const sprite = sprites[i];
+
+                c.position.x += c.velocity.x;
+                c.position.y += c.velocity.y;
+                c.position.z += c.velocity.z;
+
+                const bounds = CARD_SPREAD_XY * 0.95;
+                const zBounds = CARD_Z_RANGE * 0.5;
+
+                if (Math.abs(c.position.x) > bounds) {
+                    c.velocity.x *= -1;
+                    c.position.x = Math.sign(c.position.x) * bounds;
+                }
+                if (Math.abs(c.position.y) > bounds) {
+                    c.velocity.y *= -1;
+                    c.position.y = Math.sign(c.position.y) * bounds;
+                }
+                if (Math.abs(c.position.z) > zBounds) {
+                    c.velocity.z *= -1;
+                    c.position.z = Math.sign(c.position.z) * zBounds;
+                }
+
+                if (sprite) {
+                    sprite.position.set(c.position.x, c.position.y, c.position.z);
+                }
+
+                let distance = 0;
+                if (cameraRef.current) {
+                    distance = c.position.distanceTo(cameraRef.current.position);
+                }
+                c.distanceToCamera = distance;
+
+                let lodLevel = 0;
+                if (distance > 1000) {
+                    lodLevel = 3;
+                } else if (distance > 750) {
+                    lodLevel = 2;
+                } else if (distance > 500) {
+                    lodLevel = 1;
+                }
+                c.lodLevel = lodLevel;
+
+                let sizeMultiplier = 1.0;
+                switch (lodLevel) {
+                    case 1: sizeMultiplier = 0.75; break;
+                    case 2: sizeMultiplier = 0.5; break;
+                    case 3: sizeMultiplier = 0.25; break;
+                    default: sizeMultiplier = 1.0; break;
+                }
+                c.currentSize = c.size * sizeMultiplier;
+
+                const speedVariation = 0.1 + Math.random() * 0.3;
+                c.fillProgress += delta * CARD_TWINKLE_RATE * c.fillDirection * speedVariation;
+
+                if (c.fillProgress >= 1.0) {
+                    c.fillProgress = 1.0;
+                    if (Math.random() > 0.5) {
+                        c.fillDirection = -1;
+                    }
+                } else if (c.fillProgress <= 0.0) {
+                    c.fillProgress = 0.0;
+                    if (Math.random() > 0.5) {
+                        c.fillDirection = 1;
+                    }
+                }
+
+                const styleIndex = CARD_STYLES.indexOf(c.style);
+                const suitIndex = CARD_SUITS.indexOf(c.suit);
+
+                if (styleIndex !== -1 && suitIndex !== -1) {
+                    const baseIndex = (styleIndex * CARD_SUITS.length + suitIndex) * 2;
+                    const filledMaterialIndex = baseIndex;
+                    const hollowMaterialIndex = baseIndex + 1;
+
+                    const transitionWidth = 0.7;
+                    const offsetTransitionPoint = 0.5 + Math.sin(c.randomOffset) * 0.15;
+                    const transitionStart = offsetTransitionPoint - transitionWidth / 2;
+                    const transitionEnd = offsetTransitionPoint + transitionWidth / 2;
+
+                    if (c.fillProgress < transitionStart) {
+                        if (sprite && c.materialIndex !== hollowMaterialIndex) {
+                            sprite.material = cardsRef.current.materials[hollowMaterialIndex];
+                            c.materialIndex = hollowMaterialIndex;
+                        }
+                    } else if (c.fillProgress > transitionEnd) {
+                        if (sprite && c.materialIndex !== filledMaterialIndex) {
+                            sprite.material = cardsRef.current.materials[filledMaterialIndex];
+                            c.materialIndex = filledMaterialIndex;
+                        }
+                    } else {
+                        const transitionProgress = (c.fillProgress - transitionStart) / transitionWidth;
+                        const switchValue = Math.sin(transitionProgress * Math.PI + c.randomOffset);
+                        const useFilledMaterial = switchValue > 0;
+                        const targetMaterialIndex = useFilledMaterial ? filledMaterialIndex : hollowMaterialIndex;
+
+                        if (sprite && c.materialIndex !== targetMaterialIndex) {
+                            sprite.material = cardsRef.current.materials[targetMaterialIndex];
+                            c.materialIndex = targetMaterialIndex;
+                        }
+                    }
+                }
+
+                if (sprite && c.aspectRatio > 0) {
+                    const scaleX = c.currentSize * c.aspectRatio;
+                    const scaleY = c.currentSize;
+                    sprite.scale.set(scaleX, scaleY, 1);
+                }
+
+                if (sprite.material) {
+                    (sprite.material as THREE.SpriteMaterial).opacity = c.baseOpacity + Math.sin(elapsed * 2 + i * 0.1) * 0.1;
+                }
+            }
+        }
+
+        function easeInOutCubic(t: number): number {
+            return t < 0.5
+                ? 4 * t * t * t
+                : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
         const tick = (renderer: THREE.WebGLRenderer, deltaMs: number) => {
             let delta = deltaMs / 1000;
             const elapsed = clock.getElapsedTime();
@@ -1299,133 +1414,6 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
     }, [threeBase, clock, createShootingStar, forceCleanup, handleKeyPress, loadCardTexture, onReady, updateShootingStars]);
 
     logDebug('useEffect hook defined');
-
-    const updateCards = (delta: number, elapsed: number) => {
-        const data = cardsRef.current.data;
-        const sprites = cardsRef.current.sprites;
-
-        for (let i = 0; i < data.length; i++) {
-            const c = data[i];
-            const sprite = sprites[i];
-
-            c.position.x += c.velocity.x;
-            c.position.y += c.velocity.y;
-            c.position.z += c.velocity.z;
-
-            const bounds = CARD_SPREAD_XY * 0.95;
-            const zBounds = CARD_Z_RANGE * 0.5;
-
-            if (Math.abs(c.position.x) > bounds) {
-                c.velocity.x *= -1;
-                c.position.x = Math.sign(c.position.x) * bounds;
-            }
-            if (Math.abs(c.position.y) > bounds) {
-                c.velocity.y *= -1;
-                c.position.y = Math.sign(c.position.y) * bounds;
-            }
-            if (Math.abs(c.position.z) > zBounds) {
-                c.velocity.z *= -1;
-                c.position.z = Math.sign(c.position.z) * zBounds;
-            }
-
-            if (sprite) {
-                sprite.position.set(c.position.x, c.position.y, c.position.z);
-            }
-
-            let distance = 0;
-            if (cameraRef.current) {
-                distance = c.position.distanceTo(cameraRef.current.position);
-            }
-            c.distanceToCamera = distance;
-
-            let lodLevel = 0;
-            if (distance > 1000) {
-                lodLevel = 3;
-            } else if (distance > 750) {
-                lodLevel = 2;
-            } else if (distance > 500) {
-                lodLevel = 1;
-            }
-            c.lodLevel = lodLevel;
-
-            let sizeMultiplier = 1.0;
-            switch (lodLevel) {
-                case 1: sizeMultiplier = 0.75; break;
-                case 2: sizeMultiplier = 0.5; break;
-                case 3: sizeMultiplier = 0.25; break;
-                default: sizeMultiplier = 1.0; break;
-            }
-            c.currentSize = c.size * sizeMultiplier;
-
-            const speedVariation = 0.1 + Math.random() * 0.3;
-            c.fillProgress += delta * CARD_TWINKLE_RATE * c.fillDirection * speedVariation;
-
-            if (c.fillProgress >= 1.0) {
-                c.fillProgress = 1.0;
-                if (Math.random() > 0.5) {
-                    c.fillDirection = -1;
-                }
-            } else if (c.fillProgress <= 0.0) {
-                c.fillProgress = 0.0;
-                if (Math.random() > 0.5) {
-                    c.fillDirection = 1;
-                }
-            }
-
-            const styleIndex = CARD_STYLES.indexOf(c.style);
-            const suitIndex = CARD_SUITS.indexOf(c.suit);
-
-            if (styleIndex !== -1 && suitIndex !== -1) {
-                const baseIndex = (styleIndex * CARD_SUITS.length + suitIndex) * 2;
-                const filledMaterialIndex = baseIndex;
-                const hollowMaterialIndex = baseIndex + 1;
-
-                const transitionWidth = 0.7;
-                const offsetTransitionPoint = 0.5 + Math.sin(c.randomOffset) * 0.15;
-                const transitionStart = offsetTransitionPoint - transitionWidth / 2;
-                const transitionEnd = offsetTransitionPoint + transitionWidth / 2;
-
-                if (c.fillProgress < transitionStart) {
-                    if (sprite && c.materialIndex !== hollowMaterialIndex) {
-                        sprite.material = cardsRef.current.materials[hollowMaterialIndex];
-                        c.materialIndex = hollowMaterialIndex;
-                    }
-                } else if (c.fillProgress > transitionEnd) {
-                    if (sprite && c.materialIndex !== filledMaterialIndex) {
-                        sprite.material = cardsRef.current.materials[filledMaterialIndex];
-                        c.materialIndex = filledMaterialIndex;
-                    }
-                } else {
-                    const transitionProgress = (c.fillProgress - transitionStart) / transitionWidth;
-                    const switchValue = Math.sin(transitionProgress * Math.PI + c.randomOffset);
-                    const useFilledMaterial = switchValue > 0;
-                    const targetMaterialIndex = useFilledMaterial ? filledMaterialIndex : hollowMaterialIndex;
-
-                    if (sprite && c.materialIndex !== targetMaterialIndex) {
-                        sprite.material = cardsRef.current.materials[targetMaterialIndex];
-                        c.materialIndex = targetMaterialIndex;
-                    }
-                }
-            }
-
-            if (sprite && c.aspectRatio > 0) {
-                const scaleX = c.currentSize * c.aspectRatio;
-                const scaleY = c.currentSize;
-                sprite.scale.set(scaleX, scaleY, 1);
-            }
-
-            if (sprite.material) {
-                (sprite.material as THREE.SpriteMaterial).opacity = c.baseOpacity + Math.sin(elapsed * 2 + i * 0.1) * 0.1;
-            }
-        }
-    };
-
-
-    const easeInOutCubic = (t: number): number => {
-        return t < 0.5
-            ? 4 * t * t * t
-            : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    };
 
     return null;
 };
