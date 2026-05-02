@@ -1,4 +1,5 @@
 import type { GameEngine } from '@ocentra/game-asset-domain/schemas/game-engine-schema';
+import type { AppPageSliceDocument } from '@ocentra/game-asset-domain/schemas/app-page-slice-schema';
 import type { GameCatalogDocument } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
 import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
@@ -29,6 +30,12 @@ async function withRuntimeRead<T>(
 export async function loadRemoteGameCatalogDocument(): Promise<GameCatalogDocument | null> {
   return await withRuntimeRead('remote game catalog', async () =>
     await getPlatformAssetRuntime().getGameCatalog(getStorageConfig())
+  );
+}
+
+export async function loadRemoteAppPageSlice(pageId: string): Promise<AppPageSliceDocument | null> {
+  return await withRuntimeRead(`remote app page slice (${pageId})`, async () =>
+    await getPlatformAssetRuntime().getAppPageSlice(pageId, getStorageConfig())
   );
 }
 
@@ -79,4 +86,3 @@ export async function loadRemoteCatalogGame(slug: string): Promise<unknown | nul
     return await res.json() as unknown;
   });
 }
-

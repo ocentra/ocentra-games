@@ -327,6 +327,7 @@ export const ApiEndpoint = {
     EntryIndex: `${ApiPathPrefix}/slices/entry-index` as ApiPath,
     Home: `${ApiPathPrefix}/slices/home` as ApiPath,
     Games: `${ApiPathPrefix}/slices/games` as ApiPath,
+    AppPage: (pageId: string): ApiPath => `${ApiPathPrefix}/slices/pages/${encodeURIComponent(pageId)}` as ApiPath,
     CatalogIndex: `${ApiPathPrefix}/slices/catalog/index` as ApiPath,
     GamePage: (gameId: string): ApiPath => `${ApiPathPrefix}/slices/games/${encodeURIComponent(gameId)}/page` as ApiPath,
     GameEngine: (gameId: string): ApiPath => `${ApiPathPrefix}/slices/games/${encodeURIComponent(gameId)}/engine` as ApiPath,

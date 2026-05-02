@@ -21,6 +21,10 @@ import {
   HomePageGamesDocumentSchema,
   type HomePageGamesDocument,
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
+import {
+  AppPageSliceDocumentSchema,
+  type AppPageSliceDocument,
+} from '@ocentra/game-asset-domain/schemas/app-page-slice-schema';
 import { getCachedSlice, setCachedSlice } from '@/adapters/assets/ContentSliceCache';
 import { getEntryIndexUrl, type StorageConfig } from '@/services/storage/StorageConfig';
 
@@ -77,6 +81,7 @@ export interface PlatformAssetRuntime {
   getEntryIndex(storageConfig: StorageConfig): Promise<EntryIndexDocument | null>;
   getHomePageGames(storageConfig: StorageConfig): Promise<HomePageGamesDocument | null>;
   getGameCatalog(storageConfig: StorageConfig): Promise<GameCatalogDocument | null>;
+  getAppPageSlice(pageId: string, storageConfig: StorageConfig): Promise<AppPageSliceDocument | null>;
   getSelectedGamePage(gameId: string, storageConfig: StorageConfig): Promise<GamePage | null>;
   getGameEngine(gameId: string, storageConfig: StorageConfig): Promise<GameEngine | null>;
   prefetchCoreSlices(storageConfig: StorageConfig): Promise<void>;
@@ -186,6 +191,11 @@ export function parseHomePageGamesPayload(payload: unknown): HomePageGamesDocume
 
 export function parseGameCatalogPayload(payload: unknown): GameCatalogDocument | null {
   const parsed = GameCatalogDocumentSchema.safeParse(payload);
+  return parsed.success ? parsed.data : null;
+}
+
+export function parseAppPageSlicePayload(payload: unknown): AppPageSliceDocument | null {
+  const parsed = AppPageSliceDocumentSchema.safeParse(payload);
   return parsed.success ? parsed.data : null;
 }
 

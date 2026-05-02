@@ -18,6 +18,10 @@ export function slicePathToR2Key(path: string): string | null {
   if (path === '/api/v1/slices/games' || path.endsWith('/slices/games')) {
     return AssetContentSlicePath.Games;
   }
+  const appPageMatch = path.match(/\/slices\/pages\/([^/]+)$/);
+  if (appPageMatch) {
+    return AssetContentSlicePath.AppPage(decodeURIComponent(appPageMatch[1]));
+  }
   if (path === '/api/v1/slices/catalog/index' || path.endsWith('/slices/catalog/index')) {
     return AssetContentSlicePath.CatalogIndex;
   }

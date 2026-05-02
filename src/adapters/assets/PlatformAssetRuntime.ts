@@ -15,6 +15,7 @@ import {
   parseEntryIndexPayload,
   parseHomePageGamesPayload,
   parseGameCatalogPayload,
+  parseAppPageSlicePayload,
   parseGamePagePayload,
   parseGameEnginePayload,
   prefetchCoreSlicesInternal,
@@ -82,6 +83,7 @@ function createLazyDesktopRuntime(): IPlatformAssetRuntime {
     getEntryIndex: (sc) => load().then((r) => r.getEntryIndex(sc)),
     getHomePageGames: (sc) => load().then((r) => r.getHomePageGames(sc)),
     getGameCatalog: (sc) => load().then((r) => r.getGameCatalog(sc)),
+    getAppPageSlice: (pageId, sc) => load().then((r) => r.getAppPageSlice(pageId, sc)),
     getSelectedGamePage: (gameId, sc) => load().then((r) => r.getSelectedGamePage(gameId, sc)),
     getGameEngine: (gameId, sc) => load().then((r) => r.getGameEngine(gameId, sc)),
     prefetchCoreSlices: (sc) => load().then((r) => r.prefetchCoreSlices(sc)),
@@ -126,6 +128,15 @@ class WebPlatformAssetRuntime implements IPlatformAssetRuntime {
       fetchValidatedSlice(
         getSliceUrl(storageConfig, ApiEndpoint.Slices.Games),
         parseGameCatalogPayload
+      )
+    );
+  }
+
+  async getAppPageSlice(pageId: string, storageConfig: StorageConfig) {
+    return await measureRuntimeAssetOperation('web', 'appPageSlice', async () =>
+      fetchValidatedSlice(
+        getSliceUrl(storageConfig, ApiEndpoint.Slices.AppPage(pageId)),
+        parseAppPageSlicePayload
       )
     );
   }
@@ -259,6 +270,15 @@ class MobilePlatformAssetRuntime extends WebPlatformAssetRuntime {
       fetchMobileJsonSlice(
         getSliceUrl(storageConfig, ApiEndpoint.Slices.Games),
         parseGameCatalogPayload
+      )
+    );
+  }
+
+  override async getAppPageSlice(pageId: string, storageConfig: StorageConfig) {
+    return await measureRuntimeAssetOperation('mobile', 'appPageSlice', async () =>
+      fetchMobileJsonSlice(
+        getSliceUrl(storageConfig, ApiEndpoint.Slices.AppPage(pageId)),
+        parseAppPageSlicePayload
       )
     );
   }

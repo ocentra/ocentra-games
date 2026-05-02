@@ -29,6 +29,10 @@ import {
   type FeatureBannerItem,
 } from '@ocentra/game-asset-domain/schemas/feature-banner-item-schema';
 import {
+  AppPageSliceDocumentSchema,
+  type AppPageSliceDocument,
+} from '@ocentra/game-asset-domain/schemas/app-page-slice-schema';
+import {
   FeaturedShowcaseControlsSchema,
   HomeShowcaseFrameControlsSchema,
   HomepageLayoutControlsSchema,
@@ -56,6 +60,7 @@ type BuiltAppAssetSlices = {
   entryIndex: EntryIndexDocument;
   home: HomePageGamesDocument;
   games: GameCatalogDocument;
+  appPages: Record<string, AppPageSliceDocument>;
   pages: Record<string, GamePage>;
   engines: Record<string, GameEngine>;
 };
@@ -671,6 +676,26 @@ async function readHomepageLayoutControls(
   }
 }
 
+async function readAppPageSlices(resourcesDir: string): Promise<AppPageSliceDocument[]> {
+  const pagesDir = path.join(resourcesDir, 'Content', 'Pages');
+  try {
+    const entries = await fs.readdir(pagesDir, { withFileTypes: true });
+    const pageFiles = entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+      .map((entry) => entry.name)
+      .sort((a, b) => a.localeCompare(b));
+    const pages = await Promise.all(
+      pageFiles.map(async (fileName) => {
+        const raw = await fs.readFile(path.join(pagesDir, fileName), 'utf8');
+        return AppPageSliceDocumentSchema.parse(JSON5.parse(raw));
+      })
+    );
+    return pages;
+  } catch {
+    return [];
+  }
+}
+
 async function cleanOutputDir(outDir: string): Promise<void> {
   await fs.rm(outDir, { recursive: true, force: true });
   await ensureDir(outDir);
@@ -719,6 +744,7 @@ export async function buildAppAssetSlices(
     'comingSoonShowcaseControls.json'
   );
   const homepageLayoutControls = await readHomepageLayoutControls(resourcesDir);
+  const appPageSlices = await readAppPageSlices(resourcesDir);
   const featured = builtGames
     .map((artifact) => artifact.home)
     .filter((game) => game.enabled);
@@ -743,6 +769,12 @@ export async function buildAppAssetSlices(
   await writeJsonFile(path.join(outDir, AssetContentSlicePath.EntryIndex), entryIndex);
   await writeJsonFile(path.join(outDir, AssetContentSlicePath.Home), home);
   await writeJsonFile(path.join(outDir, AssetContentSlicePath.Games), gamesDocument);
+  const appPages: Record<string, AppPageSliceDocument> = {};
+
+  for (const pageSlice of appPageSlices) {
+    appPages[pageSlice.pageId] = pageSlice;
+    await writeJsonFile(path.join(outDir, AssetContentSlicePath.AppPage(pageSlice.pageId)), pageSlice);
+  }
 
   const pages: Record<string, GamePage> = {};
   const engines: Record<string, GameEngine> = {};
@@ -760,6 +792,7 @@ export async function buildAppAssetSlices(
     entryIndex,
     home,
     games: gamesDocument,
+    appPages,
     pages,
     engines,
   };
@@ -780,6 +813,7 @@ async function main(): Promise<void> {
         resourcesDir: result.resourcesDir,
         outDir: result.outDir,
         games: result.games.games.length,
+        appPages: Object.keys(result.appPages).length,
         resources: result.entryIndex.resources.length,
       },
       null,

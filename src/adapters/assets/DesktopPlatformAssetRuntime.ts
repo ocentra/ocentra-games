@@ -19,6 +19,7 @@ import {
   parseEntryIndexPayload,
   parseHomePageGamesPayload,
   parseGameCatalogPayload,
+  parseAppPageSlicePayload,
   parseGamePagePayload,
   parseGameEnginePayload,
   prefetchCoreSlicesInternal,
@@ -159,6 +160,15 @@ class DesktopPlatformAssetRuntimeImpl implements PlatformAssetRuntime {
   async getGameCatalog(storageConfig: StorageConfig) {
     return await measureRuntimeAssetOperation('desktop', 'gameCatalog', async () =>
       fetchDesktopJsonSlice(getSliceUrl(storageConfig, ApiEndpoint.Slices.Games), parseGameCatalogPayload)
+    );
+  }
+
+  async getAppPageSlice(pageId: string, storageConfig: StorageConfig) {
+    return await measureRuntimeAssetOperation('desktop', 'appPageSlice', async () =>
+      fetchDesktopJsonSlice(
+        getSliceUrl(storageConfig, ApiEndpoint.Slices.AppPage(pageId)),
+        parseAppPageSlicePayload
+      )
     );
   }
 
