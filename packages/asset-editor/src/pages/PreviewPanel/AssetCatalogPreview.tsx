@@ -17,6 +17,7 @@ import {
   type HomepageLayoutControlsData,
   type HomePageGamesDocument,
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
+import { MemoryRouter } from 'react-router-dom'
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
 import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
@@ -282,24 +283,26 @@ function AssetCatalogMainAppPreviewShell({ children }: { children: React.ReactNo
 
   return (
     <div className="asset-catalog-preview__main-app-host">
-      <ThreeBaseProvider>
-        <UnifiedPageShell
-          embedded
-          className="asset-catalog-preview__main-app-shell home-page"
-          workClassName="home-shell-work"
-          background={<DynamicBackground controlRef={rotationControlRef} />}
-          header={
-            <UnifiedHeader
-              config={headerConfig}
-              profileName="main_screen"
-              includeAdminNavigation
-            />
-          }
-          footer={<GameFooter appVersion={ASSET_EDITOR_PREVIEW_APP_VERSION} />}
-        >
-          {children}
-        </UnifiedPageShell>
-      </ThreeBaseProvider>
+      <MemoryRouter>
+        <ThreeBaseProvider>
+          <UnifiedPageShell
+            embedded
+            className="asset-catalog-preview__main-app-shell home-page"
+            workClassName="home-shell-work"
+            background={<DynamicBackground controlRef={rotationControlRef} />}
+            header={
+              <UnifiedHeader
+                config={headerConfig}
+                profileName="main_screen"
+                includeAdminNavigation
+              />
+            }
+            footer={<GameFooter appVersion={ASSET_EDITOR_PREVIEW_APP_VERSION} />}
+          >
+            {children}
+          </UnifiedPageShell>
+        </ThreeBaseProvider>
+      </MemoryRouter>
     </div>
   )
 }
