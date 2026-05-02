@@ -52,16 +52,20 @@ export function FeatureBannerSection({
   previewLayoutMode = 'auto',
 }: FeatureBannerSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const activeFeatureBannerItems =
+    Array.isArray(controls?.items) && controls.items.length > 0
+      ? controls.items
+      : featureBannerItems;
   const slides = useMemo(
     () =>
-      featureBannerItems.map((item) => ({
+      activeFeatureBannerItems.map((item) => ({
         title: item.title,
         description: item.description,
         image: isImageHash(item.imageHash)
           ? (resolveImageUrl?.(item.imageHash as ImageHash) ?? undefined)
           : undefined,
       })),
-    [featureBannerItems, resolveImageUrl]
+    [activeFeatureBannerItems, resolveImageUrl]
   );
 
   const goToSlide = useCallback((newSlide: number) => {

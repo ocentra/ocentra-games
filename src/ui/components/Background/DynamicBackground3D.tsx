@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react';
-import { useThreeBase } from '@/ui/components/Background/ThreeBaseContext';
+import { useThreeBase } from './ThreeBaseContext';
 import * as THREE from 'three';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';

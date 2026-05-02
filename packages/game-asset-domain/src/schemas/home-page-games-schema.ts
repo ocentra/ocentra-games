@@ -319,6 +319,7 @@ export const HomeShowcaseFrameControlsSchema = schema.object({
   copy: HomeShowcaseFrameCopyControlsSchema,
   footer: HomeShowcaseFrameFooterControlsSchema,
   colors: HomeShowcaseFrameColorControlsSchema,
+  items: schema.array(FeatureBannerItemSchema).optional(),
   variants: HomeShowcaseFrameControlVariantsSchema.optional(),
 });
 

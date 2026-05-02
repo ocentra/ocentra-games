@@ -9,13 +9,14 @@ import {
 } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types'
 import { readAsset, writeAsset } from '@/adapters/assets/TauriAssetAdapter'
 import type { HomeShowcaseFrameControlsKind } from '@/utils/homeShowcaseFrameControlsChannel'
+import type { FeatureBannerItem } from '@ocentra/game-asset-domain/schemas/feature-banner-item-schema'
 
 export const HOME_SHOWCASE_FRAME_CONTROLS_RESOURCE_PATHS: Record<HomeShowcaseFrameControlsKind, string> = {
   about: 'Content/Home/aboutShowcaseControls.json',
 }
 
 type PrimitiveGroup = Record<string, number | boolean | string>
-type HomeFrameControlGroups = Omit<HomeShowcaseFrameControls, 'variants'>
+type HomeFrameControlGroups = Omit<HomeShowcaseFrameControls, 'items' | 'variants'>
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
@@ -89,6 +90,19 @@ function mergeHomeFrameGroups(record: Record<string, unknown> | null): HomeFrame
   }
 }
 
+function mergeFeatureBannerItems(value: unknown): FeatureBannerItem[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => {
+      const record = asRecord(item)
+      const title = typeof record?.title === 'string' ? record.title : ''
+      const description = typeof record?.description === 'string' ? record.description : ''
+      const imageHash = typeof record?.imageHash === 'string' ? record.imageHash : ''
+      return { title, description, imageHash }
+    })
+    .filter((item) => item.title.length > 0 || item.description.length > 0 || item.imageHash.length > 0)
+}
+
 export function getProductionHomeShowcaseFrameControls(
   controls: HomeShowcaseFrameControls
 ): HomeShowcaseFrameControls {
@@ -102,6 +116,7 @@ export function normalizeHomeShowcaseFrameControls(
   const variants = asRecord(record?.variants)
   const merged: HomeShowcaseFrameControlsData = {
     ...mergeHomeFrameGroups(record),
+    items: mergeFeatureBannerItems(record?.items),
     variants: variants
       ? {
           wide: mergeHomeFrameGroups(asRecord(variants.wide)),

@@ -743,6 +743,9 @@ export async function buildAppAssetSlices(
     resourcesDir,
     'comingSoonShowcaseControls.json'
   );
+  const effectiveFeatureBannerItems = aboutShowcaseControls?.items?.length
+    ? aboutShowcaseControls.items
+    : featureBannerItems;
   const homepageLayoutControls = await readHomepageLayoutControls(resourcesDir);
   const appPageSlices = await readAppPageSlices(resourcesDir);
   const featured = builtGames
@@ -756,7 +759,7 @@ export async function buildAppAssetSlices(
     comingSoon,
     catalogMontageImages,
     availableNow,
-    featureBannerItems,
+    featureBannerItems: effectiveFeatureBannerItems,
     ...(featuredShowcaseControls ? { featuredShowcaseControls } : {}),
     ...(aboutShowcaseControls ? { aboutShowcaseControls } : {}),
     ...(comingSoonShowcaseControls || featuredShowcaseControls

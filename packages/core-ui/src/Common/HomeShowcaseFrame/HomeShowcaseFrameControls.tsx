@@ -1,4 +1,5 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
+import type { FeatureBannerItem } from '@ocentra/game-asset-domain/schemas/feature-banner-item-schema';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   resolveHomeShowcaseFrameControlsForVariant,
@@ -156,6 +157,16 @@ const inputStyle: React.CSSProperties = {
   background: '#020617',
   color: '#ecfeff',
   paddingInline: '0.45rem',
+};
+
+const textareaStyle: React.CSSProperties = {
+  ...inputStyle,
+  height: '12rem',
+  paddingBlock: '0.5rem',
+  resize: 'vertical',
+  fontFamily: 'Consolas, monospace',
+  fontSize: '0.72rem',
+  lineHeight: 1.4,
 };
 
 const buttonStyle: React.CSSProperties = {
@@ -337,6 +348,31 @@ function colorWithAlpha(value: string, alpha: number): string {
     : `rgba(${r}, ${g}, ${b}, ${Number(nextAlpha.toFixed(2))})`;
 }
 
+function parseFeatureBannerItemsDraft(value: string): FeatureBannerItem[] {
+  const parsed = JSON.parse(value) as unknown;
+  if (!Array.isArray(parsed)) {
+    throw new Error('Slots must be a JSON array.');
+  }
+
+  return parsed.map((item, index) => {
+    if (typeof item !== 'object' || item === null) {
+      throw new Error(`Slot ${index + 1} must be an object.`);
+    }
+    const record = item as Record<string, unknown>;
+    const title = typeof record.title === 'string' ? record.title.trim() : '';
+    const description = typeof record.description === 'string' ? record.description.trim() : '';
+    const imageHash = typeof record.imageHash === 'string' ? record.imageHash.trim() : '';
+    if (!title || !description || !imageHash) {
+      throw new Error(`Slot ${index + 1} needs title, description, and imageHash.`);
+    }
+    return { title, description, imageHash };
+  });
+}
+
+function stringifyFeatureBannerItems(items?: FeatureBannerItem[]): string {
+  return JSON.stringify(items ?? [], null, 2);
+}
+
 export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameControlsPanel({
   title = 'Homepage Showcase Frame Controls',
   description = 'Shared SVG frame tuning for a homepage block.',
@@ -352,6 +388,18 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
+  const [itemsDraft, setItemsDraft] = useState(() => stringifyFeatureBannerItems(controls.items));
+  const [itemsDraftError, setItemsDraftError] = useState<string | null>(null);
+  const [lastItemsDraftSource, setLastItemsDraftSource] = useState(() => stringifyFeatureBannerItems(controls.items));
+
+  useEffect(() => {
+    const nextSource = stringifyFeatureBannerItems(controls.items);
+    if (nextSource !== lastItemsDraftSource) {
+      setItemsDraft(nextSource);
+      setItemsDraftError(null);
+      setLastItemsDraftSource(nextSource);
+    }
+  }, [controls.items, lastItemsDraftSource]);
 
   const setNumber = (
     group: HomeShowcaseFrameNumberControlGroup,
@@ -425,6 +473,27 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
 
   const resetColor = (field: keyof HomeShowcaseFrameControls['colors']) => {
     setColor(field, DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors[field]);
+  };
+
+  const applyItemsDraft = () => {
+    try {
+      const items = parseFeatureBannerItemsDraft(itemsDraft);
+      const nextSource = stringifyFeatureBannerItems(items);
+      onControlsChange((prev) => ({ ...prev, items }));
+      setItemsDraft(nextSource);
+      setLastItemsDraftSource(nextSource);
+      setItemsDraftError(null);
+    } catch (error) {
+      setItemsDraftError(error instanceof Error ? error.message : 'Invalid slots JSON.');
+    }
+  };
+
+  const clearItemsDraft = () => {
+    const nextSource = stringifyFeatureBannerItems(undefined);
+    onControlsChange((prev) => ({ ...prev, items: undefined }));
+    setItemsDraft(nextSource);
+    setLastItemsDraftSource(nextSource);
+    setItemsDraftError(null);
   };
 
   const getSerializedControls = (): HomeShowcaseFrameControls =>
@@ -675,6 +744,37 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     </label>
   );
 
+  const aboutSlotsField = () => (
+    <section style={{ ...groupStyle, gridColumn: '1 / -1' }}>
+      <div style={{ color: '#a5f3fc', fontWeight: 800, marginBottom: '0.5rem' }}>About Slots</div>
+      <label style={{ ...fieldStyle, marginBottom: '0.5rem' }}>
+        <span style={fieldLabelStyle}>Slide Items</span>
+        <textarea
+          style={{
+            ...textareaStyle,
+            borderColor: itemsDraftError ? 'rgba(251, 113, 133, 0.72)' : 'rgba(103, 232, 249, 0.3)',
+          }}
+          value={itemsDraft}
+          spellCheck={false}
+          onChange={(event) => setItemsDraft(event.target.value)}
+        />
+      </label>
+      {itemsDraftError ? (
+        <div style={{ color: '#fecdd3', fontSize: '0.72rem', marginBottom: '0.5rem' }}>
+          {itemsDraftError}
+        </div>
+      ) : null}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <button type="button" style={buttonStyle} onClick={applyItemsDraft}>
+          Apply Slots
+        </button>
+        <button type="button" style={buttonStyle} onClick={clearItemsDraft}>
+          Clear Slots
+        </button>
+      </div>
+    </section>
+  );
+
   const renderSection = (sectionTitle: string, fields: React.ReactNode[]) => (
     <section style={groupStyle}>
       <div style={{ color: '#a5f3fc', fontWeight: 800, marginBottom: '0.5rem' }}>{sectionTitle}</div>
@@ -878,6 +978,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
             copyTextField({ field: 'bodyAccentPalette', label: 'Line Palette' }),
             textAlignField(),
           ])}
+          {aboutSlotsField()}
         </div>
       ) : null}
 

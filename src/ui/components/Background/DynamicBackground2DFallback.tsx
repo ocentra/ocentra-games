@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import type { RotationControlAPI } from '@/ui/components/Background/DynamicBackground3D';
+import type { RotationControlAPI } from './DynamicBackground3D';
 import {
   cardGameWOCSpadeFilledImageUrl,
   cardGameWOCSpadeHollowImageUrl,

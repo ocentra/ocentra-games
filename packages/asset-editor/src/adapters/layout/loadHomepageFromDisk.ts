@@ -206,12 +206,16 @@ export async function loadHomepageFromDisk(): Promise<HomepageFromDisk> {
     featureBannerItems = [];
   }
 
+  const effectiveFeatureBannerItems = aboutShowcaseControls.items?.length
+    ? aboutShowcaseControls.items
+    : featureBannerItems;
+
   return {
     featured,
     recommended,
     comingSoon,
     availableNow,
-    featureBannerItems,
+    featureBannerItems: effectiveFeatureBannerItems,
     catalogMontageImages,
     featuredShowcaseControls,
     aboutShowcaseControls,
@@ -273,8 +277,12 @@ export async function loadHomepageFromDiskIncremental(
     loadHomepageLayoutControlsFromDisk(),
   ]);
 
-  if (onPrefetchHashes && featureBannerItems.length > 0) {
-    const hashes = featureBannerItems
+  const effectiveFeatureBannerItems = aboutShowcaseControls.items?.length
+    ? aboutShowcaseControls.items
+    : featureBannerItems;
+
+  if (onPrefetchHashes && effectiveFeatureBannerItems.length > 0) {
+    const hashes = effectiveFeatureBannerItems
       .map((item) => item.imageHash)
       .filter((hash): hash is ImageHash => isImageHash(hash));
     if (hashes.length > 0) {
@@ -318,7 +326,7 @@ export async function loadHomepageFromDiskIncremental(
       comingSoon,
       catalogMontageImages,
       availableNow: [...availableNow],
-      featureBannerItems,
+      featureBannerItems: effectiveFeatureBannerItems,
       featuredShowcaseControls,
       aboutShowcaseControls,
       comingSoonShowcaseControls,
@@ -333,7 +341,7 @@ export async function loadHomepageFromDiskIncremental(
       comingSoon,
       catalogMontageImages,
       availableNow: [],
-      featureBannerItems,
+      featureBannerItems: effectiveFeatureBannerItems,
       featuredShowcaseControls,
       aboutShowcaseControls,
       comingSoonShowcaseControls,
@@ -347,7 +355,7 @@ export async function loadHomepageFromDiskIncremental(
     comingSoon,
     catalogMontageImages,
     availableNow,
-    featureBannerItems,
+    featureBannerItems: effectiveFeatureBannerItems,
     featuredShowcaseControls,
     aboutShowcaseControls,
     comingSoonShowcaseControls,

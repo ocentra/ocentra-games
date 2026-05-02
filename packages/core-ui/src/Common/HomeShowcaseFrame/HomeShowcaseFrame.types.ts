@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import type { FeatureBannerItem } from '@ocentra/game-asset-domain/schemas/feature-banner-item-schema';
 
 export type HomeShowcasePreviewLayoutMode = 'auto' | 'wide' | 'narrow';
 export type HomeShowcaseControlVariant = 'wide' | 'narrow';
@@ -109,6 +110,7 @@ export type HomeShowcaseFrameControlGroups = {
 };
 
 export type HomeShowcaseFrameControls = HomeShowcaseFrameControlGroups & {
+  items?: FeatureBannerItem[];
   variants?: HomeShowcaseResponsiveVariants<HomeShowcaseFrameControlGroups>;
 };
 
@@ -227,6 +229,18 @@ type HomeShowcasePrimitiveGroup = Record<string, number | boolean | string>;
 
 type HomeShowcaseFrameVariantGroups = HomeShowcaseResponsiveVariants<HomeShowcaseFrameControlGroups>;
 
+function serializeFeatureBannerItems(items?: FeatureBannerItem[]): FeatureBannerItem[] | undefined {
+  if (!Array.isArray(items)) return undefined;
+  const next = items
+    .map((item) => ({
+      title: typeof item.title === 'string' ? item.title : '',
+      description: typeof item.description === 'string' ? item.description : '',
+      imageHash: typeof item.imageHash === 'string' ? item.imageHash : '',
+    }))
+    .filter((item) => item.title.length > 0 || item.description.length > 0 || item.imageHash.length > 0);
+  return next.length > 0 ? next : undefined;
+}
+
 function serializePrimitiveControlGroup<T extends HomeShowcasePrimitiveGroup>(
   defaults: T,
   value: T,
@@ -328,8 +342,10 @@ export function serializeHomeShowcaseFrameControls(
   controls: HomeShowcaseFrameControls,
 ): HomeShowcaseFrameControls {
   const base = serializeHomeShowcaseFrameControlGroups(controls);
+  const items = serializeFeatureBannerItems(controls.items);
   return {
     ...base,
+    ...(items ? { items } : {}),
     variants: serializeHomeShowcaseFrameVariants(base, controls.variants),
   };
 }

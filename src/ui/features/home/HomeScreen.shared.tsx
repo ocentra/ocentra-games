@@ -82,6 +82,7 @@ function getMergedHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeS
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
+    items: controls.items,
     variants: controls.variants,
   };
 }

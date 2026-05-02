@@ -37,6 +37,12 @@ import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerConte
 import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar'
 import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard'
 import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow'
+import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
+import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader'
+import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
+import { mlogoImageUrl } from '@ocentra/app-assets/commons'
+import { DynamicBackground, type RotationControlAPI } from '@main/ui/components/Background/DynamicBackground'
+import { ThreeBaseProvider } from '@main/ui/components/Background/ThreeBaseContext'
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl'
 import { PreviewPanelHeader } from './PreviewPanelHeader'
 import {
@@ -135,6 +141,7 @@ function mergeHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeShowc
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
+    items: controls.items,
     variants: controls.variants,
   }
 }
@@ -207,6 +214,95 @@ const RELEASE_STATUSES = new Set<NonNullable<GameHome['releaseStatus']>>([
 
 const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
   'virtual:AssetCatalog/FeaturedShowcaseControls'
+
+const ASSET_EDITOR_PREVIEW_APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
+
+function AssetCatalogMainAppPreviewShell({ children }: { children: React.ReactNode }) {
+  const rotationControlRef = useRef<RotationControlAPI | null>(null)
+  const headerConfig = useMemo(() => ({
+    center: {
+      modeA: {
+        logo: {
+          size: 44,
+          renderer: ({
+            cx,
+            cy,
+            size,
+            aspectCorrection,
+            strokeWidth,
+            innerOpacity,
+            color,
+          }: {
+            cx: number
+            cy: number
+            size: number
+            aspectCorrection: number
+            strokeWidth: number
+            innerOpacity: number
+            color: string
+          }) => {
+            const logoH = size
+            const logoW = logoH * aspectCorrection
+            const outerRadius = size / 2
+            const innerRadius = Math.max(1, outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5)
+            return (
+              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={outerRadius}
+                  fill="none"
+                  stroke={color}
+                  strokeWidth={strokeWidth}
+                  opacity={0.95}
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={innerRadius}
+                  fill={color}
+                  opacity={innerOpacity}
+                />
+                <image
+                  href={mlogoImageUrl}
+                  x={cx - logoW / 2}
+                  y={cy - logoH / 2}
+                  width={logoW}
+                  height={logoH}
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </g>
+            )
+          },
+        },
+      },
+    },
+  }), [])
+
+  return (
+    <div className="asset-catalog-preview__main-app-host">
+      <ThreeBaseProvider>
+        <UnifiedPageShell
+          embedded
+          className="asset-catalog-preview__main-app-shell home-page"
+          workClassName="home-shell-work"
+          background={<DynamicBackground controlRef={rotationControlRef} />}
+          header={
+            <UnifiedHeader
+              config={headerConfig}
+              profileName="main_screen"
+              includeAdminNavigation
+            />
+          }
+          footer={<GameFooter appVersion={ASSET_EDITOR_PREVIEW_APP_VERSION} />}
+        >
+          {children}
+        </UnifiedPageShell>
+      </ThreeBaseProvider>
+    </div>
+  )
+}
 
 type AssetCatalogPreviewProps = {
   assetId: string
@@ -1539,57 +1635,64 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         <div className="asset-catalog-preview">
           {activeTab === 'homepage' && (
             <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
-              {ImageLoaders}
-              <div
-                ref={homepageContentFrameRef}
-                className={`asset-catalog-preview__homepage-content-frame ${
-                  homepageLayoutControls.contentBoundsOverlay
-                    ? 'asset-catalog-preview__homepage-content-frame--bounds'
-                    : ''
-                }`}
-              >
-                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
-                  <FeatureBannerSection
-                    featureBannerItems={homepageData.featureBannerItems}
-                    resolveImageUrl={resolveImageUrl}
-                    controls={aboutShowcaseControls}
-                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                    allowDebugBounds
-                  />
-                </section>
-                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
-                  <FeaturedGameShowcase
-                    featured={homepageData.featured}
-                    recommended={homepageData.recommended ?? []}
-                    isLoading={isLoadingHomepageCatalog}
-                    controls={featuredShowcaseControls}
-                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                    onLearnMore={handleGameClick}
-                    resolveImageUrl={resolveImageUrl}
-                    allowDebugBounds
-                  />
-                </section>
-                <section className="asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
-                  <ComingSoonShowcase
-                    comingSoon={homepageData.comingSoon}
-                    catalogMontageItems={homepageData.catalogMontageImages ?? []}
-                    availableNow={homepageData.availableNow}
-                    explorerGames={explorerGames}
-                    isLoading={
-                      isLoadingHomepageCatalog ||
-                      isLoadingHomepageComingSoon ||
-                      isLoadingHomepageFeatureBanner
-                    }
-                    onGameClick={handleGameClick}
-                    onExploreClick={() => handleTabChange('games')}
-                    resolveImageUrl={resolveImageUrl}
-                    showExploreTile
-                    controls={comingSoonShowcaseControls}
-                    previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                    allowDebugBounds
-                  />
-                </section>
-              </div>
+              <AssetCatalogMainAppPreviewShell>
+                <div className="home-work-math">
+                  {ImageLoaders}
+                  <div className="scrollable-content-container">
+                    <div
+                      ref={homepageContentFrameRef}
+                      className={`home-content asset-catalog-preview__homepage-content-frame ${
+                        homepageLayoutControls.contentBoundsOverlay
+                          ? 'asset-catalog-preview__homepage-content-frame--bounds'
+                          : ''
+                      }`}
+                    >
+                      <section className="about-us-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
+                        <FeatureBannerSection
+                          featureBannerItems={homepageData.featureBannerItems}
+                          resolveImageUrl={resolveImageUrl}
+                          controls={aboutShowcaseControls}
+                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                          allowDebugBounds
+                        />
+                      </section>
+                      <section className="featured-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
+                        <FeaturedGameShowcase
+                          featured={homepageData.featured}
+                          recommended={homepageData.recommended ?? []}
+                          isLoading={isLoadingHomepageCatalog}
+                          controls={featuredShowcaseControls}
+                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                          onLearnMore={handleGameClick}
+                          resolveImageUrl={resolveImageUrl}
+                          allowDebugBounds
+                        />
+                      </section>
+                      <section className="games-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
+                        <ComingSoonShowcase
+                          comingSoon={homepageData.comingSoon}
+                          catalogMontageItems={homepageData.catalogMontageImages ?? []}
+                          availableNow={homepageData.availableNow}
+                          explorerGames={explorerGames}
+                          isLoading={
+                            isLoadingHomepageCatalog ||
+                            isLoadingHomepageComingSoon ||
+                            isLoadingHomepageFeatureBanner
+                          }
+                          onGameClick={handleGameClick}
+                          onExploreClick={() => handleTabChange('games')}
+                          resolveImageUrl={resolveImageUrl}
+                          showExploreTile
+                          controls={comingSoonShowcaseControls}
+                          previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                          allowDebugBounds
+                        />
+                      </section>
+                      <div className="content-spacer" />
+                    </div>
+                  </div>
+                </div>
+              </AssetCatalogMainAppPreviewShell>
             </div>
           )}
 

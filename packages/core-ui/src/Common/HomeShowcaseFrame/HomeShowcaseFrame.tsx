@@ -23,6 +23,7 @@ function mergeControls(value?: HomeShowcaseFrameControls): HomeShowcaseFrameCont
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...value.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...value.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...value.colors },
+    items: value.items,
     variants: value.variants,
   };
 }

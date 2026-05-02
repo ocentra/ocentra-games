@@ -1,7 +1,7 @@
 import React from 'react';
-import { detectWebGL } from '@/ui/components/Background/detectWebGL';
-import DynamicBackground3D, { type RotationControlAPI } from '@/ui/components/Background/DynamicBackground3D';
-import { DynamicBackground2DFallback } from '@/ui/components/Background/DynamicBackground2DFallback';
+import { detectWebGL } from './detectWebGL';
+import DynamicBackground3D, { type RotationControlAPI } from './DynamicBackground3D';
+import { DynamicBackground2DFallback } from './DynamicBackground2DFallback';
 
 export type { RotationControlAPI };
 
