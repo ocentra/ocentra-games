@@ -925,6 +925,7 @@ const FeaturedShowcaseControlsSurface: React.FC<FeaturedShowcaseControlsSurfaceP
       onSave={handleSaveControls}
       previewLayoutMode={previewLayoutMode}
       onPreviewLayoutModeChange={handlePreviewLayoutModeChange}
+      responsiveVariant={previewLayoutMode === 'narrow' ? 'narrow' : 'wide'}
       controlScope={controlScope}
     />
   );
@@ -994,6 +995,16 @@ const standaloneHomepageToggleLabelStyle: React.CSSProperties = {
   color: '#f3e8ff',
   padding: '0.55rem 0.75rem',
   fontWeight: 800,
+};
+
+const standaloneHomepageSegmentedControlStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.35rem',
+  border: '1px solid rgba(103, 232, 249, 0.22)',
+  borderRadius: '0.65rem',
+  padding: '0.25rem',
+  background: 'rgba(2, 6, 23, 0.54)',
 };
 
 const StandaloneFeaturedShowcaseControls: React.FC = () => (
@@ -1387,6 +1398,16 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
     } satisfies HomeShowcaseFrameControlsMessage);
   }, []);
 
+  const handleHomepagePreviewLayoutModeChange = useCallback((mode: HomeShowcasePreviewLayoutMode) => {
+    handleAboutPreviewLayoutModeChange(mode);
+    handleFeaturedPreviewLayoutModeChange(mode);
+    handleComingSoonPreviewLayoutModeChange(mode);
+  }, [
+    handleAboutPreviewLayoutModeChange,
+    handleComingSoonPreviewLayoutModeChange,
+    handleFeaturedPreviewLayoutModeChange,
+  ]);
+
   const handleResetBlock = useCallback(() => {
     if (tab === 'about') {
       updateAboutControls(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS);
@@ -1404,18 +1425,26 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
     updateAboutControls(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS);
     updateFeaturedControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
     updateComingSoonControls(DEFAULT_FEATURED_SHOWCASE_CONTROLS);
-    handleAboutPreviewLayoutModeChange('auto');
-    handleFeaturedPreviewLayoutModeChange('auto');
-    handleComingSoonPreviewLayoutModeChange('auto');
+    handleHomepagePreviewLayoutModeChange('auto');
   }, [
-    handleAboutPreviewLayoutModeChange,
-    handleComingSoonPreviewLayoutModeChange,
-    handleFeaturedPreviewLayoutModeChange,
+    handleHomepagePreviewLayoutModeChange,
     updateAboutControls,
     updateComingSoonControls,
     updateFeaturedControls,
     updateHomepageLayoutControls,
   ]);
+
+  const homepagePreviewLayoutMode: HomeShowcasePreviewLayoutMode =
+    aboutPreviewLayoutMode === featuredPreviewLayoutMode &&
+    aboutPreviewLayoutMode === comingSoonPreviewLayoutMode
+      ? aboutPreviewLayoutMode
+      : 'auto';
+  const responsiveVariant = homepagePreviewLayoutMode === 'narrow' ? 'narrow' : 'wide';
+  const previewModes: { id: HomeShowcasePreviewLayoutMode; label: string }[] = [
+    { id: 'auto', label: 'Auto' },
+    { id: 'wide', label: 'Wide' },
+    { id: 'narrow', label: 'Narrow' },
+  ];
 
   return (
     <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
@@ -1441,6 +1470,18 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
             />
             Home Bounds
           </label>
+          <div style={standaloneHomepageSegmentedControlStyle}>
+            {previewModes.map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                style={homepagePreviewLayoutMode === mode.id ? standaloneHomepageActiveTabButtonStyle : standaloneHomepageTabButtonStyle}
+                onClick={() => handleHomepagePreviewLayoutModeChange(mode.id)}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
           <span style={standaloneHomepageToolbarSpacerStyle} />
           <button
             type="button"
@@ -1484,7 +1525,7 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
             controls={aboutControls}
             onControlsChange={updateAboutControls}
             previewLayoutMode={aboutPreviewLayoutMode}
-            onPreviewLayoutModeChange={handleAboutPreviewLayoutModeChange}
+            responsiveVariant={responsiveVariant}
             showActions={false}
           />
         ) : null}
@@ -1495,7 +1536,7 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
             controls={featuredControls}
             onControlsChange={updateFeaturedControls}
             previewLayoutMode={featuredPreviewLayoutMode}
-            onPreviewLayoutModeChange={handleFeaturedPreviewLayoutModeChange}
+            responsiveVariant={responsiveVariant}
             controlScope="featured"
             showActions={false}
           />
@@ -1507,7 +1548,7 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
             controls={comingSoonControls}
             onControlsChange={updateComingSoonControls}
             previewLayoutMode={comingSoonPreviewLayoutMode}
-            onPreviewLayoutModeChange={handleComingSoonPreviewLayoutModeChange}
+            responsiveVariant={responsiveVariant}
             controlScope="comingSoon"
             showActions={false}
           />

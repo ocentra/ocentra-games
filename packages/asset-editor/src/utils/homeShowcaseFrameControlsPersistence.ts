@@ -15,6 +15,7 @@ export const HOME_SHOWCASE_FRAME_CONTROLS_RESOURCE_PATHS: Record<HomeShowcaseFra
 }
 
 type PrimitiveGroup = Record<string, number | boolean | string>
+type HomeFrameControlGroups = Omit<HomeShowcaseFrameControls, 'variants'>
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
@@ -55,17 +56,8 @@ function mergePrimitiveGroup<T extends PrimitiveGroup>(
   return next as T
 }
 
-export function getProductionHomeShowcaseFrameControls(
-  controls: HomeShowcaseFrameControls
-): HomeShowcaseFrameControls {
-  return serializeHomeShowcaseFrameControls(controls)
-}
-
-export function normalizeHomeShowcaseFrameControls(
-  value: unknown
-): HomeShowcaseFrameControls {
-  const record = asRecord(value)
-  const merged: HomeShowcaseFrameControlsData = {
+function mergeHomeFrameGroups(record: Record<string, unknown> | null): HomeFrameControlGroups {
+  return {
     overall: mergePrimitiveGroup(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.overall,
       record?.overall
@@ -94,6 +86,28 @@ export function normalizeHomeShowcaseFrameControls(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors,
       record?.colors
     ),
+  }
+}
+
+export function getProductionHomeShowcaseFrameControls(
+  controls: HomeShowcaseFrameControls
+): HomeShowcaseFrameControls {
+  return serializeHomeShowcaseFrameControls(controls)
+}
+
+export function normalizeHomeShowcaseFrameControls(
+  value: unknown
+): HomeShowcaseFrameControls {
+  const record = asRecord(value)
+  const variants = asRecord(record?.variants)
+  const merged: HomeShowcaseFrameControlsData = {
+    ...mergeHomeFrameGroups(record),
+    variants: variants
+      ? {
+          wide: mergeHomeFrameGroups(asRecord(variants.wide)),
+          narrow: mergeHomeFrameGroups(asRecord(variants.narrow)),
+        }
+      : undefined,
   }
 
   return getProductionHomeShowcaseFrameControls(

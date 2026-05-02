@@ -12,6 +12,7 @@ import type { FeaturedGameItem } from '@ocentra/game-asset-domain/schemas/game-h
 import { getBannerPlaybackImageCount, getBannerPlaybackImages } from './bannerPlayback';
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
+  resolveFeaturedShowcaseControlsForVariant,
   type FeaturedGameShowcaseProps,
   type FeaturedShowcaseControls,
   type FeaturedShowcaseMediaFit,
@@ -58,6 +59,7 @@ function mergeFeaturedShowcaseControls(value?: FeaturedShowcaseControls): Featur
     sideB: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideB, ...value.sideB },
     footer: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.footer, ...value.footer },
     colors: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.colors, ...value.colors },
+    variants: value.variants,
   };
 }
 
@@ -1046,7 +1048,14 @@ export const FeaturedGameShowcase: React.FC<FeaturedGameShowcaseProps> = ({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [prevImageIndex, setPrevImageIndex] = useState<number | null>(null);
   const mergedControls = useMemo(() => mergeFeaturedShowcaseControls(controls), [controls]);
-  const c = useDeferredValue(mergedControls);
+  const variantControls = useMemo(
+    () => resolveFeaturedShowcaseControlsForVariant(
+      mergedControls,
+      previewLayoutMode === 'narrow' ? 'narrow' : 'wide',
+    ),
+    [mergedControls, previewLayoutMode],
+  );
+  const c = useDeferredValue(variantControls);
 
   const tabs = useMemo(() => [
     { id: 'featured' as const, label: featuredLabel, games: featured.filter((game) => game.enabled !== false) },

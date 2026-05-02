@@ -1,6 +1,14 @@
 import type { CSSProperties, ReactNode } from 'react';
 
 export type HomeShowcasePreviewLayoutMode = 'auto' | 'wide' | 'narrow';
+export type HomeShowcaseControlVariant = 'wide' | 'narrow';
+export type HomeShowcaseControlGroupOverrides<T> = {
+  [G in keyof T]?: Partial<T[G]>;
+};
+export type HomeShowcaseResponsiveVariants<T> = Partial<Record<
+  HomeShowcaseControlVariant,
+  T
+>>;
 
 export type HomeShowcaseControlTab =
   | 'overall'
@@ -10,7 +18,7 @@ export type HomeShowcaseControlTab =
   | 'copy'
   | 'footer';
 
-export type HomeShowcaseFrameControls = {
+export type HomeShowcaseFrameControlGroups = {
   overall: {
     viewWidth: number;
     canvasInsetX: number;
@@ -100,7 +108,11 @@ export type HomeShowcaseFrameControls = {
   };
 };
 
-export type HomeShowcaseFrameNumberControlGroup = Exclude<keyof HomeShowcaseFrameControls, 'colors'>;
+export type HomeShowcaseFrameControls = HomeShowcaseFrameControlGroups & {
+  variants?: HomeShowcaseResponsiveVariants<HomeShowcaseFrameControlGroups>;
+};
+
+export type HomeShowcaseFrameNumberControlGroup = Exclude<keyof HomeShowcaseFrameControlGroups, 'colors'>;
 
 export type HomeShowcaseFrameSlot = {
   x: number;
@@ -213,6 +225,8 @@ export const DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS: HomeShowcaseFrameControls = {
 
 type HomeShowcasePrimitiveGroup = Record<string, number | boolean | string>;
 
+type HomeShowcaseFrameVariantGroups = HomeShowcaseResponsiveVariants<HomeShowcaseFrameControlGroups>;
+
 function serializePrimitiveControlGroup<T extends HomeShowcasePrimitiveGroup>(
   defaults: T,
   value: T,
@@ -245,9 +259,9 @@ function serializePrimitiveControlGroup<T extends HomeShowcasePrimitiveGroup>(
   return next as T;
 }
 
-export function serializeHomeShowcaseFrameControls(
-  controls: HomeShowcaseFrameControls,
-): HomeShowcaseFrameControls {
+function serializeHomeShowcaseFrameControlGroups(
+  controls: HomeShowcaseFrameControlGroups,
+): HomeShowcaseFrameControlGroups {
   return {
     overall: serializePrimitiveControlGroup(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.overall,
@@ -278,4 +292,54 @@ export function serializeHomeShowcaseFrameControls(
       controls.colors,
     ),
   };
+}
+
+function mergeHomeShowcaseFrameControlGroups(
+  base: HomeShowcaseFrameControlGroups,
+  overrides?: HomeShowcaseControlGroupOverrides<HomeShowcaseFrameControlGroups>,
+): HomeShowcaseFrameControlGroups {
+  if (!overrides) return base;
+  return {
+    overall: { ...base.overall, ...overrides.overall },
+    body: { ...base.body, ...overrides.body },
+    sideA: { ...base.sideA, ...overrides.sideA },
+    sideB: { ...base.sideB, ...overrides.sideB },
+    copy: { ...base.copy, ...overrides.copy },
+    footer: { ...base.footer, ...overrides.footer },
+    colors: { ...base.colors, ...overrides.colors },
+  };
+}
+
+function serializeHomeShowcaseFrameVariants(
+  base: HomeShowcaseFrameControlGroups,
+  variants?: HomeShowcaseFrameVariantGroups,
+): HomeShowcaseFrameVariantGroups {
+  return {
+    wide: serializeHomeShowcaseFrameControlGroups(
+      mergeHomeShowcaseFrameControlGroups(base, variants?.wide),
+    ),
+    narrow: serializeHomeShowcaseFrameControlGroups(
+      mergeHomeShowcaseFrameControlGroups(base, variants?.narrow),
+    ),
+  };
+}
+
+export function serializeHomeShowcaseFrameControls(
+  controls: HomeShowcaseFrameControls,
+): HomeShowcaseFrameControls {
+  const base = serializeHomeShowcaseFrameControlGroups(controls);
+  return {
+    ...base,
+    variants: serializeHomeShowcaseFrameVariants(base, controls.variants),
+  };
+}
+
+export function resolveHomeShowcaseFrameControlsForVariant(
+  controls: HomeShowcaseFrameControls,
+  variant: HomeShowcaseControlVariant,
+): HomeShowcaseFrameControlGroups {
+  const base = serializeHomeShowcaseFrameControlGroups(controls);
+  return serializeHomeShowcaseFrameControlGroups(
+    mergeHomeShowcaseFrameControlGroups(base, controls.variants?.[variant]),
+  );
 }

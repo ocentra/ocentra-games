@@ -1,8 +1,11 @@
 import React, { memo, useState } from 'react';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
+  resolveHomeShowcaseFrameControlsForVariant,
   serializeHomeShowcaseFrameControls,
   type HomeShowcaseControlTab,
+  type HomeShowcaseControlVariant,
+  type HomeShowcaseFrameControlGroups,
   type HomeShowcaseFrameControls,
   type HomeShowcaseFrameNumberControlGroup,
   type HomeShowcasePreviewLayoutMode,
@@ -16,6 +19,7 @@ type HomeShowcaseFrameControlsProps = {
   onSave?: (controls: HomeShowcaseFrameControls) => Promise<string | void> | string | void;
   previewLayoutMode?: HomeShowcasePreviewLayoutMode;
   onPreviewLayoutModeChange?: (mode: HomeShowcasePreviewLayoutMode) => void;
+  responsiveVariant?: HomeShowcaseControlVariant;
   showActions?: boolean;
 };
 
@@ -184,6 +188,81 @@ const copiedButtonStyle: React.CSSProperties = {
   color: '#f0fdf4',
 };
 
+type HomePrimitive = number | boolean | string;
+type HomeControlGroupName = keyof HomeShowcaseFrameControlGroups;
+
+const homeNarrowFieldAliases: Record<string, string> = {
+  'overall.marginTop': 'narrowMarginTop',
+  'overall.marginBottom': 'narrowMarginBottom',
+  'overall.wideHeight': 'narrowHeight',
+  'overall.stageWideH': 'stageNarrowH',
+};
+
+function getVariantField(
+  group: HomeControlGroupName,
+  field: string,
+  variant: HomeShowcaseControlVariant,
+): string {
+  return variant === 'narrow'
+    ? homeNarrowFieldAliases[`${String(group)}.${field}`] ?? field
+    : field;
+}
+
+function getVariantPrimitiveValue(
+  controls: HomeShowcaseFrameControls,
+  group: HomeControlGroupName,
+  field: string,
+  variant: HomeShowcaseControlVariant,
+): HomePrimitive | undefined {
+  const actualField = getVariantField(group, field, variant);
+  const variantRecord = controls.variants?.[variant]?.[group] as Record<string, HomePrimitive> | undefined;
+  const groupRecord = controls[group] as Record<string, HomePrimitive>;
+  return variantRecord?.[actualField] ?? groupRecord[actualField];
+}
+
+function setVariantPrimitiveValue(
+  controls: HomeShowcaseFrameControls,
+  group: HomeControlGroupName,
+  field: string,
+  variant: HomeShowcaseControlVariant,
+  value: HomePrimitive,
+): HomeShowcaseFrameControls {
+  const actualField = getVariantField(group, field, variant);
+  const groupRecord = controls[group] as Record<string, HomePrimitive>;
+  const variantControls = controls.variants?.[variant]
+    ?? resolveHomeShowcaseFrameControlsForVariant(controls, variant);
+  const variantGroup = variantControls[group] as Record<string, HomePrimitive> | undefined;
+  const radiusPatch = group === 'body' && field === 'radius'
+    ? {
+        radiusTopLeft: value,
+        radiusTopRight: value,
+        radiusBottomRight: value,
+        radiusBottomLeft: value,
+      }
+    : {};
+
+  return {
+    ...controls,
+    [group]: {
+      ...controls[group],
+      [actualField]: value,
+      ...radiusPatch,
+    },
+    variants: {
+      ...controls.variants,
+      [variant]: {
+        ...variantControls,
+        [group]: {
+          ...groupRecord,
+          ...variantGroup,
+          [actualField]: value,
+          ...radiusPatch,
+        },
+      },
+    },
+  };
+}
+
 function getNumberValue(
   controls: HomeShowcaseFrameControls,
   group: HomeShowcaseFrameNumberControlGroup,
@@ -266,6 +345,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   onSave,
   previewLayoutMode = 'auto',
   onPreviewLayoutModeChange,
+  responsiveVariant = 'wide',
   showActions = true,
 }: HomeShowcaseFrameControlsProps) {
   const [tab, setTab] = useState<HomeShowcaseControlTab>('overall');
@@ -278,29 +358,22 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     field: string,
     value: number,
   ) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: value,
-        ...(group === 'body' && field === 'radius'
-          ? {
-              radiusTopLeft: value,
-              radiusTopRight: value,
-              radiusBottomRight: value,
-              radiusBottomLeft: value,
-            }
-          : {}),
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      group,
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetNumber = (
     group: HomeShowcaseFrameNumberControlGroup,
     field: string,
   ) => {
+    const actualField = getVariantField(group, field, responsiveVariant);
     const defaults = DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS[group] as Record<string, number | boolean | string>;
-    setNumber(group, field, Number(defaults[field]));
+    setNumber(group, field, Number(defaults[actualField]));
   };
 
   const setBoolean = (
@@ -308,41 +381,42 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     field: string,
     value: boolean,
   ) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      group,
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetBoolean = (
     group: HomeShowcaseFrameNumberControlGroup,
     field: string,
   ) => {
+    const actualField = getVariantField(group, field, responsiveVariant);
     const defaults = DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS[group] as Record<string, number | boolean | string>;
-    setBoolean(group, field, Boolean(defaults[field]));
+    setBoolean(group, field, Boolean(defaults[actualField]));
   };
 
   const setColor = (field: keyof HomeShowcaseFrameControls['colors'], value: string) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      'colors',
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const setCopyString = (field: keyof HomeShowcaseFrameControls['copy'], value: string) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      copy: {
-        ...prev.copy,
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      'copy',
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetCopyString = (field: keyof HomeShowcaseFrameControls['copy']) => {
@@ -386,7 +460,8 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   };
 
   const numberField = ({ group, field, label, min = -200, max = 2000, step = 1 }: NumberFieldConfig) => {
-    const value = getNumberValue(controls, group, field);
+    const rawValue = getVariantPrimitiveValue(controls, group, field, responsiveVariant);
+    const value = typeof rawValue === 'number' ? rawValue : getNumberValue(controls, group, field);
     return (
       <label key={`${group}.${field}`} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -418,7 +493,9 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   };
 
   const colorField = ({ field, label }: ColorFieldConfig) => {
-    const parsed = parseColor(controls.colors[field]);
+    const rawValue = getVariantPrimitiveValue(controls, 'colors', field, responsiveVariant);
+    const colorValue = typeof rawValue === 'string' ? rawValue : controls.colors[field];
+    const parsed = parseColor(colorValue);
     return (
       <label key={field} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -426,12 +503,12 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
           <input
             type="color"
             value={parsed.hex}
-            onChange={(event) => setColor(field, colorWithHex(controls.colors[field], event.target.value))}
+            onChange={(event) => setColor(field, colorWithHex(colorValue, event.target.value))}
             style={{ width: '2.5rem', height: '1.8rem', padding: 0, borderRadius: '0.35rem' }}
           />
           <input
             style={inputStyle}
-            value={controls.colors[field]}
+            value={colorValue}
             onChange={(event) => setColor(field, event.target.value)}
           />
           <button type="button" title="Reset this color" aria-label={`Reset ${label}`} style={resetButtonStyle} onClick={() => resetColor(field)}>
@@ -446,7 +523,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
             max={1}
             step={0.01}
             value={parsed.alpha}
-            onChange={(event) => setColor(field, colorWithAlpha(controls.colors[field], Number(event.target.value)))}
+            onChange={(event) => setColor(field, colorWithAlpha(colorValue, Number(event.target.value)))}
           />
           <input
             style={{ ...inputStyle, textAlign: 'right' }}
@@ -455,7 +532,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
             max={1}
             step={0.01}
             value={Number(parsed.alpha.toFixed(2))}
-            onChange={(event) => setColor(field, colorWithAlpha(controls.colors[field], Number(event.target.value)))}
+            onChange={(event) => setColor(field, colorWithAlpha(colorValue, Number(event.target.value)))}
           />
           <span style={{ color: '#a5f3fc', fontSize: '0.68rem' }}>A</span>
         </span>
@@ -464,7 +541,8 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   };
 
   const copyColorField = ({ field, label }: CopyColorFieldConfig) => {
-    const value = String(controls.copy[field]);
+    const rawValue = getVariantPrimitiveValue(controls, 'copy', field, responsiveVariant);
+    const value = typeof rawValue === 'string' ? rawValue : String(controls.copy[field]);
     const parsed = parseColor(value);
     return (
       <label key={field} style={fieldStyle}>
@@ -515,7 +593,8 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     field: string,
     label: string,
   ) => {
-    const value = getBooleanValue(controls, group, field);
+    const rawValue = getVariantPrimitiveValue(controls, group, field, responsiveVariant);
+    const value = typeof rawValue === 'boolean' ? rawValue : getBooleanValue(controls, group, field);
     return (
       <label key={`${group}.${field}`} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -534,7 +613,8 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   };
 
   const textAlignField = () => {
-    const value = getStringValue(controls, 'copy', 'textAlign');
+    const rawValue = getVariantPrimitiveValue(controls, 'copy', 'textAlign', responsiveVariant);
+    const value = typeof rawValue === 'string' ? rawValue : getStringValue(controls, 'copy', 'textAlign');
     return (
       <label key="copy.textAlign" style={fieldStyle}>
         <span style={fieldLabelStyle}>Text Align</span>
@@ -557,7 +637,8 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   };
 
   const bodyColorModeField = () => {
-    const value = getStringValue(controls, 'copy', 'bodyColorMode');
+    const rawValue = getVariantPrimitiveValue(controls, 'copy', 'bodyColorMode', responsiveVariant);
+    const value = typeof rawValue === 'string' ? rawValue : getStringValue(controls, 'copy', 'bodyColorMode');
     return (
       <label key="copy.bodyColorMode" style={fieldStyle}>
         <span style={fieldLabelStyle}>Body Color Mode</span>
@@ -584,7 +665,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
       <span style={fieldControlsStyle}>
         <input
           style={{ ...inputStyle, gridColumn: '1 / span 2' }}
-          value={String(controls.copy[field])}
+          value={String(getVariantPrimitiveValue(controls, 'copy', field, responsiveVariant) ?? controls.copy[field])}
           onChange={(event) => setCopyString(field, event.target.value)}
         />
         <button type="button" title={`Reset ${label}`} aria-label={`Reset ${label}`} style={resetButtonStyle} onClick={() => resetCopyString(field)}>
@@ -692,20 +773,16 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
           {renderSection('Outer Canvas', [
             numberField({ group: 'overall', field: 'parentBleedX', label: 'Page Bleed X', min: 0, max: 420 }),
             numberField({ group: 'overall', field: 'canvasInsetX', label: 'Inner Padding X', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'marginTop', label: 'Top Margin Wide', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'marginBottom', label: 'Bottom Margin Wide', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'narrowMarginTop', label: 'Top Margin Narrow', min: 0, max: 360 }),
-            numberField({ group: 'overall', field: 'narrowMarginBottom', label: 'Bottom Margin Narrow', min: 0, max: 360 }),
+            numberField({ group: 'overall', field: 'marginTop', label: 'Top Margin', min: 0, max: 360 }),
+            numberField({ group: 'overall', field: 'marginBottom', label: 'Bottom Margin', min: 0, max: 360 }),
             numberField({ group: 'overall', field: 'viewWidth', label: 'Design Width / Scale', min: 760, max: 2600 }),
-            numberField({ group: 'overall', field: 'wideHeight', label: 'Outer Height Wide', min: 160, max: 1800 }),
-            numberField({ group: 'overall', field: 'narrowHeight', label: 'Outer Height Narrow', min: 240, max: 2600 }),
+            numberField({ group: 'overall', field: 'wideHeight', label: 'Outer Height', min: 160, max: 2600 }),
             numberField({ group: 'overall', field: 'narrowBreakpoint', label: 'Narrow Breakpoint', min: 0, max: 1600 }),
           ])}
           {renderSection('Stage Box', [
             numberField({ group: 'overall', field: 'stageInsetX', label: 'Stage Inset X', min: 0, max: 260 }),
             numberField({ group: 'overall', field: 'stageY', label: 'Stage Top Y', min: 0, max: 300 }),
-            numberField({ group: 'overall', field: 'stageWideH', label: 'Stage Height Wide', min: 120, max: 1600 }),
-            numberField({ group: 'overall', field: 'stageNarrowH', label: 'Stage Height Narrow', min: 180, max: 2400 }),
+            numberField({ group: 'overall', field: 'stageWideH', label: 'Stage Height', min: 120, max: 2400 }),
             numberField({ group: 'overall', field: 'stageRadius', label: 'Stage Radius', min: 0, max: 80 }),
           ])}
           {renderSection('Colors', [

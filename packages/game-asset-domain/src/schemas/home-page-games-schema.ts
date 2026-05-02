@@ -174,6 +174,22 @@ const FeaturedShowcaseColorControlsSchema = schema.object({
   learnMoreStroke: schema.string(),
 });
 
+const FeaturedShowcaseControlGroupsSchema = schema.object({
+  overall: FeaturedShowcaseOverallControlsSchema,
+  arrows: FeaturedShowcaseArrowControlsSchema,
+  header: FeaturedShowcaseHeaderControlsSchema,
+  body: FeaturedShowcaseBodyControlsSchema,
+  sideA: FeaturedShowcaseSideAControlsSchema,
+  sideB: FeaturedShowcaseSideBControlsSchema,
+  footer: FeaturedShowcaseFooterControlsSchema,
+  colors: FeaturedShowcaseColorControlsSchema,
+});
+
+const FeaturedShowcaseControlVariantsSchema = schema.object({
+  wide: FeaturedShowcaseControlGroupsSchema.optional(),
+  narrow: FeaturedShowcaseControlGroupsSchema.optional(),
+});
+
 export const FeaturedShowcaseControlsSchema = schema.object({
   overall: FeaturedShowcaseOverallControlsSchema,
   arrows: FeaturedShowcaseArrowControlsSchema,
@@ -183,6 +199,7 @@ export const FeaturedShowcaseControlsSchema = schema.object({
   sideB: FeaturedShowcaseSideBControlsSchema,
   footer: FeaturedShowcaseFooterControlsSchema,
   colors: FeaturedShowcaseColorControlsSchema,
+  variants: FeaturedShowcaseControlVariantsSchema.optional(),
 });
 
 const HomeShowcaseFrameOverallControlsSchema = schema.object({
@@ -279,6 +296,21 @@ const HomeShowcaseFrameColorControlsSchema = schema.object({
   debugBody: schema.string(),
 });
 
+const HomeShowcaseFrameControlGroupsSchema = schema.object({
+  overall: HomeShowcaseFrameOverallControlsSchema,
+  body: HomeShowcaseFrameBodyControlsSchema,
+  sideA: HomeShowcaseFrameSideAControlsSchema,
+  sideB: HomeShowcaseFrameSideBControlsSchema,
+  copy: HomeShowcaseFrameCopyControlsSchema,
+  footer: HomeShowcaseFrameFooterControlsSchema,
+  colors: HomeShowcaseFrameColorControlsSchema,
+});
+
+const HomeShowcaseFrameControlVariantsSchema = schema.object({
+  wide: HomeShowcaseFrameControlGroupsSchema.optional(),
+  narrow: HomeShowcaseFrameControlGroupsSchema.optional(),
+});
+
 export const HomeShowcaseFrameControlsSchema = schema.object({
   overall: HomeShowcaseFrameOverallControlsSchema,
   body: HomeShowcaseFrameBodyControlsSchema,
@@ -287,6 +319,7 @@ export const HomeShowcaseFrameControlsSchema = schema.object({
   copy: HomeShowcaseFrameCopyControlsSchema,
   footer: HomeShowcaseFrameFooterControlsSchema,
   colors: HomeShowcaseFrameColorControlsSchema,
+  variants: HomeShowcaseFrameControlVariantsSchema.optional(),
 });
 
 export const HomepageLayoutControlsSchema = schema.object({

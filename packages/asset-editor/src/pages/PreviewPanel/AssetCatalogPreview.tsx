@@ -121,6 +121,7 @@ function mergeFeaturedControls(controls?: FeaturedShowcaseControls): FeaturedSho
     sideB: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.sideB, ...controls.sideB },
     footer: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_FEATURED_SHOWCASE_CONTROLS.colors, ...controls.colors },
+    variants: controls.variants,
   }
 }
 
@@ -134,6 +135,7 @@ function mergeHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeShowc
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
+    variants: controls.variants,
   }
 }
 

@@ -12,8 +12,16 @@ export type FeaturedShowcaseControlTab =
 
 export type FeaturedShowcaseMediaFit = 'cover' | 'contain' | 'stretch';
 export type FeaturedShowcaseButtonAlign = 'start' | 'center' | 'end';
+export type FeaturedShowcaseControlVariant = 'wide' | 'narrow';
+export type FeaturedShowcaseControlGroupOverrides<T> = {
+  [G in keyof T]?: Partial<T[G]>;
+};
+export type FeaturedShowcaseResponsiveVariants<T> = Partial<Record<
+  FeaturedShowcaseControlVariant,
+  T
+>>;
 
-export type FeaturedShowcaseControls = {
+export type FeaturedShowcaseControlGroups = {
   overall: {
     viewWidth: number;
     canvasInsetX: number;
@@ -177,7 +185,11 @@ export type FeaturedShowcaseControls = {
   };
 };
 
-export type FeaturedShowcaseNumberControlGroup = Exclude<keyof FeaturedShowcaseControls, 'colors'>;
+export type FeaturedShowcaseControls = FeaturedShowcaseControlGroups & {
+  variants?: FeaturedShowcaseResponsiveVariants<FeaturedShowcaseControlGroups>;
+};
+
+export type FeaturedShowcaseNumberControlGroup = Exclude<keyof FeaturedShowcaseControlGroups, 'colors'>;
 
 export type FeaturedShowcaseMediaSlot = {
   game: FeaturedGameItem;
@@ -393,6 +405,8 @@ export const DEFAULT_FEATURED_SHOWCASE_CONTROLS: FeaturedShowcaseControls = {
 
 type FeaturedShowcasePrimitiveGroup = Record<string, number | boolean | string>;
 
+type FeaturedShowcaseVariantGroups = FeaturedShowcaseResponsiveVariants<FeaturedShowcaseControlGroups>;
+
 function serializePrimitiveControlGroup<T extends FeaturedShowcasePrimitiveGroup>(
   defaults: T,
   value: T,
@@ -433,9 +447,9 @@ function normalizeFeaturedShowcaseButtonAlign(value: string): FeaturedShowcaseBu
   return value === 'center' || value === 'end' ? value : 'start';
 }
 
-export function serializeFeaturedShowcaseControls(
-  controls: FeaturedShowcaseControls,
-): FeaturedShowcaseControls {
+function serializeFeaturedShowcaseControlGroups(
+  controls: FeaturedShowcaseControlGroups,
+): FeaturedShowcaseControlGroups {
   return {
     overall: serializePrimitiveControlGroup(
       DEFAULT_FEATURED_SHOWCASE_CONTROLS.overall,
@@ -478,4 +492,55 @@ export function serializeFeaturedShowcaseControls(
       controls.colors,
     ),
   };
+}
+
+function mergeFeaturedShowcaseControlGroups(
+  base: FeaturedShowcaseControlGroups,
+  overrides?: FeaturedShowcaseControlGroupOverrides<FeaturedShowcaseControlGroups>,
+): FeaturedShowcaseControlGroups {
+  if (!overrides) return base;
+  return {
+    overall: { ...base.overall, ...overrides.overall },
+    arrows: { ...base.arrows, ...overrides.arrows },
+    header: { ...base.header, ...overrides.header },
+    body: { ...base.body, ...overrides.body },
+    sideA: { ...base.sideA, ...overrides.sideA },
+    sideB: { ...base.sideB, ...overrides.sideB },
+    footer: { ...base.footer, ...overrides.footer },
+    colors: { ...base.colors, ...overrides.colors },
+  };
+}
+
+function serializeFeaturedShowcaseVariants(
+  base: FeaturedShowcaseControlGroups,
+  variants?: FeaturedShowcaseVariantGroups,
+): FeaturedShowcaseVariantGroups {
+  return {
+    wide: serializeFeaturedShowcaseControlGroups(
+      mergeFeaturedShowcaseControlGroups(base, variants?.wide),
+    ),
+    narrow: serializeFeaturedShowcaseControlGroups(
+      mergeFeaturedShowcaseControlGroups(base, variants?.narrow),
+    ),
+  };
+}
+
+export function serializeFeaturedShowcaseControls(
+  controls: FeaturedShowcaseControls,
+): FeaturedShowcaseControls {
+  const base = serializeFeaturedShowcaseControlGroups(controls);
+  return {
+    ...base,
+    variants: serializeFeaturedShowcaseVariants(base, controls.variants),
+  };
+}
+
+export function resolveFeaturedShowcaseControlsForVariant(
+  controls: FeaturedShowcaseControls,
+  variant: FeaturedShowcaseControlVariant,
+): FeaturedShowcaseControlGroups {
+  const base = serializeFeaturedShowcaseControlGroups(controls);
+  return serializeFeaturedShowcaseControlGroups(
+    mergeFeaturedShowcaseControlGroups(base, controls.variants?.[variant]),
+  );
 }

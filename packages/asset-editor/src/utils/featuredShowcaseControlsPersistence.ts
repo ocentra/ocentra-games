@@ -16,6 +16,7 @@ export const COMING_SOON_SHOWCASE_CONTROLS_RESOURCE_PATH =
   'Content/Home/comingSoonShowcaseControls.json'
 
 type PrimitiveGroup = Record<string, number | boolean | string>
+type FeaturedControlGroups = Omit<FeaturedShowcaseControls, 'variants'>
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null
@@ -56,17 +57,8 @@ function mergePrimitiveGroup<T extends PrimitiveGroup>(
   return next as T
 }
 
-export function getProductionFeaturedShowcaseControls(
-  controls: FeaturedShowcaseControls
-): FeaturedShowcaseControls {
-  return serializeFeaturedShowcaseControls(controls)
-}
-
-export function normalizeFeaturedShowcaseControls(
-  value: unknown
-): FeaturedShowcaseControls {
-  const record = asRecord(value)
-  const merged: FeaturedShowcaseControlsData = {
+function mergeFeaturedGroups(record: Record<string, unknown> | null): FeaturedControlGroups {
+  return {
     overall: mergePrimitiveGroup(
       DEFAULT_FEATURED_SHOWCASE_CONTROLS.overall,
       record?.overall
@@ -99,6 +91,28 @@ export function normalizeFeaturedShowcaseControls(
       DEFAULT_FEATURED_SHOWCASE_CONTROLS.colors,
       record?.colors
     ),
+  }
+}
+
+export function getProductionFeaturedShowcaseControls(
+  controls: FeaturedShowcaseControls
+): FeaturedShowcaseControls {
+  return serializeFeaturedShowcaseControls(controls)
+}
+
+export function normalizeFeaturedShowcaseControls(
+  value: unknown
+): FeaturedShowcaseControls {
+  const record = asRecord(value)
+  const variants = asRecord(record?.variants)
+  const merged: FeaturedShowcaseControlsData = {
+    ...mergeFeaturedGroups(record),
+    variants: variants
+      ? {
+          wide: mergeFeaturedGroups(asRecord(variants.wide)),
+          narrow: mergeFeaturedGroups(asRecord(variants.narrow)),
+        }
+      : undefined,
   }
 
   return getProductionFeaturedShowcaseControls(

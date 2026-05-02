@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
+  resolveHomeShowcaseFrameControlsForVariant,
   type HomeShowcaseFrameControls,
   type HomeShowcaseFrameProps,
   type HomeShowcaseFrameSlot,
@@ -22,6 +23,7 @@ function mergeControls(value?: HomeShowcaseFrameControls): HomeShowcaseFrameCont
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...value.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...value.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...value.colors },
+    variants: value.variants,
   };
 }
 
@@ -91,7 +93,14 @@ export function HomeShowcaseFrame({
 }: HomeShowcaseFrameProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [measuredWidth, setMeasuredWidth] = useState(DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.overall.viewWidth);
-  const c = useMemo(() => mergeControls(controls), [controls]);
+  const mergedControls = useMemo(() => mergeControls(controls), [controls]);
+  const c = useMemo(
+    () => resolveHomeShowcaseFrameControlsForVariant(
+      mergedControls,
+      previewLayoutMode === 'narrow' ? 'narrow' : 'wide',
+    ),
+    [mergedControls, previewLayoutMode],
+  );
   const vw = c.overall.viewWidth;
   const stageX = c.overall.stageInsetX;
   const stageY = c.overall.stageY;

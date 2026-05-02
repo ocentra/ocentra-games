@@ -1,11 +1,14 @@
 import React, { memo, useState } from 'react';
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
+  resolveFeaturedShowcaseControlsForVariant,
   serializeFeaturedShowcaseControls,
   type FeaturedGameShowcasePreviewLayoutMode,
   type FeaturedShowcaseButtonAlign,
+  type FeaturedShowcaseControlGroups,
   type FeaturedShowcaseControls,
   type FeaturedShowcaseControlTab,
+  type FeaturedShowcaseControlVariant,
   type FeaturedShowcaseMediaFit,
   type FeaturedShowcaseNumberControlGroup,
 } from './FeaturedGameShowcase.types';
@@ -16,6 +19,7 @@ type FeaturedGameShowcaseControlsProps = {
   onSave?: (controls: FeaturedShowcaseControls) => Promise<string | void> | string | void;
   previewLayoutMode?: FeaturedGameShowcasePreviewLayoutMode;
   onPreviewLayoutModeChange?: (mode: FeaturedGameShowcasePreviewLayoutMode) => void;
+  responsiveVariant?: FeaturedShowcaseControlVariant;
   controlScope?: 'featured' | 'comingSoon';
   title?: string;
   description?: string;
@@ -190,6 +194,95 @@ const copiedButtonStyle: React.CSSProperties = {
   color: '#f0fdf4',
 };
 
+type FeaturedPrimitive = number | boolean | string;
+type FeaturedControlGroupName = keyof FeaturedShowcaseControlGroups;
+
+const featuredNarrowFieldAliases: Record<string, string> = {
+  'overall.marginTop': 'narrowMarginTop',
+  'overall.marginBottom': 'narrowMarginBottom',
+  'overall.wideHeight': 'narrowHeight',
+  'overall.stageWideH': 'stageNarrowH',
+  'sideA.cardTitleMaxFont': 'narrowCardTitleMaxFont',
+  'sideA.cardDescMaxFont': 'narrowCardDescMaxFont',
+  'sideA.cardButtonW': 'narrowCardButtonW',
+  'sideA.cardButtonH': 'narrowCardButtonH',
+  'sideA.cardButtonFont': 'narrowCardButtonFont',
+  'sideA.cardButtonArrowW': 'narrowCardButtonArrowW',
+  'sideB.logoH': 'narrowLogoH',
+  'sideB.logoTaglineGap': 'narrowLogoTaglineGap',
+  'sideB.taglineH': 'narrowTaglineH',
+  'sideB.statusH': 'narrowStatusH',
+  'sideB.logoMaxFont': 'narrowLogoMaxFont',
+  'sideB.taglineMaxFont': 'narrowTaglineMaxFont',
+  'sideB.descMaxFont': 'narrowDescMaxFont',
+  'sideB.descMinFont': 'narrowDescMinFont',
+  'sideB.statusLabelFont': 'narrowStatusLabelFont',
+  'sideB.statusValueFont': 'narrowStatusValueFont',
+  'sideB.montageH': 'narrowMontageH',
+  'sideB.catalogEyebrowFont': 'narrowCatalogEyebrowFont',
+  'sideB.catalogTitleFont': 'narrowCatalogTitleFont',
+  'sideB.catalogDescFont': 'narrowCatalogDescFont',
+  'sideB.catalogButtonW': 'narrowCatalogButtonW',
+  'sideB.catalogButtonH': 'narrowCatalogButtonH',
+  'sideB.catalogButtonFont': 'narrowCatalogButtonFont',
+  'sideB.catalogButtonArrowW': 'narrowCatalogButtonArrowW',
+};
+
+function getVariantField(
+  group: FeaturedControlGroupName,
+  field: string,
+  variant: FeaturedShowcaseControlVariant,
+): string {
+  return variant === 'narrow'
+    ? featuredNarrowFieldAliases[`${String(group)}.${field}`] ?? field
+    : field;
+}
+
+function getVariantPrimitiveValue(
+  controls: FeaturedShowcaseControls,
+  group: FeaturedControlGroupName,
+  field: string,
+  variant: FeaturedShowcaseControlVariant,
+): FeaturedPrimitive | undefined {
+  const actualField = getVariantField(group, field, variant);
+  const variantRecord = controls.variants?.[variant]?.[group] as Record<string, FeaturedPrimitive> | undefined;
+  const groupRecord = controls[group] as Record<string, FeaturedPrimitive>;
+  return variantRecord?.[actualField] ?? groupRecord[actualField];
+}
+
+function setVariantPrimitiveValue(
+  controls: FeaturedShowcaseControls,
+  group: FeaturedControlGroupName,
+  field: string,
+  variant: FeaturedShowcaseControlVariant,
+  value: FeaturedPrimitive,
+): FeaturedShowcaseControls {
+  const actualField = getVariantField(group, field, variant);
+  const groupRecord = controls[group] as Record<string, FeaturedPrimitive>;
+  const variantControls = controls.variants?.[variant]
+    ?? resolveFeaturedShowcaseControlsForVariant(controls, variant);
+  const variantGroup = variantControls[group] as Record<string, FeaturedPrimitive> | undefined;
+
+  return {
+    ...controls,
+    [group]: {
+      ...controls[group],
+      [actualField]: value,
+    },
+    variants: {
+      ...controls.variants,
+      [variant]: {
+        ...variantControls,
+        [group]: {
+          ...groupRecord,
+          ...variantGroup,
+          [actualField]: value,
+        },
+      },
+    },
+  };
+}
+
 function getNumberValue(
   controls: FeaturedShowcaseControls,
   group: FeaturedShowcaseNumberControlGroup,
@@ -270,6 +363,7 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
   onSave,
   previewLayoutMode = 'auto',
   onPreviewLayoutModeChange,
+  responsiveVariant = 'wide',
   controlScope = 'featured',
   title = 'Featured Showcase Controls',
   description = 'Shared SVG layout tuning for the homepage featured block.',
@@ -285,21 +379,22 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
     field: string,
     value: number,
   ) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      group,
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetNumber = (
     group: FeaturedShowcaseNumberControlGroup,
     field: string,
   ) => {
+    const actualField = getVariantField(group, field, responsiveVariant);
     const defaults = DEFAULT_FEATURED_SHOWCASE_CONTROLS[group] as Record<string, number | boolean | string>;
-    setNumber(group, field, Number(defaults[field]));
+    setNumber(group, field, Number(defaults[actualField]));
   };
 
   const setBoolean = (
@@ -307,21 +402,22 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
     field: string,
     value: boolean,
   ) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      group,
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetBoolean = (
     group: FeaturedShowcaseNumberControlGroup,
     field: string,
   ) => {
+    const actualField = getVariantField(group, field, responsiveVariant);
     const defaults = DEFAULT_FEATURED_SHOWCASE_CONTROLS[group] as Record<string, number | boolean | string>;
-    setBoolean(group, field, Boolean(defaults[field]));
+    setBoolean(group, field, Boolean(defaults[actualField]));
   };
 
   const setString = (
@@ -329,31 +425,32 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
     field: string,
     value: string,
   ) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      [group]: {
-        ...prev[group],
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      group,
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetString = (
     group: FeaturedShowcaseNumberControlGroup,
     field: string,
   ) => {
+    const actualField = getVariantField(group, field, responsiveVariant);
     const defaults = DEFAULT_FEATURED_SHOWCASE_CONTROLS[group] as Record<string, number | boolean | string>;
-    setString(group, field, String(defaults[field] ?? ''));
+    setString(group, field, String(defaults[actualField] ?? ''));
   };
 
   const setColor = (field: keyof FeaturedShowcaseControls['colors'], value: string) => {
-    onControlsChange((prev) => ({
-      ...prev,
-      colors: {
-        ...prev.colors,
-        [field]: value,
-      },
-    }));
+    onControlsChange((prev) => setVariantPrimitiveValue(
+      prev,
+      'colors',
+      field,
+      responsiveVariant,
+      value,
+    ));
   };
 
   const resetColor = (field: keyof FeaturedShowcaseControls['colors']) => {
@@ -392,7 +489,8 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
   };
 
   const numberField = ({ group, field, label, min = -200, max = 2000, step = 1 }: NumberFieldConfig) => {
-    const value = getNumberValue(controls, group, field);
+    const rawValue = getVariantPrimitiveValue(controls, group, field, responsiveVariant);
+    const value = typeof rawValue === 'number' ? rawValue : getNumberValue(controls, group, field);
     return (
       <label key={`${group}.${field}`} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -424,7 +522,9 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
   };
 
   const colorField = ({ field, label }: ColorFieldConfig) => {
-    const parsed = parseColor(controls.colors[field]);
+    const rawValue = getVariantPrimitiveValue(controls, 'colors', field, responsiveVariant);
+    const colorValue = typeof rawValue === 'string' ? rawValue : controls.colors[field];
+    const parsed = parseColor(colorValue);
     return (
       <label key={field} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -432,12 +532,12 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
           <input
             type="color"
             value={parsed.hex}
-            onChange={(event) => setColor(field, colorWithHex(controls.colors[field], event.target.value))}
+            onChange={(event) => setColor(field, colorWithHex(colorValue, event.target.value))}
             style={{ width: '2.5rem', height: '1.8rem', padding: 0, borderRadius: '0.35rem' }}
           />
           <input
             style={inputStyle}
-            value={controls.colors[field]}
+            value={colorValue}
             onChange={(event) => setColor(field, event.target.value)}
           />
           <button type="button" title="Reset this color" aria-label={`Reset ${label}`} style={resetButtonStyle} onClick={() => resetColor(field)}>
@@ -452,7 +552,7 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
             max={1}
             step={0.01}
             value={parsed.alpha}
-            onChange={(event) => setColor(field, colorWithAlpha(controls.colors[field], Number(event.target.value)))}
+            onChange={(event) => setColor(field, colorWithAlpha(colorValue, Number(event.target.value)))}
           />
           <input
             style={{ ...inputStyle, textAlign: 'right' }}
@@ -461,7 +561,7 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
             max={1}
             step={0.01}
             value={Number(parsed.alpha.toFixed(2))}
-            onChange={(event) => setColor(field, colorWithAlpha(controls.colors[field], Number(event.target.value)))}
+            onChange={(event) => setColor(field, colorWithAlpha(colorValue, Number(event.target.value)))}
           />
           <span style={{ color: '#a5f3fc', fontSize: '0.68rem' }}>A</span>
         </span>
@@ -474,7 +574,8 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
     field: string,
     label: string,
   ) => {
-    const value = getBooleanValue(controls, group, field);
+    const rawValue = getVariantPrimitiveValue(controls, group, field, responsiveVariant);
+    const value = typeof rawValue === 'boolean' ? rawValue : getBooleanValue(controls, group, field);
     return (
       <label key={`${group}.${field}`} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -493,7 +594,8 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
   };
 
   const selectField = ({ group, field, label, options }: SelectFieldConfig) => {
-    const value = getStringValue(controls, group, field);
+    const rawValue = getVariantPrimitiveValue(controls, group, field, responsiveVariant);
+    const value = typeof rawValue === 'string' ? rawValue : getStringValue(controls, group, field);
     return (
       <label key={`${group}.${field}`} style={fieldStyle}>
         <span style={fieldLabelStyle}>{label}</span>
@@ -631,19 +733,15 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
           {renderSection('Outer Canvas', [
             numberField({ group: 'overall', field: 'parentBleedX', label: 'Page Bleed X', min: 0, max: 420 }),
             numberField({ group: 'overall', field: 'canvasInsetX', label: 'Inner Padding X', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'marginTop', label: 'Top Margin Wide', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'marginBottom', label: 'Bottom Margin Wide', min: 0, max: 240 }),
-            numberField({ group: 'overall', field: 'narrowMarginTop', label: 'Top Margin Narrow', min: 0, max: 360 }),
-            numberField({ group: 'overall', field: 'narrowMarginBottom', label: 'Bottom Margin Narrow', min: 0, max: 360 }),
+            numberField({ group: 'overall', field: 'marginTop', label: 'Top Margin', min: 0, max: 360 }),
+            numberField({ group: 'overall', field: 'marginBottom', label: 'Bottom Margin', min: 0, max: 360 }),
             numberField({ group: 'overall', field: 'viewWidth', label: 'Design Width / Scale', min: 900, max: 2400 }),
-            numberField({ group: 'overall', field: 'wideHeight', label: 'Outer Height Wide', min: 420, max: 1800 }),
-            numberField({ group: 'overall', field: 'narrowHeight', label: 'Outer Height Narrow', min: 520, max: 2600 }),
+            numberField({ group: 'overall', field: 'wideHeight', label: 'Outer Height', min: 420, max: 2600 }),
             numberField({ group: 'overall', field: 'narrowBreakpoint', label: 'Narrow Breakpoint', min: 0, max: 1600 }),
           ])}
           {renderSection('Stage Box', [
             numberField({ group: 'overall', field: 'stageY', label: 'Stage Top Y', min: 0, max: 200 }),
-            numberField({ group: 'overall', field: 'stageWideH', label: 'Stage Height Wide', min: 260, max: 1600 }),
-            numberField({ group: 'overall', field: 'stageNarrowH', label: 'Stage Height Narrow', min: 360, max: 2400 }),
+            numberField({ group: 'overall', field: 'stageWideH', label: 'Stage Height', min: 260, max: 2400 }),
             numberField({ group: 'overall', field: 'stageRadius', label: 'Stage Radius', min: 0, max: 60 }),
           ])}
           {renderSection('Arrows', [
@@ -732,17 +830,11 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
             numberField({ group: 'sideA', field: 'cardImageRatio', label: 'Image/Text Split', min: 0.25, max: 0.82, step: 0.01 }),
             numberField({ group: 'sideA', field: 'cardCopyPad', label: 'Text Pad', min: 0, max: 40 }),
             numberField({ group: 'sideA', field: 'cardTitleMaxFont', label: 'Title Max Font', min: 8, max: 40 }),
-            numberField({ group: 'sideA', field: 'narrowCardTitleMaxFont', label: 'Narrow Title Max', min: 8, max: 56 }),
             numberField({ group: 'sideA', field: 'cardDescMaxFont', label: 'Description Max Font', min: 6, max: 28 }),
-            numberField({ group: 'sideA', field: 'narrowCardDescMaxFont', label: 'Narrow Description Max', min: 6, max: 36 }),
             numberField({ group: 'sideA', field: 'cardButtonW', label: 'Button Width', min: 70, max: 240 }),
-            numberField({ group: 'sideA', field: 'narrowCardButtonW', label: 'Narrow Button Width', min: 70, max: 280 }),
             numberField({ group: 'sideA', field: 'cardButtonH', label: 'Button Height', min: 22, max: 80 }),
-            numberField({ group: 'sideA', field: 'narrowCardButtonH', label: 'Narrow Button Height', min: 22, max: 96 }),
             numberField({ group: 'sideA', field: 'cardButtonFont', label: 'Button Font', min: 6, max: 28, step: 0.5 }),
-            numberField({ group: 'sideA', field: 'narrowCardButtonFont', label: 'Narrow Button Font', min: 6, max: 34, step: 0.5 }),
             numberField({ group: 'sideA', field: 'cardButtonArrowW', label: 'Arrow Box Width', min: 12, max: 90 }),
-            numberField({ group: 'sideA', field: 'narrowCardButtonArrowW', label: 'Narrow Arrow Box Width', min: 12, max: 110 }),
             selectField({ group: 'sideA', field: 'cardButtonAlign', label: 'Button Align', options: buttonAlignOptions }),
             numberField({ group: 'sideA', field: 'cardButtonBottom', label: 'Button Bottom Gap', min: 0, max: 40 }),
           ]) : null}
@@ -759,29 +851,19 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
           ]) : null}
           {isFeaturedScope ? renderSection('Logo', [
             numberField({ group: 'sideB', field: 'logoH', label: 'Logo Height', min: 20, max: 160 }),
-            numberField({ group: 'sideB', field: 'narrowLogoH', label: 'Narrow Logo Height', min: 20, max: 260 }),
             numberField({ group: 'sideB', field: 'logoTaglineGap', label: 'Logo to Tagline Gap', min: -120, max: 120 }),
-            numberField({ group: 'sideB', field: 'narrowLogoTaglineGap', label: 'Narrow Logo to Tagline Gap', min: -160, max: 160 }),
             numberField({ group: 'sideB', field: 'logoMaxFont', label: 'Fallback Font', min: 12, max: 90 }),
-            numberField({ group: 'sideB', field: 'narrowLogoMaxFont', label: 'Narrow Fallback Font', min: 12, max: 120 }),
           ]) : null}
           {isFeaturedScope ? renderSection('Text', [
             numberField({ group: 'sideB', field: 'taglineH', label: 'Tagline Height', min: 10, max: 100 }),
-            numberField({ group: 'sideB', field: 'narrowTaglineH', label: 'Narrow Tagline Height', min: 10, max: 140 }),
             numberField({ group: 'sideB', field: 'taglineMaxFont', label: 'Tagline Font', min: 6, max: 28 }),
-            numberField({ group: 'sideB', field: 'narrowTaglineMaxFont', label: 'Narrow Tagline Font', min: 6, max: 38 }),
             numberField({ group: 'sideB', field: 'descMaxFont', label: 'Description Max', min: 8, max: 32 }),
-            numberField({ group: 'sideB', field: 'narrowDescMaxFont', label: 'Narrow Description Max', min: 8, max: 44 }),
             numberField({ group: 'sideB', field: 'descMinFont', label: 'Description Min', min: 6, max: 24 }),
-            numberField({ group: 'sideB', field: 'narrowDescMinFont', label: 'Narrow Description Min', min: 6, max: 30 }),
           ]) : null}
           {isFeaturedScope ? renderSection('Status', [
             numberField({ group: 'sideB', field: 'statusH', label: 'Status Height', min: 30, max: 180 }),
-            numberField({ group: 'sideB', field: 'narrowStatusH', label: 'Narrow Status Height', min: 30, max: 260 }),
             numberField({ group: 'sideB', field: 'statusLabelFont', label: 'Label Font', min: 6, max: 28 }),
-            numberField({ group: 'sideB', field: 'narrowStatusLabelFont', label: 'Narrow Label Font', min: 6, max: 36 }),
             numberField({ group: 'sideB', field: 'statusValueFont', label: 'Value Font', min: 6, max: 32 }),
-            numberField({ group: 'sideB', field: 'narrowStatusValueFont', label: 'Narrow Value Font', min: 6, max: 40 }),
           ]) : null}
           {isComingSoonScope ? renderSection('Catalog Montage', [
             numberField({ group: 'sideB', field: 'montageRows', label: 'Rows', min: 1, max: 5, step: 1 }),
@@ -794,7 +876,6 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
             numberField({ group: 'sideB', field: 'montageImageOutlineWidth', label: 'Image Outline W', min: 0, max: 6, step: 0.1 }),
             numberField({ group: 'sideB', field: 'montageImageOutlineOpacity', label: 'Image Outline Alpha', min: 0, max: 1, step: 0.01 }),
             numberField({ group: 'sideB', field: 'montageSlideDuration', label: 'Slide Duration', min: 6, max: 90 }),
-            numberField({ group: 'sideB', field: 'narrowMontageH', label: 'Narrow Montage Height', min: 40, max: 760 }),
           ]) : null}
           {isComingSoonScope ? renderSection('Catalog Text / Button', [
             numberField({ group: 'sideB', field: 'catalogPanelPadX', label: 'Panel Pad X', min: 0, max: 80 }),
@@ -802,21 +883,14 @@ export const FeaturedGameShowcaseControls = memo(function FeaturedGameShowcaseCo
             numberField({ group: 'sideB', field: 'catalogCopyGap', label: 'Copy Gap', min: 0, max: 60 }),
             numberField({ group: 'sideB', field: 'catalogCopyOffsetY', label: 'Copy Nudge Y', min: -160, max: 160 }),
             numberField({ group: 'sideB', field: 'catalogEyebrowFont', label: 'Eyebrow Font', min: 6, max: 28 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogEyebrowFont', label: 'Narrow Eyebrow Font', min: 6, max: 36 }),
             numberField({ group: 'sideB', field: 'catalogEyebrowGap', label: 'Eyebrow Gap', min: -30, max: 60 }),
             numberField({ group: 'sideB', field: 'catalogTitleFont', label: 'Title Font', min: 12, max: 72 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogTitleFont', label: 'Narrow Title Font', min: 12, max: 96 }),
             numberField({ group: 'sideB', field: 'catalogTitleGap', label: 'Title Gap', min: -30, max: 80 }),
             numberField({ group: 'sideB', field: 'catalogDescFont', label: 'Description Font', min: 8, max: 32 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogDescFont', label: 'Narrow Description Font', min: 8, max: 44 }),
             numberField({ group: 'sideB', field: 'catalogButtonW', label: 'Explore Width', min: 90, max: 280 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogButtonW', label: 'Narrow Explore Width', min: 90, max: 340 }),
             numberField({ group: 'sideB', field: 'catalogButtonH', label: 'Explore Height', min: 26, max: 90 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogButtonH', label: 'Narrow Explore Height', min: 26, max: 110 }),
             numberField({ group: 'sideB', field: 'catalogButtonFont', label: 'Explore Font', min: 6, max: 30, step: 0.5 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogButtonFont', label: 'Narrow Explore Font', min: 6, max: 38, step: 0.5 }),
             numberField({ group: 'sideB', field: 'catalogButtonArrowW', label: 'Explore Arrow Width', min: 12, max: 90 }),
-            numberField({ group: 'sideB', field: 'narrowCatalogButtonArrowW', label: 'Narrow Explore Arrow Width', min: 12, max: 110 }),
             selectField({ group: 'sideB', field: 'catalogButtonAlign', label: 'Explore Align', options: buttonAlignOptions }),
           ]) : null}
         </div>
