@@ -33,7 +33,7 @@ import {
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
 import { MemoryRouter } from 'react-router-dom'
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
-import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types'
+import type { CategoryWithSubs, GamesExplorerGame, PlayerModeFilter } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
@@ -612,6 +612,9 @@ type GameWithMetadata = {
   home: GameHome
   path: string
   entry: AssetResourceEntry<GameMode>
+  source?: 'asset' | 'catalog'
+  playerMode?: string | null
+  alsoKnownAs?: string[]
 }
 
 const RELEASE_STATUSES = new Set<NonNullable<GameHome['releaseStatus']>>([
@@ -627,6 +630,275 @@ const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
 const ASSET_EDITOR_PREVIEW_APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
 const SELECTED_GAME_PLACEHOLDER_ART_URL = '/Resources/AppAssets/PlaceHolders/image0.jpg'
 const SELECTED_GAME_PLACEHOLDER_OVERVIEW_URL = '/Resources/AppAssets/PlaceHolders/image1.jpg'
+const GAME_CATALOG_INDEX_PATHS = [
+  'Resources/GameCatalog/index.json',
+  'Resources/catalog/index.json',
+] as const
+
+type LocalGameCatalogEntry = {
+  slug: string
+  name: string
+  quality?: string
+  completeness?: Record<string, boolean>
+  description?: string
+  players?: string
+  deck?: string
+  difficulty?: string
+  duration?: string
+  category?: string
+  subcategory?: string | null
+  playerMode?: string | null
+  alsoKnownAs?: string[]
+  tags?: string[]
+}
+
+function asStringValue(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined
+}
+
+function asStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined
+  const items = value
+    .map(item => asStringValue(item))
+    .filter((item): item is string => Boolean(item))
+  return items.length ? items : undefined
+}
+
+function asNumberValue(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+function normalizePlayerMode(value: unknown): PlayerModeFilter | null {
+  const normalized = asStringValue(value)?.toLowerCase().replace(/[\s_-]+/g, '')
+  if (normalized === 'singleplayer' || normalized === 'solo') return 'singleplayer'
+  if (normalized === 'multiplayer' || normalized === 'multi') return 'multiplayer'
+  return null
+}
+
+function asBooleanRecord(value: unknown): Record<string, boolean> | undefined {
+  const record = asPreviewRecord(value)
+  const entries = Object.entries(record)
+    .filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean')
+  return entries.length ? Object.fromEntries(entries) : undefined
+}
+
+function slugFromCatalogValue(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+function toCatalogIndexEntries(raw: unknown): LocalGameCatalogEntry[] {
+  const rawGames = asPreviewRecord(raw).games
+  if (!Array.isArray(rawGames)) return []
+  return rawGames.flatMap(item => {
+    const record = asPreviewRecord(item)
+    const name = asStringValue(record.name) ?? asStringValue(record.displayName)
+    const slug = asStringValue(record.slug) ?? asStringValue(record.gameId) ?? (name ? slugFromCatalogValue(name) : undefined)
+    if (!name || !slug) return []
+    return [{
+      slug,
+      name,
+      quality: asStringValue(record.quality),
+      completeness: asBooleanRecord(record.completeness),
+      description: asStringValue(record.description) ?? asStringValue(record.shortDescription),
+      players: asStringValue(record.players) ?? asStringValue(record.playersDisplay),
+      deck: asStringValue(record.deck),
+      difficulty: asStringValue(record.difficulty),
+      duration: asStringValue(record.duration),
+      category: asStringValue(record.category) ?? asStringValue(record.gameCategory),
+      subcategory: record.subcategory === null ? null : asStringValue(record.subcategory),
+      playerMode: record.playerMode === null ? null : normalizePlayerMode(record.playerMode),
+      alsoKnownAs: asStringArray(record.alsoKnownAs),
+      tags: asStringArray(record.tags),
+    }]
+  })
+}
+
+async function loadGameCatalogIndexFromResources(): Promise<LocalGameCatalogEntry[]> {
+  for (const path of GAME_CATALOG_INDEX_PATHS) {
+    const document = await loadPreviewAssetDocument(path)
+    const entries = toCatalogIndexEntries(document)
+    if (entries.length) return entries
+  }
+  return []
+}
+
+function firstInfoParagraph(infoData: LooseRecord): string | undefined {
+  const sections = Array.isArray(infoData.sections) ? infoData.sections : []
+  for (const section of sections) {
+    const pages = Array.isArray(asPreviewRecord(section).pages)
+      ? asPreviewRecord(section).pages as unknown[]
+      : []
+    for (const page of pages) {
+      const content = Array.isArray(asPreviewRecord(page).content)
+        ? asPreviewRecord(page).content as unknown[]
+        : []
+      for (const block of content) {
+        const blockRecord = asPreviewRecord(block)
+        if (blockRecord.type === 'paragraph') {
+          const text = asStringValue(blockRecord.text)
+          if (text) return text
+        }
+      }
+    }
+  }
+  return undefined
+}
+
+function fallbackCompletenessFromInfo(infoData: LooseRecord): Record<string, boolean> | undefined {
+  const explicit = asBooleanRecord(infoData.completeness)
+  if (explicit) return explicit
+  const sectionTypes = new Set(
+    (Array.isArray(infoData.sections) ? infoData.sections : [])
+      .map(section => asStringValue(asPreviewRecord(section).type))
+      .filter((item): item is string => Boolean(item))
+  )
+  if (!sectionTypes.size && !Object.keys(infoData).length) return undefined
+  return {
+    overview: sectionTypes.has('about') || Boolean(infoData.hero),
+    history: Boolean(infoData.historyContent) || Boolean(asStringValue(infoData.origin)),
+    setup: sectionTypes.has('rules'),
+    rules: sectionTypes.has('rules'),
+    strategy: sectionTypes.has('strategy'),
+    variations: Boolean(infoData.variationsContent) || Boolean(asStringArray(infoData.alsoKnownAs)?.length),
+    ai: Boolean(infoData.aiContent),
+    sources: Boolean(infoData.sourcesContent),
+  }
+}
+
+async function buildFallbackGameMetadataFromEntry(
+  entry: AssetResourceEntry<GameMode>
+): Promise<GameWithMetadata | null> {
+  const path = typeof entry.path === 'string' ? entry.path : ''
+  if (!path) return null
+  const document = await loadPreviewAssetDocument(path)
+  if (!document) return null
+  const system = asPreviewRecord(document.system)
+  const data = dataOfPreview(document)
+  const infoDocument = await loadPreviewAssetDocument(pathFromPreviewRef(data.gameInfoAsset))
+  const infoData = dataOfPreview(infoDocument)
+  const gameId = asStringValue(system.gameId) ?? asStringValue(data.gameId) ?? entry.gameId ?? extractGameIdFromPath(path)
+  const guid = asStringValue(system.guid) ?? entry.guid
+  const name = asStringValue(system.displayName) ?? asStringValue(data.displayName) ?? entry.displayName ?? gameId
+  if (!gameId || !guid || !name) return null
+  entry.gameId = gameId as never
+  const minPlayers = asNumberValue(data.minPlayers) ?? asNumberValue(infoData.minPlayers)
+  const maxPlayers = asNumberValue(data.maxPlayers) ?? asNumberValue(infoData.maxPlayers)
+  const home: GameHome = {
+    gameId,
+    guid,
+    name,
+    enabled: true,
+    releaseStatus: toReleaseStatus(asStringValue(data.releaseStatus)),
+    tags: asStringArray(infoData.tags),
+    bannerImage: asStringValue(data.bannerImage),
+    gameIcon: asStringValue(data.gameIcon),
+    tagline: asStringValue(asPreviewRecord(infoData.hero).subtitle),
+    shortDescription: firstInfoParagraph(infoData),
+    minPlayers,
+    maxPlayers,
+    playersDisplay: asStringValue(infoData.playersDisplay) ??
+      (minPlayers != null && maxPlayers != null ? `${minPlayers}-${maxPlayers}` : undefined),
+    gameCategory: asStringValue(infoData.gameCategory) ?? 'CardGames',
+    subcategory: infoData.subcategory === null ? null : asStringValue(infoData.subcategory),
+    difficulty: asStringValue(infoData.difficulty),
+    duration: asStringValue(infoData.duration),
+    deck: asStringValue(infoData.deck) ?? asStringValue(asPreviewRecord(data.deckAsset).displayName),
+    quality: asStringValue(infoData.quality) ?? 'complete',
+    completeness: fallbackCompletenessFromInfo(infoData),
+  }
+  return {
+    home,
+    path,
+    entry,
+    source: 'asset',
+    playerMode: normalizePlayerMode(infoData.playerMode),
+    alsoKnownAs: asStringArray(infoData.alsoKnownAs),
+  }
+}
+
+async function appendMissingGameMetadata(
+  loaded: GameWithMetadata[],
+  entries: AssetResourceEntry<GameMode>[]
+): Promise<GameWithMetadata[]> {
+  const ids = new Set(loaded.map(item => slugFromCatalogValue(gameMetadataId(item))))
+  const missing = entries.filter(entry => {
+    const id = entry.gameId ?? extractGameIdFromPath(typeof entry.path === 'string' ? entry.path : '')
+    return id ? !ids.has(slugFromCatalogValue(id)) : false
+  })
+  if (!missing.length) return loaded
+  const fallback = await Promise.all(missing.map(buildFallbackGameMetadataFromEntry))
+  return [
+    ...loaded.map(item => ({ ...item, source: item.source ?? 'asset' as const })),
+    ...fallback.filter((item): item is GameWithMetadata => item !== null),
+  ]
+}
+
+function gameMetadataId(item: GameWithMetadata): string {
+  return item.home.gameId ?? item.entry.gameId ?? extractGameIdFromPath(item.path) ?? item.home.name ?? item.entry.displayName ?? item.path
+}
+
+function isCatalogGameItem(item: GameWithMetadata): boolean {
+  if (item.source === 'catalog') return true
+  const path = item.path.replace(/\\/g, '/')
+  return path.includes('/GameCatalog/') || path.includes('/catalog/')
+}
+
+function gamePlayerMode(item: GameWithMetadata): PlayerModeFilter | null {
+  const explicit = normalizePlayerMode(item.playerMode)
+  if (explicit) return explicit
+  const minPlayers = item.home.minPlayers
+  const maxPlayers = item.home.maxPlayers
+  if (maxPlayers != null && maxPlayers <= 1) return 'singleplayer'
+  if (minPlayers != null || maxPlayers != null) return 'multiplayer'
+  return null
+}
+
+function toCatalogGameMetadata(item: LocalGameCatalogEntry): GameWithMetadata {
+  const guid = `catalog:${item.slug}`
+  const entry = new AssetResourceEntryClass<GameMode>('CatalogGame' as never, guid as never)
+  entry.displayName = item.name
+  entry.path = `Resources/GameCatalog/games/${item.slug}.json`
+  entry.gameId = item.slug as never
+  const home: GameHome = {
+    gameId: item.slug,
+    guid,
+    name: item.name,
+    enabled: true,
+    releaseStatus: 'ComingSoon',
+    tags: item.tags,
+    shortDescription: item.description,
+    gameCategory: item.category ?? 'Other',
+    subcategory: item.subcategory ?? null,
+    difficulty: item.difficulty,
+    duration: item.duration,
+    deck: item.deck,
+    playersDisplay: item.players,
+    quality: item.quality,
+    completeness: item.completeness,
+  }
+  return {
+    home,
+    path: entry.path,
+    entry,
+    source: 'catalog',
+    playerMode: item.playerMode ?? null,
+    alsoKnownAs: item.alsoKnownAs,
+  }
+}
+
+function mergeGameCatalogWithAssets(
+  assetGames: GameWithMetadata[],
+  catalogEntries: LocalGameCatalogEntry[]
+): GameWithMetadata[] {
+  if (!catalogEntries.length) return assetGames
+  const assetIds = new Set(
+    assetGames.map(item => slugFromCatalogValue(gameMetadataId(item))).filter(Boolean)
+  )
+  const catalogGames = catalogEntries
+    .filter(item => !assetIds.has(slugFromCatalogValue(item.slug)))
+    .map(toCatalogGameMetadata)
+  return [...assetGames.map(item => ({ ...item, source: item.source ?? 'asset' as const })), ...catalogGames]
+}
 
 function mergeHeaderConfigInput(
   baseConfig?: UnifiedHeaderConfigInput | null,
@@ -1630,14 +1902,19 @@ const PageLayoutViewportFrame = React.forwardRef<
 })
 
 function extractModeFromPath(path: string): string {
-  const match = path.match(/GameMode\/([^/]+)\//)
+  const normalized = path.replace(/\\/g, '/')
+  if (normalized.includes('/GameCatalog/') || normalized.includes('/catalog/')) return 'CardGames'
+  const match = normalized.match(/GameMode\/([^/]+)\//)
   return match ? match[1] : 'Other'
 }
 
 function extractGameIdFromPath(path: string): string | null {
-  const match = path.match(/GameMode\/[^/]+\/([^/]+)\//)
+  const normalized = path.replace(/\\/g, '/')
+  const gameFolderMatch = normalized.match(/GameMode\/[^/]+\/Games\/([^/]+)\//)
+  if (gameFolderMatch?.[1]) return gameFolderMatch[1]
+  const match = normalized.match(/GameMode\/[^/]+\/([^/]+)\//)
   if (match?.[1]) return match[1]
-  const segments = path.split('/')
+  const segments = normalized.split('/')
   return segments.length >= 3 ? (segments[segments.length - 2] ?? null) : null
 }
 
@@ -1903,6 +2180,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [hasLoadedImages, setHasLoadedImages] = useState(false)
   const [gamesSearch, setGamesSearch] = useState('')
   const [gamesModeFilter, setGamesModeFilter] = useState('all')
+  const [gamesPlayerModeFilter, setGamesPlayerModeFilter] = useState<PlayerModeFilter>('all')
   const [gamesCategory, setGamesCategory] = useState('all')
   const [gamesView, setGamesView] = useState<'grid' | 'list'>('grid')
   const [featuredShowcaseControls, setFeaturedShowcaseControls] = useState(
@@ -2637,8 +2915,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       try {
         setIsLoadingGames(true)
         if (isTauri()) {
-          const catalog = await getGamesCatalogFromTauri()
-          const withMeta: GameWithMetadata[] = catalog.games.map(g => {
+          const [tauriCatalog, catalogEntries] = await Promise.all([
+            getGamesCatalogFromTauri(),
+            isSelectedGameLayout ? Promise.resolve([]) : loadGameCatalogIndexFromResources(),
+          ])
+          const withMeta: GameWithMetadata[] = tauriCatalog.games.map(g => {
             const entry = new AssetResourceEntryClass<GameMode>(
               g.assetType as never,
               g.guid as never
@@ -2655,10 +2936,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
               gameCategory: g.mode,
               subcategory: null,
             }
-            return { home, path: g.path, entry }
+            return { home, path: g.path, entry, source: 'asset' }
           })
           setGameEntries(withMeta.map(m => m.entry))
-          setGamesWithMetadata(withMeta)
+          setGamesWithMetadata(mergeGameCatalogWithAssets(withMeta, catalogEntries))
         } else {
           const [
             { loadGamesWithMetadataFromDisk },
@@ -2673,7 +2954,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
               '@ocentra/eventing-domain/events/assets/GetDiskGameModeEntriesEvent'
             ),
           ])
-          const [gameModeResult, withMeta] = await Promise.all([
+          const [gameModeResult, withMeta, catalogEntries] = await Promise.all([
             (async () => {
               const deferred = new OperationDeferred<
                 AssetResourceEntry<GameMode>[]
@@ -2687,9 +2968,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
                 : []
             })(),
             loadGamesWithMetadataFromDisk(),
+            isSelectedGameLayout ? Promise.resolve([]) : loadGameCatalogIndexFromResources(),
           ])
+          const completeWithMeta = await appendMissingGameMetadata(withMeta, gameModeResult)
           setGameEntries(gameModeResult)
-          setGamesWithMetadata(withMeta)
+          setGamesWithMetadata(mergeGameCatalogWithAssets(completeWithMeta, catalogEntries))
         }
         setHasLoadedGames(true)
       } catch {
@@ -2700,7 +2983,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       }
     }
     void load()
-  }, [activeTab, hasLoadedGames, shouldLoadGamesForPageLayout])
+  }, [activeTab, hasLoadedGames, isSelectedGameLayout, shouldLoadGamesForPageLayout])
 
   useEffect(() => {
     if (activeTab !== 'images' || hasLoadedImages) return
@@ -2826,6 +3109,20 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1])
   }, [gamesWithMetadata])
 
+  const gamesPlayerModeCounts = useMemo(() => {
+    const counts = { all: gamesWithMetadata.length, singleplayer: 0, multiplayer: 0 }
+    for (const item of gamesWithMetadata) {
+      const mode = gamePlayerMode(item)
+      if (mode) counts[mode] += 1
+    }
+    return counts
+  }, [gamesWithMetadata])
+
+  const availableGamesCount = useMemo(
+    () => gamesWithMetadata.filter(item => !isCatalogGameItem(item)).length,
+    [gamesWithMetadata]
+  )
+
   const gamesCategoryWithSubs = useMemo((): CategoryWithSubs[] => {
     const modeFiltered =
       gamesModeFilter === 'all'
@@ -2833,8 +3130,12 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         : gamesWithMetadata.filter(
             g => extractModeFromPath(g.path) === gamesModeFilter
           )
+    const playerModeFiltered =
+      gamesPlayerModeFilter === 'all'
+        ? modeFiltered
+        : modeFiltered.filter(g => gamePlayerMode(g) === gamesPlayerModeFilter)
     const byCat = new Map<string, Map<string, number>>()
-    for (const { home, path } of modeFiltered) {
+    for (const { home, path } of playerModeFiltered) {
       const cat = home.gameCategory || extractModeFromPath(path)
       const sub = home.subcategory ?? null
       if (!byCat.has(cat)) byCat.set(cat, new Map())
@@ -2843,12 +3144,12 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       subMap.set(subKey, (subMap.get(subKey) ?? 0) + 1)
     }
     const catTotals = new Map<string, number>()
-    for (const { home, path } of modeFiltered) {
+    for (const { home, path } of playerModeFiltered) {
       const c = home.gameCategory || extractModeFromPath(path)
       catTotals.set(c, (catTotals.get(c) ?? 0) + 1)
     }
     const result: CategoryWithSubs[] = [
-      { category: 'all', total: modeFiltered.length, subList: [] },
+      { category: 'all', total: playerModeFiltered.length, subList: [] },
     ]
     let sortedCats: Array<[string, number]>
     if (gamesModeFilter === 'CardGames') {
@@ -2866,7 +3167,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       result.push({ category, total, subList })
     }
     return result
-  }, [gamesWithMetadata, gamesModeFilter])
+  }, [gamesWithMetadata, gamesModeFilter, gamesPlayerModeFilter])
 
   const gamesCategoryCounts = useMemo(
     () => gamesCategoryWithSubs.map(c => [c.category, c.total] as const),
@@ -2889,6 +3190,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             g => extractModeFromPath(g.path) === gamesModeFilter
           )
     }
+    if (gamesPlayerModeFilter !== 'all') {
+      result = result.filter(g => gamePlayerMode(g) === gamesPlayerModeFilter)
+    }
     if (gamesCategory !== 'all') {
       result = result.filter(g => {
         const cat = g.home.gameCategory || extractModeFromPath(g.path)
@@ -2900,8 +3204,20 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       result = result.filter(g => {
         const name = (g.home.name ?? g.entry.displayName ?? '').toLowerCase()
         const gameId = (g.home.gameId ?? g.entry.gameId ?? '').toLowerCase()
+        const description = (g.home.shortDescription ?? g.home.description ?? '').toLowerCase()
+        const category = (g.home.gameCategory ?? '').toLowerCase()
+        const subcategory = (g.home.subcategory ?? '').toLowerCase()
+        const aliases = (g.alsoKnownAs ?? []).join(' ').toLowerCase()
         const path = g.path.toLowerCase()
-        return name.includes(q) || gameId.includes(q) || path.includes(q)
+        return (
+          name.includes(q) ||
+          gameId.includes(q) ||
+          description.includes(q) ||
+          category.includes(q) ||
+          subcategory.includes(q) ||
+          aliases.includes(q) ||
+          path.includes(q)
+        )
       })
     }
     return [...result].sort((a, b) =>
@@ -2909,7 +3225,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         b.home.name ?? b.entry.displayName ?? ''
       )
     )
-  }, [gamesWithMetadata, gamesModeFilter, gamesCategory, deferredGamesSearch])
+  }, [gamesWithMetadata, gamesModeFilter, gamesPlayerModeFilter, gamesCategory, deferredGamesSearch])
 
   const imageResourceCount = useMemo(
     () =>
@@ -2930,6 +3246,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const selectedGameSampleOptions = useMemo(
     () =>
       [...gamesWithMetadata]
+        .filter(item => !isCatalogGameItem(item))
         .map(item => ({
           id:
             item.home.gameId ??
@@ -3167,11 +3484,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     if (guid && onNavigateToAsset) onNavigateToAsset(toAssetIdentifier(guid))
   }
 
-  const handleGamesTabNavigate = (item: {
-    home: GameHome
-    path: string
-    entry: AssetResourceEntry<GameMode>
-  }) => {
+  const handleGamesTabNavigate = (item: GameWithMetadata) => {
+    if (isCatalogGameItem(item)) return
     setSelectedGameId(
       item.home.gameId ??
         item.entry.gameId ??
@@ -3183,11 +3497,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
   }
 
-  const toGamesExplorerGame = (g: {
-    home: GameHome
-    path: string
-    entry: AssetResourceEntry<GameMode>
-  }): GamesExplorerGame => {
+  const toGamesExplorerGame = (g: GameWithMetadata): GamesExplorerGame => {
     const cat = g.home.gameCategory || extractModeFromPath(g.path)
     const pct = g.home.completeness
       ? Math.round(
@@ -3210,8 +3520,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       deck: g.home.deck ?? undefined,
       duration: g.home.duration ?? undefined,
       difficulty: g.home.difficulty ?? undefined,
+      player_mode: gamePlayerMode(g),
       completeness: g.home.completeness ?? undefined,
       completenessPercent: pct,
+      source: isCatalogGameItem(g) ? 'catalog' : 'asset',
     }
   }
 
@@ -3238,6 +3550,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             searchQuery={gamesSearch}
             onSearchChange={setGamesSearch}
             metadata={{ totalGames: gamesWithMetadata.length }}
+            availableCount={availableGamesCount}
             categoryMapSize={
               gamesCategoryCounts.filter(([k]) => k !== 'all').length
             }
@@ -3249,6 +3562,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           className={`asset-catalog-games-tab__body ${gamesSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
         >
           <ExplorerSidebar
+            playerModeFilter={gamesPlayerModeFilter}
+            onPlayerModeChange={setGamesPlayerModeFilter}
+            playerModeCounts={gamesPlayerModeCounts}
             currentCategory={gamesCategory}
             onCategoryChange={setGamesCategory}
             categoryWithSubs={gamesCategoryWithSubs}
@@ -3278,7 +3594,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
                     >
                       <GameCard
                         game={toGamesExplorerGame(item)}
-                        onGameClick={() => handleGamesTabNavigate(item)}
+                        onGameClick={
+                          isCatalogGameItem(item) ? undefined : () => handleGamesTabNavigate(item)
+                        }
                       />
                     </div>
                   ))}
@@ -3293,7 +3611,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
                     >
                       <GameListRow
                         game={toGamesExplorerGame(item)}
-                        onGameClick={() => handleGamesTabNavigate(item)}
+                        onGameClick={
+                          isCatalogGameItem(item) ? undefined : () => handleGamesTabNavigate(item)
+                        }
                       />
                     </div>
                   ))}
