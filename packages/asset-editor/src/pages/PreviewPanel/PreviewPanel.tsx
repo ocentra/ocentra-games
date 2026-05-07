@@ -330,6 +330,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           <LazyAssetCatalogPreview
             key="asset-catalog-preview"
             assetId={assetId}
+            assetPath={assetPath}
             assetData={assetData}
             viewMode={viewMode}
             setViewMode={setViewMode}
@@ -348,6 +349,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
           <LazyAssetCatalogPreview
             key={`page-layout-preview:${assetPath}`}
             assetId={assetId}
+            assetPath={assetPath}
             assetData={assetData}
             viewMode={viewMode}
             setViewMode={setViewMode}

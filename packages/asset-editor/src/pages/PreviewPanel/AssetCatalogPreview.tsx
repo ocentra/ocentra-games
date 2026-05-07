@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useDeferredValue,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -134,6 +135,11 @@ import {
   type SelectedGamePreviewLayoutMode,
 } from '@/utils/selectedGameLayoutControlsChannel'
 import { normalizeSelectedGameLayoutConfig } from '@/utils/selectedGameLayoutPersistence'
+import {
+  readStoredLayoutEditorCameraState,
+  writeStoredLayoutEditorCameraState,
+  type LayoutEditorCanvasCameraState,
+} from '@/utils/layoutEditorPreferences'
 import type { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry'
 import { AssetResourceEntry as AssetResourceEntryClass } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry'
 import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier'
@@ -777,6 +783,7 @@ function AssetCatalogMainAppPreviewShell({
 
 type AssetCatalogPreviewProps = {
   assetId: string
+  assetPath?: string
   assetData: { system?: unknown; data?: unknown; metadata?: unknown }
   viewMode: ViewMode
   setViewMode: React.Dispatch<React.SetStateAction<ViewMode>>
@@ -787,6 +794,140 @@ type AssetCatalogPreviewProps = {
 }
 
 type PageLayoutPreviewData = Partial<PageLayoutDocument>
+
+type PagePreviewResolutionOption = {
+  label: string
+  value: string
+  disabled?: boolean
+}
+
+type PagePreviewViewportSize = {
+  w: number
+  h: number
+}
+
+type PageLayoutViewportFrameHandle = {
+  fitCamera: () => void
+  actualSizeCamera: () => void
+  zoomOut: () => void
+  zoomIn: () => void
+}
+
+const PAGE_PREVIEW_DEFAULT_VIEWPORT: PagePreviewViewportSize = { w: 1440, h: 900 }
+const PAGE_PREVIEW_FALLBACK_RESOLUTIONS: PagePreviewResolutionOption[] = [
+  { label: 'Fit Window', value: 'fit' },
+  { label: 'Desktop Full HD (1920x1080)', value: '1920x1080' },
+  { label: 'Laptop 1440x900', value: '1440x900' },
+  { label: 'iPad Pro 11 (1194x834)', value: '1194x834' },
+  { label: 'iPhone 14 / 13 / 12 (844x390)', value: '844x390' },
+  { label: 'Custom...', value: 'custom' },
+]
+const PAGE_PREVIEW_MIN_CAMERA_ZOOM = 0.25
+const PAGE_PREVIEW_MAX_CAMERA_ZOOM = 8
+const PAGE_PREVIEW_CAMERA_STEP_FACTOR = 1.15
+const PAGE_PREVIEW_CANVAS_PADDING = 40
+const PAGE_PREVIEW_LABEL_RESERVE = 40
+
+function clampPreviewNumber(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value))
+}
+
+function createDefaultPagePreviewCameraState(): LayoutEditorCanvasCameraState {
+  return {
+    zoom: 1,
+    panX: 0,
+    panY: 0,
+  }
+}
+
+function getPagePreviewViewportSignature(viewport: PagePreviewViewportSize): string {
+  return `${Math.round(viewport.w)}x${Math.round(viewport.h)}`
+}
+
+function getOrientedPagePreviewViewport(
+  rawW: number,
+  rawH: number,
+  isPortrait: boolean
+): PagePreviewViewportSize {
+  let w = Number.isFinite(rawW) ? rawW : PAGE_PREVIEW_DEFAULT_VIEWPORT.w
+  let h = Number.isFinite(rawH) ? rawH : PAGE_PREVIEW_DEFAULT_VIEWPORT.h
+  if (isPortrait && w > h) {
+    const nextW = h
+    h = w
+    w = nextW
+  } else if (!isPortrait && h > w) {
+    const nextW = h
+    h = w
+    w = nextW
+  }
+  return { w, h }
+}
+
+function resolvePagePreviewViewport(
+  resolution: string,
+  customWidth: number,
+  customHeight: number,
+  isPortrait: boolean
+): PagePreviewViewportSize {
+  let rawW = PAGE_PREVIEW_DEFAULT_VIEWPORT.w
+  let rawH = PAGE_PREVIEW_DEFAULT_VIEWPORT.h
+  if (resolution === 'custom') {
+    rawW = customWidth
+    rawH = customHeight
+  } else if (resolution !== 'fit') {
+    const matches = resolution.match(/(\d+)\D+(\d+)/)
+    if (matches) {
+      rawW = Number(matches[1])
+      rawH = Number(matches[2])
+    }
+  }
+  return getOrientedPagePreviewViewport(rawW, rawH, isPortrait)
+}
+
+function getPagePreviewResolutionLabel(
+  _resolution: string,
+  viewport: PagePreviewViewportSize
+): string {
+  return `${viewport.w} x ${viewport.h}`
+}
+
+function clampPagePreviewCameraState(
+  state: LayoutEditorCanvasCameraState,
+  viewport: PagePreviewViewportSize,
+  fitScale: number,
+  container: { width: number; height: number }
+): LayoutEditorCanvasCameraState {
+  const zoom = clampPreviewNumber(
+    state.zoom,
+    PAGE_PREVIEW_MIN_CAMERA_ZOOM,
+    PAGE_PREVIEW_MAX_CAMERA_ZOOM
+  )
+  const effectiveScale = fitScale * zoom
+  const contentWidth = viewport.w * effectiveScale
+  const contentHeight = viewport.h * effectiveScale
+  const clampAxis = (pan: number, containerSize: number, contentSize: number): number => {
+    if (!Number.isFinite(containerSize) || containerSize <= 0) {
+      return 0
+    }
+    const baseOffset = (containerSize - contentSize) * 0.5
+    const minVisible = Math.min(
+      Math.max(Math.min(containerSize * 0.12, 160), 64),
+      Math.max(contentSize * 0.25, 24)
+    )
+    const overscroll = Math.min(
+      Math.max(containerSize * 0.1, 48),
+      Math.max(contentSize * 0.5, 48)
+    )
+    const minPan = minVisible - (baseOffset + contentSize) - overscroll
+    const maxPan = containerSize - minVisible - baseOffset + overscroll
+    return clampPreviewNumber(pan, minPan, maxPan)
+  }
+  return {
+    zoom,
+    panX: clampAxis(state.panX, container.width, contentWidth),
+    panY: clampAxis(state.panY, container.height, contentHeight),
+  }
+}
 
 function readPageLayoutData(assetData: { data?: unknown }): PageLayoutPreviewData {
   return assetData.data && typeof assetData.data === 'object'
@@ -1113,6 +1254,381 @@ function PageLayoutMainAppPreview({
   )
 }
 
+const PageLayoutViewportFrame = React.forwardRef<
+  PageLayoutViewportFrameHandle,
+  {
+    assetPath: string
+    viewport: PagePreviewViewportSize
+    resolutionLabel: string
+    isPortrait: boolean
+    children: React.ReactNode
+    onZoomPercentChange?: (value: number) => void
+  }
+>(function PageLayoutViewportFrame(
+  {
+    assetPath,
+    viewport,
+    resolutionLabel,
+    isPortrait,
+    children,
+    onZoomPercentChange,
+  },
+  ref
+) {
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const panGestureRef = useRef<{
+    pointerId: number
+    startClientX: number
+    startClientY: number
+    startPanX: number
+    startPanY: number
+  } | null>(null)
+  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 })
+  const [spacePressed, setSpacePressed] = useState(false)
+  const [isPanning, setIsPanning] = useState(false)
+  const [cameraEntry, setCameraEntry] = useState<{ key: string; state: LayoutEditorCanvasCameraState }>(() => ({
+    key: '',
+    state: createDefaultPagePreviewCameraState(),
+  }))
+  const orientationKey = isPortrait ? 'portrait' : 'landscape'
+  const viewportSignature = useMemo(
+    () => getPagePreviewViewportSignature(viewport),
+    [viewport]
+  )
+  const cameraStoragePath = `${assetPath}:page-layout-preview`
+  const cameraViewKey = `${cameraStoragePath}:${viewportSignature}:${orientationKey}`
+  const canvasAreaWidth = Math.max(
+    100,
+    containerDimensions.width - PAGE_PREVIEW_CANVAS_PADDING * 2
+  )
+  const canvasAreaHeight = Math.max(
+    100,
+    containerDimensions.height - PAGE_PREVIEW_CANVAS_PADDING * 2 - PAGE_PREVIEW_LABEL_RESERVE
+  )
+  const fitScale = useMemo(() => {
+    const nextScale = Math.min(
+      canvasAreaWidth / Math.max(viewport.w, 1),
+      canvasAreaHeight / Math.max(viewport.h, 1)
+    )
+    return Number.isFinite(nextScale) ? Math.max(nextScale, 0.01) : 1
+  }, [canvasAreaHeight, canvasAreaWidth, viewport.h, viewport.w])
+  const storedCameraState = useMemo(
+    () =>
+      readStoredLayoutEditorCameraState(
+        cameraStoragePath,
+        viewportSignature,
+        orientationKey
+      ) ?? createDefaultPagePreviewCameraState(),
+    [cameraStoragePath, orientationKey, viewportSignature]
+  )
+  const rawCameraState = cameraEntry.key === cameraViewKey
+    ? cameraEntry.state
+    : storedCameraState
+  const clampedCameraState = useMemo(
+    () =>
+      clampPagePreviewCameraState(rawCameraState, viewport, fitScale, {
+        width: canvasAreaWidth,
+        height: canvasAreaHeight,
+      }),
+    [canvasAreaHeight, canvasAreaWidth, fitScale, rawCameraState, viewport]
+  )
+  const effectiveScale = fitScale * clampedCameraState.zoom
+  const canvasDisplayWidth = viewport.w * effectiveScale
+  const canvasDisplayHeight = viewport.h * effectiveScale
+  const centeredOffsetX =
+    PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaWidth - canvasDisplayWidth) * 0.5
+  const centeredOffsetY =
+    PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaHeight - canvasDisplayHeight) * 0.5
+  const simulationShellVars = useMemo<React.CSSProperties>(() => {
+    const simulatedRootFontPx = clampPreviewNumber(13 + viewport.w * 0.0028, 14, 18)
+    const mobileShellBreakpointPx = simulatedRootFontPx * 48
+    const useMobileFooterProfile = viewport.w <= mobileShellBreakpointPx
+    const footerMinHeightPx = useMobileFooterProfile
+      ? clampPreviewNumber(viewport.h * 0.0275, simulatedRootFontPx * 1.5, simulatedRootFontPx * 2.1)
+      : clampPreviewNumber(viewport.h * 0.0325, simulatedRootFontPx * 1.75, simulatedRootFontPx * 2.5)
+    const footerTextSizePx = useMobileFooterProfile
+      ? clampPreviewNumber(
+        simulatedRootFontPx * 0.62 + viewport.w * 0.0012,
+        simulatedRootFontPx * 0.64,
+        simulatedRootFontPx * 0.74
+      )
+      : clampPreviewNumber(
+        simulatedRootFontPx * 0.64 + viewport.w * 0.0016,
+        simulatedRootFontPx * 0.68,
+        simulatedRootFontPx * 0.8
+      )
+    const footerTextGapPx = useMobileFooterProfile
+      ? simulatedRootFontPx * 0.22
+      : simulatedRootFontPx * 0.3
+
+    return {
+      '--oc-sim-footer-min-height': `${footerMinHeightPx}px`,
+      '--oc-sim-footer-text-size': `${footerTextSizePx}px`,
+      '--oc-sim-footer-text-gap': `${footerTextGapPx}px`,
+    } as React.CSSProperties
+  }, [viewport])
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      if (!containerRef.current) {
+        return
+      }
+      const rect = containerRef.current.getBoundingClientRect()
+      setContainerDimensions({
+        width: rect.width,
+        height: rect.height,
+      })
+    }
+
+    updateDimensions()
+    const observer = new ResizeObserver(updateDimensions)
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    writeStoredLayoutEditorCameraState(
+      cameraStoragePath,
+      viewportSignature,
+      orientationKey,
+      clampedCameraState
+    )
+  }, [cameraStoragePath, clampedCameraState, orientationKey, viewportSignature])
+
+  useEffect(() => {
+    onZoomPercentChange?.(Math.max(1, Math.round(effectiveScale * 100)))
+  }, [effectiveScale, onZoomPercentChange])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        setSpacePressed(true)
+      }
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        setSpacePressed(false)
+      }
+    }
+    const handleBlur = () => {
+      setSpacePressed(false)
+      setIsPanning(false)
+      panGestureRef.current = null
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', handleBlur)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
+
+  const updateCameraState = useCallback(
+    (updater: (current: LayoutEditorCanvasCameraState) => LayoutEditorCanvasCameraState) => {
+      setCameraEntry({
+        key: cameraViewKey,
+        state: clampPagePreviewCameraState(updater(clampedCameraState), viewport, fitScale, {
+          width: canvasAreaWidth,
+          height: canvasAreaHeight,
+        }),
+      })
+    },
+    [cameraViewKey, canvasAreaHeight, canvasAreaWidth, clampedCameraState, fitScale, viewport]
+  )
+
+  const applyZoomAtPoint = useCallback(
+    (nextZoom: number, pointerX?: number, pointerY?: number) => {
+      const targetZoom = clampPreviewNumber(
+        nextZoom,
+        PAGE_PREVIEW_MIN_CAMERA_ZOOM,
+        PAGE_PREVIEW_MAX_CAMERA_ZOOM
+      )
+      updateCameraState(current => {
+        if (Math.abs(current.zoom - targetZoom) < 0.0001) {
+          return current
+        }
+        const resolvedPointerX =
+          pointerX ?? (PAGE_PREVIEW_CANVAS_PADDING + canvasAreaWidth * 0.5)
+        const resolvedPointerY =
+          pointerY ?? (PAGE_PREVIEW_CANVAS_PADDING + canvasAreaHeight * 0.5)
+        const oldScale = fitScale * current.zoom
+        const newScale = fitScale * targetZoom
+        const oldBaseX =
+          PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaWidth - viewport.w * oldScale) * 0.5
+        const oldBaseY =
+          PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaHeight - viewport.h * oldScale) * 0.5
+        const newBaseX =
+          PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaWidth - viewport.w * newScale) * 0.5
+        const newBaseY =
+          PAGE_PREVIEW_CANVAS_PADDING + (canvasAreaHeight - viewport.h * newScale) * 0.5
+        const worldX = (resolvedPointerX - oldBaseX - current.panX) / Math.max(oldScale, 0.0001)
+        const worldY = (resolvedPointerY - oldBaseY - current.panY) / Math.max(oldScale, 0.0001)
+        return {
+          zoom: targetZoom,
+          panX: resolvedPointerX - newBaseX - worldX * newScale,
+          panY: resolvedPointerY - newBaseY - worldY * newScale,
+        }
+      })
+    },
+    [canvasAreaHeight, canvasAreaWidth, fitScale, updateCameraState, viewport.h, viewport.w]
+  )
+
+  const handleFitCamera = useCallback(() => {
+    setCameraEntry({
+      key: cameraViewKey,
+      state: createDefaultPagePreviewCameraState(),
+    })
+  }, [cameraViewKey])
+
+  const handleActualSizeCamera = useCallback(() => {
+    setCameraEntry({
+      key: cameraViewKey,
+      state: clampPagePreviewCameraState(
+        {
+          zoom: clampPreviewNumber(
+            1 / Math.max(fitScale, 0.0001),
+            PAGE_PREVIEW_MIN_CAMERA_ZOOM,
+            PAGE_PREVIEW_MAX_CAMERA_ZOOM
+          ),
+          panX: 0,
+          panY: 0,
+        },
+        viewport,
+        fitScale,
+        {
+          width: canvasAreaWidth,
+          height: canvasAreaHeight,
+        }
+      ),
+    })
+  }, [cameraViewKey, canvasAreaHeight, canvasAreaWidth, fitScale, viewport])
+
+  const handleZoomStep = useCallback(
+    (direction: 1 | -1) => {
+      const factor = direction > 0
+        ? PAGE_PREVIEW_CAMERA_STEP_FACTOR
+        : 1 / PAGE_PREVIEW_CAMERA_STEP_FACTOR
+      applyZoomAtPoint(clampedCameraState.zoom * factor)
+    },
+    [applyZoomAtPoint, clampedCameraState.zoom]
+  )
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      fitCamera: handleFitCamera,
+      actualSizeCamera: handleActualSizeCamera,
+      zoomOut: () => handleZoomStep(-1),
+      zoomIn: () => handleZoomStep(1),
+    }),
+    [handleActualSizeCamera, handleFitCamera, handleZoomStep]
+  )
+
+  const handleCanvasWheel = useCallback(
+    (event: React.WheelEvent<HTMLDivElement>) => {
+      if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+        return
+      }
+      event.preventDefault()
+      const rect = containerRef.current?.getBoundingClientRect()
+      const pointerX = rect ? event.clientX - rect.left : undefined
+      const pointerY = rect ? event.clientY - rect.top : undefined
+      const zoomFactor = Math.exp(-event.deltaY * 0.0015)
+      applyZoomAtPoint(clampedCameraState.zoom * zoomFactor, pointerX, pointerY)
+    },
+    [applyZoomAtPoint, clampedCameraState.zoom]
+  )
+
+  const handleCanvasPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const wantsPan = event.button === 1 || (event.button === 0 && spacePressed)
+      if (!wantsPan) {
+        return
+      }
+      event.preventDefault()
+      event.currentTarget.setPointerCapture(event.pointerId)
+      setIsPanning(true)
+      panGestureRef.current = {
+        pointerId: event.pointerId,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        startPanX: clampedCameraState.panX,
+        startPanY: clampedCameraState.panY,
+      }
+    },
+    [clampedCameraState.panX, clampedCameraState.panY, spacePressed]
+  )
+
+  const handleCanvasPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!panGestureRef.current || panGestureRef.current.pointerId !== event.pointerId) {
+        return
+      }
+      event.preventDefault()
+      const deltaX = event.clientX - panGestureRef.current.startClientX
+      const deltaY = event.clientY - panGestureRef.current.startClientY
+      updateCameraState(current => ({
+        zoom: current.zoom,
+        panX: (panGestureRef.current?.startPanX ?? 0) + deltaX,
+        panY: (panGestureRef.current?.startPanY ?? 0) + deltaY,
+      }))
+    },
+    [updateCameraState]
+  )
+
+  const handleCanvasPointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    if (panGestureRef.current?.pointerId === event.pointerId) {
+      panGestureRef.current = null
+      setIsPanning(false)
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }, [])
+
+  return (
+    <div
+      className={`asset-catalog-preview__page-viewport-frame ${
+        isPanning ? 'asset-catalog-preview__page-viewport-frame--panning' : ''
+      } ${spacePressed ? 'asset-catalog-preview__page-viewport-frame--pan-ready' : ''}`}
+      onWheel={handleCanvasWheel}
+      onPointerDown={handleCanvasPointerDown}
+      onPointerMove={handleCanvasPointerMove}
+      onPointerUp={handleCanvasPointerUp}
+      onPointerCancel={handleCanvasPointerUp}
+      ref={containerRef}
+    >
+      <div
+        className="asset-catalog-preview__page-viewport-label"
+        style={{
+          top: `${Math.max(centeredOffsetY + clampedCameraState.panY - 22, 8)}px`,
+          left: `${centeredOffsetX + clampedCameraState.panX}px`,
+        }}
+      >
+        {resolutionLabel}
+        <span>{isPortrait ? 'Portrait' : 'Landscape'}</span>
+      </div>
+      <div
+        className="asset-catalog-preview__page-viewport-device"
+        style={{
+          width: `${viewport.w}px`,
+          height: `${viewport.h}px`,
+          transform: `translate(${centeredOffsetX + clampedCameraState.panX}px, ${centeredOffsetY + clampedCameraState.panY}px) scale(${effectiveScale})`,
+        }}
+      >
+        <div
+          className="asset-catalog-preview__page-viewport-content"
+          style={simulationShellVars}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+})
+
 function extractModeFromPath(path: string): string {
   const match = path.match(/GameMode\/([^/]+)\//)
   return match ? match[1] : 'Other'
@@ -1313,6 +1829,7 @@ function hasHomepagePreviewContent(data: HomePageGamesDocument | null): boolean 
 
 export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   assetId,
+  assetPath,
   assetData,
   viewMode,
   setViewMode,
@@ -1334,7 +1851,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
   const shouldLoadGamesForPageLayout =
     isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'selected-game')
-  const initialSelectedGameLayoutConfig = normalizeSelectedGameLayoutConfig(pageLayoutData)
+  const initialSelectedGameLayoutConfig = useMemo(
+    () => normalizeSelectedGameLayoutConfig(pageLayoutData),
+    [pageLayoutData]
+  )
   const hasCachedHomepagePreview = hasHomepagePreviewContent(cachedHomepagePreviewData)
   const [activeTab, setActiveTab] = useState<AssetCatalogTab>(
     isPageLayoutMode ? 'homepage' : 'games'
@@ -1413,6 +1933,18 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [selectedGamePreviewLayoutMode, setSelectedGamePreviewLayoutMode] =
     useState<SelectedGamePreviewLayoutMode>('auto')
   const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
+  const pageLayoutViewportFrameRef = useRef<PageLayoutViewportFrameHandle | null>(null)
+  const [pageLayoutPreviewResolution, setPageLayoutPreviewResolution] = useState('fit')
+  const [pageLayoutPreviewCustomWidth, setPageLayoutPreviewCustomWidth] = useState(
+    PAGE_PREVIEW_DEFAULT_VIEWPORT.w
+  )
+  const [pageLayoutPreviewCustomHeight, setPageLayoutPreviewCustomHeight] = useState(
+    PAGE_PREVIEW_DEFAULT_VIEWPORT.h
+  )
+  const [pageLayoutPreviewResolutions, setPageLayoutPreviewResolutions] =
+    useState<PagePreviewResolutionOption[]>(PAGE_PREVIEW_FALLBACK_RESOLUTIONS)
+  const [pageLayoutPreviewIsPortrait, setPageLayoutPreviewIsPortrait] = useState(false)
+  const [pageLayoutPreviewZoomPercent, setPageLayoutPreviewZoomPercent] = useState(100)
   const [selectedGamePreviewBundle, setSelectedGamePreviewBundle] =
     useState<SelectedGamePreviewBundle | null>(null)
   const [selectedGameActiveTab, setSelectedGameActiveTab] =
@@ -1454,6 +1986,25 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [gamesSidebarCollapsed, setGamesSidebarCollapsed] = useState(false)
   const [resourcesSearch, setResourcesSearch] = useState('')
   const [resourcesFilter, setResourcesFilter] = useState('All')
+  const pageLayoutPreviewViewport = useMemo(
+    () =>
+      resolvePagePreviewViewport(
+        pageLayoutPreviewResolution,
+        pageLayoutPreviewCustomWidth,
+        pageLayoutPreviewCustomHeight,
+        pageLayoutPreviewIsPortrait
+      ),
+    [
+      pageLayoutPreviewCustomHeight,
+      pageLayoutPreviewCustomWidth,
+      pageLayoutPreviewIsPortrait,
+      pageLayoutPreviewResolution,
+    ]
+  )
+  const pageLayoutPreviewResolutionLabel = useMemo(
+    () => getPagePreviewResolutionLabel(pageLayoutPreviewResolution, pageLayoutPreviewViewport),
+    [pageLayoutPreviewResolution, pageLayoutPreviewViewport]
+  )
   const [tabCounts, setTabCounts] = useState<{
     games: number | null
     images: number | null
@@ -1461,6 +2012,35 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }>({ games: null, images: null, resources: null })
   const deferredGamesSearch = useDeferredValue(gamesSearch)
   const deferredResourcesSearch = useDeferredValue(resourcesSearch)
+
+  useEffect(() => {
+    if (!isPageLayoutMode) {
+      return
+    }
+    let cancelled = false
+    fetch('/Resources/devices.json')
+      .then(response => response.json())
+      .then((data: unknown) => {
+        if (!cancelled && Array.isArray(data)) {
+          const options = data.filter((item): item is PagePreviewResolutionOption => {
+            if (!item || typeof item !== 'object') {
+              return false
+            }
+            const record = item as Record<string, unknown>
+            return typeof record.label === 'string' && typeof record.value === 'string'
+          })
+          setPageLayoutPreviewResolutions(options.length > 0 ? options : PAGE_PREVIEW_FALLBACK_RESOLUTIONS)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPageLayoutPreviewResolutions(PAGE_PREVIEW_FALLBACK_RESOLUTIONS)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isPageLayoutMode])
 
   const { resolveImageUrl, ImageLoaders, prefetchHashes } =
     useResolveImageUrl(homepageData)
@@ -1517,6 +2097,21 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   useEffect(() => {
     selectedGameContentPlanRef.current = selectedGameContentPlan
   }, [selectedGameContentPlan])
+
+  useEffect(() => {
+    if (!isSelectedGameLayout) {
+      return undefined
+    }
+    const nextSampleGameId = initialSelectedGameLayoutConfig.previewSampleGameId || 'claim'
+    const timeoutId = window.setTimeout(() => {
+      setSelectedGameLayoutControls(initialSelectedGameLayoutConfig.layoutControls)
+      setSelectedGameContentPlan(initialSelectedGameLayoutConfig.contentPlan)
+      setSelectedGamePreviewSampleGameId(nextSampleGameId)
+      setSelectedGameId(nextSampleGameId || null)
+      setSelectedGameDebugBounds(initialSelectedGameLayoutConfig.debugBounds)
+    }, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [initialSelectedGameLayoutConfig, isSelectedGameLayout])
 
   useEffect(() => {
     selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
@@ -2781,6 +3376,95 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const pageLayoutViewportToolbar = isPageLayoutMode ? (
+    <div className="asset-catalog-preview__viewport-toolbar">
+      <label className="asset-catalog-preview__viewport-select">
+        <span>Viewport</span>
+        <select
+          value={pageLayoutPreviewResolution}
+          onChange={event => setPageLayoutPreviewResolution(event.target.value)}
+          aria-label="Page layout preview viewport"
+        >
+          {pageLayoutPreviewResolutions.map((option, index) => (
+            <option
+              key={`${option.value}-${index}`}
+              value={option.value}
+              disabled={option.disabled}
+            >
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button
+        type="button"
+        className={`asset-catalog-preview__viewport-button ${
+          pageLayoutPreviewIsPortrait ? 'is-active' : ''
+        }`}
+        onClick={() => setPageLayoutPreviewIsPortrait(value => !value)}
+        title={pageLayoutPreviewIsPortrait ? 'Switch to landscape' : 'Switch to portrait'}
+      >
+        {pageLayoutPreviewIsPortrait ? 'Portrait' : 'Landscape'}
+      </button>
+      {pageLayoutPreviewResolution === 'custom' && (
+        <div className="asset-catalog-preview__viewport-custom-size">
+          <input
+            type="number"
+            min="320"
+            max="7680"
+            value={pageLayoutPreviewCustomWidth}
+            onChange={event => setPageLayoutPreviewCustomWidth(Math.max(320, Number(event.target.value) || 320))}
+            aria-label="Custom viewport width"
+          />
+          <span>x</span>
+          <input
+            type="number"
+            min="320"
+            max="7680"
+            value={pageLayoutPreviewCustomHeight}
+            onChange={event => setPageLayoutPreviewCustomHeight(Math.max(320, Number(event.target.value) || 320))}
+            aria-label="Custom viewport height"
+          />
+        </div>
+      )}
+      <div className="asset-catalog-preview__viewport-camera">
+        <button
+          type="button"
+          className="asset-catalog-preview__viewport-button"
+          onClick={() => pageLayoutViewportFrameRef.current?.fitCamera()}
+        >
+          Fit
+        </button>
+        <button
+          type="button"
+          className="asset-catalog-preview__viewport-button"
+          onClick={() => pageLayoutViewportFrameRef.current?.actualSizeCamera()}
+        >
+          100%
+        </button>
+        <button
+          type="button"
+          className="asset-catalog-preview__viewport-button asset-catalog-preview__viewport-button--icon"
+          onClick={() => pageLayoutViewportFrameRef.current?.zoomOut()}
+          aria-label="Zoom out"
+        >
+          -
+        </button>
+        <span className="asset-catalog-preview__viewport-zoom-readout">
+          {pageLayoutPreviewZoomPercent}%
+        </span>
+        <button
+          type="button"
+          className="asset-catalog-preview__viewport-button asset-catalog-preview__viewport-button--icon"
+          onClick={() => pageLayoutViewportFrameRef.current?.zoomIn()}
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  ) : null
+
   const catalogHeaderToolbar = (
     <div className="asset-catalog-preview__tabs-row asset-catalog-preview__tabs-row--header">
       <div className="asset-catalog-preview__tabs">
@@ -2873,6 +3557,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           </select>
         </div>
       )}
+      {pageLayoutViewportToolbar}
       {activeTab === 'games' && (
         <div className="asset-catalog-preview__games-mode">
           <label htmlFor="asset-catalog-games-mode">Mode</label>
@@ -2892,6 +3577,64 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
               ))}
           </select>
         </div>
+      )}
+    </div>
+  )
+
+  const homepagePreviewContent = (
+    <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
+      {isHomePageLayout ? (
+        <AssetCatalogMainAppPreviewShell
+          routePath={pageLayoutData?.routePath ?? '/'}
+          headerConfigOverride={headerConfigOverride}
+        >
+          <div className="home-work-math">
+            <HomePageShowcaseContent
+              contentRef={homepageContentFrameRef}
+              imageLoaders={ImageLoaders}
+              contentClassName={`asset-catalog-preview__homepage-content-frame ${
+                homepageLayoutControls.contentBoundsOverlay
+                  ? 'asset-catalog-preview__homepage-content-frame--bounds'
+                  : ''
+              }`}
+              sectionClassName="asset-catalog-preview__homepage-section"
+              aboutSectionClassName="asset-catalog-preview__homepage-feature-banner"
+              featuredSectionClassName="asset-catalog-preview__homepage-featured"
+              comingSoonSectionClassName="asset-catalog-preview__homepage-coming-soon"
+              featureBannerItems={homepageData.featureBannerItems}
+              featured={homepageData.featured}
+              recommended={homepageData.recommended ?? []}
+              comingSoon={homepageData.comingSoon}
+              catalogMontageItems={homepageData.catalogMontageImages ?? []}
+              availableNow={homepageData.availableNow}
+              explorerGames={explorerGames}
+              isFeaturedLoading={isLoadingHomepageCatalog}
+              isComingSoonLoading={
+                isLoadingHomepageCatalog ||
+                isLoadingHomepageComingSoon ||
+                isLoadingHomepageFeatureBanner
+              }
+              resolveImageUrl={resolveImageUrl}
+              aboutControls={aboutShowcaseControls}
+              featuredControls={featuredShowcaseControls}
+              comingSoonControls={comingSoonShowcaseControls}
+              previewLayoutMode={syncedHomepagePreviewLayoutMode}
+              onLearnMore={handleGameClick}
+              onGameClick={handleGameClick}
+              onExploreClick={() => handleTabChange('games')}
+              showExploreTile
+              allowDebugBounds
+            />
+          </div>
+        </AssetCatalogMainAppPreviewShell>
+      ) : (
+        <PageLayoutMainAppPreview
+          document={pageLayoutData ?? {}}
+          headerConfigOverride={headerConfigOverride}
+          gamesExplorerContent={gamesExplorerPreviewContent}
+          selectedGameContent={selectedGamePagePreviewContent}
+          debugBounds={pageLayoutBoundsOverlay}
+        />
       )}
     </div>
   )
@@ -2945,61 +3688,20 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       <div className="preview-panel__content preview-panel__content--preview asset-catalog-preview__viewport-region">
         <div className="asset-catalog-preview">
           {activeTab === 'homepage' && (
-            <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
-              {isHomePageLayout ? (
-                <AssetCatalogMainAppPreviewShell
-                  routePath={pageLayoutData?.routePath ?? '/'}
-                  headerConfigOverride={headerConfigOverride}
-                >
-                  <div className="home-work-math">
-                    <HomePageShowcaseContent
-                      contentRef={homepageContentFrameRef}
-                      imageLoaders={ImageLoaders}
-                      contentClassName={`asset-catalog-preview__homepage-content-frame ${
-                        homepageLayoutControls.contentBoundsOverlay
-                          ? 'asset-catalog-preview__homepage-content-frame--bounds'
-                          : ''
-                      }`}
-                      sectionClassName="asset-catalog-preview__homepage-section"
-                      aboutSectionClassName="asset-catalog-preview__homepage-feature-banner"
-                      featuredSectionClassName="asset-catalog-preview__homepage-featured"
-                      comingSoonSectionClassName="asset-catalog-preview__homepage-coming-soon"
-                      featureBannerItems={homepageData.featureBannerItems}
-                      featured={homepageData.featured}
-                      recommended={homepageData.recommended ?? []}
-                      comingSoon={homepageData.comingSoon}
-                      catalogMontageItems={homepageData.catalogMontageImages ?? []}
-                      availableNow={homepageData.availableNow}
-                      explorerGames={explorerGames}
-                      isFeaturedLoading={isLoadingHomepageCatalog}
-                      isComingSoonLoading={
-                        isLoadingHomepageCatalog ||
-                        isLoadingHomepageComingSoon ||
-                        isLoadingHomepageFeatureBanner
-                      }
-                      resolveImageUrl={resolveImageUrl}
-                      aboutControls={aboutShowcaseControls}
-                      featuredControls={featuredShowcaseControls}
-                      comingSoonControls={comingSoonShowcaseControls}
-                      previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                      onLearnMore={handleGameClick}
-                      onGameClick={handleGameClick}
-                      onExploreClick={() => handleTabChange('games')}
-                      showExploreTile
-                      allowDebugBounds
-                    />
-                  </div>
-                </AssetCatalogMainAppPreviewShell>
-              ) : (
-                <PageLayoutMainAppPreview
-                  document={pageLayoutData ?? {}}
-                  headerConfigOverride={headerConfigOverride}
-                  gamesExplorerContent={gamesExplorerPreviewContent}
-                  selectedGameContent={selectedGamePagePreviewContent}
-                  debugBounds={pageLayoutBoundsOverlay}
-                />
-              )}
-            </div>
+            isPageLayoutMode ? (
+              <PageLayoutViewportFrame
+                ref={pageLayoutViewportFrameRef}
+                assetPath={assetPath ?? assetId}
+                viewport={pageLayoutPreviewViewport}
+                resolutionLabel={pageLayoutPreviewResolutionLabel}
+                isPortrait={pageLayoutPreviewIsPortrait}
+                onZoomPercentChange={setPageLayoutPreviewZoomPercent}
+              >
+                {homepagePreviewContent}
+              </PageLayoutViewportFrame>
+            ) : (
+              homepagePreviewContent
+            )
           )}
 
           {activeTab === 'games' && (

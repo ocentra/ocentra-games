@@ -480,17 +480,17 @@ async function startViteServer(port: number) {
   
   console.log(`🚀 Starting Vite development server on port ${port}...\n`);
   
-  const isWindows = process.platform === 'win32';
-  
-  // Set environment variables for Vite
+  const viteHost = process.env.VITE_HOST || '127.0.0.1';
+  const viteCliPath = path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
+
   process.env.PORT = port.toString();
   process.env.VITE_PORT = port.toString();
-  
-  // Spawn Vite process with the allocated port and strict port mode
-  const vite = spawn('vite', ['--port', port.toString(), '--strict-port'], { 
-    stdio: 'inherit', 
-    shell: isWindows,
-    env: { ...process.env, PORT: port.toString(), VITE_PORT: port.toString() }
+  process.env.VITE_HOST = viteHost;
+
+  const vite = spawn(process.execPath, [viteCliPath, '--host', viteHost, '--port', port.toString(), '--strict-port'], {
+    stdio: 'inherit',
+    shell: false,
+    env: { ...process.env, PORT: port.toString(), VITE_PORT: port.toString(), VITE_HOST: viteHost },
   });
   
   vite.on('error', (err) => {

@@ -9,6 +9,7 @@ import { asAssetType } from '@ocentra/asset-domain/types/assetType';
 import type { AssetGUIDType, AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { Deck } from '@/card/deck/Deck';
 import type { CreateGameModeOptions } from '@/factories/GameModeAssetFactory';
+import { assertProcessedGameTransferCoverage } from '@/factories/ProcessedGameAssetTransferContract';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -208,6 +209,165 @@ function buildEditorOnlyMetadata(game: Game): Record<string, unknown> {
   };
 }
 
+function mechanicsModelFileNames(slug: string): Record<string, string> {
+  return {
+    playerModel: `${slug}PlayerModel.asset`,
+    sessionModel: `${slug}SessionModel.asset`,
+    deckModel: `${slug}DeckModel.asset`,
+    zoneModel: `${slug}ZoneModel.asset`,
+    phaseFlowModel: `${slug}PhaseFlowModel.asset`,
+    actionSet: `${slug}ActionSet.asset`,
+    stateEventModel: `${slug}StateEventModel.asset`,
+    validationFixtures: `${slug}ValidationFixtures.asset`,
+  };
+}
+
+function buildMechanicsContract(game: Game, slug: string): Record<string, unknown> {
+  return {
+    gameId: slug,
+    mechanicsId: `${slug}-mechanics`,
+    mechanicsVersion: game.engineModelVersion,
+    familyKernel: slug,
+    familyVariant: game.overview.subCategory || game.overview.category,
+    executorId: `${slug}.mechanics.v1`,
+    strategyExecutorId: `${slug}.bot.v1`,
+    linkedAssetKeys: mechanicsModelFileNames(slug),
+  };
+}
+
+function buildActionModel(game: Game): Record<string, unknown> {
+  const customActions = game.engine.customActions ?? [];
+  const playerActionIds = Object.entries(game.engine.playerActions)
+    .filter(([, value]) => Boolean((value as { supported?: boolean }).supported))
+    .map(([key]) => key);
+  const customActionIds = customActions.map((action) => action.id);
+  return {
+    actionIds: Array.from(new Set([...playerActionIds, ...customActionIds])),
+    payloadSchemas: {},
+    actionEndsTurn: Object.fromEntries(
+      [...Object.entries(game.engine.playerActions), ...customActions.map((action) => [action.id, action] as const)]
+        .map(([id, action]) => [id, Boolean((action as { isTerminating?: boolean }).isTerminating)]),
+    ),
+  };
+}
+
+function buildMechanicsModelDataOverrides(
+  game: Game,
+  slug: string,
+  linkedDeckAsset: AssetResourceEntry<Deck>,
+  rankingAsset: Record<string, unknown>,
+): NonNullable<CreateGameModeOptions['mechanicsModelDataOverrides']> {
+  const shared = {
+    familyKernel: slug,
+    familyVariant: game.overview.subCategory || game.overview.category,
+  };
+
+  return {
+    player: {
+      ...shared,
+      playerConfig: {
+        playerMode: game.engine.playerConfig.playerMode,
+        minPlayers: game.engine.playerConfig.minPlayers,
+        maxPlayers: game.engine.playerConfig.maxPlayers,
+        optimalPlayers: game.engine.playerConfig.optimalPlayers,
+        dealerRotates: game.engine.turnOrder.dealerRotates,
+      },
+      playerModel: game.engine.roles,
+    },
+    session: {
+      ...shared,
+      sessionModel: game.engine.constants,
+      bankingConfig: game.engine.bankingConfig,
+      roundConfig: game.engine.roundConfig,
+      endConditions: [
+        {
+          id: 'round_end',
+          description: describeRoundConfig(game.engine.roundConfig, 'roundEndCondition'),
+          appliesToPhase: null,
+        },
+        {
+          id: 'game_end',
+          description: describeRoundConfig(game.engine.roundConfig, 'gameEndCondition'),
+          appliesToPhase: null,
+        },
+      ],
+    },
+    deck: {
+      ...shared,
+      deckType: game.engine.deckType,
+      suitSet: game.engine.suitSet,
+      rankSet: game.engine.rankSet,
+      deckCount: game.engine.deckCount,
+      initialHandSize: game.engine.initialHandSize,
+      drawConfig: game.engine.drawConfig,
+      discardConfig: game.engine.discardConfig,
+      deckModel: {
+        deckAssetRef: 'deck',
+        rankingAssetRef: 'ranking',
+        deckCount: game.engine.deckCount,
+        includedCards: game.setup.deck,
+        excludedCards: [],
+        shufflePolicy: 'seeded_round_shuffle',
+        drawDirection: 'top_is_index_0',
+        jokers: /joker/i.test(game.setup.deck),
+      },
+      handRanks: game.engine.handRanks,
+      specialCards: game.engine.specialCards,
+      assetRefs: {
+        deck: linkedDeckAsset,
+        ranking: rankingAsset,
+      },
+    },
+    zones: {
+      ...shared,
+      zones: game.engine.zones,
+      zoneModel: game.engine.zones,
+      cardVisibility: game.engine.cardVisibility,
+    },
+    phaseFlow: {
+      ...shared,
+      phases: game.engine.phases,
+      turnPolicy: {
+        direction: game.engine.turnOrder.direction,
+        startsWith: game.engine.turnOrder.startsWith,
+        timerSeconds: null,
+      },
+      setupModel: {
+        setup: game.setup,
+      },
+      turnModel: {
+        turnOrder: game.engine.turnOrder,
+        trickConfig: game.engine.trickConfig,
+      },
+      runtimeIntegration: game.engine.implementationHints,
+      progression: game.engine.progression,
+    },
+    actions: {
+      ...shared,
+      actionModel: buildActionModel(game),
+      actions: game.engine.playerActions,
+      customActions: game.engine.customActions ?? [],
+    },
+    stateEvents: {
+      ...shared,
+      stateModel: {
+        zones: game.engine.zones,
+        cardVisibility: game.engine.cardVisibility,
+        constants: game.engine.constants,
+      },
+      eventModel: {
+        phases: game.engine.phases.map((phase) => phase.id),
+        actions: buildActionModel(game).actionIds,
+      },
+    },
+    validation: {
+      ...shared,
+      validationSuites: [],
+      examples: [],
+    },
+  };
+}
+
 function deriveScoringType(game: Game): string {
   if (game.overview.category === 'Poker' || game.overview.category === 'Vying') {
     return 'poker_ranking';
@@ -340,11 +500,12 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
   const { linkedDeckAsset, deckEnvelope } = resolveDeckAsset(game);
   const rankingAsset = getCardRankingReference(deckEnvelope);
 
-  return {
+  const createOptions: CreateGameModeOptions = {
     gameId: slug,
     displayName: game.name,
     category: options.category ?? 'CardGames/Imported',
     linkedDeckAsset,
+    mechanicsModelDataOverrides: buildMechanicsModelDataOverrides(game, slug, linkedDeckAsset, rankingAsset),
     assetDataOverrides: {
       rules: {
         LLM: game.prompts.ai || game.rules.gameplay,
@@ -416,6 +577,7 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         setupContent: buildSetupContent(game),
         variationsContent: buildVariationsContent(game),
         aiContent: buildAiContent(game),
+        mechanicsContract: buildMechanicsContract(game, slug),
         editorOnly: buildEditorOnlyMetadata(game),
         sections: buildGameInfoSections(game),
       },
@@ -505,4 +667,6 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
       },
     },
   };
+  assertProcessedGameTransferCoverage(game, createOptions);
+  return createOptions;
 }

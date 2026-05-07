@@ -19,6 +19,7 @@ export const GAME_WORKER_PORT = parseInt(process.env.WORKER_PORT ?? String(Cloud
 export const GAME_WORKER_HOST = CloudflareLocalConfig.Host;
 export const GAME_WORKER_BASE = `http://${GAME_WORKER_HOST}:${GAME_WORKER_PORT}`;
 export const STARTUP_TIMEOUT_MS = 300_000;
+const HEALTH_FETCH_TIMEOUT_MS = 2500;
 
 const PRODUCT_SEED_CACHE_FILE = path.join(GAME_WORKER_DIR, '.dev-seed-hash');
 const WORKER_DEV_VARS_FILE = path.join(GAME_WORKER_DIR, '.dev.vars');
@@ -30,6 +31,7 @@ const PRODUCT_SEED_SOURCE_FILES = [
 ] as const;
 
 const isWindows = process.platform === 'win32';
+const ANSI_ESCAPE_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
 
 export type ManagedProcessRegistry = {
   processes: ChildProcess[];
@@ -58,7 +60,7 @@ class LogDeduplicator {
   private normalize(line: string): string {
 
     return line
-      .replace(/\u001b\[[0-9;]*m/g, '')
+      .replace(ANSI_ESCAPE_PATTERN, '')
       .replace(/\[\d{4}-\d{2}-\d{2}\]\[\d{2}:\d{2}:\d{2}\]/g, '[TIMESTAMP]')
       .replace(/\(\d+ms\)/g, '(DURATION)')
       .replace(/\d+\.\d+s/g, 'DURATION')
@@ -270,12 +272,25 @@ async function isPortOpen(port: number): Promise<boolean> {
   }
 }
 
+async function fetchWithTimeout(url: string, init: Parameters<typeof fetch>[1] = {}, timeoutMs = HEALTH_FETCH_TIMEOUT_MS): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function waitForWorkerHealth(baseUrl: string, label: string, log: (message: string) => void): Promise<boolean> {
   const healthUrls = [`${baseUrl}/health`, `${baseUrl}/api/v1/health`];
   for (let attempt = 0; attempt < 15; attempt += 1) {
     for (const url of healthUrls) {
       try {
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url);
         await response.text().catch(() => undefined);
         if (response.ok) {
           log(`${label} ready via ${url}`);
@@ -295,7 +310,7 @@ async function isWorkerHealthy(baseUrl: string): Promise<boolean> {
   const healthUrls = [`${baseUrl}/health`, `${baseUrl}/api/v1/health`];
   for (const url of healthUrls) {
     try {
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url);
       await response.text().catch(() => undefined);
       if (response.ok) {
         return true;
@@ -368,7 +383,7 @@ function seedAiCatalog(log: (message: string) => void): void {
 async function seedProductsViaWorker(baseUrl: string, log: (message: string) => void): Promise<void> {
   const seedUrl = `${baseUrl}/api/v1/test/seed-products`;
   try {
-    const response = await fetch(seedUrl, { method: 'POST' });
+    const response = await fetchWithTimeout(seedUrl, { method: 'POST' }, 10000);
     await response.text().catch(() => undefined);
     if (response.ok) {
       log('Seeded PRODUCT_KV via game worker endpoint.');

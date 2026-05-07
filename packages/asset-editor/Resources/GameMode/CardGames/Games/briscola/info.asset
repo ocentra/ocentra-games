@@ -152,6 +152,7 @@
     difficulty: 'Beginner',
     duration: '20-30 minutes',
     origin: 'Italy',
+    originName: 'Briscola (Italian)',
     deck: '40 cards (Italian deck; or French 52-card deck stripped to 40)',
     alsoKnownAs: [
       'Briškula',
@@ -159,10 +160,65 @@
       'Brisca',
     ],
     playersDisplay: '2-6',
-    historyContent: null,
-    setupContent: null,
-    variationsContent: null,
-    aiContent: null,
+    mechanicsContract: {
+      gameId: 'briscola',
+      mechanicsId: 'briscola-mechanics',
+      mechanicsVersion: '2.0.0',
+      familyKernel: 'briscola',
+      familyVariant: 'ace-ten-draw',
+      executorId: 'briscola.engine.v1',
+      strategyExecutorId: 'briscola.bot.v1',
+      linkedAssetKeys: {
+        deckModel: 'briscolaDeckModel.asset',
+        actionSet: 'briscolaActionSet.asset',
+        validationFixtures: 'briscolaValidationFixtures.asset',
+      },
+    },
+    historyContent: {
+      origins: "Briscola developed in Italy from older European Ace-Ten card games. The word 'briscola' means trump in Italian. The game is one of the founding pillars of Mediterranean card culture.",
+      originCountries: [
+        'Italy',
+      ],
+      timeline: [
+        '1600s-1700s: Briscola-type games spread across Italy.',
+        '1800s: Standard rules codified across Italian regions.',
+        'Present: National game of Italy; also played across the Mediterranean as Briskula, Bisca, and Brisca.',
+      ],
+      evolution: 'Briscola Chiamata is the most sophisticated common variant, adding called partners and bidding. Related games such as Bisca and Brisca keep the core trump-taking idea but adjust rank details.',
+      cultural: 'Briscola is embedded in Italian daily life, played in cafes, homes, courts, and piazzas. The five-player called version is often treated as the prestige variant.',
+    },
+    setupContent: {
+      players: '2 players is standard; 3, 4, or 6 are common variants.',
+      deck: '40 cards. Use an Italian deck ranked A, 3, King, Queen, Jack, 7, 6, 5, 4, 2 in four suits, or a French deck stripped of 8s, 9s, and 10s.',
+      equipment: 'Cards.',
+      dealing: "Deal 3 cards to each player, then turn one card face-up beside the stock. That card's suit is Briscola, the trump suit, and remains visible until the final draw.",
+    },
+    variationsContent: {
+      list: [
+        {
+          id: 'briscola-chiamata',
+          name: 'Briscola Chiamata',
+          description: 'Five-player called Briscola adds bidding and a secret partner chosen by naming a specific card.',
+        },
+        {
+          id: 'briscola-scoperta',
+          name: 'Briscola Scoperta',
+          description: 'Open Briscola exposes some or all cards face-up, reducing luck and increasing exact calculation.',
+        },
+      ],
+    },
+    aiContent: {
+      difficulty: {
+        easy: 'Lead weak cards and spend trump too freely.',
+        medium: 'Count trump, protect Aces and 3s, and avoid gifting high cards into low-value tricks.',
+        hard: 'Track the full card economy, stock depletion, trump ownership, and exact endgame point swings.',
+      },
+      considerations: [
+        'There is no follow-suit obligation, so hand reading depends on point pressure and trump economy.',
+        'The unusual A > 3 > K > Q > J point order must be encoded explicitly.',
+        'Stock depletion changes the game from hidden draw pressure to exact endgame calculation.',
+      ],
+    },
     sourcesContent: null,
     quality: 'complete',
     completeness: {

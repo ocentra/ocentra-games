@@ -1,6 +1,11 @@
 import { useAsset } from './useAsset';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
-import type { PageAssetLike } from '@/ui/components/GameInfo/types';
+import type { HeroSection, PageSection } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
+
+interface PageAssetLike {
+  hero?: HeroSection | null;
+  sections?: PageSection[];
+}
 
 type PageContentAsset = ScriptableObject & PageAssetLike;
 

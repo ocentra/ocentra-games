@@ -1,0 +1,60 @@
+{
+  system: {
+    guid: '911852d4-618b-4fe6-9a65-44be49520884',
+    assetType: 'GameValidationFixtures',
+    schemaVersion: 1,
+    displayName: 'Briscola Validation Fixtures',
+    category: 'Game',
+    gameId: 'briscola',
+    treePath: 'Resources/GameMode/CardGames/Games/briscola/briscolaValidationFixtures.asset',
+  },
+  data: {
+    modelKind: 'validation_fixture_model',
+    modelId: 'briscola.validation-fixtures.v1',
+    modelVersion: '1.0.0',
+    familyKernel: 'briscola',
+    familyVariant: 'ace-ten-draw',
+    validationSuites: [
+      {
+        id: 'briscola.scoring.examples',
+        fixtures: [
+          {
+            id: 'briscola.score.ace_three_king',
+            title: 'Ace, Three, King',
+            purpose: 'scoring',
+            hand: [
+              'A_trump',
+              '3_trump',
+              'K_trump',
+            ],
+            expectedFinalScore: 25,
+            explanation: 'Ace 11 plus Three 10 plus King 4 equals 25 card points.',
+            linkedRuleIds: [
+              'briscola.score.card_values',
+            ],
+          },
+          {
+            id: 'briscola.score.target_61',
+            title: 'Winning Threshold',
+            purpose: 'scoring',
+            hand: [
+              'A_trump',
+              '3_trump',
+              'K_trump',
+              'Q_trump',
+              'J_trump',
+              'A_led',
+              '3_led',
+              'K_led',
+            ],
+            expectedFinalScore: 62,
+            explanation: 'A side with more than 60 of the 120 available card points wins the deal.',
+            linkedRuleIds: [
+              'briscola.score.win_threshold',
+            ],
+          },
+        ],
+      },
+    ],
+  },
+}

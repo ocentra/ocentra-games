@@ -10,6 +10,8 @@ if (existsSync(appBuildInfoPath)) {
   unlinkSync(appBuildInfoPath);
 }
 
+execSync('npm run validate:game-assets', { stdio: 'inherit' });
+
 if (!process.env.SKIP_DOMAIN_BUILD) {
-  execSync('npm run build:domains', { stdio: 'inherit' });
+  execSync('npm run build:domains:exec', { stdio: 'inherit' });
 }

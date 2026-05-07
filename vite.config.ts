@@ -21,6 +21,63 @@ import { headerConfigPlugin } from './vite/plugins/header-config'
 import { workspaceSourceResolver } from './vite/plugins/workspaceSourceResolver'
 import type { PluginOption } from 'vite'
 
+const devWatchRoots = [
+  'index.html',
+  'test-harness.html',
+  'public',
+  'src',
+  'packages/core-ui/src',
+  'packages/card-game-ui/src',
+  'packages/app-assets/src',
+  'packages/card-games/src',
+  'packages/game-layout-domain/src',
+  'packages/game-asset-domain/src',
+  'packages/game-domain/src',
+  'packages/asset-domain/src',
+  'packages/endpoint-domain/src',
+  'packages/boundary-domain/src',
+] as const
+
+const alwaysIgnoredWatchSegments = [
+  '/node_modules/',
+  '/.git/',
+  '/dist/',
+  '/build/',
+  '/target/',
+  '/.temp/',
+  '/.wrangler/',
+  '/coverage/',
+  '/packages/card-games/src/SourceHtml/',
+  '/packages/card-games/src/processed-games/',
+  '/packages/asset-editor/Resources/',
+  '/platforms/mobile/',
+] as const
+
+function normalizeWatchPath(filePath: string): string {
+  const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(__dirname, filePath)
+  return path.relative(__dirname, absolutePath).replace(/\\/g, '/')
+}
+
+function isSameOrChildPath(pathName: string, rootPath: string): boolean {
+  return pathName === rootPath || pathName.startsWith(`${rootPath}/`)
+}
+
+function shouldIgnoreDevWatchPath(filePath: string): boolean {
+  const relativePath = normalizeWatchPath(filePath)
+  if (!relativePath || relativePath === '.') {
+    return false
+  }
+
+  const comparablePath = `/${relativePath}/`
+  if (alwaysIgnoredWatchSegments.some((segment) => comparablePath.includes(segment))) {
+    return true
+  }
+
+  return !devWatchRoots.some((rootPath) =>
+    isSameOrChildPath(relativePath, rootPath) || rootPath.startsWith(`${relativePath}/`)
+  )
+}
+
 export default defineConfig(async ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd(), '')
   Object.keys(env).forEach(key => {
@@ -37,7 +94,7 @@ export default defineConfig(async ({ mode, command }) => {
     process.env.VITE_ASSETS_PUBLIC_URL = process.env.VITE_ASSETS_PUBLIC_URL || `${(process.env.VITE_CLAIM_STORAGE_URL || localBase).replace(/\/$/, '')}/api/v1/assets`
   }
 
-  const serverHost = process.env.VITE_HOST || 'localhost'
+  const serverHost = process.env.VITE_HOST || '127.0.0.1'
   const serverPort = parseInt(process.env.PORT || process.env.VITE_PORT || '3000')
   const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || process.env.PORT || process.env.VITE_PORT || '3000')
 
@@ -133,6 +190,9 @@ export default defineConfig(async ({ mode, command }) => {
     },
   },
   optimizeDeps: {
+    entries: [
+      'index.html',
+    ],
     exclude: [
       ...aiDomainExportSubpaths,
       '@ocentra/endpoint-domain/constants/cloudflare',
@@ -145,22 +205,9 @@ export default defineConfig(async ({ mode, command }) => {
       'onnxruntime-web',
     ],
     include: [
-      ...ocentraExportSubpaths.filter(
-        (specifier) => 
-          (specifier === '@ocentra/ai-domain' || !specifier.startsWith('@ocentra/ai-domain/')) &&
-          !specifier.endsWith('.css') &&
-          !excludedOcentraPrefixes.some(pkg => specifier === pkg || specifier.startsWith(pkg + '/'))
-      ),
-      'three',
-      'framer-motion',
-      'zustand',
-      'three-stdlib',
-      '@huggingface/transformers',
-      '@tanstack/react-query',
-      'firebase/app',
-      'firebase/auth',
-      'firebase/firestore',
-        'buffer',
+      'buffer',
+      'cookie',
+      'set-cookie-parser',
     ],
     esbuildOptions: {
       sourcemap: false,
@@ -199,16 +246,7 @@ export default defineConfig(async ({ mode, command }) => {
       ]
     },
     watch: {
-      ignored: [
-        '**/node_modules/**',
-        '**/.git/**',
-        '**/dist/**',
-        '**/build/**',
-        '**/*.generated.ts',
-        '**/.meta',
-        '**/node_modules/.vite/**',
-        '**/*.meta'
-      ]
+      ignored: shouldIgnoreDevWatchPath,
     },
     hmr: {
       overlay: true,

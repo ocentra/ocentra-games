@@ -3,16 +3,30 @@
     guid: '5838c38b-dfb8-4896-a437-b3fd68603573',
     assetType: 'GameInfo',
     schemaVersion: 2,
-    displayName: 'Game Info',
+    displayName: 'Three Card Brag Info',
     category: 'Content',
-    icon: '📄',
+    icon: 'BRAG',
     treePath: 'Resources/GameMode/CardGames/Games/three-card-brag/info.asset',
     gameId: 'three-card-brag',
   },
   data: {
     hero: {
       title: 'THREE CARD BRAG',
-      subtitle: 'Card Game',
+      subtitle: 'Blind pressure. Three cards. One pot.',
+    },
+    mechanicsContract: {
+      gameId: 'three-card-brag',
+      mechanicsId: 'three-card-brag-vying',
+      mechanicsVersion: '2.0.0',
+      familyKernel: 'three-card-brag',
+      familyVariant: 'vying',
+      executorId: 'vying.betting.v1',
+      strategyExecutorId: 'three-card-brag.bot.v1',
+      linkedAssetKeys: {
+        deckModel: 'three-card-bragDeckModel.asset',
+        actionSet: 'three-card-bragActionSet.asset',
+        validationFixtures: 'three-card-bragValidationFixtures.asset',
+      },
     },
     sections: [
       {
@@ -21,15 +35,15 @@
         pages: [
           {
             title: 'Three Card Brag',
-            subtitle: 'Card Game',
+            subtitle: 'British vying classic',
             content: [
               {
                 type: 'paragraph',
-                text: 'Teen Patti (तीन पत्ती), meaning "three cards" in Hindi, is a popular Indian vying game that combines elements of poker and bluffing. Also known as **Flash** or **Three Card Brag**, it is one of the most widely played card games in the Indian subcontinent. The game is traditionally played during festivals, especially Diwali, and has gained international recognition through online gaming platforms.',
+                text: "3-Card Brag is Britain's premier vying card game and a direct ancestor of modern poker. Each player receives three cards and competes for a central pot through blind and seeing bets.",
               },
               {
                 type: 'paragraph',
-                text: 'Country/Region of Origin: India\nTime Period: Several centuries old, exact origins unknown\nEtymology: "Teen" means three and "Patti" means cards in Hindi\nAlternative Names: Flash, Flush, Three Card Brag (British equivalent)',
+                text: 'Its signature tension is the blind system: a player can bet without looking at their cards for half the cost, keeping both price pressure and psychological pressure on players who have already seen their hands.',
               },
             ],
           },
@@ -50,7 +64,7 @@
               },
               {
                 type: 'paragraph',
-                text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+                text: 'Win the pot by showing the best three-card hand or by being the last player remaining after all others have folded.',
               },
               {
                 type: 'heading',
@@ -59,35 +73,23 @@
               },
               {
                 type: 'paragraph',
-                text: '1. Ante/Boot Phase\nAll players place the agreed minimum stake (boot) into the pot\nThis ensures there is something to play for in each hand',
+                text: 'Players ante, receive three face-down cards, then bet in turn. Blind players pay the lower blind price. Seeing players pay the higher seeing price. A player may fold, call, raise, see their cards, or force a comparison according to table stakes.',
               },
               {
                 type: 'heading',
                 level: 4,
-                text: 'Key Rules',
+                text: 'Hand Order',
               },
               {
                 type: 'list',
-                style: 'unordered',
+                style: 'ordered',
                 items: [
-                  {
-                    text: 'Blind Player: Has not looked at their cards',
-                  },
-                  {
-                    text: 'Must bet at least the current stake (minimum) or up to twice the current stake (maximum)',
-                  },
-                  {
-                    text: 'Can bet less than a seen player',
-                  },
-                  {
-                    text: 'Seen Player: Has looked at their cards',
-                  },
-                  {
-                    text: 'Must bet at least twice the current stake (minimum) or up to four times the current stake (maximum)',
-                  },
-                  {
-                    text: 'Must bet double what a blind player bets',
-                  },
+                  { text: 'Prial: three cards of the same rank. The prial of threes is traditionally strongest.' },
+                  { text: 'Running flush: three consecutive cards in the same suit.' },
+                  { text: 'Run: three consecutive cards in mixed suits.' },
+                  { text: 'Flush: three cards in the same suit.' },
+                  { text: 'Pair: two cards of one rank.' },
+                  { text: 'High card: highest card breaks the tie.' },
                 ],
               },
             ],
@@ -100,19 +102,15 @@
         pages: [
           {
             title: 'Strategy',
-            subtitle: 'Tips and guidance',
+            subtitle: 'Pressure and price',
             content: [
               {
                 type: 'paragraph',
-                text: "For Beginners\n1. Start as a Seen Player: Look at your cards to understand hand values\n2. Play Strong Hands Aggressively: Bet and raise with trails, pure sequences\n3. Fold Weak Hands: Don't chase with high card only\n4. Learn Hand Rankings: Memorize the order of hands\n5. Manage Your Bankroll: Don't bet more than you can afford to lose",
+                text: 'Staying blind can be valuable because it keeps your betting price lower and makes your hand harder to read. The tradeoff is that you are accepting risk without information.',
               },
               {
                 type: 'paragraph',
-                text: 'Blind Play Strategy\nAdvantages: Lower betting requirements, psychological pressure on seen players\nWhen to Play Blind: Early in the game, with small stakes, or to confuse opponents\nWhen to Look: When stakes get high or when considering a sideshow',
-              },
-              {
-                type: 'paragraph',
-                text: 'Bluffing Techniques\nSemi-Bluff: Bet aggressively with drawing hands (potential sequences)\nPure Bluff: Represent strong hands with weak cards\nTiming: Bluff when opponents show weakness\nTable Image: Establish a tight image to make bluffs more credible',
+                text: 'Seeing early gives you better hand knowledge, but it usually doubles your required betting cost. Strong hands should press value; weak seen hands often need discipline because blind opponents can keep the pot expensive.',
               },
             ],
           },
@@ -124,52 +122,87 @@
         pages: [
           {
             title: 'Scoring',
-            subtitle: 'How you win',
+            subtitle: 'Pot resolution',
             content: [
               {
                 type: 'paragraph',
-                text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+                text: 'Brag does not use cumulative point scoring in a normal hand. The pot is awarded to the last remaining player or to the strongest three-card hand at comparison.',
               },
               {
                 type: 'paragraph',
-                text: 'Win the pot by having the best three-card hand or by being the last player remaining after all others have folded.',
+                text: 'The ranking model is hierarchical: prial, running flush, run, flush, pair, then high card. Special table rules can make the prial of threes the highest possible hand.',
               },
             ],
           },
         ],
       },
     ],
-    description: 'Teen Patti (तीन पत्ती), meaning "three cards" in Hindi, is a popular Indian vying game that combines elements of poker and bluffing. Also known as **Flash** or **Three Card Brag**, it is one of the most widely played card games in the Indian subcontinent. The game is traditionally played during festivals, especially Diwali, and has gained international recognition through online gaming platforms.',
+    description: "3-Card Brag is Britain's classic three-card vying game. Blind and seeing betting costs create a fast contest of hand strength, pressure, and nerve.",
     tags: [
       'card-game',
       'vying',
       'bluffing',
+      'british',
     ],
     comingSoon: false,
     minPlayers: 3,
     maxPlayers: 7,
     routePath: 'three-card-brag',
-    LLM: 'Game: Three Card Brag. Logic: See rules.objective and rules.gameplay.',
-    Player: 'Teen Patti (तीन पत्ती), meaning "three cards" in Hindi, is a popular Indian vying game that combines elements of poker and bluffing. Also known as **Flash** or **Three Card Brag**, it is one of the most widely played card games in the Indian subcontinent. The game is traditionally played during festivals, especially Diwali, and has gained international recognition through online gaming platforms.',
-    tagline: 'Teen Patti (तीन पत्ती), meaning "three cards" in Hindi, is a popular Indian vyin...',
+    LLM: 'Game: Three Card Brag. Logic: ante, deal three cards, manage blind and seeing bets, then award the pot by fold-out or three-card hand ranking.',
+    Player: "3-Card Brag is a fast British pot game where every player has three cards and every betting choice asks whether staying blind, seeing, raising, or folding creates the best pressure.",
+    tagline: 'Blind pressure. Three cards. One pot.',
     gameCategory: 'Vying',
-    subcategory: 'Indian Poker / Vying',
+    subcategory: 'British Vying',
     playerMode: 'multiplayer',
     difficulty: 'Beginner',
     duration: '10-30 minutes',
-    origin: 'India',
+    origin: 'Great Britain',
+    originName: '3-Card Brag',
     deck: '52 (standard, no jokers)',
     alsoKnownAs: [
-      'Teen Patti',
-      'Flush',
-      'Flash',
-      '3 card Brag',
+      'Brag',
+      'Three Card Brag',
+      '3 Card Brag',
     ],
-    playersDisplay: '3-6 (optimal: 4-7)',
-    historyContent: null,
-    setupContent: null,
-    variationsContent: null,
-    aiContent: null,
+    playersDisplay: '3-7',
+    historyContent: {
+      origins: 'Brag emerged in 16th-century England as a three-card vying game. It became the parent of Indian Teen Patti and influenced betting structures used by later poker-family games.',
+      timeline: [
+        "1500s: early versions of Post and Pair and Brag are documented in England.",
+        '1700s: bragger wild-card variants appear, often using the Jack of Clubs.',
+        '1900s: Brag remains common in British military, social club, and pub play.',
+        'Present: the game survives as a compact high-pressure gambling and social card game.',
+      ],
+      evolution: 'The core hand rankings and half-price blind betting have stayed recognizable for centuries even as poker became globally dominant.',
+      cultural: "Brag is often treated as a working-class British poker relative and appears in British gambling fiction and film culture.",
+    },
+    setupContent: {
+      players: 'Typically 3 to 7 players play individually around one pot.',
+      deck: 'One Standard 52-card French deck with no jokers.',
+      equipment: 'A standard pack plus chips, coins, or another agreed stake unit.',
+      dealing: 'Each player antes. The dealer gives three face-down cards to every active player, then betting begins.',
+    },
+    variationsContent: {
+      list: [
+        {
+          id: 'brag-with-braggers',
+          name: 'Brag with Braggers',
+          description: 'A common wild-card variant where selected cards such as Jack of Clubs, 9 of Diamonds, and Ace of Diamonds can act as braggers.',
+        },
+      ],
+    },
+    aiContent: {
+      difficulty: {
+        easy: 'Looks at cards immediately, bets only with a pair or better, and folds to major raises.',
+        medium: 'Stays blind for a short window, uses pot odds before folding, and understands the Brag hand hierarchy.',
+        hard: 'Manages blind state deliberately, pressure-bets strong made hands, and estimates opponent strength from blind duration and bet sizing.',
+      },
+      considerations: [
+        'The action model must distinguish blind and seeing betting prices.',
+        'The ranking evaluator needs a three-card hand hierarchy, including special prial treatment.',
+        'Bot policy should reason about pot pressure as well as raw hand strength.',
+      ],
+    },
     sourcesContent: null,
     quality: 'complete',
     completeness: {

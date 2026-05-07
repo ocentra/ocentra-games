@@ -1,4 +1,4 @@
-import type { ContentBlock, Page, PageSection } from '@/ui/components/GameInfo/types';
+import type { ContentBlock, Page, PageSection } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 
@@ -47,11 +47,17 @@ export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<Sel
   const rankingDocument = await loadAssetDocumentFromRef(gameData.rankingAsset, resources)
     ?? await loadAssetDocumentFromRef(dataOf(scoringDocument).rankingAsset, resources);
   const infoData = dataOf(infoDocument);
+  const mechanicsData = dataOf(mechanicsDocument);
   const linkedAssets = asRecord(asRecord(infoData.mechanicsContract).linkedAssetKeys);
+  const modelRefs = asRecord(mechanicsData.modelRefs);
   const gameTreePath = asText(asRecord(asRecord(gameDocument).system).treePath);
-  const validationDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.validationFixtures), resources);
-  const deckModelDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.deckModel), resources);
-  const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources);
+  const validationDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.validationFixtures), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.validation, resources);
+  const deckModelDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.deckModel), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.deck, resources);
+  const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.actionSet, resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.actions, resources);
   const layoutDocument = await loadAssetDocumentByPath('Resources/Pages/SelectedGameLayout.asset', resources, 'PageLayout');
 
   return {
@@ -89,10 +95,15 @@ export async function loadGameDetailAssetContent(
   const strategyData = dataOf(strategyDocument);
   const linkedAssets = asRecord(asRecord(infoData.mechanicsContract).linkedAssetKeys);
   const gameTreePath = asText(asRecord(asRecord(gameDocument).system).treePath);
-  const validationDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.validationFixtures), resources);
-  const deckModelDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.deckModel), resources);
-  const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources);
   const mechanicsDocument = await loadAssetDocumentFromRef(gameData.mechanicsAsset, resources);
+  const modelRefs = asRecord(dataOf(mechanicsDocument).modelRefs);
+  const validationDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.validationFixtures), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.validation, resources);
+  const deckModelDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.deckModel), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.deck, resources);
+  const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.actionSet, resources)
+    ?? await loadAssetDocumentFromRef(modelRefs.actions, resources);
 
   const infoSections = normalizeInfoSections(
     asArray(infoData.sections).length > 0 ? asArray(infoData.sections) : fallbackSections,
@@ -224,7 +235,7 @@ function normalizeBlock(value: unknown): ContentBlock {
   if ('text' in block) {
     return { ...block, text: cleanText(asText(block.text)) } as ContentBlock;
   }
-  return block as ContentBlock;
+  return block as unknown as ContentBlock;
 }
 
 function cleanText(value: string): string {
