@@ -77,7 +77,7 @@ export function HomePageShowcaseContent({
   onLearnMore,
   onGameClick,
   onExploreClick,
-  showExploreTile = false,
+  showExploreTile = true,
   allowDebugBounds = false,
   debugPageStructure = false,
   debugLayout = false,
