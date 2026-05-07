@@ -129,41 +129,15 @@ function buildGameInfoSections(game: Game): Record<string, unknown>[] {
     ...paragraphBlocks(game.history.origins),
   ];
 
-  const rulesContent = [
-    {
-      type: 'heading',
-      level: 3,
-      text: 'Objective',
-    },
-    ...paragraphBlocks(game.rules.objective),
-    {
-      type: 'heading',
-      level: 3,
-      text: 'Gameplay',
-    },
-    ...paragraphBlocks(game.rules.gameplay),
+  const setupContent = [
+    ...paragraphBlocks(game.setup.players),
+    ...paragraphBlocks(game.setup.deck),
+    ...paragraphBlocks(game.setup.equipment),
+    ...paragraphBlocks(game.setup.dealing),
   ];
-
-  const keyRulesBlock = listBlock(game.rules.keyRules);
-  if (keyRulesBlock) {
-    rulesContent.push({
-      type: 'heading',
-      level: 4,
-      text: 'Key Rules',
-    });
-    rulesContent.push(keyRulesBlock);
-  }
-
-  const strategyContent = [
-    ...paragraphBlocks(game.strategy.basic ?? ''),
-    ...paragraphBlocks(game.strategy.intermediate ?? ''),
-    ...paragraphBlocks(game.strategy.advanced ?? ''),
-  ];
-
-  const scoringContent = [
-    ...paragraphBlocks(game.scoring.description),
-    ...paragraphBlocks(game.scoring.winCondition),
-  ];
+  const variationsBlock = listBlock(
+    game.variations.list.map((variation) => `${variation.name}: ${variation.description}`)
+  );
 
   return [
     {
@@ -175,42 +149,63 @@ function buildGameInfoSections(game: Game): Record<string, unknown>[] {
           subtitle: game.synthesis.hero.subtitle ?? 'Game Overview',
           content: aboutContent,
         },
-      ],
-    },
-    {
-      type: 'rules',
-      tabLabel: 'Rules',
-      pages: [
         {
-          title: 'Rules',
-          subtitle: 'How to play',
-          content: rulesContent,
+          title: 'Setup',
+          subtitle: 'Table, deck, equipment, and deal',
+          content: setupContent,
         },
-      ],
-    },
-    {
-      type: 'strategy',
-      tabLabel: 'Strategy',
-      pages: [
-        {
-          title: 'Strategy',
-          subtitle: 'Tips and guidance',
-          content: strategyContent,
-        },
-      ],
-    },
-    {
-      type: 'scoring',
-      tabLabel: 'Scoring',
-      pages: [
-        {
-          title: 'Scoring',
-          subtitle: 'How you win',
-          content: scoringContent,
-        },
+        ...(variationsBlock
+          ? [{
+              title: 'Variations',
+              subtitle: 'Known ways this game changes',
+              content: [variationsBlock],
+            }]
+          : []),
       ],
     },
   ];
+}
+
+function buildHistoryContent(game: Game): Record<string, unknown> {
+  return {
+    origins: game.history.origins,
+    originCountries: game.history.originCountries,
+    timeline: game.history.timeline,
+    evolution: game.history.evolution ?? '',
+    cultural: game.history.cultural ?? '',
+  };
+}
+
+function buildSetupContent(game: Game): Record<string, unknown> {
+  return {
+    players: game.setup.players,
+    deck: game.setup.deck,
+    equipment: game.setup.equipment,
+    dealing: game.setup.dealing,
+  };
+}
+
+function buildVariationsContent(game: Game): Record<string, unknown> {
+  return {
+    list: game.variations.list,
+    noVariationsReason: game.variations.noVariationsReason ?? '',
+  };
+}
+
+function buildAiContent(game: Game): Record<string, unknown> {
+  return {
+    difficulty: game.ai.difficulty,
+    considerations: game.ai.considerations,
+  };
+}
+
+function buildEditorOnlyMetadata(game: Game): Record<string, unknown> {
+  return {
+    sources: game.sources,
+    evidence: game.evidence,
+    extraction: game.extraction,
+    fieldStatus: game.fieldStatus ?? {},
+  };
 }
 
 function deriveScoringType(game: Game): string {
@@ -357,6 +352,13 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         objective: game.rules.objective,
         gameplay: game.rules.gameplay,
         keyRules: game.rules.keyRules,
+        setup: {
+          players: game.setup.players,
+          deck: game.setup.deck,
+          equipment: game.setup.equipment,
+          dealing: game.setup.dealing,
+        },
+        turnFlow: game.rules.gameplay,
         moveValidityConditions: buildMoveValidityConditions(game),
         exampleHands: [],
         bonusRules: '',
@@ -404,11 +406,17 @@ export function buildCreateGameModeOptionsFromProcessedGame(options: BuildProces
         difficulty: game.overview.difficulty,
         duration: game.overview.duration,
         origin: game.overview.origin,
+        originName: game.overview.originName,
         deck: game.overview.deck,
         alsoKnownAs: game.alsoKnownAs,
         playersDisplay: game.overview.players.display ?? '',
         quality: game.quality,
         completeness: game.completeness,
+        historyContent: buildHistoryContent(game),
+        setupContent: buildSetupContent(game),
+        variationsContent: buildVariationsContent(game),
+        aiContent: buildAiContent(game),
+        editorOnly: buildEditorOnlyMetadata(game),
         sections: buildGameInfoSections(game),
       },
       layout: {

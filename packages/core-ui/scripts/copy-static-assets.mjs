@@ -20,6 +20,7 @@ const fileCopies = [
   ['src/Common/ComingSoonCarousel/ComingSoonShowcase.css', 'dist/Common/ComingSoonCarousel/'],
   ['src/Common/ExploreGamesPanel/ExploreGamesPanel.css', 'dist/Common/ExploreGamesPanel/'],
   ['src/Common/GameBadgesOverlay/GameBadgesOverlay.css', 'dist/Common/GameBadgesOverlay/'],
+  ['src/AppPages/MainAppPageSurfaces.css', 'dist/AppPages/'],
   ['src/GamesExplorer/GameCard.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/GameListRow.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/ExplorerContentBar.css', 'dist/GamesExplorer/'],

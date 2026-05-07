@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { CardGridMatrix } from '../CardGridMatrix/CardGridMatrix';
+import { SuitIcon } from '../SuitArt/SuitArt';
+import { normalizeSuit } from '../SuitArt/SuitArtPrimitives';
 
 const DeckPreviewSectionKind = {
   Matrix: 'matrix',
@@ -50,6 +52,8 @@ export interface DeckPreviewModel {
 
 export interface DeckPreviewViewProps {
   model: DeckPreviewModel;
+  compact?: boolean;
+  onCellClick?: (cell: DeckPreviewCell) => void;
   renderPiece?: (cell: DeckPreviewCell) => ReactNode;
   renderAxis?: (axis: DeckPreviewAxis) => ReactNode;
   renderBack?: (imageHash: string) => ReactNode;
@@ -98,6 +102,60 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(4.25rem, 1fr))',
     gap: '0.5rem',
+  } as CSSProperties,
+  compactMatrix: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 'var(--deck-preview-compact-matrix-gap, 0.28rem)',
+    minWidth: 0,
+  } as CSSProperties,
+  compactSuitRow: {
+    display: 'grid',
+    gridTemplateColumns: 'var(--deck-preview-axis-column-width, 2rem) minmax(0, 1fr)',
+    alignItems: 'stretch',
+    gap: 'var(--deck-preview-compact-row-gap, 0.28rem)',
+    minWidth: 0,
+  } as CSSProperties,
+  compactSuitHeader: {
+    minWidth: 0,
+    border: '1px solid rgba(120, 120, 120, 0.24)',
+    borderRadius: '0.3rem',
+    background: 'rgba(255, 255, 255, 0.035)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0.12rem',
+  } as CSSProperties,
+  compactAxisGlyph: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: 'var(--deck-preview-axis-glyph-size, 0.9rem)',
+    fontWeight: 800,
+    lineHeight: 1,
+  } as CSSProperties,
+  compactAxisImage: {
+    width: 'var(--deck-preview-axis-image-size, 1rem)',
+    height: 'var(--deck-preview-axis-image-size, 1rem)',
+    objectFit: 'contain',
+    display: 'block',
+  } as CSSProperties,
+  compactSuitCards: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(var(--deck-preview-card-track-min, 2.35rem), 1fr))',
+    gap: '0.18rem',
+    minWidth: 0,
+  } as CSSProperties,
+  compactGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(var(--deck-preview-card-track-min, 2.35rem), 1fr))',
+    gap: '0.18rem',
+    minWidth: 0,
+  } as CSSProperties,
+  compactCell: {
+    minHeight: 'var(--deck-preview-card-cell-min-height, 2.7rem)',
+    padding: '0.08rem',
+    borderRadius: '0.24rem',
   } as CSSProperties,
   cell: {
     minWidth: 0,
@@ -154,9 +212,16 @@ const styles = {
     textAlign: 'center',
     pointerEvents: 'none',
   } as CSSProperties,
+  clickableCell: {
+    appearance: 'none',
+    width: '100%',
+    color: 'inherit',
+    font: 'inherit',
+    cursor: 'pointer',
+  } as CSSProperties,
 };
 
-export function DeckPreviewView({ model, renderPiece, renderAxis, renderBack }: DeckPreviewViewProps) {
+export function DeckPreviewView({ model, compact = false, onCellClick, renderPiece, renderAxis, renderBack }: DeckPreviewViewProps) {
   return (
     <div style={styles.root}>
       <div style={styles.header}>
@@ -170,6 +235,8 @@ export function DeckPreviewView({ model, renderPiece, renderAxis, renderBack }: 
           section={section}
           renderPiece={renderPiece}
           renderAxis={renderAxis}
+          compact={compact}
+          onCellClick={onCellClick}
         />
       ))}
 
@@ -191,10 +258,14 @@ function DeckPreviewSectionView({
   section,
   renderPiece,
   renderAxis,
+  compact,
+  onCellClick,
 }: {
   section: DeckPreviewSection;
   renderPiece?: (cell: DeckPreviewCell) => ReactNode;
   renderAxis?: (axis: DeckPreviewAxis) => ReactNode;
+  compact: boolean;
+  onCellClick?: (cell: DeckPreviewCell) => void;
 }) {
   const cellMap = new Map<string, DeckPreviewCell>();
   for (const cell of section.cells ?? []) {
@@ -206,7 +277,16 @@ function DeckPreviewSectionView({
   return (
     <section style={styles.section}>
       <h3 style={styles.sectionTitle}>{section.title}</h3>
-      {section.kind === DeckPreviewSectionKind.Matrix ? (
+      {section.kind === DeckPreviewSectionKind.Matrix && compact ? (
+        <DeckPreviewCompactMatrix
+          rows={section.rows ?? []}
+          columns={section.columns ?? []}
+          cellMap={cellMap}
+          renderPiece={renderPiece}
+          renderAxis={renderAxis}
+          onCellClick={onCellClick}
+        />
+      ) : section.kind === DeckPreviewSectionKind.Matrix ? (
         <CardGridMatrix
           rows={section.rows ?? []}
           columns={section.columns ?? []}
@@ -215,17 +295,20 @@ function DeckPreviewSectionView({
             <DeckPreviewCellView
               cell={cellMap.get(`${rowKey}:${columnKey}`)}
               renderPiece={renderPiece}
+              onCellClick={onCellClick}
             />
           )}
           emptyMessage="No matrix data available."
         />
       ) : (
-        <div style={styles.grid}>
+        <div style={compact ? styles.compactGrid : styles.grid}>
           {(section.items ?? []).map((cell) => (
             <DeckPreviewCellView
               key={cell.id}
               cell={cell}
               renderPiece={renderPiece}
+              compact={compact}
+              onCellClick={onCellClick}
             />
           ))}
         </div>
@@ -234,37 +317,166 @@ function DeckPreviewSectionView({
   );
 }
 
+function DeckPreviewCompactMatrix({
+  rows,
+  columns,
+  cellMap,
+  renderPiece,
+  renderAxis,
+  onCellClick,
+}: {
+  rows: DeckPreviewAxis[];
+  columns: DeckPreviewAxis[];
+  cellMap: Map<string, DeckPreviewCell>;
+  renderPiece?: (cell: DeckPreviewCell) => ReactNode;
+  renderAxis?: (axis: DeckPreviewAxis) => ReactNode;
+  onCellClick?: (cell: DeckPreviewCell) => void;
+}) {
+  if (rows.length === 0 || columns.length === 0) {
+    return <div style={styles.empty}>No matrix data available.</div>;
+  }
+
+  return (
+    <div style={styles.compactMatrix}>
+      {rows.map((row) => (
+        <div key={row.key} style={styles.compactSuitRow}>
+          <div style={styles.compactSuitHeader}>
+            <DeckPreviewAxisHeader axis={row} renderAxis={renderAxis} />
+          </div>
+          <div style={styles.compactSuitCards}>
+            {columns.map((column) => (
+              <DeckPreviewCellView
+                key={`${row.key}:${column.key}`}
+                cell={cellMap.get(`${row.key}:${column.key}`)}
+                compact
+                renderPiece={renderPiece}
+                onCellClick={onCellClick}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function resolveDeckAxisColor(color?: string): string | undefined {
+  const normalized = color?.trim().toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  if (normalized === 'red') {
+    return '#ef4444';
+  }
+  if (normalized === 'black') {
+    return 'rgba(235, 235, 235, 0.92)';
+  }
+  return color;
+}
+
+function DeckPreviewAxisHeader({
+  axis,
+  renderAxis,
+}: {
+  axis: DeckPreviewAxis;
+  renderAxis?: (axis: DeckPreviewAxis) => ReactNode;
+}) {
+  const custom = renderAxis?.(axis);
+  if (custom !== null && custom !== undefined) {
+    return <>{custom}</>;
+  }
+
+  if (axis.imagePath) {
+    return <img src={axis.imagePath} alt={axis.label} title={axis.label} style={styles.compactAxisImage} />;
+  }
+
+  const suit = getDeckPreviewAxisSuit(axis);
+  if (suit) {
+    return (
+      <SuitIcon
+        suit={suit}
+        variant="filled"
+        size={24}
+        showRings={false}
+        shadowGlow={false}
+        title={axis.label}
+        style={styles.compactAxisImage}
+      />
+    );
+  }
+
+  return (
+    <span
+      aria-label={axis.label}
+      title={axis.label}
+      style={{ ...styles.compactAxisGlyph, color: resolveDeckAxisColor(axis.color) }}
+    >
+      {axis.symbol || axis.icon || axis.label}
+    </span>
+  );
+}
+
+function getDeckPreviewAxisSuit(axis: DeckPreviewAxis) {
+  return normalizeSuit(axis.symbol) ?? normalizeSuit(axis.icon) ?? normalizeSuit(axis.label) ?? normalizeSuit(axis.key);
+}
+
 function DeckPreviewCellView({
   cell,
   renderPiece,
+  compact = false,
+  onCellClick,
 }: {
   cell?: DeckPreviewCell;
   renderPiece?: (cell: DeckPreviewCell) => ReactNode;
+  compact?: boolean;
+  onCellClick?: (cell: DeckPreviewCell) => void;
 }) {
+  const cellStyle = compact
+    ? { ...styles.cell, ...styles.compactCell }
+    : styles.cell;
+
   if (!cell) {
     return (
       <div
         aria-label="Not in deck"
-        style={{ ...styles.cell, ...styles.emptyCell }}
+        style={{ ...cellStyle, ...styles.emptyCell }}
         title="Not in deck"
       />
     );
   }
 
   const custom = renderPiece?.(cell);
+  const content = (
+    <>
+      {custom ?? <span style={styles.cellLabel}>{cell.label}</span>}
+      <DeckPreviewCountBadge count={cell.count} />
+    </>
+  );
+
+  if (onCellClick) {
+    return (
+      <button
+        type="button"
+        style={{ ...cellStyle, ...styles.clickableCell }}
+        title={cell.label}
+        onClick={() => onCellClick(cell)}
+      >
+        {content}
+      </button>
+    );
+  }
+
   if (custom) {
     return (
-      <div style={styles.cell}>
-        {custom}
-        <DeckPreviewCountBadge count={cell.count} />
+      <div style={cellStyle}>
+        {content}
       </div>
     );
   }
 
   return (
-    <div style={styles.cell}>
-      <span style={styles.cellLabel}>{cell.label}</span>
-      <DeckPreviewCountBadge count={cell.count} />
+    <div style={cellStyle}>
+      {content}
     </div>
   );
 }

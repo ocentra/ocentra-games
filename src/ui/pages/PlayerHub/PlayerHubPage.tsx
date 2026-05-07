@@ -5,10 +5,8 @@ import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
+import { PlayerHubPageContent } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
 import { APP_VERSION } from '@/constants/version';
-import { InventoryPanel } from '@/ui/pages/PlayerHub/components/InventoryPanel';
-import { MarketplacePanel } from '@/ui/pages/PlayerHub/components/MarketplacePanel';
-import { ProfilePanel } from '@/ui/pages/PlayerHub/components/ProfilePanel';
 import { usePlayerHubData } from '@/ui/pages/PlayerHub/hooks/usePlayerHubData';
 import { AppScreenToken } from '@/ui/navigation/appRoutes';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
@@ -60,53 +58,18 @@ export function PlayerHubPage({ user, onLogout, onLogoutClick }: PlayerHubPagePr
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      <main className="ph-content">
-        <section className="ph-shell">
-          <div className="ph-toolbar">
-            <h1 className="ph-title">Player Hub</h1>
-            <div className="ph-toolbar-actions">
-              <button
-                type="button"
-                className="ph-btn ph-btn-secondary"
-                onClick={() => {
-                  void refreshAll();
-                }}
-              >
-                Refresh
-              </button>
-              <button
-                type="button"
-                className="ph-btn ph-btn-secondary"
-                onClick={() => EventBus.instance.publish(new ShowScreenEvent('shop'))}
-              >
-                Shop
-              </button>
-              <button
-                type="button"
-                className="ph-btn ph-btn-secondary"
-                onClick={() => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Settings))}
-              >
-                Settings
-              </button>
-            </div>
-          </div>
-
-          {error && <div className="ph-error">{error}</div>}
-          {loading ? (
-            <div className="ph-loading">Loading player hub data...</div>
-          ) : (
-            <div className="ph-grid">
-              <ProfilePanel
-                targetUserId={targetUserId}
-                profile={profile}
-                onLoadUser={loadUserData}
-              />
-              <InventoryPanel items={inventoryItems} />
-              <MarketplacePanel listings={marketplaceListings} />
-            </div>
-          )}
-        </section>
-      </main>
+      <PlayerHubPageContent
+        loading={loading}
+        error={error}
+        targetUserId={targetUserId}
+        profile={profile}
+        inventoryItems={inventoryItems}
+        marketplaceListings={marketplaceListings}
+        onRefresh={() => { void refreshAll(); }}
+        onShop={() => EventBus.instance.publish(new ShowScreenEvent('shop'))}
+        onSettings={() => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Settings))}
+        onLoadUser={(nextUserId) => { void loadUserData(nextUserId); }}
+      />
     </UnifiedPageShell>
   );
 }

@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import JSON5 from 'json5'
 import type { ViewMode } from './types'
 import type { AssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier'
 import { toAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier'
@@ -14,6 +15,16 @@ import type { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/Ass
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode'
 import type { GameHome } from '@ocentra/game-asset-domain/schemas/game-home-schema'
 import type { PageLayoutDocument } from '@ocentra/game-asset-domain/ui/pageLayout/PageLayout'
+import { buildSelectedGamePresentation } from '@ocentra/game-asset-domain/ui/selectedGame/buildSelectedGamePresentation'
+import {
+  DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+  type SelectedGameContentPlan,
+  type SelectedGameDeckVisualControls,
+  type SelectedGameLayoutControls,
+  type SelectedGamePresentationVisualRef,
+  type SelectedGameRankingVisualControls,
+  type SelectedGameTabId,
+} from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation'
 import {
   HomePageGamesDocumentSchema,
   type HomepageLayoutControlsData,
@@ -23,14 +34,13 @@ import { MemoryRouter } from 'react-router-dom'
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
 import type { CategoryWithSubs, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
-import { FeaturedGameShowcase } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase'
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
   type FeaturedGameShowcasePreviewLayoutMode,
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types'
-import { ComingSoonShowcase } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonShowcase'
-import { FeatureBannerSection } from '@ocentra/core-ui/Common/FeatureBanner/FeatureBannerSection'
+import { HomePageShowcaseContent } from '@ocentra/core-ui/Common/HomePage/HomePageShowcaseContent'
+import { SelectedGameShowcase } from '@ocentra/core-ui/Common/SelectedGameShowcase/SelectedGameShowcase'
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   type HomeShowcaseFrameControls,
@@ -40,13 +50,35 @@ import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerConte
 import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar'
 import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard'
 import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow'
+import {
+  AdminUsersPageContent,
+  CompetitionPageContent,
+  PlayerHubPageContent,
+  SettingsPageContent,
+  SettingsPageToolbar,
+  ShopPageContent,
+  ShopPageToolbar,
+  SocialPageContent,
+  type AdminActivityRow,
+  type AdminUserRow,
+  type LeaderboardRow,
+  type ShopProduct,
+  type ShopTab,
+} from '@ocentra/core-ui/AppPages/MainAppPageSurfaces'
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
+import { createOcentraHeaderLogoConfig } from '@ocentra/core-ui/Header/createOcentraHeaderConfig'
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader'
+import type {
+  SerializedUnifiedHeaderConfig,
+  UnifiedHeaderConfigInput,
+} from '@ocentra/core-ui/Header/UnifiedHeader.config'
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
 import { mlogoImageUrl } from '@ocentra/app-assets/commons'
 import { DynamicBackground, type RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground'
 import { ThreeBaseProvider } from '@ocentra/core-ui/Background/ThreeBaseContext'
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl'
+import { DeckPreview } from '@/lib/assets/card/deck/DeckPreview'
+import { CardRankingPreview } from '@/lib/assets/card/cardRanking/CardRankingPreview'
 import { PreviewPanelHeader } from './PreviewPanelHeader'
 import {
   getCatalogCountsFromTauri,
@@ -56,6 +88,7 @@ import {
   getHomepageFeatureBannerFromTauri,
   getImageResourceGroupsFromTauri,
   queryResourcesFromTauri,
+  readAsset,
   isTauri,
   type AssetIndexEntry as TauriAssetIndexEntry,
   type TauriHomepageFeaturedGame,
@@ -87,13 +120,23 @@ import {
   type HomepageLayoutControlsMessage,
 } from '@/utils/homepageLayoutControlsChannel'
 import {
+  HEADER_PROFILE_CONTROLS_CHANNEL,
+  type HeaderProfileControlsMessage,
+} from '@/utils/headerProfileControlsChannel'
+import {
   DEFAULT_HOMEPAGE_LAYOUT_CONTROLS,
   loadHomepageLayoutControlsFromDisk,
   normalizeHomepageLayoutControls,
 } from '@/utils/homepageLayoutControlsPersistence'
+import {
+  SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL,
+  type SelectedGameLayoutControlsMessage,
+  type SelectedGamePreviewLayoutMode,
+} from '@/utils/selectedGameLayoutControlsChannel'
+import { normalizeSelectedGameLayoutConfig } from '@/utils/selectedGameLayoutPersistence'
 import type { ResourceEntry } from '@ocentra/asset-domain/resourceEntry/ResourceEntry'
 import { AssetResourceEntry as AssetResourceEntryClass } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry'
-import { isImageHash } from '@ocentra/asset-domain/types/assetIdentifier'
+import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier'
 import './AssetCatalogPreview.css'
 import './AssetCatalogGamesTab.css'
 
@@ -117,6 +160,363 @@ type CatalogResourceRecord = {
 type ImageResourceGroup = {
   folder: string
   items: CatalogResourceRecord[]
+}
+
+type LooseRecord = Record<string, unknown>
+
+type SelectedGamePreviewBundle = {
+  gameMode: LooseRecord | null
+  gameInfo: LooseRecord | null
+  rules: LooseRecord | null
+  strategy: LooseRecord | null
+  scoring: LooseRecord | null
+  deckModel: LooseRecord | null
+  deck: LooseRecord | null
+  ranking: LooseRecord | null
+  mechanics: LooseRecord | null
+  actions: LooseRecord | null
+  validationFixtures: LooseRecord | null
+  images: LooseRecord | null
+}
+
+const SELECTED_GAME_TEMPLATE_DECK_REF = {
+  path: 'Resources/GameMode/CardGames/Decks/Standard_52.asset',
+  guid: '991b75fe-271a-4e16-99bf-02e4651a60fd',
+  assetType: 'Deck',
+  displayName: 'Standard 52',
+  resourceEntryType: 'AssetResourceEntry',
+  variant: 'Standard52',
+  category: 'Game',
+} as const
+
+const SELECTED_GAME_TEMPLATE_RANKING_REF = {
+  path: 'Resources/GameMode/CardGames/CardRanking/StandardCardRanking.asset',
+  guid: 'c9ffcf9a-4917-c61d-ce71-d709e878c0ff',
+  assetType: 'DeckRanking',
+  displayName: 'StandardCardRanking',
+  resourceEntryType: 'AssetResourceEntry',
+  variant: 'StandardCardRanking',
+  category: 'Game',
+} as const
+
+function asPreviewRecord(value: unknown): LooseRecord {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as LooseRecord
+    : {}
+}
+
+function asPreviewText(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
+function dataOfPreview(value: unknown): LooseRecord {
+  const record = asPreviewRecord(value)
+  const data = asPreviewRecord(record.data)
+  return Object.keys(data).length > 0 ? data : record
+}
+
+function pathFromPreviewRef(value: unknown): string {
+  return asPreviewText(asPreviewRecord(value).path)
+}
+
+async function loadPreviewAssetDocument(path: string): Promise<LooseRecord | null> {
+  if (!path) {
+    return null
+  }
+  try {
+    const response = await readAsset(path)
+    if (!response.ok) {
+      return null
+    }
+    return JSON5.parse(await response.text()) as LooseRecord
+  } catch {
+    return null
+  }
+}
+
+async function loadSelectedGamePreviewBundle(
+  gamePath: string
+): Promise<SelectedGamePreviewBundle> {
+  const gameMode = await loadPreviewAssetDocument(gamePath)
+  const gameData = dataOfPreview(gameMode)
+  const gameBasePath = gamePath.replace(/\\/g, '/').replace(/\/[^/]*$/, '')
+  const gameInfo = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.gameInfoAsset))
+  const rules = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.gameRulesAsset))
+  const scoring = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.scoringAsset))
+  const strategy = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.strategyAsset))
+  const mechanics = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.mechanicsAsset))
+  const images = await loadPreviewAssetDocument(pathFromPreviewRef(gameData.carouselImagesAsset))
+  const infoData = dataOfPreview(gameInfo)
+  const linkedAssets = asPreviewRecord(asPreviewRecord(infoData.mechanicsContract).linkedAssetKeys)
+  const deckModel = await loadPreviewAssetDocument(
+    asPreviewText(linkedAssets.deckModel) ? `${gameBasePath}/${asPreviewText(linkedAssets.deckModel)}` : ''
+  )
+  const deckModelData = dataOfPreview(deckModel)
+  const deck =
+    await loadPreviewAssetDocument(pathFromPreviewRef(gameData.deckAsset)) ??
+    await loadPreviewAssetDocument(pathFromPreviewRef(asPreviewRecord(deckModelData.assetRefs).deck)) ??
+    await loadPreviewAssetDocument(pathFromPreviewRef(asPreviewRecord(dataOfPreview(scoring).scoringRules).deckAsset))
+  const actions = await loadPreviewAssetDocument(
+    asPreviewText(linkedAssets.actionSet) ? `${gameBasePath}/${asPreviewText(linkedAssets.actionSet)}` : ''
+  )
+  const validationFixtures = await loadPreviewAssetDocument(
+    asPreviewText(linkedAssets.validationFixtures) ? `${gameBasePath}/${asPreviewText(linkedAssets.validationFixtures)}` : ''
+  )
+  const ranking =
+    await loadPreviewAssetDocument(pathFromPreviewRef(gameData.rankingAsset)) ??
+    await loadPreviewAssetDocument(pathFromPreviewRef(dataOfPreview(scoring).rankingAsset)) ??
+    await loadPreviewAssetDocument(pathFromPreviewRef(asPreviewRecord(deckModelData.assetRefs).ranking))
+
+  return {
+    gameMode,
+    gameInfo,
+    rules,
+    strategy,
+    scoring,
+    deckModel,
+    deck,
+    ranking,
+    mechanics,
+    actions,
+    validationFixtures,
+    images,
+  }
+}
+
+async function loadSelectedGameTemplatePreviewBundle(): Promise<SelectedGamePreviewBundle> {
+  const [deck, ranking] = await Promise.all([
+    loadPreviewAssetDocument(SELECTED_GAME_TEMPLATE_DECK_REF.path),
+    loadPreviewAssetDocument(SELECTED_GAME_TEMPLATE_RANKING_REF.path),
+  ])
+  return {
+    ...buildSelectedGameFallbackBundle(null),
+    deck,
+    ranking,
+  }
+}
+
+function buildSelectedGameFallbackBundle(
+  selectedGame: GameWithMetadata | null
+): SelectedGamePreviewBundle {
+  if (!selectedGame) {
+    return {
+      gameMode: {
+        data: {
+          displayName: 'Template Game',
+          minPlayers: 2,
+          maxPlayers: 4,
+          deckType: 'Standard 52',
+          deckAsset: SELECTED_GAME_TEMPLATE_DECK_REF,
+          rankingAsset: SELECTED_GAME_TEMPLATE_RANKING_REF,
+        },
+      },
+      gameInfo: {
+        data: {
+          hero: {
+            title: 'Template Game',
+            subtitle: 'Lorem ipsum dolor sit amet. Curabitur table pressure rises every turn.',
+          },
+          Player: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse players race to read the table, protect key cards, and choose the right moment to score.',
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer table states create short choices, visible pressure, and clear scoring windows.',
+          tagline: 'Asset-backed selected-game template.',
+          tags: ['Template', 'Card Game', 'Preview'],
+          minPlayers: 2,
+          maxPlayers: 4,
+          gameCategory: 'CardGames',
+          subcategory: 'Template',
+          difficulty: 'Medium',
+          duration: '20 minutes',
+          deck: 'Standard placeholder deck',
+          playersDisplay: '2-4 players',
+          sections: [
+            {
+              id: 'about-template',
+              label: 'About',
+              pages: [
+                {
+                  title: 'How To Play',
+                  subtitle: 'Template copy',
+                  content: [
+                    { kind: 'paragraph', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. The selected-game layout should make the goal, rhythm, and table pressure easy to scan.' },
+                    { kind: 'list', items: ['Fast overview for new players', 'Short snippets for returning players', 'Room for authored game history'] },
+                  ],
+                },
+                {
+                  title: 'How to Play',
+                  subtitle: 'Player flow',
+                  content: [
+                    { kind: 'list', items: ['Set up the table from the authored deck asset.', 'Take turns using the rules asset as the source of truth.', 'Score from the scoring asset when the round ends.'] },
+                  ],
+                },
+                {
+                  title: 'History',
+                  subtitle: 'Origin placeholder',
+                  content: [
+                    { kind: 'paragraph', text: 'Lorem ipsum origin text marks where migrated processed-game history, countries, and alternative names will appear.' },
+                  ],
+                },
+              ],
+            },
+          ],
+          historyContent: {
+            origins: 'Lorem ipsum history text for country, origin, and timeline content.',
+            timeline: ['Origin placeholder', 'Regional variant placeholder', 'Modern rules placeholder'],
+          },
+          variationsContent: {
+            list: [
+              { name: 'Variant A', description: 'Lorem ipsum variant description.' },
+              { name: 'Variant B', description: 'Alternate table size placeholder.' },
+            ],
+          },
+        },
+      },
+      rules: {
+        data: {
+          rules: [
+            { id: 'setup', text: 'Use the deck asset to deal the authored setup.' },
+            { id: 'turn', text: 'Resolve player turns from the rules asset.' },
+            { id: 'round-end', text: 'End the round when the scoring asset condition is met.' },
+            { id: 'edge', text: 'Use authored edge cases for ambiguous moves.' },
+          ],
+          ruleGroups: [
+            { id: 'setup', label: 'Setup', ruleIds: ['setup'] },
+            { id: 'turn-flow', label: 'Turn Flow', ruleIds: ['turn', 'edge'] },
+            { id: 'round-end', label: 'Round End', ruleIds: ['round-end'] },
+          ],
+          playerCount: { min: 2, max: 4 },
+          setup: { deck: 'Template deck' },
+          turnRules: { timerSeconds: 45 },
+        },
+      },
+      strategy: {
+        data: {
+          tips: [
+            { title: 'Read pressure', body: 'Lorem ipsum strategy copy for short tactical guidance.' },
+            { title: 'Protect tempo', body: 'Use concise snippets instead of long paragraphs.' },
+          ],
+        },
+      },
+      scoring: {
+        data: {
+          description: 'Lorem ipsum scoring model placeholder.',
+          targetScore: '21',
+          winCondition: 'Highest valid score wins.',
+          scoringDirection: 'highest',
+          cardValues: { A: 11, K: 10, Q: 10, J: 10 },
+          scoringRules: {
+            deckAsset: SELECTED_GAME_TEMPLATE_DECK_REF,
+          },
+          rankingAsset: SELECTED_GAME_TEMPLATE_RANKING_REF,
+        },
+      },
+      deckModel: {
+        data: {
+          assetRefs: {
+            deck: SELECTED_GAME_TEMPLATE_DECK_REF,
+            ranking: SELECTED_GAME_TEMPLATE_RANKING_REF,
+          },
+          deckType: 'Standard 52',
+          suits: ['Suit A', 'Suit B', 'Suit C', 'Suit D'],
+          ranks: ['A', 'K', 'Q', 'J', '10'],
+          handRanks: {
+            valueSystem: 'ace_high',
+            rankCycle: ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'],
+            suitScope: 'same_suit_only',
+          },
+        },
+      },
+      deck: null,
+      ranking: {
+        data: {
+          rankingType: 'Template ranking',
+          ranks: ['A', 'K', 'Q', 'J', '10'],
+        },
+      },
+      mechanics: {
+        data: {
+          mechanicsId: 'template-mechanics',
+          mechanicsVersion: '0.1.0',
+          familyKernel: 'template',
+          executorId: 'template-executor',
+        },
+      },
+      actions: {
+        data: {
+          actionSetId: 'template-actions',
+          actions: [{ id: 'play', label: 'Play placeholder action' }],
+        },
+      },
+      validationFixtures: null,
+      images: null,
+    }
+  }
+  const home: Partial<GameHome> = selectedGame?.home ?? {}
+  const entry = selectedGame?.entry
+  const name = home.name ?? entry?.displayName ?? 'Selected Game'
+  return {
+    gameMode: {
+      data: {
+        displayName: name,
+        minPlayers: home.minPlayers,
+        maxPlayers: home.maxPlayers,
+        bannerImage: home.bannerImage,
+        deckType: home.deck,
+      },
+    },
+    gameInfo: {
+      data: {
+        hero: {
+          title: name,
+          subtitle: home.tagline ?? home.shortDescription,
+        },
+        Player: home.description ?? home.shortDescription ?? home.tagline,
+        description: home.description ?? home.shortDescription,
+        tagline: home.tagline,
+        tags: home.tags ?? [],
+        minPlayers: home.minPlayers,
+        maxPlayers: home.maxPlayers,
+        gameCategory: home.gameCategory,
+        subcategory: home.subcategory,
+        difficulty: home.difficulty,
+        duration: home.duration,
+        deck: home.deck,
+        playersDisplay: home.playersDisplay,
+        quality: home.quality,
+      },
+    },
+    rules: null,
+    strategy: null,
+    scoring: null,
+    deckModel: null,
+    deck: null,
+    ranking: null,
+    mechanics: null,
+    actions: null,
+    validationFixtures: null,
+    images: null,
+  }
+}
+
+function collectSelectedGameImageHashesFromBundle(bundle: SelectedGamePreviewBundle | null): ImageHash[] {
+  if (!bundle) {
+    return []
+  }
+  const hashes: ImageHash[] = []
+  const add = (value: unknown) => {
+    if (typeof value === 'string' && isImageHash(value)) {
+      hashes.push(value)
+    }
+  }
+  const gameMode = dataOfPreview(bundle.gameMode)
+  const gameInfo = dataOfPreview(bundle.gameInfo)
+  const images = dataOfPreview(bundle.images)
+  add(gameMode.bannerImage)
+  add(gameInfo.gameIconImage)
+  add(images.logoImageHash)
+  for (const slide of Array.isArray(images.slides) ? images.slides : []) {
+    add(asPreviewRecord(slide).imageHash)
+  }
+  return Array.from(new Set(hashes))
 }
 
 function mergeFeaturedControls(controls?: FeaturedShowcaseControls): FeaturedShowcaseControls {
@@ -219,75 +619,130 @@ const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
   'virtual:AssetCatalog/FeaturedShowcaseControls'
 
 const ASSET_EDITOR_PREVIEW_APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
+const SELECTED_GAME_PLACEHOLDER_ART_URL = '/Resources/AppAssets/PlaceHolders/image0.jpg'
+const SELECTED_GAME_PLACEHOLDER_OVERVIEW_URL = '/Resources/AppAssets/PlaceHolders/image1.jpg'
+
+function mergeHeaderConfigInput(
+  baseConfig?: UnifiedHeaderConfigInput | null,
+  overrideConfig?: UnifiedHeaderConfigInput | null
+): UnifiedHeaderConfigInput {
+  return {
+    ...baseConfig,
+    ...overrideConfig,
+    layout: {
+      ...baseConfig?.layout,
+      ...overrideConfig?.layout,
+    },
+    style: {
+      ...baseConfig?.style,
+      ...overrideConfig?.style,
+    },
+    left: {
+      ...baseConfig?.left,
+      ...overrideConfig?.left,
+      ...(baseConfig?.left?.textStyle || overrideConfig?.left?.textStyle
+        ? {
+            textStyle: {
+              ...baseConfig?.left?.textStyle,
+              ...overrideConfig?.left?.textStyle,
+            },
+          }
+        : {}),
+    },
+    right: {
+      ...baseConfig?.right,
+      ...overrideConfig?.right,
+      ...(baseConfig?.right?.textStyle || overrideConfig?.right?.textStyle
+        ? {
+            textStyle: {
+              ...baseConfig?.right?.textStyle,
+              ...overrideConfig?.right?.textStyle,
+            },
+          }
+        : {}),
+    },
+    center: {
+      ...baseConfig?.center,
+      ...overrideConfig?.center,
+      modeA: {
+        ...baseConfig?.center?.modeA,
+        ...overrideConfig?.center?.modeA,
+        ...(baseConfig?.center?.modeA?.textStyle || overrideConfig?.center?.modeA?.textStyle
+          ? {
+              textStyle: {
+                ...baseConfig?.center?.modeA?.textStyle,
+                ...overrideConfig?.center?.modeA?.textStyle,
+              },
+            }
+          : {}),
+        ...(baseConfig?.center?.modeA?.logo || overrideConfig?.center?.modeA?.logo
+          ? {
+              logo: {
+                ...baseConfig?.center?.modeA?.logo,
+                ...overrideConfig?.center?.modeA?.logo,
+              },
+            }
+          : {}),
+      },
+      modeB: {
+        ...baseConfig?.center?.modeB,
+        ...overrideConfig?.center?.modeB,
+        ...(baseConfig?.center?.modeB?.textStyle || overrideConfig?.center?.modeB?.textStyle
+          ? {
+              textStyle: {
+                ...baseConfig?.center?.modeB?.textStyle,
+                ...overrideConfig?.center?.modeB?.textStyle,
+              },
+            }
+          : {}),
+        ...(baseConfig?.center?.modeB?.taglineStyle || overrideConfig?.center?.modeB?.taglineStyle
+          ? {
+              taglineStyle: {
+                ...baseConfig?.center?.modeB?.taglineStyle,
+                ...overrideConfig?.center?.modeB?.taglineStyle,
+              },
+            }
+          : {}),
+      },
+    },
+    navigation: {
+      ...baseConfig?.navigation,
+      ...overrideConfig?.navigation,
+    },
+    metadata: {
+      ...baseConfig?.metadata,
+      ...overrideConfig?.metadata,
+    },
+  } as UnifiedHeaderConfigInput
+}
 
 function AssetCatalogMainAppPreviewShell({
   children,
   routePath = '/',
+  headerConfigOverride = null,
+  headerDynamicData,
+  toolbar = null,
+  shellClassName = 'home-page',
+  workClassName = 'home-shell-work',
+  includeAdminNavigation = true,
+  showPrimaryNavigation = true,
 }: {
   children: React.ReactNode
   routePath?: string
+  headerConfigOverride?: UnifiedHeaderConfigInput | null
+  headerDynamicData?: { gameName: string; tagline: string }
+  toolbar?: React.ReactNode
+  shellClassName?: string
+  workClassName?: string
+  includeAdminNavigation?: boolean
+  showPrimaryNavigation?: boolean
 }) {
   const rotationControlRef = useRef<RotationControlAPI | null>(null)
-  const headerConfig = useMemo(() => ({
-    center: {
-      modeA: {
-        logo: {
-          size: 44,
-          renderer: ({
-            cx,
-            cy,
-            size,
-            aspectCorrection,
-            strokeWidth,
-            innerOpacity,
-            color,
-          }: {
-            cx: number
-            cy: number
-            size: number
-            aspectCorrection: number
-            strokeWidth: number
-            innerOpacity: number
-            color: string
-          }) => {
-            const logoH = size
-            const logoW = logoH * aspectCorrection
-            const outerRadius = size / 2
-            const innerRadius = Math.max(1, outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5)
-            return (
-              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={outerRadius}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  opacity={0.95}
-                  vectorEffect="non-scaling-stroke"
-                />
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={innerRadius}
-                  fill={color}
-                  opacity={innerOpacity}
-                />
-                <image
-                  href={mlogoImageUrl}
-                  x={cx - logoW / 2}
-                  y={cy - logoH / 2}
-                  width={logoW}
-                  height={logoH}
-                  preserveAspectRatio="xMidYMid meet"
-                />
-              </g>
-            )
-          },
-        },
-      },
-    },
-  }), [])
+  const headerLogoConfig = useMemo(() => createOcentraHeaderLogoConfig(mlogoImageUrl), [])
+  const headerConfig = useMemo(
+    () => mergeHeaderConfigInput(headerConfigOverride, headerLogoConfig),
+    [headerConfigOverride, headerLogoConfig]
+  )
 
   return (
     <div className="asset-catalog-preview__main-app-host">
@@ -295,18 +750,21 @@ function AssetCatalogMainAppPreviewShell({
         <ThreeBaseProvider>
           <UnifiedPageShell
             embedded
-            className="asset-catalog-preview__main-app-shell home-page"
-            workClassName="home-shell-work"
+            className={`asset-catalog-preview__main-app-shell ${shellClassName}`}
+            workClassName={workClassName}
             background={<DynamicBackground controlRef={rotationControlRef} />}
             header={
               <UnifiedHeader
                 config={headerConfig}
+                dynamicData={headerDynamicData}
                 profileName="main_screen"
-                includeAdminNavigation
+                includeAdminNavigation={includeAdminNavigation}
+                showPrimaryNavigation={showPrimaryNavigation}
                 placement="contained"
                 showDebugControls={false}
               />
             }
+            toolbar={toolbar}
             footer={<GameFooter appVersion={ASSET_EDITOR_PREVIEW_APP_VERSION} />}
           >
             {children}
@@ -336,7 +794,88 @@ function readPageLayoutData(assetData: { data?: unknown }): PageLayoutPreviewDat
     : {}
 }
 
-function PageLayoutMainAppPreview({ document }: { document: PageLayoutPreviewData }) {
+function getPageLayoutKind(document: PageLayoutPreviewData): NonNullable<PageLayoutPreviewData['kind']> {
+  if (document.kind) return document.kind
+  if (document.pageId === 'leaderboard') return 'leaderboard'
+  if (document.pageId === 'profile') return 'profile'
+  if (document.pageId === 'tournaments') return 'tournaments'
+  if (document.pageId === 'selected-game') return 'selected-game'
+  if (document.pageId === 'games') return 'games'
+  if (document.pageId === 'shop') return 'shop'
+  if (document.pageId === 'social') return 'social'
+  if (document.pageId === 'admin') return 'admin'
+  if (document.pageId === 'settings') return 'settings'
+  return 'generic'
+}
+
+function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: string; tagline: string } {
+  const kind = getPageLayoutKind(document)
+  if (kind === 'shop') {
+    return { gameName: 'Arena Marketplace', tagline: 'Gear up. Outthink. Outplay.' }
+  }
+  if (kind === 'social') {
+    return { gameName: 'Social Hub', tagline: 'Friends, parties, messages, notifications, and activity.' }
+  }
+  if (kind === 'tournaments') {
+    return { gameName: 'Competition', tagline: 'Rank ladders, nearby standings, and tournament brackets.' }
+  }
+  if (kind === 'selected-game') {
+    return { gameName: 'Selected Game', tagline: 'Asset-backed game detail presentation.' }
+  }
+  if (kind === 'leaderboard') {
+    return { gameName: 'Leaderboard', tagline: 'Season ranks, nearby players, and competitive progress.' }
+  }
+  if (kind === 'profile') {
+    return { gameName: 'Player Hub', tagline: 'Profile, inventory, and marketplace in one control center.' }
+  }
+  if (kind === 'games') {
+    return { gameName: 'Card Games Explorer', tagline: 'Finished card games in the catalog.' }
+  }
+  if (kind === 'admin') {
+    return { gameName: 'Admin Dashboard', tagline: 'Control Center | Manage users and system tools' }
+  }
+  if (kind === 'settings') {
+    return { gameName: 'Settings', tagline: 'Models, providers, native integrations, and asset delivery.' }
+  }
+  return { gameName: document.title || 'Page Layout', tagline: document.routePath || '/' }
+}
+
+const previewShopProducts: ShopProduct[] = [
+  { productId: 'ac-100', productType: 'AC_CREDITS', displayName: 'Starter Credits', acAmount: 100, unitPriceCents: 100, currency: 'usd', active: true },
+  { productId: 'ac-500', productType: 'AC_CREDITS', displayName: 'Arena Credits', acAmount: 500, unitPriceCents: 500, currency: 'usd', active: true },
+  { productId: 'ac-1200', productType: 'AC_CREDITS', displayName: 'Best Value Credits', acAmount: 1200, unitPriceCents: 999, currency: 'usd', active: true },
+  { productId: 'ac-3500', productType: 'AC_CREDITS', displayName: 'Season Supply', acAmount: 3500, unitPriceCents: 2499, currency: 'usd', active: true },
+  { productId: 'sub-arena-pass', productType: 'SUBSCRIPTION', displayName: 'Arena Pass', unitPriceCents: 999, currency: 'usd', active: true },
+  { productId: 'sub-champions-pass', productType: 'SUBSCRIPTION', displayName: "Champion's Pass", unitPriceCents: 1999, currency: 'usd', active: true },
+  { productId: 'vault-card-back-neon', productType: 'MARKETPLACE', displayName: 'Neon Card Back', currency: 'ac', active: true },
+  { productId: 'vault-table-classic', productType: 'MARKETPLACE', displayName: 'Classic Felt Table', currency: 'ac', active: true },
+]
+
+const previewLeaderboardEntries: LeaderboardRow[] = [
+  { user_id: 'ocentra-ai', rank: 1, score: 18420, wins: 94, losses: 12 },
+  { user_id: 'table-pilot', rank: 2, score: 17905, wins: 88, losses: 16 },
+  { user_id: 'claim-master', rank: 3, score: 16280, wins: 79, losses: 18 },
+  { user_id: 'near-you', rank: 14, score: 9740, wins: 41, losses: 22 },
+]
+
+const previewAdminUsers: AdminUserRow[] = [
+  { uid: 'u-001', email: 'sujan@ocentra.ca', displayName: 'sujan', isAdmin: true, lastLogin: '2026-05-02T14:30:00.000Z' },
+  { uid: 'u-002', email: 'pilot@ocentra.ca', displayName: 'table pilot', isAdmin: false, lastLogin: '2026-05-01T19:12:00.000Z' },
+  { uid: 'u-003', email: 'claim@ocentra.ca', displayName: 'claim master', isAdmin: false, lastLogin: '2026-04-29T11:09:00.000Z' },
+]
+
+const previewAdminActivities: AdminActivityRow[] = [
+  { adminEmail: 'sujan@ocentra.ca', targetEmail: 'pilot@ocentra.ca', action: 'grant', timestamp: '2026-05-01T15:25:00.000Z' },
+  { adminEmail: 'sujan@ocentra.ca', targetEmail: 'claim@ocentra.ca', action: 'revoke', timestamp: '2026-04-30T10:10:00.000Z' },
+]
+
+function GenericPageLayoutContent({
+  document,
+  debugBounds = false,
+}: {
+  document: PageLayoutPreviewData
+  debugBounds?: boolean
+}) {
   const title = document.title || document.pageId || 'Page Layout'
   const routePath = document.routePath || '/'
   const enabledSlices = (document.slices ?? [])
@@ -344,39 +883,232 @@ function PageLayoutMainAppPreview({ document }: { document: PageLayoutPreviewDat
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
   return (
-    <AssetCatalogMainAppPreviewShell routePath={routePath}>
-      <main className="asset-catalog-preview__page-layout-stage">
-        <section className="asset-catalog-preview__page-layout-hero">
-          <div>
-            <span className="asset-catalog-preview__page-layout-eyebrow">Page Layout</span>
-            <h1>{title}</h1>
-            <p>{routePath}</p>
-          </div>
-          <div className="asset-catalog-preview__page-layout-kind">
-            {(document.kind ?? 'generic').toString()}
-          </div>
-        </section>
-        <section className="asset-catalog-preview__page-layout-slices">
-          {enabledSlices.length > 0 ? (
-            enabledSlices.map(slice => (
-              <article key={slice.id} className="asset-catalog-preview__page-layout-slice">
-                <div>
-                  <span>{slice.type}</span>
-                  <h2>{slice.title || slice.id}</h2>
-                </div>
-                {slice.sourceAssetPath ? <code>{slice.sourceAssetPath}</code> : null}
-              </article>
-            ))
-          ) : (
-            <article className="asset-catalog-preview__page-layout-slice">
+    <main className={`asset-catalog-preview__page-layout-stage ${debugBounds ? 'asset-catalog-preview__page-layout-stage--bounds' : ''}`}>
+      <section className="asset-catalog-preview__page-layout-hero">
+        <div>
+          <span className="asset-catalog-preview__page-layout-eyebrow">Page Layout</span>
+          <h1>{title}</h1>
+          <p>{routePath}</p>
+        </div>
+        <div className="asset-catalog-preview__page-layout-kind">
+          {(document.kind ?? 'generic').toString()}
+        </div>
+      </section>
+      <section className="asset-catalog-preview__page-layout-slices">
+        {enabledSlices.length > 0 ? (
+          enabledSlices.map(slice => (
+            <article key={slice.id} className="asset-catalog-preview__page-layout-slice">
               <div>
-                <span>empty</span>
-                <h2>No page slices configured</h2>
+                <span>{slice.type}</span>
+                <h2>{slice.title || slice.id}</h2>
               </div>
+              {slice.sourceAssetPath ? <code>{slice.sourceAssetPath}</code> : null}
             </article>
-          )}
-        </section>
-      </main>
+          ))
+        ) : (
+          <article className="asset-catalog-preview__page-layout-slice">
+            <div>
+              <span>empty</span>
+              <h2>No page slices configured</h2>
+            </div>
+          </article>
+        )}
+      </section>
+    </main>
+  )
+}
+
+function PageLayoutMainAppPreview({
+  document,
+  headerConfigOverride = null,
+  gamesExplorerContent = null,
+  selectedGameContent = null,
+  debugBounds = false,
+}: {
+  document: PageLayoutPreviewData
+  headerConfigOverride?: UnifiedHeaderConfigInput | null
+  gamesExplorerContent?: React.ReactNode
+  selectedGameContent?: React.ReactNode
+  debugBounds?: boolean
+}) {
+  const routePath = document.routePath || '/'
+  const kind = getPageLayoutKind(document)
+  const headerDynamicData = getPageLayoutHeaderData(document)
+  const [shopTab, setShopTab] = useState<ShopTab>('Treasury')
+  const [settingsTab, setSettingsTab] = useState<'models' | 'inference' | 'providers' | 'native' | 'assets'>('models')
+  const [adminSearch, setAdminSearch] = useState('')
+
+  const content =
+    kind === 'games' ? (
+      gamesExplorerContent ?? <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
+    ) : kind === 'selected-game' ? (
+      selectedGameContent ?? <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
+    ) : kind === 'shop' ? (
+      <ShopPageContent
+        activeTab={shopTab}
+        products={previewShopProducts}
+        loadingProducts={false}
+        loadingId={null}
+        error={null}
+        acBalance={12450}
+        onClearError={() => undefined}
+        onBuy={() => undefined}
+      />
+    ) : kind === 'social' ? (
+      <SocialPageContent
+        loading={false}
+        error={null}
+        presenceStatus="online"
+        friends={[{ friendId: 'claim-master' }, { friendId: 'table-pilot' }]}
+        partyId="party-preview"
+        partyMembers={[{ userId: 'sujan' }, { userId: 'ocentra-ai' }]}
+        messages={[{ messageId: 'm1', senderId: 'claim-master', content: 'Ready for the next table.' }]}
+        activeConversationId="claim-table"
+        notifications={[{ id: 'n1', type: 'party.invite', title: 'Party invite', body: 'table-pilot invited you.', read: false }]}
+        feedItems={[{ id: 'f1', type: 'match.complete', payload: { game: 'Claim', result: 'win' } }]}
+        onRefresh={() => undefined}
+        onMatchmaking={() => undefined}
+        onLobby={() => undefined}
+        onAddFriend={() => undefined}
+        onRemoveFriend={() => undefined}
+        onCreateParty={() => undefined}
+        onLoadParty={() => undefined}
+        onJoinParty={() => undefined}
+        onLeaveParty={() => undefined}
+        onInvite={() => undefined}
+        onLoadMessages={() => undefined}
+        onSendMessage={() => undefined}
+        onMarkRead={() => undefined}
+        onMarkAllNotificationsRead={() => undefined}
+        onAppendActivity={() => undefined}
+      />
+    ) : kind === 'tournaments' ? (
+      <CompetitionPageContent
+        loading={false}
+        registering={false}
+        error={null}
+        gameType={1}
+        seasonId="preview-season"
+        lastUpdated="just now"
+        leaderboardEntries={previewLeaderboardEntries}
+        showPersonalizedStats
+        userEntry={previewLeaderboardEntries[3] ?? null}
+        nearbyAbove={previewLeaderboardEntries.slice(1, 2)}
+        nearbyBelow={previewLeaderboardEntries.slice(2, 3)}
+        tournamentId="preview-bracket"
+        tournamentRounds={[{ round: 1, matches: [1, 2, 3, 4] }, { round: 2, matches: [1, 2] }, { round: 3, matches: [1] }]}
+        onRefreshLeaderboard={() => undefined}
+        onLoadBracket={() => undefined}
+        onRegister={() => undefined}
+        onMatchmaking={() => undefined}
+      />
+    ) : kind === 'leaderboard' ? (
+      <CompetitionPageContent
+        loading={false}
+        registering={false}
+        error={null}
+        gameType={1}
+        seasonId="preview-season"
+        lastUpdated="just now"
+        leaderboardEntries={previewLeaderboardEntries}
+        showPersonalizedStats
+        userEntry={previewLeaderboardEntries[3] ?? null}
+        nearbyAbove={previewLeaderboardEntries.slice(1, 2)}
+        nearbyBelow={previewLeaderboardEntries.slice(2, 3)}
+        tournamentId="preview-bracket"
+        tournamentRounds={[{ round: 1, matches: [1, 2, 3, 4] }, { round: 2, matches: [1, 2] }]}
+        onRefreshLeaderboard={() => undefined}
+        onLoadBracket={() => undefined}
+        onRegister={() => undefined}
+        onMatchmaking={() => undefined}
+      />
+    ) : kind === 'profile' ? (
+      <PlayerHubPageContent
+        loading={false}
+        error={null}
+        targetUserId="preview-player"
+        profile={{ alias: 'preview-player', rank: 14, favoriteGame: 'Claim', accountType: 'full' }}
+        inventoryItems={[{ itemId: 'neon-card-back', quantity: 1 }, { itemId: 'founder-badge', quantity: 1 }]}
+        marketplaceListings={[{ id: 'classic-felt', title: 'Classic Felt Table' }, { id: 'royal-card-back', title: 'Royal Card Back' }]}
+        onRefresh={() => undefined}
+        onShop={() => undefined}
+        onSettings={() => undefined}
+        onLoadUser={() => undefined}
+      />
+    ) : kind === 'admin' ? (
+      <AdminUsersPageContent
+        permissionDenied={false}
+        users={previewAdminUsers}
+        activities={previewAdminActivities}
+        loading={false}
+        searchQuery={adminSearch}
+        selectedUser={null}
+        pendingAction={null}
+        onSearchChange={setAdminSearch}
+        onRefresh={() => undefined}
+        onToggleAdmin={() => undefined}
+        onCancelDialog={() => undefined}
+        onConfirmDialog={() => undefined}
+        currentUserId="u-001"
+      />
+    ) : kind === 'settings' ? (
+      <SettingsPageContent>
+        <div className="model-list">
+          {['Local Model Selection', 'Inference Settings', 'Provider Config'].map((title) => (
+            <div key={title} className="model-item">
+              <div className="model-name">{title}</div>
+              <div className="model-quants">
+                <button className="quant-btn downloaded" type="button">Ready</button>
+                <button className="quant-btn" type="button">Configure</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SettingsPageContent>
+    ) : (
+      <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
+    )
+
+  const toolbar = kind === 'shop'
+    ? <ShopPageToolbar activeTab={shopTab} acBalance={12450} onTabChange={setShopTab} />
+    : kind === 'settings'
+      ? <SettingsPageToolbar activeTab={settingsTab} showAssetsTab onTabChange={setSettingsTab} />
+      : null
+
+  const shellClassName = kind === 'shop'
+    ? 'sp-root'
+    : kind === 'social'
+      ? 'social-page'
+      : kind === 'tournaments' || kind === 'leaderboard'
+        ? 'cp-page'
+        : kind === 'profile'
+          ? 'ph-page'
+          : kind === 'admin'
+            ? 'admin-users-page'
+            : kind === 'settings'
+              ? 'settings-page'
+              : kind === 'selected-game'
+                ? 'selected-game-page'
+                : 'home-page'
+
+  const workClassName = kind === 'admin'
+    ? `admin-users-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+    : kind === 'selected-game'
+      ? `selected-game-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+      : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+
+  return (
+    <AssetCatalogMainAppPreviewShell
+      routePath={routePath}
+      headerConfigOverride={headerConfigOverride}
+      headerDynamicData={headerDynamicData}
+      toolbar={toolbar}
+      shellClassName={shellClassName}
+      workClassName={workClassName}
+      includeAdminNavigation={kind !== 'selected-game'}
+      showPrimaryNavigation={kind !== 'selected-game'}
+    >
+      {content}
     </AssetCatalogMainAppPreviewShell>
   )
 }
@@ -598,11 +1330,18 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     !isPageLayoutMode ||
     pageLayoutData?.kind === 'home' ||
     pageLayoutData?.pageId === 'home'
+  const pageLayoutKind = pageLayoutData ? getPageLayoutKind(pageLayoutData) : 'generic'
+  const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
+  const shouldLoadGamesForPageLayout =
+    isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'selected-game')
+  const initialSelectedGameLayoutConfig = normalizeSelectedGameLayoutConfig(pageLayoutData)
   const hasCachedHomepagePreview = hasHomepagePreviewContent(cachedHomepagePreviewData)
   const [activeTab, setActiveTab] = useState<AssetCatalogTab>(
     isPageLayoutMode ? 'homepage' : 'games'
   )
-  const [selectedGameId, setSelectedGameId] = useState<string | null>(null)
+  const [selectedGameId, setSelectedGameId] = useState<string | null>(
+    () => isSelectedGameLayout ? initialSelectedGameLayoutConfig.previewSampleGameId || null : null
+  )
   const [homepageData, setHomepageDataState] = useState<HomePageGamesDocument>(
     () => cachedHomepagePreviewData ?? EMPTY_HOMEPAGE_PREVIEW_DATA
   )
@@ -663,6 +1402,23 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<FeaturedGameShowcasePreviewLayoutMode>('auto')
   const [homepageLayoutControls, setHomepageLayoutControls] =
     useState<HomepageLayoutControlsData>(DEFAULT_HOMEPAGE_LAYOUT_CONTROLS)
+  const [selectedGameLayoutControls, setSelectedGameLayoutControls] =
+    useState<SelectedGameLayoutControls>(() => initialSelectedGameLayoutConfig.layoutControls)
+  const [selectedGameContentPlan, setSelectedGameContentPlan] =
+    useState<SelectedGameContentPlan>(() => initialSelectedGameLayoutConfig.contentPlan)
+  const [selectedGamePreviewSampleGameId, setSelectedGamePreviewSampleGameId] =
+    useState(() => initialSelectedGameLayoutConfig.previewSampleGameId)
+  const [selectedGameDebugBounds, setSelectedGameDebugBounds] =
+    useState(() => initialSelectedGameLayoutConfig.debugBounds)
+  const [selectedGamePreviewLayoutMode, setSelectedGamePreviewLayoutMode] =
+    useState<SelectedGamePreviewLayoutMode>('auto')
+  const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
+  const [selectedGamePreviewBundle, setSelectedGamePreviewBundle] =
+    useState<SelectedGamePreviewBundle | null>(null)
+  const [selectedGameActiveTab, setSelectedGameActiveTab] =
+    useState<SelectedGameTabId>('about')
+  const [headerConfigOverride, setHeaderConfigOverride] =
+    useState<SerializedUnifiedHeaderConfig | null>(null)
   const featuredShowcaseControlsRef = useRef<FeaturedShowcaseControls>(
     DEFAULT_FEATURED_SHOWCASE_CONTROLS
   )
@@ -681,6 +1437,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const homepageLayoutControlsRef = useRef<HomepageLayoutControlsData>(
     DEFAULT_HOMEPAGE_LAYOUT_CONTROLS
   )
+  const selectedGameLayoutControlsRef =
+    useRef<SelectedGameLayoutControls>({})
+  const selectedGameContentPlanRef =
+    useRef<SelectedGameContentPlan>(DEFAULT_SELECTED_GAME_CONTENT_PLAN)
+  const selectedGamePreviewSampleGameIdRef = useRef('claim')
+  const selectedGameDebugBoundsRef = useRef(false)
+  const selectedGamePreviewLayoutModeRef =
+    useRef<SelectedGamePreviewLayoutMode>('auto')
+  const headerConfigOverrideRef = useRef<SerializedUnifiedHeaderConfig | null>(null)
   const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
   const [homepageContentFrameWidth, setHomepageContentFrameWidth] = useState<number | null>(null)
   const [gamesCategoryExpanded, setGamesCategoryExpanded] = useState<
@@ -744,6 +1509,40 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   useEffect(() => {
     homepageLayoutControlsRef.current = homepageLayoutControls
   }, [homepageLayoutControls])
+
+  useEffect(() => {
+    selectedGameLayoutControlsRef.current = selectedGameLayoutControls
+  }, [selectedGameLayoutControls])
+
+  useEffect(() => {
+    selectedGameContentPlanRef.current = selectedGameContentPlan
+  }, [selectedGameContentPlan])
+
+  useEffect(() => {
+    selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
+  }, [selectedGamePreviewSampleGameId])
+
+  useEffect(() => {
+    if (isSelectedGameLayout && selectedGamePreviewSampleGameId && selectedGameId === null) {
+      const timeoutId = window.setTimeout(() => {
+        setSelectedGameId(selectedGamePreviewSampleGameId)
+      }, 0)
+      return () => window.clearTimeout(timeoutId)
+    }
+    return undefined
+  }, [isSelectedGameLayout, selectedGameId, selectedGamePreviewSampleGameId])
+
+  useEffect(() => {
+    selectedGameDebugBoundsRef.current = selectedGameDebugBounds
+  }, [selectedGameDebugBounds])
+
+  useEffect(() => {
+    selectedGamePreviewLayoutModeRef.current = selectedGamePreviewLayoutMode
+  }, [selectedGamePreviewLayoutMode])
+
+  useEffect(() => {
+    headerConfigOverrideRef.current = headerConfigOverride
+  }, [headerConfigOverride])
 
   useEffect(() => {
     const node = homepageContentFrameRef.current
@@ -931,6 +1730,70 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.close()
     }
   }, [setHomepageData])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<SelectedGameLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          layoutControls: selectedGameLayoutControlsRef.current,
+          contentPlan: selectedGameContentPlanRef.current,
+          previewSampleGameId: selectedGamePreviewSampleGameIdRef.current,
+          previewLayoutMode: selectedGamePreviewLayoutModeRef.current,
+          debugBounds: selectedGameDebugBoundsRef.current,
+        } satisfies SelectedGameLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        const nextSampleGameId = event.data.previewSampleGameId || 'claim'
+        setSelectedGameLayoutControls(event.data.layoutControls)
+        setSelectedGameContentPlan(event.data.contentPlan)
+        setSelectedGamePreviewSampleGameId(nextSampleGameId)
+        setSelectedGameId(nextSampleGameId || null)
+        setSelectedGameDebugBounds(event.data.debugBounds)
+        return
+      }
+
+      if (event.data.type === 'preview-layout-mode') {
+        setSelectedGamePreviewLayoutMode(event.data.previewLayoutMode)
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(HEADER_PROFILE_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<HeaderProfileControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          config: headerConfigOverrideRef.current,
+        } satisfies HeaderProfileControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state') {
+        setHeaderConfigOverride(event.data.config)
+        return
+      }
+
+      if (event.data.type === 'update') {
+        setHeaderConfigOverride(event.data.config)
+      }
+    }
+    channel.addEventListener('message', handler)
+    channel.postMessage({ type: 'request-state' } satisfies HeaderProfileControlsMessage)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
 
   useEffect(() => {
     let isCancelled = false
@@ -1174,7 +2037,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [activeTab])
 
   useEffect(() => {
-    if (activeTab !== 'games' || hasLoadedGames) return
+    if ((activeTab !== 'games' && !shouldLoadGamesForPageLayout) || hasLoadedGames) return
     const load = async () => {
       try {
         setIsLoadingGames(true)
@@ -1242,7 +2105,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       }
     }
     void load()
-  }, [activeTab, hasLoadedGames])
+  }, [activeTab, hasLoadedGames, shouldLoadGamesForPageLayout])
 
   useEffect(() => {
     if (activeTab !== 'images' || hasLoadedImages) return
@@ -1469,6 +2332,138 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     [gamesWithMetadata, selectedGameId]
   )
 
+  const selectedGameSampleOptions = useMemo(
+    () =>
+      [...gamesWithMetadata]
+        .map(item => ({
+          id:
+            item.home.gameId ??
+            item.entry.gameId ??
+            extractGameIdFromPath(item.path) ??
+            '',
+          label: item.home.name ?? item.entry.displayName ?? item.path,
+        }))
+        .filter(item => item.id)
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    [gamesWithMetadata]
+  )
+
+  useEffect(() => {
+    if (!isSelectedGameLayout) {
+      const timeoutId = window.setTimeout(() => setSelectedGamePreviewBundle(null), 0)
+      return () => window.clearTimeout(timeoutId)
+    }
+    let cancelled = false
+    const loadBundle = selectedGame?.path
+      ? loadSelectedGamePreviewBundle(selectedGame.path)
+      : loadSelectedGameTemplatePreviewBundle()
+    void loadBundle.then((bundle) => {
+      if (!cancelled) {
+        setSelectedGamePreviewBundle(bundle)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [isSelectedGameLayout, selectedGame])
+
+  const selectedGameFallbackBundle = useMemo(
+    () => buildSelectedGameFallbackBundle(selectedGame),
+    [selectedGame]
+  )
+  const selectedGameRenderBundle = selectedGamePreviewBundle ?? selectedGameFallbackBundle
+
+  const selectedGamePresentation = useMemo(() => {
+    if (!isSelectedGameLayout) {
+      return null
+    }
+    const layoutDocument = {
+      ...(pageLayoutData ?? {}),
+      layoutControls: selectedGameLayoutControls,
+      contentPlan: selectedGameContentPlan,
+    }
+    const fallbackBundle = selectedGameFallbackBundle
+    const bundle = selectedGameRenderBundle
+    return buildSelectedGamePresentation({
+      layout: { data: layoutDocument },
+      gameMode: bundle.gameMode ?? fallbackBundle.gameMode,
+      gameInfo: bundle.gameInfo ?? fallbackBundle.gameInfo,
+      rules: bundle.rules,
+      strategy: bundle.strategy,
+      scoring: bundle.scoring,
+      deckModel: bundle.deckModel,
+      deck: bundle.deck,
+      ranking: bundle.ranking,
+      mechanics: bundle.mechanics,
+      actions: bundle.actions,
+      validationFixtures: bundle.validationFixtures,
+      images: bundle.images,
+    })
+  }, [
+    isSelectedGameLayout,
+    pageLayoutData,
+    selectedGameContentPlan,
+    selectedGameFallbackBundle,
+    selectedGameLayoutControls,
+    selectedGameRenderBundle,
+  ])
+
+  useEffect(() => {
+    const hashes = collectSelectedGameImageHashesFromBundle(selectedGamePreviewBundle)
+    if (hashes.length > 0) {
+      prefetchHashes(hashes)
+    }
+  }, [prefetchHashes, selectedGamePreviewBundle])
+
+  const resolveSelectedGameVisualRefUrl = useCallback(
+    (ref: SelectedGamePresentationVisualRef) =>
+      ref.imageHash && isImageHash(ref.imageHash)
+        ? resolveImageUrl(ref.imageHash as ImageHash)
+        : null,
+    [resolveImageUrl]
+  )
+
+  const renderSelectedGameVisualContent = useCallback(({ tabId }: { tabId: SelectedGameTabId }) => {
+    if (!selectedGameRenderBundle) {
+      return null
+    }
+
+    const gameLabel = selectedGame?.home.name ?? selectedGameId ?? 'Template Game'
+    const deckVisualControls =
+      selectedGameLayoutControls.visuals?.deck as SelectedGameDeckVisualControls | undefined
+    const rankingVisualControls =
+      selectedGameLayoutControls.visuals?.ranking as SelectedGameRankingVisualControls | undefined
+
+    if (tabId === 'deck' && (selectedGameRenderBundle.deck || selectedGameRenderBundle.deckModel)) {
+      return (
+        <div className="asset-catalog-preview__selected-visual-preview asset-catalog-preview__selected-visual-preview--deck">
+          <DeckPreview
+            assetId={`${gameLabel} Deck`}
+            assetData={(selectedGameRenderBundle.deck ?? selectedGameRenderBundle.deckModel) as { data?: Record<string, unknown>; system?: Record<string, unknown> }}
+            compact
+            enableCardDetail
+            compactControls={deckVisualControls}
+          />
+        </div>
+      )
+    }
+
+    if (tabId === 'ranking' && selectedGameRenderBundle.ranking) {
+      return (
+        <div className="asset-catalog-preview__selected-visual-preview asset-catalog-preview__selected-visual-preview--ranking">
+          <CardRankingPreview
+            assetId={`${gameLabel} Ranking`}
+            assetData={selectedGameRenderBundle.ranking as { data?: Record<string, unknown> }}
+            compact
+            compactControls={rankingVisualControls}
+          />
+        </div>
+      )
+    }
+
+    return null
+  }, [selectedGame, selectedGameId, selectedGameLayoutControls, selectedGameRenderBundle])
+
   const rawJsonForTab = useMemo(() => {
     if (activeTab === 'homepage') {
       if (isPageLayoutMode && !isHomePageLayout) {
@@ -1509,14 +2504,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       }))
       return JSON.stringify({ games }, null, 2)
     }
-    if (activeTab === 'selected-game' && selectedGameId) {
+    if (activeTab === 'selected-game') {
       return JSON.stringify(
         {
-          gameId: selectedGameId,
-          exportPath: `games/${selectedGameId}/page.json`,
-          enginePath: `games/${selectedGameId}/engine.json`,
+          gameId: selectedGameId ?? null,
+          mode: selectedGameId ? 'game-sample' : 'template-placeholders',
+          exportPath: selectedGameId ? `games/${selectedGameId}/page.json` : null,
+          enginePath: selectedGameId ? `games/${selectedGameId}/engine.json` : null,
           guid: selectedGame?.entry.guid ?? null,
-          name: selectedGame?.home.name ?? null,
+          name: selectedGame?.home.name ?? 'Template Game',
         },
         null,
         2
@@ -1635,6 +2631,107 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     quality: g.home.quality ?? 'complete',
   }))
 
+  const gamesExplorerPreviewContent = (
+    <main className="asset-catalog-preview__real-page asset-catalog-preview__real-page--games">
+      <div className="asset-catalog-games-tab asset-catalog-games-tab--explorer asset-catalog-preview__games-page-layout">
+        <div className="asset-catalog-games-tab__top-bar">
+          <ExplorerContentBar
+            currentView={gamesView}
+            onViewChange={(v: 'grid' | 'list' | 'alphabet') =>
+              setGamesView(v === 'alphabet' ? 'grid' : v)
+            }
+            searchQuery={gamesSearch}
+            onSearchChange={setGamesSearch}
+            metadata={{ totalGames: gamesWithMetadata.length }}
+            categoryMapSize={
+              gamesCategoryCounts.filter(([k]) => k !== 'all').length
+            }
+            sortBy="name"
+            views={['grid', 'list']}
+          />
+        </div>
+        <div
+          className={`asset-catalog-games-tab__body ${gamesSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
+        >
+          <ExplorerSidebar
+            currentCategory={gamesCategory}
+            onCategoryChange={setGamesCategory}
+            categoryWithSubs={gamesCategoryWithSubs}
+            categoryExpanded={gamesCategoryExpanded}
+            onCategoryExpandToggle={toggleGamesCategoryExpanded}
+            isCollapsed={gamesSidebarCollapsed}
+            onToggleCollapse={() => setGamesSidebarCollapsed(v => !v)}
+          />
+          <div className="asset-catalog-games-tab__content">
+            <div className="asset-catalog-games-tab__games-area">
+              {isLoadingGames ? (
+                <div className="asset-catalog-preview__empty">
+                  Loading games...
+                </div>
+              ) : filteredGamesWithMeta.length === 0 ? (
+                <div className="asset-catalog-preview__empty">
+                  {gamesWithMetadata.length === 0
+                    ? 'No games available from the local catalog.'
+                    : 'No games match the current filters.'}
+                </div>
+              ) : gamesView === 'grid' ? (
+                <div className="cge-games-grid asset-catalog-games-tab__grid">
+                  {filteredGamesWithMeta.map(item => (
+                    <div
+                      key={item.entry.guid ?? item.path}
+                      className="asset-catalog-games-tab__card"
+                    >
+                      <GameCard
+                        game={toGamesExplorerGame(item)}
+                        onGameClick={() => handleGamesTabNavigate(item)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="cge-games-list asset-catalog-games-tab__list">
+                  <GameListRowHeader />
+                  {filteredGamesWithMeta.map(item => (
+                    <div
+                      key={item.entry.guid ?? item.path}
+                      className="asset-catalog-games-tab__list-row"
+                    >
+                      <GameListRow
+                        game={toGamesExplorerGame(item)}
+                        onGameClick={() => handleGamesTabNavigate(item)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+
+  const selectedGamePagePreviewContent = selectedGamePresentation ? (
+    <main className="asset-catalog-preview__real-page asset-catalog-preview__real-page--selected-game">
+      <SelectedGameShowcase
+        activeTabId={selectedGameActiveTab}
+        presentation={selectedGamePresentation}
+        layoutControls={selectedGameLayoutControls}
+        layoutMode={selectedGamePreviewLayoutMode}
+        designerMode={selectedGameDebugBounds}
+        fallbackArtUrl={SELECTED_GAME_PLACEHOLDER_ART_URL}
+        fallbackOverviewArtUrl={SELECTED_GAME_PLACEHOLDER_OVERVIEW_URL}
+        renderActiveVisualContent={renderSelectedGameVisualContent}
+        resolveVisualRefUrl={resolveSelectedGameVisualRefUrl}
+        showDesignerControls={false}
+        onActiveTabChange={setSelectedGameActiveTab}
+        onViewLobbies={() => undefined}
+      />
+    </main>
+  ) : (
+    <GenericPageLayoutContent document={pageLayoutData ?? {}} debugBounds={pageLayoutBoundsOverlay} />
+  )
+
   const tabs: { id: AssetCatalogTab; label: string; count?: number }[] = isPageLayoutMode
     ? []
     : [
@@ -1675,6 +2772,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenSelectedGameLayoutControls = () => {
+    void createPanelWindow(
+      'selected-game-layout-controls',
+      'Resources/Pages/SelectedGameLayout.asset',
+      'Selected Game Layout Controls',
+      true
+    )
+  }
+
   const catalogHeaderToolbar = (
     <div className="asset-catalog-preview__tabs-row asset-catalog-preview__tabs-row--header">
       <div className="asset-catalog-preview__tabs">
@@ -1702,7 +2808,71 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
+        {isPageLayoutMode && isHomePageLayout && (
+          <label className="asset-catalog-preview__bounds-toggle">
+            <input
+              type="checkbox"
+              checked={homepageLayoutControls.contentBoundsOverlay}
+              onChange={event => setHomepageLayoutControls(prev => ({
+                ...prev,
+                contentBoundsOverlay: event.target.checked,
+              }))}
+            />
+            Home Bounds
+          </label>
+        )}
+        {isSelectedGameLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenSelectedGameLayoutControls}
+          >
+            Edit
+          </button>
+        )}
+        {isSelectedGameLayout && (
+          <label className="asset-catalog-preview__bounds-toggle">
+            <input
+              type="checkbox"
+              checked={selectedGameDebugBounds}
+              onChange={event => setSelectedGameDebugBounds(event.target.checked)}
+            />
+            Bounds
+          </label>
+        )}
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && (
+          <label className="asset-catalog-preview__bounds-toggle">
+            <input
+              type="checkbox"
+              checked={pageLayoutBoundsOverlay}
+              onChange={event => setPageLayoutBoundsOverlay(event.target.checked)}
+            />
+            Page Bounds
+          </label>
+        )}
       </div>
+      {isSelectedGameLayout && (
+        <div className="asset-catalog-preview__games-mode">
+          <label htmlFor="asset-catalog-selected-game-sample">Sample</label>
+          <select
+            id="asset-catalog-selected-game-sample"
+            value={selectedGameId ?? ''}
+            onChange={e => {
+              const nextGameId = e.target.value || null
+              setSelectedGameId(nextGameId)
+              setSelectedGamePreviewSampleGameId(nextGameId ?? '')
+            }}
+            aria-label="Selected game preview sample"
+          >
+            <option value="">Template placeholders</option>
+            {selectedGameSampleOptions.map(game => (
+              <option key={game.id} value={game.id}>
+                {game.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       {activeTab === 'games' && (
         <div className="asset-catalog-preview__games-mode">
           <label htmlFor="asset-catalog-games-mode">Mode</label>
@@ -1777,146 +2947,63 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           {activeTab === 'homepage' && (
             <div className="asset-catalog-preview__tab-content asset-catalog-preview__homepage-layout">
               {isHomePageLayout ? (
-                <AssetCatalogMainAppPreviewShell routePath={pageLayoutData?.routePath ?? '/'}>
+                <AssetCatalogMainAppPreviewShell
+                  routePath={pageLayoutData?.routePath ?? '/'}
+                  headerConfigOverride={headerConfigOverride}
+                >
                   <div className="home-work-math">
-                    {ImageLoaders}
-                    <div className="scrollable-content-container">
-                      <div
-                        ref={homepageContentFrameRef}
-                        className={`home-content asset-catalog-preview__homepage-content-frame ${
-                          homepageLayoutControls.contentBoundsOverlay
-                            ? 'asset-catalog-preview__homepage-content-frame--bounds'
-                            : ''
-                        }`}
-                      >
-                        <section className="about-us-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-feature-banner">
-                          <FeatureBannerSection
-                            featureBannerItems={homepageData.featureBannerItems}
-                            resolveImageUrl={resolveImageUrl}
-                            controls={aboutShowcaseControls}
-                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                            allowDebugBounds
-                          />
-                        </section>
-                        <section className="featured-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-featured">
-                          <FeaturedGameShowcase
-                            featured={homepageData.featured}
-                            recommended={homepageData.recommended ?? []}
-                            isLoading={isLoadingHomepageCatalog}
-                            controls={featuredShowcaseControls}
-                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                            onLearnMore={handleGameClick}
-                            resolveImageUrl={resolveImageUrl}
-                            allowDebugBounds
-                          />
-                        </section>
-                        <section className="games-section asset-catalog-preview__homepage-section asset-catalog-preview__homepage-coming-soon">
-                          <ComingSoonShowcase
-                            comingSoon={homepageData.comingSoon}
-                            catalogMontageItems={homepageData.catalogMontageImages ?? []}
-                            availableNow={homepageData.availableNow}
-                            explorerGames={explorerGames}
-                            isLoading={
-                              isLoadingHomepageCatalog ||
-                              isLoadingHomepageComingSoon ||
-                              isLoadingHomepageFeatureBanner
-                            }
-                            onGameClick={handleGameClick}
-                            onExploreClick={() => handleTabChange('games')}
-                            resolveImageUrl={resolveImageUrl}
-                            showExploreTile
-                            controls={comingSoonShowcaseControls}
-                            previewLayoutMode={syncedHomepagePreviewLayoutMode}
-                            allowDebugBounds
-                          />
-                        </section>
-                        <div className="content-spacer" />
-                      </div>
-                    </div>
+                    <HomePageShowcaseContent
+                      contentRef={homepageContentFrameRef}
+                      imageLoaders={ImageLoaders}
+                      contentClassName={`asset-catalog-preview__homepage-content-frame ${
+                        homepageLayoutControls.contentBoundsOverlay
+                          ? 'asset-catalog-preview__homepage-content-frame--bounds'
+                          : ''
+                      }`}
+                      sectionClassName="asset-catalog-preview__homepage-section"
+                      aboutSectionClassName="asset-catalog-preview__homepage-feature-banner"
+                      featuredSectionClassName="asset-catalog-preview__homepage-featured"
+                      comingSoonSectionClassName="asset-catalog-preview__homepage-coming-soon"
+                      featureBannerItems={homepageData.featureBannerItems}
+                      featured={homepageData.featured}
+                      recommended={homepageData.recommended ?? []}
+                      comingSoon={homepageData.comingSoon}
+                      catalogMontageItems={homepageData.catalogMontageImages ?? []}
+                      availableNow={homepageData.availableNow}
+                      explorerGames={explorerGames}
+                      isFeaturedLoading={isLoadingHomepageCatalog}
+                      isComingSoonLoading={
+                        isLoadingHomepageCatalog ||
+                        isLoadingHomepageComingSoon ||
+                        isLoadingHomepageFeatureBanner
+                      }
+                      resolveImageUrl={resolveImageUrl}
+                      aboutControls={aboutShowcaseControls}
+                      featuredControls={featuredShowcaseControls}
+                      comingSoonControls={comingSoonShowcaseControls}
+                      previewLayoutMode={syncedHomepagePreviewLayoutMode}
+                      onLearnMore={handleGameClick}
+                      onGameClick={handleGameClick}
+                      onExploreClick={() => handleTabChange('games')}
+                      showExploreTile
+                      allowDebugBounds
+                    />
                   </div>
                 </AssetCatalogMainAppPreviewShell>
               ) : (
-                <PageLayoutMainAppPreview document={pageLayoutData ?? {}} />
+                <PageLayoutMainAppPreview
+                  document={pageLayoutData ?? {}}
+                  headerConfigOverride={headerConfigOverride}
+                  gamesExplorerContent={gamesExplorerPreviewContent}
+                  selectedGameContent={selectedGamePagePreviewContent}
+                  debugBounds={pageLayoutBoundsOverlay}
+                />
               )}
             </div>
           )}
 
           {activeTab === 'games' && (
-            <div className="asset-catalog-games-tab asset-catalog-games-tab--explorer">
-              <div className="asset-catalog-games-tab__top-bar">
-                <ExplorerContentBar
-                  currentView={gamesView}
-                  onViewChange={(v: 'grid' | 'list' | 'alphabet') =>
-                    setGamesView(v === 'alphabet' ? 'grid' : v)
-                  }
-                  searchQuery={gamesSearch}
-                  onSearchChange={setGamesSearch}
-                  metadata={{ totalGames: gamesWithMetadata.length }}
-                  categoryMapSize={
-                    gamesCategoryCounts.filter(([k]) => k !== 'all').length
-                  }
-                  sortBy="name"
-                  views={['grid', 'list']}
-                />
-              </div>
-              <div
-                className={`asset-catalog-games-tab__body ${gamesSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
-              >
-                <ExplorerSidebar
-                  currentCategory={gamesCategory}
-                  onCategoryChange={setGamesCategory}
-                  categoryWithSubs={gamesCategoryWithSubs}
-                  categoryExpanded={gamesCategoryExpanded}
-                  onCategoryExpandToggle={toggleGamesCategoryExpanded}
-                  isCollapsed={gamesSidebarCollapsed}
-                  onToggleCollapse={() => setGamesSidebarCollapsed(v => !v)}
-                />
-                <div className="asset-catalog-games-tab__content">
-                  <div className="asset-catalog-games-tab__games-area">
-                    {isLoadingGames ? (
-                      <div className="asset-catalog-preview__empty">
-                        Loading games...
-                      </div>
-                    ) : filteredGamesWithMeta.length === 0 ? (
-                      <div className="asset-catalog-preview__empty">
-                        {gamesWithMetadata.length === 0
-                          ? 'No games available from the local catalog.'
-                          : 'No games match the current filters.'}
-                      </div>
-                    ) : gamesView === 'grid' ? (
-                      <div className="cge-games-grid asset-catalog-games-tab__grid">
-                        {filteredGamesWithMeta.map(item => (
-                          <div
-                            key={item.entry.guid ?? item.path}
-                            className="asset-catalog-games-tab__card"
-                          >
-                            <GameCard
-                              game={toGamesExplorerGame(item)}
-                              onGameClick={() => handleGamesTabNavigate(item)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="cge-games-list asset-catalog-games-tab__list">
-                        <GameListRowHeader />
-                        {filteredGamesWithMeta.map(item => (
-                          <div
-                            key={item.entry.guid ?? item.path}
-                            className="asset-catalog-games-tab__list-row"
-                          >
-                            <GameListRow
-                              game={toGamesExplorerGame(item)}
-                              onGameClick={() => handleGamesTabNavigate(item)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            gamesExplorerPreviewContent
           )}
 
           {activeTab === 'selected-game' && (

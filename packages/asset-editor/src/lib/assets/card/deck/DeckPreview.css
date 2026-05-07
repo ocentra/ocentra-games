@@ -3,10 +3,37 @@
   overflow: auto;
 }
 
+.preview-panel__content--deck-compact {
+  position: relative;
+  padding: 0.45rem 0.55rem;
+  overflow: hidden;
+  container-type: inline-size;
+  --deck-preview-card-track-min: clamp(2.2rem, 7.1cqw, 2.9rem);
+  --deck-preview-card-width: clamp(2rem, 6.85cqw, 2.72rem);
+  --deck-preview-card-cell-min-height: clamp(3rem, 9.7cqw, 4.15rem);
+}
+
 .deck-preview {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.preview-panel__content--deck-compact .deck-preview {
+  gap: 0.35rem;
+}
+
+.preview-panel__content--deck-compact .deck-preview__piece-image {
+  width: var(--deck-preview-card-width);
+  max-width: 94%;
+  height: auto;
+  max-height: calc(var(--deck-preview-card-cell-min-height) - 0.25rem);
+  border-radius: 0.12rem;
+}
+
+.preview-panel__content--deck-compact .deck-preview__axis-image {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .deck-preview__header {
@@ -205,5 +232,71 @@
   line-height: 1.15;
   text-align: center;
   overflow-wrap: anywhere;
+}
+
+.deck-preview__card-detail {
+  position: absolute;
+  inset: 0.45rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(139, 215, 255, 0.42);
+  border-radius: 0.65rem;
+  background: rgba(2, 6, 23, 0.9);
+  box-shadow: 0 0 1.5rem rgba(56, 189, 248, 0.24);
+}
+
+.deck-preview__card-detail-panel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  max-width: min(12rem, 82%);
+  max-height: 92%;
+  padding: 0.65rem;
+}
+
+.deck-preview__card-detail-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 1px solid rgba(139, 215, 255, 0.44);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.94);
+  color: #e0f2fe;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.deck-preview__card-detail-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 7rem;
+  min-height: 9.8rem;
+}
+
+.deck-preview__card-detail-image {
+  display: block;
+  width: auto;
+  max-width: var(--deck-preview-detail-image-max-width, 8.4rem);
+  max-height: var(--deck-preview-detail-image-max-height, 11.8rem);
+  object-fit: contain;
+  border-radius: 0.45rem;
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.5);
+}
+
+.deck-preview__card-detail-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
 }
 

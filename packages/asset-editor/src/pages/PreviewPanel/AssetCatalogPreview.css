@@ -342,6 +342,60 @@
   scrollbar-gutter: auto;
 }
 
+.asset-catalog-preview__main-app-shell.oc-unified-shell--embedded .selected-game-shell-work {
+  position: relative;
+  min-height: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  scrollbar-gutter: auto;
+}
+
+.asset-catalog-preview__main-app-shell.selected-game-page {
+  --home-top-clearance: 0.5rem;
+}
+
+.asset-catalog-preview__main-app-shell.selected-game-page .scrollable-content-container {
+  padding-top: 0.5rem;
+}
+
+.selected-game-showcase__visual-slot .asset-catalog-preview__selected-visual-preview {
+  height: 100%;
+  min-height: 0;
+}
+
+.selected-game-showcase__visual-slot .preview-panel__content,
+.selected-game-showcase__visual-slot .preview-panel__content--deck {
+  background: transparent;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
+  padding: 0.75rem;
+}
+
+.selected-game-showcase__visual-slot .deck-preview,
+.selected-game-showcase__visual-slot .card-ranking-preview {
+  min-height: 100%;
+}
+
+.selected-game-showcase__visual-slot .card-ranking-preview {
+  padding: 0.75rem;
+}
+
+.selected-game-showcase__visual-slot .card-ranking-preview.card-ranking-preview--compact {
+  height: 100%;
+  min-height: 100%;
+  padding: 0.35rem 0.45rem;
+}
+
+.selected-game-showcase__visual-slot .deck-preview__title,
+.selected-game-showcase__visual-slot .card-ranking-preview__title {
+  font-size: 1rem;
+}
+
+.selected-game-showcase__visual-slot .card-ranking-preview--compact .card-ranking-preview__title {
+  font-size: clamp(0.82rem, 2.25cqw, 1.08rem);
+}
+
 .asset-catalog-preview__main-app-shell .home-work-math {
   position: relative;
   min-height: 100%;
@@ -451,6 +505,54 @@
   color: #e8f8ff;
 }
 
+.asset-catalog-preview__page-layout-stage--bounds {
+  position: relative;
+  outline: 2px dashed rgba(168, 85, 247, 0.95);
+  outline-offset: -2px;
+}
+
+.asset-catalog-preview__page-layout-stage--bounds::before,
+.asset-catalog-preview__page-bounds-work::before {
+  content: 'body';
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 60;
+  border: 1px solid rgba(250, 204, 21, 0.9);
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.88);
+  color: #facc15;
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0.3rem 0.45rem;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.asset-catalog-preview__page-layout-stage--bounds .asset-catalog-preview__page-layout-hero,
+.asset-catalog-preview__page-layout-stage--bounds .asset-catalog-preview__page-layout-slice {
+  outline: 2px dashed rgba(34, 211, 238, 0.85);
+  outline-offset: -3px;
+}
+
+.asset-catalog-preview__page-bounds-work {
+  position: relative;
+  outline: 2px dashed rgba(168, 85, 247, 0.95);
+  outline-offset: -2px;
+}
+
+.asset-catalog-preview__page-bounds-work::before {
+  content: 'page body';
+}
+
+.asset-catalog-preview__page-bounds-work > main,
+.asset-catalog-preview__page-bounds-work > section,
+.asset-catalog-preview__page-bounds-work > div {
+  outline: 2px dashed rgba(34, 211, 238, 0.75);
+  outline-offset: -3px;
+}
+
 .asset-catalog-preview__page-layout-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -522,6 +624,298 @@
 .asset-catalog-preview__page-layout-slice code {
   display: block;
   overflow-wrap: anywhere;
+}
+
+.asset-catalog-preview__real-page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(88rem, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: clamp(5.5rem, 12dvh, 8rem) 0 4rem;
+  color: #eaf9ff;
+}
+
+.asset-catalog-preview__real-page--selected-game {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: none;
+  min-height: 0;
+  padding: 0.35rem 0.5rem 0.25rem;
+  width: 100%;
+}
+
+.asset-catalog-preview__real-page--selected-game > .selected-game-showcase {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.asset-catalog-preview__real-page--games {
+  max-width: min(92rem, calc(100% - 1.5rem));
+  padding-top: clamp(4.75rem, 10dvh, 7rem);
+}
+
+.asset-catalog-preview__real-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  flex-wrap: wrap;
+}
+
+.asset-catalog-preview__bounds-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(103, 232, 249, 0.24);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.6);
+  color: #cffafe;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.4rem 0.65rem;
+}
+
+.asset-catalog-preview__bounds-toggle input {
+  margin: 0;
+}
+
+.asset-catalog-preview__real-toolbar button,
+.asset-catalog-preview__real-hero button,
+.asset-catalog-preview__real-card button {
+  border: 1px solid rgba(100, 216, 255, 0.55);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(19, 74, 110, 0.88), rgba(2, 11, 24, 0.9));
+  color: #eaf9ff;
+  font-weight: 800;
+  padding: 0.62rem 0.9rem;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 1rem rgba(71, 202, 255, 0.16);
+}
+
+.asset-catalog-preview__real-toolbar button.is-active {
+  border-color: rgba(255, 225, 135, 0.86);
+  color: #ffe187;
+  background: linear-gradient(180deg, rgba(88, 58, 8, 0.88), rgba(18, 12, 2, 0.94));
+}
+
+.asset-catalog-preview__wallet-pill,
+.asset-catalog-preview__real-hero-aside {
+  margin-left: auto;
+  border: 1px solid rgba(255, 225, 135, 0.48);
+  border-radius: 999px;
+  padding: 0.55rem 0.85rem;
+  color: #ffe187;
+  background: rgba(28, 19, 4, 0.72);
+  font-weight: 900;
+}
+
+.asset-catalog-preview__real-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: end;
+  margin-bottom: 1rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid rgba(100, 216, 255, 0.7);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(4, 19, 37, 0.88), rgba(7, 10, 32, 0.84)),
+    radial-gradient(circle at 22% 0%, rgba(100, 216, 255, 0.18), transparent 46%);
+  box-shadow: 0 0 2rem rgba(64, 201, 255, 0.16);
+}
+
+.asset-catalog-preview__real-hero span,
+.asset-catalog-preview__real-card-label {
+  display: block;
+  color: #72e6ff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.asset-catalog-preview__real-hero h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(2rem, 4vw, 4.25rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 0 0 1.1rem rgba(100, 216, 255, 0.76);
+}
+
+.asset-catalog-preview__real-hero p,
+.asset-catalog-preview__real-card p {
+  margin: 0.55rem 0 0;
+  color: rgba(234, 249, 255, 0.78);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.asset-catalog-preview__real-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.asset-catalog-preview__real-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.asset-catalog-preview__real-grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.asset-catalog-preview__real-grid--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.asset-catalog-preview__real-grid--social {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card:nth-child(1),
+.asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card:nth-child(5) {
+  grid-column: span 2;
+}
+
+.asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card:nth-child(2),
+.asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card:nth-child(3),
+.asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card:nth-child(4) {
+  grid-column: span 2;
+}
+
+.asset-catalog-preview__real-card {
+  min-width: 0;
+  border: 1px solid rgba(100, 216, 255, 0.44);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(1, 7, 17, 0.78);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.asset-catalog-preview__real-card--gold {
+  border-color: rgba(255, 225, 135, 0.6);
+}
+
+.asset-catalog-preview__real-card--green {
+  border-color: rgba(71, 242, 154, 0.5);
+}
+
+.asset-catalog-preview__real-card--purple {
+  border-color: rgba(186, 102, 255, 0.56);
+}
+
+.asset-catalog-preview__real-card h2 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.3rem, 2vw, 2rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.asset-catalog-preview__real-card button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.asset-catalog-preview__leaderboard-list {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.asset-catalog-preview__leaderboard-list div {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  border: 1px solid rgba(100, 216, 255, 0.22);
+  border-radius: 6px;
+  padding: 0.5rem 0.65rem;
+  background: rgba(14, 24, 48, 0.72);
+}
+
+.asset-catalog-preview__leaderboard-list strong {
+  color: #ffe187;
+}
+
+.asset-catalog-preview__leaderboard-list em {
+  color: #9dffc2;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.asset-catalog-preview__bracket {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.asset-catalog-preview__bracket span {
+  border: 1px solid rgba(186, 102, 255, 0.4);
+  border-radius: 6px;
+  padding: 0.7rem;
+  text-align: center;
+  background: rgba(36, 14, 58, 0.55);
+  font-weight: 800;
+}
+
+.asset-catalog-preview__admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.asset-catalog-preview__admin-stats div {
+  border: 1px solid rgba(100, 216, 255, 0.44);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(1, 7, 17, 0.78);
+}
+
+.asset-catalog-preview__admin-stats strong {
+  display: block;
+  color: #ffe187;
+  font-size: 2rem;
+}
+
+.asset-catalog-preview__admin-stats span {
+  color: rgba(234, 249, 255, 0.72);
+  font-weight: 800;
+}
+
+.asset-catalog-preview__games-page-layout {
+  height: min(42rem, calc(100dvh - 12rem));
+  min-height: 30rem;
+}
+
+@media (max-width: 900px) {
+  .asset-catalog-preview__real-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .asset-catalog-preview__wallet-pill,
+  .asset-catalog-preview__real-hero-aside {
+    margin-left: 0;
+    width: max-content;
+  }
+
+  .asset-catalog-preview__real-grid--two,
+  .asset-catalog-preview__real-grid--three,
+  .asset-catalog-preview__real-grid--four,
+  .asset-catalog-preview__real-grid--social {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .asset-catalog-preview__real-grid--social .asset-catalog-preview__real-card {
+    grid-column: auto !important;
+  }
+
+  .asset-catalog-preview__admin-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .asset-catalog-preview--raw {

@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-02
+**Last Updated:** 2026-05-07
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -70,6 +70,8 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 ### Dev: shared backend and separate Tauri apps
 - **Shared dev backend:** One Cloudflare worker (port 8787); main app or editor can start it; the other reuses it. Same for Turbo (skip if recently run).
 - **Two Tauri apps:** Main app binary **ocentraplatform** (platforms/desktop/tauri), editor **ocentraeditor** (packages/asset-editor/src-tauri). They do not depend on each other; each is built and run from its own directory with its own `CARGO_TARGET_DIR`.
+- **Asset editor Tauri launchers:** `npm --prefix packages/asset-editor run dev:tauri` is the direct launcher backed by `scripts/dev/dev-editor-tauri.ts`; it kills stale `ocentraeditor` processes and uses `packages/asset-editor/src-tauri/target-editor` as its dedicated Cargo target dir. `npm run dev:editor:tauri` is the simpler root shortcut that currently runs plain `cargo tauri dev` from `packages/asset-editor`.
+- **Interactive editor launcher:** `npm --prefix packages/asset-editor run dev` uses `scripts/dev/dev-editor-interactive.ts` when you need preset/local-vs-production backend selection, optional `.temp/dev-editor-output.log`, or `--force` Vite cache clearing before launch.
 
 ### Domain Build Standard (No .js in Source)
 - **Never** add `.js` to relative or path-alias imports in domain source (e.g. `from './foo'` not `from './foo.js'`)
@@ -85,6 +87,16 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - The local pilot runtime is currently ready for **Claim** only; treat other card-game local-pilot paths as not ready unless the asset/runtime explicitly says otherwise.
 - When debugging the local Claim play route, run the exact screen test first: `cmd /c npm exec -- vitest run src\ui\pages\games\CardGamePlay\GameScreenPage.test.tsx`, then rerun broader validation only after that warning/failure is clean.
 - After changing shared layout types in `packages/game-ui-types`, rebuild shared deps first (`npm run dev:prep:editor` or `npm run dev:prep:main`) before trusting downstream type-check failures.
+
+### Page Layout Assets
+- Site page-shell/layout work is now asset-backed with `PageLayout` assets under `packages/asset-editor/Resources/Pages/*`.
+- In the asset editor, use the dedicated `Pages` resource tab for this workflow; it filters to the `Pages` root and `PageLayout` assets instead of the full resource tree.
+- For homepage/page-layout tuning, prefer the standalone page/homepage layout control panels and save from there so the editor does the local write plus targeted R2 sync.
+- Selected-game page tuning now uses `packages/asset-editor/Resources/Pages/SelectedGameLayout.asset`; adjust its standalone selected-game layout controls (`layoutControls` / `contentPlan`) there, then use Save + Sync for the local write plus targeted R2 sync flow.
+
+### Shared Main-App Page Surfaces
+- Main-app home/showcase and app-page body surfaces are now shared out of `packages/core-ui` (`AppPages/*`, `Common/HomePage/*`, `Common/SelectedGameShowcase/*`).
+- When changing homepage, selected-game, shop, social, player-hub, settings, competition, or admin page bodies, prefer editing the shared `@ocentra/core-ui` surface first instead of rebuilding page-local markup.
 
 ---
 
@@ -196,6 +208,9 @@ npm run dev:prep:worker  # Prebuild shared workspace deps for Cloudflare worker
 npm run dev:compare      # Shared web stack + desktop/mobile compare targets
 npm run dev:editor:stack # Asset editor with shared backend/dev stack
 npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
+npm run dev:editor:tauri # Root shortcut: plain cargo tauri dev from packages/asset-editor
+npm --prefix packages/asset-editor run dev:tauri # Direct editor Tauri launcher (stale-process cleanup, dedicated target dir)
+npm --prefix packages/asset-editor run dev # Interactive asset-editor launcher (backend/output presets, optional log/profile)
 npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
 npm run dev:seed:assets:force # Force re-upload during local asset seeding
@@ -203,6 +218,7 @@ npm run build            # Production build
 npm test                 # Unit tests
 npm run test:editor      # Asset-editor package tests
 npm run test:e2e         # E2E tests
+npm run test:e2e:editor:full # Full editor E2E stack (seed local assets, worker on 8787, editor on 5175)
 npm run test:editor:prod-smoke # Prod-like asset-editor smoke test
 npm run lint             # ESLint + type check
 npm run validate:main    # Main-app focused lint + type-check
@@ -248,6 +264,8 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 
 - **Validation is noisy or blocked by unrelated tooling**: Prefer targeted checks before repo-wide commands. Typical order in this repo: file-level eslint via `cmd /c npx eslint ...`, package-level validation such as `cmd /c npm --prefix packages/core-ui run lint:exec`, then broader gates like `cmd /c npm run lint`.
 
+- **Shared page-surface work needs a fast validation loop**: For `packages/core-ui` home/showcase or app-page surface edits, start with `cmd /c npm --prefix packages/core-ui run lint:exec`, then `cmd /c npm run validate:main`.
+
 - **Card-game asset work needs validation without dragging the whole repo first**: Start with the package-level tests that match the asset contract you changed, then run the root gate. Current proven path: `cmd /c npm --prefix packages/asset-editor run test -- src/adapters/assets/createGameModeBundle.test.ts`, `cmd /c npm --prefix packages/game-asset-domain run test -- src/game/gameMechanics/MechanicsTranslator.test.ts src/schemas/asset/card-game-mechanics-data.schema.test.ts`, then `cmd /c npm run lint`.
 
 - **`logs:main` / `logs:vite` says the DB is missing or stale**: Rebuild from NDJSON first with `npm run logs:db:rebuild -- --scope main`, `npm run logs:db:rebuild -- --scope vite`, or `npm run logs:db:rebuild -- --scope all`, then retry the query. For ad hoc filtering, use `npm run logs:query -- search "<term>" --scope main --format json`.
@@ -261,7 +279,7 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 
 - **EBUSY/EPERM on `workerd` or `@cloudflare/workerd-windows-64`**: Another process is locking those files (e.g. `wrangler dev`, IDE, antivirus). Close wrangler and any terminal using it, then retry. If it persists, run the install from an elevated shell or after a reboot.
 
-- **Tauri Google sign-in fails with `client_secret is missing`**: Use a **Desktop app** OAuth client, not a Web client. 1) In Google Cloud Console create OAuth client ID → Desktop app. 2) Add redirect URI `http://127.0.0.1:8766`. 3) Put the downloaded `client_secret_*.json` in repo root. 4) Run `npm run env:from-google-json`. Then run `npm run dev:tauri`.
+- **Tauri Google sign-in fails with `client_secret is missing`**: Use a **Desktop app** OAuth client, not a Web client. 1) In Google Cloud Console create OAuth client ID → Desktop app. 2) Add redirect URI `http://127.0.0.1:8765`. 3) Put the downloaded `client_secret_*.json` in `packages/asset-editor`. 4) From `packages/asset-editor`, run `npm run env:from-google-json`. 5) Then run `npm run dev:tauri` there, or from repo root `npm --prefix packages/asset-editor run dev:tauri`.
 
 ---
 

@@ -17,6 +17,60 @@ export interface GameDetailAssetContent {
   summary: GameDetailAssetSummary | null;
 }
 
+export interface SelectedGameAssetBundle {
+  layout: LooseRecord | null;
+  gameMode: LooseRecord | null;
+  gameInfo: LooseRecord | null;
+  rules: LooseRecord | null;
+  strategy: LooseRecord | null;
+  scoring: LooseRecord | null;
+  deckModel: LooseRecord | null;
+  deck: LooseRecord | null;
+  ranking: LooseRecord | null;
+  mechanics: LooseRecord | null;
+  actions: LooseRecord | null;
+  validationFixtures: LooseRecord | null;
+  images: LooseRecord | null;
+}
+
+export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<SelectedGameAssetBundle> {
+  const resources = await getEntryIndexResourceEntries();
+  const gameDocument = await loadRawAssetDocumentByGuid(gameGuid);
+  const gameData = dataOf(gameDocument);
+  const infoDocument = await loadAssetDocumentFromRef(gameData.gameInfoAsset, resources);
+  const rulesDocument = await loadAssetDocumentFromRef(gameData.gameRulesAsset, resources);
+  const scoringDocument = await loadAssetDocumentFromRef(gameData.scoringAsset, resources);
+  const strategyDocument = await loadAssetDocumentFromRef(gameData.strategyAsset, resources);
+  const mechanicsDocument = await loadAssetDocumentFromRef(gameData.mechanicsAsset, resources);
+  const deckDocument = await loadAssetDocumentFromRef(gameData.deckAsset, resources);
+  const imagesDocument = await loadAssetDocumentFromRef(gameData.carouselImagesAsset, resources);
+  const rankingDocument = await loadAssetDocumentFromRef(gameData.rankingAsset, resources)
+    ?? await loadAssetDocumentFromRef(dataOf(scoringDocument).rankingAsset, resources);
+  const infoData = dataOf(infoDocument);
+  const linkedAssets = asRecord(asRecord(infoData.mechanicsContract).linkedAssetKeys);
+  const gameTreePath = asText(asRecord(asRecord(gameDocument).system).treePath);
+  const validationDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.validationFixtures), resources);
+  const deckModelDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.deckModel), resources);
+  const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources);
+  const layoutDocument = await loadAssetDocumentByPath('Resources/Pages/SelectedGameLayout.asset', resources, 'PageLayout');
+
+  return {
+    layout: layoutDocument,
+    gameMode: gameDocument,
+    gameInfo: infoDocument,
+    rules: rulesDocument,
+    strategy: strategyDocument,
+    scoring: scoringDocument,
+    deckModel: deckModelDocument,
+    deck: deckDocument,
+    ranking: rankingDocument,
+    mechanics: mechanicsDocument,
+    actions: actionSetDocument,
+    validationFixtures: validationDocument,
+    images: imagesDocument,
+  };
+}
+
 export async function loadGameDetailAssetContent(
   gameGuid: string,
   fallbackSections: PageSection[],
@@ -88,6 +142,15 @@ function normalizePath(path: string): string {
 async function loadAssetDocumentFromRef(ref: unknown, resources: Array<{ guid?: string; path?: string; assetType?: string }>): Promise<LooseRecord | null> {
   const refRecord = asRecord(ref);
   const guid = asText(refRecord.guid) || findGuidByPath(resources, asText(refRecord.path), asText(refRecord.assetType));
+  return guid ? await loadRawAssetDocumentByGuid(guid) : null;
+}
+
+async function loadAssetDocumentByPath(
+  path: string,
+  resources: Array<{ guid?: string; path?: string; assetType?: string }>,
+  assetType = '',
+): Promise<LooseRecord | null> {
+  const guid = findGuidByPath(resources, path, assetType);
   return guid ? await loadRawAssetDocumentByGuid(guid) : null;
 }
 

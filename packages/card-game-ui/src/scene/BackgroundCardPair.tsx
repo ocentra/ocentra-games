@@ -1,8 +1,12 @@
 import React from 'react';
+import { SuitCard, SuitIcon } from '@ocentra/core-ui/Common/SuitArt/SuitArt';
+import type { Suit } from '@ocentra/core-ui/Common/SuitArt/SuitArtPrimitives';
 
 interface BackgroundCardPairProps {
   id: string;
   label: string;
+  suit: Suit;
+  artKind: 'card' | 'icon';
   left: string;
   top: string;
   width: string;
@@ -15,13 +19,13 @@ interface BackgroundCardPairProps {
   floatDelay: string;
   floatRotate: string;
   floatScale: number;
-  filledImage: string;
-  hollowImage: string;
 }
 
 const BackgroundCardPair: React.FC<BackgroundCardPairProps> = ({
   id,
   label,
+  suit,
+  artKind,
   left,
   top,
   width,
@@ -34,8 +38,6 @@ const BackgroundCardPair: React.FC<BackgroundCardPairProps> = ({
   floatDelay,
   floatRotate,
   floatScale,
-  filledImage,
-  hollowImage,
 }) => {
   const pairStyle: React.CSSProperties = {
     left,
@@ -61,18 +63,63 @@ const BackgroundCardPair: React.FC<BackgroundCardPairProps> = ({
     >
       {frosted ? <div className="game-background__pair-glass" aria-hidden="true" /> : null}
       <div className="game-background__pair-content">
-        <img
+        <BackgroundSuitArt
           className="game-background__pair-card game-background__pair-card--filled"
-          src={filledImage}
-          alt=""
+          suit={suit}
+          artKind={artKind}
+          variant="filled"
         />
-        <img
+        <BackgroundSuitArt
           className="game-background__pair-card game-background__pair-card--hollow"
-          src={hollowImage}
-          alt=""
+          suit={suit}
+          artKind={artKind}
+          variant="hollow"
         />
       </div>
     </div>
+  );
+};
+
+const BackgroundSuitArt: React.FC<{
+  className: string;
+  suit: Suit;
+  artKind: 'card' | 'icon';
+  variant: 'filled' | 'hollow';
+}> = ({ className, suit, artKind, variant }) => {
+  if (artKind === 'card') {
+    return (
+      <SuitCard
+        className={className}
+        suit={suit}
+        variant={variant}
+        cardWidth={160}
+        cardHeight={250}
+        cardFillOpacity={0.16}
+        cardStrokeWidth={2.2}
+        cardInnerStrokeWidth={0.9}
+        showRings
+        ringMode="circle"
+        ringFit="viewport"
+        ringOpacity={0.14}
+        ringStroke={0.6}
+        title=""
+      />
+    );
+  }
+
+  return (
+    <SuitIcon
+      className={className}
+      suit={suit}
+      variant={variant}
+      size={256}
+      showRings
+      ringMode="circle"
+      ringFit="viewport"
+      ringOpacity={0.2}
+      ringStroke={0.7}
+      title=""
+    />
   );
 };
 

@@ -6,6 +6,7 @@ import { AppScreenToken } from '@/ui/navigation/appRoutes'
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader'
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
+import { SettingsPageContent, SettingsPageToolbar } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces'
 import { APP_VERSION } from '@/constants/version'
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps'
 import { ModelSelectionTab } from './tabs/ModelSelectionTab'
@@ -54,55 +55,25 @@ export function SettingsPage() {
         />
       }
       toolbar={
-        <div className="settings-toolbar">
-          <button
-            className={`settings-tab ${activeTab === 'models' ? 'active' : ''}`}
-            onClick={() => setActiveTab('models')}
-          >
-            Models
-          </button>
-          <button
-            className={`settings-tab ${activeTab === 'inference' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inference')}
-          >
-            Inference
-          </button>
-          <button
-            className={`settings-tab ${activeTab === 'providers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('providers')}
-          >
-            Providers
-          </button>
-          <button
-            className={`settings-tab ${activeTab === 'native' ? 'active' : ''}`}
-            onClick={() => setActiveTab('native')}
-          >
-            Native
-          </button>
-          {showAssetsTab && (
-            <button
-              className={`settings-tab ${activeTab === 'assets' ? 'active' : ''}`}
-              onClick={() => setActiveTab('assets')}
-            >
-              Assets
-            </button>
-          )}
-        </div>
+        <SettingsPageToolbar
+          activeTab={activeTab}
+          showAssetsTab={showAssetsTab}
+          onTabChange={setActiveTab}
+        />
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      <main className="settings-page__work">
-        <section className="settings-content">
-          {activeTab === 'models' && <ModelSelectionTab />}
-          {activeTab === 'inference' && <InferenceSettingsTab />}
-          {activeTab === 'providers' && <ProviderConfigTab />}
-          {activeTab === 'native' && <NativeIntegrationTab />}
-          {activeTab === 'assets' && showAssetsTab && <AssetDeliveryTab />}
-        </section>
-        <div className="settings-footer">
+      <SettingsPageContent
+        footer={
           <DesktopCheckForUpdates />
-        </div>
-      </main>
+        }
+      >
+        {activeTab === 'models' && <ModelSelectionTab />}
+        {activeTab === 'inference' && <InferenceSettingsTab />}
+        {activeTab === 'providers' && <ProviderConfigTab />}
+        {activeTab === 'native' && <NativeIntegrationTab />}
+        {activeTab === 'assets' && showAssetsTab && <AssetDeliveryTab />}
+      </SettingsPageContent>
     </UnifiedPageShell>
   )
 }

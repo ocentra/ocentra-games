@@ -2,6 +2,11 @@ import 'reflect-metadata';
 import { serializable, serializableClass } from '@ocentra/asset-domain/serialization/decorators';
 import { AssetTypeCategory } from '@ocentra/asset-domain/constants/assets';
 import { Layout, type LayoutStructure } from '@/ui/layout/Layout';
+import {
+  DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+  type SelectedGameContentPlan,
+  type SelectedGameLayoutControls,
+} from '@/ui/selectedGame/SelectedGamePresentation';
 
 export type PageLayoutKind =
   | 'home'
@@ -15,6 +20,7 @@ export type PageLayoutKind =
   | 'settings'
   | 'lobby'
   | 'matchmaking'
+  | 'selected-game'
   | 'generic';
 
 export type PageLayoutSliceType =
@@ -23,6 +29,7 @@ export type PageLayoutSliceType =
   | 'coming-soon'
   | 'available-now'
   | 'catalog-montage'
+  | 'selected-game'
   | 'custom';
 
 export interface PageLayoutSlice {
@@ -42,6 +49,16 @@ export interface PageLayoutDocument {
   kind: PageLayoutKind;
   slices: PageLayoutSlice[];
   layout: LayoutStructure;
+  layoutControls?: SelectedGameLayoutControls;
+  contentPlan?: SelectedGameContentPlan;
+  preview?: {
+    sampleGameRef?: {
+      gameId: string;
+      guid: string;
+      path: string;
+    };
+    debugBounds?: boolean;
+  };
 }
 
 const DEFAULT_PAGE_LAYOUT_DOCUMENT: PageLayoutDocument = {
@@ -57,7 +74,7 @@ const DEFAULT_PAGE_LAYOUT_DOCUMENT: PageLayoutDocument = {
       order: 10,
       title: 'About Us',
       sourceAssetPath: 'Resources/Content/Home/FeatureBanner.asset',
-      controlsAssetPath: 'Resources/Pages/Home/HomePageLayout.asset#about',
+      controlsAssetPath: 'Resources/Pages/HomePageLayout.asset#about',
     },
     {
       id: 'featured-games',
@@ -66,7 +83,7 @@ const DEFAULT_PAGE_LAYOUT_DOCUMENT: PageLayoutDocument = {
       order: 20,
       title: 'Featured Games',
       sourceAssetPath: 'Resources/GameCatalog/index/home.json',
-      controlsAssetPath: 'Resources/Pages/Home/HomePageLayout.asset#featured',
+      controlsAssetPath: 'Resources/Pages/HomePageLayout.asset#featured',
     },
     {
       id: 'coming-soon',
@@ -74,8 +91,8 @@ const DEFAULT_PAGE_LAYOUT_DOCUMENT: PageLayoutDocument = {
       enabled: true,
       order: 30,
       title: 'Coming Soon',
-      sourceAssetPath: 'Resources/Pages/Home/ComingSoon.asset',
-      controlsAssetPath: 'Resources/Pages/Home/HomePageLayout.asset#coming-soon',
+      sourceAssetPath: 'Resources/Pages/ComingSoon.asset',
+      controlsAssetPath: 'Resources/Pages/HomePageLayout.asset#coming-soon',
     },
   ],
   layout: {
@@ -124,4 +141,13 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Layout' })
   override layout: LayoutStructure = cloneDefaultPageLayoutDocument().layout;
+
+  @serializable({ label: 'Layout Controls' })
+  layoutControls: SelectedGameLayoutControls = {};
+
+  @serializable({ label: 'Content Plan' })
+  contentPlan: SelectedGameContentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;
+
+  @serializable({ label: 'Preview' })
+  preview: PageLayoutDocument['preview'] = undefined;
 }

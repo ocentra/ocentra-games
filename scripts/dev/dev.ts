@@ -149,6 +149,10 @@ function clearViteOptimizeCache(): void {
   }
 }
 
+function shouldClearViteOptimizeCache(): boolean {
+  return process.env.VITE_FORCE === 'true' || process.env.FORCE === 'true';
+}
+
 // ============================================================================
 // Port Management Functions
 // ============================================================================
@@ -598,7 +602,9 @@ async function main() {
   }
   stageLog('Starting main Vite bootstrap');
   try {
-    clearViteOptimizeCache();
+    if (shouldClearViteOptimizeCache()) {
+      clearViteOptimizeCache();
+    }
 
     if (clearLogDatabase()) {
       console.log('🧹 Cleared Log.db\n');

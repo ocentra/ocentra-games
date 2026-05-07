@@ -438,7 +438,12 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   } = useEditorState();
   const [savedLayout] = useState(() => loadSavedLayout());
   const dockRef = useRef<DockLayout | null>(null);
+  const assetPathRef = useRef(assetPath);
   const [isPanelDragOutActive, setIsPanelDragOutActive] = useState(false);
+
+  useEffect(() => {
+    assetPathRef.current = assetPath;
+  }, [assetPath]);
 
   const getCurrentSnapshot = useCallback((): LockedAssetSnapshot | null => {
     if (!assetPath || !assetData) {
@@ -545,7 +550,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     const activeTab = panel.activeId
       ? (panel.tabs.find(t => t.id === panel.activeId) as WorkspaceTabData | undefined)
       : undefined
-    const effectivePath = activeTab?.lockedSnapshot?.assetPath ?? assetPath ?? 'virtual:AssetCatalog'
+    const effectivePath = activeTab?.lockedSnapshot?.assetPath ?? assetPathRef.current ?? 'virtual:AssetCatalog'
     const title = activeTab?.lockedSnapshot?.assetLabel ?? effectivePath.split('/').pop() ?? effectivePath
     const locked = Boolean(activeTab?.lockedSnapshot)
     const shouldRemove = activeTab && panel.tabs.length > 1
@@ -554,7 +559,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
         if (shouldRemove) context.dockMove(activeTab!, null, 'remove')
       })
       .catch(() => {})
-  }, [assetPath])
+  }, [])
 
   const groups = useMemo<Record<string, TabGroup>>(() => ({
     resources: {
@@ -825,7 +830,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
         const out = lastX < 0 || lastY < 0 || lastX > window.innerWidth || lastY > window.innerHeight
         if (out && activeTab && (activeTab.panelKind === 'preview' || activeTab.panelKind === 'inspector') && dockRef.current) {
           const kind = activeTab.panelKind
-          const effectivePath = activeTab.lockedSnapshot?.assetPath ?? assetPath ?? 'virtual:AssetCatalog'
+          const effectivePath = activeTab.lockedSnapshot?.assetPath ?? assetPathRef.current ?? 'virtual:AssetCatalog'
           const title = activeTab.lockedSnapshot?.assetLabel ?? effectivePath.split('/').pop() ?? effectivePath
           const locked = Boolean(activeTab.lockedSnapshot)
           const shouldRemove = panelTabCount > 1
@@ -838,7 +843,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     }
     addDragStateListener(onDragState)
     return () => { (dragOutRef as { _cleanup?: () => void })._cleanup?.(); removeDragStateListener(onDragState) }
-  }, [assetPath])
+  }, [])
 
   useEffect(() => {
     const fallbackNode = fallbackDropRef.current;
@@ -869,7 +874,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
           const activeTab = tab ?? (panel?.activeId && panel?.tabs ? panel.tabs.find((t) => t.id === panel!.activeId) : panel?.tabs?.[0]) as WorkspaceTabData | undefined
           const kind = activeTab?.panelKind
           if (kind !== 'preview' && kind !== 'inspector' || !activeTab) return false
-          const effectivePath = activeTab.lockedSnapshot?.assetPath ?? assetPath ?? 'virtual:AssetCatalog'
+          const effectivePath = activeTab.lockedSnapshot?.assetPath ?? assetPathRef.current ?? 'virtual:AssetCatalog'
           const title = activeTab.lockedSnapshot?.assetLabel ?? effectivePath.split('/').pop() ?? effectivePath
           const locked = Boolean(activeTab.lockedSnapshot)
           const shouldRemove = (panel?.tabs?.length ?? 0) > 1
@@ -883,7 +888,7 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
     }
     addHandlers(fallbackNode, handler)
     return () => { removeHandlers(fallbackNode) }
-  }, [assetPath])
+  }, [])
 
 
   const hideInspector = isInspectableAssetSelection(assetPath ?? null, assetData) === false

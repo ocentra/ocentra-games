@@ -64,10 +64,11 @@ import {
 import { HomeShowcaseFrameControlsPanel } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrameControls';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import type {
-  CenterLogoRenderArgs,
+  SerializedUnifiedHeaderConfig,
+  UnifiedHeaderConfig,
   UnifiedHeaderConfigInput,
 } from '@ocentra/core-ui/Header/UnifiedHeader.config';
-import { mlogoImageUrl } from '@ocentra/app-assets/commons';
+import { parseSerializedUnifiedHeaderConfig } from '@ocentra/core-ui/Header/UnifiedHeader.config';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   serializeHomeShowcaseFrameControls,
@@ -75,6 +76,14 @@ import {
   type HomeShowcasePreviewLayoutMode,
 } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types';
 import type { HomepageLayoutControlsData } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
+import {
+  DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS,
+  DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+  DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS,
+  type SelectedGameContentPlan,
+  type SelectedGameLayoutControls,
+  type SelectedGameTabId,
+} from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import {
   FEATURED_SHOWCASE_CONTROLS_CHANNEL,
   type FeaturedShowcaseControlsMessage,
@@ -99,11 +108,27 @@ import {
   type HomepageLayoutControlsMessage,
 } from '@/utils/homepageLayoutControlsChannel';
 import {
+  HEADER_PROFILE_CONTROLS_CHANNEL,
+  type HeaderProfileControlsMessage,
+} from '@/utils/headerProfileControlsChannel';
+import {
   DEFAULT_HOMEPAGE_LAYOUT_CONTROLS,
   loadHomepageLayoutControlsFromDisk,
   normalizeHomepageLayoutControls,
   saveHomepageLayoutControlsToDisk,
 } from '@/utils/homepageLayoutControlsPersistence';
+import {
+  SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL,
+  type SelectedGameLayoutControlsMessage,
+  type SelectedGamePreviewLayoutMode,
+} from '@/utils/selectedGameLayoutControlsChannel';
+import {
+  loadSelectedGameLayoutFromDisk,
+  normalizeSelectedGameLayoutConfig,
+  saveSelectedGameLayoutToDisk,
+  SELECTED_GAME_LAYOUT_ASSET_PATH,
+  type SelectedGameLayoutConfig,
+} from '@/utils/selectedGameLayoutPersistence';
 import './StandalonePanelPage.css';
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -117,7 +142,8 @@ type StandalonePanel =
   | 'preview-canvas'
   | 'isolation'
   | 'featured-showcase-controls'
-  | 'homepage-layout-controls';
+  | 'homepage-layout-controls'
+  | 'selected-game-layout-controls';
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -1020,97 +1046,97 @@ const StandaloneFeaturedShowcaseControls: React.FC = () => (
   </div>
 );
 
-function HeaderProfileControlsPanel() {
-  const headerConfig = useMemo<UnifiedHeaderConfigInput>(() => ({
-    center: {
-      modeA: {
-        logo: {
-          size: 44,
-          renderer: ({
-            cx,
-            cy,
-            size,
-            aspectCorrection,
-            strokeWidth,
-            innerOpacity,
-            color,
-          }: CenterLogoRenderArgs) => {
-            const logoH = size;
-            const logoW = logoH * aspectCorrection;
-            const outerRadius = size / 2;
-            const innerRadius = Math.max(
-              1,
-              outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5
-            );
-            return (
-              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={outerRadius}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  opacity={0.95}
-                  vectorEffect="non-scaling-stroke"
-                />
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={innerRadius}
-                  fill={color}
-                  opacity={innerOpacity}
-                />
-                <image
-                  href={mlogoImageUrl}
-                  x={cx - logoW / 2}
-                  y={cy - logoH / 2}
-                  width={logoW}
-                  height={logoH}
-                  preserveAspectRatio="xMidYMid meet"
-                />
-              </g>
-            );
-          },
-        },
-      },
+function serializeHeaderConfigForPreview(config: UnifiedHeaderConfig): SerializedUnifiedHeaderConfig {
+  const serializedCandidate: UnifiedHeaderConfigInput = {
+    ...config,
+    left: {
+      ...config.left,
+      onClick: undefined,
+      customRenderer: undefined,
     },
     right: {
-      isProfile: true,
-      isButton: true,
-      user: {
-        name: 'ocentra ai',
-        isLoggedIn: true,
-        isAdmin: true,
+      ...config.right,
+      user: undefined,
+      isProfile: undefined,
+      onClick: undefined,
+      onLogout: undefined,
+      onUpgradeGuestClick: undefined,
+      onAdminDashboardClick: undefined,
+      onViewProfileClick: undefined,
+      onSettingsClick: undefined,
+      onSecurityClick: undefined,
+      onUpdatePhoto: undefined,
+      getAvatars: undefined,
+      customRenderer: undefined,
+    },
+    center: {
+      ...config.center,
+      customRenderer: undefined,
+      modeA: {
+        ...config.center.modeA,
+        logo: {
+          ...config.center.modeA.logo,
+          renderer: undefined,
+        },
+      },
+      modeB: {
+        ...config.center.modeB,
+        logo: typeof config.center.modeB.logo === 'string' ? config.center.modeB.logo : undefined,
+        icons: config.center.modeB.icons?.filter((icon): icon is string => typeof icon === 'string'),
+        leftIcons: config.center.modeB.leftIcons?.filter((icon): icon is string => typeof icon === 'string'),
+        rightIcons: config.center.modeB.rightIcons?.filter((icon): icon is string => typeof icon === 'string'),
       },
     },
-  }), []);
+  };
+
+  return parseSerializedUnifiedHeaderConfig(
+    JSON.parse(JSON.stringify(serializedCandidate))
+  );
+}
+
+function HeaderProfileControlsPanel() {
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const latestConfigRef = useRef<SerializedUnifiedHeaderConfig | null>(null);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(HEADER_PROFILE_CONTROLS_CHANNEL);
+    const handleMessage = (event: MessageEvent<HeaderProfileControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          config: latestConfigRef.current,
+        } satisfies HeaderProfileControlsMessage);
+      }
+    };
+    channelRef.current = channel;
+    channel.addEventListener('message', handleMessage);
+    return () => {
+      channel.removeEventListener('message', handleMessage);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, []);
+
+  const handleResolvedConfigChange = useCallback((config: UnifiedHeaderConfig) => {
+    const serializedConfig = serializeHeaderConfigForPreview(config);
+    latestConfigRef.current = serializedConfig;
+    channelRef.current?.postMessage({
+      type: 'update',
+      config: serializedConfig,
+    } satisfies HeaderProfileControlsMessage);
+  }, []);
 
   return (
     <div style={{ display: 'grid', gap: '1rem' }}>
-      <div
-        style={{
-          border: '1px solid rgba(103, 232, 249, 0.28)',
-          borderRadius: '0.75rem',
-          background: 'rgba(2, 6, 23, 0.72)',
-          minHeight: '8rem',
-          overflow: 'visible',
-        }}
-      >
-        <MemoryRouter initialEntries={['/']}>
-          <UnifiedHeader
-            config={headerConfig}
-            profileName="main_screen"
-            includeAdminNavigation
-            placement="contained"
-            showDebugControls
-            defaultShowDebugControlsOpen
-          />
-        </MemoryRouter>
-      </div>
-      <div style={{ color: '#bae6fd', fontSize: '0.8rem' }}>
-        Header profiles are edited here. Use the profile controls inside this panel to load and save page-matched header profiles.
-      </div>
+      <MemoryRouter initialEntries={['/']}>
+        <UnifiedHeader
+          profileName="main_screen"
+          includeAdminNavigation
+          placement="contained"
+          debugControlsOnly
+          onResolvedConfigChange={handleResolvedConfigChange}
+        />
+      </MemoryRouter>
     </div>
   );
 }
@@ -1667,6 +1693,862 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
   );
 };
 
+type SelectedGameLayoutControlTab =
+  | 'header'
+  | 'layout'
+  | 'sideA'
+  | 'sideB'
+  | 'tabs'
+  | 'quickStrip'
+  | 'tip'
+  | 'action'
+  | 'visuals'
+  | 'contentPlan';
+
+const selectedGameControlTabs: { id: SelectedGameLayoutControlTab; label: string }[] = [
+  { id: 'header', label: 'Header' },
+  { id: 'layout', label: 'Layout / SVG' },
+  { id: 'sideA', label: 'Side A' },
+  { id: 'sideB', label: 'Side B' },
+  { id: 'tabs', label: 'Tabs' },
+  { id: 'quickStrip', label: 'Quick Strip' },
+  { id: 'tip', label: 'Tip' },
+  { id: 'action', label: 'Action' },
+  { id: 'visuals', label: 'Visuals' },
+  { id: 'contentPlan', label: 'Content Plan' },
+];
+
+type SelectedGameNumberControl = {
+  path: string;
+  label: string;
+  min: number;
+  max: number;
+  step?: number;
+  defaultValue?: number;
+  section?: string;
+};
+
+const selectedGameNumberControls: Record<SelectedGameLayoutControlTab, SelectedGameNumberControl[]> = {
+  header: [],
+  layout: [
+    { path: 'canvas.pad', label: 'Canvas Pad', min: 0, max: 64, step: 1 },
+    { path: 'canvas.svgBgOpacity', label: 'SVG Background Opacity', min: 0, max: 1, step: 0.05 },
+    { path: 'body.leftWidth', label: 'Side A Width', min: 260, max: 820, step: 5 },
+    { path: 'body.aRatio', label: 'A/B Ratio', min: 0.18, max: 0.48, step: 0.01 },
+    { path: 'body.rowGap', label: 'Body Gap', min: 0, max: 60, step: 1 },
+  ],
+  sideA: [
+    { path: 'sideA.logoY', label: 'Logo Y', min: 0, max: 180, step: 1 },
+    { path: 'sideA.logoFont', label: 'Logo Font', min: 28, max: 96, step: 1 },
+    { path: 'sideA.taglineFont', label: 'Tagline Font', min: 12, max: 36, step: 1 },
+    { path: 'sideA.statsY', label: 'Stats Y', min: 80, max: 280, step: 1 },
+    { path: 'sideA.artY', label: 'Media Y', min: 160, max: 420, step: 1 },
+    { path: 'sideA.artBottomPad', label: 'Media Bottom Pad', min: 120, max: 420, step: 1 },
+  ],
+  sideB: [
+    { path: 'overview.titleFont', label: 'Title Font', min: 14, max: 42, step: 1 },
+    { path: 'overview.bodyFont', label: 'Body Font', min: 10, max: 28, step: 1 },
+    { path: 'overview.lineGap', label: 'Line Gap', min: 16, max: 48, step: 1 },
+    { path: 'overview.paraGap', label: 'Paragraph Gap', min: 24, max: 80, step: 1 },
+    { path: 'howTo.height', label: 'Chunk Frame Height', min: 180, max: 380, step: 5 },
+    { path: 'howTo.yOffset', label: 'How To Y Offset', min: -80, max: 80, step: 1 },
+    { path: 'howTo.topGap', label: 'How To Top Gap', min: 0, max: 48, step: 1 },
+    { path: 'howTo.stepsPerPage', label: 'Steps Per Page', min: 1, max: 5, step: 1 },
+    { path: 'howTo.pagerArrowWidth', label: 'Pager Arrow Width', min: 18, max: 72, step: 1 },
+    { path: 'howTo.pagerArrowHeight', label: 'Pager Arrow Height', min: 24, max: 80, step: 1 },
+    { path: 'howTo.pagerSideInset', label: 'Pager Side Inset', min: 0, max: 32, step: 1 },
+  ],
+  tabs: [
+    { path: 'tabGroup.y', label: 'Tab Y', min: 0, max: 120, step: 1 },
+    { path: 'tabGroup.tabW', label: 'Tab Width', min: 90, max: 240, step: 1 },
+    { path: 'tabGroup.tabH', label: 'Tab Height', min: 32, max: 80, step: 1 },
+    { path: 'tabGroup.tabGap', label: 'Tab Gap', min: 0, max: 28, step: 1 },
+    { path: 'tabGroup.fontSize', label: 'Tab Font', min: 10, max: 28, step: 1 },
+  ],
+  quickStrip: [
+    { path: 'strip.topGap', label: 'Top Gap', min: 0, max: 48, step: 1 },
+    { path: 'strip.insetX', label: 'Inset X', min: 0, max: 80, step: 1 },
+    { path: 'strip.height', label: 'Height', min: 96, max: 280, step: 2 },
+    { path: 'strip.cardGap', label: 'Card Gap', min: 4, max: 32, step: 1 },
+    { path: 'strip.cardMinWidth', label: 'Card Min Width', min: 100, max: 240, step: 5 },
+    { path: 'strip.cardMaxWidth', label: 'Card Max Width', min: 180, max: 420, step: 5 },
+  ],
+  tip: [
+    { path: 'tip.height', label: 'Height', min: 40, max: 140, step: 1 },
+    { path: 'tip.sideInset', label: 'Side Inset', min: 120, max: 520, step: 5 },
+    { path: 'tip.textFont', label: 'Text Font', min: 10, max: 28, step: 1 },
+  ],
+  action: [
+    { path: 'button.edgeOffsetY', label: 'Rail Edge Y Offset', min: -90, max: 90, step: 1 },
+    { path: 'button.railHeight', label: 'Rail Height', min: 40, max: 180, step: 1 },
+    { path: 'button.railInsetX', label: 'Rail Side Inset', min: 0, max: 560, step: 5 },
+    { path: 'button.width', label: 'Button Width', min: 180, max: 520, step: 5 },
+    { path: 'button.height', label: 'Button Height', min: 40, max: 96, step: 1 },
+    { path: 'button.fontSize', label: 'Font Size', min: 14, max: 36, step: 1 },
+  ],
+  visuals: [
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.cardTrackMin',
+      label: 'Card Track Min',
+      min: 28,
+      max: 92,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.cardTrackMin,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.cardWidth',
+      label: 'Card Width',
+      min: 24,
+      max: 84,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.cardWidth,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.cardCellMinHeight',
+      label: 'Card Cell Height',
+      min: 34,
+      max: 120,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.cardCellMinHeight,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.axisColumnWidth',
+      label: 'Suit Column Width',
+      min: 20,
+      max: 70,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.axisColumnWidth,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.matrixGap',
+      label: 'Deck Matrix Gap',
+      min: 0,
+      max: 18,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.matrixGap,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.rowGap',
+      label: 'Deck Row Gap',
+      min: 0,
+      max: 18,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.rowGap,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.axisGlyphSize',
+      label: 'Suit Glyph Size',
+      min: 10,
+      max: 34,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.axisGlyphSize,
+    },
+    {
+      section: 'Deck Preview',
+      path: 'visuals.deck.axisImageSize',
+      label: 'Suit Image Size',
+      min: 10,
+      max: 34,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.axisImageSize,
+    },
+    {
+      section: 'Deck Detail Popup',
+      path: 'visuals.deck.detailImageMaxWidth',
+      label: 'Popup Image Max Width',
+      min: 80,
+      max: 260,
+      step: 2,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.detailImageMaxWidth,
+    },
+    {
+      section: 'Deck Detail Popup',
+      path: 'visuals.deck.detailImageMaxHeight',
+      label: 'Popup Image Max Height',
+      min: 110,
+      max: 360,
+      step: 2,
+      defaultValue: DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS.detailImageMaxHeight,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconGap',
+      label: 'Icon Card Gap',
+      min: 0,
+      max: 18,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconGap,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconGlyphSize',
+      label: 'Icon Glyph Box',
+      min: 14,
+      max: 42,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconGlyphSize,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconGlyphFont',
+      label: 'Icon Glyph Font',
+      min: 10,
+      max: 30,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconGlyphFont,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconLabelFont',
+      label: 'Icon Label Font',
+      min: 8,
+      max: 22,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconLabelFont,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconPadY',
+      label: 'Icon Pad Y',
+      min: 1,
+      max: 16,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconPadY,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconPadX',
+      label: 'Icon Pad X',
+      min: 2,
+      max: 22,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconPadX,
+    },
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.suitIconRadius',
+      label: 'Icon Radius',
+      min: 0,
+      max: 18,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.suitIconRadius,
+    },
+    {
+      section: 'Ranking Summary',
+      path: 'visuals.ranking.summaryGap',
+      label: 'Summary Gap',
+      min: 0,
+      max: 18,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.summaryGap,
+    },
+    {
+      section: 'Ranking Summary',
+      path: 'visuals.ranking.summaryLabelFont',
+      label: 'Summary Label Font',
+      min: 8,
+      max: 22,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.summaryLabelFont,
+    },
+    {
+      section: 'Ranking Summary',
+      path: 'visuals.ranking.summaryValueFont',
+      label: 'Summary Value Font',
+      min: 9,
+      max: 28,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.summaryValueFont,
+    },
+    {
+      section: 'Ranking Summary',
+      path: 'visuals.ranking.summaryPadY',
+      label: 'Summary Pad Y',
+      min: 1,
+      max: 16,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.summaryPadY,
+    },
+    {
+      section: 'Ranking Summary',
+      path: 'visuals.ranking.summaryPadX',
+      label: 'Summary Pad X',
+      min: 2,
+      max: 22,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.summaryPadX,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixRowHeight',
+      label: 'Matrix Row Height',
+      min: 24,
+      max: 72,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixRowHeight,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixRankColumnWidth',
+      label: 'Rank Column Width',
+      min: 42,
+      max: 120,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixRankColumnWidth,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixCellFont',
+      label: 'Matrix Cell Font',
+      min: 9,
+      max: 30,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixCellFont,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixHeaderFont',
+      label: 'Matrix Header Font',
+      min: 10,
+      max: 34,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixHeaderFont,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixCellPadY',
+      label: 'Matrix Pad Y',
+      min: 0,
+      max: 14,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixCellPadY,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixCellPadX',
+      label: 'Matrix Pad X',
+      min: 0,
+      max: 20,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixCellPadX,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixRadius',
+      label: 'Matrix Radius',
+      min: 0,
+      max: 20,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixRadius,
+    },
+    {
+      section: 'Ranking Matrix',
+      path: 'visuals.ranking.matrixScrollbarSize',
+      label: 'Scrollbar Size',
+      min: 4,
+      max: 16,
+      step: 1,
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixScrollbarSize,
+    },
+  ],
+  contentPlan: [],
+};
+
+function getNestedNumber(
+  value: SelectedGameLayoutControls,
+  path: string,
+  fallback = 0
+): number {
+  const entry = path.split('.').reduce<unknown>((current, part) => (
+    current && typeof current === 'object'
+      ? (current as Record<string, unknown>)[part]
+      : undefined
+  ), value);
+  return typeof entry === 'number' && Number.isFinite(entry) ? entry : fallback;
+}
+
+function getNestedBoolean(
+  value: SelectedGameLayoutControls,
+  path: string,
+  fallback = false
+): boolean {
+  const entry = path.split('.').reduce<unknown>((current, part) => (
+    current && typeof current === 'object'
+      ? (current as Record<string, unknown>)[part]
+      : undefined
+  ), value);
+  return typeof entry === 'boolean' ? entry : fallback;
+}
+
+function setNestedControlValue(
+  controls: SelectedGameLayoutControls,
+  path: string,
+  value: number | boolean
+): SelectedGameLayoutControls {
+  const next = JSON.parse(JSON.stringify(controls)) as Record<string, unknown>;
+  const parts = path.split('.');
+  let cursor = next;
+  parts.slice(0, -1).forEach((part) => {
+    const existing = cursor[part];
+    if (!existing || typeof existing !== 'object' || Array.isArray(existing)) {
+      cursor[part] = {};
+    }
+    cursor = cursor[part] as Record<string, unknown>;
+  });
+  cursor[parts[parts.length - 1] ?? path] = value;
+  return next;
+}
+
+const selectedGamePanelStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: '1rem',
+  padding: '1rem',
+};
+
+const selectedGamePanelGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 1fr))',
+  gap: '0.75rem',
+};
+
+const selectedGamePanelCardStyle: React.CSSProperties = {
+  border: '1px solid rgba(103, 232, 249, 0.22)',
+  borderRadius: '0.75rem',
+  background: 'rgba(2, 6, 23, 0.72)',
+  padding: '0.85rem',
+};
+
+const selectedGamePanelInputStyle: React.CSSProperties = {
+  width: '100%',
+  border: '1px solid rgba(103, 232, 249, 0.32)',
+  borderRadius: '0.45rem',
+  background: 'rgba(2, 6, 23, 0.8)',
+  color: '#e0f2fe',
+  padding: '0.5rem',
+};
+
+const selectedGameToolbarInputStyle: React.CSSProperties = {
+  width: '7.5rem',
+  border: '1px solid rgba(103, 232, 249, 0.32)',
+  borderRadius: '0.45rem',
+  background: 'rgba(2, 6, 23, 0.8)',
+  color: '#e0f2fe',
+  padding: '0.38rem 0.55rem',
+};
+
+const selectedGameToolbarFieldStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '0.45rem',
+  color: '#cffafe',
+  fontSize: '0.75rem',
+  fontWeight: 800,
+};
+
+const selectedGameTabOrder: SelectedGameTabId[] = [
+  'about',
+  'rules',
+  'deck',
+  'ranking',
+  'scoring',
+  'strategy',
+  'systems',
+];
+
+const StandaloneSelectedGameLayoutControls: React.FC = () => {
+  const [tab, setTab] = useState<SelectedGameLayoutControlTab>('layout');
+  const [layoutControls, setLayoutControls] = useState<SelectedGameLayoutControls>({});
+  const [contentPlan, setContentPlan] =
+    useState<SelectedGameContentPlan>(DEFAULT_SELECTED_GAME_CONTENT_PLAN);
+  const [previewSampleGameId, setPreviewSampleGameId] = useState('claim');
+  const [previewLayoutMode, setPreviewLayoutMode] =
+    useState<SelectedGamePreviewLayoutMode>('auto');
+  const [debugBounds, setDebugBounds] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  const config = useMemo<SelectedGameLayoutConfig>(() => ({
+    layoutControls,
+    contentPlan,
+    previewSampleGameId,
+    debugBounds,
+  }), [contentPlan, debugBounds, layoutControls, previewSampleGameId]);
+
+  const copyValue = useMemo(() => JSON.stringify(config, null, 2), [config]);
+  const isCopyCurrent = copiedValue === copyValue;
+
+  const broadcastUpdate = useCallback((nextConfig: SelectedGameLayoutConfig) => {
+    channelRef.current?.postMessage({
+      type: 'update',
+      layoutControls: nextConfig.layoutControls,
+      contentPlan: nextConfig.contentPlan,
+      previewSampleGameId: nextConfig.previewSampleGameId,
+      debugBounds: nextConfig.debugBounds,
+    } satisfies SelectedGameLayoutControlsMessage);
+  }, []);
+
+  const applyConfig = useCallback((nextConfig: SelectedGameLayoutConfig) => {
+    setLayoutControls(nextConfig.layoutControls);
+    setContentPlan(nextConfig.contentPlan);
+    setPreviewSampleGameId(nextConfig.previewSampleGameId);
+    setDebugBounds(nextConfig.debugBounds);
+    broadcastUpdate(nextConfig);
+  }, [broadcastUpdate]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadSelectedGameLayoutFromDisk().then(({ config: loadedConfig }) => {
+      if (!cancelled) {
+        applyConfig(loadedConfig);
+      }
+    }).catch((error) => {
+      if (!cancelled) {
+        setStatus(error instanceof Error ? error.message : 'Failed to load selected-game layout');
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [applyConfig]);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<SelectedGameLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          layoutControls,
+          contentPlan,
+          previewSampleGameId,
+          previewLayoutMode,
+          debugBounds,
+        } satisfies SelectedGameLayoutControlsMessage);
+        return;
+      }
+      if (event.data.type === 'state') {
+        setLayoutControls(event.data.layoutControls);
+        setContentPlan(event.data.contentPlan);
+        setPreviewSampleGameId(event.data.previewSampleGameId);
+        setPreviewLayoutMode(event.data.previewLayoutMode);
+        setDebugBounds(event.data.debugBounds);
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies SelectedGameLayoutControlsMessage);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [contentPlan, debugBounds, layoutControls, previewLayoutMode, previewSampleGameId]);
+
+  const updateLayoutControl = useCallback((path: string, value: number | boolean) => {
+    setLayoutControls((previous) => {
+      const nextControls = setNestedControlValue(previous, path, value);
+      broadcastUpdate({ ...config, layoutControls: nextControls });
+      return nextControls;
+    });
+  }, [broadcastUpdate, config]);
+
+  const updateContentPlanTab = useCallback((
+    tabId: SelectedGameTabId,
+    patch: Partial<SelectedGameContentPlan['tabs'][number]>
+  ) => {
+    setContentPlan((previous) => {
+      const nextPlan = {
+        tabs: selectedGameTabOrder.map((id) => {
+          const existing =
+            previous.tabs.find((item) => item.id === id) ??
+            DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.find((item) => item.id === id)!;
+          return existing.id === tabId ? { ...existing, ...patch } : existing;
+        }),
+      };
+      broadcastUpdate({ ...config, contentPlan: nextPlan });
+      return nextPlan;
+    });
+  }, [broadcastUpdate, config]);
+
+  const updatePreviewSample = useCallback((value: string) => {
+    setPreviewSampleGameId(value);
+    broadcastUpdate({ ...config, previewSampleGameId: value });
+  }, [broadcastUpdate, config]);
+
+  const updateDebugBounds = useCallback((value: boolean) => {
+    setDebugBounds(value);
+    broadcastUpdate({ ...config, debugBounds: value });
+  }, [broadcastUpdate, config]);
+
+  const handlePreviewLayoutModeChange = useCallback((mode: SelectedGamePreviewLayoutMode) => {
+    setPreviewLayoutMode(mode);
+    channelRef.current?.postMessage({
+      type: 'preview-layout-mode',
+      previewLayoutMode: mode,
+    } satisfies SelectedGameLayoutControlsMessage);
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    await copyTextToClipboard(copyValue);
+    setCopiedValue(copyValue);
+  }, [copyValue]);
+
+  const handleSave = useCallback(async () => {
+    if (isSaving) {
+      return;
+    }
+    setIsSaving(true);
+    setStatus('Saving...');
+    try {
+      const savedDocument = await saveSelectedGameLayoutToDisk(config);
+      const savedConfig = normalizeSelectedGameLayoutConfig(savedDocument);
+      applyConfig(savedConfig);
+      const syncResult = await syncSavedLayoutAssetToR2(SELECTED_GAME_LAYOUT_ASSET_PATH);
+      setStatus(syncResult.message);
+    } catch (error) {
+      logError('[StandaloneSelectedGameLayoutControls] save failed', error);
+      setStatus(error instanceof Error ? error.message : 'Save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [applyConfig, config, isSaving]);
+
+  const handleResetBlock = useCallback(() => {
+    if (tab === 'contentPlan') {
+      applyConfig({ ...config, contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN });
+      return;
+    }
+    if (tab !== 'header') {
+      const groups = tab === 'quickStrip'
+        ? ['strip']
+        : tab === 'action'
+          ? ['button']
+          : tab === 'sideB'
+            ? ['overview', 'howTo']
+            : [tab];
+      const nextControls = { ...layoutControls };
+      groups.forEach((group) => delete (nextControls as Record<string, unknown>)[group]);
+      applyConfig({ ...config, layoutControls: nextControls });
+    }
+  }, [applyConfig, config, layoutControls, tab]);
+
+  const handleResetAll = useCallback(() => {
+    applyConfig({
+      layoutControls: {},
+      contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN,
+      previewSampleGameId: 'claim',
+      debugBounds: false,
+    });
+    handlePreviewLayoutModeChange('auto');
+  }, [applyConfig, handlePreviewLayoutModeChange]);
+
+  const previewModes: { id: SelectedGamePreviewLayoutMode; label: string }[] = [
+    { id: 'auto', label: 'Auto' },
+    { id: 'wide', label: 'Wide' },
+    { id: 'narrow', label: 'Narrow' },
+  ];
+
+  const numberControls = selectedGameNumberControls[tab];
+
+  return (
+    <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
+      <div style={selectedGamePanelStyle}>
+        <div style={standaloneHomepageToolbarStyle}>
+          {selectedGameControlTabs.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              style={tab === item.id ? standaloneHomepageActiveTabButtonStyle : standaloneHomepageTabButtonStyle}
+              onClick={() => setTab(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <label style={selectedGameToolbarFieldStyle}>
+            Sample
+            <input
+              type="text"
+              value={previewSampleGameId}
+              style={selectedGameToolbarInputStyle}
+              onChange={(event) => updatePreviewSample(event.target.value)}
+            />
+          </label>
+          <label style={standaloneHomepageToggleLabelStyle}>
+            <input
+              type="checkbox"
+              checked={debugBounds}
+              onChange={(event) => updateDebugBounds(event.target.checked)}
+            />
+            Bounds
+          </label>
+          <div style={standaloneHomepageSegmentedControlStyle}>
+            {previewModes.map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                style={previewLayoutMode === mode.id ? standaloneHomepageActiveTabButtonStyle : standaloneHomepageTabButtonStyle}
+                onClick={() => handlePreviewLayoutModeChange(mode.id)}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+          <span style={standaloneHomepageToolbarSpacerStyle} />
+          <button type="button" style={standaloneHomepageToolbarButtonStyle} onClick={handleResetBlock}>
+            Reset Block
+          </button>
+          <button
+            type="button"
+            style={isCopyCurrent ? standaloneHomepageSavedButtonStyle : standaloneHomepageToolbarButtonStyle}
+            onClick={() => void handleCopy()}
+          >
+            {isCopyCurrent ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageSavedButtonStyle}
+            disabled={isSaving}
+            onClick={() => void handleSave()}
+          >
+            {isSaving ? 'Saving...' : 'Save + Sync'}
+          </button>
+          <button type="button" style={standaloneHomepageDangerButtonStyle} onClick={handleResetAll}>
+            Reset All
+          </button>
+        </div>
+        {status ? (
+          <div style={{ color: '#bbf7d0', fontSize: '0.75rem' }}>
+            {status}
+          </div>
+        ) : null}
+        {tab === 'header' ? (
+          <HeaderProfileControlsPanel />
+        ) : null}
+        {numberControls.length > 0 ? (
+          <div style={selectedGamePanelGridStyle}>
+            {numberControls.flatMap((field, index) => {
+              const value = getNestedNumber(layoutControls, field.path, field.defaultValue);
+              const showSection = Boolean(field.section && field.section !== numberControls[index - 1]?.section);
+              return [
+                showSection ? (
+                  <div
+                    key={`${field.section}-heading`}
+                    style={{
+                      gridColumn: '1 / -1',
+                      color: '#67e8f9',
+                      fontSize: '0.78rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {field.section}
+                  </div>
+                ) : null,
+                <label key={field.path} style={selectedGamePanelCardStyle}>
+                  <span style={{ display: 'block', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
+                    {field.label}
+                  </span>
+                  <input
+                    type="range"
+                    min={field.min}
+                    max={field.max}
+                    step={field.step ?? 1}
+                    value={value}
+                    onChange={(event) => updateLayoutControl(field.path, Number(event.target.value))}
+                  />
+                  <input
+                    type="number"
+                    min={field.min}
+                    max={field.max}
+                    step={field.step ?? 1}
+                    value={value}
+                    style={selectedGamePanelInputStyle}
+                    onChange={(event) => updateLayoutControl(field.path, Number(event.target.value))}
+                  />
+                </label>,
+              ];
+            })}
+          </div>
+        ) : null}
+        {tab === 'layout' ? (
+          <label style={standaloneHomepageToggleLabelStyle}>
+            <input
+              type="checkbox"
+              checked={Boolean((layoutControls.canvas as { whitePreviewBg?: boolean } | undefined)?.whitePreviewBg)}
+              onChange={(event) => updateLayoutControl('canvas.whitePreviewBg', event.target.checked)}
+            />
+            White Preview Background
+          </label>
+        ) : null}
+        {tab === 'visuals' ? (
+          <label style={standaloneHomepageToggleLabelStyle}>
+            <input
+              type="checkbox"
+              checked={getNestedBoolean(
+                layoutControls,
+                'visuals.ranking.showSuitIcons',
+                DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.showSuitIcons
+              )}
+              onChange={(event) => updateLayoutControl('visuals.ranking.showSuitIcons', event.target.checked)}
+            />
+            Show Ranking Suit Icon Row
+          </label>
+        ) : null}
+        {tab === 'contentPlan' ? (
+          <div style={selectedGamePanelGridStyle}>
+            {selectedGameTabOrder.map((id) => {
+              const planTab =
+                contentPlan.tabs.find((item) => item.id === id) ??
+                DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.find((item) => item.id === id)!;
+              return (
+                <div key={id} style={selectedGamePanelCardStyle}>
+                  <label style={standaloneHomepageToggleLabelStyle}>
+                    <input
+                      type="checkbox"
+                      checked={planTab.enabled}
+                      onChange={(event) => updateContentPlanTab(id, { enabled: event.target.checked })}
+                    />
+                    {id}
+                  </label>
+                  <input
+                    type="text"
+                    value={planTab.label}
+                    style={selectedGamePanelInputStyle}
+                    onChange={(event) => updateContentPlanTab(id, { label: event.target.value })}
+                  />
+                  <input
+                    type="text"
+                    value={planTab.source}
+                    style={selectedGamePanelInputStyle}
+                    onChange={(event) => updateContentPlanTab(id, { source: event.target.value })}
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    max={8}
+                    value={planTab.maxChunks}
+                    style={selectedGamePanelInputStyle}
+                    onChange={(event) => updateContentPlanTab(id, { maxChunks: Number(event.target.value) })}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
 export const StandalonePanelPage: React.FC = () => {
   const [params, setParams] = useState<{
     panel: StandalonePanel;
@@ -1691,7 +2573,8 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'preview-canvas' ||
         panel === 'isolation' ||
         panel === 'featured-showcase-controls' ||
-        panel === 'homepage-layout-controls'
+        panel === 'homepage-layout-controls' ||
+        panel === 'selected-game-layout-controls'
       )
     ) {
       return { panel, assetPath, locked, hideTools, reflectionOnly };
@@ -1721,7 +2604,8 @@ export const StandalonePanelPage: React.FC = () => {
     params !== null &&
     params.panel !== 'isolation' &&
     params.panel !== 'featured-showcase-controls' &&
-    params.panel !== 'homepage-layout-controls';
+    params.panel !== 'homepage-layout-controls' &&
+    params.panel !== 'selected-game-layout-controls';
   const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(
     shouldLoadStandaloneAsset ? params.assetPath : null
   );
@@ -1768,6 +2652,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'homepage-layout-controls') {
     return <StandaloneHomepageLayoutControls />;
+  }
+
+  if (params.panel === 'selected-game-layout-controls') {
+    return <StandaloneSelectedGameLayoutControls />;
   }
 
   return (

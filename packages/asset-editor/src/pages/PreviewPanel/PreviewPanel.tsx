@@ -36,6 +36,7 @@ const PREVIEW_ASSET_TYPE = {
   mahjongDeck: assetTypeMap.MahjongDeck.assetType,
   card: assetTypeMap.Card.assetType,
   cardRanking: assetTypeMap.CardRanking.assetType,
+  deckRanking: assetTypeMap.DeckRanking.assetType,
   gameInfo: assetTypeMap.GameInfo.assetType,
   imageList: assetTypeMap.ImageList.assetType,
   imageCarousel: assetTypeMap.ImageCarousel.assetType,
@@ -49,6 +50,11 @@ const DECK_PREVIEW_ASSET_TYPES = new Set<string>([
   PREVIEW_ASSET_TYPE.dominoDeck,
   PREVIEW_ASSET_TYPE.hanafudaDeck,
   PREVIEW_ASSET_TYPE.mahjongDeck,
+]);
+
+const CARD_RANKING_PREVIEW_ASSET_TYPES = new Set<string>([
+  PREVIEW_ASSET_TYPE.cardRanking,
+  PREVIEW_ASSET_TYPE.deckRanking,
 ]);
 
 const LazyAssetCatalogPreview = React.lazy(async () => ({
@@ -461,7 +467,7 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
       );
     }
 
-    if (assetType === PREVIEW_ASSET_TYPE.cardRanking) {
+    if (CARD_RANKING_PREVIEW_ASSET_TYPES.has(assetType)) {
       return (
         <div className="preview-panel">
           <PreviewPanelHeader

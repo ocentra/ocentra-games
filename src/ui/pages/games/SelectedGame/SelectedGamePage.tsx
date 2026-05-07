@@ -1,27 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
-import type { PageSection } from '@/ui/components/GameInfo/types';
+import type {
+  SelectedGameLayoutControls,
+  SelectedGamePresentation,
+  SelectedGamePresentationVisualRef,
+} from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
+import { buildSelectedGamePresentation } from '@ocentra/game-asset-domain/ui/selectedGame/buildSelectedGamePresentation';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
+import { SelectedGameShowcase } from '@ocentra/core-ui/Common/SelectedGameShowcase/SelectedGameShowcase';
 import { APP_VERSION } from '@/constants/version';
-import { GameModeSelector } from '@/ui/components/Common/GamePlayersSelector/GameModeSelector';
-import { GameInfoTabs } from '@/ui/components/GameInfo/GameInfoTabs';
-import { GameCardDeckPreview } from '@/ui/components/GameInfo/GameCardDeckPreview';
 import { GameNotFound } from '@/ui/pages/games/NotFound/GameNotFound';
-import { isAssetGUID, type AssetGUIDType } from '@ocentra/asset-domain/types/assetIdentifier';
+import { isAssetGUID, isImageHash, type AssetGUIDType, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { MultiplayerStorageKey } from '@/ui/pages/Matchmaking/types';
-import { AppScreenToken, buildCardGameTemplatePath, buildGameMatchmakingPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
+import { AppScreenToken, buildGameLobbyPath } from '@/ui/navigation/appRoutes';
 import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
-import { getLocalPilotStatus } from '@/ui/pages/games/CardGamePlay/localPilotCatalog';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import {
-  loadGameDetailAssetContent,
-  type GameDetailAssetSummary,
+  loadSelectedGameAssetBundle,
 } from '@/ui/pages/games/SelectedGame/gameDetailAssetSections';
+import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
 import './SelectedGamePage.css';
 
 interface SelectedGamePageProps {
@@ -37,6 +39,9 @@ interface ParsedGameId {
 }
 
 const GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS = 10000;
+
+type LooseRecord = Record<string, unknown>;
+type ImageResolverInput = Parameters<typeof useResolveImageUrl>[0];
 
 function parseGameIdentifier(identifier: string): ParsedGameId | null {
   const parts = identifier.split(':');
@@ -73,12 +78,34 @@ async function withPageLoadTimeout<T>(promise: Promise<T>): Promise<T | null> {
   }
 }
 
+function asRecord(value: unknown): LooseRecord {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as LooseRecord : {};
+}
+
+function dataOf(value: unknown): LooseRecord {
+  const record = asRecord(value);
+  const data = asRecord(record.data);
+  return Object.keys(data).length > 0 ? data : record;
+}
+
+function selectedGameImageResolverInput(presentation: SelectedGamePresentation | null): ImageResolverInput {
+  const hashes = [
+    ...(presentation?.hero.media ?? []),
+    ...(presentation?.sideA.media ?? []),
+  ]
+    .map(ref => ref.imageHash)
+    .filter((hash): hash is ImageHash => typeof hash === 'string' && isImageHash(hash));
+  return hashes.length > 0
+    ? { featureBannerItems: hashes.map((imageHash, index) => ({ title: `Selected game image ${index + 1}`, description: '', imageHash })) }
+    : {};
+}
+
 export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: SelectedGamePageProps) {
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [gameInfo, setGameInfo] = useState<GamePage | null>(null);
-  const [assetSections, setAssetSections] = useState<PageSection[]>([]);
-  const [assetSummary, setAssetSummary] = useState<GameDetailAssetSummary | null>(null);
+  const [presentation, setPresentation] = useState<SelectedGamePresentation | null>(null);
+  const [layoutControls, setLayoutControls] = useState<SelectedGameLayoutControls | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [parsedGameName, setParsedGameName] = useState<string>('');
   const handleLogout = () => {
@@ -102,20 +129,20 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       }
 
       setParsedGameName(parsed.name);
-      setAssetSections([]);
-      setAssetSummary(null);
+      setPresentation(null);
+      setLayoutControls(undefined);
 
       try {
         const loadedInfo =
           await withPageLoadTimeout(getSelectedGamePageInfos(parsed.name)) ??
           await withPageLoadTimeout(getSelectedGamePageInfos(parsed.guid));
-        const fallbackSections = (loadedInfo?.sections ?? []) as unknown as PageSection[];
-        const enriched = await withPageLoadTimeout(loadGameDetailAssetContent(parsed.guid, fallbackSections).catch(() => null));
+        const bundle = await withPageLoadTimeout(loadSelectedGameAssetBundle(parsed.guid).catch(() => null));
 
-        if (loadedInfo || enriched?.sections.length) {
+        if (loadedInfo || bundle?.gameMode) {
+          const nextPresentation = bundle ? buildSelectedGamePresentation(bundle) : null;
           setGameInfo(loadedInfo ?? null);
-          setAssetSections(enriched?.sections ?? fallbackSections);
-          setAssetSummary(enriched?.summary ?? null);
+          setPresentation(nextPresentation);
+          setLayoutControls(asRecord(dataOf(bundle?.layout).layoutControls) as SelectedGameLayoutControls);
           setIsValid(true);
         } else {
           setIsValid(false);
@@ -131,6 +158,12 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
 
     validateGame();
   }, [gameId]);
+
+  const imageResolverInput = useMemo(() => selectedGameImageResolverInput(presentation), [presentation]);
+  const { resolveImageUrl, ImageLoaders } = useResolveImageUrl(imageResolverInput);
+  const resolveSelectedGameVisualRefUrl = useCallback((ref: SelectedGamePresentationVisualRef) =>
+    ref.imageHash && isImageHash(ref.imageHash) ? resolveImageUrl(ref.imageHash as ImageHash) : null,
+  [resolveImageUrl]);
 
   if (isValidating) {
     return (
@@ -148,33 +181,20 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     return <GameNotFound user={user} onLogout={onLogout} onLogoutClick={onLogoutClick} message={errorMessage} />;
   }
 
-  const localPilotStatus = getLocalPilotStatus(parsedGameName || gameId);
-
-  const handlePlayLocalGame = () => {
-    EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(parsedGameName)));
-  };
-
-  const handlePlaySinglePlayer = (config: { aiCount: number; aiModel: string }) => {
-    void config;
-    if (localPilotStatus.isReady) {
-      handlePlayLocalGame();
-    }
-  };
-
-  const handlePlayMultiplayer = (config: { humans: number; ai: number; aiModel: string }) => {
+  const handleOpenLobbies = () => {
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem(
         MultiplayerStorageKey.Config,
         JSON.stringify({
-          humans: config.humans,
-          ai: config.ai,
-          aiModel: config.aiModel,
+          humans: 1,
+          ai: 3,
+          aiModel: 'onnx-community/Phi-3.5-mini-instruct-onnx-web',
           gameId,
           gameName: parsedGameName || gameId,
         })
       );
     }
-    EventBus.instance.publish(new ShowScreenEvent(buildGameMatchmakingPath(gameId)));
+    EventBus.instance.publish(new ShowScreenEvent(buildGameLobbyPath(gameId)));
   };
 
   const handleBackToHome = () => {
@@ -186,23 +206,14 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
     return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
-  const formatAvailabilityMessage = (message: string): string =>
-    message.replace(/\blocal pilot\b/gi, 'local match').replace(/\bpilot\b/gi, 'match');
-
-  const displayName = assetSummary?.title || formatGameName(parsedGameName || gameId);
-  const detailSubtitle = assetSummary?.subtitle || gameInfo?.tagline || "Simple Rules. Deadly Game.";
-  const detailDescription = assetSummary?.description || gameInfo?.description || '';
-  const detailSections = assetSections.length > 0
-    ? assetSections
-    : (gameInfo?.sections ?? []) as unknown as PageSection[];
-
-  const handleOpenTemplate = () => {
-    EventBus.instance.publish(new ShowScreenEvent(buildCardGameTemplatePath()));
-  };
+  const displayName = presentation?.hero.title || formatGameName(parsedGameName || gameId);
+  const detailSubtitle = presentation?.hero.taglineLines[0] || gameInfo?.tagline || "Simple Rules. Deadly Game.";
 
   return (
     <UnifiedPageShell
       className="generic-game-page"
+      viewportLocked
+      workClassName="selected-game-shell-work"
       header={
         <UnifiedHeader
           showPrimaryNavigation={false}
@@ -220,51 +231,13 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      <div className="generic-game-main">
-        {localPilotStatus.isReady && (
-          <section className="game-detail-hero">
-            <div>
-              <p className="game-detail-hero__eyebrow">Available now</p>
-              <h2>{displayName}</h2>
-              <p>
-                {detailDescription || `Launch a ${displayName} table with one human seat and three deterministic opponents.`}
-              </p>
-              <div className="game-detail-hero__meta">
-                {(assetSummary?.metrics ?? []).map((item) => (
-                  <span key={item.label}>{item.label}: {item.value}</span>
-                ))}
-              </div>
-            </div>
-            <div className="game-detail-hero__actions">
-              <button type="button" className="game-detail-hero__button" onClick={handlePlayLocalGame}>
-                Play {displayName}
-              </button>
-              <button type="button" className="game-detail-hero__button game-detail-hero__button--secondary" onClick={handleOpenTemplate}>
-                View Table Preview
-              </button>
-            </div>
-          </section>
-        )}
-        {localPilotStatus.isKnown && !localPilotStatus.isReady && (
-          <section className="game-detail-hero game-detail-hero--disabled">
-            <div>
-              <p className="game-detail-hero__eyebrow">In development</p>
-              <h2>{displayName}</h2>
-              <p>{formatAvailabilityMessage(localPilotStatus.message)}</p>
-            </div>
-          </section>
-        )}
-
-        <GameModeSelector
-          onPlaySinglePlayer={handlePlaySinglePlayer}
-          onPlayMultiplayer={handlePlayMultiplayer}
-        />
-
-        <GameInfoTabs
-          sections={detailSections}
-          sectionExtras={{
-            'Deck & Ranking': <GameCardDeckPreview gameIdentifier={parsedGameName || gameId} />,
-          }}
+      <div className="generic-game-main generic-game-main--showcase">
+        {ImageLoaders}
+        <SelectedGameShowcase
+          layoutControls={layoutControls}
+          onViewLobbies={handleOpenLobbies}
+          presentation={presentation ?? undefined}
+          resolveVisualRefUrl={resolveSelectedGameVisualRefUrl}
         />
       </div>
     </UnifiedPageShell>

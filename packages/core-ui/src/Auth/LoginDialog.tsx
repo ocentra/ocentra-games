@@ -6,16 +6,8 @@ import {
 } from '@ocentra/app-assets/auth';
 import { avatarImageById } from '@ocentra/app-assets/avatars';
 import { mlogoImageUrl } from '@ocentra/app-assets/commons';
-import {
-  cardGameWOCClubFilledImageUrl,
-  cardGameWOCClubHollowImageUrl,
-  cardGameWOCDiamondFilledImageUrl,
-  cardGameWOCDiamondHollowImageUrl,
-  cardGameWOCHeartFilledImageUrl,
-  cardGameWOCHeartHollowImageUrl,
-  cardGameWOCSpadeFilledImageUrl,
-  cardGameWOCSpadeHollowImageUrl,
-} from '@ocentra/app-assets/cardgame';
+import { SuitIcon } from '../Common/SuitArt/SuitArt';
+import type { Suit, Variant } from '../Common/SuitArt/SuitArtPrimitives';
 import { GameFooter } from '../Footer/GameFooter';
 import './LoginDialog.css';
 
@@ -27,15 +19,15 @@ const AUTH_MODE_STORAGE_KEY = 'ocentra.auth.mode';
 
 const AvatarImages = avatarImageById;
 
-const AuthBackgroundCards = [
-  cardGameWOCSpadeFilledImageUrl,
-  cardGameWOCSpadeHollowImageUrl,
-  cardGameWOCHeartFilledImageUrl,
-  cardGameWOCHeartHollowImageUrl,
-  cardGameWOCDiamondFilledImageUrl,
-  cardGameWOCDiamondHollowImageUrl,
-  cardGameWOCClubFilledImageUrl,
-  cardGameWOCClubHollowImageUrl,
+const AuthBackgroundCards: ReadonlyArray<{ suit: Suit; variant: Variant }> = [
+  { suit: 'spade', variant: 'filled' },
+  { suit: 'spade', variant: 'hollow' },
+  { suit: 'heart', variant: 'filled' },
+  { suit: 'heart', variant: 'hollow' },
+  { suit: 'diamond', variant: 'filled' },
+  { suit: 'diamond', variant: 'hollow' },
+  { suit: 'club', variant: 'filled' },
+  { suit: 'club', variant: 'hollow' },
 ] as const;
 
 const AuthBackgroundLayout = [
@@ -182,7 +174,7 @@ export function LoginDialog({
     () =>
       AuthBackgroundLayout.map((entry, index) => ({
         ...entry,
-        src: AuthBackgroundCards[index % AuthBackgroundCards.length],
+        ...AuthBackgroundCards[index % AuthBackgroundCards.length],
         delay: `${(index % 5) * -1.6}s`,
       })),
     [],
@@ -440,11 +432,15 @@ export function LoginDialog({
         <div className="login-dialog-background__glow login-dialog-background__glow--left" />
         <div className="login-dialog-background__glow login-dialog-background__glow--right" />
         {backgroundCards.map((card, index) => (
-          <img
+          <SuitIcon
             key={`${card.left}-${card.top}-${index}`}
             className="login-dialog-background__card"
-            src={card.src}
-            alt=""
+            suit={card.suit}
+            variant={card.variant}
+            size={128}
+            showRings={false}
+            shadowGlow
+            title=""
             style={{
               left: card.left,
               top: card.top,

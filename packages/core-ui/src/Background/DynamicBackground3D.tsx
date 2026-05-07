@@ -2,51 +2,71 @@ import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import { useThreeBase } from './ThreeBaseContext';
 import * as THREE from 'three';
 import {
-  cardGame256SpadeFilledImageUrl,
-  cardGame256SpadeHollowImageUrl,
-  cardGame256HeartFilledImageUrl,
-  cardGame256HeartHollowImageUrl,
-  cardGame256DiamondFilledImageUrl,
-  cardGame256DiamondHollowImageUrl,
-  cardGame256ClubFilledImageUrl,
-  cardGame256ClubHollowImageUrl,
-  cardGameWOCSpadeFilledImageUrl,
-  cardGameWOCSpadeHollowImageUrl,
-  cardGameWOCHeartFilledImageUrl,
-  cardGameWOCHeartHollowImageUrl,
-  cardGameWOCDiamondFilledImageUrl,
-  cardGameWOCDiamondHollowImageUrl,
-  cardGameWOCClubFilledImageUrl,
-  cardGameWOCClubHollowImageUrl,
-  cardGameSpadeWithCirclesFilledImageUrl,
-  cardGameSpadeWithCirclesHollowImageUrl,
-  cardGameHeartWithCirclesFilledImageUrl,
-  cardGameHeartWithCirclesHollowImageUrl,
-  cardGameDiamondWithCirclesFilledImageUrl,
-  cardGameDiamondWithCirclesHollowImageUrl,
-  cardGameClubWithCirclesFilledImageUrl,
-  cardGameClubWithCirclesHollowImageUrl,
-} from '@ocentra/app-assets/cardgame';
+    getSuitCardDataUrl,
+    getSuitIconDataUrl,
+    type Suit,
+    type Variant,
+} from '../Common/SuitArt/SuitArtPrimitives';
 import './DynamicBackground3D.css';
+
+type CardSuitName = 'Spade' | 'Heart' | 'Diamond' | 'Club';
+type CardStyleName = 'Fullcard' | 'WithoutCircles' | 'WithCircles';
+
+const CARD_SUIT_MAP: Record<CardSuitName, Suit> = {
+    Spade: 'spade',
+    Heart: 'heart',
+    Diamond: 'diamond',
+    Club: 'club',
+};
+
+const buildCardTextureUrl = (style: CardStyleName, suitName: CardSuitName, variant: Variant): string => {
+    const suit = CARD_SUIT_MAP[suitName];
+    if (style === 'Fullcard') {
+        return getSuitCardDataUrl(suit, variant, {
+            showRings: true,
+            ringMode: 'circle',
+            ringFit: 'viewport',
+            ringOpacity: 0.14,
+            ringStroke: 0.6,
+            shadowGlow: true,
+        }, {
+            cardWidth: 160,
+            cardHeight: 250,
+            cardFillOpacity: 0.16,
+            cardStrokeWidth: 2.2,
+            cardInnerStrokeWidth: 0.9,
+        });
+    }
+
+    return getSuitIconDataUrl(suit, variant, {
+        size: 256,
+        showRings: style === 'WithCircles',
+        ringMode: style === 'WithCircles' ? 'circle' : 'none',
+        ringFit: 'viewport',
+        ringOpacity: 0.2,
+        ringStroke: 0.7,
+        shadowGlow: true,
+    });
+};
 
 const CARD_ASSETS = {
   Fullcard: {
-    Spade: { filled: cardGame256SpadeFilledImageUrl, hollow: cardGame256SpadeHollowImageUrl },
-    Heart: { filled: cardGame256HeartFilledImageUrl, hollow: cardGame256HeartHollowImageUrl },
-    Diamond: { filled: cardGame256DiamondFilledImageUrl, hollow: cardGame256DiamondHollowImageUrl },
-    Club: { filled: cardGame256ClubFilledImageUrl, hollow: cardGame256ClubHollowImageUrl },
+    Spade: { filled: buildCardTextureUrl('Fullcard', 'Spade', 'filled'), hollow: buildCardTextureUrl('Fullcard', 'Spade', 'hollow') },
+    Heart: { filled: buildCardTextureUrl('Fullcard', 'Heart', 'filled'), hollow: buildCardTextureUrl('Fullcard', 'Heart', 'hollow') },
+    Diamond: { filled: buildCardTextureUrl('Fullcard', 'Diamond', 'filled'), hollow: buildCardTextureUrl('Fullcard', 'Diamond', 'hollow') },
+    Club: { filled: buildCardTextureUrl('Fullcard', 'Club', 'filled'), hollow: buildCardTextureUrl('Fullcard', 'Club', 'hollow') },
   },
   WithoutCircles: {
-    Spade: { filled: cardGameWOCSpadeFilledImageUrl, hollow: cardGameWOCSpadeHollowImageUrl },
-    Heart: { filled: cardGameWOCHeartFilledImageUrl, hollow: cardGameWOCHeartHollowImageUrl },
-    Diamond: { filled: cardGameWOCDiamondFilledImageUrl, hollow: cardGameWOCDiamondHollowImageUrl },
-    Club: { filled: cardGameWOCClubFilledImageUrl, hollow: cardGameWOCClubHollowImageUrl },
+    Spade: { filled: buildCardTextureUrl('WithoutCircles', 'Spade', 'filled'), hollow: buildCardTextureUrl('WithoutCircles', 'Spade', 'hollow') },
+    Heart: { filled: buildCardTextureUrl('WithoutCircles', 'Heart', 'filled'), hollow: buildCardTextureUrl('WithoutCircles', 'Heart', 'hollow') },
+    Diamond: { filled: buildCardTextureUrl('WithoutCircles', 'Diamond', 'filled'), hollow: buildCardTextureUrl('WithoutCircles', 'Diamond', 'hollow') },
+    Club: { filled: buildCardTextureUrl('WithoutCircles', 'Club', 'filled'), hollow: buildCardTextureUrl('WithoutCircles', 'Club', 'hollow') },
   },
   WithCircles: {
-    Spade: { filled: cardGameSpadeWithCirclesFilledImageUrl, hollow: cardGameSpadeWithCirclesHollowImageUrl },
-    Heart: { filled: cardGameHeartWithCirclesFilledImageUrl, hollow: cardGameHeartWithCirclesHollowImageUrl },
-    Diamond: { filled: cardGameDiamondWithCirclesFilledImageUrl, hollow: cardGameDiamondWithCirclesHollowImageUrl },
-    Club: { filled: cardGameClubWithCirclesFilledImageUrl, hollow: cardGameClubWithCirclesHollowImageUrl },
+    Spade: { filled: buildCardTextureUrl('WithCircles', 'Spade', 'filled'), hollow: buildCardTextureUrl('WithCircles', 'Spade', 'hollow') },
+    Heart: { filled: buildCardTextureUrl('WithCircles', 'Heart', 'filled'), hollow: buildCardTextureUrl('WithCircles', 'Heart', 'hollow') },
+    Diamond: { filled: buildCardTextureUrl('WithCircles', 'Diamond', 'filled'), hollow: buildCardTextureUrl('WithCircles', 'Diamond', 'hollow') },
+    Club: { filled: buildCardTextureUrl('WithCircles', 'Club', 'filled'), hollow: buildCardTextureUrl('WithCircles', 'Club', 'hollow') },
   },
 } as const;
 
@@ -101,8 +121,8 @@ const SHOOTING_STAR_COLORS_HEX = {
     red: '#EF4444'
 };
 
-const CARD_SUITS = ['Spade', 'Heart', 'Diamond', 'Club'];
-const CARD_STYLES = ['Fullcard', 'WithoutCircles', 'WithCircles'];
+const CARD_SUITS: CardSuitName[] = ['Spade', 'Heart', 'Diamond', 'Club'];
+const CARD_STYLES: CardStyleName[] = ['Fullcard', 'WithoutCircles', 'WithCircles'];
 
 interface TextureCache {
     [key: string]: {
@@ -121,8 +141,8 @@ interface CardData {
     size: number;
     color: THREE.Color;
     id: number;
-    suit: string;
-    style: string;
+    suit: CardSuitName;
+    style: CardStyleName;
     isFilled: boolean;
     fillProgress: number;
     fillDirection: number;

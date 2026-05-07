@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { UserProfile } from '@/adapters/firebase/service';
-import { FeaturedGameShowcase } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase';
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
-import { ComingSoonShowcase } from '@ocentra/core-ui/Common/ComingSoonCarousel/ComingSoonShowcase';
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary';
-import { FeatureBannerSection } from '@ocentra/core-ui/Common/FeatureBanner/FeatureBannerSection';
+import { HomePageShowcaseContent } from '@ocentra/core-ui/Common/HomePage/HomePageShowcaseContent';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   type HomeShowcaseFrameControls,
@@ -16,6 +14,7 @@ import {
 } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types';
 import { mlogoImageUrl } from '@ocentra/app-assets/commons';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { createOcentraHeaderLogoConfig } from '@ocentra/core-ui/Header/createOcentraHeaderConfig';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { APP_VERSION } from '@/constants/version';
@@ -291,64 +290,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
   };
 
   const homeHeaderConfig = useMemo(() => ({
-    center: {
-      modeA: {
-        logo: {
-          size: 44,
-          renderer: ({
-            cx,
-            cy,
-            size,
-            aspectCorrection,
-            strokeWidth,
-            innerOpacity,
-            color,
-          }: {
-            cx: number;
-            cy: number;
-            size: number;
-            aspectCorrection: number;
-            strokeWidth: number;
-            innerOpacity: number;
-            color: string;
-          }) => {
-            const logoH = size;
-            const logoW = logoH * aspectCorrection;
-            const outerRadius = size / 2;
-            const innerRadius = Math.max(1, outerRadius - Math.max(0.35, size * 0.018) - strokeWidth * 0.5);
-            return (
-              <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={outerRadius}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth={strokeWidth}
-                  opacity={0.95}
-                  vectorEffect="non-scaling-stroke"
-                />
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={innerRadius}
-                  fill={color}
-                  opacity={innerOpacity}
-                />
-                <image
-                  href={mlogoImageUrl}
-                  x={cx - logoW / 2}
-                  y={cy - logoH / 2}
-                  width={logoW}
-                  height={logoH}
-                  preserveAspectRatio="xMidYMid meet"
-                />
-              </g>
-            );
-          }
-        }
-      }
-    },
+    ...createOcentraHeaderLogoConfig(mlogoImageUrl),
     right: {
       ...headerRightConfig,
     },
@@ -368,67 +310,31 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
       <div className="home-work-math">
-        {ImageLoaders}
-        <div className={`scrollable-content-container ${DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : ''}`}>
-          <div ref={homepageContentRef} className={`home-content ${DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : ''}`}>
-            {DEBUG_PAGE_STRUCTURE ? (
-              <>
-                <div className="page-debug-top">top</div>
-                <div className="page-debug-middle">middle</div>
-                <div className="page-debug-bottom">bottom</div>
-              </>
-            ) : DEBUG_LAYOUT ? (
-              <>
-                <section className="about-us-section layout-debug-box" data-layout="about-us">
-                  <span>Feature banner</span>
-                </section>
-                <section className="featured-section layout-debug-box" data-layout="featured">
-                  <span>Featured carousel</span>
-                </section>
-                <section className="games-section layout-debug-box" data-layout="coming-soon">
-                  <span>Coming Soon carousel</span>
-                </section>
-              </>
-            ) : (
-              <>
-                <section className="about-us-section">
-                  <FeatureBannerSection
-                    featureBannerItems={gamesData.featureBannerItems}
-                    resolveImageUrl={resolveImageUrl}
-                    controls={gamesData.aboutShowcaseControls}
-                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
-                  />
-                </section>
-                <section className="featured-section">
-                  <FeaturedGameShowcase
-                    featured={gamesData.featured}
-                    recommended={gamesData.recommended}
-                    isLoading={isLoadingGames}
-                    controls={gamesData.featuredShowcaseControls}
-                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
-                    onLearnMore={handleLearnMore}
-                    resolveImageUrl={resolveImageUrl}
-                  />
-                </section>
-                <section className="games-section">
-                  <ComingSoonShowcase
-                    comingSoon={gamesData.comingSoon}
-                    catalogMontageItems={gamesData.catalogMontageImages}
-                    availableNow={gamesData.availableNow}
-                    explorerGames={explorerGamesForCarousel}
-                    isLoading={isLoadingGames}
-                    onGameClick={handlePlayGame}
-                    onExploreClick={() => navigate('/CardGamesExplorer')}
-                    resolveImageUrl={resolveImageUrl}
-                    controls={gamesData.comingSoonShowcaseControls}
-                    previewLayoutMode={sharedHomepagePreviewLayoutMode}
-                  />
-                </section>
-              </>
-            )}
-            {!DEBUG_PAGE_STRUCTURE && <div className="content-spacer" />}
-          </div>
-        </div>
+        <HomePageShowcaseContent
+          contentRef={homepageContentRef}
+          imageLoaders={ImageLoaders}
+          scrollClassName={DEBUG_PAGE_STRUCTURE ? 'debug-scroll-container' : undefined}
+          contentClassName={DEBUG_PAGE_STRUCTURE ? 'debug-home-content' : undefined}
+          debugPageStructure={DEBUG_PAGE_STRUCTURE}
+          debugLayout={DEBUG_LAYOUT}
+          featureBannerItems={gamesData.featureBannerItems}
+          featured={gamesData.featured}
+          recommended={gamesData.recommended}
+          comingSoon={gamesData.comingSoon}
+          catalogMontageItems={gamesData.catalogMontageImages}
+          availableNow={gamesData.availableNow}
+          explorerGames={explorerGamesForCarousel}
+          isFeaturedLoading={isLoadingGames}
+          isComingSoonLoading={isLoadingGames}
+          resolveImageUrl={resolveImageUrl}
+          aboutControls={gamesData.aboutShowcaseControls}
+          featuredControls={gamesData.featuredShowcaseControls}
+          comingSoonControls={gamesData.comingSoonShowcaseControls}
+          previewLayoutMode={sharedHomepagePreviewLayoutMode}
+          onLearnMore={handleLearnMore}
+          onGameClick={handlePlayGame}
+          onExploreClick={() => navigate('/CardGamesExplorer')}
+        />
       </div>
     </UnifiedPageShell>
   );

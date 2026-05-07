@@ -22,6 +22,10 @@ import {
   type DeckPreviewModel,
   type DeckPreviewReference,
 } from '@ocentra/game-asset-domain/deckPreview/DeckPreviewModel';
+import {
+  DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS,
+  type SelectedGameDeckVisualControls,
+} from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { DeckPreviewView } from '@ocentra/core-ui/Common/DeckPreview/DeckPreviewView';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
@@ -33,7 +37,12 @@ interface DeckPreviewProps {
   assetId: string;
   assetInstance?: unknown | null;
   assetData?: { data?: Record<string, unknown>; system?: Record<string, unknown> } | null;
+  compact?: boolean;
+  enableCardDetail?: boolean;
+  compactControls?: SelectedGameDeckVisualControls;
 }
+
+type DeckPreviewStyle = React.CSSProperties & Record<`--${string}`, string | number | undefined>;
 
 type AssetConstructor<T = unknown> = new () => T;
 
@@ -53,15 +62,30 @@ const constructors: Record<string, AssetConstructor> = {
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
 
-export const DeckPreview: React.FC<DeckPreviewProps> = ({ assetId, assetInstance, assetData }) => {
+export const DeckPreview: React.FC<DeckPreviewProps> = ({
+  assetId,
+  assetInstance,
+  assetData,
+  compact = false,
+  enableCardDetail = false,
+  compactControls,
+}) => {
   const [model, setModel] = useState<DeckPreviewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
+  const compactStyle = compact
+    ? buildDeckPreviewCompactStyle({
+      ...DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS,
+      ...compactControls,
+    })
+    : undefined;
 
   useEffect(() => {
     let isCancelled = false;
 
     const loadPreview = async () => {
       setIsLoading(true);
+      setSelectedCell(null);
       try {
         const source = assetData || assetInstance;
         if (!source) {
@@ -128,16 +152,49 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({ assetId, assetInstance
   }
 
   return (
-    <div className="preview-panel__content preview-panel__content--deck">
+    <div
+      className={[
+        'preview-panel__content',
+        'preview-panel__content--deck',
+        compact ? 'preview-panel__content--deck-compact' : '',
+      ].filter(Boolean).join(' ')}
+      style={compactStyle}
+    >
       <DeckPreviewView
         model={model}
+        compact={compact}
+        onCellClick={enableCardDetail ? setSelectedCell : undefined}
         renderPiece={(cell) => <PreviewPieceCell cell={cell} />}
         renderAxis={(axis) => axis.imageHash ? <PreviewAxisImage axis={axis} /> : undefined}
         renderBack={(imageHash) => <BackCell hash={imageHash as ImageHash} />}
       />
+      {enableCardDetail && selectedCell ? (
+        <PreviewCardDetail cell={selectedCell} onClose={() => setSelectedCell(null)} />
+      ) : null}
     </div>
   );
 };
+
+function px(value: number | undefined): string | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? `${value}px` : undefined;
+}
+
+function buildDeckPreviewCompactStyle(
+  controls: Required<SelectedGameDeckVisualControls>
+): DeckPreviewStyle {
+  return {
+    '--deck-preview-card-track-min': px(controls.cardTrackMin),
+    '--deck-preview-card-width': px(controls.cardWidth),
+    '--deck-preview-card-cell-min-height': px(controls.cardCellMinHeight),
+    '--deck-preview-compact-matrix-gap': px(controls.matrixGap),
+    '--deck-preview-compact-row-gap': px(controls.rowGap),
+    '--deck-preview-axis-column-width': px(controls.axisColumnWidth),
+    '--deck-preview-axis-glyph-size': px(controls.axisGlyphSize),
+    '--deck-preview-axis-image-size': px(controls.axisImageSize),
+    '--deck-preview-detail-image-max-width': px(controls.detailImageMaxWidth),
+    '--deck-preview-detail-image-max-height': px(controls.detailImageMaxHeight),
+  };
+}
 
 async function loadRefs(refs: DeckPreviewReference[]): Promise<unknown[]> {
   const results = await Promise.all(refs.map(loadRef));
@@ -195,11 +252,13 @@ async function loadPathFromGuid(guid?: string): Promise<string | undefined> {
 
 const PreviewPieceCell: React.FC<{ cell: DeckPreviewCell }> = ({ cell }) => {
   const { imageUrl } = useImageUrl((cell.imageHash || null) as ImageHash | null);
+  const pathUrl = imageUrl ? null : imagePathToBrowserUrl(cell.imagePath);
+  const src = imageUrl ?? pathUrl;
 
-  if (imageUrl) {
+  if (src) {
     return (
       <img
-        src={imageUrl}
+        src={src}
         alt={cell.label}
         className="deck-preview__piece-image"
         onError={(event) => {
@@ -211,6 +270,54 @@ const PreviewPieceCell: React.FC<{ cell: DeckPreviewCell }> = ({ cell }) => {
 
   return <span className="deck-preview__piece-label">{cell.label}</span>;
 };
+
+const PreviewCardDetail: React.FC<{
+  cell: DeckPreviewCell;
+  onClose: () => void;
+}> = ({ cell, onClose }) => {
+  const { imageUrl } = useImageUrl((cell.imageHash || null) as ImageHash | null);
+  const pathUrl = imageUrl ? null : imagePathToBrowserUrl(cell.imagePath);
+  const src = imageUrl ?? pathUrl;
+
+  return (
+    <div className="deck-preview__card-detail" role="dialog" aria-label={`${cell.label} detail`}>
+      <div className="deck-preview__card-detail-panel">
+        <button
+          type="button"
+          className="deck-preview__card-detail-close"
+          onClick={onClose}
+          aria-label="Close card detail"
+        >
+          x
+        </button>
+        <div className="deck-preview__card-detail-media">
+          {src ? (
+            <img
+              src={src}
+              alt={cell.label}
+              className="deck-preview__card-detail-image"
+              onError={(event) => {
+                (event.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            <span className="deck-preview__card-detail-label">{cell.label}</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function imagePathToBrowserUrl(path?: string): string | null {
+  if (!path) {
+    return null;
+  }
+  const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
+  return normalized.startsWith('Resources/')
+    ? `/${normalized}`
+    : `/Resources/${normalized}`;
+}
 
 const PreviewAxisImage: React.FC<{ axis: DeckPreviewAxis }> = ({ axis }) => {
   const { imageUrl } = useImageUrl((axis.imageHash || null) as ImageHash | null);
