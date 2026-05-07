@@ -552,7 +552,3 @@ export const GameScreenPage: React.FC<GameScreenPageProps> = ({ gameModeId }) =>
 };
 
 export default GameScreenPage;
-
-export const ClaimGameScreenPage: React.FC = () => (
-  <GameScreenPage gameModeId="claim" />
-);
