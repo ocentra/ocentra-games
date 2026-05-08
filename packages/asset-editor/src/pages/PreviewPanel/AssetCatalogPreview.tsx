@@ -33,7 +33,12 @@ import {
 } from '@ocentra/game-asset-domain/schemas/home-page-games-schema'
 import { MemoryRouter } from 'react-router-dom'
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary'
-import type { CategoryWithSubs, GamesExplorerGame, PlayerModeFilter } from '@ocentra/core-ui/GamesExplorer/types'
+import type {
+  CategoryWithSubs,
+  GamesExplorerGame,
+  PlayerModeFilter,
+  ViewMode as GamesExplorerViewMode,
+} from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
 import {
   DEFAULT_FEATURED_SHOWCASE_CONTROLS,
@@ -47,10 +52,7 @@ import {
   type HomeShowcaseFrameControls,
   type HomeShowcasePreviewLayoutMode,
 } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types'
-import { ExplorerContentBar } from '@ocentra/core-ui/GamesExplorer/ExplorerContentBar'
-import { ExplorerSidebar } from '@ocentra/core-ui/GamesExplorer/ExplorerSidebar'
-import { GameCard } from '@ocentra/core-ui/GamesExplorer/GameCard'
-import { GameListRow, GameListRowHeader } from '@ocentra/core-ui/GamesExplorer/GameListRow'
+import { GamesCatalogSvgShowcase } from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcase'
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
@@ -2182,7 +2184,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [gamesModeFilter, setGamesModeFilter] = useState('all')
   const [gamesPlayerModeFilter, setGamesPlayerModeFilter] = useState<PlayerModeFilter>('all')
   const [gamesCategory, setGamesCategory] = useState('all')
-  const [gamesView, setGamesView] = useState<'grid' | 'list'>('grid')
+  const [gamesView, setGamesView] = useState<GamesExplorerViewMode>('grid')
   const [featuredShowcaseControls, setFeaturedShowcaseControls] = useState(
     DEFAULT_FEATURED_SHOWCASE_CONTROLS
   )
@@ -3169,11 +3171,6 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return result
   }, [gamesWithMetadata, gamesModeFilter, gamesPlayerModeFilter])
 
-  const gamesCategoryCounts = useMemo(
-    () => gamesCategoryWithSubs.map(c => [c.category, c.total] as const),
-    [gamesCategoryWithSubs]
-  )
-
   const toggleGamesCategoryExpanded = (cat: string) => {
     setGamesCategoryExpanded(prev => {
       const next = new Set(prev)
@@ -3538,91 +3535,42 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     quality: g.home.quality ?? 'complete',
   }))
 
+  const gamesExplorerSvgGames: GamesExplorerGame[] = filteredGamesWithMeta.map(toGamesExplorerGame)
+
   const gamesExplorerPreviewContent = (
     <main className="asset-catalog-preview__real-page asset-catalog-preview__real-page--games">
-      <div className="asset-catalog-games-tab asset-catalog-games-tab--explorer asset-catalog-preview__games-page-layout">
-        <div className="asset-catalog-games-tab__top-bar">
-          <ExplorerContentBar
-            currentView={gamesView}
-            onViewChange={(v: 'grid' | 'list' | 'alphabet') =>
-              setGamesView(v === 'alphabet' ? 'grid' : v)
+      {isLoadingGames ? (
+        <div className="asset-catalog-preview__empty">Loading games...</div>
+      ) : (
+        <GamesCatalogSvgShowcase
+          games={gamesExplorerSvgGames}
+          metadata={{ totalGames: gamesWithMetadata.length }}
+          availableCount={availableGamesCount}
+          categoryWithSubs={gamesCategoryWithSubs}
+          playerModeCounts={gamesPlayerModeCounts}
+          currentView={gamesView}
+          onViewChange={setGamesView}
+          searchQuery={gamesSearch}
+          onSearchChange={setGamesSearch}
+          currentCategory={gamesCategory}
+          onCategoryChange={setGamesCategory}
+          playerModeFilter={gamesPlayerModeFilter}
+          onPlayerModeChange={setGamesPlayerModeFilter}
+          categoryExpanded={gamesCategoryExpanded}
+          onCategoryExpandToggle={toggleGamesCategoryExpanded}
+          isSidebarCollapsed={gamesSidebarCollapsed}
+          onToggleSidebar={() => setGamesSidebarCollapsed(v => !v)}
+          onGameClick={(game: GamesExplorerGame) => {
+            const match = filteredGamesWithMeta.find(item => {
+              const nextGame = toGamesExplorerGame(item)
+              return nextGame.slug === game.slug
+            })
+            if (match && !isCatalogGameItem(match)) {
+              handleGamesTabNavigate(match)
             }
-            searchQuery={gamesSearch}
-            onSearchChange={setGamesSearch}
-            metadata={{ totalGames: gamesWithMetadata.length }}
-            availableCount={availableGamesCount}
-            categoryMapSize={
-              gamesCategoryCounts.filter(([k]) => k !== 'all').length
-            }
-            sortBy="name"
-            views={['grid', 'list']}
-          />
-        </div>
-        <div
-          className={`asset-catalog-games-tab__body ${gamesSidebarCollapsed ? 'is-sidebar-collapsed' : ''}`}
-        >
-          <ExplorerSidebar
-            playerModeFilter={gamesPlayerModeFilter}
-            onPlayerModeChange={setGamesPlayerModeFilter}
-            playerModeCounts={gamesPlayerModeCounts}
-            currentCategory={gamesCategory}
-            onCategoryChange={setGamesCategory}
-            categoryWithSubs={gamesCategoryWithSubs}
-            categoryExpanded={gamesCategoryExpanded}
-            onCategoryExpandToggle={toggleGamesCategoryExpanded}
-            isCollapsed={gamesSidebarCollapsed}
-            onToggleCollapse={() => setGamesSidebarCollapsed(v => !v)}
-          />
-          <div className="asset-catalog-games-tab__content">
-            <div className="asset-catalog-games-tab__games-area">
-              {isLoadingGames ? (
-                <div className="asset-catalog-preview__empty">
-                  Loading games...
-                </div>
-              ) : filteredGamesWithMeta.length === 0 ? (
-                <div className="asset-catalog-preview__empty">
-                  {gamesWithMetadata.length === 0
-                    ? 'No games available from the local catalog.'
-                    : 'No games match the current filters.'}
-                </div>
-              ) : gamesView === 'grid' ? (
-                <div className="cge-games-grid asset-catalog-games-tab__grid">
-                  {filteredGamesWithMeta.map(item => (
-                    <div
-                      key={item.entry.guid ?? item.path}
-                      className="asset-catalog-games-tab__card"
-                    >
-                      <GameCard
-                        game={toGamesExplorerGame(item)}
-                        onGameClick={
-                          isCatalogGameItem(item) ? undefined : () => handleGamesTabNavigate(item)
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="cge-games-list asset-catalog-games-tab__list">
-                  <GameListRowHeader />
-                  {filteredGamesWithMeta.map(item => (
-                    <div
-                      key={item.entry.guid ?? item.path}
-                      className="asset-catalog-games-tab__list-row"
-                    >
-                      <GameListRow
-                        game={toGamesExplorerGame(item)}
-                        onGameClick={
-                          isCatalogGameItem(item) ? undefined : () => handleGamesTabNavigate(item)
-                        }
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+          }}
+        />
+      )}
     </main>
   )
 

@@ -25,6 +25,7 @@ const fileCopies = [
   ['src/GamesExplorer/GameListRow.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/ExplorerContentBar.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/ExplorerSidebar.css', 'dist/GamesExplorer/'],
+  ['src/GamesExplorer/GamesCatalogSvgShowcase.css', 'dist/GamesExplorer/'],
 ];
 
 function copyFile(relativeSourcePath, relativeDestinationDir) {
