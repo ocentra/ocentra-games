@@ -10,7 +10,6 @@ import { APP_VERSION } from '@/constants/version';
 import { usePlayerHubData } from '@/ui/pages/PlayerHub/hooks/usePlayerHubData';
 import { AppScreenToken } from '@/ui/navigation/appRoutes';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
-import './PlayerHubPage.css';
 
 interface PlayerHubPageProps {
   user: UserProfile | null;

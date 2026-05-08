@@ -425,7 +425,7 @@ export default defineConfig(({ command }) => ({
     {
       name: 'serve-resources',
       configureServer(server) {
-        server.middlewares.use('/__asset-editor-api__/disk-resource-entries', (_req, res) => {
+        server.middlewares.use(LocalApiEndpoint.AssetEditor.DiskResourceEntries, (_req, res) => {
           try {
             const entries = buildBrowserAssetIndexEntries();
             res.statusCode = 200;
@@ -439,6 +439,43 @@ export default defineConfig(({ command }) => ({
                 error: error instanceof Error ? error.message : String(error),
               })
             );
+          }
+        });
+        server.middlewares.use(LocalApiEndpoint.AssetEditor.WriteAsset, async (req, res, next) => {
+          if (req.method !== 'POST') {
+            next();
+            return;
+          }
+          res.setHeader('Content-Type', 'application/json');
+          try {
+            const body = JSON.parse(await readBody(req)) as { path?: unknown; content?: unknown };
+            const requestedPath = typeof body.path === 'string' ? body.path : '';
+            const resourcePath = normalizeResourceUrlPath(requestedPath);
+            if (!resourcePath.startsWith('Resources/') || resourcePath.includes('..')) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Invalid resource path' }));
+              return;
+            }
+            const content = Array.isArray(body.content) ? body.content : null;
+            if (!content || !content.every(value => Number.isInteger(value) && value >= 0 && value <= 255)) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Invalid asset content' }));
+              return;
+            }
+            const filePath = path.resolve(__dirname, resourcePath);
+            if (!filePath.startsWith(assetEditorResourcesDir)) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ error: 'Invalid resource target' }));
+              return;
+            }
+            fs.mkdirSync(path.dirname(filePath), { recursive: true });
+            fs.writeFileSync(filePath, Buffer.from(content));
+            cachedBrowserAssetIndex = null;
+            res.statusCode = 200;
+            res.end(JSON.stringify({ ok: true }));
+          } catch (error) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
           }
         });
         server.middlewares.use('/Resources', (req, res, next) => {

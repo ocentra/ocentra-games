@@ -656,6 +656,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "kind": "PageLayoutKind",
     "slices": "Array",
     "layout": "LayoutStructure",
+    "pageControls": "PageLayoutDocument['pageControls']",
     "layoutControls": "SelectedGameLayoutControls",
     "contentPlan": "SelectedGameContentPlan",
     "preview": "PageLayoutDocument['preview']"

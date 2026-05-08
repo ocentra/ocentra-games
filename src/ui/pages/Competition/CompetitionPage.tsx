@@ -10,7 +10,6 @@ import { APP_VERSION } from '@/constants/version';
 import { useCompetitionData } from '@/ui/pages/Competition/hooks/useCompetitionData';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
-import './CompetitionPage.css';
 
 interface CompetitionPageProps {
   user: UserProfile | null;
@@ -119,6 +118,8 @@ export function CompetitionPage({
         nearbyBelow={nearbyBelow}
         tournamentId={tournamentId}
         tournamentRounds={Array.isArray(tournamentBracket?.rounds) ? tournamentBracket.rounds : []}
+        pageMode={pageMode}
+        gameId={gameId}
         onRefreshLeaderboard={(nextGameType) => { void refreshLeaderboard(nextGameType); }}
         onLoadBracket={(nextTournamentId) => { void loadTournamentBracket(nextTournamentId); }}
         onRegister={(nextTournamentId) => {

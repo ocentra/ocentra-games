@@ -15,6 +15,11 @@ export const LocalApiEndpoint = {
   OpenInEditor: `${localApiPrefix}/open-in-editor` as ApiPath,
   HeaderConfig: `${localApiPrefix}/header-config` as ApiPath,
 
+  AssetEditor: {
+    DiskResourceEntries: `${localApiPrefix}/asset-editor/disk-resource-entries` as ApiPath,
+    WriteAsset: `${localApiPrefix}/asset-editor/write-asset` as ApiPath,
+  },
+
   CardGames: {
     Games: `${apiPrefix}/games` as ApiPath,
     GamesPath: '/games' as const,

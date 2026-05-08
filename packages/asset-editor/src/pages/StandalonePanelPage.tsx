@@ -1,5 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import JSON5 from 'json5';
 import { MemoryRouter } from 'react-router-dom';
 import { PreviewPanel } from '@/pages/PreviewPanel/PreviewPanel';
 import { InspectorPanel } from '@/pages/InspectorPanel/InspectorPanel';
@@ -66,6 +67,11 @@ import {
   DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS,
   type GamesCatalogSvgLayoutControls,
 } from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcaseControls';
+import {
+  DEFAULT_APP_PAGE_SVG_CONTROLS,
+  normalizeAppPageSvgControls,
+  type AppPageSvgControls,
+} from '@ocentra/core-ui/AppPages/AppPageSvgSurfaceControls';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import type {
   SerializedUnifiedHeaderConfig,
@@ -143,6 +149,7 @@ import {
   SELECTED_GAME_LAYOUT_ASSET_PATH,
   type SelectedGameLayoutConfig,
 } from '@/utils/selectedGameLayoutPersistence';
+import { readAsset, writeAsset } from '@/adapters/assets/TauriAssetAdapter';
 import './StandalonePanelPage.css';
 const log = AssetEditorLogger.instance;
 log.register(import.meta.url);
@@ -158,7 +165,8 @@ type StandalonePanel =
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
   | 'selected-game-layout-controls'
-  | 'games-catalog-layout-controls';
+  | 'games-catalog-layout-controls'
+  | 'page-layout-controls';
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -3086,6 +3094,184 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
   );
 };
 
+type PageLayoutControlsEnvelope = {
+  system: Record<string, unknown>;
+  data: Record<string, unknown> & {
+    pageControls?: Partial<AppPageSvgControls>;
+  };
+};
+
+const pageLayoutControlRows: Array<{
+  key: keyof AppPageSvgControls;
+  label: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  type: 'number' | 'color' | 'boolean';
+}> = [
+  { key: 'accentColor', label: 'Accent Color', type: 'color' },
+  { key: 'panelOpacity', label: 'Panel Opacity', min: 0.35, max: 1, step: 0.01, type: 'number' },
+  { key: 'density', label: 'Panel Density', min: 0.72, max: 1.35, step: 0.01, type: 'number' },
+  { key: 'stageScale', label: 'Stage Scale', min: 0.82, max: 1.16, step: 0.01, type: 'number' },
+  { key: 'heroOffsetY', label: 'Hero Offset Y', min: -90, max: 140, step: 1, type: 'number' },
+  { key: 'showGuides', label: 'Show Guides', type: 'boolean' },
+];
+
+function normalizePageLayoutControlsEnvelope(value: unknown): PageLayoutControlsEnvelope {
+  const record = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+  const data = record.data && typeof record.data === 'object' && !Array.isArray(record.data)
+    ? record.data as Record<string, unknown>
+    : {};
+  return {
+    system: record.system && typeof record.system === 'object' && !Array.isArray(record.system)
+      ? record.system as Record<string, unknown>
+      : {},
+    data,
+  };
+}
+
+const StandalonePageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [envelope, setEnvelope] = useState<PageLayoutControlsEnvelope | null>(null);
+  const [controls, setControls] = useState<AppPageSvgControls>(DEFAULT_APP_PAGE_SVG_CONTROLS);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [status, setStatus] = useState<string>('');
+
+  useEffect(() => {
+    let cancelled = false;
+    readAsset(assetPath)
+      .then(async response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load ${assetPath}`);
+        }
+        const nextEnvelope = normalizePageLayoutControlsEnvelope(JSON5.parse(await response.text()));
+        if (cancelled) return;
+        setEnvelope(nextEnvelope);
+        setControls(normalizeAppPageSvgControls(nextEnvelope.data.pageControls));
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [assetPath]);
+
+  const updateControl = useCallback((
+    key: keyof AppPageSvgControls,
+    value: string | number | boolean,
+  ) => {
+    setControls(previous => normalizeAppPageSvgControls({
+      ...previous,
+      [key]: value,
+    }));
+    setStatus('Unsaved changes');
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setControls(DEFAULT_APP_PAGE_SVG_CONTROLS);
+    setStatus('Unsaved changes');
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard?.writeText(JSON.stringify(controls, null, 2));
+    setStatus('Copied controls JSON');
+  }, [controls]);
+
+  const handleSave = useCallback(async () => {
+    if (!envelope) return;
+    setIsSaving(true);
+    try {
+      const nextEnvelope: PageLayoutControlsEnvelope = {
+        ...envelope,
+        data: {
+          ...envelope.data,
+          pageControls: controls,
+        },
+      };
+      const payload = new TextEncoder().encode(`${JSON.stringify(nextEnvelope, null, 2)}\n`);
+      await writeAsset(assetPath, payload);
+      setEnvelope(nextEnvelope);
+      setStatus('Saved');
+    } catch (error) {
+      logError('[StandalonePageLayoutControls] save failed', error);
+      setStatus(error instanceof Error ? error.message : 'Save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [assetPath, controls, envelope]);
+
+  return (
+    <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
+      <div style={selectedGamePanelStyle}>
+        <div style={standaloneHomepageToolbarStyle}>
+          <strong style={{ color: '#cffafe', fontSize: '0.88rem' }}>Page SVG Controls</strong>
+          <span style={standaloneHomepageToolbarSpacerStyle} />
+          <button type="button" style={standaloneHomepageToolbarButtonStyle} onClick={() => void handleCopy()}>
+            Copy
+          </button>
+          <button type="button" style={standaloneHomepageSavedButtonStyle} disabled={isSaving || isLoading} onClick={() => void handleSave()}>
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+          <button type="button" style={standaloneHomepageDangerButtonStyle} onClick={handleReset}>
+            Reset
+          </button>
+        </div>
+        <div style={selectedGamePanelCardStyle}>
+          <div style={{ color: '#cbd5e1', fontSize: '0.82rem' }}>{assetPath}</div>
+          {status ? <div style={{ color: status === 'Saved' ? '#bbf7d0' : '#fef3c7', fontSize: '0.82rem' }}>{status}</div> : null}
+        </div>
+        <div style={selectedGamePanelGridStyle}>
+          {pageLayoutControlRows.map(row => (
+            <label key={row.key} style={selectedGamePanelCardStyle}>
+              <span style={{ color: '#e2e8f0', fontWeight: 700 }}>{row.label}</span>
+              {row.type === 'boolean' ? (
+                <input
+                  type="checkbox"
+                  checked={Boolean(controls[row.key])}
+                  onChange={event => updateControl(row.key, event.target.checked)}
+                />
+              ) : row.type === 'color' ? (
+                <input
+                  type="color"
+                  value={String(controls[row.key])}
+                  style={selectedGamePanelInputStyle}
+                  onChange={event => updateControl(row.key, event.target.value)}
+                />
+              ) : (
+                <>
+                  <input
+                    type="range"
+                    min={row.min}
+                    max={row.max}
+                    step={row.step}
+                    value={Number(controls[row.key])}
+                    onChange={event => updateControl(row.key, Number(event.target.value))}
+                  />
+                  <input
+                    type="number"
+                    min={row.min}
+                    max={row.max}
+                    step={row.step}
+                    value={Number(controls[row.key])}
+                    style={selectedGamePanelInputStyle}
+                    onChange={event => updateControl(row.key, Number(event.target.value))}
+                  />
+                </>
+              )}
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const StandalonePanelPage: React.FC = () => {
   const [params, setParams] = useState<{
     panel: StandalonePanel;
@@ -3112,7 +3298,8 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'featured-showcase-controls' ||
         panel === 'homepage-layout-controls' ||
         panel === 'selected-game-layout-controls' ||
-        panel === 'games-catalog-layout-controls'
+        panel === 'games-catalog-layout-controls' ||
+        panel === 'page-layout-controls'
       )
     ) {
       return { panel, assetPath, locked, hideTools, reflectionOnly };
@@ -3199,6 +3386,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'games-catalog-layout-controls') {
     return <StandaloneGamesCatalogLayoutControls />;
+  }
+
+  if (params.panel === 'page-layout-controls') {
+    return <StandalonePageLayoutControls assetPath={params.assetPath} />;
   }
 
   return (

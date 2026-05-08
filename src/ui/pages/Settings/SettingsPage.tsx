@@ -9,13 +9,7 @@ import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
 import { SettingsPageContent, SettingsPageToolbar } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces'
 import { APP_VERSION } from '@/constants/version'
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps'
-import { ModelSelectionTab } from './tabs/ModelSelectionTab'
-import { InferenceSettingsTab } from './tabs/InferenceSettingsTab'
-import { ProviderConfigTab } from './tabs/ProviderConfigTab'
-import { NativeIntegrationTab } from './tabs/NativeIntegrationTab'
-import { AssetDeliveryTab } from './tabs/AssetDeliveryTab'
 import { DesktopCheckForUpdates } from '@/ui/components/DesktopCheckForUpdates/DesktopCheckForUpdates'
-import './SettingsPage.css'
 
 type TabType = 'models' | 'inference' | 'providers' | 'native' | 'assets'
 
@@ -64,16 +58,12 @@ export function SettingsPage() {
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
       <SettingsPageContent
+        activeTab={activeTab}
+        showAssetsTab={showAssetsTab}
         footer={
           <DesktopCheckForUpdates />
         }
-      >
-        {activeTab === 'models' && <ModelSelectionTab />}
-        {activeTab === 'inference' && <InferenceSettingsTab />}
-        {activeTab === 'providers' && <ProviderConfigTab />}
-        {activeTab === 'native' && <NativeIntegrationTab />}
-        {activeTab === 'assets' && showAssetsTab && <AssetDeliveryTab />}
-      </SettingsPageContent>
+      />
     </UnifiedPageShell>
   )
 }

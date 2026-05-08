@@ -9,7 +9,6 @@ import { SocialPageContent } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces
 import { APP_VERSION } from '@/constants/version';
 import { useSocialHubData } from '@/ui/pages/Social/hooks/useSocialHubData';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
-import './SocialPage.css';
 
 interface SocialPageProps {
   user: UserProfile | null;

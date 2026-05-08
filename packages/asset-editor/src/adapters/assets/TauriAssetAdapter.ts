@@ -1,10 +1,11 @@
 import { invoke } from '@tauri-apps/api/core'
+import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local'
 
 export function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
 
-const BROWSER_ASSET_INDEX_ENDPOINT = '/__asset-editor-api__/disk-resource-entries'
+const BROWSER_ASSET_INDEX_ENDPOINT = LocalApiEndpoint.AssetEditor.DiskResourceEntries
 
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -158,6 +159,21 @@ export async function writeAsset(
   path: string,
   content: Uint8Array
 ): Promise<void> {
+  if (!isTauri()) {
+    const response = await fetch(LocalApiEndpoint.AssetEditor.WriteAsset, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: normalizeResourcePath(path),
+        content: Array.from(content),
+      }),
+    })
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({})) as { error?: string }
+      throw new Error(data.error ?? `Failed to write asset: ${response.status}`)
+    }
+    return
+  }
   try {
     await invoke('write_asset', {
       path: normalizeResourcePath(path),

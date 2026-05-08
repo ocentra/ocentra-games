@@ -55,6 +55,14 @@ export interface PageLayoutDocument {
   kind: PageLayoutKind;
   slices: PageLayoutSlice[];
   layout: LayoutStructure;
+  pageControls?: {
+    accentColor?: string;
+    panelOpacity?: number;
+    density?: number;
+    stageScale?: number;
+    heroOffsetY?: number;
+    showGuides?: boolean;
+  };
   layoutControls?: SelectedGameLayoutControls;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
@@ -147,6 +155,9 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Layout' })
   override layout: LayoutStructure = cloneDefaultPageLayoutDocument().layout;
+
+  @serializable({ label: 'Page Controls' })
+  pageControls: PageLayoutDocument['pageControls'] = undefined;
 
   @serializable({ label: 'Layout Controls' })
   layoutControls: SelectedGameLayoutControls = {};

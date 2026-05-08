@@ -63,6 +63,8 @@ import {
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
+  LobbyPageContent,
+  MatchmakingPageContent,
   PlayerHubPageContent,
   SettingsPageContent,
   SettingsPageToolbar,
@@ -1663,6 +1665,7 @@ function PageLayoutMainAppPreview({
   const [shopTab, setShopTab] = useState<ShopTab>('Treasury')
   const [settingsTab, setSettingsTab] = useState<'models' | 'inference' | 'providers' | 'native' | 'assets'>('models')
   const [adminSearch, setAdminSearch] = useState('')
+  const pageControls = document.pageControls
 
   const content =
     kind === 'games' || kind === 'game-catalog' ? (
@@ -1679,6 +1682,7 @@ function PageLayoutMainAppPreview({
         acBalance={12450}
         onClearError={() => undefined}
         onBuy={() => undefined}
+        layoutControls={pageControls}
       />
     ) : kind === 'social' ? (
       <SocialPageContent
@@ -1707,6 +1711,7 @@ function PageLayoutMainAppPreview({
         onMarkRead={() => undefined}
         onMarkAllNotificationsRead={() => undefined}
         onAppendActivity={() => undefined}
+        layoutControls={pageControls}
       />
     ) : kind === 'competition' || kind === 'tournaments' || kind === 'tournament-detail' ? (
       <CompetitionPageContent
@@ -1723,10 +1728,12 @@ function PageLayoutMainAppPreview({
         nearbyBelow={previewLeaderboardEntries.slice(2, 3)}
         tournamentId="preview-bracket"
         tournamentRounds={[{ round: 1, matches: [1, 2, 3, 4] }, { round: 2, matches: [1, 2] }, { round: 3, matches: [1] }]}
+        pageMode={kind === 'tournaments' ? 'tournaments' : kind === 'tournament-detail' ? 'tournamentDetail' : 'competition'}
         onRefreshLeaderboard={() => undefined}
         onLoadBracket={() => undefined}
         onRegister={() => undefined}
         onMatchmaking={() => undefined}
+        layoutControls={pageControls}
       />
     ) : kind === 'leaderboard' || kind === 'game-leaderboard' || kind === 'ai-benchmark-leaderboard' ? (
       <CompetitionPageContent
@@ -1743,10 +1750,13 @@ function PageLayoutMainAppPreview({
         nearbyBelow={previewLeaderboardEntries.slice(2, 3)}
         tournamentId="preview-bracket"
         tournamentRounds={[{ round: 1, matches: [1, 2, 3, 4] }, { round: 2, matches: [1, 2] }]}
+        pageMode={kind === 'game-leaderboard' ? 'gameLeaderboard' : kind === 'ai-benchmark-leaderboard' ? 'aiBenchmarkLeaderboard' : 'leaderboard'}
+        gameId="claim:preview"
         onRefreshLeaderboard={() => undefined}
         onLoadBracket={() => undefined}
         onRegister={() => undefined}
         onMatchmaking={() => undefined}
+        layoutControls={pageControls}
       />
     ) : kind === 'profile' || kind === 'player-hub' ? (
       <PlayerHubPageContent
@@ -1760,6 +1770,7 @@ function PageLayoutMainAppPreview({
         onShop={() => undefined}
         onSettings={() => undefined}
         onLoadUser={() => undefined}
+        layoutControls={pageControls}
       />
     ) : kind === 'admin' ? (
       <AdminUsersPageContent
@@ -1776,21 +1787,51 @@ function PageLayoutMainAppPreview({
         onCancelDialog={() => undefined}
         onConfirmDialog={() => undefined}
         currentUserId="u-001"
+        layoutControls={pageControls}
       />
     ) : kind === 'settings' ? (
-      <SettingsPageContent>
-        <div className="model-list">
-          {['Local Model Selection', 'Inference Settings', 'Provider Config'].map((title) => (
-            <div key={title} className="model-item">
-              <div className="model-name">{title}</div>
-              <div className="model-quants">
-                <button className="quant-btn downloaded" type="button">Ready</button>
-                <button className="quant-btn" type="button">Configure</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </SettingsPageContent>
+      <SettingsPageContent
+        activeTab={settingsTab}
+        showAssetsTab
+        layoutControls={pageControls}
+      />
+    ) : kind === 'lobby' ? (
+      <LobbyPageContent
+        loading={false}
+        creating={false}
+        error={null}
+        gameId="claim:preview"
+        rooms={[
+          { roomId: 'room-alpha', roomType: 'public', gameType: 'claim', currentPlayers: 2, maxPlayers: 4, status: 'open' },
+          { roomId: 'room-beta', roomType: 'private', gameType: 'claim', currentPlayers: 3, maxPlayers: 4, status: 'waiting' },
+        ]}
+        busyRoomId={null}
+        onRefresh={() => undefined}
+        onCreateRoom={() => undefined}
+        onJoinRoom={() => undefined}
+        onLeaveRoom={() => undefined}
+        onMatchmaking={() => undefined}
+        layoutControls={pageControls}
+      />
+    ) : kind === 'matchmaking' ? (
+      <MatchmakingPageContent
+        gameId="claim:preview"
+        gameName="Claim"
+        humans={2}
+        ai={2}
+        ticket={{ ticketId: 'ticket-preview', queuePosition: 3 }}
+        status={{ status: 'queued', queuePosition: 3 }}
+        loading={false}
+        leaving={false}
+        error={null}
+        hasMatch={false}
+        queueStatusLabel="queued"
+        onQueue={() => undefined}
+        onLeave={() => undefined}
+        onRefreshStatus={() => undefined}
+        onOpenLobby={() => undefined}
+        layoutControls={pageControls}
+      />
     ) : (
       <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
     )
@@ -4102,6 +4143,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenPageLayoutControls = () => {
+    void createPanelWindow(
+      'page-layout-controls',
+      assetPath ?? assetId,
+      `${pageLayoutData?.title ?? 'Page'} Layout Controls`,
+      true
+    )
+  }
+
   const pageLayoutViewportToolbar = isPageLayoutMode ? (
     <div className="asset-catalog-preview__viewport-toolbar">
       <label className="asset-catalog-preview__viewport-select">
@@ -4255,6 +4305,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             type="button"
             className="asset-catalog-preview__edit-featured-button"
             onClick={handleOpenGamesCatalogLayoutControls}
+          >
+            Edit
+          </button>
+        )}
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenPageLayoutControls}
           >
             Edit
           </button>
