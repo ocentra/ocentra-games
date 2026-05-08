@@ -62,6 +62,10 @@ import {
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
 import { HomeShowcaseFrameControlsPanel } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrameControls';
+import {
+  DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS,
+  type GamesCatalogSvgLayoutControls,
+} from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcaseControls';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import type {
   SerializedUnifiedHeaderConfig,
@@ -108,6 +112,10 @@ import {
   type HomepageLayoutControlsMessage,
 } from '@/utils/homepageLayoutControlsChannel';
 import {
+  GAMES_CATALOG_LAYOUT_CONTROLS_CHANNEL,
+  type GamesCatalogLayoutControlsMessage,
+} from '@/utils/gamesCatalogLayoutControlsChannel';
+import {
   HEADER_PROFILE_CONTROLS_CHANNEL,
   type HeaderProfileControlsMessage,
 } from '@/utils/headerProfileControlsChannel';
@@ -117,6 +125,12 @@ import {
   normalizeHomepageLayoutControls,
   saveHomepageLayoutControlsToDisk,
 } from '@/utils/homepageLayoutControlsPersistence';
+import {
+  GAMES_CATALOG_LAYOUT_CONTROLS_RESOURCE_PATH,
+  loadGamesCatalogLayoutControlsFromDisk,
+  normalizeGamesCatalogLayoutControls,
+  saveGamesCatalogLayoutControlsToDisk,
+} from '@/utils/gamesCatalogLayoutControlsPersistence';
 import {
   SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL,
   type SelectedGameLayoutControlsMessage,
@@ -143,7 +157,8 @@ type StandalonePanel =
   | 'isolation'
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
-  | 'selected-game-layout-controls';
+  | 'selected-game-layout-controls'
+  | 'games-catalog-layout-controls';
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -1045,6 +1060,528 @@ const StandaloneFeaturedShowcaseControls: React.FC = () => (
     <FeaturedShowcaseControlsSurface />
   </div>
 );
+
+type GamesCatalogControlTab = 'overall' | 'header' | 'sidebar' | 'cards' | 'detail' | 'visibility';
+
+type GamesCatalogNumericControlKey = {
+  [Key in keyof GamesCatalogSvgLayoutControls]:
+    GamesCatalogSvgLayoutControls[Key] extends number ? Key : never
+}[keyof GamesCatalogSvgLayoutControls];
+
+type GamesCatalogBooleanControlKey = {
+  [Key in keyof GamesCatalogSvgLayoutControls]:
+    GamesCatalogSvgLayoutControls[Key] extends boolean ? Key : never
+}[keyof GamesCatalogSvgLayoutControls];
+
+type GamesCatalogColorControlKey = {
+  [Key in keyof GamesCatalogSvgLayoutControls]:
+    GamesCatalogSvgLayoutControls[Key] extends string ? Key : never
+}[keyof GamesCatalogSvgLayoutControls];
+
+const gamesCatalogControlTabs: Array<{ key: GamesCatalogControlTab; label: string }> = [
+  { key: 'overall', label: 'Overall' },
+  { key: 'header', label: 'Header' },
+  { key: 'sidebar', label: 'Side Panel' },
+  { key: 'cards', label: 'Cards' },
+  { key: 'detail', label: 'Popup' },
+  { key: 'visibility', label: 'Bounds' },
+];
+
+const gamesCatalogNumberControls: Array<{
+  key: GamesCatalogNumericControlKey;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  tab: GamesCatalogControlTab;
+}> = [
+  { key: 'outerInset', label: 'Outer Inset', min: 0, max: 64, step: 1, tab: 'overall' },
+  { key: 'gamesAreaPadding', label: 'Content Padding', min: 0, max: 80, step: 1, tab: 'overall' },
+  { key: 'cardGap', label: 'Grid Gap', min: 8, max: 96, step: 1, tab: 'overall' },
+  { key: 'cardTopClearance', label: 'Card Top Clearance', min: 0, max: 80, step: 1, tab: 'overall' },
+  { key: 'topBarInsetX', label: 'Header Side Inset', min: 0, max: 96, step: 1, tab: 'header' },
+  { key: 'topBarTopInset', label: 'Header Top Inset', min: 0, max: 64, step: 1, tab: 'header' },
+  { key: 'topBarHeight', label: 'Header Height', min: 0, max: 120, step: 1, tab: 'header' },
+  { key: 'toolbarButtonHeight', label: 'Control Height', min: 24, max: 64, step: 1, tab: 'header' },
+  { key: 'searchWidth', label: 'Search Width', min: 160, max: 520, step: 5, tab: 'header' },
+  { key: 'statsBoxWidth', label: 'Stat Box Width', min: 64, max: 150, step: 1, tab: 'header' },
+  { key: 'defaultSidebarWidth', label: 'Default Width', min: 180, max: 760, step: 5, tab: 'sidebar' },
+  { key: 'minSidebarWidth', label: 'Minimum Width', min: 140, max: 520, step: 5, tab: 'sidebar' },
+  { key: 'maxSidebarWidth', label: 'Maximum Width', min: 240, max: 900, step: 5, tab: 'sidebar' },
+  { key: 'sidebarHeaderHeight', label: 'Header Height', min: 36, max: 96, step: 1, tab: 'sidebar' },
+  { key: 'playerModeRowHeight', label: 'Player Row Height', min: 42, max: 82, step: 1, tab: 'sidebar' },
+  { key: 'categoryRowHeight', label: 'Category Row Height', min: 34, max: 72, step: 1, tab: 'sidebar' },
+  { key: 'subcategoryRowHeight', label: 'Subcategory Row Height', min: 22, max: 48, step: 1, tab: 'sidebar' },
+  { key: 'minCardWidthPx', label: 'Minimum Card Width', min: 180, max: 520, step: 5, tab: 'cards' },
+  { key: 'maxCardWidthPx', label: 'Maximum Card Width', min: 220, max: 680, step: 5, tab: 'cards' },
+  { key: 'maxGridColumns', label: 'Maximum Columns', min: 1, max: 8, step: 1, tab: 'cards' },
+  { key: 'cardHeight', label: 'Card Height', min: 360, max: 820, step: 5, tab: 'cards' },
+  { key: 'cardPadding', label: 'Card Padding', min: 0, max: 36, step: 1, tab: 'cards' },
+  { key: 'cardImageHeight', label: 'Image Height', min: 0, max: 340, step: 1, tab: 'cards' },
+  { key: 'cardRadius', label: 'Card Radius', min: 0, max: 36, step: 1, tab: 'cards' },
+  { key: 'cardTitleFont', label: 'Title Font', min: 12, max: 28, step: 0.5, tab: 'cards' },
+  { key: 'cardDescriptionFont', label: 'Description Font', min: 10, max: 20, step: 0.5, tab: 'cards' },
+  { key: 'cardMetaPillHeight', label: 'Meta Pill Height', min: 20, max: 44, step: 1, tab: 'cards' },
+  { key: 'cardMetaGap', label: 'Meta Gap', min: 2, max: 24, step: 1, tab: 'cards' },
+  { key: 'detailPanelWidth', label: 'Popup Width', min: 720, max: 1680, step: 10, tab: 'detail' },
+  { key: 'detailPanelHeight', label: 'Popup Height', min: 420, max: 1000, step: 10, tab: 'detail' },
+  { key: 'topBarFillOpacity', label: 'Header Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'header' },
+  { key: 'topBarStrokeWidth', label: 'Header Edge Width', min: 0, max: 6, step: 0.1, tab: 'header' },
+  { key: 'topBarBackdropBlur', label: 'Header Backdrop Blur', min: 0, max: 32, step: 1, tab: 'header' },
+  { key: 'controlFillOpacity', label: 'Control Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'header' },
+  { key: 'controlStrokeWidth', label: 'Control Edge Width', min: 0, max: 6, step: 0.1, tab: 'header' },
+  { key: 'controlGlowBlur', label: 'Control Glow Blur', min: 0, max: 24, step: 1, tab: 'header' },
+  { key: 'controlGlowOpacity', label: 'Control Glow Opacity', min: 0, max: 1, step: 0.01, tab: 'header' },
+  { key: 'sidebarFillOpacity', label: 'Panel Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'sidebar' },
+  { key: 'sidebarStrokeWidth', label: 'Panel Edge Width', min: 0, max: 6, step: 0.1, tab: 'sidebar' },
+  { key: 'sidebarHeaderFillOpacity', label: 'Header Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'sidebar' },
+  { key: 'sidebarRowFillOpacity', label: 'Row Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'sidebar' },
+  { key: 'sidebarRowActiveFillOpacity', label: 'Active Row Opacity', min: 0, max: 1, step: 0.01, tab: 'sidebar' },
+  { key: 'sidebarBackdropBlur', label: 'Panel Backdrop Blur', min: 0, max: 32, step: 1, tab: 'sidebar' },
+  { key: 'gamesAreaFillOpacity', label: 'Main Panel Opacity', min: 0, max: 1, step: 0.01, tab: 'overall' },
+  { key: 'gamesAreaStrokeWidth', label: 'Main Panel Edge Width', min: 0, max: 6, step: 0.1, tab: 'overall' },
+  { key: 'gamesAreaBackdropBlur', label: 'Main Panel Backdrop Blur', min: 0, max: 32, step: 1, tab: 'overall' },
+  { key: 'cardFillOpacity', label: 'Card Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardStrokeWidth', label: 'Card Edge Width', min: 0, max: 8, step: 0.1, tab: 'cards' },
+  { key: 'cardRingStrokeWidth', label: 'Card Inner Ring Width', min: 0, max: 6, step: 0.1, tab: 'cards' },
+  { key: 'cardRingOpacity', label: 'Card Inner Ring Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardGlowBlur', label: 'Card Glow Blur', min: 0, max: 24, step: 1, tab: 'cards' },
+  { key: 'cardGlowOpacity', label: 'Card Glow Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardBackdropBlur', label: 'Card Backdrop Blur', min: 0, max: 32, step: 1, tab: 'cards' },
+  { key: 'cardImageOverlayOpacity', label: 'Image Dark Overlay', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardImageCurveOpacity', label: 'Image Curve Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardCategoryBadgeOpacity', label: 'Category Badge Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardMetaFillOpacity', label: 'Meta Pill Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardTopClampHeight', label: 'Top Clamp Height', min: 0, max: 28, step: 1, tab: 'cards' },
+  { key: 'cardTopClampFillOpacity', label: 'Top Clamp Opacity', min: 0, max: 1, step: 0.01, tab: 'cards' },
+  { key: 'cardTopClampStrokeWidth', label: 'Top Clamp Edge Width', min: 0, max: 8, step: 0.1, tab: 'cards' },
+  { key: 'detailOverlayOpacity', label: 'Overlay Opacity', min: 0, max: 1, step: 0.01, tab: 'detail' },
+  { key: 'detailPanelFillOpacity', label: 'Panel Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'detail' },
+  { key: 'detailPanelStrokeWidth', label: 'Panel Edge Width', min: 0, max: 8, step: 0.1, tab: 'detail' },
+  { key: 'detailHeaderFillOpacity', label: 'Header Fill Opacity', min: 0, max: 1, step: 0.01, tab: 'detail' },
+  { key: 'detailCardFillOpacity', label: 'Body Card Opacity', min: 0, max: 1, step: 0.01, tab: 'detail' },
+  { key: 'detailBackdropBlur', label: 'Popup Backdrop Blur', min: 0, max: 32, step: 1, tab: 'detail' },
+  { key: 'debugBoundsStrokeWidth', label: 'Bounds Edge Width', min: 0.5, max: 8, step: 0.5, tab: 'visibility' },
+  { key: 'debugBoundsFillOpacity', label: 'Bounds Fill Opacity', min: 0, max: 0.5, step: 0.01, tab: 'visibility' },
+];
+
+const gamesCatalogBooleanControls: Array<{
+  key: GamesCatalogBooleanControlKey;
+  label: string;
+  tab: GamesCatalogControlTab;
+}> = [
+  { key: 'showToolbar', label: 'Show header controls', tab: 'header' },
+  { key: 'showSearch', label: 'Show search', tab: 'header' },
+  { key: 'showViewButtons', label: 'Show Grid/List/A-Z', tab: 'header' },
+  { key: 'showQualityFilter', label: 'Show quality filter', tab: 'header' },
+  { key: 'showSortFilter', label: 'Show sort filter', tab: 'header' },
+  { key: 'showStats', label: 'Show stat boxes', tab: 'header' },
+  { key: 'showSidebar', label: 'Show side panel', tab: 'sidebar' },
+  { key: 'showPlayerModes', label: 'Show player filters', tab: 'sidebar' },
+  { key: 'showCategoryList', label: 'Show category rows', tab: 'sidebar' },
+  { key: 'showCardImages', label: 'Show card images', tab: 'cards' },
+  { key: 'showCardCategoryBadge', label: 'Show category badge', tab: 'cards' },
+  { key: 'showCardStatusBadge', label: 'Show status badge', tab: 'cards' },
+  { key: 'showCardMeta', label: 'Show card meta pills', tab: 'cards' },
+  { key: 'showCardTopClamp', label: 'Show top glow clamp', tab: 'cards' },
+  { key: 'enableDetailOverlay', label: 'Enable click popup', tab: 'detail' },
+  { key: 'showDetailReadiness', label: 'Show popup readiness', tab: 'detail' },
+  { key: 'showDetailActions', label: 'Show popup actions', tab: 'detail' },
+  { key: 'showDebugBounds', label: 'Show layout bounds', tab: 'visibility' },
+  { key: 'showPageBounds', label: 'Show page bounds', tab: 'visibility' },
+  { key: 'showHeaderBounds', label: 'Show header bounds', tab: 'visibility' },
+  { key: 'showSidebarBounds', label: 'Show side panel bounds', tab: 'visibility' },
+  { key: 'showGamesAreaBounds', label: 'Show game area bounds', tab: 'visibility' },
+  { key: 'showCardBounds', label: 'Show card bounds', tab: 'visibility' },
+  { key: 'showDetailBounds', label: 'Show popup bounds', tab: 'visibility' },
+];
+
+const gamesCatalogColorControls: Array<{
+  key: GamesCatalogColorControlKey;
+  label: string;
+  tab: GamesCatalogControlTab;
+}> = [
+  { key: 'gamesAreaFillColor', label: 'Main Panel Fill', tab: 'overall' },
+  { key: 'gamesAreaStrokeColor', label: 'Main Panel Edge', tab: 'overall' },
+  { key: 'topBarFillColor', label: 'Header Fill', tab: 'header' },
+  { key: 'topBarStrokeColor', label: 'Header Edge', tab: 'header' },
+  { key: 'controlFillColor', label: 'Control Fill', tab: 'header' },
+  { key: 'controlStrokeColor', label: 'Control Edge', tab: 'header' },
+  { key: 'controlGlowColor', label: 'Control Glow', tab: 'header' },
+  { key: 'activeControlStartColor', label: 'Active Gradient Start', tab: 'header' },
+  { key: 'activeControlEndColor', label: 'Active Gradient End', tab: 'header' },
+  { key: 'sidebarFillColor', label: 'Panel Fill', tab: 'sidebar' },
+  { key: 'sidebarStrokeColor', label: 'Panel Edge', tab: 'sidebar' },
+  { key: 'sidebarHeaderFillColor', label: 'Header Fill', tab: 'sidebar' },
+  { key: 'sidebarDividerColor', label: 'Divider', tab: 'sidebar' },
+  { key: 'sidebarRowFillColor', label: 'Row Fill', tab: 'sidebar' },
+  { key: 'sidebarRowActiveFillColor', label: 'Active Row Fill', tab: 'sidebar' },
+  { key: 'cardOuterFillColor', label: 'Outer Fill', tab: 'cards' },
+  { key: 'cardFillColor', label: 'Inner Fill', tab: 'cards' },
+  { key: 'cardStrokeColor', label: 'Selected Edge', tab: 'cards' },
+  { key: 'cardRingColor', label: 'Inner Ring', tab: 'cards' },
+  { key: 'cardGlowColor', label: 'Glow', tab: 'cards' },
+  { key: 'cardEdgeStartColor', label: 'Edge Start', tab: 'cards' },
+  { key: 'cardEdgeMiddleColor', label: 'Edge Middle', tab: 'cards' },
+  { key: 'cardEdgeEndColor', label: 'Edge End', tab: 'cards' },
+  { key: 'cardTextColor', label: 'Title Text', tab: 'cards' },
+  { key: 'cardDescriptionColor', label: 'Description Text', tab: 'cards' },
+  { key: 'cardImageOverlayColor', label: 'Image Overlay', tab: 'cards' },
+  { key: 'cardCategoryBadgeFillColor', label: 'Category Badge Fill', tab: 'cards' },
+  { key: 'cardCategoryBadgeStrokeColor', label: 'Category Badge Edge', tab: 'cards' },
+  { key: 'cardMetaFillColor', label: 'Meta Pill Fill', tab: 'cards' },
+  { key: 'cardMetaStrokeColor', label: 'Meta Pill Edge', tab: 'cards' },
+  { key: 'cardTopClampStrokeColor', label: 'Top Clamp Edge', tab: 'cards' },
+  { key: 'detailOverlayColor', label: 'Overlay Color', tab: 'detail' },
+  { key: 'detailPanelFillColor', label: 'Panel Fill', tab: 'detail' },
+  { key: 'detailPanelStrokeColor', label: 'Panel Edge', tab: 'detail' },
+  { key: 'detailHeaderFillColor', label: 'Header Fill', tab: 'detail' },
+  { key: 'detailCardFillColor', label: 'Body Card Fill', tab: 'detail' },
+  { key: 'detailCardStrokeColor', label: 'Body Card Edge', tab: 'detail' },
+  { key: 'debugPageBoundsColor', label: 'Page Bounds', tab: 'visibility' },
+  { key: 'debugHeaderBoundsColor', label: 'Header Bounds', tab: 'visibility' },
+  { key: 'debugSidebarBoundsColor', label: 'Side Bounds', tab: 'visibility' },
+  { key: 'debugGamesBoundsColor', label: 'Game Area Bounds', tab: 'visibility' },
+  { key: 'debugCardBoundsColor', label: 'Card Bounds', tab: 'visibility' },
+];
+
+const gamesCatalogPanelStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: '1rem',
+  padding: '1rem',
+};
+
+const gamesCatalogPanelGridStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 1fr))',
+  gap: '0.75rem',
+};
+
+const gamesCatalogPanelCardStyle: React.CSSProperties = {
+  border: '1px solid rgba(103, 232, 249, 0.22)',
+  borderRadius: '0.75rem',
+  background: 'rgba(2, 6, 23, 0.72)',
+  padding: '0.85rem',
+};
+
+const gamesCatalogPanelInputStyle: React.CSSProperties = {
+  width: '100%',
+  border: '1px solid rgba(103, 232, 249, 0.32)',
+  borderRadius: '0.45rem',
+  background: 'rgba(2, 6, 23, 0.8)',
+  color: '#e0f2fe',
+  padding: '0.5rem',
+};
+
+const gamesCatalogResetMiniButtonStyle: React.CSSProperties = {
+  border: '1px solid rgba(125, 211, 252, 0.35)',
+  borderRadius: '0.35rem',
+  background: 'rgba(8, 47, 73, 0.62)',
+  color: '#bae6fd',
+  cursor: 'pointer',
+  fontSize: '0.68rem',
+  padding: '0.22rem 0.45rem',
+};
+
+const StandaloneGamesCatalogLayoutControls: React.FC = () => {
+  const [controls, setControls] = useState<GamesCatalogSvgLayoutControls>(
+    DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS
+  );
+  const [activeTab, setActiveTab] = useState<GamesCatalogControlTab>('overall');
+  const [status, setStatus] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [copiedValue, setCopiedValue] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const controlsRef = useRef<GamesCatalogSvgLayoutControls>(
+    DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS
+  );
+
+  useEffect(() => {
+    controlsRef.current = controls;
+  }, [controls]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadGamesCatalogLayoutControlsFromDisk().then((nextControls) => {
+      if (cancelled) {
+        return;
+      }
+      const normalized = normalizeGamesCatalogLayoutControls(nextControls);
+      setControls(normalized);
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: normalized,
+      } satisfies GamesCatalogLayoutControlsMessage);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(GAMES_CATALOG_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+
+    const handler = (event: MessageEvent<GamesCatalogLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: controlsRef.current,
+        } satisfies GamesCatalogLayoutControlsMessage);
+        return;
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setControls(normalizeGamesCatalogLayoutControls(event.data.controls));
+      }
+    };
+
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies GamesCatalogLayoutControlsMessage);
+    return () => {
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, []);
+
+  const updateControls = useCallback((value: React.SetStateAction<GamesCatalogSvgLayoutControls>) => {
+    setControls((previousControls) => {
+      const nextControls = normalizeGamesCatalogLayoutControls(
+        typeof value === 'function' ? value(previousControls) : value
+      );
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: nextControls,
+      } satisfies GamesCatalogLayoutControlsMessage);
+      return nextControls;
+    });
+  }, []);
+
+  const updateNumberControl = useCallback((
+    key: GamesCatalogNumericControlKey,
+    value: number
+  ) => {
+    updateControls((previousControls) => ({
+      ...previousControls,
+      [key]: value,
+    }));
+  }, [updateControls]);
+
+  const updateBooleanControl = useCallback((
+    key: GamesCatalogBooleanControlKey,
+    value: boolean
+  ) => {
+    updateControls((previousControls) => ({
+      ...previousControls,
+      [key]: value,
+    }));
+  }, [updateControls]);
+
+  const updateColorControl = useCallback((
+    key: GamesCatalogColorControlKey,
+    value: string
+  ) => {
+    updateControls((previousControls) => ({
+      ...previousControls,
+      [key]: value,
+    }));
+  }, [updateControls]);
+
+  const resetControl = useCallback((key: keyof GamesCatalogSvgLayoutControls) => {
+    updateControls((previousControls) => ({
+      ...previousControls,
+      [key]: DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS[key],
+    }));
+  }, [updateControls]);
+
+  const copyValue = useMemo(() => JSON.stringify(controls, null, 2), [controls]);
+  const isCopyCurrent = copiedValue === copyValue;
+
+  const handleCopy = useCallback(async () => {
+    await copyTextToClipboard(copyValue);
+    setCopiedValue(copyValue);
+  }, [copyValue]);
+
+  const handleSave = useCallback(async () => {
+    if (isSaving) {
+      return;
+    }
+    setIsSaving(true);
+    setStatus('Saving...');
+    try {
+      const savedControls = await saveGamesCatalogLayoutControlsToDisk(controls);
+      updateControls(savedControls);
+      const syncResult = await syncSavedLayoutAssetToR2(GAMES_CATALOG_LAYOUT_CONTROLS_RESOURCE_PATH);
+      setStatus(syncResult.message);
+    } catch (error) {
+      logError('[StandaloneGamesCatalogLayoutControls] save failed', error);
+      setStatus(error instanceof Error ? error.message : 'Save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [controls, isSaving, updateControls]);
+
+  const handleReset = useCallback(() => {
+    updateControls(DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS);
+  }, [updateControls]);
+
+  const handleResetTab = useCallback(() => {
+    const tabKeys = [
+      ...gamesCatalogNumberControls.filter(field => field.tab === activeTab).map(field => field.key),
+      ...gamesCatalogBooleanControls.filter(field => field.tab === activeTab).map(field => field.key),
+      ...gamesCatalogColorControls.filter(field => field.tab === activeTab).map(field => field.key),
+    ];
+    updateControls((previousControls) => ({
+      ...previousControls,
+      ...Object.fromEntries(tabKeys.map(key => [
+        key,
+        DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS[key],
+      ])),
+    }));
+  }, [activeTab, updateControls]);
+
+  const visibleNumberControls = gamesCatalogNumberControls.filter(field => field.tab === activeTab);
+  const visibleBooleanControls = gamesCatalogBooleanControls.filter(field => field.tab === activeTab);
+  const visibleColorControls = gamesCatalogColorControls.filter(field => field.tab === activeTab);
+
+  return (
+    <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
+      <div style={gamesCatalogPanelStyle}>
+        <div style={standaloneHomepageToolbarStyle}>
+          <strong style={{ color: '#cffafe', fontSize: '0.88rem' }}>Games Catalog SVG</strong>
+          <span style={standaloneHomepageToolbarSpacerStyle} />
+          <button
+            type="button"
+            style={isCopyCurrent ? standaloneHomepageSavedButtonStyle : standaloneHomepageToolbarButtonStyle}
+            onClick={() => void handleCopy()}
+          >
+            {isCopyCurrent ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageSavedButtonStyle}
+            disabled={isSaving}
+            onClick={() => void handleSave()}
+          >
+            {isSaving ? 'Saving...' : 'Save + Sync'}
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageDangerButtonStyle}
+            onClick={handleResetTab}
+          >
+            Reset Tab
+          </button>
+          <button
+            type="button"
+            style={standaloneHomepageDangerButtonStyle}
+            onClick={handleReset}
+          >
+            Reset All
+          </button>
+        </div>
+        {status ? (
+          <div style={{ color: '#bbf7d0', fontSize: '0.75rem' }}>
+            {status}
+          </div>
+        ) : null}
+        <div style={standaloneHomepageSegmentedControlStyle}>
+          {gamesCatalogControlTabs.map(tab => (
+            <button
+              key={tab.key}
+              type="button"
+              style={
+                activeTab === tab.key
+                  ? standaloneHomepageActiveTabButtonStyle
+                  : standaloneHomepageTabButtonStyle
+              }
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+        <div style={gamesCatalogPanelGridStyle}>
+          {visibleNumberControls.map((field) => (
+            <label key={field.key} style={gamesCatalogPanelCardStyle}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
+                <span>{field.label}</span>
+                <button type="button" style={gamesCatalogResetMiniButtonStyle} onClick={() => resetControl(field.key)}>
+                  Reset
+                </button>
+              </span>
+              <input
+                type="range"
+                min={field.min}
+                max={field.max}
+                step={field.step}
+                value={controls[field.key]}
+                onChange={(event) => updateNumberControl(field.key, Number(event.target.value))}
+              />
+              <input
+                type="number"
+                min={field.min}
+                max={field.max}
+                step={field.step}
+                value={controls[field.key]}
+                style={gamesCatalogPanelInputStyle}
+                onChange={(event) => updateNumberControl(field.key, Number(event.target.value))}
+              />
+            </label>
+          ))}
+          {visibleBooleanControls.map((field) => (
+            <label key={field.key} style={{
+              ...gamesCatalogPanelCardStyle,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.75rem',
+            }}>
+              <span style={{ color: '#cffafe', fontWeight: 800 }}>
+                {field.label}
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <button type="button" style={gamesCatalogResetMiniButtonStyle} onClick={() => resetControl(field.key)}>
+                  Reset
+                </button>
+                <input
+                  type="checkbox"
+                  checked={controls[field.key]}
+                  onChange={(event) => updateBooleanControl(field.key, event.target.checked)}
+                />
+              </span>
+            </label>
+          ))}
+          {visibleColorControls.map((field) => (
+            <label key={field.key} style={gamesCatalogPanelCardStyle}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
+                <span>{field.label}</span>
+                <button type="button" style={gamesCatalogResetMiniButtonStyle} onClick={() => resetControl(field.key)}>
+                  Reset
+                </button>
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: '3.5rem 1fr', gap: '0.5rem', alignItems: 'center' }}>
+                <input
+                  type="color"
+                  value={controls[field.key]}
+                  onChange={(event) => updateColorControl(field.key, event.target.value)}
+                  style={{ width: '100%', height: '2.4rem', border: '1px solid rgba(103, 232, 249, 0.32)', borderRadius: '0.45rem', background: 'transparent' }}
+                />
+                <input
+                  type="text"
+                  value={controls[field.key]}
+                  style={gamesCatalogPanelInputStyle}
+                  onChange={(event) => updateColorControl(field.key, event.target.value)}
+                />
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function serializeHeaderConfigForPreview(config: UnifiedHeaderConfig): SerializedUnifiedHeaderConfig {
   const serializedCandidate: UnifiedHeaderConfigInput = {
@@ -2574,7 +3111,8 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'isolation' ||
         panel === 'featured-showcase-controls' ||
         panel === 'homepage-layout-controls' ||
-        panel === 'selected-game-layout-controls'
+        panel === 'selected-game-layout-controls' ||
+        panel === 'games-catalog-layout-controls'
       )
     ) {
       return { panel, assetPath, locked, hideTools, reflectionOnly };
@@ -2605,7 +3143,8 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'isolation' &&
     params.panel !== 'featured-showcase-controls' &&
     params.panel !== 'homepage-layout-controls' &&
-    params.panel !== 'selected-game-layout-controls';
+    params.panel !== 'selected-game-layout-controls' &&
+    params.panel !== 'games-catalog-layout-controls';
   const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(
     shouldLoadStandaloneAsset ? params.assetPath : null
   );
@@ -2656,6 +3195,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'selected-game-layout-controls') {
     return <StandaloneSelectedGameLayoutControls />;
+  }
+
+  if (params.panel === 'games-catalog-layout-controls') {
+    return <StandaloneGamesCatalogLayoutControls />;
   }
 
   return (

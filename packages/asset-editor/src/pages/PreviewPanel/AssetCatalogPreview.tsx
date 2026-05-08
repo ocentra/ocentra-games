@@ -36,6 +36,7 @@ import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGa
 import type {
   CategoryWithSubs,
   GamesExplorerGame,
+  GamesExplorerGameDetail,
   PlayerModeFilter,
   QualityFilter,
   SortBy,
@@ -55,6 +56,10 @@ import {
   type HomeShowcasePreviewLayoutMode,
 } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrame.types'
 import { GamesCatalogSvgShowcase } from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcase'
+import {
+  DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS,
+  type GamesCatalogSvgLayoutControls,
+} from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcaseControls'
 import {
   AdminUsersPageContent,
   CompetitionPageContent,
@@ -125,6 +130,10 @@ import {
   type HomepageLayoutControlsMessage,
 } from '@/utils/homepageLayoutControlsChannel'
 import {
+  GAMES_CATALOG_LAYOUT_CONTROLS_CHANNEL,
+  type GamesCatalogLayoutControlsMessage,
+} from '@/utils/gamesCatalogLayoutControlsChannel'
+import {
   HEADER_PROFILE_CONTROLS_CHANNEL,
   type HeaderProfileControlsMessage,
 } from '@/utils/headerProfileControlsChannel'
@@ -133,6 +142,10 @@ import {
   loadHomepageLayoutControlsFromDisk,
   normalizeHomepageLayoutControls,
 } from '@/utils/homepageLayoutControlsPersistence'
+import {
+  loadGamesCatalogLayoutControlsFromDisk,
+  normalizeGamesCatalogLayoutControls,
+} from '@/utils/gamesCatalogLayoutControlsPersistence'
 import {
   SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL,
   type SelectedGameLayoutControlsMessage,
@@ -619,6 +632,7 @@ type GameWithMetadata = {
   source?: 'asset' | 'catalog'
   playerMode?: string | null
   alsoKnownAs?: string[]
+  origin?: string
 }
 
 const RELEASE_STATUSES = new Set<NonNullable<GameHome['releaseStatus']>>([
@@ -649,6 +663,7 @@ type LocalGameCatalogEntry = {
   deck?: string
   difficulty?: string
   duration?: string
+  origin?: string
   category?: string
   subcategory?: string | null
   playerMode?: string | null
@@ -708,6 +723,7 @@ function toCatalogIndexEntries(raw: unknown): LocalGameCatalogEntry[] {
       deck: asStringValue(record.deck),
       difficulty: asStringValue(record.difficulty),
       duration: asStringValue(record.duration),
+      origin: asStringValue(record.origin),
       category: asStringValue(record.category) ?? asStringValue(record.gameCategory),
       subcategory: record.subcategory === null ? null : asStringValue(record.subcategory),
       playerMode: record.playerMode === null ? null : normalizePlayerMode(record.playerMode),
@@ -767,6 +783,280 @@ function fallbackCompletenessFromInfo(infoData: LooseRecord): Record<string, boo
     ai: Boolean(infoData.aiContent),
     sources: Boolean(infoData.sourcesContent),
   }
+}
+
+function compactDetailText(parts: Array<string | undefined>): string | undefined {
+  const text = parts
+    .map(part => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join('\n\n')
+  return text || undefined
+}
+
+function previewListItemText(value: unknown): string {
+  const record = asPreviewRecord(value)
+  const name = asStringValue(record.name) ?? asStringValue(record.title) ?? asStringValue(record.label)
+  const description =
+    asStringValue(record.description) ??
+    asStringValue(record.body) ??
+    asStringValue(record.text) ??
+    asStringValue(record.value)
+  if (name && description) return `${name}: ${description}`
+  if (name) return name
+  if (description) return description
+  return previewValueText(value)
+}
+
+function previewValueText(value: unknown): string {
+  if (value == null || value === '') return ''
+  if (typeof value === 'string') return value.trim()
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  if (Array.isArray(value)) {
+    return value
+      .map(item => previewListItemText(item))
+      .filter(Boolean)
+      .map(item => `- ${item}`)
+      .join('\n')
+  }
+  const record = asPreviewRecord(value)
+  const direct =
+    asStringValue(record.text) ??
+    asStringValue(record.description) ??
+    asStringValue(record.body) ??
+    asStringValue(record.value)
+  if (direct) return direct
+  if (Array.isArray(record.content)) {
+    return record.content.map(previewBlockText).filter(Boolean).join('\n')
+  }
+  if (Array.isArray(record.items)) {
+    return record.items.map(item => `- ${previewListItemText(item)}`).filter(Boolean).join('\n')
+  }
+  return Object.entries(record)
+    .filter(([key, entryValue]) =>
+      !['id', 'type', 'kind', 'style', 'level', 'overrides'].includes(key) &&
+      entryValue !== null &&
+      entryValue !== undefined &&
+      entryValue !== ''
+    )
+    .map(([key, entryValue]) => {
+      const rendered = previewValueText(entryValue)
+      return rendered ? `${key}: ${rendered}` : ''
+    })
+    .filter(Boolean)
+    .join('\n')
+}
+
+function previewBlockText(value: unknown): string {
+  const record = asPreviewRecord(value)
+  const direct = asStringValue(record.text) ?? asStringValue(record.description)
+  if (direct) return direct
+  if (Array.isArray(record.content)) {
+    return record.content.map(previewBlockText).filter(Boolean).join('\n')
+  }
+  if (Array.isArray(record.items)) {
+    return record.items.map(item => `- ${previewListItemText(item)}`).filter(Boolean).join('\n')
+  }
+  return ''
+}
+
+function gameInfoSectionText(infoData: LooseRecord): Record<string, string> {
+  const result: Record<string, string> = {}
+  const sections = Array.isArray(infoData.sections) ? infoData.sections : []
+  for (const section of sections) {
+    const sectionRecord = asPreviewRecord(section)
+    const type = asStringValue(sectionRecord.type)
+    if (!type) continue
+    const pages = Array.isArray(sectionRecord.pages) ? sectionRecord.pages : []
+    const pageText = pages
+      .map(page => {
+        const pageRecord = asPreviewRecord(page)
+        const content = Array.isArray(pageRecord.content) ? pageRecord.content : []
+        return content.map(previewBlockText).filter(Boolean).join('\n')
+      })
+      .filter(Boolean)
+      .join('\n\n')
+    if (pageText) result[type] = pageText
+  }
+  return result
+}
+
+function enrichGameMetadataFromBundle(
+  item: GameWithMetadata,
+  bundle: SelectedGamePreviewBundle
+): GameWithMetadata {
+  const infoData = dataOfPreview(bundle.gameInfo)
+  const gameData = dataOfPreview(bundle.gameMode)
+  const setupContent = asPreviewRecord(infoData.setupContent)
+  const mechanicsContract = asPreviewRecord(infoData.mechanicsContract)
+  const playerCount = asPreviewRecord(mechanicsContract.playerCount)
+  const deckModelData = dataOfPreview(bundle.deckModel)
+  const hero = asPreviewRecord(infoData.hero)
+  const home = item.home
+  const minPlayers =
+    asNumberValue(infoData.minPlayers) ??
+    asNumberValue(gameData.minPlayers) ??
+    asNumberValue(playerCount.min) ??
+    home.minPlayers
+  const maxPlayers =
+    asNumberValue(infoData.maxPlayers) ??
+    asNumberValue(gameData.maxPlayers) ??
+    asNumberValue(playerCount.max) ??
+    home.maxPlayers
+  const playersDisplay =
+    asStringValue(infoData.playersDisplay) ??
+    home.playersDisplay ??
+    (minPlayers != null && maxPlayers != null ? `${minPlayers}-${maxPlayers}` : undefined)
+
+  return {
+    ...item,
+    home: {
+      ...home,
+      gameId: home.gameId,
+      guid: home.guid,
+      name:
+        asStringValue(hero.title) ??
+        asStringValue(infoData.originName) ??
+        home.name ??
+        item.entry.displayName ??
+        gameMetadataId(item),
+      tags: asStringArray(infoData.tags) ?? home.tags,
+      tagline: asStringValue(infoData.tagline) ?? asStringValue(hero.subtitle) ?? home.tagline,
+      shortDescription:
+        firstInfoParagraph(infoData) ??
+        asStringValue(infoData.Player) ??
+        asStringValue(infoData.description) ??
+        home.shortDescription,
+      description: asStringValue(infoData.description) ?? home.description,
+      minPlayers,
+      maxPlayers,
+      playersDisplay,
+      gameCategory: asStringValue(infoData.gameCategory) ?? home.gameCategory,
+      subcategory: infoData.subcategory === null ? null : asStringValue(infoData.subcategory) ?? home.subcategory,
+      difficulty: asStringValue(infoData.difficulty) ?? home.difficulty,
+      duration: asStringValue(infoData.duration) ?? home.duration,
+      deck:
+        asStringValue(infoData.deck) ??
+        asStringValue(setupContent.deck) ??
+        asStringValue(deckModelData.deckType) ??
+        asStringValue(asPreviewRecord(gameData.deckAsset).displayName) ??
+        home.deck,
+      quality: asStringValue(infoData.quality) ?? home.quality ?? 'complete',
+      completeness: asBooleanRecord(infoData.completeness) ?? home.completeness ?? fallbackCompletenessFromInfo(infoData),
+      bannerImage: asStringValue(gameData.bannerImage) ?? home.bannerImage,
+      gameIcon: asStringValue(gameData.gameIcon) ?? home.gameIcon,
+    },
+    playerMode: normalizePlayerMode(infoData.playerMode) ?? item.playerMode,
+    alsoKnownAs: asStringArray(infoData.alsoKnownAs) ?? item.alsoKnownAs,
+    origin: asStringValue(infoData.origin) ?? item.origin,
+  }
+}
+
+function buildAssetGameDetail(
+  item: GameWithMetadata,
+  bundle: SelectedGamePreviewBundle
+): GamesExplorerGameDetail {
+  const enriched = enrichGameMetadataFromBundle(item, bundle)
+  const infoData = dataOfPreview(bundle.gameInfo)
+  const sectionText = gameInfoSectionText(infoData)
+  const rulesData = dataOfPreview(bundle.rules)
+  const strategyData = dataOfPreview(bundle.strategy)
+  const scoringData = dataOfPreview(bundle.scoring)
+  const home = enriched.home
+  const overviewDescription =
+    asStringValue(infoData.description) ??
+    sectionText.about ??
+    home.description ??
+    home.shortDescription
+
+  return {
+    filename: item.path,
+    name: home.name,
+    guid: item.entry.guid,
+    quality: home.quality,
+    source: 'asset',
+    completeness: home.completeness ?? undefined,
+    overview: {
+      description: overviewDescription,
+      type: home.subcategory ? `${home.gameCategory} / ${home.subcategory}` : home.gameCategory,
+      origin: asStringValue(infoData.origin),
+      players: home.playersDisplay,
+      deck: home.deck,
+      difficulty: home.difficulty,
+      duration: home.duration,
+    },
+    history: infoData.historyContent ?? sectionText.history,
+    setup: infoData.setupContent ?? sectionText.rules,
+    rules: compactDetailText([
+      sectionText.rules,
+      previewValueText(rulesData.rules),
+      previewValueText(rulesData.ruleGroups),
+      previewValueText(scoringData.description),
+    ]),
+    strategy: compactDetailText([
+      sectionText.strategy,
+      previewValueText(strategyData.tips),
+      previewValueText(strategyData.strategy),
+    ]),
+    variations: infoData.variationsContent,
+    ai: infoData.aiContent,
+    sources: infoData.sourcesContent,
+    cursorFind: {
+      alsoKnownAs: asStringArray(infoData.alsoKnownAs) ?? item.alsoKnownAs ?? [],
+    },
+  }
+}
+
+function buildCatalogGameDetail(
+  item: GameWithMetadata,
+  catalogData: LooseRecord
+): GamesExplorerGameDetail {
+  const home = item.home
+  const overview = asPreviewRecord(catalogData.overview)
+  return {
+    filename: item.path,
+    name: asStringValue(catalogData.name) ?? home.name,
+    guid: item.entry.guid,
+    quality: asStringValue(catalogData.quality) ?? home.quality,
+    source: 'catalog',
+    completeness: asBooleanRecord(catalogData.completeness) ?? home.completeness ?? undefined,
+    overview: {
+      description: asStringValue(overview.description) ?? asStringValue(catalogData.description) ?? home.shortDescription,
+      type: asStringValue(catalogData.subcategory)
+        ? `${asStringValue(catalogData.category) ?? home.gameCategory} / ${asStringValue(catalogData.subcategory)}`
+        : asStringValue(catalogData.category) ?? home.gameCategory,
+      origin: asStringValue(overview.origin) ?? asStringValue(catalogData.origin),
+      players: asStringValue(overview.players) ?? asStringValue(catalogData.players) ?? home.playersDisplay,
+      deck: asStringValue(overview.deck) ?? asStringValue(catalogData.deck) ?? home.deck,
+      difficulty: asStringValue(overview.difficulty) ?? asStringValue(catalogData.difficulty) ?? home.difficulty,
+      duration: asStringValue(overview.duration) ?? asStringValue(catalogData.duration) ?? home.duration,
+    },
+    history: catalogData.history,
+    setup: catalogData.setup,
+    rules: catalogData.rules,
+    strategy: catalogData.strategy,
+    variations: catalogData.variations,
+    sources: catalogData.sources,
+    cursorFind: {
+      alsoKnownAs: asStringArray(catalogData.alsoKnownAs) ?? item.alsoKnownAs ?? [],
+    },
+  }
+}
+
+async function loadCatalogGameDetailData(item: GameWithMetadata): Promise<LooseRecord> {
+  const path = item.path.replace(/\\/g, '/')
+  const fallbackPath = `Resources/catalog/games/${slugFromCatalogValue(gameMetadataId(item))}.json`
+  const document =
+    await loadPreviewAssetDocument(path) ??
+    await loadPreviewAssetDocument(fallbackPath)
+  return dataOfPreview(document)
+}
+
+async function enrichAssetGamesFromPreviewAssets(items: GameWithMetadata[]): Promise<GameWithMetadata[]> {
+  return Promise.all(items.map(async item => {
+    if (isCatalogGameItem(item)) return item
+    const bundle = await loadSelectedGamePreviewBundle(item.path)
+    return enrichGameMetadataFromBundle(item, bundle)
+  }))
 }
 
 async function buildFallbackGameMetadataFromEntry(
@@ -887,6 +1177,7 @@ function toCatalogGameMetadata(item: LocalGameCatalogEntry): GameWithMetadata {
     source: 'catalog',
     playerMode: item.playerMode ?? null,
     alsoKnownAs: item.alsoKnownAs,
+    origin: item.origin,
   }
 }
 
@@ -1102,7 +1393,6 @@ const PAGE_PREVIEW_MIN_CAMERA_ZOOM = 0.25
 const PAGE_PREVIEW_MAX_CAMERA_ZOOM = 8
 const PAGE_PREVIEW_CAMERA_STEP_FACTOR = 1.15
 const PAGE_PREVIEW_CANVAS_PADDING = 40
-const PAGE_PREVIEW_LABEL_RESERVE = 40
 
 function clampPreviewNumber(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
@@ -1158,13 +1448,6 @@ function resolvePagePreviewViewport(
     }
   }
   return getOrientedPagePreviewViewport(rawW, rawH, isPortrait)
-}
-
-function getPagePreviewResolutionLabel(
-  _resolution: string,
-  viewport: PagePreviewViewportSize
-): string {
-  return `${viewport.w} x ${viewport.h}`
 }
 
 function clampPagePreviewCameraState(
@@ -1538,7 +1821,6 @@ const PageLayoutViewportFrame = React.forwardRef<
   {
     assetPath: string
     viewport: PagePreviewViewportSize
-    resolutionLabel: string
     isPortrait: boolean
     children: React.ReactNode
     onZoomPercentChange?: (value: number) => void
@@ -1547,7 +1829,6 @@ const PageLayoutViewportFrame = React.forwardRef<
   {
     assetPath,
     viewport,
-    resolutionLabel,
     isPortrait,
     children,
     onZoomPercentChange,
@@ -1582,7 +1863,7 @@ const PageLayoutViewportFrame = React.forwardRef<
   )
   const canvasAreaHeight = Math.max(
     100,
-    containerDimensions.height - PAGE_PREVIEW_CANVAS_PADDING * 2 - PAGE_PREVIEW_LABEL_RESERVE
+    containerDimensions.height - PAGE_PREVIEW_CANVAS_PADDING * 2
   )
   const fitScale = useMemo(() => {
     const nextScale = Math.min(
@@ -1880,16 +2161,6 @@ const PageLayoutViewportFrame = React.forwardRef<
       ref={containerRef}
     >
       <div
-        className="asset-catalog-preview__page-viewport-label"
-        style={{
-          top: `${Math.max(centeredOffsetY + clampedCameraState.panY - 22, 8)}px`,
-          left: `${centeredOffsetX + clampedCameraState.panX}px`,
-        }}
-      >
-        {resolutionLabel}
-        <span>{isPortrait ? 'Portrait' : 'Landscape'}</span>
-      </div>
-      <div
         className="asset-catalog-preview__page-viewport-device"
         style={{
           width: `${viewport.w}px`,
@@ -2133,6 +2404,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     pageLayoutData?.pageId === 'home'
   const pageLayoutKind = pageLayoutData ? getPageLayoutKind(pageLayoutData) : 'generic'
   const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
+  const isGamesPageLayout = isPageLayoutMode && pageLayoutKind === 'games'
   const shouldLoadGamesForPageLayout =
     isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'selected-game')
   const initialSelectedGameLayoutConfig = useMemo(
@@ -2192,6 +2464,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [gamesView, setGamesView] = useState<GamesExplorerViewMode>('grid')
   const [gamesQualityFilter, setGamesQualityFilter] = useState<QualityFilter>('all')
   const [gamesSortBy, setGamesSortBy] = useState<SortBy>('name')
+  const [gamesCatalogLayoutControls, setGamesCatalogLayoutControls] =
+    useState<GamesCatalogSvgLayoutControls>(DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS)
+  const [gamesExplorerDetail, setGamesExplorerDetail] =
+    useState<GamesExplorerGameDetail | null>(null)
+  const [gamesExplorerDetailLoading, setGamesExplorerDetailLoading] = useState(false)
   const [featuredShowcaseControls, setFeaturedShowcaseControls] = useState(
     DEFAULT_FEATURED_SHOWCASE_CONTROLS
   )
@@ -2238,6 +2515,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<SelectedGameTabId>('about')
   const [headerConfigOverride, setHeaderConfigOverride] =
     useState<SerializedUnifiedHeaderConfig | null>(null)
+  const gamesExplorerDetailRequestRef = useRef(0)
   const featuredShowcaseControlsRef = useRef<FeaturedShowcaseControls>(
     DEFAULT_FEATURED_SHOWCASE_CONTROLS
   )
@@ -2255,6 +2533,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useRef<FeaturedGameShowcasePreviewLayoutMode>('auto')
   const homepageLayoutControlsRef = useRef<HomepageLayoutControlsData>(
     DEFAULT_HOMEPAGE_LAYOUT_CONTROLS
+  )
+  const gamesCatalogLayoutControlsRef = useRef<GamesCatalogSvgLayoutControls>(
+    DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS
   )
   const selectedGameLayoutControlsRef =
     useRef<SelectedGameLayoutControls>({})
@@ -2287,10 +2568,6 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       pageLayoutPreviewIsPortrait,
       pageLayoutPreviewResolution,
     ]
-  )
-  const pageLayoutPreviewResolutionLabel = useMemo(
-    () => getPagePreviewResolutionLabel(pageLayoutPreviewResolution, pageLayoutPreviewViewport),
-    [pageLayoutPreviewResolution, pageLayoutPreviewViewport]
   )
   const [tabCounts, setTabCounts] = useState<{
     games: number | null
@@ -2376,6 +2653,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   useEffect(() => {
     homepageLayoutControlsRef.current = homepageLayoutControls
   }, [homepageLayoutControls])
+
+  useEffect(() => {
+    gamesCatalogLayoutControlsRef.current = gamesCatalogLayoutControls
+  }, [gamesCatalogLayoutControls])
 
   useEffect(() => {
     selectedGameLayoutControlsRef.current = selectedGameLayoutControls
@@ -2485,6 +2766,17 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       cancelled = true
     }
   }, [setHomepageData])
+
+  useEffect(() => {
+    let cancelled = false
+    void loadGamesCatalogLayoutControlsFromDisk().then(nextControls => {
+      if (cancelled) return
+      setGamesCatalogLayoutControls(nextControls)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     const channel = new BroadcastChannel(FEATURED_SHOWCASE_CONTROLS_CHANNEL)
@@ -2612,6 +2904,30 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       channel.close()
     }
   }, [setHomepageData])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(GAMES_CATALOG_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<GamesCatalogLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: gamesCatalogLayoutControlsRef.current,
+        } satisfies GamesCatalogLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setGamesCatalogLayoutControls(
+          normalizeGamesCatalogLayoutControls(event.data.controls)
+        )
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
 
   useEffect(() => {
     const channel = new BroadcastChannel(SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL)
@@ -2947,8 +3263,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             }
             return { home, path: g.path, entry, source: 'asset' }
           })
+          const mergedGames = mergeGameCatalogWithAssets(withMeta, catalogEntries)
           setGameEntries(withMeta.map(m => m.entry))
-          setGamesWithMetadata(mergeGameCatalogWithAssets(withMeta, catalogEntries))
+          setGamesWithMetadata(await enrichAssetGamesFromPreviewAssets(mergedGames))
         } else {
           const [
             { loadGamesWithMetadataFromDisk },
@@ -2980,8 +3297,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             isSelectedGameLayout ? Promise.resolve([]) : loadGameCatalogIndexFromResources(),
           ])
           const completeWithMeta = await appendMissingGameMetadata(withMeta, gameModeResult)
+          const mergedGames = mergeGameCatalogWithAssets(completeWithMeta, catalogEntries)
           setGameEntries(gameModeResult)
-          setGamesWithMetadata(mergeGameCatalogWithAssets(completeWithMeta, catalogEntries))
+          setGamesWithMetadata(await enrichAssetGamesFromPreviewAssets(mergedGames))
         }
         setHasLoadedGames(true)
       } catch {
@@ -3544,6 +3862,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return {
       slug:
         g.home.gameId ?? g.entry.gameId ?? extractGameIdFromPath(g.path) ?? '',
+      guid: g.entry.guid,
       name: g.home.name ?? g.entry.displayName ?? g.entry.gameId ?? '-',
       category: cat,
       subcategory: g.home.subcategory ?? null,
@@ -3558,10 +3877,68 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       duration: g.home.duration ?? undefined,
       difficulty: g.home.difficulty ?? undefined,
       player_mode: gamePlayerMode(g),
+      origin: g.origin,
+      alsoKnownAs: g.alsoKnownAs,
       completeness: g.home.completeness ?? undefined,
       completenessPercent: pct,
       source: isCatalogGameItem(g) ? 'catalog' : 'asset',
     }
+  }
+
+  const findGamesExplorerMetadata = (game: GamesExplorerGame): GameWithMetadata | undefined =>
+    filteredGamesWithMeta.find(item => {
+      const slug = item.home.gameId ?? item.entry.gameId ?? extractGameIdFromPath(item.path) ?? ''
+      return slug === game.slug
+    })
+
+  const handleGamesExplorerGameSelect = (game: GamesExplorerGame) => {
+    const match = findGamesExplorerMetadata(game)
+    const requestId = gamesExplorerDetailRequestRef.current + 1
+    gamesExplorerDetailRequestRef.current = requestId
+    setGamesExplorerDetail(null)
+
+    if (!match) {
+      setGamesExplorerDetailLoading(false)
+      return
+    }
+
+    setGamesExplorerDetailLoading(true)
+    void (async () => {
+      try {
+        if (isCatalogGameItem(match)) {
+          const catalogData = await loadCatalogGameDetailData(match)
+          if (gamesExplorerDetailRequestRef.current !== requestId) return
+          setGamesExplorerDetail(buildCatalogGameDetail(match, catalogData))
+          return
+        }
+
+        const bundle = await loadSelectedGamePreviewBundle(match.path)
+        const enriched = enrichGameMetadataFromBundle(match, bundle)
+        if (gamesExplorerDetailRequestRef.current !== requestId) return
+        setGamesWithMetadata(previous =>
+          previous.map(item => gameMetadataId(item) === gameMetadataId(match) ? enriched : item)
+        )
+        setGamesExplorerDetail(buildAssetGameDetail(enriched, bundle))
+      } catch {
+        if (gamesExplorerDetailRequestRef.current === requestId) {
+          setGamesExplorerDetail(
+            isCatalogGameItem(match)
+              ? buildCatalogGameDetail(match, {})
+              : buildAssetGameDetail(match, buildSelectedGameFallbackBundle(match))
+          )
+        }
+      } finally {
+        if (gamesExplorerDetailRequestRef.current === requestId) {
+          setGamesExplorerDetailLoading(false)
+        }
+      }
+    })()
+  }
+
+  const handleGamesExplorerDetailClose = () => {
+    gamesExplorerDetailRequestRef.current += 1
+    setGamesExplorerDetail(null)
+    setGamesExplorerDetailLoading(false)
   }
 
   const explorerGames: ExploreGameSummary[] = filteredGamesWithMeta.map(g => ({
@@ -3604,11 +3981,13 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           onCategoryExpandToggle={toggleGamesCategoryExpanded}
           isSidebarCollapsed={gamesSidebarCollapsed}
           onToggleSidebar={() => setGamesSidebarCollapsed(v => !v)}
+          detail={gamesExplorerDetail}
+          detailLoading={gamesExplorerDetailLoading}
+          onGameSelect={handleGamesExplorerGameSelect}
+          onDetailClose={handleGamesExplorerDetailClose}
+          layoutControls={gamesCatalogLayoutControls}
           onGameClick={(game: GamesExplorerGame) => {
-            const match = filteredGamesWithMeta.find(item => {
-              const nextGame = toGamesExplorerGame(item)
-              return nextGame.slug === game.slug
-            })
+            const match = findGamesExplorerMetadata(game)
             if (match && !isCatalogGameItem(match)) {
               handleGamesTabNavigate(match)
             }
@@ -3684,6 +4063,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       'selected-game-layout-controls',
       'Resources/Pages/SelectedGameLayout.asset',
       'Selected Game Layout Controls',
+      true
+    )
+  }
+
+  const handleOpenGamesCatalogLayoutControls = () => {
+    void createPanelWindow(
+      'games-catalog-layout-controls',
+      'Resources/Pages/GamesPageLayout.asset',
+      'Games Catalog Layout Controls',
       true
     )
   }
@@ -3836,7 +4224,16 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Bounds
           </label>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && (
+        {isGamesPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenGamesCatalogLayoutControls}
+          >
+            Edit
+          </button>
+        )}
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && (
           <label className="asset-catalog-preview__bounds-toggle">
             <input
               type="checkbox"
@@ -4005,7 +4402,6 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
                 ref={pageLayoutViewportFrameRef}
                 assetPath={assetPath ?? assetId}
                 viewport={pageLayoutPreviewViewport}
-                resolutionLabel={pageLayoutPreviewResolutionLabel}
                 isPortrait={pageLayoutPreviewIsPortrait}
                 onZoomPercentChange={setPageLayoutPreviewZoomPercent}
               >

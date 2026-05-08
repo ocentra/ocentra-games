@@ -18,7 +18,7 @@ export interface PanelWindowHandle {
 }
 
 export function getStandalonePanelUrl(
-  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation' | 'featured-showcase-controls' | 'homepage-layout-controls' | 'selected-game-layout-controls',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation' | 'featured-showcase-controls' | 'homepage-layout-controls' | 'selected-game-layout-controls' | 'games-catalog-layout-controls',
   assetPath: string,
   locked?: boolean,
   playerCount?: number
@@ -33,7 +33,7 @@ export function getStandalonePanelUrl(
 }
 
 export async function createPanelWindow(
-  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation' | 'featured-showcase-controls' | 'homepage-layout-controls' | 'selected-game-layout-controls',
+  panel: 'preview' | 'inspector' | 'design-studio' | 'preview-canvas' | 'isolation' | 'featured-showcase-controls' | 'homepage-layout-controls' | 'selected-game-layout-controls' | 'games-catalog-layout-controls',
   assetPath: string,
   title?: string,
   locked?: boolean,
@@ -93,7 +93,7 @@ export async function createPanelWindow(
   const size =
     panel === 'preview'
       ? { width: 1100, height: 720 }
-      : panel === 'featured-showcase-controls' || panel === 'homepage-layout-controls' || panel === 'selected-game-layout-controls'
+      : panel === 'featured-showcase-controls' || panel === 'homepage-layout-controls' || panel === 'selected-game-layout-controls' || panel === 'games-catalog-layout-controls'
         ? { width: 980, height: 860 }
       : panel === 'design-studio'
         ? { width: 1600, height: 1000 }
@@ -109,7 +109,7 @@ export async function createPanelWindow(
       title ??
       `${panel === 'preview'
         ? 'Preview'
-        : panel === 'featured-showcase-controls' || panel === 'homepage-layout-controls' || panel === 'selected-game-layout-controls'
+        : panel === 'featured-showcase-controls' || panel === 'homepage-layout-controls' || panel === 'selected-game-layout-controls' || panel === 'games-catalog-layout-controls'
           ? 'Layout Controls'
         : panel === 'design-studio'
           ? 'Design Studio'

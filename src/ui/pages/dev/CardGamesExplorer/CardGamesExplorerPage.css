@@ -1,117 +1,32 @@
-/* =========================================================
-   CardGamesExplorerPage — full-page shell
-   ========================================================= */
-
 .cge-page {
-  display: flex;
-  flex-direction: column;
   position: relative;
   background: transparent;
   color: #f9fafb;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  box-sizing: border-box;
 }
 
-/* Body: sidebar + content side-by-side, pushed below sticky GameHeader */
-.cge-page__top-bar {
-  padding: 0;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-}
-
-.cge-page__body {
-  display: flex;
-  flex: 1;
+.cge-page__work {
   min-height: 0;
-  padding: 0;
   overflow: hidden;
-  gap: 0;
 }
 
-/* Responsive: below 700px collapse sidebar automatically and show just content */
-@media (max-width: 700px) {
-  .cge-page__body {
-    flex-direction: column;
-    overflow: visible;
-  }
-
-  .cge-page__body .cge-sidebar {
-    width: 100% !important;
-    height: auto;
-    max-height: 40dvh;
-    flex-shrink: 0;
-  }
-
-  .cge-page__body.is-sidebar-collapsed .cge-sidebar {
-    max-height: 2rem;
-  }
-
-  .cge-page__content {
-    overflow-y: auto;
-  }
-}
-
-/* Content column */
-.cge-page__content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.cge-page__svg-stage {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
-  padding: 0;
-  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  gap: 0.75rem;
 }
 
-.cge-page__body.is-sidebar-collapsed .cge-page__content {
-  padding-left: 1.5rem;
-  /* Room for the toggle handle */
-}
-
-/* Scrollable game area */
-.cge-page__games-area {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #374151 transparent;
-  padding: 0 0 1rem 0;
-}
-
-.cge-page__games-area::-webkit-scrollbar {
-  width: 8px;
-}
-
-.cge-page__games-area::-webkit-scrollbar-track {
-  background: #0a0f1a;
-}
-
-.cge-page__games-area::-webkit-scrollbar-thumb {
-  background: #374151;
-  border-radius: 4px;
-}
-
-.cge-page__games-area::-webkit-scrollbar-thumb:hover {
-  background: #4b5563;
-}
-
-/* Loading / empty / error states */
 .cge-page__state {
   display: flex;
+  height: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: 4rem 2rem;
-  color: #6b7280;
+  padding: 2rem;
+  color: #9ca3af;
   text-align: center;
-}
-
-.cge-page__state h3 {
-  color: #f9fafb;
-  font-size: 1.125rem;
-  margin: 0;
 }
 
 .cge-page__state p {
@@ -119,66 +34,50 @@
   font-size: 0.9rem;
 }
 
-.cge-page__empty-icon {
-  font-size: 4rem;
-  opacity: 0.5;
+.cge-page__state--error {
+  color: #fecaca;
 }
 
 .cge-page__error-msg {
-  color: #ef4444;
-  font-weight: 600;
-  font-size: 1rem;
   margin: 0;
+  color: #fca5a5;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .cge-page__error-pre {
-  font-size: 0.8rem;
-  background: #1f2937;
-  border: 1px solid #374151;
-  padding: 10px 16px;
-  border-radius: 8px;
+  max-width: min(56rem, 90vw);
+  margin: 0;
   overflow: auto;
-  max-width: 90vw;
-  text-align: left;
-  color: #9ca3af;
-  margin: 0;
-}
-
-.cge-page__error-hint {
-  font-size: 0.82rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.cge-page__error-hint code {
-  background: #1f2937;
-  padding: 1px 5px;
-  border-radius: 4px;
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #fecaca;
   font-size: 0.8rem;
+  padding: 0.75rem 1rem;
+  text-align: left;
 }
 
 .cge-page__refresh-btn {
-  padding: 0.5rem 1.25rem;
-  background: #3b82f6;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 0.875rem;
+  border: 1px solid rgba(103, 232, 249, 0.42);
+  border-radius: 0.5rem;
+  background: rgba(37, 99, 235, 0.82);
+  color: #ffffff;
   cursor: pointer;
-  transition: filter 0.15s;
+  font-size: 0.875rem;
+  padding: 0.55rem 1.25rem;
 }
 
 .cge-page__refresh-btn:hover {
-  filter: brightness(1.15);
+  filter: brightness(1.12);
 }
 
-/* Spinner */
 .cge-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid #1f2937;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgba(30, 41, 59, 0.9);
+  border-top-color: #38bdf8;
+  border-radius: 999rem;
   animation: cge-page-spin 0.8s linear infinite;
 }
 
@@ -186,158 +85,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-/* Games grid */
-.cge-games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-  padding: 0 0.75rem 0.75rem 0.75rem;
-}
-
-/* Games list */
-.cge-games-list {
-  display: flex;
-  flex-direction: column;
-  padding: 0 0.75rem 0.75rem 0.75rem;
-}
-
-/* =========================================================
-   Responsive Fixes for Thin UI
-   ========================================================= */
-
-/* 1. Ensure Sidebar categories truncation works reliably */
-.cge-category-item, .cge-subcategory-item {
-  min-width: 0 !important;
-  overflow: hidden !important;
-}
-
-.cge-category-item__name, .cge-subcategory-item__name {
-  flex: 1 !important;
-  min-width: 0 !important;
-  display: block !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-/* Handle the icon + text combo inside name */
-.cge-category-item__name {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-}
-
-/* 2. Top Bar (ExplorerContentBar) Responsiveness */
-@media (max-width: 1000px) {
-  .cge-content-bar {
-    gap: 0.75rem !important;
-    padding: 0.5rem 0.75rem !important;
-  }
-  
-  .cge-search-wrap {
-    min-width: 150px !important;
-    flex: 1 !important;
-  }
-
-  /* Compact View Tabs */
-  .cge-view-tab {
-    padding: 0 0.6rem !important;
-    font-size: 0.75rem !important;
-  }
-  
-  .cge-sort-select {
-    min-width: 100px !important;
-    padding-right: 1.5rem !important;
-  }
-}
-
-@media (max-width: 850px) {
-  /* Collapse labels in stat pills */
-  .cge-stat__label {
-    font-size: 0.55rem !important;
-    transform: scale(0.9);
-  }
-  
-  .cge-stat {
-    min-width: 48px !important;
-    gap: 0 !important;
-  }
-}
-
-@media (max-width: 650px) {
-  .cge-page__top-bar {
-    position: relative !important;
-  }
-  
-  .cge-content-bar {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    height: auto !important;
-  }
-  
-  .cge-content-bar__left {
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
-  }
-  
-  .cge-content-bar__right {
-    justify-content: center !important;
-    padding-top: 0.5rem !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-  }
-
-  .cge-content-stats {
-    width: 100% !important;
-    justify-content: space-around !important;
-  }
-}
-
-/* 3. Sidebar width adjustments */
-@media (min-width: 701px) and (max-width: 1100px) {
-  .cge-sidebar {
-    width: clamp(180px, 20vw, 240px) !important;
-  }
-}
-
-/* 4. Fix category icons/counts alignment */
-.cge-category-item__count, .cge-subcategory-item__count {
-  margin-left: 0.5rem !important;
-  flex-shrink: 0 !important;
-}
-
-/* 5. Game List Row Responsiveness */
-@media (max-width: 900px) {
-    .cge-list-header, .cge-list-row {
-        grid-template-columns: 1fr 100px 70px 80px 40px !important;
-    }
-    .cge-list-header span:nth-child(5), /* Completeness Bar */
-    .cge-list-row > div:nth-child(5) {
-        display: none !important;
-    }
-}
-
-@media (max-width: 750px) {
-    .cge-list-header, .cge-list-row {
-        grid-template-columns: 1fr 80px 60px 40px !important;
-    }
-    .cge-list-header span:nth-child(2), /* Category */
-    .cge-list-row > div:nth-child(2) {
-        display: none !important;
-    }
-}
-
-@media (max-width: 500px) {
-    .cge-list-header {
-        display: none !important;
-    }
-    .cge-list-row {
-        grid-template-columns: 1fr 60px 40px !important;
-        padding: 0.75rem !important;
-    }
-    .cge-list-row__name {
-        font-size: 0.9rem !important;
-        white-space: normal !important;
-    }
 }

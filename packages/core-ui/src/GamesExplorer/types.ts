@@ -2,6 +2,7 @@ export type PlayerModeFilter = 'all' | 'singleplayer' | 'multiplayer';
 
 export interface GamesExplorerGame {
   slug: string;
+  guid?: string;
   name: string;
   category: string;
   quality?: string;
@@ -12,12 +13,33 @@ export interface GamesExplorerGame {
   duration?: string;
   difficulty?: string;
   player_mode?: string | null;
+  origin?: string;
+  alsoKnownAs?: readonly string[];
   completeness?: Record<string, boolean>;
   completenessPercent?: number;
   file_exists?: boolean;
   link_valid?: string;
   file?: string;
   source?: 'asset' | 'catalog';
+}
+
+export interface GamesExplorerGameDetail {
+  filename?: string;
+  name?: string;
+  guid?: string;
+  completeness?: Record<string, boolean>;
+  quality?: string;
+  overview?: unknown;
+  history?: unknown;
+  setup?: unknown;
+  rules?: unknown;
+  strategy?: unknown;
+  variations?: unknown;
+  ai?: unknown;
+  sources?: unknown;
+  pagat?: unknown;
+  source?: 'asset' | 'catalog';
+  cursorFind?: unknown;
 }
 
 export interface GamesExplorerMetadata {
