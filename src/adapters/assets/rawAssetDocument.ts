@@ -3,6 +3,10 @@ import { getStorageConfig } from '@/services/storage/StorageConfig';
 
 type LooseRecord = Record<string, unknown>;
 
+interface LoadRawAssetOptions {
+  cache?: RequestCache;
+}
+
 function isRecord(value: unknown): value is LooseRecord {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -16,10 +20,10 @@ async function parseJson5Text(text: string): Promise<LooseRecord | null> {
   return isRecord(parsed) ? parsed : null;
 }
 
-export async function loadRawAssetTextByGuid(guid: string): Promise<string | null> {
+export async function loadRawAssetTextByGuid(guid: string, options: LoadRawAssetOptions = {}): Promise<string | null> {
   try {
     const url = await resolveAssetDownloadUrl({ guid }, getStorageConfig());
-    const response = await fetch(url);
+    const response = await fetch(url, options.cache ? { cache: options.cache } : undefined);
     if (!response.ok) {
       return null;
     }
@@ -30,8 +34,8 @@ export async function loadRawAssetTextByGuid(guid: string): Promise<string | nul
   }
 }
 
-export async function loadRawAssetDocumentByGuid(guid: string): Promise<LooseRecord | null> {
-  const text = await loadRawAssetTextByGuid(guid);
+export async function loadRawAssetDocumentByGuid(guid: string, options: LoadRawAssetOptions = {}): Promise<LooseRecord | null> {
+  const text = await loadRawAssetTextByGuid(guid, options);
   if (!text) {
     return null;
   }

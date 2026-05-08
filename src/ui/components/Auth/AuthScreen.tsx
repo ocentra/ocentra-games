@@ -6,6 +6,7 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { buildHomePath, parseAppRoute, resolvePathFromScreenToken, type AppRouteState } from '@/ui/navigation/appRoutes';
+import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 
 const LoginScreen = lazy(() => import('@/ui/features/auth/LoginScreen').then((m) => ({ default: m.LoginScreen })));
 const HomeScreen = lazy(() => import('@/ui/features/home/HomeScreen').then((m) => ({ default: m.HomeScreen })));
@@ -19,22 +20,7 @@ const SocialScreen = lazy(() => import('@/ui/features/social/SocialScreen').then
 const CompetitionScreen = lazy(() => import('@/ui/features/competition/CompetitionScreen').then((m) => ({ default: m.CompetitionScreen })));
 const PlayerHubScreen = lazy(() => import('@/ui/features/playerHub/PlayerHubScreen').then((m) => ({ default: m.PlayerHubScreen })));
 
-const RouteFallback = () => (
-  <div
-    aria-hidden="true"
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'radial-gradient(circle, rgb(0, 110, 104) 0%, rgb(0, 50, 100) 70%, rgb(0, 5, 15) 100%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 9998,
-    }}
-  >
-    <img src="/favicon.svg" alt="" width={128} height={128} style={{ opacity: 0.95 }} />
-  </div>
-);
+const RouteFallback = () => <ScreenLoadingFallback label="Loading Ocentra Games" variant="page" />;
 
 const log = MainAppLogger.instance;
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
@@ -260,6 +246,26 @@ export function AuthScreen({
       return (
         <Suspense fallback={<RouteFallback />}>
           <CardGamesExplorerScreen catalogScope={route.scope} />
+        </Suspense>
+      );
+    }
+
+    if (route.kind === 'category') {
+      return (
+        <Suspense fallback={<RouteFallback />}>
+          <CardGamesExplorerScreen catalogScope="card-games" initialCategorySlug={route.categoryId} />
+        </Suspense>
+      );
+    }
+
+    if (route.kind === 'rules' && !route.gameId.includes(':')) {
+      return (
+        <Suspense fallback={<RouteFallback />}>
+          <CardGamesExplorerScreen
+            catalogScope="card-games"
+            initialGameSlug={route.gameId}
+            initialDetailSection={route.kind === 'rules' ? 'rules' : 'overview'}
+          />
         </Suspense>
       );
     }

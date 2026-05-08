@@ -59,6 +59,7 @@ export interface CategoryWithSubs {
 export type QualityFilter = 'all' | 'available' | 'complete' | 'partial' | 'placeholder' | 'missing_json' | 'missing_name';
 export type SortBy = 'name' | 'category' | 'completeness' | 'available';
 export type ViewMode = 'grid' | 'list' | 'alphabet';
+export type GamesExplorerDetailSection = 'overview' | 'history' | 'setup' | 'rules' | 'strategy' | 'variations';
 
 export const SECTIONS = ['overview', 'history', 'setup', 'rules', 'strategy', 'variations', 'ai', 'sources'] as const;
 export type Section = (typeof SECTIONS)[number];

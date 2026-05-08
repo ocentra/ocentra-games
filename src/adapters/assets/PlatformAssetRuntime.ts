@@ -34,7 +34,7 @@ export type {
 } from '@/adapters/assets/PlatformAssetRuntimeShared';
 
 async function fetchEntryIndexFromSlices(url: string) {
-  const payload = await fetchJsonSlice<unknown>(url);
+  const payload = await fetchJsonSlice<unknown>(url, { bypassCache: true });
   return parseEntryIndexPayload(payload);
 }
 

@@ -2,11 +2,13 @@ import {
   PublicRouteKey,
   PublicRoutePath,
   PublicRouteSegment,
+  buildPublicCategoryPath,
   buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
   buildPublicGamePlayPath,
+  buildPublicRulesPath,
   buildPublicTournamentDetailPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
 
@@ -29,6 +31,7 @@ export type AppScreenToken = (typeof AppScreenToken)[keyof typeof AppScreenToken
 export type AppRouteState =
   | { kind: 'home' }
   | { kind: 'gameCatalog'; scope: 'all' | 'card-games' }
+  | { kind: 'category'; categoryId: string }
   | { kind: 'settings' }
   | { kind: 'shop' }
   | { kind: 'social' }
@@ -37,6 +40,7 @@ export type AppRouteState =
   | { kind: 'tournamentDetail'; tournamentId: string }
   | { kind: 'leaderboard' }
   | { kind: 'gameLeaderboard'; gameId: string }
+  | { kind: 'rules'; gameId: string }
   | { kind: 'aiBenchmarkLeaderboard' }
   | { kind: 'playerHub' }
   | { kind: 'matchmaking'; gameId?: string }
@@ -126,6 +130,14 @@ export function buildCardGamesCatalogPath(): string {
   return PublicRoutePath[PublicRouteKey.CardGamesCatalog];
 }
 
+export function buildCategoryPath(categoryId: string): string {
+  return buildPublicCategoryPath(categoryId);
+}
+
+export function buildRulesPath(gameId: string): string {
+  return buildPublicRulesPath(gameId);
+}
+
 export function buildTournamentsPath(): string {
   return PublicRoutePath[PublicRouteKey.Tournaments];
 }
@@ -175,6 +187,10 @@ export function parseAppRoute(pathname: string): AppRouteState {
 
   const [first, second, third] = segments;
 
+  if (first === PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer].replace(/^\/+/, '')) {
+    return { kind: 'gameCatalog', scope: 'card-games' };
+  }
+
   if (first === PublicRouteSegment.Games) {
     if (!second) {
       return { kind: 'gameCatalog', scope: 'all' };
@@ -199,6 +215,14 @@ export function parseAppRoute(pathname: string): AppRouteState {
 
   if (first === PublicRouteSegment.CardGames) {
     return { kind: 'gameCatalog', scope: 'card-games' };
+  }
+
+  if (first === PublicRouteSegment.Categories && second) {
+    return { kind: 'category', categoryId: second };
+  }
+
+  if (first === PublicRouteSegment.Rules && second) {
+    return { kind: 'rules', gameId: second };
   }
 
   if (first === AppScreenToken.Settings) {

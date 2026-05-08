@@ -4,6 +4,8 @@ import { enrich } from '../helpers';
 import { clearContentSliceCache } from '@/adapters/assets/ContentSliceCache';
 import { clearGameCatalogCache, getGameCatalogEntries } from '@/adapters/assets/GameCatalogService';
 import { buildGameMetadata } from '../adapters/gameCatalogToGameInfo';
+import { loadAssetExplorerContent } from '../adapters/assetExplorerContent';
+import { authoredCatalogKeys, catalogEntryKeys } from '../adapters/catalogIdentity';
 import { loadRemoteCatalogIndex } from '@/adapters/assets/GameCatalogRuntimeSource';
 
 interface GamesDataState {
@@ -40,6 +42,28 @@ type CatalogIndex = {
   games: CatalogIndexEntry[];
 };
 
+function mergeAssetSummary(game: Game, summary: Partial<Game> | undefined): Game {
+  if (!summary) {
+    return game;
+  }
+
+  return enrich({
+    ...game,
+    description: summary.description || game.description,
+    origin: summary.origin || game.origin,
+    players: summary.players || game.players,
+    deck: summary.deck || game.deck,
+    difficulty: summary.difficulty || game.difficulty,
+    duration: summary.duration || game.duration,
+    category: summary.category || game.category,
+    subcategory: summary.subcategory ?? game.subcategory,
+    player_mode: summary.player_mode ?? game.player_mode,
+    quality: summary.quality || game.quality,
+    completeness: summary.completeness && Object.keys(summary.completeness).length > 0 ? summary.completeness : game.completeness,
+    alsoKnownAs: summary.alsoKnownAs && summary.alsoKnownAs.length > 0 ? [...summary.alsoKnownAs] : game.alsoKnownAs,
+  });
+}
+
 export function useGamesData(): GamesDataState {
   const [games, setGames] = useState<Game[]>([]);
   const [metadata, setMetadata] = useState<GameMetadata | null>(null);
@@ -64,7 +88,7 @@ export function useGamesData(): GamesDataState {
           loadRemoteCatalogIndex(),
         ]);
 
-        const madeGameSlugs = new Set<string>();
+        const madeGameKeys = new Set<string>();
         const loadedGames: Game[] = [];
 
         for (const entry of entries) {
@@ -73,9 +97,7 @@ export function useGamesData(): GamesDataState {
           }
 
           const slug = entry.gameId ? String(entry.gameId) : entry.displayName || entry.path;
-          madeGameSlugs.add(slug.toLowerCase());
-
-          loadedGames.push(enrich({
+          const game = enrich({
             slug,
             guid: entry.guid,
             file: entry.path,
@@ -95,13 +117,18 @@ export function useGamesData(): GamesDataState {
             file_exists: true,
             link_valid: entry.releaseStatus || 'asset',
             source: 'asset' as const,
-          }));
+          });
+
+          const assetContent = await loadAssetExplorerContent(game).catch(() => null);
+          const enrichedGame = mergeAssetSummary(game, assetContent?.summary);
+          authoredCatalogKeys(enrichedGame).forEach((key) => madeGameKeys.add(key));
+          loadedGames.push(enrichedGame);
         }
 
         const catalogIndex = catalogIndexRaw as CatalogIndex | null;
         if (catalogIndex?.games && Array.isArray(catalogIndex.games)) {
           for (const catalogEntry of catalogIndex.games) {
-            if (madeGameSlugs.has(catalogEntry.slug.toLowerCase())) {
+            if (catalogEntryKeys(catalogEntry).some((key) => madeGameKeys.has(key))) {
               continue;
             }
             loadedGames.push(enrich({

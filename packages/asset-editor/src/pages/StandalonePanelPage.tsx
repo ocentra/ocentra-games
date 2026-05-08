@@ -63,6 +63,7 @@ import {
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
 import { HomeShowcaseFrameControlsPanel } from '@ocentra/core-ui/Common/HomeShowcaseFrame/HomeShowcaseFrameControls';
+import { DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG } from '@ocentra/core-ui/Common/SelectedGameShowcase/SelectedGameShowcase.config';
 import {
   DEFAULT_GAMES_CATALOG_SVG_LAYOUT_CONTROLS,
   type GamesCatalogSvgLayoutControls,
@@ -2240,6 +2241,7 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
 
 type SelectedGameLayoutControlTab =
   | 'header'
+  | 'visibility'
   | 'layout'
   | 'sideA'
   | 'sideB'
@@ -2248,10 +2250,13 @@ type SelectedGameLayoutControlTab =
   | 'tip'
   | 'action'
   | 'visuals'
+  | 'glow'
+  | 'colors'
   | 'contentPlan';
 
 const selectedGameControlTabs: { id: SelectedGameLayoutControlTab; label: string }[] = [
   { id: 'header', label: 'Header' },
+  { id: 'visibility', label: 'Visibility' },
   { id: 'layout', label: 'Layout / SVG' },
   { id: 'sideA', label: 'Side A' },
   { id: 'sideB', label: 'Side B' },
@@ -2260,6 +2265,8 @@ const selectedGameControlTabs: { id: SelectedGameLayoutControlTab; label: string
   { id: 'tip', label: 'Tip' },
   { id: 'action', label: 'Action' },
   { id: 'visuals', label: 'Visuals' },
+  { id: 'glow', label: 'Glow' },
+  { id: 'colors', label: 'Colors' },
   { id: 'contentPlan', label: 'Content Plan' },
 ];
 
@@ -2273,63 +2280,227 @@ type SelectedGameNumberControl = {
   section?: string;
 };
 
+type SelectedGameBooleanControl = {
+  path: string;
+  label: string;
+  defaultValue?: boolean;
+  section?: string;
+};
+
+type SelectedGameColorControl = {
+  path: string;
+  label: string;
+  defaultValue?: string;
+  section?: string;
+};
+
+function getSelectedGameDefaultValue(path: string): unknown {
+  return path.split('.').reduce<unknown>((current, part) => (
+    current && typeof current === 'object'
+      ? (current as Record<string, unknown>)[part]
+      : undefined
+  ), DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG);
+}
+
+function getSelectedGameDefaultNumber(path: string, fallback = 0): number {
+  const value = getSelectedGameDefaultValue(path);
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function getSelectedGameDefaultBoolean(path: string, fallback = false): boolean {
+  const value = getSelectedGameDefaultValue(path);
+  return typeof value === 'boolean' ? value : fallback;
+}
+
+function getSelectedGameDefaultString(path: string, fallback = ''): string {
+  const value = getSelectedGameDefaultValue(path);
+  return typeof value === 'string' ? value : fallback;
+}
+
 const selectedGameNumberControls: Record<SelectedGameLayoutControlTab, SelectedGameNumberControl[]> = {
   header: [],
+  visibility: [],
   layout: [
-    { path: 'canvas.pad', label: 'Canvas Pad', min: 0, max: 64, step: 1 },
-    { path: 'canvas.svgBgOpacity', label: 'SVG Background Opacity', min: 0, max: 1, step: 0.05 },
-    { path: 'body.leftWidth', label: 'Side A Width', min: 260, max: 820, step: 5 },
-    { path: 'body.aRatio', label: 'A/B Ratio', min: 0.18, max: 0.48, step: 0.01 },
-    { path: 'body.rowGap', label: 'Body Gap', min: 0, max: 60, step: 1 },
+    { section: 'Canvas', path: 'canvas.vw', label: 'ViewBox Width', min: 720, max: 2400, step: 1 },
+    { section: 'Canvas', path: 'canvas.vh', label: 'ViewBox Height', min: 720, max: 1400, step: 1 },
+    { section: 'Canvas', path: 'canvas.pad', label: 'Canvas Pad', min: 0, max: 64, step: 1 },
+    { section: 'Canvas', path: 'canvas.svgBgOpacity', label: 'SVG Background Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Page Frame', path: 'page.x', label: 'Page X', min: 0, max: 200, step: 1 },
+    { section: 'Page Frame', path: 'page.y', label: 'Page Y', min: 0, max: 220, step: 1 },
+    { section: 'Page Frame', path: 'page.width', label: 'Page Width', min: 560, max: 1900, step: 1 },
+    { section: 'Page Frame', path: 'page.height', label: 'Page Height', min: 600, max: 1200, step: 1 },
+    { section: 'Page Frame', path: 'page.radius', label: 'Page Radius', min: 0, max: 40, step: 1 },
+    { section: 'Page Frame', path: 'page.strokeWidth', label: 'Page Stroke Width', min: 0, max: 6, step: 0.1 },
+    { section: 'Page Frame', path: 'page.shadowBlur', label: 'Shadow Blur', min: 0, max: 40, step: 1 },
+    { section: 'Page Frame', path: 'page.shadowY', label: 'Shadow Y', min: -20, max: 40, step: 1 },
+    { section: 'Page Frame', path: 'page.shadowOpacity', label: 'Shadow Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'A/B Split', path: 'body.leftWidth', label: 'Side A Fixed Width', min: 220, max: 900, step: 1 },
+    { section: 'A/B Split', path: 'body.aRatio', label: 'A/B Ratio', min: 0.15, max: 0.55, step: 0.01 },
+    { section: 'A/B Split', path: 'body.bottomInset', label: 'Body Bottom Inset', min: 0, max: 100, step: 1 },
+    { section: 'A/B Split', path: 'body.rowGap', label: 'Body Gap', min: 0, max: 60, step: 1 },
+    { section: 'Divider', path: 'body.dividerWidth', label: 'Divider Width', min: 0, max: 8, step: 0.1 },
+    { section: 'Divider', path: 'body.dividerConnectorWidth', label: 'Connector Width', min: 0, max: 8, step: 0.1 },
+    { section: 'Divider', path: 'body.dividerConnectorOpacity', label: 'Connector Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Overlay', path: 'body.overlayRadius', label: 'Overlay Radius', min: 0, max: 50, step: 1 },
+    { section: 'Overlay', path: 'body.overlayDitherOpacity', label: 'Dither Opacity', min: 0, max: 0.12, step: 0.005 },
+    { section: 'Overlay', path: 'body.overlayDitherScale', label: 'Dither Scale', min: 0.1, max: 14, step: 0.1 },
+    { section: 'Overlay', path: 'body.overlayMidStop', label: 'Gradient Mid Stop', min: 0.1, max: 0.75, step: 0.01 },
+    { section: 'Overlay', path: 'body.overlaySoftStop', label: 'Gradient Soft Stop', min: 0.3, max: 0.95, step: 0.01 },
   ],
   sideA: [
-    { path: 'sideA.logoY', label: 'Logo Y', min: 0, max: 180, step: 1 },
-    { path: 'sideA.logoFont', label: 'Logo Font', min: 28, max: 96, step: 1 },
-    { path: 'sideA.taglineFont', label: 'Tagline Font', min: 12, max: 36, step: 1 },
-    { path: 'sideA.statsY', label: 'Stats Y', min: 80, max: 280, step: 1 },
-    { path: 'sideA.artY', label: 'Media Y', min: 160, max: 420, step: 1 },
-    { path: 'sideA.artBottomPad', label: 'Media Bottom Pad', min: 120, max: 420, step: 1 },
+    { section: 'Logo / Text', path: 'sideA.logoXPad', label: 'Logo X Pad', min: 0, max: 80, step: 1 },
+    { section: 'Logo / Text', path: 'sideA.logoY', label: 'Logo Y', min: 0, max: 180, step: 1 },
+    { section: 'Logo / Text', path: 'sideA.logoFont', label: 'Logo Font', min: 20, max: 100, step: 1 },
+    { section: 'Logo / Text', path: 'sideA.taglineFont', label: 'Tagline Font', min: 8, max: 36, step: 1 },
+    { section: 'Logo / Text', path: 'sideA.taglineGap', label: 'Tagline Gap', min: 8, max: 80, step: 1 },
+    { section: 'Stats', path: 'sideA.statsY', label: 'Stats Y', min: 80, max: 320, step: 1 },
+    { section: 'Stats', path: 'sideA.statsH', label: 'Stats Height', min: 30, max: 110, step: 1 },
+    { section: 'Stats', path: 'sideA.statsGap', label: 'Stats Gap', min: 0, max: 30, step: 1 },
+    { section: 'Stats', path: 'sideA.statRadius', label: 'Stats Radius', min: 0, max: 30, step: 1 },
+    { section: 'Image / Fade', path: 'sideA.artY', label: 'Media Y', min: 160, max: 460, step: 1 },
+    { section: 'Image / Fade', path: 'sideA.artBottomPad', label: 'Media Bottom Pad', min: 0, max: 560, step: 1 },
+    { section: 'Image / Fade', path: 'sideA.artTopFade', label: 'Top Fade Stop', min: 0, max: 0.5, step: 0.01 },
+    { section: 'Image / Fade', path: 'sideA.artBottomFade', label: 'Bottom Fade Stop', min: 0.5, max: 1, step: 0.01 },
   ],
   sideB: [
-    { path: 'overview.titleFont', label: 'Title Font', min: 14, max: 42, step: 1 },
-    { path: 'overview.bodyFont', label: 'Body Font', min: 10, max: 28, step: 1 },
-    { path: 'overview.lineGap', label: 'Line Gap', min: 16, max: 48, step: 1 },
-    { path: 'overview.paraGap', label: 'Paragraph Gap', min: 24, max: 80, step: 1 },
-    { path: 'howTo.height', label: 'Chunk Frame Height', min: 180, max: 380, step: 5 },
-    { path: 'howTo.yOffset', label: 'How To Y Offset', min: -80, max: 80, step: 1 },
-    { path: 'howTo.topGap', label: 'How To Top Gap', min: 0, max: 48, step: 1 },
-    { path: 'howTo.stepsPerPage', label: 'Steps Per Page', min: 1, max: 5, step: 1 },
-    { path: 'howTo.pagerArrowWidth', label: 'Pager Arrow Width', min: 18, max: 72, step: 1 },
-    { path: 'howTo.pagerArrowHeight', label: 'Pager Arrow Height', min: 24, max: 80, step: 1 },
-    { path: 'howTo.pagerSideInset', label: 'Pager Side Inset', min: 0, max: 32, step: 1 },
+    { section: 'Overview Text', path: 'overview.xPad', label: 'Overview X Pad', min: 0, max: 80, step: 1 },
+    { section: 'Overview Text', path: 'overview.textX', label: 'Text X', min: 0, max: 100, step: 1 },
+    { section: 'Overview Text', path: 'overview.titleY', label: 'Title Y', min: 10, max: 100, step: 1 },
+    { section: 'Overview Text', path: 'overview.titleFont', label: 'Title Font', min: 10, max: 40, step: 1 },
+    { section: 'Overview Text', path: 'overview.titleLetterSpacing', label: 'Title Spacing', min: 0, max: 10, step: 0.1 },
+    { section: 'Overview Text', path: 'overview.bodyY', label: 'Body Y', min: 40, max: 160, step: 1 },
+    { section: 'Overview Text', path: 'overview.bodyFont', label: 'Body Font', min: 8, max: 30, step: 1 },
+    { section: 'Overview Text', path: 'overview.lineGap', label: 'Line Gap', min: 12, max: 50, step: 1 },
+    { section: 'Overview Text', path: 'overview.paraGap', label: 'Paragraph Gap', min: 20, max: 100, step: 1 },
+    { section: 'Overview Image', path: 'overview.imageRatio', label: 'Image Width Ratio', min: 0.1, max: 0.8, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageBottomHowToRatio', label: 'Image Bottom Ratio', min: 0.1, max: 1.25, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeCx', label: 'Fade Center X', min: -0.5, max: 1.5, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeCy', label: 'Fade Center Y', min: -0.5, max: 1.5, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeInner', label: 'Fade Solid Radius', min: 0, max: 1, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeSoft1', label: 'Fade Soft Stop 1', min: 0, max: 1.5, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeSoft2', label: 'Fade Soft Stop 2', min: 0, max: 1.5, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeOuter', label: 'Fade Outer Radius', min: 0.05, max: 1.8, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeMidOpacity', label: 'Mid Fade Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageCornerFadeSoftOpacity', label: 'Soft Fade Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Overview Image', path: 'overview.imageMaskBlur', label: 'Image Mask Blur', min: 0, max: 60, step: 1 },
+    { section: 'How To Container', path: 'howTo.yOffset', label: 'How To Y Offset', min: -140, max: 180, step: 1 },
+    { section: 'How To Container', path: 'howTo.topGap', label: 'How To Top Gap', min: 0, max: 100, step: 1 },
+    { section: 'How To Container', path: 'howTo.height', label: 'How To Height', min: 120, max: 420, step: 1 },
+    { section: 'How To Container', path: 'howTo.xPad', label: 'How To X Pad', min: 0, max: 80, step: 1 },
+    { section: 'How To Container', path: 'howTo.headerH', label: 'Header Height', min: 20, max: 90, step: 1 },
+    { section: 'How To Container', path: 'howTo.bodyPadX', label: 'Body Pad X', min: 0, max: 50, step: 1 },
+    { section: 'How To Container', path: 'howTo.bodyPadBottom', label: 'Body Pad Bottom', min: 0, max: 50, step: 1 },
+    { section: 'How To Container', path: 'howTo.boxRadius', label: 'Box Radius', min: 0, max: 30, step: 1 },
+    { section: 'How To Cards', path: 'howTo.arrowW', label: 'Step Arrow Width', min: 0, max: 80, step: 1 },
+    { section: 'How To Cards', path: 'howTo.titleFont', label: 'Title Font', min: 10, max: 40, step: 1 },
+    { section: 'How To Cards', path: 'howTo.titleLetterSpacing', label: 'Title Spacing', min: 0, max: 10, step: 0.1 },
+    { section: 'How To Cards', path: 'howTo.stepRadius', label: 'Step Radius', min: 0, max: 30, step: 1 },
+    { section: 'How To Cards', path: 'howTo.stepCircleMaxR', label: 'Circle Max Radius', min: 10, max: 70, step: 1 },
+    { section: 'How To Cards', path: 'howTo.stepIconScale', label: 'Icon Scale', min: 0.2, max: 1.5, step: 0.01 },
+    { section: 'How To Cards', path: 'howTo.stepTitleFont', label: 'Step Title Font', min: 8, max: 28, step: 1 },
+    { section: 'How To Cards', path: 'howTo.stepBodyFont', label: 'Step Body Font', min: 6, max: 22, step: 0.5 },
+    { section: 'How To Pager', path: 'howTo.stepsPerPage', label: 'Steps Per Page', min: 1, max: 5, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerArrowWidth', label: 'Pager Arrow Width', min: 12, max: 72, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerArrowHeight', label: 'Pager Arrow Height', min: 24, max: 240, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerSideInset', label: 'Pager Arrow Outside Gap', min: -40, max: 120, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerPillW', label: 'Pager Pill Width', min: 4, max: 40, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerActivePillW', label: 'Active Pill Width', min: 8, max: 80, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerPillH', label: 'Pager Pill Height', min: 2, max: 20, step: 1 },
+    { section: 'How To Pager', path: 'howTo.pagerPillGap', label: 'Pager Pill Gap', min: 0, max: 24, step: 1 },
   ],
   tabs: [
-    { path: 'tabGroup.y', label: 'Tab Y', min: 0, max: 120, step: 1 },
-    { path: 'tabGroup.tabW', label: 'Tab Width', min: 90, max: 240, step: 1 },
-    { path: 'tabGroup.tabH', label: 'Tab Height', min: 32, max: 80, step: 1 },
-    { path: 'tabGroup.tabGap', label: 'Tab Gap', min: 0, max: 28, step: 1 },
-    { path: 'tabGroup.fontSize', label: 'Tab Font', min: 10, max: 28, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.y', label: 'Tab Y', min: 0, max: 160, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.tabW', label: 'Tab Width', min: 60, max: 260, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.tabH', label: 'Tab Height', min: 24, max: 90, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.tabGap', label: 'Tab Gap', min: 0, max: 30, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.bgPadX', label: 'Outer Pad X', min: 0, max: 40, step: 1 },
+    { section: 'Placement / Size', path: 'tabGroup.bgPadY', label: 'Outer Pad Y', min: 0, max: 30, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.radius', label: 'Group Radius', min: 0, max: 30, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.tabTopRadius', label: 'Tab Top Radius', min: 0, max: 30, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.tabBottomRadius', label: 'Tab Bottom Radius', min: 0, max: 30, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.fontSize', label: 'Tab Font', min: 8, max: 28, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.activeLineH', label: 'Active Line Height', min: 0, max: 10, step: 1 },
+    { section: 'Shape / Text', path: 'tabGroup.shineH', label: 'Shine Height', min: 0, max: 40, step: 1 },
   ],
   quickStrip: [
-    { path: 'strip.topGap', label: 'Top Gap', min: 0, max: 48, step: 1 },
-    { path: 'strip.insetX', label: 'Inset X', min: 0, max: 80, step: 1 },
-    { path: 'strip.height', label: 'Height', min: 96, max: 280, step: 2 },
-    { path: 'strip.cardGap', label: 'Card Gap', min: 4, max: 32, step: 1 },
-    { path: 'strip.cardMinWidth', label: 'Card Min Width', min: 100, max: 240, step: 5 },
-    { path: 'strip.cardMaxWidth', label: 'Card Max Width', min: 180, max: 420, step: 5 },
+    { section: 'Overall Placement', path: 'strip.yOffset', label: 'Strip Y Offset', min: -140, max: 180, step: 1 },
+    { section: 'Overall Placement', path: 'strip.topGap', label: 'Top Gap', min: 0, max: 100, step: 1 },
+    { section: 'Overall Placement', path: 'strip.insetX', label: 'Inset X', min: 0, max: 160, step: 1 },
+    { section: 'Overall Placement', path: 'strip.height', label: 'Height', min: 96, max: 360, step: 1 },
+    { section: 'Overall Placement', path: 'strip.radius', label: 'Strip Radius', min: 0, max: 40, step: 1 },
+    { section: 'Overall Placement', path: 'strip.fillOpacity', label: 'Fill Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Overall Placement', path: 'strip.shineH', label: 'Top Shine Height', min: 0, max: 80, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.carouselPadTop', label: 'Card Top Pad', min: 0, max: 90, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.carouselPadBottom', label: 'Footer Bottom Pad', min: 0, max: 100, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.carouselSidePad', label: 'Side Pad', min: 0, max: 80, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.arrowWidth', label: 'Arrow Width', min: 20, max: 140, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.arrowHeight', label: 'Arrow Height', min: 20, max: 260, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.arrowOutsideGap', label: 'Arrow Outside Gap', min: -30, max: 80, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.arrowYOffset', label: 'Arrow Y Offset', min: -60, max: 60, step: 1 },
+    { section: 'Viewport / Arrows', path: 'strip.arrowRadius', label: 'Arrow Radius', min: 0, max: 40, step: 1 },
+    { section: 'Cards', path: 'strip.cardGap', label: 'Card Gap', min: 0, max: 50, step: 1 },
+    { section: 'Cards', path: 'strip.uniformCardWidth', label: 'Manual Card Width', min: 120, max: 620, step: 1 },
+    { section: 'Cards', path: 'strip.cardMinWidth', label: 'Auto Min Width', min: 80, max: 360, step: 1 },
+    { section: 'Cards', path: 'strip.cardMaxWidth', label: 'Auto Max Width', min: 160, max: 620, step: 1 },
+    { section: 'Cards', path: 'strip.cardRadius', label: 'Card Radius', min: 0, max: 40, step: 1 },
+    { section: 'Cards', path: 'strip.cardTextPadRight', label: 'Text Right Pad', min: 0, max: 80, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerStripHeight', label: 'Header Strip Height', min: 16, max: 90, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerIconSize', label: 'Icon Size', min: 8, max: 50, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerIconInsetX', label: 'Icon X', min: 0, max: 70, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerTitleFont', label: 'Title Font', min: 8, max: 34, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerTitleInsetX', label: 'Title X', min: 20, max: 120, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerLetterSpacing', label: 'Title Spacing', min: 0, max: 10, step: 0.1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.headerTextExtraPad', label: 'Header Extra Pad', min: 0, max: 100, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bulletTop', label: 'Bullet Top', min: 30, max: 160, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bulletFont', label: 'Bullet Font', min: 7, max: 24, step: 0.5 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bulletGap', label: 'Bullet Gap', min: 0, max: 30, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bulletInsetX', label: 'Bullet X', min: 0, max: 70, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bulletDotSize', label: 'Dot Size', min: 1, max: 10, step: 0.1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.bodyLineHeight', label: 'Line Height', min: 10, max: 32, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerLineOffset', label: 'Footer Line Y', min: -40, max: 30, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerPillY', label: 'Footer Pill Y', min: -20, max: 40, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerPillW', label: 'Inactive Pill Width', min: 4, max: 50, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerActivePillW', label: 'Active Pill Width', min: 10, max: 90, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerPillH', label: 'Pill Height', min: 3, max: 24, step: 1 },
+    { section: 'Header / Bullets / Footer', path: 'strip.footerPillGap', label: 'Pill Gap', min: 0, max: 30, step: 1 },
   ],
   tip: [
-    { path: 'tip.height', label: 'Height', min: 40, max: 140, step: 1 },
-    { path: 'tip.sideInset', label: 'Side Inset', min: 120, max: 520, step: 5 },
-    { path: 'tip.textFont', label: 'Text Font', min: 10, max: 28, step: 1 },
+    { section: 'Tip Box', path: 'tip.yOffset', label: 'Tip Y Offset', min: -140, max: 160, step: 1 },
+    { section: 'Tip Box', path: 'tip.topGap', label: 'Tip Top Gap', min: 0, max: 60, step: 1 },
+    { section: 'Tip Box', path: 'tip.height', label: 'Height', min: 30, max: 140, step: 1 },
+    { section: 'Tip Box', path: 'tip.sideInset', label: 'Side Inset', min: 0, max: 700, step: 1 },
+    { section: 'Tip Box', path: 'tip.radius', label: 'Radius', min: 0, max: 30, step: 1 },
+    { section: 'Tip Box', path: 'tip.iconX', label: 'Icon X', min: 0, max: 100, step: 1 },
+    { section: 'Tip Box', path: 'tip.textX', label: 'Text X', min: 50, max: 260, step: 1 },
+    { section: 'Tip Box', path: 'tip.iconFont', label: 'Icon Font', min: 10, max: 40, step: 1 },
+    { section: 'Tip Box', path: 'tip.textFont', label: 'Text Font', min: 10, max: 32, step: 1 },
   ],
   action: [
-    { path: 'button.edgeOffsetY', label: 'Rail Edge Y Offset', min: -90, max: 90, step: 1 },
-    { path: 'button.railHeight', label: 'Rail Height', min: 40, max: 180, step: 1 },
-    { path: 'button.railInsetX', label: 'Rail Side Inset', min: 0, max: 560, step: 5 },
-    { path: 'button.width', label: 'Button Width', min: 180, max: 520, step: 5 },
-    { path: 'button.height', label: 'Button Height', min: 40, max: 96, step: 1 },
-    { path: 'button.fontSize', label: 'Font Size', min: 14, max: 36, step: 1 },
+    { section: 'Rail / Button', path: 'button.yOffsetFromBottom', label: 'Button Bottom Offset', min: 0, max: 120, step: 1 },
+    { section: 'Rail / Button', path: 'button.edgeOffsetY', label: 'Rail Edge Y Offset', min: -90, max: 90, step: 1 },
+    { section: 'Rail / Button', path: 'button.railHeight', label: 'Rail Height', min: 40, max: 180, step: 1 },
+    { section: 'Rail / Button', path: 'button.railInsetX', label: 'Rail Side Inset', min: 0, max: 600, step: 1 },
+    { section: 'Rail / Button', path: 'button.width', label: 'Button Width', min: 160, max: 600, step: 1 },
+    { section: 'Rail / Button', path: 'button.height', label: 'Button Height', min: 30, max: 120, step: 1 },
+    { section: 'Rail / Button', path: 'button.radius', label: 'Button Radius', min: 0, max: 30, step: 1 },
+    { section: 'Rail / Button', path: 'button.fontSize', label: 'Font Size', min: 10, max: 40, step: 1 },
+    { section: 'Rail / Button', path: 'button.letterSpacing', label: 'Letter Spacing', min: 0, max: 10, step: 0.1 },
+    { section: 'Rail / Button', path: 'button.strokeOpacity', label: 'Stroke Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Rail / Button', path: 'button.shineH', label: 'Top Shine Height', min: 0, max: 40, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxW', label: 'Arrow Box Width', min: 16, max: 120, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxInset', label: 'All Side Inset', min: 0, max: 20, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxInsetLeft', label: 'Inset Left', min: 0, max: 30, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxInsetTop', label: 'Inset Top', min: 0, max: 30, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxInsetRight', label: 'Inset Right', min: 0, max: 30, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxInsetBottom', label: 'Inset Bottom', min: 0, max: 30, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxRadius', label: 'Arrow Box Radius', min: 0, max: 20, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxStrokeWidth', label: 'Arrow Box Stroke Width', min: 0, max: 5, step: 0.1 },
+    { section: 'Arrow Box', path: 'button.innerBoxStrokeOpacity', label: 'Arrow Box Stroke Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Arrow Box', path: 'button.innerBoxShineH', label: 'Arrow Box Shine Height', min: 0, max: 40, step: 1 },
+    { section: 'Arrow Box', path: 'button.innerBoxShineOpacity', label: 'Arrow Box Shine Opacity', min: 0, max: 0.5, step: 0.01 },
+    { section: 'Arrow Box', path: 'button.arrowSize', label: 'Triangle Size', min: 4, max: 30, step: 1 },
+    { section: 'Arrow Box', path: 'button.arrowOffsetX', label: 'Triangle X Offset', min: -20, max: 20, step: 1 },
+    { section: 'Arrow Box', path: 'button.arrowOffsetY', label: 'Triangle Y Offset', min: -20, max: 20, step: 1 },
   ],
   visuals: [
     {
@@ -2603,6 +2774,118 @@ const selectedGameNumberControls: Record<SelectedGameLayoutControlTab, SelectedG
       defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.matrixScrollbarSize,
     },
   ],
+  glow: [
+    { section: 'Page / Tabs Glow', path: 'glow.pageBlur', label: 'Page Glow Blur', min: 0, max: 30, step: 1 },
+    { section: 'Page / Tabs Glow', path: 'glow.pageOpacity', label: 'Page Glow Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Page / Tabs Glow', path: 'glow.tabsBlur', label: 'Top Tab Glow Blur', min: 0, max: 30, step: 1 },
+    { section: 'Page / Tabs Glow', path: 'glow.tabsOpacity', label: 'Top Tab Glow Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.panelsBlur', label: 'Panel Glow Blur', min: 0, max: 30, step: 1 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.panelsOpacity', label: 'Panel Glow Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.stripBlur', label: 'Strip Glow Blur', min: 0, max: 30, step: 1 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.stripOpacity', label: 'Strip Glow Opacity', min: 0, max: 1, step: 0.01 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.buttonBlur', label: 'Button Glow Blur', min: 0, max: 30, step: 1 },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.buttonOpacity', label: 'Button Glow Opacity', min: 0, max: 1, step: 0.01 },
+  ],
+  colors: [],
+  contentPlan: [],
+};
+
+const selectedGameBooleanControls: Record<SelectedGameLayoutControlTab, SelectedGameBooleanControl[]> = {
+  header: [],
+  visibility: [
+    { section: 'Top Level', path: 'visibility.tabGroup', label: 'Tab Group' },
+    { section: 'Top Level', path: 'visibility.pageFrame', label: 'Page Frame' },
+    { section: 'Top Level', path: 'visibility.bodyOverlay', label: 'Body Overlay' },
+    { section: 'A Side', path: 'visibility.sideA', label: 'A Side Group' },
+    { section: 'A Side', path: 'visibility.hero', label: 'Hero / Logo' },
+    { section: 'A Side', path: 'visibility.stats', label: 'Stats Cards' },
+    { section: 'A Side', path: 'visibility.sideAImage', label: 'A Side Image' },
+    { section: 'B Side', path: 'visibility.sideB', label: 'B Side Group' },
+    { section: 'B Side', path: 'visibility.divider', label: 'A/B Divider' },
+    { section: 'B Side', path: 'visibility.overview', label: 'Overview Block' },
+    { section: 'B Side', path: 'visibility.overviewImage', label: 'Overview Image' },
+    { section: 'B Side', path: 'visibility.howTo', label: 'How To Block' },
+    { section: 'B Side', path: 'visibility.howToCards', label: 'How To Cards' },
+    { section: 'Bottom', path: 'visibility.strip', label: 'Quick Strip' },
+    { section: 'Bottom', path: 'visibility.tip', label: 'Tip Box' },
+    { section: 'Bottom', path: 'visibility.button', label: 'Action Buttons' },
+  ],
+  layout: [
+    { section: 'Canvas', path: 'canvas.whitePreviewBg', label: 'White Preview Background' },
+    { section: 'Canvas', path: 'canvas.showDebugLabels', label: 'Show Debug Labels' },
+    { section: 'A/B Split', path: 'body.useABRatio', label: 'Use A/B Ratio' },
+    { section: 'Divider', path: 'body.dividerConnectToStrip', label: 'Divider Touches Strip' },
+    { section: 'Overlay', path: 'body.overlayDither', label: 'Anti-band Dither' },
+  ],
+  sideA: [],
+  sideB: [],
+  tabs: [],
+  quickStrip: [
+    { section: 'Cards', path: 'strip.forceUniformCardWidth', label: 'Force Same Card Width' },
+  ],
+  tip: [],
+  action: [],
+  visuals: [
+    {
+      section: 'Ranking Suit Icons',
+      path: 'visuals.ranking.showSuitIcons',
+      label: 'Show Ranking Suit Icon Row',
+      defaultValue: DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.showSuitIcons,
+    },
+  ],
+  glow: [
+    { section: 'Page / Tabs Glow', path: 'glow.page', label: 'Page Glow' },
+    { section: 'Page / Tabs Glow', path: 'glow.tabs', label: 'Top Tab Glow' },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.panels', label: 'Panel Glow' },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.strip', label: 'Strip Glow' },
+    { section: 'Panels / Strip / Button Glow', path: 'glow.button', label: 'Button Glow' },
+  ],
+  colors: [],
+  contentPlan: [],
+};
+
+const selectedGameColorControls: Record<SelectedGameLayoutControlTab, SelectedGameColorControl[]> = {
+  header: [],
+  visibility: [],
+  layout: [],
+  sideA: [],
+  sideB: [],
+  tabs: [],
+  quickStrip: [],
+  tip: [],
+  action: [],
+  visuals: [],
+  glow: [
+    { section: 'Global Glow Colors', path: 'glow.color', label: 'Glow Color' },
+    { section: 'Global Glow Colors', path: 'glow.activeColor', label: 'Active Glow Color' },
+  ],
+  colors: [
+    { section: 'Page / Tabs / Body', path: 'colors.pageStroke', label: 'Page Stroke' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabStroke', label: 'Tab Stroke' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabInactiveFill', label: 'Tab Inactive Fill' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabActiveTop', label: 'Tab Active Top' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabActiveMid', label: 'Tab Active Middle' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabActiveBottom', label: 'Tab Active Bottom' },
+    { section: 'Page / Tabs / Body', path: 'colors.tabActiveLine', label: 'Active Line' },
+    { section: 'Page / Tabs / Body', path: 'colors.bodyOverlayTop', label: 'Overlay Top' },
+    { section: 'Page / Tabs / Body', path: 'colors.bodyOverlayMid', label: 'Overlay Middle' },
+    { section: 'Page / Tabs / Body', path: 'colors.bodyOverlayBottom', label: 'Overlay Bottom' },
+    { section: 'Panels / Text / Strip', path: 'colors.cardPanelFill', label: 'Panel Fill' },
+    { section: 'Panels / Text / Strip', path: 'colors.panelStroke', label: 'Panel Stroke' },
+    { section: 'Panels / Text / Strip', path: 'colors.textPrimary', label: 'Text Primary' },
+    { section: 'Panels / Text / Strip', path: 'colors.textMuted', label: 'Text Muted' },
+    { section: 'Panels / Text / Strip', path: 'colors.titlePurple', label: 'Title Purple' },
+    { section: 'Panels / Text / Strip', path: 'colors.iconPurple', label: 'Icon Purple' },
+    { section: 'Panels / Text / Strip', path: 'colors.success', label: 'Success' },
+    { section: 'Panels / Text / Strip', path: 'colors.tipGold', label: 'Tip Gold' },
+    { section: 'Panels / Text / Strip', path: 'colors.stripStroke', label: 'Strip Stroke' },
+    { section: 'Panels / Text / Strip', path: 'colors.stripCardStroke', label: 'Strip Card Stroke' },
+    { section: 'Panels / Text / Strip', path: 'colors.stripActiveStroke', label: 'Strip Active Stroke' },
+    { section: 'Panels / Text / Strip', path: 'colors.arrowHover', label: 'Arrow Hover' },
+    { section: 'Button Gradient', path: 'colors.buttonLeft', label: 'Button Left' },
+    { section: 'Button Gradient', path: 'colors.buttonMid', label: 'Button Middle' },
+    { section: 'Button Gradient', path: 'colors.buttonRight', label: 'Button Right' },
+  ],
   contentPlan: [],
 };
 
@@ -2632,10 +2915,23 @@ function getNestedBoolean(
   return typeof entry === 'boolean' ? entry : fallback;
 }
 
+function getNestedString(
+  value: SelectedGameLayoutControls,
+  path: string,
+  fallback = ''
+): string {
+  const entry = path.split('.').reduce<unknown>((current, part) => (
+    current && typeof current === 'object'
+      ? (current as Record<string, unknown>)[part]
+      : undefined
+  ), value);
+  return typeof entry === 'string' ? entry : fallback;
+}
+
 function setNestedControlValue(
   controls: SelectedGameLayoutControls,
   path: string,
-  value: number | boolean
+  value: number | boolean | string
 ): SelectedGameLayoutControls {
   const next = JSON.parse(JSON.stringify(controls)) as Record<string, unknown>;
   const parts = path.split('.');
@@ -2797,7 +3093,7 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
     };
   }, [contentPlan, debugBounds, layoutControls, previewLayoutMode, previewSampleGameId]);
 
-  const updateLayoutControl = useCallback((path: string, value: number | boolean) => {
+  const updateLayoutControl = useCallback((path: string, value: number | boolean | string) => {
     setLayoutControls((previous) => {
       const nextControls = setNestedControlValue(previous, path, value);
       broadcastUpdate({ ...config, layoutControls: nextControls });
@@ -2872,13 +3168,20 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
       return;
     }
     if (tab !== 'header') {
-      const groups = tab === 'quickStrip'
-        ? ['strip']
-        : tab === 'action'
-          ? ['button']
-          : tab === 'sideB'
-            ? ['overview', 'howTo']
-            : [tab];
+      const resetGroupsByTab: Partial<Record<SelectedGameLayoutControlTab, string[]>> = {
+        visibility: ['visibility'],
+        layout: ['canvas', 'page', 'body'],
+        sideA: ['sideA'],
+        sideB: ['overview', 'howTo'],
+        tabs: ['tabGroup'],
+        quickStrip: ['strip'],
+        tip: ['tip'],
+        action: ['button'],
+        visuals: ['visuals'],
+        glow: ['glow'],
+        colors: ['colors'],
+      };
+      const groups = resetGroupsByTab[tab] ?? [tab];
       const nextControls = { ...layoutControls };
       groups.forEach((group) => delete (nextControls as Record<string, unknown>)[group]);
       applyConfig({ ...config, layoutControls: nextControls });
@@ -2902,6 +3205,8 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
   ];
 
   const numberControls = selectedGameNumberControls[tab];
+  const booleanControls = selectedGameBooleanControls[tab];
+  const colorControls = selectedGameColorControls[tab];
 
   return (
     <div className="standalone-panel-page standalone-panel-page--featured-showcase-controls">
@@ -2980,7 +3285,8 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
         {numberControls.length > 0 ? (
           <div style={selectedGamePanelGridStyle}>
             {numberControls.flatMap((field, index) => {
-              const value = getNestedNumber(layoutControls, field.path, field.defaultValue);
+              const defaultValue = getSelectedGameDefaultNumber(field.path, field.defaultValue ?? 0);
+              const value = getNestedNumber(layoutControls, field.path, defaultValue);
               const showSection = Boolean(field.section && field.section !== numberControls[index - 1]?.section);
               return [
                 showSection ? (
@@ -2998,9 +3304,16 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
                     {field.section}
                   </div>
                 ) : null,
-                <label key={field.path} style={selectedGamePanelCardStyle}>
-                  <span style={{ display: 'block', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
-                    {field.label}
+                <div key={field.path} style={selectedGamePanelCardStyle}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
+                    <span>{field.label}</span>
+                    <button
+                      type="button"
+                      style={gamesCatalogResetMiniButtonStyle}
+                      onClick={() => updateLayoutControl(field.path, defaultValue)}
+                    >
+                      Reset
+                    </button>
                   </span>
                   <input
                     type="range"
@@ -3019,51 +3332,133 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
                     style={selectedGamePanelInputStyle}
                     onChange={(event) => updateLayoutControl(field.path, Number(event.target.value))}
                   />
-                </label>,
+                </div>,
               ];
             })}
           </div>
         ) : null}
-        {tab === 'layout' ? (
-          <label style={standaloneHomepageToggleLabelStyle}>
-            <input
-              type="checkbox"
-              checked={Boolean((layoutControls.canvas as { whitePreviewBg?: boolean } | undefined)?.whitePreviewBg)}
-              onChange={(event) => updateLayoutControl('canvas.whitePreviewBg', event.target.checked)}
-            />
-            White Preview Background
-          </label>
+        {booleanControls.length > 0 ? (
+          <div style={selectedGamePanelGridStyle}>
+            {booleanControls.flatMap((field, index) => {
+              const defaultValue = getSelectedGameDefaultBoolean(field.path, field.defaultValue ?? false);
+              const value = getNestedBoolean(layoutControls, field.path, defaultValue);
+              const showSection = Boolean(field.section && field.section !== booleanControls[index - 1]?.section);
+              return [
+                showSection ? (
+                  <div
+                    key={`${field.section}-boolean-heading`}
+                    style={{
+                      gridColumn: '1 / -1',
+                      color: '#67e8f9',
+                      fontSize: '0.78rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {field.section}
+                  </div>
+                ) : null,
+                <div key={field.path} style={selectedGamePanelCardStyle}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', color: '#cffafe', fontWeight: 800 }}>
+                    <label style={standaloneHomepageToggleLabelStyle}>
+                      <input
+                        type="checkbox"
+                        checked={value}
+                        onChange={(event) => updateLayoutControl(field.path, event.target.checked)}
+                      />
+                      {field.label}
+                    </label>
+                    <button
+                      type="button"
+                      style={gamesCatalogResetMiniButtonStyle}
+                      onClick={() => updateLayoutControl(field.path, defaultValue)}
+                    >
+                      Reset
+                    </button>
+                  </span>
+                </div>,
+              ];
+            })}
+          </div>
         ) : null}
-        {tab === 'visuals' ? (
-          <label style={standaloneHomepageToggleLabelStyle}>
-            <input
-              type="checkbox"
-              checked={getNestedBoolean(
-                layoutControls,
-                'visuals.ranking.showSuitIcons',
-                DEFAULT_SELECTED_GAME_RANKING_VISUAL_CONTROLS.showSuitIcons
-              )}
-              onChange={(event) => updateLayoutControl('visuals.ranking.showSuitIcons', event.target.checked)}
-            />
-            Show Ranking Suit Icon Row
-          </label>
+        {colorControls.length > 0 ? (
+          <div style={selectedGamePanelGridStyle}>
+            {colorControls.flatMap((field, index) => {
+              const defaultValue = getSelectedGameDefaultString(field.path, field.defaultValue ?? '#ffffff');
+              const value = getNestedString(layoutControls, field.path, defaultValue);
+              const showSection = Boolean(field.section && field.section !== colorControls[index - 1]?.section);
+              return [
+                showSection ? (
+                  <div
+                    key={`${field.section}-color-heading`}
+                    style={{
+                      gridColumn: '1 / -1',
+                      color: '#67e8f9',
+                      fontSize: '0.78rem',
+                      fontWeight: 900,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {field.section}
+                  </div>
+                ) : null,
+                <div key={field.path} style={selectedGamePanelCardStyle}>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.45rem', color: '#cffafe', fontWeight: 800 }}>
+                    <span>{field.label}</span>
+                    <button
+                      type="button"
+                      style={gamesCatalogResetMiniButtonStyle}
+                      onClick={() => updateLayoutControl(field.path, defaultValue)}
+                    >
+                      Reset
+                    </button>
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '3.5rem 1fr', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="color"
+                      value={value}
+                      onChange={(event) => updateLayoutControl(field.path, event.target.value)}
+                    />
+                    <input
+                      type="text"
+                      value={value}
+                      style={selectedGamePanelInputStyle}
+                      onChange={(event) => updateLayoutControl(field.path, event.target.value)}
+                    />
+                  </div>
+                </div>,
+              ];
+            })}
+          </div>
         ) : null}
         {tab === 'contentPlan' ? (
           <div style={selectedGamePanelGridStyle}>
             {selectedGameTabOrder.map((id) => {
+              const defaultPlanTab = DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.find((item) => item.id === id)!;
               const planTab =
                 contentPlan.tabs.find((item) => item.id === id) ??
-                DEFAULT_SELECTED_GAME_CONTENT_PLAN.tabs.find((item) => item.id === id)!;
+                defaultPlanTab;
               return (
                 <div key={id} style={selectedGamePanelCardStyle}>
-                  <label style={standaloneHomepageToggleLabelStyle}>
-                    <input
-                      type="checkbox"
-                      checked={planTab.enabled}
-                      onChange={(event) => updateContentPlanTab(id, { enabled: event.target.checked })}
-                    />
-                    {id}
-                  </label>
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.45rem' }}>
+                    <label style={standaloneHomepageToggleLabelStyle}>
+                      <input
+                        type="checkbox"
+                        checked={planTab.enabled}
+                        onChange={(event) => updateContentPlanTab(id, { enabled: event.target.checked })}
+                      />
+                      {id}
+                    </label>
+                    <button
+                      type="button"
+                      style={gamesCatalogResetMiniButtonStyle}
+                      onClick={() => updateContentPlanTab(id, defaultPlanTab)}
+                    >
+                      Reset
+                    </button>
+                  </span>
                   <input
                     type="text"
                     value={planTab.label}

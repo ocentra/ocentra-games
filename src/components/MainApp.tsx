@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useGameStore } from '@/store/gameStore';
 import { useAuth } from '@/providers/AuthProvider';
 import type { RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground';
+import { PublicRouteKey, PublicRoutePath, PublicRouteSegment } from '@ocentra/endpoint-domain/constants/public-routes';
 
 const LazyThreeBaseProvider = React.lazy(() =>
   import('@ocentra/core-ui/Background/ThreeBaseContext').then((m) => ({ default: m.ThreeBaseProvider }))
@@ -12,7 +13,12 @@ const LazyDynamicBackground = React.lazy(() =>
   import('@ocentra/core-ui/Background/DynamicBackground').then((m) => ({ default: m.DynamicBackground }))
 );
 
+const LazyDynamicBackground2DFallback = React.lazy(() =>
+  import('@ocentra/core-ui/Background/DynamicBackground2DFallback').then((m) => ({ default: m.DynamicBackground2DFallback }))
+);
+
 import { PlatformDesktopAssetWarmupBanner } from '@/ui/components/Loading/PlatformDesktopAssetWarmupBanner';
+import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 import { ErrorScreen } from '@/ui/components/Error/ErrorScreen';
 import { AuthScreen } from '@/ui/components/Auth/AuthScreen';
 import { useAuthHandlers } from '@/hooks/useAuthHandlers';
@@ -25,6 +31,29 @@ import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScree
 
 
 const DISABLE_BACKGROUND_3D = false;
+
+const PUBLIC_CONTENT_BACKGROUND_PATHS = [
+  PublicRoutePath[PublicRouteKey.Home],
+  PublicRoutePath[PublicRouteKey.GamesCatalog],
+  PublicRoutePath[PublicRouteKey.CardGamesCatalog],
+  PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer],
+  PublicRoutePath[PublicRouteKey.Shop],
+  PublicRoutePath[PublicRouteKey.Competition],
+  PublicRoutePath[PublicRouteKey.Tournaments],
+  PublicRoutePath[PublicRouteKey.Leaderboard],
+  PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard],
+] as const;
+
+function isPublicContentRoute(pathname: string): boolean {
+  if (PUBLIC_CONTENT_BACKGROUND_PATHS.some(path => path === pathname)) {
+    return true;
+  }
+
+  return pathname.startsWith(`/${PublicRouteSegment.Games}/`)
+    || pathname.startsWith(`/${PublicRouteSegment.Rules}/`)
+    || pathname.startsWith(`/${PublicRouteSegment.Categories}/`)
+    || pathname.startsWith(`/${PublicRouteSegment.Tournaments}/`);
+}
 
 
 
@@ -51,6 +80,8 @@ const AuthenticatedApp: React.FC = () => {
     ];
     return !excludedPaths.some(excluded => path.startsWith(excluded));
   }, [location.pathname]);
+  const shouldUseLiteBackground = useMemo(() => isPublicContentRoute(location.pathname), [location.pathname]);
+  const shouldUseThreeBackground = shouldShowBackground && !DISABLE_BACKGROUND_3D && !shouldUseLiteBackground;
 
   useEffect(() => {
     if ((!shouldShowBackground || DISABLE_BACKGROUND_3D) && !isBackgroundReady) {
@@ -66,16 +97,16 @@ const AuthenticatedApp: React.FC = () => {
   }, [isBackgroundReady]);
 
   useEffect(() => {
-    if (!shouldShowBackground || DISABLE_BACKGROUND_3D || !isBackgroundReady || !rotationRef.current?.rotate) return;
+    if (!shouldUseThreeBackground || !isBackgroundReady || !rotationRef.current?.rotate) return;
     const navigated = prevPathnameRef.current !== location.pathname;
     prevPathnameRef.current = location.pathname;
     if (!navigated) return;
     rotationRef.current.rotate();
-  }, [location.pathname, shouldShowBackground, isBackgroundReady]);
+  }, [location.pathname, shouldUseThreeBackground, isBackgroundReady]);
 
   useEffect(() => {
     const handleShowScreen = () => {
-      if (shouldShowBackground && !DISABLE_BACKGROUND_3D && isBackgroundReady && rotationRef.current?.rotate) {
+      if (shouldUseThreeBackground && isBackgroundReady && rotationRef.current?.rotate) {
         rotationRef.current.rotate();
       }
     };
@@ -85,7 +116,7 @@ const AuthenticatedApp: React.FC = () => {
     return () => {
       EventBus.instance.unsubscribe(ShowScreenEvent, handleShowScreen);
     };
-  }, [shouldShowBackground, isBackgroundReady]);
+  }, [shouldUseThreeBackground, isBackgroundReady]);
 
   const { shouldShowLoading } = useLoadingState({
     isBackgroundReady,
@@ -108,15 +139,26 @@ const AuthenticatedApp: React.FC = () => {
   return (
     <div className="app main-app-container">
       <PlatformDesktopAssetWarmupBanner />
-      {shouldShowBackground && !DISABLE_BACKGROUND_3D && (
+      {shouldShowBackground && (
       <Suspense fallback={null}>
-        <LazyDynamicBackground
+        {shouldUseThreeBackground ? (
+          <LazyThreeBaseProvider>
+            <LazyDynamicBackground
           controlRef={rotationRef}
           onReady={() => {
             logger.logUI('[onReady] ✅ Background is ready');
             setIsBackgroundReady(true);
           }}
-        />
+            />
+          </LazyThreeBaseProvider>
+        ) : (
+          <LazyDynamicBackground2DFallback
+            controlRef={rotationRef}
+            onReady={() => {
+              setIsBackgroundReady(true);
+            }}
+          />
+        )}
       </Suspense>
       )}
       
@@ -148,10 +190,8 @@ const MainApp: React.FC = () => {
 
 
   return (
-    <Suspense fallback={<div className="app main-app-container" />}>
-      <LazyThreeBaseProvider>
-        <AuthenticatedApp />
-      </LazyThreeBaseProvider>
+    <Suspense fallback={<ScreenLoadingFallback label="Loading Ocentra Games" variant="page" />}>
+      <AuthenticatedApp />
     </Suspense>
   );
 };

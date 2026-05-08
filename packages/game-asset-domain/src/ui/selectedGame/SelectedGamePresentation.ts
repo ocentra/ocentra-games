@@ -53,8 +53,9 @@ export interface SelectedGamePresentationHero {
 }
 
 export interface SelectedGamePresentationAction {
-  id: 'view-lobbies';
+  id: 'explore-card-games' | 'view-lobbies' | 'play-local-pilot';
   label: string;
+  enabled?: boolean;
 }
 
 export interface SelectedGamePresentation {
@@ -67,6 +68,28 @@ export interface SelectedGamePresentation {
   quickInfo: Record<SelectedGameTabId, SelectedGamePresentationChunk[]>;
   tip: Record<SelectedGameTabId, string>;
   actions: SelectedGamePresentationAction[];
+}
+
+export function selectedGameActionsForAuthoredState(isAuthored: boolean): SelectedGamePresentationAction[] {
+  return isAuthored
+    ? [
+      { id: 'explore-card-games', label: 'Explore Games' },
+      { id: 'view-lobbies', label: 'View Lobbies' },
+      { id: 'play-local-pilot', label: 'Play Local Pilot' },
+    ]
+    : [
+      { id: 'explore-card-games', label: 'Explore Games' },
+    ];
+}
+
+export function withSelectedGameActions(
+  presentation: SelectedGamePresentation,
+  isAuthored: boolean
+): SelectedGamePresentation {
+  return {
+    ...presentation,
+    actions: selectedGameActionsForAuthoredState(isAuthored),
+  };
 }
 
 export interface SelectedGameContentPlanTab {

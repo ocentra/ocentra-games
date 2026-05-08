@@ -26,6 +26,7 @@ import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
+import { buildCardGamesCatalogPath } from '@/ui/navigation/appRoutes';
 import '@/ui/pages/Home/HomePage.css';
 
 const log = MainAppLogger.instance;
@@ -333,7 +334,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           previewLayoutMode={sharedHomepagePreviewLayoutMode}
           onLearnMore={handleLearnMore}
           onGameClick={handlePlayGame}
-          onExploreClick={() => navigate('/CardGamesExplorer')}
+          onExploreClick={() => navigate(buildCardGamesCatalogPath())}
         />
       </div>
     </UnifiedPageShell>

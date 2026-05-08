@@ -25,6 +25,7 @@ import {
   type SelectedGamePresentationVisualRef,
   type SelectedGameRankingVisualControls,
   type SelectedGameTabId,
+  withSelectedGameActions,
 } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation'
 import {
   HomePageGamesDocumentSchema,
@@ -3718,7 +3719,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
     const fallbackBundle = selectedGameFallbackBundle
     const bundle = selectedGameRenderBundle
-    return buildSelectedGamePresentation({
+    return withSelectedGameActions(buildSelectedGamePresentation({
       layout: { data: layoutDocument },
       gameMode: bundle.gameMode ?? fallbackBundle.gameMode,
       gameInfo: bundle.gameInfo ?? fallbackBundle.gameInfo,
@@ -3732,11 +3733,12 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       actions: bundle.actions,
       validationFixtures: bundle.validationFixtures,
       images: bundle.images,
-    })
+    }), Boolean(selectedGame))
   }, [
     isSelectedGameLayout,
     pageLayoutData,
     selectedGameContentPlan,
+    selectedGame,
     selectedGameFallbackBundle,
     selectedGameLayoutControls,
     selectedGameRenderBundle,

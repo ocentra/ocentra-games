@@ -4,6 +4,7 @@ import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getGameMode } from '@/adapters/assets/GameCatalogService';
 import { buildGameDetail } from '../adapters/gameCatalogToGameInfo';
+import { loadAssetExplorerContent } from '../adapters/assetExplorerContent';
 import { loadRemoteCatalogGame } from '@/adapters/assets/GameCatalogRuntimeSource';
 import type { GameInfo } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 
@@ -88,6 +89,15 @@ export function useGameDetail() {
         }
       } else {
         try {
+          const assetContent = await loadAssetExplorerContent(game);
+          if (isResolved) return;
+
+          if (assetContent?.detail) {
+            log.logInfo('[CardGamesExplorer] Asset-backed game detail loaded', getStackTrace(), { slug: game.slug });
+            setGameDetail(assetContent.detail);
+            return;
+          }
+
           const gameModeId = game.guid || game.slug;
           log.logInfo('[CardGamesExplorer] Fetching GameMode for "Made" game', getStackTrace(), { identifier: gameModeId });
           const gameMode = await getGameMode(gameModeId);

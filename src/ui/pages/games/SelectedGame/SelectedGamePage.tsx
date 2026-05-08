@@ -8,6 +8,7 @@ import type {
   SelectedGamePresentation,
   SelectedGamePresentationVisualRef,
 } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
+import { withSelectedGameActions } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { buildSelectedGamePresentation } from '@ocentra/game-asset-domain/ui/selectedGame/buildSelectedGamePresentation';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
@@ -15,14 +16,20 @@ import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { SelectedGameShowcase } from '@ocentra/core-ui/Common/SelectedGameShowcase/SelectedGameShowcase';
 import { APP_VERSION } from '@/constants/version';
 import { GameNotFound } from '@/ui/pages/games/NotFound/GameNotFound';
+import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 import { isAssetGUID, isImageHash, type AssetGUIDType, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import { MultiplayerStorageKey } from '@/ui/pages/Matchmaking/types';
-import { AppScreenToken, buildGameLobbyPath } from '@/ui/navigation/appRoutes';
-import { getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
+import { AppScreenToken, buildCardGamesCatalogPath, buildGameLobbyPath, buildGamePlayPath } from '@/ui/navigation/appRoutes';
+import { getGameCatalogEntries, getSelectedGamePageInfos } from '@/adapters/assets/GameCatalogService';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import {
   loadSelectedGameAssetBundle,
+  loadSelectedGameLayoutControls,
+  type SelectedGameAssetBundle,
 } from '@/ui/pages/games/SelectedGame/gameDetailAssetSections';
+import { loadCatalogSelectedGamePresentation } from '@/ui/pages/games/SelectedGame/catalogSelectedGamePresentation';
+import { SelectedGameVisualContent } from '@/ui/pages/games/SelectedGame/SelectedGameVisualContent';
+import { findAuthoredSlugForCatalogSlug } from '@/seo/generated/catalogSeoReplacements';
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
 import './SelectedGamePage.css';
 
@@ -35,16 +42,36 @@ interface SelectedGamePageProps {
 
 interface ParsedGameId {
   name: string;
+  guid: AssetGUIDType | null;
+}
+
+interface AuthoredGameResolution {
+  slug: string;
   guid: AssetGUIDType;
+  routeId: string;
 }
 
 const GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS = 10000;
+const GAME_DETAIL_AUTHORED_BUNDLE_LOAD_TIMEOUT_MS = 30000;
 
 type LooseRecord = Record<string, unknown>;
 type ImageResolverInput = Parameters<typeof useResolveImageUrl>[0];
 
+function decodeGameIdentifier(identifier: string): string {
+  try {
+    return decodeURIComponent(identifier);
+  } catch {
+    return identifier;
+  }
+}
+
 function parseGameIdentifier(identifier: string): ParsedGameId | null {
-  const parts = identifier.split(':');
+  const parts = decodeGameIdentifier(identifier).split(':');
+
+  if (parts.length === 1) {
+    const [name] = parts;
+    return name ? { name, guid: null } : null;
+  }
 
   if (parts.length !== 2) {
     return null;
@@ -63,10 +90,64 @@ function parseGameIdentifier(identifier: string): ParsedGameId | null {
   return { name, guid: guidStr };
 }
 
-async function withPageLoadTimeout<T>(promise: Promise<T>): Promise<T | null> {
+function slugify(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function formatGameName(name: string): string {
+  if (!name) return '';
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+async function resolveAuthoredGame(parsed: ParsedGameId): Promise<AuthoredGameResolution | null> {
+  if (parsed.guid) {
+    return {
+      slug: parsed.name,
+      guid: parsed.guid,
+      routeId: `${parsed.name}:${parsed.guid}`,
+    };
+  }
+
+  const replacementSlug = findAuthoredSlugForCatalogSlug(slugify(parsed.name));
+  const lookupName = replacementSlug ?? parsed.name;
+  const normalizedName = slugify(lookupName);
+  const entries = await getGameCatalogEntries();
+  const entry = entries.find((candidate) => {
+    const candidateGameId = candidate.gameId ? String(candidate.gameId) : '';
+    const candidateDisplayName = candidate.displayName ?? '';
+    return (
+      candidate.guid === lookupName ||
+      candidateGameId.toLowerCase() === lookupName.toLowerCase() ||
+      slugify(candidateGameId) === normalizedName ||
+      slugify(candidateDisplayName) === normalizedName
+    );
+  });
+
+  if (!entry?.guid || !isAssetGUID(entry.guid)) {
+    return null;
+  }
+
+  const slug = entry.gameId ? String(entry.gameId) : normalizedName;
+  return {
+    slug,
+    guid: entry.guid,
+    routeId: `${slug}:${entry.guid}`,
+  };
+}
+
+async function withPageLoadTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs = GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS
+): Promise<T | null> {
   let timer: ReturnType<typeof globalThis.setTimeout> | null = null;
   const timeout = new Promise<null>((resolve) => {
-    timer = globalThis.setTimeout(() => resolve(null), GAME_DETAIL_PAGE_LOAD_TIMEOUT_MS);
+    timer = globalThis.setTimeout(() => resolve(null), timeoutMs);
   });
 
   try {
@@ -100,14 +181,22 @@ function selectedGameImageResolverInput(presentation: SelectedGamePresentation |
     : {};
 }
 
+function extractSelectedGameLayoutControls(value: unknown): SelectedGameLayoutControls | undefined {
+  const controls = asRecord(dataOf(value).layoutControls);
+  return Object.keys(controls).length > 0 ? controls as SelectedGameLayoutControls : undefined;
+}
+
 export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: SelectedGamePageProps) {
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [gameInfo, setGameInfo] = useState<GamePage | null>(null);
   const [presentation, setPresentation] = useState<SelectedGamePresentation | null>(null);
+  const [assetBundle, setAssetBundle] = useState<SelectedGameAssetBundle | null>(null);
   const [layoutControls, setLayoutControls] = useState<SelectedGameLayoutControls | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [parsedGameName, setParsedGameName] = useState<string>('');
+  const [resolvedGameId, setResolvedGameId] = useState<string>('');
+  const [showPilotSetup, setShowPilotSetup] = useState(false);
   const handleLogout = () => {
     if (onLogoutClick) {
       onLogoutClick();
@@ -129,20 +218,61 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
       }
 
       setParsedGameName(parsed.name);
+      setResolvedGameId(parsed.name);
+      setGameInfo(null);
       setPresentation(null);
+      setAssetBundle(null);
       setLayoutControls(undefined);
+      setShowPilotSetup(false);
 
       try {
-        const loadedInfo =
-          await withPageLoadTimeout(getSelectedGamePageInfos(parsed.name)) ??
-          await withPageLoadTimeout(getSelectedGamePageInfos(parsed.guid));
-        const bundle = await withPageLoadTimeout(loadSelectedGameAssetBundle(parsed.guid).catch(() => null));
+        const layoutControlsPromise = withPageLoadTimeout(
+          loadSelectedGameLayoutControls().catch(() => undefined)
+        );
+        const authoredGame = await withPageLoadTimeout(resolveAuthoredGame(parsed).catch(() => null));
+        if (authoredGame) {
+          const loadedInfoPromise = (async () =>
+            await withPageLoadTimeout(getSelectedGamePageInfos(authoredGame.slug).catch(() => null)) ??
+            await withPageLoadTimeout(getSelectedGamePageInfos(authoredGame.guid).catch(() => null))
+          )();
+          const bundlePromise = withPageLoadTimeout(
+            loadSelectedGameAssetBundle(authoredGame.guid).catch(() => null),
+            GAME_DETAIL_AUTHORED_BUNDLE_LOAD_TIMEOUT_MS
+          );
+          const [loadedInfo, bundle] = await Promise.all([loadedInfoPromise, bundlePromise]);
 
-        if (loadedInfo || bundle?.gameMode) {
-          const nextPresentation = bundle ? buildSelectedGamePresentation(bundle) : null;
-          setGameInfo(loadedInfo ?? null);
-          setPresentation(nextPresentation);
-          setLayoutControls(asRecord(dataOf(bundle?.layout).layoutControls) as SelectedGameLayoutControls);
+          if (bundle?.gameMode) {
+            const nextPresentation = withSelectedGameActions(buildSelectedGamePresentation(bundle), true);
+            const savedLayoutControls = await layoutControlsPromise;
+            setGameInfo(loadedInfo ?? null);
+            setPresentation(nextPresentation);
+            setAssetBundle(bundle);
+            setLayoutControls(savedLayoutControls ?? extractSelectedGameLayoutControls(bundle?.layout));
+            setParsedGameName(authoredGame.slug);
+            setResolvedGameId(authoredGame.routeId);
+            setIsValid(true);
+            return;
+          }
+
+          if (loadedInfo) {
+            setGameInfo(loadedInfo);
+            setPresentation(null);
+            setAssetBundle(null);
+            setIsValid(false);
+            setErrorMessage(`Game "${authoredGame.slug}" asset bundle could not be loaded.`);
+            return;
+          }
+        }
+
+        const catalogResolution = await withPageLoadTimeout(loadCatalogSelectedGamePresentation(parsed.name));
+        if (catalogResolution) {
+          const savedLayoutControls = await layoutControlsPromise;
+          setGameInfo(null);
+          setPresentation(withSelectedGameActions(catalogResolution.presentation, false));
+          setAssetBundle(null);
+          setLayoutControls(savedLayoutControls ?? undefined);
+          setParsedGameName(catalogResolution.displayName);
+          setResolvedGameId(parsed.name);
           setIsValid(true);
         } else {
           setIsValid(false);
@@ -164,17 +294,26 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   const resolveSelectedGameVisualRefUrl = useCallback((ref: SelectedGamePresentationVisualRef) =>
     ref.imageHash && isImageHash(ref.imageHash) ? resolveImageUrl(ref.imageHash as ImageHash) : null,
   [resolveImageUrl]);
+  const selectedGameDisplayName = presentation?.hero.title || formatGameName(parsedGameName || gameId);
+  const selectedGameSubtitle = presentation?.hero.taglineLines[0] || gameInfo?.tagline || "Simple Rules. Deadly Game.";
+  const renderSelectedGameVisualContent = useCallback(({ tabId }: { tabId: Parameters<typeof SelectedGameVisualContent>[0]['tabId'] }) => {
+    const hasDeckVisual = tabId === 'deck' && Boolean(assetBundle?.deck || assetBundle?.deckModel);
+    const hasRankingVisual = tabId === 'ranking' && Boolean(assetBundle?.ranking);
+    if (!hasDeckVisual && !hasRankingVisual) {
+      return null;
+    }
+    return (
+      <SelectedGameVisualContent
+        bundle={assetBundle}
+        gameLabel={selectedGameDisplayName}
+        layoutControls={layoutControls}
+        tabId={tabId}
+      />
+    );
+  }, [assetBundle, layoutControls, selectedGameDisplayName]);
 
   if (isValidating) {
-    return (
-      <div className="generic-game-page">
-        <div className="generic-game-main">
-          <div className="generic-game-loading">
-            Loading game...
-          </div>
-        </div>
-      </div>
-    );
+    return <ScreenLoadingFallback label="Loading game" variant="page" />;
   }
 
   if (!isValid) {
@@ -182,6 +321,7 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
   }
 
   const handleOpenLobbies = () => {
+    const nextGameId = resolvedGameId || gameId;
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem(
         MultiplayerStorageKey.Config,
@@ -189,25 +329,25 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
           humans: 1,
           ai: 3,
           aiModel: 'onnx-community/Phi-3.5-mini-instruct-onnx-web',
-          gameId,
+          gameId: nextGameId,
           gameName: parsedGameName || gameId,
         })
       );
     }
-    EventBus.instance.publish(new ShowScreenEvent(buildGameLobbyPath(gameId)));
+    EventBus.instance.publish(new ShowScreenEvent(buildGameLobbyPath(nextGameId)));
+  };
+
+  const handleExploreCardGames = () => {
+    EventBus.instance.publish(new ShowScreenEvent(buildCardGamesCatalogPath()));
+  };
+
+  const handleStartPilot = () => {
+    EventBus.instance.publish(new ShowScreenEvent(buildGamePlayPath(resolvedGameId || gameId)));
   };
 
   const handleBackToHome = () => {
     EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home));
   };
-
-  const formatGameName = (name: string): string => {
-    if (!name) return '';
-    return name.charAt(0).toUpperCase() + name.slice(1);
-  };
-
-  const displayName = presentation?.hero.title || formatGameName(parsedGameName || gameId);
-  const detailSubtitle = presentation?.hero.taglineLines[0] || gameInfo?.tagline || "Simple Rules. Deadly Game.";
 
   return (
     <UnifiedPageShell
@@ -218,8 +358,8 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
         <UnifiedHeader
           showPrimaryNavigation={false}
           dynamicData={{
-            gameName: displayName,
-            tagline: detailSubtitle
+            gameName: selectedGameDisplayName,
+            tagline: selectedGameSubtitle
           }}
           config={{
             right: headerRightConfig,
@@ -235,10 +375,47 @@ export function SelectedGamePage({ gameId, user, onLogout, onLogoutClick }: Sele
         {ImageLoaders}
         <SelectedGameShowcase
           layoutControls={layoutControls}
-          onViewLobbies={handleOpenLobbies}
+          onActionClick={(actionId) => {
+            if (actionId === 'explore-card-games') {
+              handleExploreCardGames();
+            }
+            if (actionId === 'view-lobbies') {
+              handleOpenLobbies();
+            }
+            if (actionId === 'play-local-pilot') {
+              setShowPilotSetup(true);
+            }
+          }}
           presentation={presentation ?? undefined}
+          renderActiveVisualContent={renderSelectedGameVisualContent}
           resolveVisualRefUrl={resolveSelectedGameVisualRefUrl}
         />
+        {showPilotSetup && (
+          <div className="selected-game-pilot-modal" role="dialog" aria-modal="true" aria-label="Local pilot setup">
+            <div className="selected-game-pilot-modal__panel">
+              <div>
+                <p className="selected-game-pilot-modal__eyebrow">Local Pilot</p>
+                <h2>{selectedGameDisplayName}</h2>
+              </div>
+              <div className="selected-game-pilot-modal__grid">
+                <span>Seats</span>
+                <strong>4</strong>
+                <span>Table</span>
+                <strong>Local</strong>
+                <span>Bots</span>
+                <strong>Deterministic</strong>
+              </div>
+              <div className="selected-game-pilot-modal__actions">
+                <button type="button" className="selected-game-pilot-modal__button selected-game-pilot-modal__button--secondary" onClick={() => setShowPilotSetup(false)}>
+                  Cancel
+                </button>
+                <button type="button" className="selected-game-pilot-modal__button" onClick={handleStartPilot}>
+                  Start Pilot
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </UnifiedPageShell>
   );

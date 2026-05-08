@@ -2251,10 +2251,12 @@ function HeaderPill({
   dataSlot?: string;
 }) {
   const [hovered, setHovered] = useState(false);
+  const titleId = useId().replace(/:/g, '');
   const interactive = Boolean(onClick || isButton);
   const edgeColor = interactive && hovered ? style.hoverEdgeColor : style.edgeColor;
   const fillColor = interactive && hovered ? style.hoverTintColor : style.tintColor;
   const fillOpacity = interactive && hovered ? Math.min(1, style.boxOpacity + style.hoverBoxOpacityBoost) : style.boxOpacity;
+  const accessibleName = ariaLabel?.trim() || undefined;
 
   return (
     <g
@@ -2272,11 +2274,12 @@ function HeaderPill({
         }
       }}
       role={interactive ? 'button' : undefined}
-      aria-label={interactive ? ariaLabel : undefined}
+      aria-labelledby={interactive && accessibleName ? titleId : undefined}
       tabIndex={interactive ? 0 : undefined}
       pointerEvents={interactive ? 'bounding-box' : 'visiblePainted'}
       style={{ cursor: interactive ? 'pointer' : 'default', outline: 'none' }}
     >
+      {interactive && accessibleName ? <title id={titleId}>{accessibleName}</title> : null}
       <rect
         x={box.x}
         y={box.y}
@@ -2290,7 +2293,7 @@ function HeaderPill({
         vectorEffect="non-scaling-stroke"
         filter={style.pillGlowBlur > 0 ? 'url(#pillGlow)' : undefined}
       />
-      {children}
+      {interactive ? <g aria-hidden="true">{children}</g> : children}
     </g>
   );
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildSelectedGamePresentation } from '@/ui/selectedGame/buildSelectedGamePresentation';
+import { withSelectedGameActions } from '@/ui/selectedGame/SelectedGamePresentation';
 
 const claimLikeBundle = {
   layout: {
@@ -210,6 +211,22 @@ describe('buildSelectedGamePresentation', () => {
       'banner-hash',
       'logo-hash',
     ]);
+  });
+
+  it('uses the authored selected-game action set for playable assets', () => {
+    const presentation = buildSelectedGamePresentation(claimLikeBundle);
+
+    expect(presentation.actions.map((action) => action.label)).toEqual([
+      'Explore Games',
+      'View Lobbies',
+      'Play Local Pilot',
+    ]);
+  });
+
+  it('can restrict selected-game actions for catalog-only entries', () => {
+    const presentation = withSelectedGameActions(buildSelectedGamePresentation(claimLikeBundle), false);
+
+    expect(presentation.actions.map((action) => action.label)).toEqual(['Explore Games']);
   });
 
   it('degrades missing assets to empty sections without crashing', () => {

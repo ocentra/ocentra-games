@@ -1,16 +1,18 @@
-export function ScreenLoadingFallback() {
+import { BrandedLoadingSpinner } from './BrandedLoadingSpinner';
+
+interface ScreenLoadingFallbackProps {
+  label?: string;
+  variant?: 'panel' | 'page';
+}
+
+export function ScreenLoadingFallback({ label = 'Loading', variant = 'panel' }: ScreenLoadingFallbackProps) {
   return (
     <div
-      aria-hidden="true"
-      style={{
-        minHeight: '200px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'transparent',
-      }}
+      className={`screen-loading-fallback screen-loading-fallback--${variant}`}
+      role="status"
+      aria-label={label}
     >
-      <img src="/favicon.svg" alt="" width={64} height={64} style={{ opacity: 0.6 }} />
+      <BrandedLoadingSpinner size={variant === 'page' ? 'large' : 'medium'} />
     </div>
   );
 }

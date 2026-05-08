@@ -24,6 +24,352 @@
   min-height: 0;
 }
 
+.selected-game-asset-visual {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  color: rgba(232, 237, 255, 0.92);
+}
+
+.selected-game-asset-visual--deck {
+  container-type: inline-size;
+  overflow: hidden;
+  padding: 0.45rem 0.55rem;
+}
+
+.selected-game-asset-visual__placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: rgba(219, 237, 255, 0.72);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.selected-game-deck-visual__piece-image {
+  width: var(--deck-preview-card-width, clamp(2rem, 6.85cqw, 2.72rem));
+  max-width: 94%;
+  height: auto;
+  max-height: calc(var(--deck-preview-card-cell-min-height, 3.1rem) - 0.25rem);
+  border-radius: 0.12rem;
+}
+
+.selected-game-deck-visual__axis-image {
+  width: var(--deck-preview-axis-image-size, 1rem);
+  height: var(--deck-preview-axis-image-size, 1rem);
+  object-fit: contain;
+}
+
+.selected-game-deck-visual__back-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.selected-game-deck-visual__piece-label {
+  color: rgba(219, 237, 255, 0.82);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.selected-game-deck-visual__detail {
+  position: absolute;
+  inset: 0.45rem;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(139, 215, 255, 0.42);
+  border-radius: 0.65rem;
+  background: rgba(2, 6, 23, 0.9);
+  box-shadow: 0 0 1.5rem rgba(56, 189, 248, 0.24);
+}
+
+.selected-game-deck-visual__detail-panel {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  max-width: min(12rem, 82%);
+  max-height: 92%;
+  padding: 0.65rem;
+}
+
+.selected-game-deck-visual__detail-close {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.55rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid rgba(139, 215, 255, 0.7);
+  border-radius: 999rem;
+  background: rgba(2, 6, 23, 0.92);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.selected-game-deck-visual__detail-image {
+  display: block;
+  max-width: var(--deck-preview-detail-image-max-width, 8.6rem);
+  max-height: var(--deck-preview-detail-image-max-height, 11.75rem);
+  object-fit: contain;
+}
+
+.selected-game-ranking-visual {
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 0.32rem;
+  min-height: 0;
+  height: 100%;
+  padding: 0.35rem 0.45rem;
+  overflow: hidden;
+}
+
+.selected-game-ranking-visual__header h2 {
+  margin: 0;
+  color: #4a9eff;
+  font-size: clamp(0.82rem, 2.25cqw, 1.08rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.selected-game-ranking-visual__suits {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ranking-suit-icon-gap, 0.36rem);
+}
+
+.selected-game-ranking-visual__suit {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.24rem;
+  min-width: 0;
+  padding: var(--ranking-suit-icon-pad-y, 0.22rem) var(--ranking-suit-icon-pad-x, 0.4rem);
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  border-radius: var(--ranking-suit-icon-radius, 0.32rem);
+  background: rgba(14, 116, 144, 0.08);
+  color: rgba(224, 242, 254, 0.84);
+  font-size: var(--ranking-suit-icon-label-font, 0.62rem);
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.selected-game-ranking-visual__suit--red {
+  border-color: rgba(255, 138, 128, 0.32);
+  background: rgba(183, 28, 28, 0.14);
+}
+
+.selected-game-ranking-visual__suit--black {
+  border-color: rgba(144, 164, 174, 0.34);
+  background: rgba(38, 50, 56, 0.28);
+}
+
+.selected-game-ranking-visual__suit-glyph {
+  display: grid;
+  place-items: center;
+  width: var(--ranking-suit-icon-glyph-size, 1.5rem);
+  height: var(--ranking-suit-icon-glyph-size, 1.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.28rem;
+  background: rgba(2, 6, 23, 0.38);
+  font-size: var(--ranking-suit-icon-glyph-font, 1rem);
+  line-height: 1;
+}
+
+.selected-game-ranking-visual__suit--red .selected-game-ranking-visual__suit-glyph {
+  color: #ff8a80;
+}
+
+.selected-game-ranking-visual__suit--black .selected-game-ranking-visual__suit-glyph {
+  color: #e0e8ff;
+}
+
+.selected-game-ranking-visual__summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ranking-summary-gap, 0.35rem);
+}
+
+.selected-game-ranking-visual__summary-item {
+  display: grid;
+  gap: 0.08rem;
+  min-width: 0;
+  padding: var(--ranking-summary-pad-y, 0.22rem) var(--ranking-summary-pad-x, 0.42rem);
+  border: 1px solid rgba(74, 158, 255, 0.22);
+  border-radius: 0.32rem;
+  background: rgba(74, 158, 255, 0.06);
+}
+
+.selected-game-ranking-visual__summary-item span {
+  color: rgba(190, 215, 255, 0.66);
+  font-size: var(--ranking-summary-label-font, 0.64rem);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.selected-game-ranking-visual__summary-item strong {
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: var(--ranking-summary-value-font, 0.84rem);
+  overflow-wrap: anywhere;
+}
+
+.selected-game-ranking-visual__matrix {
+  display: grid;
+  grid-template-columns: var(--ranking-matrix-rank-column-width, 3.9rem) repeat(var(--ranking-suit-count), minmax(0, 1fr));
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95, 201, 255, 0.72) rgba(2, 6, 23, 0.38);
+}
+
+.selected-game-ranking-visual__matrix::-webkit-scrollbar {
+  width: var(--ranking-matrix-scrollbar-size, 0.45rem);
+  height: var(--ranking-matrix-scrollbar-size, 0.45rem);
+}
+
+.selected-game-ranking-visual__matrix-row-fragment {
+  display: contents;
+}
+
+.selected-game-ranking-visual__matrix-corner,
+.selected-game-ranking-visual__matrix-suit,
+.selected-game-ranking-visual__matrix-rank,
+.selected-game-ranking-visual__matrix-value {
+  display: grid;
+  place-items: center;
+  min-height: var(--ranking-matrix-row-height, 2.1rem);
+  padding: var(--ranking-matrix-cell-pad-y, 0.24rem) var(--ranking-matrix-cell-pad-x, 0.42rem);
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  background: rgba(2, 6, 23, 0.36);
+}
+
+.selected-game-ranking-visual__matrix-corner,
+.selected-game-ranking-visual__matrix-suit {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-top-left-radius: var(--ranking-matrix-radius, 0.35rem);
+  background: rgba(7, 24, 39, 0.92);
+  color: rgba(190, 215, 255, 0.78);
+  font-size: var(--ranking-matrix-header-font, 0.92rem);
+  font-weight: 900;
+}
+
+.selected-game-ranking-visual__matrix-rank {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: rgba(7, 24, 39, 0.82);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--ranking-matrix-cell-font, 0.84rem);
+  font-weight: 900;
+}
+
+.selected-game-ranking-visual__matrix-value {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: var(--ranking-matrix-cell-font, 0.84rem);
+  font-weight: 800;
+}
+
+.selected-game-ranking-visual__matrix-suit--red {
+  color: #ff8a80;
+}
+
+.selected-game-ranking-visual__matrix-suit--black {
+  color: #e0e8ff;
+}
+
+.selected-game-pilot-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 7, 14, 0.68);
+  -webkit-backdrop-filter: blur(0.55rem);
+  backdrop-filter: blur(0.55rem);
+}
+
+.selected-game-pilot-modal__panel {
+  width: min(28rem, 100%);
+  border: 1px solid rgba(71, 242, 154, 0.72);
+  border-radius: 0.85rem;
+  padding: 1.1rem;
+  background: linear-gradient(145deg, rgba(3, 16, 29, 0.96), rgba(5, 26, 43, 0.96));
+  color: #f6fbff;
+  box-shadow: 0 0 1.4rem rgba(64, 222, 255, 0.28), 0 1.2rem 3rem rgba(0, 0, 0, 0.45);
+}
+
+.selected-game-pilot-modal__eyebrow {
+  margin: 0 0 0.35rem;
+  color: #5eead4;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.selected-game-pilot-modal__panel h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.selected-game-pilot-modal__grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem 1rem;
+  margin: 1.1rem 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(118, 210, 255, 0.28);
+  border-radius: 0.65rem;
+  background: rgba(3, 10, 22, 0.62);
+}
+
+.selected-game-pilot-modal__grid span {
+  color: rgba(219, 237, 255, 0.74);
+  font-weight: 800;
+}
+
+.selected-game-pilot-modal__grid strong {
+  color: #ffffff;
+  text-align: right;
+}
+
+.selected-game-pilot-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.selected-game-pilot-modal__button {
+  min-height: 2.6rem;
+  border: 1px solid rgba(216, 191, 255, 0.8);
+  border-radius: 0.55rem;
+  padding: 0 1rem;
+  background: linear-gradient(135deg, #62bcff, #7569ee 52%, #c927d5);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.selected-game-pilot-modal__button--secondary {
+  border-color: rgba(141, 215, 255, 0.38);
+  background: rgba(4, 12, 25, 0.72);
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

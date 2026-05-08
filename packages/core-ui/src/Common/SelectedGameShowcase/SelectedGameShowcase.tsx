@@ -43,6 +43,7 @@ export interface SelectedGameShowcaseProps {
   layoutControls?: SelectedGameLayoutControls;
   layoutMode?: LayoutMode;
   onActiveTabChange?: (tabId: SelectedGameTabId) => void;
+  onActionClick?: (actionId: SelectedGamePresentation['actions'][number]['id']) => void;
   onViewLobbies?: () => void;
   presentation?: SelectedGamePresentation;
   renderActiveVisualContent?: (context: {
@@ -109,7 +110,7 @@ const FALLBACK_PRESENTATION: SelectedGamePresentation = {
   ],
   quickInfo: { about: [], rules: [], deck: [], ranking: [], scoring: [], strategy: [], systems: [] },
   tip: { about: '', rules: '', deck: '', ranking: '', scoring: '', strategy: '', systems: '' },
-  actions: [{ id: 'view-lobbies', label: 'View Lobbies' }],
+  actions: [{ id: 'explore-card-games', label: 'Explore Games' }],
 };
 const DEFAULT_SELECTED_GAME_SHOWCASE_CONFIG = {
   canvas: {
@@ -650,24 +651,111 @@ function mergeLayoutControls(base: SelectedGameShowcaseConfig, controls: Selecte
   return controls && Object.keys(controls).length > 0 ? mergeConfig(base, controls as ConfigRecord) : base;
 }
 
-function HeroSummary({ x, y, w, cfg, presentation }: {
+function HeroSummary({ x, y, w, cfg, logoUrl, presentation }: {
   x: number;
   y: number;
   w: number;
   cfg: SelectedGameShowcaseConfig;
+  logoUrl?: string | null;
   presentation: SelectedGamePresentation;
 }) {
   const title = presentation.hero.title || 'GAME';
   const taglineLines = presentation.hero.taglineLines.length > 0 ? presentation.hero.taglineLines.slice(0, 2) : presentation.hero.badges.slice(0, 2);
   const subtitle = taglineLines[0] ?? '';
   const detail = taglineLines[1] ?? presentation.hero.badges[0] ?? '';
+  const logoH = Math.min(94, Math.max(56, cfg.sideA.logoFont * 1.24));
+  const logoY = y;
+  const subtitleY = logoUrl ? logoY + logoH + 2 : y + 112;
+  const detailY = logoUrl ? subtitleY + 24 : y + 142;
   return (
     <g>
-      <text x={x + w / 2} y={y + 74} textAnchor="middle" dominantBaseline="central" fontFamily="Impact, Arial Black" fontSize={Math.min(cfg.sideA.logoFont, 78)} fontWeight="900" fill="#f4f7ff" stroke="#071321" strokeWidth="3" paintOrder="stroke">{title.toUpperCase()}</text>
-      {subtitle && <SvgFitText x={x + 14} y={y + 112} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={9} fontWeight="800" fill="#ffffff" />}
-      {detail && <SvgWrappedText x={x + 26} y={y + 142} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={8} fill="#cbd5ff" />}
+      {logoUrl ? (
+        <image href={logoUrl} x={x + w * 0.12} y={logoY} width={w * 0.76} height={logoH} preserveAspectRatio="xMidYMid meet" />
+      ) : (
+        <text x={x + w / 2} y={y + 74} textAnchor="middle" dominantBaseline="central" fontFamily="Impact, Arial Black" fontSize={Math.min(cfg.sideA.logoFont, 78)} fontWeight="900" fill="#f4f7ff" stroke="#071321" strokeWidth="3" paintOrder="stroke">{title.toUpperCase()}</text>
+      )}
+      {subtitle && <SvgFitText x={x + 14} y={subtitleY} width={w - 28} height={28} text={subtitle} maxFontSize={cfg.sideA.taglineFont} minFontSize={9} fontWeight="800" fill="#ffffff" />}
+      {detail && <SvgWrappedText x={x + 26} y={detailY} width={w - 52} height={42} text={detail} maxFontSize={Math.max(9, cfg.sideA.taglineFont * 0.72)} minFontSize={8} fill="#cbd5ff" />}
     </g>
   );
+}
+
+function compactDeckMetric(value: string): string {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  const plusJokers = normalized.match(/(\d+)[-\s]*card[^0-9]+(?:plus|\+)\s*(\d+)\s*jokers?/i);
+  if (plusJokers) {
+    return `${plusJokers[1]} + ${plusJokers[2]} Jokers`;
+  }
+
+  const cardCount = normalized.match(/(\d+)[-\s]*cards?/i) ?? normalized.match(/\bstandard\s+(\d+)\b/i);
+  if (cardCount) {
+    return `${cardCount[1]} Cards`;
+  }
+
+  return normalized;
+}
+
+function statDisplayValue(stat: { label: string; value: string }): string {
+  if (/deck/i.test(stat.label)) {
+    return compactDeckMetric(stat.value);
+  }
+  return stat.value;
+}
+
+function StatIcon({ x, y, size, label, fallback }: {
+  x: number;
+  y: number;
+  size: number;
+  label: string;
+  fallback: string;
+}) {
+  const key = label.toLowerCase();
+  const stroke = '#7c8dff';
+  const fill = 'rgba(124, 141, 255, 0.16)';
+  const cx = x + size / 2;
+  const cy = y + size / 2;
+
+  if (key.includes('player')) {
+    return (
+      <g fill="none" stroke={stroke} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx={x + size * 0.38} cy={y + size * 0.36} r={size * 0.16} fill={fill} />
+        <circle cx={x + size * 0.66} cy={y + size * 0.42} r={size * 0.13} fill={fill} opacity="0.82" />
+        <path d={`M${x + size * 0.18} ${y + size * 0.76} Q${x + size * 0.38} ${y + size * 0.56} ${x + size * 0.58} ${y + size * 0.76}`} />
+        <path d={`M${x + size * 0.5} ${y + size * 0.77} Q${x + size * 0.67} ${y + size * 0.62} ${x + size * 0.83} ${y + size * 0.77}`} opacity="0.82" />
+      </g>
+    );
+  }
+
+  if (key.includes('deck')) {
+    return (
+      <g fill={fill} stroke={stroke} strokeWidth="1.6" strokeLinejoin="round">
+        <rect x={x + size * 0.22} y={y + size * 0.2} width={size * 0.5} height={size * 0.64} rx={size * 0.07} transform={`rotate(-8 ${cx} ${cy})`} />
+        <rect x={x + size * 0.32} y={y + size * 0.15} width={size * 0.5} height={size * 0.64} rx={size * 0.07} transform={`rotate(7 ${cx} ${cy})`} />
+      </g>
+    );
+  }
+
+  if (key.includes('goal')) {
+    return (
+      <g fill="none" stroke={stroke} strokeWidth="1.7" strokeLinecap="round">
+        <circle cx={cx} cy={cy} r={size * 0.34} fill={fill} />
+        <circle cx={cx} cy={cy} r={size * 0.18} />
+        <path d={`M${cx} ${y + size * 0.08} V${y + size * 0.26} M${cx} ${y + size * 0.74} V${y + size * 0.92} M${x + size * 0.08} ${cy} H${x + size * 0.26} M${x + size * 0.74} ${cy} H${x + size * 0.92}`} />
+      </g>
+    );
+  }
+
+  if (key.includes('timer') || key.includes('round')) {
+    return (
+      <g fill="none" stroke={stroke} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx={cx} cy={cy} r={size * 0.34} fill={fill} />
+        <path d={`M${cx} ${cy} V${y + size * 0.34} L${x + size * 0.68} ${y + size * 0.62}`} />
+        <path d={`M${x + size * 0.38} ${y + size * 0.1} H${x + size * 0.62}`} />
+      </g>
+    );
+  }
+
+  return <text x={cx} y={cy + 5} textAnchor="middle" fontFamily="Arial" fontSize={Math.max(12, size * 0.68)} fill={stroke}>{fallback}</text>;
 }
 
 function StatCard({ x, y, w, h, stat, cfg }: {
@@ -678,11 +766,12 @@ function StatCard({ x, y, w, h, stat, cfg }: {
   stat: { label: string; value: string; icon: string };
   cfg: SelectedGameShowcaseConfig;
 }) {
+  const displayValue = statDisplayValue(stat);
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={cfg.sideA.statRadius} fill={cfg.colors.cardPanelFill} fillOpacity="0.72" stroke={cfg.colors.panelStroke} strokeWidth="1.1" strokeOpacity="0.34" filter={cfg.glow.panels ? 'url(#panelEdgeGlow)' : undefined} />
-      <text x={x + 15} y={y + 26} fontFamily="Arial" fontSize="18" fill="#7c8dff">{stat.icon}</text>
-      <SvgFitText x={x + 28} y={y + 11} width={Math.max(18, w - 34)} height={23} text={stat.value} maxFontSize={15} minFontSize={7} fontWeight="800" fill="#ffffff" />
+      <rect x={x} y={y} width={w} height={h} rx={cfg.sideA.statRadius} fill={cfg.colors.cardPanelFill} fillOpacity="0.72" stroke={cfg.colors.panelStroke} strokeWidth="1.1" strokeOpacity="0.34" />
+      <StatIcon x={x + 9} y={y + 14} size={22} label={stat.label} fallback={stat.icon} />
+      <SvgFitText x={x + 36} y={y + 11} width={Math.max(18, w - 44)} height={23} text={displayValue} maxFontSize={15} minFontSize={7} fontWeight="800" fill="#ffffff" />
       <SvgFitText x={x + 8} y={y + 35} width={Math.max(18, w - 16)} height={18} text={stat.label} maxFontSize={13} minFontSize={7} fill="#d9ddff" />
     </g>
   );
@@ -787,7 +876,7 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
   const imageH = imageBottomY - y;
   const hasChunkSelector = chunks.length > 1;
   const textShiftY = hasChunkSelector ? 42 : 0;
-  const chunkSelectorMaxW = Math.max(120, imageX - textX - 28);
+  const chunkSelectorMaxW = Math.max(120, w - o.textX - 72);
   return (
     <g>
       <defs>
@@ -806,6 +895,7 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
           <rect x={imageX} y={y} width={imageW} height={imageH} fill="url(#overviewImageMaskGradient)" filter="url(#overviewImageMaskBlur)" />
         </mask>
       </defs>
+      {cfg.visibility.overviewImage && <image href={imageUrl} x={imageX} y={y} width={imageW} height={imageH} preserveAspectRatio="xMidYMid slice" clipPath="url(#overviewImageClip)" mask="url(#overviewImageMask)" />}
       <ChunkSelectorRow x={textX} y={y + 14} maxW={chunkSelectorMaxW} chunks={chunks} activeChunkId={activeChunkId} cfg={cfg} onSelectChunk={onSelectChunk} />
       <text x={textX} y={y + o.titleY + textShiftY} fontFamily="Arial" fontSize="18" fontWeight="900" fill={cfg.colors.iconPurple}>{content.eyebrow}</text>
       <text x={textX + 30} y={y + o.titleY + textShiftY} fontFamily="Impact, Arial Black" fontSize={o.titleFont} letterSpacing={o.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.title}</text>
@@ -815,7 +905,6 @@ function OverviewContent({ x, y, w, imageBottomY, cfg, content, imageUrl = defau
           <text key={`${paragraphIndex}-${lineIndex}`} x={textX} y={startY + lineIndex * o.lineGap} fontFamily="Arial" fontSize={o.bodyFont} fill={cfg.colors.textPrimary}>{line}</text>
         ));
       })}
-      {cfg.visibility.overviewImage && <image href={imageUrl} x={imageX} y={y} width={imageW} height={imageH} preserveAspectRatio="xMidYMid slice" clipPath="url(#overviewImageClip)" mask="url(#overviewImageMask)" />}
       <DebugLabel x={x + 8} y={y + 16} label="overview" cfg={cfg} />
     </g>
   );
@@ -843,28 +932,38 @@ function HowToContent({ x, y, w, h, cfg, content }: {
   const bodyW = w - c.bodyPadX * 2;
   const bodyH = h - c.headerH - c.bodyPadBottom;
   const hasPager = activeSteps.length > stepsPerPage;
-  const deckW = bodyW - (hasPager ? (c.pagerArrowWidth + c.pagerSideInset) * 2 : 0);
-  const deckX = bodyX + (bodyW - deckW) / 2;
+  const deckW = bodyW;
+  const deckX = bodyX;
   const stepW = (deckW - c.arrowW * (visibleSteps.length - 1)) / Math.max(1, visibleSteps.length);
   const nextPage = () => setStepStart((value) => Math.min(maxStepStart, Math.min(value, maxStepStart) + stepsPerPage));
   const previousPage = () => setStepStart((value) => Math.max(0, Math.min(value, maxStepStart) - stepsPerPage));
   const pagerW = pageCount * c.pagerPillW + Math.max(0, pageCount - 1) * c.pagerPillGap + c.pagerActivePillW - c.pagerPillW;
   const pagerX = x + w - pagerW - 28;
   const pagerY = y + c.headerH / 2 - c.pagerPillH / 2;
+  const shellRadius = Math.max(c.boxRadius, cfg.strip.radius);
+  const shellFillOpacity = Math.max(0.34, Math.min(0.78, cfg.strip.fillOpacity));
+  const pagerArrowY = y + h / 2 - c.pagerArrowHeight / 2;
+  const pagerRows = Array.from({ length: pageCount }).reduce<Array<{ active: boolean; currentX: number; width: number; index: number }>>((rows, _, index) => {
+    const active = index === currentPage;
+    const width = active ? c.pagerActivePillW : c.pagerPillW;
+    const previous = rows.at(-1);
+    const currentX = previous ? previous.currentX + previous.width + c.pagerPillGap : pagerX;
+    return [...rows, { active, currentX, width, index }];
+  }, []);
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={c.boxRadius} fill={cfg.colors.cardPanelFill} fillOpacity="0.72" stroke={cfg.colors.panelStroke} strokeWidth="1.25" strokeOpacity="0.42" filter={cfg.glow.panels ? 'url(#panelEdgeGlow)' : undefined} />
-      <rect x={x + 2} y={y + 2} width={w - 4} height={c.headerH - 8} rx="10" fill="#ffffff" opacity="0.035" />
+      <rect x={x} y={y + 8} width={w} height={h} rx={shellRadius} fill="#000000" opacity="0.18" pointerEvents="none" />
+      {cfg.glow.strip && <rect x={x - 1.5} y={y - 1.5} width={w + 3} height={h + 3} rx={shellRadius + 1.5} fill="none" stroke={cfg.glow.color} strokeWidth="3" strokeOpacity={Math.min(0.35, cfg.glow.stripOpacity * 0.42)} pointerEvents="none" />}
+      <rect x={x} y={y} width={w} height={h} rx={shellRadius} fill="url(#skeletonGlass)" fillOpacity={shellFillOpacity} stroke={cfg.colors.stripStroke} strokeWidth="2" strokeOpacity="0.84" />
+      <rect x={x + 2} y={y + 2} width={w - 4} height={Math.min(c.headerH - 8, cfg.strip.shineH)} rx="12" fill="#ffffff" opacity="0.03" />
       <text x={x + 32} y={y + 39} fontFamily="Impact, Arial Black" fontSize={c.titleFont} letterSpacing={c.titleLetterSpacing} fill={cfg.colors.titlePurple}>{content.stepsTitle}</text>
-      {pageCount > 1 && Array.from({ length: pageCount }, (_, index) => {
-        const active = index === currentPage;
-        const pillX = pagerX + index * (c.pagerPillW + c.pagerPillGap);
-        return <rect key={index} x={pillX} y={pagerY} width={active ? c.pagerActivePillW : c.pagerPillW} height={c.pagerPillH} rx={c.pagerPillH / 2} fill={active ? cfg.colors.stripActiveStroke : cfg.colors.panelStroke} opacity={active ? 0.9 : 0.34} />;
-      })}
+      {pageCount > 1 && pagerRows.map(({ active, currentX, width, index }) => (
+        <rect key={index} x={currentX} y={pagerY} width={width} height={c.pagerPillH} rx={c.pagerPillH / 2} fill={active ? 'url(#footerSelectedPill)' : 'transparent'} stroke={active ? cfg.colors.stripActiveStroke : cfg.colors.stripStroke} strokeWidth={active ? 1.4 : 1} strokeOpacity={active ? 0.9 : 0.46} />
+      ))}
       {cfg.visibility.howToCards && hasPager && (
         <>
-          <SmallArrow x={x + c.pagerSideInset} y={bodyY + bodyH / 2 - c.pagerArrowHeight / 2} width={c.pagerArrowWidth} height={c.pagerArrowHeight} dir="left" radius={8} hoverColor={cfg.colors.arrowHover} onClick={previousPage} />
-          <SmallArrow x={x + w - c.pagerSideInset - c.pagerArrowWidth} y={bodyY + bodyH / 2 - c.pagerArrowHeight / 2} width={c.pagerArrowWidth} height={c.pagerArrowHeight} dir="right" radius={8} hoverColor={cfg.colors.arrowHover} onClick={nextPage} />
+          <SmallArrow x={x - c.pagerArrowWidth - c.pagerSideInset} y={pagerArrowY} width={c.pagerArrowWidth} height={c.pagerArrowHeight} dir="left" radius={8} hoverColor={cfg.colors.arrowHover} onClick={previousPage} />
+          <SmallArrow x={x + w + c.pagerSideInset} y={pagerArrowY} width={c.pagerArrowWidth} height={c.pagerArrowHeight} dir="right" radius={8} hoverColor={cfg.colors.arrowHover} onClick={nextPage} />
         </>
       )}
       {cfg.visibility.howToCards && visibleSteps.map((step, i) => {
@@ -878,7 +977,8 @@ function HowToContent({ x, y, w, h, cfg, content }: {
         const bodyTextH = Math.max(18, bodyY + bodyH - bodyTextY - 8);
         return (
           <g key={`${step.title}-${i}`}>
-            <rect x={stepX} y={bodyY} width={stepW} height={bodyH} rx={c.stepRadius} fill="#08152f" fillOpacity="0.62" stroke={cfg.colors.panelStroke} strokeWidth="1" strokeOpacity="0.2" filter={cfg.glow.panels ? 'url(#panelEdgeGlow)' : undefined} />
+            <rect x={stepX} y={bodyY} width={stepW} height={bodyH} rx={c.stepRadius} fill="url(#infoCardFill)" fillOpacity="0.78" stroke={cfg.colors.stripStroke} strokeWidth="1.1" strokeOpacity="0.34" />
+            <rect x={stepX + 1.5} y={bodyY + 1.5} width={Math.max(0, stepW - 3)} height={Math.max(7, bodyH * 0.18)} rx={Math.max(0, c.stepRadius - 2)} fill="#ffffff" opacity="0.045" />
             <circle cx={cx} cy={circleCy} r={circleR} fill={cfg.colors.cardPanelFill} stroke={i === 0 ? cfg.colors.success : cfg.colors.panelStroke} strokeWidth="1.7" strokeOpacity="0.76" />
             <text x={cx} y={circleCy + 4} textAnchor="middle" dominantBaseline="central" fontFamily="Arial" fontSize={circleR * c.stepIconScale} fill="#d9e4ff">{step.icon}</text>
             <SvgFitText x={stepX + 8} y={titleY} width={stepW - 16} height={titleH} text={step.title} maxFontSize={c.stepTitleFont} minFontSize={8} fontWeight="800" fill={cfg.colors.textPrimary} />
@@ -903,7 +1003,7 @@ function TipContent({ x, y, w, h, cfg, text }: {
   const tipText = text || '';
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={cfg.tip.radius} fill={cfg.colors.cardPanelFill} fillOpacity="0.78" stroke={cfg.colors.panelStroke} strokeWidth="1.25" strokeOpacity="0.38" filter={cfg.glow.panels ? 'url(#panelEdgeGlow)' : undefined} />
+      <rect x={x} y={y} width={w} height={h} rx={cfg.tip.radius} fill={cfg.colors.cardPanelFill} fillOpacity="0.78" stroke={cfg.colors.panelStroke} strokeWidth="1.25" strokeOpacity="0.38" />
       <text x={x + cfg.tip.iconX} y={y + h / 2 + 7} fontFamily="Arial" fontSize={cfg.tip.iconFont} fontWeight="900" fill={cfg.colors.tipGold}>TIP</text>
       <SvgWrappedText x={x + cfg.tip.textX} y={y + 10} width={Math.max(20, w - cfg.tip.textX - 20)} height={h - 20} text={tipText} maxFontSize={cfg.tip.textFont} minFontSize={8} fill={cfg.colors.textPrimary} />
     </g>
@@ -967,7 +1067,7 @@ function GoalCard({ x, y, w, h, card, active, onClick, config, clipPrefix }: {
   return (
     <g onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{ cursor: 'pointer' }} filter={active ? 'url(#goldGlow)' : hover ? 'url(#tabGreenGlow)' : undefined}>
       <defs><clipPath id={clipId}><rect x={x + 5} y={y + headerH + 6} width={w - 10} height={h - headerH - 12} rx="8" /></clipPath></defs>
-      <rect x={x} y={y} width={w} height={h} rx={c.cardRadius} fill={active ? 'url(#tabSelectedFill)' : hover ? 'url(#tabHoverFill)' : 'url(#infoCardFill)'} fillOpacity={active ? 0.92 : hover ? 0.82 : 0.94} stroke={stroke} strokeWidth={active ? 2 : hover ? 1.6 : 1.1} strokeOpacity={active ? 0.9 : hover ? 0.8 : 0.5} filter={config.glow.panels ? 'url(#panelEdgeGlow)' : undefined} />
+      <rect x={x} y={y} width={w} height={h} rx={c.cardRadius} fill={active ? 'url(#tabSelectedFill)' : hover ? 'url(#tabHoverFill)' : 'url(#infoCardFill)'} fillOpacity={active ? 0.92 : hover ? 0.82 : 0.94} stroke={stroke} strokeWidth={active ? 2 : hover ? 1.6 : 1.1} strokeOpacity={active ? 0.9 : hover ? 0.8 : 0.5} />
       <rect x={x + 1.5} y={y + 1.5} width={w - 3} height={headerH} rx={Math.max(0, c.cardRadius - 2)} fill={active ? 'url(#cardHeaderActiveStrip)' : hover ? 'url(#tabHoverFill)' : 'url(#cardHeaderStrip)'} />
       <rect x={x + 2} y={y + 2} width={w - 4} height={Math.max(7, headerH * 0.45)} rx="8" fill="#ffffff" opacity="0.045" />
       <path d={roundedRectPath(x + 1.5, y + 1.5, iconTileW, headerH, Math.max(0, c.cardRadius - 2), 0, 0, Math.max(0, c.cardRadius - 2))} fill={active ? 'url(#tabCountGoldFill)' : hover ? 'url(#tabHoverFill)' : 'url(#navIdle)'} stroke={active ? '#f7c84a' : hover ? colors.arrowHover : colors.stripStroke} strokeWidth="1.1" strokeOpacity={active || hover ? 0.86 : 0.42} />
@@ -1004,11 +1104,13 @@ function GoalStripCarousel({ x, y, w, h, config, cards, selectedChunkId, onSelec
   const colors = config.colors;
   const arrowW = c.arrowWidth;
   const arrowH = c.arrowHeight;
+  const arrowGap = c.arrowOutsideGap;
   const viewportX = x + c.carouselSidePad;
   const viewportY = y + c.carouselPadTop;
-  const viewportW = w - c.carouselSidePad * 2;
+  const viewportW = Math.max(0, w - c.carouselSidePad * 2);
   const footerY = y + h - c.carouselPadBottom;
   const cardH = Math.max(40, footerY - viewportY - 12);
+  const arrowY = y + h / 2 - arrowH / 2 + c.arrowYOffset;
   const clipPrefix = `goal-strip-${Math.round(x)}-${Math.round(y)}`;
   const viewportClipId = `${clipPrefix}-viewport`;
   const cardWidths = useMemo(() => cards.map((card) => estimateStripCardWidth(card, c)), [cards, c]);
@@ -1057,11 +1159,12 @@ function GoalStripCarousel({ x, y, w, h, config, cards, selectedChunkId, onSelec
   }, []);
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx={c.radius} fill="#000000" opacity="0.24" filter="url(#skeletonShadow)" pointerEvents="none" />
-      <rect x={x} y={y} width={w} height={h} rx={c.radius} fill="url(#skeletonGlass)" fillOpacity={c.fillOpacity} stroke={colors.stripStroke} strokeWidth="2" strokeOpacity="0.9" filter={config.glow.strip ? 'url(#stripEdgeGlow)' : undefined} />
+      <rect x={x} y={y + 8} width={w} height={h} rx={c.radius} fill="#000000" opacity="0.2" pointerEvents="none" />
+      {config.glow.strip && <rect x={x - 1.5} y={y - 1.5} width={w + 3} height={h + 3} rx={c.radius + 1.5} fill="none" stroke={config.glow.color} strokeWidth="3" strokeOpacity={Math.min(0.34, config.glow.stripOpacity * 0.42)} pointerEvents="none" />}
+      <rect x={x} y={y} width={w} height={h} rx={c.radius} fill="url(#skeletonGlass)" fillOpacity={c.fillOpacity} stroke={colors.stripStroke} strokeWidth="2" strokeOpacity="0.9" />
       <rect x={x + 2} y={y + 2} width={w - 4} height={c.shineH} rx="12" fill="#ffffff" opacity="0.03" />
-      <SmallArrow x={x - arrowW - c.arrowOutsideGap} y={y + h / 2 - arrowH / 2 + c.arrowYOffset} width={arrowW} height={arrowH} dir="left" radius={c.arrowRadius} hoverColor={colors.arrowHover} onClick={goPrev} />
-      <SmallArrow x={x + w + c.arrowOutsideGap} y={y + h / 2 - arrowH / 2 + c.arrowYOffset} width={arrowW} height={arrowH} dir="right" radius={c.arrowRadius} hoverColor={colors.arrowHover} onClick={goNext} />
+      <SmallArrow x={x - arrowW - arrowGap} y={arrowY} width={arrowW} height={arrowH} dir="left" radius={c.arrowRadius} hoverColor={colors.arrowHover} onClick={goPrev} />
+      <SmallArrow x={x + w + arrowGap} y={arrowY} width={arrowW} height={arrowH} dir="right" radius={c.arrowRadius} hoverColor={colors.arrowHover} onClick={goNext} />
       <defs><clipPath id={viewportClipId}><rect x={viewportX} y={viewportY - 8} width={viewportW} height={cardH + 16} rx="12" /></clipPath></defs>
       <g clipPath={`url(#${viewportClipId})`}>
         {visibleIndexes.map((cardIndex, visibleIndex) => {
@@ -1397,6 +1500,7 @@ export function SelectedGameShowcase({
   layoutControls,
   layoutMode: initialLayoutMode = 'auto',
   onActiveTabChange,
+  onActionClick,
   onViewLobbies,
   presentation = FALLBACK_PRESENTATION,
   renderActiveVisualContent,
@@ -1406,11 +1510,11 @@ export function SelectedGameShowcase({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [config, setConfig] = useState(() => mergeLayoutControls(cloneDefaultConfig(), layoutControls));
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(initialLayoutMode);
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [activeTopTab, setActiveTopTab] = useState<SelectedGameTabId>(presentation.tabs[0]?.id ?? 'about');
   const [hoverTopTab, setHoverTopTab] = useState<SelectedGameTabId | null>(null);
   const [activeChunkByTab, setActiveChunkByTab] = useState<Record<string, string>>({});
-  const effectiveLayoutMode = layoutMode === 'auto' && containerWidth > 0 && containerWidth < 860 ? 'narrow' : layoutMode;
+  const effectiveLayoutMode = layoutMode === 'auto' && containerSize.width > 0 && containerSize.width < 860 ? 'narrow' : layoutMode;
   const propConfig = useMemo(() => mergeLayoutControls(cloneDefaultConfig(), layoutControls), [layoutControls]);
   const configSource = designerMode ? config : propConfig;
   const cfg = effectiveLayoutMode === 'narrow' ? mergeConfig(configSource, NARROW_CONFIG_OVERRIDES) : configSource;
@@ -1435,6 +1539,7 @@ export function SelectedGameShowcase({
     const resolvedUrls = resolveVisualUrls(mediaRefs.length > 0 ? mediaRefs : presentation.sideA.media, resolveVisualRefUrl);
     return resolvedUrls.length > 0 ? resolvedUrls : [fallbackArtUrl];
   }, [fallbackArtUrl, presentation.sideA.media, resolveVisualRefUrl]);
+  const heroLogoUrl = resolveFirstVisualUrl(presentation.hero.media.filter((ref) => /^logo$/i.test(ref.label)), resolveVisualRefUrl);
   const sideAImageKey = sideAImageUrls.join('|');
   const [sideAImageIndex, setSideAImageIndex] = useState(0);
   const [previousSideAImageIndex, setPreviousSideAImageIndex] = useState<number | null>(null);
@@ -1466,13 +1571,21 @@ export function SelectedGameShowcase({
   const activeCardsKey = activeCards.map((card) => card.id).join('|');
   const showHowTo = activeTab.id === 'about' && cfg.visibility.howTo;
   const sideAStats = metricFallbacks(presentation.sideA.stats);
-  const actionLabel = presentation.actions.find((action) => action.id === 'view-lobbies')?.label ?? 'View Lobbies';
+  const visibleActions = presentation.actions.filter((action) => action.enabled !== false);
+  const showInternalDesignerControls = designerMode && showDesignerControls;
   const vw = cfg.canvas.vw;
-  const vh = cfg.canvas.vh;
+  const defaultVh = cfg.canvas.vh;
+  const measuredAspect = containerSize.width > 0 && containerSize.height > 0 ? containerSize.width / containerSize.height : vw / defaultVh;
+  const fittedVh = Math.round(vw / clampNumber(measuredAspect, 0.52, 2.4));
+  const minimumProductionPageH = cfg.page.height;
+  const minimumProductionVh = cfg.page.y + minimumProductionPageH + cfg.button.edgeOffsetY + cfg.button.height / 2 + 8;
+  const vh = showInternalDesignerControls ? defaultVh : clampNumber(fittedVh, minimumProductionVh, defaultVh * 1.55);
   const pageX = cfg.page.x;
   const pageY = cfg.page.y;
   const pageW = cfg.page.width;
-  const pageH = cfg.page.height;
+  const pageH = showInternalDesignerControls
+    ? cfg.page.height
+    : Math.max(minimumProductionPageH, vh - pageY - cfg.button.edgeOffsetY - cfg.button.height / 2 - 8);
   const tabW = cfg.tabGroup.tabW;
   const tabH = cfg.tabGroup.tabH;
   const tabsBgW = tabs.length * tabW + (tabs.length - 1) * cfg.tabGroup.tabGap + cfg.tabGroup.bgPadX * 2;
@@ -1489,6 +1602,12 @@ export function SelectedGameShowcase({
   const actionRailX = pageX + cfg.button.railInsetX;
   const actionRailW = Math.max(0, pageW - cfg.button.railInsetX * 2);
   const viewButtonY = actionRailY - cfg.button.height / 2;
+  const actionGap = Math.max(10, Math.min(24, cfg.button.width * 0.08));
+  const actionCount = Math.max(1, visibleActions.length);
+  const maxActionButtonW = Math.max(120, (actionRailW - actionGap * (actionCount - 1)) / actionCount);
+  const actionButtonW = Math.min(cfg.button.width, maxActionButtonW);
+  const actionGroupW = actionButtonW * actionCount + actionGap * (actionCount - 1);
+  const actionStartX = actionRailX + actionRailW / 2 - actionGroupW / 2;
   const tipY = actionRailY - cfg.button.height / 2 - cfg.body.rowGap - cfg.tip.height + cfg.tip.yOffset;
   const sideAW = cfg.body.useABRatio ? Math.round(bodyW * cfg.body.aRatio) : cfg.body.leftWidth;
   const mainX = bodyX + sideAW;
@@ -1507,9 +1626,10 @@ export function SelectedGameShowcase({
   const bandAH = Math.max(120, bandBY - cfg.body.rowGap - bodyY);
   const leftH = bandAH;
   const mainH = bandAH;
-  const showInternalDesignerControls = designerMode && showDesignerControls;
+  const sideAArtY = bodyY + cfg.sideA.artY;
+  const sideAArtH = Math.max(0, bandBY - sideAArtY);
   const bgClass = showInternalDesignerControls && cfg.canvas.whitePreviewBg ? 'bg-white' : 'bg-transparent';
-  const actionX = actionRailX + actionRailW / 2 - cfg.button.width / 2;
+  const actionX = actionStartX;
   const tipX = bodyX + cfg.tip.sideInset;
   const tipW = bodyW - cfg.tip.sideInset * 2;
   const rootStyle: React.CSSProperties = {
@@ -1526,7 +1646,10 @@ export function SelectedGameShowcase({
 
     const observer = new ResizeObserver(([entry]) => {
       if (entry) {
-        setContainerWidth(entry.contentRect.width);
+        setContainerSize((previous) => {
+          const next = { width: entry.contentRect.width, height: entry.contentRect.height };
+          return Math.abs(previous.width - next.width) < 0.5 && Math.abs(previous.height - next.height) < 0.5 ? previous : next;
+        });
       }
     });
     observer.observe(containerRef.current);
@@ -1594,13 +1717,15 @@ export function SelectedGameShowcase({
           </g>
         )}
 
-        <g id="page" filter="url(#shadow)">
-          {cfg.visibility.pageFrame && <rect x={pageX} y={pageY} width={pageW} height={pageH} rx={cfg.page.radius} fill="url(#skeletonGlass)" fillOpacity="0.5" stroke={cfg.colors.pageStroke} strokeWidth={Math.max(2, cfg.page.strokeWidth)} strokeOpacity="0.86" filter={cfg.glow.page ? 'url(#pageEdgeGlow)' : undefined} />}
+        <g id="page">
+          {cfg.visibility.pageFrame && <rect x={pageX} y={pageY + Math.max(0, cfg.page.shadowY)} width={pageW} height={pageH} rx={cfg.page.radius} fill="#000000" opacity={Math.min(0.32, cfg.page.shadowOpacity * 0.32)} pointerEvents="none" />}
+          {cfg.visibility.pageFrame && cfg.glow.page && <rect x={pageX - 2} y={pageY - 2} width={pageW + 4} height={pageH + 4} rx={cfg.page.radius + 2} fill="none" stroke={cfg.glow.color} strokeWidth={Math.max(3, cfg.page.strokeWidth + 2)} strokeOpacity={Math.min(0.35, cfg.glow.pageOpacity * 0.42)} pointerEvents="none" />}
+          {cfg.visibility.pageFrame && <rect x={pageX} y={pageY} width={pageW} height={pageH} rx={cfg.page.radius} fill="url(#skeletonGlass)" fillOpacity="0.5" stroke={cfg.colors.pageStroke} strokeWidth={Math.max(2, cfg.page.strokeWidth)} strokeOpacity="0.86" />}
           {cfg.visibility.bodyOverlay && <path d={`M${bodyX + cfg.body.overlayRadius} ${bodyY} H${bodyX + bodyW - cfg.body.overlayRadius} Q${bodyX + bodyW} ${bodyY} ${bodyX + bodyW} ${bodyY + cfg.body.overlayRadius} V${bodyBottom} H${bodyX} V${bodyY + cfg.body.overlayRadius} Q${bodyX} ${bodyY} ${bodyX + cfg.body.overlayRadius} ${bodyY} Z`} fill="url(#leftTopOverlay)" />}
 
           {cfg.visibility.sideA && (
             <g id="a-side">
-              {cfg.visibility.hero && <HeroSummary x={bodyX + cfg.sideA.logoXPad} y={bodyY + cfg.sideA.logoY} w={sideAW - cfg.sideA.logoXPad * 2} cfg={cfg} presentation={presentation} />}
+              {cfg.visibility.hero && <HeroSummary x={bodyX + cfg.sideA.logoXPad} y={bodyY + cfg.sideA.logoY} w={sideAW - cfg.sideA.logoXPad * 2} cfg={cfg} logoUrl={heroLogoUrl} presentation={presentation} />}
               {cfg.visibility.stats && (
                 <g id="stats">
                   {sideAStats.map((stat, i) => {
@@ -1610,7 +1735,7 @@ export function SelectedGameShowcase({
                   })}
                 </g>
               )}
-              {cfg.visibility.sideAImage && <LeftCardArt x={bodyX} y={bodyY + cfg.sideA.artY} w={sideAW} h={leftH - cfg.sideA.artBottomPad} cfg={cfg} imageUrls={sideAImageUrls} activeIndex={safeSideAImageIndex} previousIndex={previousSideAImageIndex} />}
+              {cfg.visibility.sideAImage && sideAArtH > 10 && <LeftCardArt x={bodyX} y={sideAArtY} w={sideAW} h={sideAArtH} cfg={cfg} imageUrls={sideAImageUrls} activeIndex={safeSideAImageIndex} previousIndex={previousSideAImageIndex} />}
               <DebugLabel x={bodyX + 12} y={bodyY + 18} label="A side" cfg={cfg} />
             </g>
           )}
@@ -1672,8 +1797,8 @@ export function SelectedGameShowcase({
           }} />}
           {cfg.visibility.tip && <TipContent x={bodyX + cfg.tip.sideInset} y={tipY} w={bodyW - cfg.tip.sideInset * 2} h={cfg.tip.height} cfg={cfg} text={activeTab.tip || presentation.tip[activeTab.id] || ''} />}
 
-          {cfg.visibility.button && (
-            <g id="bottom-actions" style={{ cursor: 'pointer' }} onClick={onViewLobbies}>
+          {cfg.visibility.button && visibleActions.length > 0 && (
+            <g id="bottom-actions">
               <rect
                 x={actionRailX}
                 y={actionRailY - actionRailH / 2}
@@ -1682,35 +1807,50 @@ export function SelectedGameShowcase({
                 fill="transparent"
                 pointerEvents="none"
               />
-              {(() => {
-                const bx = actionX;
+              {visibleActions.map((action, index) => {
+                const bx = actionStartX + index * (actionButtonW + actionGap);
                 const by = viewButtonY;
-                const bw = cfg.button.width;
+                const bw = actionButtonW;
                 const bh = cfg.button.height;
+                const isBackAction = action.id === 'explore-card-games';
                 const innerInset = cfg.button.innerBoxInset;
                 const innerLeftInset = innerInset + cfg.button.innerBoxInsetLeft;
                 const innerTopInset = innerInset + cfg.button.innerBoxInsetTop;
                 const innerRightInset = innerInset + cfg.button.innerBoxInsetRight;
                 const innerBottomInset = innerInset + cfg.button.innerBoxInsetBottom;
-                const innerW = cfg.button.innerBoxW;
+                const innerW = Math.min(cfg.button.innerBoxW, Math.max(28, bw * 0.18));
                 const innerH = Math.max(0, bh - innerTopInset - innerBottomInset);
-                const innerX = bx + bw - innerRightInset - innerW;
+                const innerX = isBackAction ? bx + innerLeftInset : bx + bw - innerRightInset - innerW;
                 const innerY = by + innerTopInset;
-                const textCenterX = bx + Math.max(0, innerX - bx - innerLeftInset) / 2 + innerLeftInset / 2;
                 const arrowCx = innerX + innerW / 2 + cfg.button.arrowOffsetX;
                 const arrowCy = innerY + innerH / 2 + cfg.button.arrowOffsetY;
                 const a = cfg.button.arrowSize;
+                const textX = isBackAction ? innerX + innerW + 10 : bx + 8;
+                const textRight = isBackAction ? bx + bw - 10 : innerX - 8;
+                const arrowPoints = isBackAction
+                  ? `${arrowCx + a * 0.45},${arrowCy - a} ${arrowCx - a * 0.65},${arrowCy} ${arrowCx + a * 0.45},${arrowCy + a}`
+                  : `${arrowCx - a * 0.45},${arrowCy - a} ${arrowCx + a * 0.65},${arrowCy} ${arrowCx - a * 0.45},${arrowCy + a}`;
                 return (
-                  <>
+                  <g
+                    key={action.id}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      if (onActionClick) {
+                        onActionClick(action.id);
+                      } else if (action.id === 'view-lobbies') {
+                        onViewLobbies?.();
+                      }
+                    }}
+                  >
                     <rect x={bx} y={by} width={bw} height={bh} rx={cfg.button.radius} fill="url(#buttonGradient)" stroke="#d8bfff" strokeOpacity={cfg.button.strokeOpacity} filter={cfg.glow.button ? 'url(#buttonEdgeGlow)' : undefined} />
-                    <rect x={bx + 3} y={by + 3} width={bw - 6} height={cfg.button.shineH} rx={Math.max(0, cfg.button.radius - 2)} fill="#ffffff" opacity="0.11" />
+                    <rect x={bx + 3} y={by + 3} width={Math.max(0, bw - 6)} height={cfg.button.shineH} rx={Math.max(0, cfg.button.radius - 2)} fill="#ffffff" opacity="0.11" />
                     <rect x={innerX} y={innerY} width={innerW} height={innerH} rx={cfg.button.innerBoxRadius} fill="#02030a" stroke="#8bd7ff" strokeWidth={cfg.button.innerBoxStrokeWidth} strokeOpacity={cfg.button.innerBoxStrokeOpacity} />
                     <rect x={innerX + 1.5} y={innerY + 1.5} width={Math.max(0, innerW - 3)} height={Math.max(0, cfg.button.innerBoxShineH)} rx={Math.max(0, cfg.button.innerBoxRadius - 1.5)} fill="#ffffff" opacity={cfg.button.innerBoxShineOpacity} />
-                    <polygon points={`${arrowCx - a * 0.45},${arrowCy - a} ${arrowCx + a * 0.65},${arrowCy} ${arrowCx - a * 0.45},${arrowCy + a}`} fill="#8bd7ff" filter="url(#cyanGlow)" />
-                    <text x={textCenterX} y={by + bh / 2} textAnchor="middle" dominantBaseline="central" fontFamily="Arial" fontSize={cfg.button.fontSize} fontWeight="900" letterSpacing={cfg.button.letterSpacing} fill="#ffffff">{actionLabel.toUpperCase()}</text>
-                  </>
+                    <polygon points={arrowPoints} fill="#8bd7ff" filter="url(#cyanGlow)" />
+                    <SvgFitText x={textX} y={by + 4} width={Math.max(32, textRight - textX)} height={Math.max(20, bh - 8)} text={action.label.toUpperCase()} maxFontSize={cfg.button.fontSize} minFontSize={8} fontWeight="900" fill="#ffffff" />
+                  </g>
                 );
-              })()}
+              })}
             </g>
           )}
         </g>

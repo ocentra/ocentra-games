@@ -13,8 +13,8 @@ vi.mock('@/adapters/solana/wallet/WalletProviderGate', () => ({
   WalletProviderGate: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock('@/ui/components/GameScreen/CardGameScreen/GameScreen', () => ({
-  default: () => <div data-testid="legacy-card-game-shell" />,
+vi.mock('@/ui/components/GameScreen/CardGameScreen/CardGamePreviewHarness', () => ({
+  CardGamePreviewHarness: () => <div data-testid="card-game-preview-harness" />,
 }));
 
 describe('PlatformAwareRoutes', () => {
@@ -25,6 +25,6 @@ describe('PlatformAwareRoutes', () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByTestId('legacy-card-game-shell')).toBeTruthy();
+    expect(await screen.findByTestId('card-game-preview-harness')).toBeTruthy();
   });
 });

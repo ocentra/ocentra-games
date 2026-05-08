@@ -9,6 +9,7 @@ import {
   buildGamePlayPath,
   buildGamesCatalogPath,
   buildLeaderboardPath,
+  buildRulesPath,
   buildTournamentDetailPath,
   buildTournamentsPath,
   parseAppRoute,
@@ -26,6 +27,7 @@ describe('appRoutes', () => {
   it('builds canonical catalog and competition paths', () => {
     expect(buildGamesCatalogPath()).toBe('/games');
     expect(buildCardGamesCatalogPath()).toBe('/games/card-games');
+    expect(buildRulesPath('three-card-brag')).toBe('/rules/three-card-brag');
     expect(buildLeaderboardPath()).toBe('/leaderboard');
     expect(buildAiBenchmarkLeaderboardPath()).toBe('/leaderboard/ai-benchmarks');
     expect(buildTournamentsPath()).toBe('/tournaments');
@@ -42,7 +44,9 @@ describe('appRoutes', () => {
   it('parses catalog before selected-game routes', () => {
     expect(parseAppRoute('/games')).toEqual({ kind: 'gameCatalog', scope: 'all' });
     expect(parseAppRoute('/games/card-games')).toEqual({ kind: 'gameCatalog', scope: 'card-games' });
+    expect(parseAppRoute('/CardGamesExplorer')).toEqual({ kind: 'gameCatalog', scope: 'card-games' });
     expect(parseAppRoute('/games/cardgame/template')).toEqual({ kind: 'template' });
+    expect(parseAppRoute('/rules/three-card-brag')).toEqual({ kind: 'rules', gameId: 'three-card-brag' });
   });
 
   it('parses route-level leaderboard, lobby, matchmaking, and tournament pages', () => {

@@ -7,6 +7,7 @@ import {
   type SelectedGamePresentationTab,
   type SelectedGamePresentationVisualRef,
   type SelectedGameTabId,
+  selectedGameActionsForAuthoredState,
 } from '@/ui/selectedGame/SelectedGamePresentation';
 
 type LooseRecord = Record<string, unknown>;
@@ -75,7 +76,7 @@ const EMPTY_PRESENTATION: SelectedGamePresentation = {
     systems: [],
   },
   tip: TAB_TIPS,
-  actions: [{ id: 'view-lobbies', label: 'View Lobbies' }],
+  actions: selectedGameActionsForAuthoredState(true),
 };
 
 export function buildSelectedGamePresentation(input: BuildSelectedGamePresentationInput): SelectedGamePresentation {
@@ -142,7 +143,7 @@ export function buildSelectedGamePresentation(input: BuildSelectedGamePresentati
       systems: quickInfoFor(tabs, 'systems'),
     },
     tip: TAB_TIPS,
-    actions: [{ id: 'view-lobbies', label: 'View Lobbies' }],
+    actions: selectedGameActionsForAuthoredState(true),
   };
 }
 

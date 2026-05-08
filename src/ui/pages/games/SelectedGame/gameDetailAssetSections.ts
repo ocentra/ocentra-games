@@ -1,8 +1,12 @@
 import type { ContentBlock, Page, PageSection } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
+import type { SelectedGameLayoutControls } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 
 type LooseRecord = Record<string, unknown>;
+type LoadAssetDocumentOptions = { cache?: RequestCache };
+
+const SELECTED_GAME_LAYOUT_ASSET_PATH = 'Resources/Pages/SelectedGameLayout.asset';
 
 export interface GameDetailAssetSummary {
   title: string;
@@ -58,7 +62,7 @@ export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<Sel
   const actionSetDocument = await loadAssetDocumentByLinkedKey(gameTreePath, asText(linkedAssets.actionSet), resources)
     ?? await loadAssetDocumentFromRef(modelRefs.actionSet, resources)
     ?? await loadAssetDocumentFromRef(modelRefs.actions, resources);
-  const layoutDocument = await loadAssetDocumentByPath('Resources/Pages/SelectedGameLayout.asset', resources, 'PageLayout');
+  const layoutDocument = await loadAssetDocumentByPath(SELECTED_GAME_LAYOUT_ASSET_PATH, resources, 'PageLayout', { cache: 'no-store' });
 
   return {
     layout: layoutDocument,
@@ -75,6 +79,13 @@ export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<Sel
     validationFixtures: validationDocument,
     images: imagesDocument,
   };
+}
+
+export async function loadSelectedGameLayoutControls(): Promise<SelectedGameLayoutControls | undefined> {
+  const resources = await getEntryIndexResourceEntries();
+  const layoutDocument = await loadAssetDocumentByPath(SELECTED_GAME_LAYOUT_ASSET_PATH, resources, 'PageLayout', { cache: 'no-store' });
+  const controls = asRecord(dataOf(layoutDocument).layoutControls);
+  return Object.keys(controls).length > 0 ? controls as SelectedGameLayoutControls : undefined;
 }
 
 export async function loadGameDetailAssetContent(
@@ -152,17 +163,19 @@ function normalizePath(path: string): string {
 
 async function loadAssetDocumentFromRef(ref: unknown, resources: Array<{ guid?: string; path?: string; assetType?: string }>): Promise<LooseRecord | null> {
   const refRecord = asRecord(ref);
-  const guid = asText(refRecord.guid) || findGuidByPath(resources, asText(refRecord.path), asText(refRecord.assetType));
-  return guid ? await loadRawAssetDocumentByGuid(guid) : null;
+  const pathGuid = findGuidByPath(resources, asText(refRecord.path), asText(refRecord.assetType));
+  const embeddedGuid = asText(refRecord.guid);
+  return await loadAssetDocumentByCandidateGuids(pathGuid, embeddedGuid);
 }
 
 async function loadAssetDocumentByPath(
   path: string,
   resources: Array<{ guid?: string; path?: string; assetType?: string }>,
   assetType = '',
+  options: LoadAssetDocumentOptions = {},
 ): Promise<LooseRecord | null> {
   const guid = findGuidByPath(resources, path, assetType);
-  return guid ? await loadRawAssetDocumentByGuid(guid) : null;
+  return guid ? await loadRawAssetDocumentByGuid(guid, options) : null;
 }
 
 async function loadAssetDocumentByLinkedKey(
@@ -177,6 +190,17 @@ async function loadAssetDocumentByLinkedKey(
   const basePath = gameTreePath.replace(/\\/g, '/').replace(/\/[^/]*$/, '');
   const guid = findGuidByPath(resources, `${basePath}/${fileName}`);
   return guid ? await loadRawAssetDocumentByGuid(guid) : null;
+}
+
+async function loadAssetDocumentByCandidateGuids(primaryGuid: string, fallbackGuid = ''): Promise<LooseRecord | null> {
+  const candidateGuids = [primaryGuid, fallbackGuid].filter((guid, index, guids) => guid && guids.indexOf(guid) === index);
+  for (const guid of candidateGuids) {
+    const document = await loadRawAssetDocumentByGuid(guid);
+    if (document) {
+      return document;
+    }
+  }
+  return null;
 }
 
 function findGuidByPath(resources: Array<{ guid?: string; path?: string; assetType?: string }>, path: string, assetType = ''): string {

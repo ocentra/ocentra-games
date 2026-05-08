@@ -84,6 +84,18 @@ function getWorkerApiBase(): string {
   return `${workerUrl}/api/v1`;
 }
 
+function getWorkerAuthHeader(authToken = ''): string {
+  const workerBase = getWorkerApiBase();
+  const isLocal = workerBase.includes('127.0.0.1') || workerBase.includes('localhost');
+  if (isLocal) {
+    return 'Bearer test-token:asset-editor-dev:admin';
+  }
+  if (authToken) {
+    return `Bearer ${authToken}`;
+  }
+  return '';
+}
+
 function toErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -141,6 +153,59 @@ async function fetchWithTimeout(url: string, options: RequestInit & { timeout?: 
   }
 }
 
+function extractAssetGuidFromBytes(resourcePath: string, contentBytes: ArrayBuffer | Uint8Array): string {
+  if (!resourcePath.toLowerCase().endsWith('.asset')) {
+    return '';
+  }
+  try {
+    const bytes = contentBytes instanceof Uint8Array ? contentBytes : new Uint8Array(contentBytes);
+    const parsed = JSON5.parse(new TextDecoder().decode(bytes)) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return '';
+    }
+    const system = (parsed as Record<string, unknown>).system;
+    if (!system || typeof system !== 'object' || Array.isArray(system)) {
+      return '';
+    }
+    const guid = (system as Record<string, unknown>).guid;
+    return typeof guid === 'string' ? guid.trim() : '';
+  } catch {
+    return '';
+  }
+}
+
+function getAssetUploadKeys(resourcePath: string, contentBytes: ArrayBuffer | Uint8Array): string[] {
+  const path = normalizeResourcePath(resourcePath);
+  const guid = extractAssetGuidFromBytes(path, contentBytes);
+  return guid && guid !== path ? [path, guid] : [path];
+}
+
+async function uploadAssetBytesToWorker(
+  workerBaseUrl: string,
+  resourcePath: string,
+  contentType: string,
+  contentBytes: ArrayBuffer | Uint8Array,
+  authHeader = '',
+  timeout = 10000
+): Promise<void> {
+  const uploadKeys = getAssetUploadKeys(resourcePath, contentBytes);
+  for (const key of uploadKeys) {
+    const encodedKey = key.split('/').map((part) => encodeURIComponent(part)).join('/');
+    const uploadRes = await fetchWithTimeout(`${workerBaseUrl}/assets/${encodedKey}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
+      body: contentBytes as BodyInit,
+      timeout,
+    });
+    if (!uploadRes.ok) {
+      throw new Error(`Upload failed for ${key}: ${uploadRes.status}`);
+    }
+  }
+}
+
 async function uploadSingleAssetToLocalWorker(
   resourcePath: string,
   contentBytes: Uint8Array,
@@ -150,26 +215,26 @@ async function uploadSingleAssetToLocalWorker(
   const pathForPut = normalizeResourcePath(resourcePath);
   const contentType =
     mimeType || (pathForPut.endsWith('.asset') ? 'application/json' : 'application/octet-stream');
-  const putRes = await fetchWithTimeout(`${base}/assets/${encodeURIComponent(pathForPut)}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': contentType },
-    body: contentBytes as BodyInit,
-  });
-  if (!putRes.ok) {
-    throw new Error(`PUT ${pathForPut}: ${putRes.status}`);
-  }
+  const authHeader = getWorkerAuthHeader();
+  await uploadAssetBytesToWorker(base, pathForPut, contentType, contentBytes, authHeader);
   const { uploads } = await buildAppAssetSlicesFromDisk();
   for (const slice of uploads) {
     const sliceRes = await fetchWithTimeout(`${base}/assets/${encodeURIComponent(slice.key)}`, {
       method: 'PUT',
-      headers: { 'Content-Type': slice.contentType },
+      headers: {
+        'Content-Type': slice.contentType,
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
       body: new TextDecoder().decode(slice.contentBytes),
     });
     if (!sliceRes.ok) {
       throw new Error(`PUT ${slice.key}: ${sliceRes.status}`);
     }
   }
-  const notifyRes = await fetchWithTimeout(`${base}/assets/notify-change`, { method: 'POST' });
+  const notifyRes = await fetchWithTimeout(`${base}/assets/notify-change`, {
+    method: 'POST',
+    headers: authHeader ? { Authorization: authHeader } : undefined,
+  });
   if (!notifyRes.ok) {
     throw new Error(`POST notify-change: ${notifyRes.status}`);
   }
@@ -465,18 +530,7 @@ export class NetworkRouter {
   }
 
   private static getAuthHeader(): string {
-    const workerBase = getWorkerApiBase();
-    const isLocal = workerBase.includes('127.0.0.1') || workerBase.includes('localhost');
-    
-    if (isLocal) {
-      return 'Bearer test-token:asset-editor-dev:admin';
-    }
-    
-    if (NetworkRouter.authToken) {
-      return `Bearer ${NetworkRouter.authToken}`;
-    }
-    
-    return '';
+    return getWorkerAuthHeader(NetworkRouter.authToken ?? '');
   }
 
   static getInstance(): NetworkRouter {
@@ -1010,7 +1064,7 @@ export class NetworkRouter {
   async syncAsset(assetPath: string): Promise<boolean> {
     const path = normalizeResourcePath(assetPath);
     try {
-      const baseUrl = getWorkerApiBase().replace(/\/api\/v1$/, '');
+      const workerBase = getWorkerApiBase();
       const localResponse = await readAsset(path);
       if (!localResponse.ok) {
         throw new Error(`Failed to read local asset: ${path}`);
@@ -1018,23 +1072,16 @@ export class NetworkRouter {
       const contentType = localResponse.headers.get('Content-Type') || 'application/octet-stream';
       const body = await localResponse.arrayBuffer();
 
-      const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
-      const url = `${baseUrl}/api/v1/assets/resource/${encodedPath}`;
-
       const authHeader = NetworkRouter.getAuthHeader();
-      const uploadRes = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': contentType,
-          ...(authHeader ? { 'Authorization': authHeader } : {}),
-        },
-        body,
-        // Short timeout for single asset sync
-        signal: AbortSignal.timeout(10000),
-      });
-
-      if (!uploadRes.ok) {
-        throw new Error(`Upload failed for ${path}: ${uploadRes.status}`);
+      await uploadAssetBytesToWorker(workerBase, path, contentType, body, authHeader);
+      if (getActiveAssetEditorSyncTarget() === AssetEditorSyncTarget.LocalDev) {
+        const notifyRes = await fetchWithTimeout(`${workerBase}/assets/notify-change`, {
+          method: 'POST',
+          headers: authHeader ? { Authorization: authHeader } : undefined,
+        });
+        if (!notifyRes.ok) {
+          throw new Error(`Asset change notification failed for ${path}: ${notifyRes.status}`);
+        }
       }
 
       logInfo(`Synced asset to R2: ${path}`);
@@ -1082,20 +1129,9 @@ export class NetworkRouter {
               localResponse.headers.get('Content-Type') ||
               'application/octet-stream';
             const body = await localResponse.arrayBuffer();
-            const baseUrl = getWorkerApiBase().replace(/\/api\/v1$/, '');
-            const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
+            const workerBase = getWorkerApiBase();
             const authHeader = NetworkRouter.getAuthHeader();
-            const uploadRes = await fetch(`${baseUrl}/api/v1/assets/${encodedPath}`, {
-              method: 'PUT',
-              headers: { 
-                'Content-Type': contentType,
-                ...(authHeader ? { 'Authorization': authHeader } : {}),
-              },
-              body,
-            });
-            if (!uploadRes.ok) {
-              throw new Error(`Upload failed for ${path}: ${uploadRes.status}`);
-            }
+            await uploadAssetBytesToWorker(workerBase, path, contentType, body, authHeader, 30000);
             return true;
           } catch (error) {
             logError('SyncToR2 upload failed for resource', {

@@ -14,6 +14,7 @@ import type {
 import { getPlaceholderImageUrl, placeholderImageCount } from '@ocentra/app-assets/placeholders';
 import type {
   CategoryWithSubs,
+  GamesExplorerDetailSection,
   GamesExplorerGameDetail,
   GamesExplorerGame,
   GamesExplorerMetadata,
@@ -120,9 +121,12 @@ export interface GamesCatalogSvgShowcaseProps {
   onToggleSidebar?: () => void;
   detail?: GamesExplorerGameDetail | null;
   detailLoading?: boolean;
+  selectedGame?: GamesExplorerGame | null;
+  initialDetailSection?: GamesExplorerDetailSection;
   onGameSelect?: (game: GamesExplorerGame) => void;
   onDetailClose?: () => void;
   onGameClick?: (game: GamesExplorerGame) => void;
+  onRulesClick?: (game: GamesExplorerGame) => void;
   layoutControls?: Partial<GamesCatalogSvgLayoutControls>;
   minCardWidthPx?: number;
   maxCardWidthPx?: number;
@@ -188,10 +192,9 @@ function wrapText(value: string | undefined | null, maxChars: number, maxLines: 
   return lines;
 }
 
-const DETAIL_SECTIONS = ['overview', 'history', 'setup', 'rules', 'strategy', 'variations'] as const;
-type DetailSection = (typeof DETAIL_SECTIONS)[number];
+const DETAIL_SECTIONS: readonly GamesExplorerDetailSection[] = ['overview', 'history', 'setup', 'rules', 'strategy', 'variations'] as const;
 
-const DETAIL_SECTION_LABELS: Record<DetailSection, string> = {
+const DETAIL_SECTION_LABELS: Record<GamesExplorerDetailSection, string> = {
   overview: 'Overview',
   history: 'History',
   setup: 'Setup',
@@ -245,7 +248,7 @@ function stringifyDetailListItem(value: unknown): string {
   return stringifyDetailValue(value);
 }
 
-function renderDetailSection(game: GamesExplorerGame, detail: GamesExplorerGameDetail | null | undefined, section: DetailSection): string {
+function renderDetailSection(game: GamesExplorerGame, detail: GamesExplorerGameDetail | null | undefined, section: GamesExplorerDetailSection): string {
   const source = detail ? (detail as Record<string, unknown>)[section] : null;
 
   if (typeof source === 'string') {
@@ -470,6 +473,7 @@ function Hit({
   w,
   h,
   onClick,
+  ariaLabel,
   children,
   className = '',
 }: {
@@ -478,6 +482,7 @@ function Hit({
   w: number;
   h: number;
   onClick?: () => void;
+  ariaLabel?: string;
   children: ReactNode;
   className?: string;
 }) {
@@ -489,6 +494,7 @@ function Hit({
       onClick={onClick}
       className={interactiveClass}
       role={onClick ? 'button' : undefined}
+      aria-label={onClick ? ariaLabel : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={event => {
         if (onClick && (event.key === 'Enter' || event.key === ' ')) {
@@ -611,7 +617,7 @@ function Button({
   const textAnchor = iconKind ? 'start' : 'middle';
   const labelWidth = iconKind ? w - 38 : w - 16;
   return (
-    <Hit x={x} y={y} w={w} h={h} onClick={onClick}>
+    <Hit x={x} y={y} w={w} h={h} onClick={onClick} ariaLabel={label}>
       <rect
         className="games-catalog-svg-showcase__hit-surface"
         x={x}
@@ -660,7 +666,7 @@ function Pill({
   const fill = active ? 'url(#gcsg-button-active)' : tone === 'gold' ? '#251a08' : tone === 'green' ? '#061d18' : resolvedControls.cardMetaFillColor;
   const color = tone === 'gold' ? '#ffd36d' : active ? '#ffffff' : tone === 'green' ? '#d7fff7' : '#bde7ff';
   return (
-    <Hit x={x} y={y} w={w} h={30} onClick={onClick}>
+    <Hit x={x} y={y} w={w} h={30} onClick={onClick} ariaLabel={label}>
       <rect className="games-catalog-svg-showcase__hit-surface" x={x} y={y} width={w} height={30} rx={8} fill={fill} fillOpacity={tone === 'blue' ? resolvedControls.cardMetaFillOpacity : 1} stroke={stroke} strokeWidth={active ? 1.7 : 1} />
       <SvgText x={x + w / 2} y={y + 16} size={11} anchor="middle" color={color} strong={active || tone === 'gold'}>
         {truncate(label, Math.max(8, Math.floor(w / 7.2)))}
@@ -863,12 +869,19 @@ function TopBar({
     <g id="games-catalog-svg-top-bar">
       <BackdropBlurRect x={x} y={y} w={w} h={layout.topH} rx={18} blur={controls.topBarBackdropBlur} />
       <path d={`M ${x + 18} ${y} H ${x + w - 18} Q ${x + w} ${y} ${x + w} ${y + 18} V ${y + layout.topH} H ${x} V ${y + 18} Q ${x} ${y} ${x + 18} ${y} Z`} fill={controls.topBarFillColor} fillOpacity={controls.topBarFillOpacity} stroke={controls.topBarStrokeColor} strokeWidth={controls.topBarStrokeWidth} />
-      <Hit x={positions.toggleX} y={positions.toolbarY} w={52} h={positions.toolbarH} onClick={onToggleSidebar}>
+      <Hit
+        x={positions.toggleX}
+        y={positions.toolbarY}
+        w={52}
+        h={positions.toolbarH}
+        onClick={onToggleSidebar}
+        ariaLabel={isSidebarCollapsed ? 'Show catalog sidebar' : 'Hide catalog sidebar'}
+      >
         <rect className="games-catalog-svg-showcase__hit-surface" x={positions.toggleX} y={positions.toolbarY} width={52} height={positions.toolbarH} rx={12} fill={controls.controlFillColor} fillOpacity={controls.controlFillOpacity} stroke={controls.controlStrokeColor} strokeWidth={controls.controlStrokeWidth} />
         <SidebarToggleGlyph x={positions.toggleX + 26} y={positions.toolbarY + positions.toolbarH / 2} collapsed={isSidebarCollapsed} />
       </Hit>
       {controls.showSearch ? (
-        <Hit x={positions.searchX} y={positions.toolbarY} w={controls.searchWidth} h={positions.toolbarH} onClick={handleSearchClick}>
+        <Hit x={positions.searchX} y={positions.toolbarY} w={controls.searchWidth} h={positions.toolbarH} onClick={handleSearchClick} ariaLabel="Search games">
           <rect className="games-catalog-svg-showcase__hit-surface" x={positions.searchX} y={positions.toolbarY} width={controls.searchWidth} height={positions.toolbarH} rx={12} fill={controls.controlFillColor} fillOpacity={controls.controlFillOpacity} stroke={controls.controlStrokeColor} strokeWidth={controls.controlStrokeWidth} />
           <circle cx={positions.searchX + 22} cy={positions.toolbarY + positions.toolbarH / 2} r={5} fill="#27d7ff" opacity={0.65} />
           <SvgText x={positions.searchX + 40} y={positions.toolbarY + positions.toolbarH / 2 + 1} size={13} color={searchQuery ? '#d5e9ff' : '#8fa5c0'}>
@@ -941,7 +954,7 @@ function TopDropdownOverlays({
         <g>
           <rect x={qualityX} y={y + 62} width={154} height={QUALITY_OPTIONS.length * 31 + 12} rx={12} fill="#050a18" stroke="#aeefff" strokeWidth={1.3} />
           {QUALITY_OPTIONS.map((option, index) => (
-            <Hit key={option.value} x={qualityX + 6} y={y + 69 + index * 31} w={142} h={26} onClick={() => onQualityChange(option.value)}>
+            <Hit key={option.value} x={qualityX + 6} y={y + 69 + index * 31} w={142} h={26} onClick={() => onQualityChange(option.value)} ariaLabel={`Filter quality: ${option.label}`}>
               <rect className="games-catalog-svg-showcase__hit-surface" x={qualityX + 6} y={y + 69 + index * 31} width={142} height={26} rx={7} fill={qualityFilter === option.value ? 'url(#gcsg-button-active)' : 'transparent'} stroke={qualityFilter === option.value ? '#ffffff' : '#4d6d9a'} strokeWidth={qualityFilter === option.value ? 1.2 : 0.6} />
               <SvgText x={qualityX + 18} y={y + 83 + index * 31} size={11} strong={qualityFilter === option.value}>
                 {option.label}
@@ -954,7 +967,7 @@ function TopDropdownOverlays({
         <g>
           <rect x={sortX} y={y + 62} width={136} height={SORT_OPTIONS.length * 31 + 12} rx={12} fill="#050a18" stroke="#aeefff" strokeWidth={1.3} />
           {SORT_OPTIONS.map((option, index) => (
-            <Hit key={option.value} x={sortX + 6} y={y + 69 + index * 31} w={124} h={26} onClick={() => onSortChange(option.value)}>
+            <Hit key={option.value} x={sortX + 6} y={y + 69 + index * 31} w={124} h={26} onClick={() => onSortChange(option.value)} ariaLabel={`Sort games by ${option.label}`}>
               <rect className="games-catalog-svg-showcase__hit-surface" x={sortX + 6} y={y + 69 + index * 31} width={124} height={26} rx={7} fill={sortBy === option.value ? 'url(#gcsg-button-active)' : 'transparent'} stroke={sortBy === option.value ? '#ffffff' : '#4d6d9a'} strokeWidth={sortBy === option.value ? 1.2 : 0.6} />
               <SvgText x={sortX + 18} y={y + 83 + index * 31} size={11} strong={sortBy === option.value}>
                 {option.label}
@@ -1062,7 +1075,7 @@ function Sidebar({
         const rowY = modeTop + index * controls.playerModeRowHeight;
         const active = playerModeFilter === row.key;
         return (
-          <Hit key={row.key} x={x + 20} y={rowY} w={sidebarW - 40} h={44} onClick={() => onPlayerModeChange?.(row.key)}>
+          <Hit key={row.key} x={x + 20} y={rowY} w={sidebarW - 40} h={44} onClick={() => onPlayerModeChange?.(row.key)} ariaLabel={`Filter player mode: ${row.label}`}>
             <rect className="games-catalog-svg-showcase__hit-surface" x={x + 20} y={rowY} width={sidebarW - 40} height={44} rx={22} fill={active ? controls.sidebarRowActiveFillColor : controls.sidebarRowFillColor} fillOpacity={active ? controls.sidebarRowActiveFillOpacity : controls.sidebarRowFillOpacity} stroke={active ? '#9ceeff' : '#345b89'} strokeWidth={active ? 1.7 : 1} />
             <SvgText x={x + 46} y={rowY + 23} size={13.5} anchor="middle" color="#bde7ff">
               {PLAYER_MODE_ICONS[row.key]}
@@ -1086,7 +1099,7 @@ function Sidebar({
               const expanded = categoryExpanded.has(row.category.category);
               const label = row.category.category === 'all' ? 'All' : row.category.category;
               return (
-                <Hit key={`cat-${row.category.category}`} x={x} y={rowY} w={sidebarW - 34} h={38} onClick={() => {
+                <Hit key={`cat-${row.category.category}`} x={x} y={rowY} w={sidebarW - 34} h={38} ariaLabel={`Filter category: ${label}`} onClick={() => {
                   onCategoryChange?.(row.category.category);
                   if (hasChildren) onCategoryExpandToggle?.(row.category.category);
                 }}>
@@ -1113,6 +1126,7 @@ function Sidebar({
                 y={rowY}
                 w={sidebarW - 76}
                 h={28}
+                ariaLabel={`Filter subcategory: ${sub[0]}`}
                 onClick={() => {
                   if (onSubcategoryChange) {
                     onSubcategoryChange(sub[0]);
@@ -1165,7 +1179,10 @@ function SidebarResizeHandle({
       onMouseDown={onMouseDown}
       className={isDragging ? 'games-catalog-svg-showcase__resize is-dragging' : 'games-catalog-svg-showcase__resize'}
       role="separator"
+      aria-label="Resize catalog sidebar"
       aria-orientation="vertical"
+      aria-valuenow={Math.round(panelX)}
+      aria-valuetext={`Sidebar width ${Math.round(panelX - layout.bodyX)}`}
       tabIndex={0}
     >
       <rect x={scrubberX - 8} y={scrubberY} width={scrubberW + 16} height={scrubberH} fill="transparent" pointerEvents="all" />
@@ -1252,7 +1269,7 @@ function GameCardSvg({
   const topClampY = y - topClampH;
 
   return (
-    <Hit x={x} y={y} w={w} h={h} onClick={onClick} className="games-catalog-svg-showcase__card">
+    <Hit x={x} y={y} w={w} h={h} onClick={onClick} className="games-catalog-svg-showcase__card" ariaLabel={`Select ${game.name}`}>
       <g className="games-catalog-svg-showcase__card-lift">
         <BackdropBlurRect x={x} y={y} w={w} h={h} rx={controls.cardRadius} blur={controls.cardBackdropBlur} />
         <rect x={x} y={y} width={w} height={h} rx={controls.cardRadius} fill={controls.cardOuterFillColor} fillOpacity={0.82} stroke={selected ? controls.cardStrokeColor : 'url(#gcsg-card-edge)'} strokeWidth={selected ? Math.max(2.2, controls.cardStrokeWidth) : controls.cardStrokeWidth} filter="url(#gcsg-card-glow)" />
@@ -1370,7 +1387,7 @@ function GameListSvg({
         const rowY = y + 54 + index * 54;
         const selected = selectedGame?.slug === game.slug;
         return (
-          <Hit key={`${game.slug}-${index}`} x={x} y={rowY} w={w} h={44} onClick={() => setSelectedGame(game)}>
+          <Hit key={`${game.slug}-${index}`} x={x} y={rowY} w={w} h={44} onClick={() => setSelectedGame(game)} ariaLabel={`Select ${game.name}`}>
             <rect className="games-catalog-svg-showcase__hit-surface" x={x} y={rowY} width={w} height={44} rx={10} fill={selected ? 'url(#gcsg-button-active)' : '#061124'} stroke={selected ? '#fff' : '#345b89'} strokeWidth={selected ? 1.8 : 1} />
             <SvgText x={x + 18} y={rowY + 23} strong={selected}>{truncate(game.name, 54)}</SvgText>
             <SvgText x={x + w - 350} y={rowY + 23}>{truncate(game.subcategory ? `${game.category} / ${game.subcategory}` : game.category, 28)}</SvgText>
@@ -1528,19 +1545,29 @@ function DetailOverlay({
   game,
   detail,
   detailLoading = false,
+  initialSection = 'overview',
   close,
   openGame,
+  openRules,
 }: {
   layout: Layout;
   controls: GamesCatalogSvgLayoutControls;
   game: GamesExplorerGame | null;
   detail?: GamesExplorerGameDetail | null;
   detailLoading?: boolean;
+  initialSection?: GamesExplorerDetailSection;
   close: () => void;
   openGame?: (game: GamesExplorerGame) => void;
+  openRules?: (game: GamesExplorerGame) => void;
 }) {
-  const [detailSectionState, setDetailSectionState] = useState<{ slug?: string; section: DetailSection }>({ section: 'overview' });
-  const activeDetailSection = detailSectionState.slug === game?.slug ? detailSectionState.section : 'overview';
+  const [detailSectionState, setDetailSectionState] = useState<{
+    slug?: string;
+    routeSection?: GamesExplorerDetailSection;
+    section: GamesExplorerDetailSection;
+  }>({ section: initialSection });
+  const activeDetailSection = detailSectionState.slug === game?.slug && detailSectionState.routeSection === initialSection
+    ? detailSectionState.section
+    : initialSection;
 
   if (!game) return null;
   const panelW = Math.min(controls.detailPanelWidth, layout.viewW - 96);
@@ -1553,7 +1580,8 @@ function DetailOverlay({
   const completeness = detail?.completeness ?? game.completeness ?? {};
   const filledSections = SECTIONS.filter(section => completeness[section]).length;
   const pct = game.completenessPercent ?? (Object.keys(completeness).length > 0 ? Math.round((filledSections / SECTIONS.length) * 100) : 0);
-  const hasOpenAction = Boolean(openGame) && game.source === 'asset' && Boolean(game.guid ?? detail?.guid);
+  const hasGamePageAction = Boolean(openGame) && Boolean(game.slug);
+  const hasRulesAction = Boolean(openRules) && Boolean(game.slug);
   const bodyCardX = x + 42;
   const bodyCardY = bodyY + 34;
   const bodyCardW = panelW - 460;
@@ -1567,6 +1595,14 @@ function DetailOverlay({
     ? 'No overview is available for this catalog entry yet.'
     : `No ${DETAIL_SECTION_LABELS[activeDetailSection].toLowerCase()} content has been authored yet.`;
   const sectionLines = wrapDetailText(sectionText || sectionFallback, Math.max(48, Math.floor((bodyCardW - 48) / 7.2)), Math.max(6, Math.floor((bodyCardH - 78) / 22)));
+  const openGamePage = () => {
+    setDetailSectionState({ slug: game.slug, routeSection: initialSection, section: 'overview' });
+    openGame?.(game);
+  };
+  const openRulesPage = () => {
+    setDetailSectionState({ slug: game.slug, routeSection: initialSection, section: 'rules' });
+    openRules?.(game);
+  };
 
   return (
     <g id="games-catalog-svg-detail-overlay">
@@ -1583,7 +1619,7 @@ function DetailOverlay({
       <SvgText x={x + 210} y={y + 98} size={14} color="#b9d5ff">
         {truncate(category, 62)}
       </SvgText>
-      <Hit x={x + panelW - 78} y={y + 28} w={52} h={52} onClick={close}>
+      <Hit x={x + panelW - 78} y={y + 28} w={52} h={52} onClick={close} ariaLabel="Close game details">
         <circle className="games-catalog-svg-showcase__hit-surface" cx={x + panelW - 52} cy={y + 54} r={27} fill="#071026" stroke="#55749e" strokeWidth={1.3} />
         <SvgText x={x + panelW - 52} y={y + 55} size={22} anchor="middle" color="#bde7ff">x</SvgText>
       </Hit>
@@ -1594,7 +1630,7 @@ function DetailOverlay({
           const by = y + 122;
           const active = activeDetailSection === section;
           return (
-            <Hit key={section} x={bx} y={by} w={118} h={42} onClick={() => setDetailSectionState({ slug: game.slug, section })}>
+            <Hit key={section} x={bx} y={by} w={118} h={42} onClick={() => setDetailSectionState({ slug: game.slug, routeSection: initialSection, section })} ariaLabel={`Show ${label} details`}>
               <rect className="games-catalog-svg-showcase__hit-surface" x={bx} y={by} width={118} height={42} rx={21} fill={active ? 'url(#gcsg-button-active)' : controls.controlFillColor} stroke={active ? '#aeefff' : '#00d6a6'} strokeWidth={active ? 1.7 : controls.controlStrokeWidth} opacity={active ? 0.96 : controls.controlFillOpacity} filter={active ? 'url(#gcsg-cyan-glow)' : undefined} />
               <SvgText x={bx + 59} y={by + 22} size={12} anchor="middle" strong={active} color={active ? '#ffffff' : '#c9e9ff'}>{label}</SvgText>
             </Hit>
@@ -1630,7 +1666,8 @@ function DetailOverlay({
                 <SvgText x={sideCardX + sideCardW - 54} y={sideCardY + 73} size={13} color="#c9e9ff">{pct}%</SvgText>
                 <rect x={sideCardX + 22} y={sideCardY + 102} width={260} height={8} rx={4} fill="#061124" stroke="#345b89" strokeWidth={1} />
                 <rect x={sideCardX + 22} y={sideCardY + 102} width={260 * Math.max(0, Math.min(100, pct)) / 100} height={8} rx={4} fill="#1ed6a6" opacity={0.86} />
-                {controls.showDetailActions && hasOpenAction ? <Button x={sideCardX + 22} y={sideCardY + 154} w={260} h={42} label="Open Game Page" active onClick={() => openGame?.(game)} controls={controls} /> : null}
+                {controls.showDetailActions && hasGamePageAction ? <Button x={sideCardX + 22} y={sideCardY + 134} w={260} h={36} label="Game Page" active onClick={openGamePage} controls={controls} /> : null}
+                {controls.showDetailActions && hasRulesAction ? <Button x={sideCardX + 22} y={sideCardY + 180} w={260} h={36} label="Rules Page" onClick={openRulesPage} controls={controls} /> : null}
               </>
             ) : (
               <>
@@ -1642,6 +1679,8 @@ function DetailOverlay({
                 <SvgText x={sideCardX + 22} y={sideCardY + 142} size={13} color="#8295b0">
                   A playable page appears here after migration.
                 </SvgText>
+                {controls.showDetailActions && hasGamePageAction ? <Button x={sideCardX + 22} y={sideCardY + 154} w={260} h={34} label="Game Page" active onClick={openGamePage} controls={controls} /> : null}
+                {controls.showDetailActions && hasRulesAction ? <Button x={sideCardX + 22} y={sideCardY + 196} w={260} h={34} label="Rules Page" onClick={openRulesPage} controls={controls} /> : null}
               </>
             )}
           </>
@@ -1740,9 +1779,12 @@ export function GamesCatalogSvgShowcase({
   onToggleSidebar,
   detail,
   detailLoading = false,
+  initialDetailSection = 'overview',
+  selectedGame: controlledSelectedGame,
   onGameSelect,
   onDetailClose,
   onGameClick,
+  onRulesClick,
   layoutControls,
   minCardWidthPx,
   maxCardWidthPx,
@@ -1751,7 +1793,7 @@ export function GamesCatalogSvgShowcase({
 }: GamesCatalogSvgShowcaseProps) {
   const idPrefix = useId().replace(/:/g, '');
   const { ref, size } = useViewportSize();
-  const [selectedGame, setSelectedGame] = useState<GamesExplorerGame | null>(null);
+  const [internalSelectedGame, setInternalSelectedGame] = useState<GamesExplorerGame | null>(null);
   const [gridScrollY, setGridScrollY] = useState(0);
   const [sidebarScrollY, setSidebarScrollY] = useState(0);
   const [qualityOpen, setQualityOpen] = useState(false);
@@ -1795,6 +1837,7 @@ export function GamesCatalogSvgShowcase({
   const resolvedAvailableCount = availableCount ?? games.filter(game => game.source === 'asset').length;
   const resolvedMetadata = metadata ?? { totalGames: games.length };
   const categoryCount = resolvedCategories.filter(item => item.category !== 'all').length;
+  const selectedGame = controlledSelectedGame === undefined ? internalSelectedGame : controlledSelectedGame;
 
   useEffect(() => {
     if (!isSidebarDragging) return undefined;
@@ -1874,11 +1917,15 @@ export function GamesCatalogSvgShowcase({
     setGridScrollY(0);
   };
   const handleSelectedGame = (game: GamesExplorerGame) => {
-    setSelectedGame(game);
+    if (controlledSelectedGame === undefined) {
+      setInternalSelectedGame(game);
+    }
     onGameSelect?.(game);
   };
   const handleCloseDetail = () => {
-    setSelectedGame(null);
+    if (controlledSelectedGame === undefined) {
+      setInternalSelectedGame(null);
+    }
     onDetailClose?.();
   };
   const handleSidebarResizeStart = (event: ReactMouseEvent<SVGGElement>) => {
@@ -2033,8 +2080,10 @@ export function GamesCatalogSvgShowcase({
             game={selectedGame}
             detail={detail}
             detailLoading={detailLoading}
+            initialSection={initialDetailSection}
             close={handleCloseDetail}
             openGame={onGameClick}
+            openRules={onRulesClick}
           />
         ) : null}
       </svg>

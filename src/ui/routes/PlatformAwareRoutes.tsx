@@ -6,6 +6,7 @@ import { WalletProviderGate } from '@/adapters/solana/wallet/WalletProviderGate'
 import { PlatformInspectorRoute } from '@/ui/platform/PlatformInspectorRoute';
 import MainApp from '@/components/MainApp';
 import { MainPlatformShell } from '@/ui/shell/MainPlatformShell';
+import { ScreenLoadingFallback } from '@/ui/components/Loading/ScreenLoadingFallback';
 import { PublicRouteKey, PublicRoutePath } from '@ocentra/endpoint-domain/constants/public-routes';
 
 const GameScreenPage = React.lazy(() =>
@@ -19,7 +20,7 @@ function GamePlayPage() {
   const { gameId } = useParams<{ gameId: string }>();
   if (!gameId) return null;
   return (
-    <Suspense fallback={<div>Loading game...</div>}>
+    <Suspense fallback={<ScreenLoadingFallback label="Loading game" variant="page" />}>
       <GameScreenPage gameModeId={gameId} />
     </Suspense>
   );
@@ -36,9 +37,6 @@ const AIModelListEditorPage = React.lazy(() =>
 );
 const AdminUsersPage = React.lazy(() =>
   import('@/ui/features/adminUsers/AdminUsersScreen').then((m) => ({ default: m.AdminUsersScreen }))
-);
-const CardGamesExplorerPage = React.lazy(() =>
-  import('@/ui/features/cardGamesExplorer/CardGamesExplorerScreen').then((m) => ({ default: m.CardGamesExplorerScreen }))
 );
 const DevPanelPage = React.lazy(() =>
   import('@/ui/features/devPanel/DevPanelScreen').then((m) => ({ default: m.DevPanelScreen }))
@@ -62,7 +60,7 @@ export function PlatformAwareRoutes() {
         <Route
           path={ROUTE_FEATURES[RouteFeature.AIPlayground].path}
           element={
-            <Suspense fallback={<div>Loading AI Playground...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading AI Playground" variant="page" />}>
               <AIPlaygroundPage />
             </Suspense>
           }
@@ -72,7 +70,7 @@ export function PlatformAwareRoutes() {
         <Route
           path={ROUTE_FEATURES[RouteFeature.AIModelListEditor].path}
           element={
-            <Suspense fallback={<div>Loading AI Model List Editor...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading AI Model List Editor" variant="page" />}>
               <AIModelListEditorPage />
             </Suspense>
           }
@@ -82,7 +80,7 @@ export function PlatformAwareRoutes() {
         <Route
           path={ROUTE_FEATURES[RouteFeature.Logs].path}
           element={
-            <Suspense fallback={<div>Loading Logs Viewer...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading Logs Viewer" variant="page" />}>
               <LogsPage />
             </Suspense>
           }
@@ -92,7 +90,7 @@ export function PlatformAwareRoutes() {
         <Route
           path={ROUTE_FEATURES[RouteFeature.Admin].path}
           element={
-            <Suspense fallback={<div>Loading Admin Dashboard...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading Admin Dashboard" variant="page" />}>
               <AdminUsersPage />
             </Suspense>
           }
@@ -104,18 +102,8 @@ export function PlatformAwareRoutes() {
         <Route
           path={PublicRoutePath[PublicRouteKey.AdminUsers]}
           element={
-            <Suspense fallback={<div>Loading Admin Users...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading Admin Users" variant="page" />}>
               <AdminUsersPage />
-            </Suspense>
-          }
-        />
-      )}
-      {isRouteEnabled(RouteFeature.CardGamesExplorer, platform, isDev) && (
-        <Route
-          path={ROUTE_FEATURES[RouteFeature.CardGamesExplorer].path}
-          element={
-            <Suspense fallback={<div>Loading Card Games Explorer...</div>}>
-              <CardGamesExplorerPage />
             </Suspense>
           }
         />
@@ -125,7 +113,7 @@ export function PlatformAwareRoutes() {
           <Route
             path={PublicRoutePath[PublicRouteKey.CardGameTemplate]}
             element={
-              <Suspense fallback={<div>Loading card game template...</div>}>
+              <Suspense fallback={<ScreenLoadingFallback label="Loading card game template" variant="page" />}>
                 <CardGameTemplateScreen />
               </Suspense>
             }
@@ -136,7 +124,7 @@ export function PlatformAwareRoutes() {
         <Route
           path={ROUTE_FEATURES[RouteFeature.DevPanel].path}
           element={
-            <Suspense fallback={<div>Loading Dev Panel...</div>}>
+            <Suspense fallback={<ScreenLoadingFallback label="Loading Dev Panel" variant="page" />}>
               <DevPanelPage />
             </Suspense>
           }

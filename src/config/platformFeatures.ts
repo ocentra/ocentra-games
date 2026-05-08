@@ -54,7 +54,7 @@ export const ROUTE_FEATURES: Record<RouteFeature, RouteFeatureConfig> = {
     platforms: [PlatformShell.Web, PlatformShell.Desktop, PlatformShell.Mobile],
   },
   [RouteFeature.CardGamesExplorer]: {
-    path: PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer],
+    path: PublicRoutePath[PublicRouteKey.CardGamesCatalog],
     devOnly: false,
     platforms: [PlatformShell.Web, PlatformShell.Desktop, PlatformShell.Mobile],
   },
