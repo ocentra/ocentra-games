@@ -18,6 +18,7 @@ import { generateRegistryMapsPlugin } from './vite/plugins/generate-inspector-ma
 import { logsPlugin } from './vite/plugins/logs'
 import { openInEditorPlugin } from './vite/plugins/open-in-editor'
 import { headerConfigPlugin } from './vite/plugins/header-config'
+import { seoRoutesPlugin } from './vite/plugins/seo-routes'
 import { workspaceSourceResolver } from './vite/plugins/workspaceSourceResolver'
 import type { PluginOption } from 'vite'
 
@@ -128,6 +129,10 @@ export default defineConfig(async ({ mode, command }) => {
     logsPlugin(),
     openInEditorPlugin(),
     headerConfigPlugin(),
+    seoRoutesPlugin({
+      rootDir: __dirname,
+      siteOrigin: process.env.VITE_PUBLIC_SITE_ORIGIN,
+    }),
   ]
 
   const excludedOcentraPrefixes = [

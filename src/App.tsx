@@ -5,6 +5,7 @@ import { AuthProvider } from '@/providers/AuthProvider';
 import { PlatformUIProvider } from '@/ui/platform/PlatformUIContext';
 import { PlatformAwareRoutes } from '@/ui/routes/PlatformAwareRoutes';
 import { NewVersionBanner } from '@/ui/components/NewVersionBanner/NewVersionBanner';
+import { RouteSeo } from '@/seo/RouteSeo';
 
 const LazyPlatformDebugOverlay = lazy(async () => {
   const mod = await import('@/ui/platform/PlatformDebugOverlay');
@@ -19,6 +20,7 @@ export default function AppWrapper() {
   return (
     <PlatformUIProvider>
       <BrowserRouter>
+        <RouteSeo />
         <QueryProvider>
           <AuthProvider>
             <NewVersionBanner />
