@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import type {
+  MouseEvent as ReactMouseEvent,
   ReactNode,
   WheelEvent as ReactWheelEvent,
 } from 'react';
@@ -16,6 +17,8 @@ import type {
   GamesExplorerGame,
   GamesExplorerMetadata,
   PlayerModeFilter,
+  QualityFilter,
+  SortBy,
   ViewMode,
 } from './types';
 import { CATEGORY_ICONS, SECTIONS } from './types';
@@ -28,9 +31,26 @@ const TOP_TAB_INSET_X = 28;
 const TOP_TAB_TOP_INSET = 16;
 const TOP_BAR_H = 74;
 const DEFAULT_SIDEBAR_W = 292;
+const MIN_SIDEBAR_W = 240;
+const MAX_SIDEBAR_W = 680;
 const CONTROL_BAR_H = 58;
 const WHEEL_SCROLL_SPEED = 0.72;
 const VIRTUAL_ROW_BUFFER = 2;
+const DRAG_RAF_NONE = -1;
+const LETTERS = ['All', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+const QUALITY_OPTIONS: ReadonlyArray<{ value: QualityFilter; label: string }> = [
+  { value: 'all', label: 'All Quality' },
+  { value: 'available', label: 'Available' },
+  { value: 'complete', label: 'Complete' },
+  { value: 'partial', label: 'Partial' },
+  { value: 'placeholder', label: 'Placeholder' },
+];
+const SORT_OPTIONS: ReadonlyArray<{ value: SortBy; label: string }> = [
+  { value: 'name', label: 'Name' },
+  { value: 'category', label: 'Category' },
+  { value: 'completeness', label: 'Completeness' },
+  { value: 'available', label: 'Available' },
+];
 
 type Layout = ReturnType<typeof makeLayout>;
 
@@ -42,6 +62,10 @@ export interface GamesCatalogSvgShowcaseProps {
   availableCount?: number;
   currentView?: ViewMode;
   onViewChange?: (value: ViewMode) => void;
+  qualityFilter?: QualityFilter;
+  onQualityChange?: (value: QualityFilter) => void;
+  sortBy?: SortBy;
+  onSortChange?: (value: SortBy) => void;
   searchQuery?: string;
   onSearchChange?: (value: string) => void;
   currentCategory?: string;
@@ -238,24 +262,28 @@ function Pill({
   y,
   w,
   label,
+  active = false,
+  onClick,
   tone = 'blue',
 }: {
   x: number;
   y: number;
   w: number;
   label: string;
+  active?: boolean;
+  onClick?: () => void;
   tone?: 'blue' | 'gold' | 'green';
 }) {
-  const stroke = tone === 'gold' ? '#b78017' : tone === 'green' ? '#1ed6a6' : '#55749e';
-  const fill = tone === 'gold' ? '#251a08' : tone === 'green' ? '#061d18' : '#071026';
-  const color = tone === 'gold' ? '#ffd36d' : tone === 'green' ? '#d7fff7' : '#bde7ff';
+  const stroke = active ? '#ffffff' : tone === 'gold' ? '#b78017' : tone === 'green' ? '#1ed6a6' : '#55749e';
+  const fill = active ? 'url(#gcsg-button-active)' : tone === 'gold' ? '#251a08' : tone === 'green' ? '#061d18' : '#071026';
+  const color = tone === 'gold' ? '#ffd36d' : active ? '#ffffff' : tone === 'green' ? '#d7fff7' : '#bde7ff';
   return (
-    <g>
-      <rect x={x} y={y} width={w} height={30} rx={8} fill={fill} stroke={stroke} strokeWidth={1} />
-      <SvgText x={x + w / 2} y={y + 16} size={11} anchor="middle" color={color} strong={tone === 'gold'}>
+    <Hit x={x} y={y} w={w} h={30} onClick={onClick}>
+      <rect className="games-catalog-svg-showcase__hit-surface" x={x} y={y} width={w} height={30} rx={8} fill={fill} stroke={stroke} strokeWidth={active ? 1.7 : 1} />
+      <SvgText x={x + w / 2} y={y + 16} size={11} anchor="middle" color={color} strong={active || tone === 'gold'}>
         {truncate(label, Math.max(8, Math.floor(w / 7.2)))}
       </SvgText>
-    </g>
+    </Hit>
   );
 }
 
@@ -332,6 +360,12 @@ function TopBar({
   layout,
   view,
   setView,
+  qualityFilter,
+  sortBy,
+  qualityOpen,
+  sortOpen,
+  onQualityToggle,
+  onSortToggle,
   searchQuery,
   onSearchChange,
   metadata,
@@ -343,6 +377,12 @@ function TopBar({
   layout: Layout;
   view: ViewMode;
   setView: (value: ViewMode) => void;
+  qualityFilter: QualityFilter;
+  sortBy: SortBy;
+  qualityOpen: boolean;
+  sortOpen: boolean;
+  onQualityToggle: () => void;
+  onSortToggle: () => void;
   searchQuery: string;
   onSearchChange?: (value: string) => void;
   metadata?: GamesExplorerMetadata | null;
@@ -355,6 +395,8 @@ function TopBar({
   const y = layout.topY;
   const w = layout.topW;
   const totalGames = metadata?.totalGames ?? 0;
+  const qualityLabel = QUALITY_OPTIONS.find(option => option.value === qualityFilter)?.label ?? 'All Quality';
+  const sortLabel = SORT_OPTIONS.find(option => option.value === sortBy)?.label ?? 'Name';
   const handleSearchClick = () => {
     if (!onSearchChange) return;
     const next = window.prompt('Search games', searchQuery);
@@ -378,10 +420,69 @@ function TopBar({
       </Hit>
       <Button x={x + 420} y={y + 18} w={84} h={38} label="Grid" active={view === 'grid'} onClick={() => setView('grid')} />
       <Button x={x + 512} y={y + 18} w={82} h={38} label="List" active={view === 'list'} onClick={() => setView('list')} />
-      <Button x={x + 604} y={y + 18} w={82} h={38} label="A-Z" active={view === 'alphabet'} onClick={() => setView('alphabet')} />
+      <Button x={x + 620} y={y + 18} w={78} h={38} label="A-Z" active={view === 'alphabet'} onClick={() => setView('alphabet')} />
+      <line x1={x + 712} y1={y + 24} x2={x + 712} y2={y + 52} stroke="#516986" strokeWidth={1} opacity={0.58} />
+      <SvgText x={x + 730} y={y + 38} size={18} anchor="middle" color="#8fa5c0">Q</SvgText>
+      <Button x={x + 750} y={y + 18} w={148} h={38} label={`${qualityLabel} v`} active={qualityOpen} onClick={onQualityToggle} />
+      <line x1={x + 912} y1={y + 24} x2={x + 912} y2={y + 52} stroke="#516986" strokeWidth={1} opacity={0.58} />
+      <SvgText x={x + 930} y={y + 38} size={18} anchor="middle" color="#8fa5c0">S</SvgText>
+      <Button x={x + 950} y={y + 18} w={124} h={38} label={`${sortLabel} v`} active={sortOpen} onClick={onSortToggle} />
       <StatBox x={x + w - 338} y={y + 17} w={96} label="GAMES" value={totalGames.toLocaleString()} />
-      <StatBox x={x + w - 230} y={y + 17} w={96} label="READY" value={availableCount.toLocaleString()} />
+      <StatBox x={x + w - 230} y={y + 17} w={96} label="AVAILABLE" value={availableCount.toLocaleString()} />
       <StatBox x={x + w - 122} y={y + 17} w={102} label="GROUPS" value={categoryCount.toLocaleString()} />
+    </g>
+  );
+}
+
+function TopDropdownOverlays({
+  layout,
+  qualityFilter,
+  sortBy,
+  qualityOpen,
+  sortOpen,
+  onQualityChange,
+  onSortChange,
+}: {
+  layout: Layout;
+  qualityFilter: QualityFilter;
+  sortBy: SortBy;
+  qualityOpen: boolean;
+  sortOpen: boolean;
+  onQualityChange: (value: QualityFilter) => void;
+  onSortChange: (value: SortBy) => void;
+}) {
+  const x = layout.topX;
+  const y = layout.topY;
+  const qualityX = x + 750;
+  const sortX = x + 950;
+  return (
+    <g id="games-catalog-svg-top-dropdowns" filter="url(#gcsg-soft-shadow)">
+      {qualityOpen ? (
+        <g>
+          <rect x={qualityX} y={y + 62} width={154} height={QUALITY_OPTIONS.length * 31 + 12} rx={12} fill="#050a18" stroke="#aeefff" strokeWidth={1.3} />
+          {QUALITY_OPTIONS.map((option, index) => (
+            <Hit key={option.value} x={qualityX + 6} y={y + 69 + index * 31} w={142} h={26} onClick={() => onQualityChange(option.value)}>
+              <rect className="games-catalog-svg-showcase__hit-surface" x={qualityX + 6} y={y + 69 + index * 31} width={142} height={26} rx={7} fill={qualityFilter === option.value ? 'url(#gcsg-button-active)' : 'transparent'} stroke={qualityFilter === option.value ? '#ffffff' : '#4d6d9a'} strokeWidth={qualityFilter === option.value ? 1.2 : 0.6} />
+              <SvgText x={qualityX + 18} y={y + 83 + index * 31} size={11} strong={qualityFilter === option.value}>
+                {option.label}
+              </SvgText>
+            </Hit>
+          ))}
+        </g>
+      ) : null}
+      {sortOpen ? (
+        <g>
+          <rect x={sortX} y={y + 62} width={136} height={SORT_OPTIONS.length * 31 + 12} rx={12} fill="#050a18" stroke="#aeefff" strokeWidth={1.3} />
+          {SORT_OPTIONS.map((option, index) => (
+            <Hit key={option.value} x={sortX + 6} y={y + 69 + index * 31} w={124} h={26} onClick={() => onSortChange(option.value)}>
+              <rect className="games-catalog-svg-showcase__hit-surface" x={sortX + 6} y={y + 69 + index * 31} width={124} height={26} rx={7} fill={sortBy === option.value ? 'url(#gcsg-button-active)' : 'transparent'} stroke={sortBy === option.value ? '#ffffff' : '#4d6d9a'} strokeWidth={sortBy === option.value ? 1.2 : 0.6} />
+              <SvgText x={sortX + 18} y={y + 83 + index * 31} size={11} strong={sortBy === option.value}>
+                {option.label}
+              </SvgText>
+            </Hit>
+          ))}
+        </g>
+      ) : null}
     </g>
   );
 }
@@ -538,6 +639,48 @@ function Sidebar({
   );
 }
 
+function SidebarResizeHandle({
+  layout,
+  panelX,
+  isDragging,
+  onMouseDown,
+}: {
+  layout: Layout;
+  panelX: number;
+  isDragging: boolean;
+  onMouseDown: (event: ReactMouseEvent<SVGGElement>) => void;
+}) {
+  const scrubberY = layout.bodyY;
+  const scrubberH = 52;
+  const scrubberW = 28;
+  const scrubberX = panelX - scrubberW / 2;
+  const bottomCorner = 9;
+  return (
+    <g
+      id="games-catalog-svg-sidebar-resize"
+      onMouseDown={onMouseDown}
+      className={isDragging ? 'games-catalog-svg-showcase__resize is-dragging' : 'games-catalog-svg-showcase__resize'}
+      role="separator"
+      aria-orientation="vertical"
+      tabIndex={0}
+    >
+      <rect x={scrubberX - 8} y={scrubberY} width={scrubberW + 16} height={scrubberH} fill="transparent" pointerEvents="all" />
+      <path d={`M ${panelX} ${scrubberY} V ${scrubberY + scrubberH}`} stroke="#7ddcff" strokeWidth={isDragging ? 3.2 : 2.1} opacity={isDragging ? 0.95 : 0.72} strokeLinecap="round" />
+      <path
+        className="games-catalog-svg-showcase__resize-surface"
+        d={`M ${scrubberX} ${scrubberY} H ${scrubberX + scrubberW} V ${scrubberY + scrubberH - bottomCorner} Q ${scrubberX + scrubberW} ${scrubberY + scrubberH} ${scrubberX + scrubberW - bottomCorner} ${scrubberY + scrubberH} H ${scrubberX + bottomCorner} Q ${scrubberX} ${scrubberY + scrubberH} ${scrubberX} ${scrubberY + scrubberH - bottomCorner} Z`}
+        fill="#071026"
+        stroke="#7ddcff"
+        strokeWidth={isDragging ? 2.4 : 1.65}
+        opacity={0.98}
+        filter="url(#gcsg-cyan-glow)"
+      />
+      <path d={`M ${scrubberX + 6} ${scrubberY + 4} H ${scrubberX + scrubberW - 6}`} stroke="#d7fff7" strokeWidth={1.2} opacity={0.72} strokeLinecap="round" />
+      <path d={`M ${panelX} ${scrubberY + 12} V ${scrubberY + scrubberH - 10}`} stroke="#aeefff" strokeWidth={1.25} opacity={0.55} strokeLinecap="round" />
+    </g>
+  );
+}
+
 function GameCardSvg({
   x,
   y,
@@ -590,6 +733,10 @@ function GameCardSvg({
   const filledSections = SECTIONS.filter(section => completeness[section]).length;
   const pct = game.completenessPercent ?? (Object.keys(completeness).length > 0 ? Math.round((filledSections / SECTIONS.length) * 100) : 0);
   const clipId = `${idPrefix}-card-img-${index}`;
+  const topClampW = Math.min(190, w * 0.58);
+  const topClampH = 11;
+  const topClampX = x + (w - topClampW) / 2;
+  const topClampY = y - topClampH;
 
   return (
     <Hit x={x} y={y} w={w} h={h} onClick={onClick} className="games-catalog-svg-showcase__card">
@@ -646,6 +793,17 @@ function GameCardSvg({
             const py = metaTop + metaRow * (metaPillH + metaRowGap);
             return <Pill key={label} x={px} y={py} w={metaPillW} label={label} />;
           })}
+        </g>
+        <g pointerEvents="none" filter="url(#gcsg-cyan-glow)">
+          <path
+            d={`M ${topClampX} ${topClampY + topClampH} V ${topClampY + 7} Q ${topClampX} ${topClampY} ${topClampX + 9} ${topClampY} H ${topClampX + topClampW - 9} Q ${topClampX + topClampW} ${topClampY} ${topClampX + topClampW} ${topClampY + 7} V ${topClampY + topClampH} Z`}
+            fill="url(#gcsg-card-edge)"
+            fillOpacity={0.42}
+            stroke="#aeefff"
+            strokeWidth={2.2}
+            strokeLinejoin="round"
+          />
+          <path d={`M ${topClampX + 10} ${topClampY + 2.4} H ${topClampX + topClampW - 10}`} stroke="#d7fff7" strokeWidth={1.35} strokeLinecap="round" opacity={0.9} />
         </g>
       </g>
     </Hit>
@@ -951,6 +1109,10 @@ export function GamesCatalogSvgShowcase({
   availableCount,
   currentView = 'grid',
   onViewChange,
+  qualityFilter = 'all',
+  onQualityChange,
+  sortBy = 'name',
+  onSortChange,
   searchQuery = '',
   onSearchChange,
   currentCategory = 'all',
@@ -968,19 +1130,75 @@ export function GamesCatalogSvgShowcase({
   const [selectedGame, setSelectedGame] = useState<GamesExplorerGame | null>(null);
   const [gridScrollY, setGridScrollY] = useState(0);
   const [sidebarScrollY, setSidebarScrollY] = useState(0);
+  const [qualityOpen, setQualityOpen] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
+  const [activeLetter, setActiveLetter] = useState('All');
+  const [sidebarW, setSidebarW] = useState(DEFAULT_SIDEBAR_W);
+  const [isSidebarDragging, setIsSidebarDragging] = useState(false);
+  const dragRafRef = useRef<number>(DRAG_RAF_NONE);
+  const pendingSidebarWRef = useRef(DEFAULT_SIDEBAR_W);
   const dynamicViewH = Math.max(MIN_VIEW_H, Math.round(BASE_VIEW_W * (size.height / Math.max(1, size.width))));
   const layout = useMemo(() => makeLayout(dynamicViewH), [dynamicViewH]);
-  const sidebarW = isSidebarCollapsed ? 0 : DEFAULT_SIDEBAR_W;
-  const panelX = layout.bodyX + sidebarW;
-  const panelW = layout.bodyW - sidebarW;
+  const viewScale = size.width / Math.max(1, layout.viewW);
+  const readableSidebarPx = size.width < 760 ? 165 : size.width < 980 ? 190 : 230;
+  const readableSidebarW = readableSidebarPx / Math.max(0.001, viewScale);
+  const autoSidebarW = Math.min(MAX_SIDEBAR_W, Math.max(sidebarW, readableSidebarW));
+  const maxSidebarForPage = layout.bodyW * (size.width < 760 ? 0.46 : 0.38);
+  const effectiveSidebarW = isSidebarCollapsed ? 0 : Math.min(autoSidebarW, maxSidebarForPage);
+  const panelX = layout.bodyX + effectiveSidebarW;
+  const panelW = layout.bodyW - effectiveSidebarW;
   const showAlphabetBar = currentView === 'alphabet';
   const gamesY = showAlphabetBar ? layout.bodyY + CONTROL_BAR_H : layout.bodyY;
   const gamesH = layout.bodyH - (showAlphabetBar ? CONTROL_BAR_H : 0);
+  const displayedGames = useMemo(() => {
+    if (currentView !== 'alphabet' || activeLetter === 'All') return games;
+    return games.filter(game => game.name.trim().toUpperCase().startsWith(activeLetter));
+  }, [activeLetter, currentView, games]);
   const resolvedCategories = categoryWithSubs?.length ? categoryWithSubs : buildFallbackCategories(games);
   const resolvedPlayerCounts = playerModeCounts ?? buildFallbackPlayerCounts(games);
   const resolvedAvailableCount = availableCount ?? games.filter(game => game.source === 'asset').length;
   const resolvedMetadata = metadata ?? { totalGames: games.length };
   const categoryCount = resolvedCategories.filter(item => item.category !== 'all').length;
+
+  useEffect(() => {
+    if (!isSidebarDragging) return undefined;
+
+    const flushSidebarWidth = () => {
+      dragRafRef.current = DRAG_RAF_NONE;
+      setSidebarW(pendingSidebarWRef.current);
+    };
+
+    const handleMove = (event: MouseEvent) => {
+      const node = ref.current;
+      if (!node) return;
+      const rect = node.getBoundingClientRect();
+      const svgX = ((event.clientX - rect.left) / Math.max(1, rect.width)) * layout.viewW;
+      pendingSidebarWRef.current = Math.min(MAX_SIDEBAR_W, Math.max(MIN_SIDEBAR_W, Math.round(svgX - layout.bodyX)));
+      if (dragRafRef.current === DRAG_RAF_NONE) {
+        dragRafRef.current = window.requestAnimationFrame(flushSidebarWidth);
+      }
+    };
+
+    const handleUp = () => {
+      setIsSidebarDragging(false);
+      if (dragRafRef.current !== DRAG_RAF_NONE) {
+        window.cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = DRAG_RAF_NONE;
+      }
+      setSidebarW(pendingSidebarWRef.current);
+    };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('mouseup', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      if (dragRafRef.current !== DRAG_RAF_NONE) {
+        window.cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = DRAG_RAF_NONE;
+      }
+    };
+  }, [isSidebarDragging, layout.bodyX, layout.viewW, ref]);
 
   const setView = (value: ViewMode) => {
     onViewChange?.(value);
@@ -998,8 +1216,28 @@ export function GamesCatalogSvgShowcase({
     onPlayerModeChange?.(value);
     setGridScrollY(0);
   };
+  const handleQualityChange = (value: QualityFilter) => {
+    onQualityChange?.(value);
+    setQualityOpen(false);
+    setGridScrollY(0);
+  };
+  const handleSortChange = (value: SortBy) => {
+    onSortChange?.(value);
+    setSortOpen(false);
+    setGridScrollY(0);
+  };
+  const handleLetterChange = (value: string) => {
+    setActiveLetter(value);
+    setGridScrollY(0);
+  };
   const handleSelectedGame = (game: GamesExplorerGame) => {
     setSelectedGame(game);
+  };
+  const handleSidebarResizeStart = (event: ReactMouseEvent<SVGGElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    pendingSidebarWRef.current = Math.max(MIN_SIDEBAR_W, effectiveSidebarW || sidebarW);
+    setIsSidebarDragging(true);
   };
 
   return (
@@ -1007,19 +1245,27 @@ export function GamesCatalogSvgShowcase({
       <svg viewBox={`0 0 ${layout.viewW} ${layout.viewH}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Card games catalog SVG preview">
         <Defs idPrefix={idPrefix} />
         <clipPath id="gcsg-sidebar-window">
-          <rect x={layout.bodyX + 1} y={layout.bodyY + 270} width={Math.max(1, DEFAULT_SIDEBAR_W - 3)} height={layout.bodyH - 288} />
+          <rect x={layout.bodyX + 1} y={layout.bodyY + 270} width={Math.max(1, effectiveSidebarW - 3)} height={layout.bodyH - 288} />
         </clipPath>
         <clipPath id={`${idPrefix}-gamesClip`}>
           <rect x={panelX + 2} y={gamesY + 2} width={panelW - 4} height={gamesH - 4} />
         </clipPath>
-        <rect x={0} y={0} width={layout.viewW} height={layout.viewH} fill="#00040b" />
-        <rect x={0} y={0} width={layout.viewW} height={layout.viewH} fill="url(#gcsg-bg-radial)" />
-        <rect x={0} y={0} width={layout.viewW} height={layout.viewH} fill="url(#gcsg-grid-pattern)" opacity={0.36} />
-        <rect x={layout.pageX} y={layout.pageY} width={layout.pageW} height={layout.pageH} rx={18} fill="none" stroke="#00ffd0" strokeWidth={1.2} opacity={0.62} />
         <TopBar
           layout={layout}
           view={currentView}
           setView={setView}
+          qualityFilter={qualityFilter}
+          sortBy={sortBy}
+          qualityOpen={qualityOpen}
+          sortOpen={sortOpen}
+          onQualityToggle={() => {
+            setQualityOpen(value => !value);
+            setSortOpen(false);
+          }}
+          onSortToggle={() => {
+            setSortOpen(value => !value);
+            setQualityOpen(false);
+          }}
           searchQuery={searchQuery}
           onSearchChange={handleSearchChange}
           metadata={resolvedMetadata}
@@ -1031,7 +1277,7 @@ export function GamesCatalogSvgShowcase({
         {!isSidebarCollapsed ? (
           <Sidebar
             layout={layout}
-            sidebarW={DEFAULT_SIDEBAR_W}
+            sidebarW={effectiveSidebarW}
             categoryWithSubs={resolvedCategories}
             currentCategory={currentCategory}
             onCategoryChange={handleCategoryChange}
@@ -1048,9 +1294,24 @@ export function GamesCatalogSvgShowcase({
           <g id="games-catalog-svg-alphabet-bar" filter="url(#gcsg-soft-shadow)">
             <path d={`M ${panelX} ${layout.bodyY} H ${panelX + panelW - 16} Q ${panelX + panelW} ${layout.bodyY} ${panelX + panelW} ${layout.bodyY + 16} V ${layout.bodyY + CONTROL_BAR_H} H ${panelX} Z`} fill="url(#gcsg-panel-fill)" stroke="#1ea7ff" strokeWidth={1.2} />
             <SvgText x={panelX + 18} y={layout.bodyY + 29} size={14} strong color="#ffffff">Alphabet</SvgText>
-            {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').slice(0, 20).map((letter, index) => (
-              <Pill key={letter} x={panelX + 104 + index * 44} y={layout.bodyY + 14} w={34} label={letter} />
-            ))}
+            {LETTERS.map((letter, index) => {
+              const startX = panelX + 100;
+              const endX = panelX + panelW - 204;
+              const availableW = Math.max(120, endX - startX);
+              const pillW = Math.max(30, Math.min(42, (availableW - 6 * (LETTERS.length - 1)) / LETTERS.length));
+              const gap = LETTERS.length > 1 ? (availableW - pillW * LETTERS.length) / (LETTERS.length - 1) : 0;
+              return (
+                <Pill
+                  key={letter}
+                  x={startX + index * (pillW + gap)}
+                  y={layout.bodyY + 14}
+                  w={pillW}
+                  label={letter}
+                  active={activeLetter === letter}
+                  onClick={() => handleLetterChange(letter)}
+                />
+              );
+            })}
           </g>
         ) : null}
         <GamesArea
@@ -1060,13 +1321,30 @@ export function GamesCatalogSvgShowcase({
           areaY={gamesY}
           areaH={gamesH}
           mode={currentView === 'alphabet' ? 'grid' : currentView}
-          games={games}
+          games={displayedGames}
           selectedGame={selectedGame}
           setSelectedGame={handleSelectedGame}
           scrollY={gridScrollY}
           setScrollY={setGridScrollY}
           viewportPixelW={size.width}
           idPrefix={idPrefix}
+        />
+        {!isSidebarCollapsed ? (
+          <SidebarResizeHandle
+            layout={layout}
+            panelX={panelX}
+            isDragging={isSidebarDragging}
+            onMouseDown={handleSidebarResizeStart}
+          />
+        ) : null}
+        <TopDropdownOverlays
+          layout={layout}
+          qualityFilter={qualityFilter}
+          sortBy={sortBy}
+          qualityOpen={qualityOpen}
+          sortOpen={sortOpen}
+          onQualityChange={handleQualityChange}
+          onSortChange={handleSortChange}
         />
         <DetailOverlay
           layout={layout}

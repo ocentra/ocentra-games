@@ -37,6 +37,8 @@ import type {
   CategoryWithSubs,
   GamesExplorerGame,
   PlayerModeFilter,
+  QualityFilter,
+  SortBy,
   ViewMode as GamesExplorerViewMode,
 } from '@ocentra/core-ui/GamesExplorer/types'
 import { CATEGORY_VALUES } from '@ocentra/game-domain/game/categories'
@@ -1510,7 +1512,10 @@ function PageLayoutMainAppPreview({
     ? `admin-users-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
     : kind === 'selected-game'
       ? `selected-game-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
-      : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+      : kind === 'games'
+        ? `games-catalog-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+        : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+  const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games'
 
   return (
     <AssetCatalogMainAppPreviewShell
@@ -1520,8 +1525,8 @@ function PageLayoutMainAppPreview({
       toolbar={toolbar}
       shellClassName={shellClassName}
       workClassName={workClassName}
-      includeAdminNavigation={kind !== 'selected-game'}
-      showPrimaryNavigation={kind !== 'selected-game'}
+      includeAdminNavigation={showPagePrimaryNavigation}
+      showPrimaryNavigation={showPagePrimaryNavigation}
     >
       {content}
     </AssetCatalogMainAppPreviewShell>
@@ -2185,6 +2190,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [gamesPlayerModeFilter, setGamesPlayerModeFilter] = useState<PlayerModeFilter>('all')
   const [gamesCategory, setGamesCategory] = useState('all')
   const [gamesView, setGamesView] = useState<GamesExplorerViewMode>('grid')
+  const [gamesQualityFilter, setGamesQualityFilter] = useState<QualityFilter>('all')
+  const [gamesSortBy, setGamesSortBy] = useState<SortBy>('name')
   const [featuredShowcaseControls, setFeaturedShowcaseControls] = useState(
     DEFAULT_FEATURED_SHOWCASE_CONTROLS
   )
@@ -3217,12 +3224,45 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         )
       })
     }
-    return [...result].sort((a, b) =>
+    if (gamesQualityFilter !== 'all') {
+      result = result.filter(g => {
+        if (gamesQualityFilter === 'available') return !isCatalogGameItem(g)
+        return (g.home.quality ?? 'complete') === gamesQualityFilter
+      })
+    }
+    const compareName = (a: GameWithMetadata, b: GameWithMetadata) =>
       (a.home.name ?? a.entry.displayName ?? '').localeCompare(
         b.home.name ?? b.entry.displayName ?? ''
       )
-    )
-  }, [gamesWithMetadata, gamesModeFilter, gamesPlayerModeFilter, gamesCategory, deferredGamesSearch])
+    const completenessScore = (g: GameWithMetadata) =>
+      g.home.completeness
+        ? Math.round((Object.values(g.home.completeness).filter(Boolean).length / 8) * 100)
+        : 0
+    return [...result].sort((a, b) => {
+      if (gamesSortBy === 'available') {
+        const availableCompare = Number(!isCatalogGameItem(b)) - Number(!isCatalogGameItem(a))
+        return availableCompare || compareName(a, b)
+      }
+      if (gamesSortBy === 'category') {
+        const categoryCompare = (a.home.gameCategory || extractModeFromPath(a.path)).localeCompare(
+          b.home.gameCategory || extractModeFromPath(b.path)
+        )
+        return categoryCompare || compareName(a, b)
+      }
+      if (gamesSortBy === 'completeness') {
+        return completenessScore(b) - completenessScore(a) || compareName(a, b)
+      }
+      return compareName(a, b)
+    })
+  }, [
+    gamesWithMetadata,
+    gamesModeFilter,
+    gamesPlayerModeFilter,
+    gamesCategory,
+    deferredGamesSearch,
+    gamesQualityFilter,
+    gamesSortBy,
+  ])
 
   const imageResourceCount = useMemo(
     () =>
@@ -3550,6 +3590,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           playerModeCounts={gamesPlayerModeCounts}
           currentView={gamesView}
           onViewChange={setGamesView}
+          qualityFilter={gamesQualityFilter}
+          onQualityChange={setGamesQualityFilter}
+          sortBy={gamesSortBy}
+          onSortChange={setGamesSortBy}
           searchQuery={gamesSearch}
           onSearchChange={setGamesSearch}
           currentCategory={gamesCategory}
