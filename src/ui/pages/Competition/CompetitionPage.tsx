@@ -16,9 +16,48 @@ interface CompetitionPageProps {
   user: UserProfile | null;
   onLogout: () => void;
   onLogoutClick?: () => void;
+  pageMode?:
+    | 'competition'
+    | 'tournaments'
+    | 'tournamentDetail'
+    | 'leaderboard'
+    | 'gameLeaderboard'
+    | 'aiBenchmarkLeaderboard';
+  gameId?: string;
+  tournamentId?: string;
 }
 
-export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPageProps) {
+function getCompetitionHeader(
+  pageMode: NonNullable<CompetitionPageProps['pageMode']>,
+  gameId?: string,
+  tournamentId?: string
+): { gameName: string; tagline: string } {
+  if (pageMode === 'leaderboard') {
+    return { gameName: 'Leaderboard', tagline: 'Overall ranks across every game.' };
+  }
+  if (pageMode === 'gameLeaderboard') {
+    return { gameName: 'Game Leaderboard', tagline: `Ranks and nearby standings for ${gameId ?? 'this game'}.` };
+  }
+  if (pageMode === 'aiBenchmarkLeaderboard') {
+    return { gameName: 'AI Benchmarks', tagline: 'AI-vs-AI model standings and benchmark runs.' };
+  }
+  if (pageMode === 'tournaments') {
+    return { gameName: 'Tournaments', tagline: 'Scheduled competitive events and active brackets.' };
+  }
+  if (pageMode === 'tournamentDetail') {
+    return { gameName: 'Tournament Detail', tagline: `Bracket, registration, and status for ${tournamentId ?? 'the selected tournament'}.` };
+  }
+  return { gameName: 'Competition', tagline: 'Rank ladders, nearby standings, and tournament brackets.' };
+}
+
+export function CompetitionPage({
+  user,
+  onLogout,
+  onLogoutClick,
+  pageMode = 'competition',
+  gameId,
+  tournamentId: routeTournamentId,
+}: CompetitionPageProps) {
   const { runWithAccount } = useAuthAccess();
   const accountUserId = user && user.isGuest !== true ? user.uid : null;
   const hasAccount = accountUserId !== null;
@@ -47,6 +86,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
     onLogout();
   };
   const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
+  const headerDynamicData = getCompetitionHeader(pageMode, gameId, routeTournamentId ?? tournamentId);
 
   return (
     <UnifiedPageShell
@@ -54,10 +94,7 @@ export function CompetitionPage({ user, onLogout, onLogoutClick }: CompetitionPa
       background={<DynamicBackground />}
       header={
         <UnifiedHeader
-          dynamicData={{
-            gameName: "Competition",
-            tagline: "Rank ladders, nearby standings, and tournament brackets."
-          }}
+          dynamicData={headerDynamicData}
           config={{
             right: headerRightConfig,
             left: {

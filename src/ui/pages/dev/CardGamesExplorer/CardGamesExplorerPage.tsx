@@ -18,7 +18,11 @@ import type { Game } from './types';
 import '@/ui/pages/Home/HomePage.css';
 import './CardGamesExplorerPage.css';
 
-export function CardGamesExplorerPage() {
+interface CardGamesExplorerPageProps {
+  catalogScope?: 'all' | 'card-games';
+}
+
+export function CardGamesExplorerPage({ catalogScope = 'card-games' }: CardGamesExplorerPageProps) {
   const navigate = useNavigate();
   const headerProps = useCoreUIHeaderProps();
   const rotationRef = useRef<RotationControlAPI | null>(null);
@@ -78,6 +82,13 @@ export function CardGamesExplorerPage() {
     void openDetail(game as Game);
   };
 
+  const catalogTitle = catalogScope === 'all' ? 'Games Catalog' : 'Card Games Explorer';
+  const catalogTagline = loading
+    ? 'Loading...'
+    : catalogScope === 'all'
+      ? `${games.length.toLocaleString()} games ready for catalog browsing`
+      : `${games.length.toLocaleString()} finished card games in the catalog`;
+
   const content =
     loading && games.length === 0 ? (
       <div className="cge-page__state">
@@ -133,12 +144,12 @@ export function CardGamesExplorerPage() {
         workClassName="home-shell-work cge-page__work"
         background={<DynamicBackground controlRef={rotationRef} />}
         header={
-          <UnifiedHeader
+            <UnifiedHeader
             showPrimaryNavigation={false}
             includeAdminNavigation={Boolean(headerProps.user?.isAdmin)}
             dynamicData={{
-              gameName: 'Card Games Explorer',
-              tagline: loading ? 'Loading...' : `${games.length.toLocaleString()} finished card games in the catalog`,
+              gameName: catalogTitle,
+              tagline: catalogTagline,
             }}
             config={{
               left: {

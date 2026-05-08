@@ -1497,14 +1497,22 @@ function readPageLayoutData(assetData: { data?: unknown }): PageLayoutPreviewDat
 function getPageLayoutKind(document: PageLayoutPreviewData): NonNullable<PageLayoutPreviewData['kind']> {
   if (document.kind) return document.kind
   if (document.pageId === 'leaderboard') return 'leaderboard'
+  if (document.pageId === 'game-leaderboard') return 'game-leaderboard'
+  if (document.pageId === 'ai-benchmark-leaderboard') return 'ai-benchmark-leaderboard'
   if (document.pageId === 'profile') return 'profile'
+  if (document.pageId === 'player-hub') return 'player-hub'
+  if (document.pageId === 'competition') return 'competition'
   if (document.pageId === 'tournaments') return 'tournaments'
+  if (document.pageId === 'tournament-detail') return 'tournament-detail'
   if (document.pageId === 'selected-game') return 'selected-game'
   if (document.pageId === 'games') return 'games'
+  if (document.pageId === 'game-catalog') return 'game-catalog'
   if (document.pageId === 'shop') return 'shop'
   if (document.pageId === 'social') return 'social'
   if (document.pageId === 'admin') return 'admin'
   if (document.pageId === 'settings') return 'settings'
+  if (document.pageId === 'lobby') return 'lobby'
+  if (document.pageId === 'matchmaking') return 'matchmaking'
   return 'generic'
 }
 
@@ -1516,8 +1524,14 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
   if (kind === 'social') {
     return { gameName: 'Social Hub', tagline: 'Friends, parties, messages, notifications, and activity.' }
   }
+  if (kind === 'competition') {
+    return { gameName: 'Competition', tagline: 'Competition hub for tournaments and leaderboard routes.' }
+  }
   if (kind === 'tournaments') {
     return { gameName: 'Competition', tagline: 'Rank ladders, nearby standings, and tournament brackets.' }
+  }
+  if (kind === 'tournament-detail') {
+    return { gameName: 'Tournament Detail', tagline: 'Bracket, registration, and event status.' }
   }
   if (kind === 'selected-game') {
     return { gameName: 'Selected Game', tagline: 'Asset-backed game detail presentation.' }
@@ -1525,10 +1539,16 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
   if (kind === 'leaderboard') {
     return { gameName: 'Leaderboard', tagline: 'Season ranks, nearby players, and competitive progress.' }
   }
-  if (kind === 'profile') {
+  if (kind === 'game-leaderboard') {
+    return { gameName: 'Game Leaderboard', tagline: 'Per-game ranks and nearby players.' }
+  }
+  if (kind === 'ai-benchmark-leaderboard') {
+    return { gameName: 'AI Benchmarks', tagline: 'AI-vs-AI model standings and benchmark runs.' }
+  }
+  if (kind === 'profile' || kind === 'player-hub') {
     return { gameName: 'Player Hub', tagline: 'Profile, inventory, and marketplace in one control center.' }
   }
-  if (kind === 'games') {
+  if (kind === 'games' || kind === 'game-catalog') {
     return { gameName: 'Card Games Explorer', tagline: 'Finished card games in the catalog.' }
   }
   if (kind === 'admin') {
@@ -1536,6 +1556,12 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
   }
   if (kind === 'settings') {
     return { gameName: 'Settings', tagline: 'Models, providers, native integrations, and asset delivery.' }
+  }
+  if (kind === 'lobby') {
+    return { gameName: 'Lobby', tagline: 'Create or join rooms before a match starts.' }
+  }
+  if (kind === 'matchmaking') {
+    return { gameName: 'Matchmaking', tagline: 'Find players, queue up, and move into a lobby.' }
   }
   return { gameName: document.title || 'Page Layout', tagline: document.routePath || '/' }
 }
@@ -1639,7 +1665,7 @@ function PageLayoutMainAppPreview({
   const [adminSearch, setAdminSearch] = useState('')
 
   const content =
-    kind === 'games' ? (
+    kind === 'games' || kind === 'game-catalog' ? (
       gamesExplorerContent ?? <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
     ) : kind === 'selected-game' ? (
       selectedGameContent ?? <GenericPageLayoutContent document={document} debugBounds={debugBounds} />
@@ -1682,7 +1708,7 @@ function PageLayoutMainAppPreview({
         onMarkAllNotificationsRead={() => undefined}
         onAppendActivity={() => undefined}
       />
-    ) : kind === 'tournaments' ? (
+    ) : kind === 'competition' || kind === 'tournaments' || kind === 'tournament-detail' ? (
       <CompetitionPageContent
         loading={false}
         registering={false}
@@ -1702,7 +1728,7 @@ function PageLayoutMainAppPreview({
         onRegister={() => undefined}
         onMatchmaking={() => undefined}
       />
-    ) : kind === 'leaderboard' ? (
+    ) : kind === 'leaderboard' || kind === 'game-leaderboard' || kind === 'ai-benchmark-leaderboard' ? (
       <CompetitionPageContent
         loading={false}
         registering={false}
@@ -1722,7 +1748,7 @@ function PageLayoutMainAppPreview({
         onRegister={() => undefined}
         onMatchmaking={() => undefined}
       />
-    ) : kind === 'profile' ? (
+    ) : kind === 'profile' || kind === 'player-hub' ? (
       <PlayerHubPageContent
         loading={false}
         error={null}
@@ -1779,9 +1805,9 @@ function PageLayoutMainAppPreview({
     ? 'sp-root'
     : kind === 'social'
       ? 'social-page'
-      : kind === 'tournaments' || kind === 'leaderboard'
+      : kind === 'competition' || kind === 'tournaments' || kind === 'tournament-detail' || kind === 'leaderboard' || kind === 'game-leaderboard' || kind === 'ai-benchmark-leaderboard'
         ? 'cp-page'
-        : kind === 'profile'
+        : kind === 'profile' || kind === 'player-hub'
           ? 'ph-page'
           : kind === 'admin'
             ? 'admin-users-page'
@@ -1795,10 +1821,10 @@ function PageLayoutMainAppPreview({
     ? `admin-users-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
     : kind === 'selected-game'
       ? `selected-game-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
-      : kind === 'games'
+      : kind === 'games' || kind === 'game-catalog'
         ? `games-catalog-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
         : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
-  const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games'
+  const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games' && kind !== 'game-catalog'
 
   return (
     <AssetCatalogMainAppPreviewShell
@@ -2404,9 +2430,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     pageLayoutData?.pageId === 'home'
   const pageLayoutKind = pageLayoutData ? getPageLayoutKind(pageLayoutData) : 'generic'
   const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
-  const isGamesPageLayout = isPageLayoutMode && pageLayoutKind === 'games'
+  const isGamesPageLayout = isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog')
   const shouldLoadGamesForPageLayout =
-    isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'selected-game')
+    isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog' || pageLayoutKind === 'selected-game')
   const initialSelectedGameLayoutConfig = useMemo(
     () => normalizeSelectedGameLayoutConfig(pageLayoutData),
     [pageLayoutData]
@@ -4070,7 +4096,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const handleOpenGamesCatalogLayoutControls = () => {
     void createPanelWindow(
       'games-catalog-layout-controls',
-      'Resources/Pages/GamesPageLayout.asset',
+      'Resources/Pages/GameCatalogPageLayout.asset',
       'Games Catalog Layout Controls',
       true
     )

@@ -9,6 +9,7 @@ import { buildHomePath, parseAppRoute, resolvePathFromScreenToken, type AppRoute
 
 const LoginScreen = lazy(() => import('@/ui/features/auth/LoginScreen').then((m) => ({ default: m.LoginScreen })));
 const HomeScreen = lazy(() => import('@/ui/features/home/HomeScreen').then((m) => ({ default: m.HomeScreen })));
+const CardGamesExplorerScreen = lazy(() => import('@/ui/features/cardGamesExplorer/CardGamesExplorerScreen').then((m) => ({ default: m.CardGamesExplorerScreen })));
 const SelectedGameScreen = lazy(() => import('@/ui/features/selectedGame/SelectedGameScreen').then((m) => ({ default: m.SelectedGameScreen })));
 const SettingsScreen = lazy(() => import('@/ui/features/settings/SettingsScreen').then((m) => ({ default: m.SettingsScreen })));
 const ShopScreen = lazy(() => import('@/ui/features/shop/ShopScreen').then((m) => ({ default: m.ShopScreen })));
@@ -217,13 +218,23 @@ export function AuthScreen({
       );
     }
 
-    if (route.kind === 'competition') {
+    if (
+      route.kind === 'competition' ||
+      route.kind === 'tournaments' ||
+      route.kind === 'tournamentDetail' ||
+      route.kind === 'leaderboard' ||
+      route.kind === 'gameLeaderboard' ||
+      route.kind === 'aiBenchmarkLeaderboard'
+    ) {
       return (
         <Suspense fallback={<RouteFallback />}>
           <CompetitionScreen
             user={currentUser}
             onLogout={onLogout}
             onLogoutClick={onLogoutClick}
+            pageMode={route.kind}
+            gameId={route.kind === 'gameLeaderboard' ? route.gameId : undefined}
+            tournamentId={route.kind === 'tournamentDetail' ? route.tournamentId : undefined}
           />
         </Suspense>
       );
@@ -243,6 +254,14 @@ export function AuthScreen({
 
     if (route.kind === 'home') {
       return renderHome(currentUser);
+    }
+
+    if (route.kind === 'gameCatalog') {
+      return (
+        <Suspense fallback={<RouteFallback />}>
+          <CardGamesExplorerScreen catalogScope={route.scope} />
+        </Suspense>
+      );
     }
 
     const gameId = route.kind === 'game'

@@ -1,3 +1,15 @@
+import {
+  PublicRouteKey,
+  PublicRoutePath,
+  PublicRouteSegment,
+  buildPublicGameLeaderboardPath,
+  buildPublicGameLobbyPath,
+  buildPublicGameMatchmakingPath,
+  buildPublicGamePath,
+  buildPublicGamePlayPath,
+  buildPublicTournamentDetailPath,
+} from '@ocentra/endpoint-domain/constants/public-routes';
+
 export const AppScreenToken = {
   Home: 'home',
   Welcome: 'welcome',
@@ -8,16 +20,24 @@ export const AppScreenToken = {
   Social: 'social',
   Competition: 'competition',
   PlayerHub: 'player-hub',
+  Tournaments: 'tournaments',
+  Leaderboard: 'leaderboard',
 } as const;
 
 export type AppScreenToken = (typeof AppScreenToken)[keyof typeof AppScreenToken];
 
 export type AppRouteState =
   | { kind: 'home' }
+  | { kind: 'gameCatalog'; scope: 'all' | 'card-games' }
   | { kind: 'settings' }
   | { kind: 'shop' }
   | { kind: 'social' }
   | { kind: 'competition' }
+  | { kind: 'tournaments' }
+  | { kind: 'tournamentDetail'; tournamentId: string }
+  | { kind: 'leaderboard' }
+  | { kind: 'gameLeaderboard'; gameId: string }
+  | { kind: 'aiBenchmarkLeaderboard' }
   | { kind: 'playerHub' }
   | { kind: 'matchmaking'; gameId?: string }
   | { kind: 'lobby'; gameId?: string }
@@ -25,14 +45,11 @@ export type AppRouteState =
   | { kind: 'template' }
   | { kind: 'legacy'; token: string };
 
-const AppRoutePrefix = {
-  Games: 'games',
-} as const;
-
 export const GameRouteSegment = {
-  Play: 'play',
+  Play: PublicRouteSegment.Play,
   Matchmaking: AppScreenToken.Matchmaking,
   Lobby: AppScreenToken.Lobby,
+  Leaderboard: AppScreenToken.Leaderboard,
 } as const;
 
 function decodeSegment(segment: string): string {
@@ -58,62 +75,95 @@ function normalizePath(pathname: string): string[] {
 }
 
 function getGameContextFromRoute(state: AppRouteState): string | undefined {
-  if (state.kind === 'game' || state.kind === 'matchmaking' || state.kind === 'lobby') {
+  if (
+    state.kind === 'game' ||
+    state.kind === 'gameLeaderboard' ||
+    state.kind === 'matchmaking' ||
+    state.kind === 'lobby'
+  ) {
     return state.gameId;
   }
   return undefined;
 }
 
 export function buildHomePath(): string {
-  return '/';
+  return PublicRoutePath[PublicRouteKey.Home];
 }
 
 export function buildSettingsPath(): string {
-  return '/settings';
+  return PublicRoutePath[PublicRouteKey.Settings];
 }
 
 export function buildShopPath(): string {
-  return '/shop';
+  return PublicRoutePath[PublicRouteKey.Shop];
 }
 
 export function buildSocialPath(): string {
-  return '/social';
+  return PublicRoutePath[PublicRouteKey.Social];
 }
 
 export function buildCompetitionPath(): string {
-  return '/competition';
+  return PublicRoutePath[PublicRouteKey.Competition];
 }
 
 export function buildPlayerHubPath(): string {
-  return '/player-hub';
+  return PublicRoutePath[PublicRouteKey.PlayerHub];
 }
 
 export function buildMatchmakingPath(): string {
-  return '/matchmaking';
+  return PublicRoutePath[PublicRouteKey.Matchmaking];
 }
 
 export function buildLobbyPath(): string {
-  return '/lobby';
+  return PublicRoutePath[PublicRouteKey.Lobby];
+}
+
+export function buildGamesCatalogPath(): string {
+  return PublicRoutePath[PublicRouteKey.GamesCatalog];
+}
+
+export function buildCardGamesCatalogPath(): string {
+  return PublicRoutePath[PublicRouteKey.CardGamesCatalog];
+}
+
+export function buildTournamentsPath(): string {
+  return PublicRoutePath[PublicRouteKey.Tournaments];
+}
+
+export function buildTournamentDetailPath(tournamentId: string): string {
+  return buildPublicTournamentDetailPath(tournamentId);
+}
+
+export function buildLeaderboardPath(): string {
+  return PublicRoutePath[PublicRouteKey.Leaderboard];
+}
+
+export function buildAiBenchmarkLeaderboardPath(): string {
+  return PublicRoutePath[PublicRouteKey.AiBenchmarkLeaderboard];
 }
 
 export function buildGamePath(gameId: string): string {
-  return `/${AppRoutePrefix.Games}/${encodeURIComponent(gameId)}`;
+  return buildPublicGamePath(gameId);
 }
 
 export function buildGameMatchmakingPath(gameId: string): string {
-  return `${buildGamePath(gameId)}/${AppScreenToken.Matchmaking}`;
+  return buildPublicGameMatchmakingPath(gameId);
 }
 
 export function buildGameLobbyPath(gameId: string): string {
-  return `${buildGamePath(gameId)}/${AppScreenToken.Lobby}`;
+  return buildPublicGameLobbyPath(gameId);
+}
+
+export function buildGameLeaderboardPath(gameId: string): string {
+  return buildPublicGameLeaderboardPath(gameId);
 }
 
 export function buildGamePlayPath(gameId: string): string {
-  return `${buildGamePath(gameId)}/${GameRouteSegment.Play}`;
+  return buildPublicGamePlayPath(gameId);
 }
 
 export function buildCardGameTemplatePath(): string {
-  return '/games/cardgame/template';
+  return PublicRoutePath[PublicRouteKey.CardGameTemplate];
 }
 
 export function parseAppRoute(pathname: string): AppRouteState {
@@ -125,9 +175,12 @@ export function parseAppRoute(pathname: string): AppRouteState {
 
   const [first, second, third] = segments;
 
-  if (first === AppRoutePrefix.Games) {
+  if (first === PublicRouteSegment.Games) {
     if (!second) {
-      return { kind: 'home' };
+      return { kind: 'gameCatalog', scope: 'all' };
+    }
+    if (second === PublicRouteSegment.CardGames && !third) {
+      return { kind: 'gameCatalog', scope: 'card-games' };
     }
     if (third === AppScreenToken.Matchmaking) {
       return { kind: 'matchmaking', gameId: second };
@@ -135,10 +188,17 @@ export function parseAppRoute(pathname: string): AppRouteState {
     if (third === AppScreenToken.Lobby) {
       return { kind: 'lobby', gameId: second };
     }
-    if (second === 'cardgame' && third === 'template') {
+    if (third === AppScreenToken.Leaderboard) {
+      return { kind: 'gameLeaderboard', gameId: second };
+    }
+    if (second === PublicRouteSegment.CardGame && third === PublicRouteSegment.Template) {
       return { kind: 'template' };
     }
     return { kind: 'game', gameId: second };
+  }
+
+  if (first === PublicRouteSegment.CardGames) {
+    return { kind: 'gameCatalog', scope: 'card-games' };
   }
 
   if (first === AppScreenToken.Settings) {
@@ -152,6 +212,16 @@ export function parseAppRoute(pathname: string): AppRouteState {
   }
   if (first === AppScreenToken.Competition) {
     return { kind: 'competition' };
+  }
+  if (first === AppScreenToken.Tournaments) {
+    return second
+      ? { kind: 'tournamentDetail', tournamentId: second }
+      : { kind: 'tournaments' };
+  }
+  if (first === AppScreenToken.Leaderboard) {
+    return second === PublicRouteSegment.AiBenchmarks
+      ? { kind: 'aiBenchmarkLeaderboard' }
+      : { kind: 'leaderboard' };
   }
   if (first === AppScreenToken.PlayerHub) {
     return { kind: 'playerHub' };
@@ -186,6 +256,12 @@ export function resolvePathFromScreenToken(screen: string, currentPathname: stri
   }
   if (screen === AppScreenToken.Competition) {
     return buildCompetitionPath();
+  }
+  if (screen === AppScreenToken.Tournaments) {
+    return buildTournamentsPath();
+  }
+  if (screen === AppScreenToken.Leaderboard) {
+    return buildLeaderboardPath();
   }
   if (screen === AppScreenToken.PlayerHub) {
     return buildPlayerHubPath();

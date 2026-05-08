@@ -6,6 +6,7 @@ import { WalletProviderGate } from '@/adapters/solana/wallet/WalletProviderGate'
 import { PlatformInspectorRoute } from '@/ui/platform/PlatformInspectorRoute';
 import MainApp from '@/components/MainApp';
 import { MainPlatformShell } from '@/ui/shell/MainPlatformShell';
+import { PublicRouteKey, PublicRoutePath } from '@ocentra/endpoint-domain/constants/public-routes';
 
 const GameScreenPage = React.lazy(() =>
   import('@/ui/pages/games/CardGamePlay/GameScreenPage').then((m) => ({ default: m.GameScreenPage }))
@@ -97,11 +98,11 @@ export function PlatformAwareRoutes() {
           }
         />
       )}
-      <Route path="/admin/tools" element={<Navigate to={ROUTE_FEATURES[RouteFeature.Admin].path} replace />} />
-      <Route path="/Editor" element={<Navigate to={ROUTE_FEATURES[RouteFeature.Admin].path} replace />} />
+      <Route path={PublicRoutePath[PublicRouteKey.AdminTools]} element={<Navigate to={ROUTE_FEATURES[RouteFeature.Admin].path} replace />} />
+      <Route path={PublicRoutePath[PublicRouteKey.EditorAlias]} element={<Navigate to={ROUTE_FEATURES[RouteFeature.Admin].path} replace />} />
       {isRouteEnabled(RouteFeature.Admin, platform, isDev) && (
         <Route
-          path="/admin/users"
+          path={PublicRoutePath[PublicRouteKey.AdminUsers]}
           element={
             <Suspense fallback={<div>Loading Admin Users...</div>}>
               <AdminUsersPage />
@@ -122,7 +123,7 @@ export function PlatformAwareRoutes() {
       {isDev && (
         <>
           <Route
-            path="/games/cardgame/template"
+            path={PublicRoutePath[PublicRouteKey.CardGameTemplate]}
             element={
               <Suspense fallback={<div>Loading card game template...</div>}>
                 <CardGameTemplateScreen />

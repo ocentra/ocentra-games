@@ -1,3 +1,5 @@
+import { PublicRouteKey, PublicRoutePath } from '@ocentra/endpoint-domain/constants/public-routes';
+
 export const PlatformShell = {
   Web: 'web',
   Desktop: 'desktop',
@@ -47,17 +49,17 @@ export const ROUTE_FEATURES: Record<RouteFeature, RouteFeatureConfig> = {
     platforms: [PlatformShell.Web, PlatformShell.Desktop],
   },
   [RouteFeature.Admin]: {
-    path: '/admin',
+    path: PublicRoutePath[PublicRouteKey.Admin],
     devOnly: false,
     platforms: [PlatformShell.Web, PlatformShell.Desktop, PlatformShell.Mobile],
   },
   [RouteFeature.CardGamesExplorer]: {
-    path: '/CardGamesExplorer',
+    path: PublicRoutePath[PublicRouteKey.LegacyCardGamesExplorer],
     devOnly: false,
     platforms: [PlatformShell.Web, PlatformShell.Desktop, PlatformShell.Mobile],
   },
   [RouteFeature.GamePlay]: {
-    path: '/games/:gameId/play',
+    path: PublicRoutePath[PublicRouteKey.GamePlay],
     devOnly: false,
     platforms: [PlatformShell.Web, PlatformShell.Desktop, PlatformShell.Mobile],
   },
