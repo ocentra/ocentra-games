@@ -3,13 +3,16 @@ import {
   PublicRoutePath,
   PublicRoutePrivacy,
   PublicRouteSegment,
+  buildPublicCategoryPath,
   buildPublicGameLeaderboardPath,
   buildPublicGameLobbyPath,
   buildPublicGameMatchmakingPath,
   buildPublicGamePath,
   buildPublicGamePlayPath,
+  buildPublicRulesPath,
   buildPublicTournamentDetailPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
+import { findAuthoredSlugForCatalogSlug } from './generated/catalogSeoReplacements';
 
 export const DEFAULT_SEO_SITE_ORIGIN = 'https://ocentra.games';
 
@@ -25,6 +28,12 @@ export interface SeoGameEntry {
   name: string;
   description: string;
   genre: string;
+}
+
+export interface SeoCategoryEntry {
+  slug: string;
+  name: string;
+  description: string;
 }
 
 export interface RouteSeoMetadata {
@@ -86,6 +95,59 @@ export const seoGameCatalog: readonly SeoGameEntry[] = [
     genre: 'Betting card game',
   },
 ] as const satisfies readonly SeoGameEntry[];
+
+export const seoCategoryCatalog: readonly SeoCategoryEntry[] = [
+  {
+    slug: 'trick-taking-card-games',
+    name: 'Trick-taking Card Games',
+    description: 'Browse trick-taking card games in the Ocentra catalog, including researched rules, decks, history, and migration status for future playable implementations.',
+  },
+  {
+    slug: 'poker-card-games',
+    name: 'Poker Card Games',
+    description: 'Browse poker and community-card games in the Ocentra catalog, from researched guide records to authored playable pilots.',
+  },
+  {
+    slug: 'rummy-card-games',
+    name: 'Rummy Card Games',
+    description: 'Browse rummy card games in the Ocentra catalog, including rules, sets, melding systems, deck notes, and researched variations.',
+  },
+  {
+    slug: 'domino-card-games',
+    name: 'Domino Games',
+    description: 'Browse domino and domino-style games in the Ocentra catalog, including researched rules, equipment notes, and category groupings.',
+  },
+  {
+    slug: 'shedding-card-games',
+    name: 'Shedding Card Games',
+    description: 'Browse shedding card games in the Ocentra catalog, including objective summaries, hand-emptying mechanics, and variation notes.',
+  },
+  {
+    slug: 'fishing-card-games',
+    name: 'Fishing Card Games',
+    description: 'Browse fishing card games in the Ocentra catalog, including capture rules, deck systems, regional history, and researched guide records.',
+  },
+  {
+    slug: 'matching-card-games',
+    name: 'Matching Card Games',
+    description: 'Browse matching card games in the Ocentra catalog, including pairing rules, deck notes, and researched variation summaries.',
+  },
+  {
+    slug: 'vying-card-games',
+    name: 'Vying Card Games',
+    description: 'Browse vying and betting card games in the Ocentra catalog, including bluffing rules, hand comparison systems, and history notes.',
+  },
+  {
+    slug: 'patience-card-games',
+    name: 'Patience Card Games',
+    description: 'Browse patience and solitaire card games in the Ocentra catalog, including layout rules, deck setup, and progression notes.',
+  },
+  {
+    slug: 'banking-card-games',
+    name: 'Banking Card Games',
+    description: 'Browse banking card games in the Ocentra catalog, including banker roles, payoff rules, deck systems, and researched history.',
+  },
+] as const satisfies readonly SeoCategoryEntry[];
 
 const staticPageMetadata = {
   [PublicRoutePath[PublicRouteKey.Home]]: {
@@ -252,7 +314,8 @@ function robotsForPrivacy(privacy: PublicRoutePrivacy): SeoRobots {
 }
 
 function cleanGameId(gameId: string): string {
-  return decodePathSegment(gameId).split(':')[0] || gameId;
+  const decoded = decodePathSegment(gameId).split(':')[0] || gameId;
+  return findAuthoredSlugForCatalogSlug(decoded) ?? decoded;
 }
 
 function titleCaseGameId(gameId: string): string {
@@ -270,6 +333,23 @@ function findGame(gameId: string): SeoGameEntry {
     name: titleCaseGameId(normalized),
     description: `${titleCaseGameId(normalized)} game page on Ocentra Games.`,
     genre: 'Game',
+  };
+}
+
+function titleCaseCategoryId(categoryId: string): string {
+  const base = categoryId.replace(/-card-games$/, '');
+  return base
+    .split('-')
+    .filter(Boolean)
+    .map(part => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+    .join(' ');
+}
+
+function findCategory(categoryId: string): SeoCategoryEntry {
+  return seoCategoryCatalog.find(category => category.slug === categoryId) ?? {
+    slug: categoryId,
+    name: `${titleCaseCategoryId(categoryId)} Card Games`,
+    description: `Browse ${titleCaseCategoryId(categoryId).toLowerCase()} card games in the Ocentra catalog, including researched rules, history, decks, and authoring status.`,
   };
 }
 
@@ -323,6 +403,32 @@ function structuredLeaderboard(siteOrigin: string, pathName: string, name: strin
     '@type': 'CollectionPage',
     name,
     url: absoluteUrl(siteOrigin, pathName),
+  };
+}
+
+function structuredCategory(siteOrigin: string, category: SeoCategoryEntry): SeoStructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: category.name,
+    description: category.description,
+    url: absoluteUrl(siteOrigin, buildPublicCategoryPath(category.slug)),
+  };
+}
+
+function structuredRules(siteOrigin: string, game: SeoGameEntry): SeoStructuredData {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${game.name} Rules`,
+    description: game.description,
+    url: absoluteUrl(siteOrigin, buildPublicRulesPath(game.gameId)),
+    about: {
+      '@type': 'Game',
+      name: game.name,
+      genre: game.genre,
+      url: absoluteUrl(siteOrigin, buildPublicGamePath(game.gameId)),
+    },
   };
 }
 
@@ -443,6 +549,32 @@ export function resolveSeoMetadata(pathname: string, siteOriginInput?: string): 
     });
   }
 
+  if (first === PublicRouteSegment.Categories && second) {
+    const category = findCategory(second);
+    return completeMetadata(siteOrigin, {
+      routeKey: PublicRouteKey.Category,
+      title: `${category.name} | Ocentra Games`,
+      description: category.description,
+      canonicalPath: buildPublicCategoryPath(category.slug),
+      privacy: PublicRoutePrivacy.Indexable,
+      pageLayoutAssetPath: pageLayoutAssetPath.gameCatalog,
+      structuredData: [structuredCategory(siteOrigin, category)],
+    });
+  }
+
+  if (first === PublicRouteSegment.Rules && second) {
+    const game = findGame(second);
+    return completeMetadata(siteOrigin, {
+      routeKey: PublicRouteKey.Rules,
+      title: `${game.name} Rules | Ocentra Games`,
+      description: `Learn ${game.name} rules, play status, related game links, and Ocentra gameplay context for this card game.`,
+      canonicalPath: buildPublicRulesPath(game.gameId),
+      privacy: PublicRoutePrivacy.Indexable,
+      pageLayoutAssetPath: pageLayoutAssetPath.selectedGame,
+      structuredData: [structuredRules(siteOrigin, game)],
+    });
+  }
+
   if (first === PublicRouteSegment.Tournaments && second) {
     const tournamentId = decodePathSegment(second);
     const title = `${titleCaseGameId(tournamentId)} Tournament`;
@@ -503,7 +635,13 @@ export function getSitemapEntries(): SitemapEntry[] {
   ];
   const gameEntries = seoGameCatalog.flatMap(game => [
     { path: buildPublicGamePath(game.gameId), priority: '0.8', changefreq: 'weekly' },
+    { path: buildPublicRulesPath(game.gameId), priority: '0.8', changefreq: 'weekly' },
     { path: buildPublicGameLeaderboardPath(game.gameId), priority: '0.7', changefreq: 'daily' },
   ]);
-  return [...staticEntries, ...gameEntries];
+  const categoryEntries = seoCategoryCatalog.map(category => ({
+    path: buildPublicCategoryPath(category.slug),
+    priority: '0.7',
+    changefreq: 'weekly',
+  }));
+  return [...staticEntries, ...gameEntries, ...categoryEntries];
 }

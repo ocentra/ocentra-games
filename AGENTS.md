@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-07
+**Last Updated:** 2026-05-08
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -16,6 +16,7 @@ Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor
 | **@ocentra/endpoint-domain** | API paths, HTTP methods/headers, query params, route keys | `@ocentra/endpoint-domain/constants/cloudflare` (or specific file) | Use raw paths like `'/api/v1/...'`, raw `'GET'`, `'Authorization'` |
 | **@ocentra/logging-domain** | Logger API, log levels, structured logging | Per package README / `@ocentra/logging-domain` | Use `console.log` or ad‑hoc log formats |
 | **@ocentra/ai-domain** | AI provider types, model IDs, pipeline keys, prompts | `@ocentra/ai-domain` (specific modules) | Hardcode provider names, model IDs, or prompt keys in app |
+| **@ocentra/seo-domain** | SEO audit helpers, raw HTML/body verification, sitemap/robots/internal-link audit logic | `@ocentra/seo-domain` | Rebuild ad-hoc SEO crawlers or metadata audit helpers in app/scripts |
 | **@ocentra/storage-domain** | Cache/IndexedDB config, validation constants | `@ocentra/storage-domain` | Duplicate storage config or validation rules in app |
 | **@ocentra/asset-domain** | Asset types, resource entry, serialization | `@ocentra/asset-domain` | Use asset type strings or serialization logic from `src/` only |
 | **@ocentra/network-domain** | P2P types, WebRTCHandler, P2PManager, useP2PNetworking, router-types | `@ocentra/network-domain/types`, `@ocentra/network-domain/router-types` | Duplicate P2P or router types in app |
@@ -66,6 +67,11 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 
 ### Responsive Layout
 - Avoid `px` for layout (width, height, padding, margin, gap). Use tokens (`var(--space-*)`, `var(--control-h-*)`, `var(--radius-*)`), `rem`, `clamp()`, `dvh`. Keep `px` for borders, shadows, hairline details. See [responsive-scaling-plan.md](docs/ocentra/plans/responsive-scaling-plan.md).
+
+### Route SEO
+- Route SEO now has a shared audit package at `packages/seo-domain`; use it instead of ad-hoc crawlers when checking metadata, sitemap, robots, canonicals, raw HTML fallback bodies, or internal-link coverage.
+- `npm run generate:catalog-seo` refreshes `src/seo/generated/catalogSeoData.ts` from `packages/asset-editor/Resources/catalog/*`; the main `npm run build` path already runs this before Vite.
+- After route/head SEO changes, prefer `npm run seo:audit` against a local app server (defaults to `http://127.0.0.1:3000`; override with `-- --base=http://127.0.0.1:4174` or `SEO_AUDIT_BASE_URL`) so served HTML, sitemap, robots, and fallback text are checked together.
 
 ### Dev: shared backend and separate Tauri apps
 - **Shared dev backend:** One Cloudflare worker (port 8787); main app or editor can start it; the other reuses it. Same for Turbo (skip if recently run).
@@ -125,6 +131,7 @@ packages/       # Domain packages — USE THESE for shared boundaries
   endpoint-domain/  # API paths, HTTP, route keys
   logging-domain/   # Logging API
   ai-domain/        # AI providers, models, prompts
+  seo-domain/       # SEO audit helpers and HTML/metadata validation
   storage-domain/   # Cache/IndexedDB config
   asset-domain/     # Asset types, resource entry
   network-domain/   # P2P types, WebRTCHandler, P2PManager, useP2PNetworking, router-types
@@ -214,6 +221,8 @@ npm --prefix packages/asset-editor run dev # Interactive asset-editor launcher (
 npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
 npm run dev:seed:assets:force # Force re-upload during local asset seeding
+npm run generate:catalog-seo # Rebuild generated catalog SEO data from asset-editor catalog resources
+npm run seo:audit       # Crawl a local app server and verify SEO metadata, robots, sitemap, canonicals, and fallback bodies
 npm run build            # Production build
 npm test                 # Unit tests
 npm run test:editor      # Asset-editor package tests

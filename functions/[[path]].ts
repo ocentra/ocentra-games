@@ -3,8 +3,9 @@ import {
   createSitemapXml,
   injectSeoIntoHtml,
   isHtmlRouteRequest,
+  resolveServerSeoMetadata,
 } from '../src/seo/seoServer';
-import { DEFAULT_SEO_SITE_ORIGIN, resolveSeoMetadata } from '../src/seo/publicSeo';
+import { DEFAULT_SEO_SITE_ORIGIN } from '../src/seo/publicSeo';
 
 interface PagesAssetsBinding {
   fetch(request: Request): Promise<Response>;
@@ -56,6 +57,6 @@ export const onRequest = async ({ request, env }: { request: Request; env: Pages
     return env.ASSETS.fetch(request);
   }
 
-  const metadata = resolveSeoMetadata(url.pathname, origin);
+  const metadata = resolveServerSeoMetadata(url.pathname, origin);
   return withHeaders(injectSeoIntoHtml(await fetchIndexHtml(request, env), metadata), 'text/html; charset=utf-8');
 };

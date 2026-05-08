@@ -7,8 +7,9 @@ import {
   createSitemapXml,
   injectSeoIntoHtml,
   isHtmlRouteRequest,
+  resolveServerSeoMetadata,
 } from '../../src/seo/seoServer';
-import { DEFAULT_SEO_SITE_ORIGIN, resolveSeoMetadata } from '../../src/seo/publicSeo';
+import { DEFAULT_SEO_SITE_ORIGIN } from '../../src/seo/publicSeo';
 
 interface SeoRoutesPluginOptions {
   rootDir: string;
@@ -62,7 +63,7 @@ async function handleDevHtmlRoute(
     return false;
   }
   const transformed = await server.transformIndexHtml(pathname, await readIndexHtml(indexHtmlPath));
-  sendText(response, injectSeoIntoHtml(transformed, resolveSeoMetadata(pathname, siteOrigin)), 'text/html; charset=utf-8');
+  sendText(response, injectSeoIntoHtml(transformed, resolveServerSeoMetadata(pathname, siteOrigin)), 'text/html; charset=utf-8');
   return true;
 }
 
@@ -76,7 +77,7 @@ async function handlePreviewHtmlRoute(
   if (!isHtmlRouteRequest(pathname, request.headers.accept)) {
     return false;
   }
-  sendText(response, injectSeoIntoHtml(await readIndexHtml(indexHtmlPath), resolveSeoMetadata(pathname, siteOrigin)), 'text/html; charset=utf-8');
+  sendText(response, injectSeoIntoHtml(await readIndexHtml(indexHtmlPath), resolveServerSeoMetadata(pathname, siteOrigin)), 'text/html; charset=utf-8');
   return true;
 }
 
@@ -125,7 +126,7 @@ export function seoRoutesPlugin(options: SeoRoutesPluginOptions): PluginOption {
       });
     },
     transformIndexHtml(html) {
-      return injectSeoIntoHtml(html, resolveSeoMetadata('/', siteOrigin));
+      return injectSeoIntoHtml(html, resolveServerSeoMetadata('/', siteOrigin));
     },
   };
 }

@@ -22,10 +22,33 @@ describe('public SEO metadata', () => {
     expect(metadata.robots).toBe('index,follow');
   });
 
+  it('canonicalizes replaced catalog game slugs to authored game slugs', () => {
+    const gameMetadata = resolveSeoMetadata('/games/brag-3-card', siteOrigin);
+    const rulesMetadata = resolveSeoMetadata('/rules/brag-3-card', siteOrigin);
+    expect(gameMetadata.title).toBe('Three Card Brag | Ocentra Games');
+    expect(gameMetadata.canonicalPath).toBe('/games/three-card-brag');
+    expect(rulesMetadata.title).toBe('Three Card Brag Rules | Ocentra Games');
+    expect(rulesMetadata.canonicalPath).toBe('/rules/three-card-brag');
+  });
+
   it('marks private and dev routes noindex', () => {
     expect(resolveSeoMetadata('/settings', siteOrigin).robots).toBe('noindex,nofollow');
     expect(resolveSeoMetadata('/games/claim/play', siteOrigin).robots).toBe('noindex,nofollow');
     expect(resolveSeoMetadata('/games/cardgame/template', siteOrigin).robots).toBe('noindex,nofollow');
+  });
+
+  it('indexes card game category routes', () => {
+    const metadata = resolveSeoMetadata('/categories/trick-taking-card-games', siteOrigin);
+    expect(metadata.title).toBe('Trick-taking Card Games | Ocentra Games');
+    expect(metadata.canonicalPath).toBe('/categories/trick-taking-card-games');
+    expect(metadata.robots).toBe('index,follow');
+  });
+
+  it('indexes card game rules routes', () => {
+    const metadata = resolveSeoMetadata('/rules/three-card-brag', siteOrigin);
+    expect(metadata.title).toBe('Three Card Brag Rules | Ocentra Games');
+    expect(metadata.canonicalPath).toBe('/rules/three-card-brag');
+    expect(metadata.robots).toBe('index,follow');
   });
 
   it('keeps private and alias routes out of the sitemap source', () => {
@@ -33,7 +56,9 @@ describe('public SEO metadata', () => {
     expect(paths).toContain('/');
     expect(paths).toContain('/games');
     expect(paths).toContain('/games/card-games');
+    expect(paths).toContain('/categories/trick-taking-card-games');
     expect(paths).toContain('/games/claim');
+    expect(paths).toContain('/rules/claim');
     expect(paths).toContain('/games/claim/leaderboard');
     expect(paths).not.toContain('/CardGamesExplorer');
     expect(paths).not.toContain('/settings');

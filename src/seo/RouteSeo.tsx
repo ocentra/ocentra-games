@@ -56,11 +56,31 @@ function applyRouteSeo(metadata: RouteSeoMetadata): void {
   upsertStructuredData(metadata);
 }
 
+function shouldPreserveServerGameSeo(metadata: RouteSeoMetadata): boolean {
+  if (metadata.routeKey !== 'game' || !metadata.description.endsWith(' game page on Ocentra Games.')) {
+    return false;
+  }
+  const existingCanonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"][data-ocentra-seo]');
+  return existingCanonical?.href === metadata.canonicalUrl && document.title !== metadata.title;
+}
+
+function shouldPreserveServerRulesSeo(metadata: RouteSeoMetadata): boolean {
+  if (metadata.routeKey !== 'rules' || !metadata.description.endsWith(' rules page on Ocentra Games.')) {
+    return false;
+  }
+  const existingCanonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"][data-ocentra-seo]');
+  return existingCanonical?.href === metadata.canonicalUrl && document.title !== metadata.title;
+}
+
 export function RouteSeo() {
   const location = useLocation();
 
   useEffect(() => {
-    applyRouteSeo(resolveSeoMetadata(location.pathname, getClientSiteOrigin()));
+    const metadata = resolveSeoMetadata(location.pathname, getClientSiteOrigin());
+    if (shouldPreserveServerGameSeo(metadata) || shouldPreserveServerRulesSeo(metadata)) {
+      return;
+    }
+    applyRouteSeo(metadata);
   }, [location.pathname]);
 
   return null;

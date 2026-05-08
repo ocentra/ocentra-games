@@ -1,0 +1,47 @@
+{
+  "name": "@ocentra/seo-domain",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SEO audit domain for route metadata, raw HTML fallbacks, sitemap, robots, and internal-link validation.",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./audit": {
+      "import": "./dist/audit.js",
+      "types": "./dist/audit.d.ts"
+    },
+    "./format": {
+      "import": "./dist/format.js",
+      "types": "./dist/format.d.ts"
+    },
+    "./html": {
+      "import": "./dist/html.js",
+      "types": "./dist/html.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "types": "./dist/types.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && tsc-alias && node ../../scripts/fix-esm-imports.mjs",
+    "type-check": "tsc --noEmit",
+    "lint": "node -e \"const cmd = process.env.TURBO_HASH ? 'npm run lint:exec' : 'npx turbo run lint:exec --filter=@ocentra/seo-domain'; require('child_process').spawnSync(cmd.split(' ')[0], cmd.split(' ').slice(1), { stdio: 'inherit', shell: true });\"",
+    "lint:exec": "eslint --cache src && tsc --noEmit",
+    "lint:eslint": "eslint --cache src",
+    "lint:fix": "eslint --cache src --fix"
+  },
+  "dependencies": {
+    "node-html-parser": "^5.4.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "eslint": "^9.36.0",
+    "globals": "^16.4.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0"
+  }
+}
