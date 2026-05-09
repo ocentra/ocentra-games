@@ -1138,17 +1138,6 @@ function GoalStripCarousel({ x, y, w, h, config, cards, selectedChunkId, onSelec
     const nextStart = visible.length ? visible[visible.length - 1] + 1 : prev + 2;
     return Math.min(cardCount - 1, nextStart);
   });
-  useEffect(() => {
-    if (cardCount <= visibleIndexes.length) return undefined;
-    const intervalId = window.setInterval(() => {
-      setWindowStart((prev) => {
-        const visible = getVisibleIndexes(prev);
-        const nextStart = visible.length ? visible[visible.length - 1] + 1 : prev + 1;
-        return nextStart >= cardCount ? 0 : nextStart;
-      });
-    }, 5200);
-    return () => window.clearInterval(intervalId);
-  }, [cardCount, getVisibleIndexes, visibleIndexes.length]);
   const totalPillW = cards.reduce((sum, _, i) => sum + (i === selectedIndex ? c.footerActivePillW : c.footerPillW), 0) + Math.max(0, cards.length - 1) * c.footerPillGap;
   const pillRows = cards.reduce<Array<{ active: boolean; card: GoalCardInfo; currentX: number; width: number }>>((rows, card, i) => {
     const active = i === selectedIndex;
@@ -1577,14 +1566,15 @@ export function SelectedGameShowcase({
   const defaultVh = cfg.canvas.vh;
   const measuredAspect = containerSize.width > 0 && containerSize.height > 0 ? containerSize.width / containerSize.height : vw / defaultVh;
   const fittedVh = Math.round(vw / clampNumber(measuredAspect, 0.52, 2.4));
-  const minimumProductionPageH = cfg.page.height;
+  const authoredPageH = cfg.page.height;
+  const minimumProductionPageH = Math.min(authoredPageH, Math.max(900, authoredPageH * 0.92));
   const minimumProductionVh = cfg.page.y + minimumProductionPageH + cfg.button.edgeOffsetY + cfg.button.height / 2 + 8;
   const vh = showInternalDesignerControls ? defaultVh : clampNumber(fittedVh, minimumProductionVh, defaultVh * 1.55);
   const pageX = cfg.page.x;
   const pageY = cfg.page.y;
   const pageW = cfg.page.width;
   const pageH = showInternalDesignerControls
-    ? cfg.page.height
+    ? authoredPageH
     : Math.max(minimumProductionPageH, vh - pageY - cfg.button.edgeOffsetY - cfg.button.height / 2 - 8);
   const tabW = cfg.tabGroup.tabW;
   const tabH = cfg.tabGroup.tabH;

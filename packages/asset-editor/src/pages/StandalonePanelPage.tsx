@@ -11,6 +11,8 @@ import {
   createPanelWindow,
 } from '@/utils/createPanelWindow';
 import type { AssetData } from '@/types/assets';
+import type { ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
+import { isImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import {
   buildLoadedLayoutAssetFromRaw,
   loadLayoutPlayerRange,
@@ -29,6 +31,8 @@ import { CardGameDesignStudio } from '@ocentra/card-game-ui/CardGameDesignStudio
 import { CardGameTemplatePage, type CardGameTemplatePageProps } from '@ocentra/card-game-ui/CardGameTemplatePage';
 import { HudButtonEditorModal } from '@ocentra/card-game-ui/HudButtonEditorModal';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
+import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
+import { uploadEditorImageFile } from '@/utils/uploadEditorImageFile';
 import { LayoutClasses } from '@ocentra/core-ui/constants/layout';
 import type {
   CardGameEditorOverlayVisibility,
@@ -2124,6 +2128,17 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
     aboutPreviewLayoutMode === comingSoonPreviewLayoutMode
       ? aboutPreviewLayoutMode
       : 'auto';
+  const aboutImageData = useMemo(() => ({
+    featureBannerItems: aboutControls.items ?? [],
+  }), [aboutControls.items]);
+  const { resolveImageUrl: resolveAboutImageUrl } = useResolveImageUrl(aboutImageData);
+  const resolveAboutBannerImageUrl = useCallback((hash: string) => {
+    if (!isImageHash(hash)) {
+      return null;
+    }
+    return resolveAboutImageUrl(hash as ImageHash);
+  }, [resolveAboutImageUrl]);
+  const handleAboutBannerImageUpload = useCallback(async (file: File) => uploadEditorImageFile(file), []);
   const responsiveVariant = homepagePreviewLayoutMode === 'narrow' ? 'narrow' : 'wide';
   const previewModes: { id: HomeShowcasePreviewLayoutMode; label: string }[] = [
     { id: 'auto', label: 'Auto' },
@@ -2214,6 +2229,8 @@ const StandaloneHomepageLayoutControls: React.FC = () => {
             onControlsChange={updateAboutControls}
             previewLayoutMode={aboutPreviewLayoutMode}
             responsiveVariant={responsiveVariant}
+            resolveImageUrl={resolveAboutBannerImageUrl}
+            onImageUpload={handleAboutBannerImageUpload}
             showActions={false}
           />
         ) : null}

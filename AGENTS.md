@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-08
+**Last Updated:** 2026-05-09
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -239,6 +239,7 @@ npm run logs:vite        # Query local Vite/dev-server logs
 npm run logs:vite:errors # Query local Vite/dev-server errors
 npm run logs:query       # Flexible local log queries (recent/errors/stats/search)
 npm run logs:db:rebuild  # Rebuild local log DuckDB from NDJSON files
+npm run generate:icons   # Rebuild Android launcher icons from packages/app-assets/src/images/mobile-icons
 ```
 
 ---
@@ -278,6 +279,8 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 - **Card-game asset work needs validation without dragging the whole repo first**: Start with the package-level tests that match the asset contract you changed, then run the root gate. Current proven path: `cmd /c npm --prefix packages/asset-editor run test -- src/adapters/assets/createGameModeBundle.test.ts`, `cmd /c npm --prefix packages/game-asset-domain run test -- src/game/gameMechanics/MechanicsTranslator.test.ts src/schemas/asset/card-game-mechanics-data.schema.test.ts`, then `cmd /c npm run lint`.
 
 - **`logs:main` / `logs:vite` says the DB is missing or stale**: Rebuild from NDJSON first with `npm run logs:db:rebuild -- --scope main`, `npm run logs:db:rebuild -- --scope vite`, or `npm run logs:db:rebuild -- --scope all`, then retry the query. For ad hoc filtering, use `npm run logs:query -- search "<term>" --scope main --format json`.
+
+- **Android launcher icon updates do not show up**: The icon generator now reads from `packages/app-assets/src/images/mobile-icons`, with the shared logo SVG in `packages/app-assets/src/images/commons/OcentraLogo.svg` as the source for regenerated icon art. After changing those assets, rerun `npm run generate:icons`.
 
 - **`yarn` is not recognized** or **`@stellar/stellar-sdk` command failed**: A transitive dependency (Stellar SDK, via Trezor wallet adapter) runs a lifecycle script that expects Yarn and Unix shell. Use:
   ```bash

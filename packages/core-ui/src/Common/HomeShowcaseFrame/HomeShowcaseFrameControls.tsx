@@ -21,8 +21,12 @@ type HomeShowcaseFrameControlsProps = {
   previewLayoutMode?: HomeShowcasePreviewLayoutMode;
   onPreviewLayoutModeChange?: (mode: HomeShowcasePreviewLayoutMode) => void;
   responsiveVariant?: HomeShowcaseControlVariant;
+  resolveImageUrl?: (hash: string) => string | null | undefined;
+  onImageUpload?: (file: File) => Promise<string | null | undefined>;
   showActions?: boolean;
 };
+
+type HomeShowcaseCopySubtab = 'textStyle' | 'bannerCopy';
 
 type NumberFieldConfig = {
   group: HomeShowcaseFrameNumberControlGroup;
@@ -89,6 +93,12 @@ const tabRowStyle: React.CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
   gap: '0.5rem',
+  marginBottom: '0.75rem',
+};
+
+const secondaryTabRowStyle: React.CSSProperties = {
+  ...tabRowStyle,
+  gap: '0.4rem',
   marginBottom: '0.75rem',
 };
 
@@ -159,14 +169,114 @@ const inputStyle: React.CSSProperties = {
   paddingInline: '0.45rem',
 };
 
-const textareaStyle: React.CSSProperties = {
-  ...inputStyle,
-  height: '12rem',
-  paddingBlock: '0.5rem',
-  resize: 'vertical',
-  fontFamily: 'Consolas, monospace',
+const compactFieldStyle: React.CSSProperties = {
+  ...fieldStyle,
+  gap: '0.32rem',
+  padding: '0.42rem',
+};
+
+const itemCardStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(7.5rem, 9rem) minmax(11rem, 0.42fr) minmax(18rem, 1fr) max-content',
+  alignItems: 'start',
+  gap: '0.55rem',
+  border: '1px solid rgba(103, 232, 249, 0.18)',
+  borderRadius: '0.65rem',
+  background: 'rgba(8, 13, 31, 0.72)',
+  padding: '0.55rem',
+  minWidth: 0,
+};
+
+const itemPreviewStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateRows: 'auto minmax(4.25rem, 5rem)',
+  gap: '0.35rem',
+  minWidth: 0,
+};
+
+const itemImageStyle: React.CSSProperties = {
+  width: '100%',
+  aspectRatio: '16 / 10',
+  objectFit: 'cover',
+  borderRadius: '0.5rem',
+  border: '1px solid rgba(103, 232, 249, 0.28)',
+  background: 'rgba(15, 23, 42, 0.86)',
+};
+
+const itemImageFallbackStyle: React.CSSProperties = {
+  ...itemImageStyle,
+  display: 'grid',
+  placeItems: 'center',
+  color: 'rgba(207, 250, 254, 0.56)',
   fontSize: '0.72rem',
-  lineHeight: 1.4,
+  fontWeight: 800,
+  textTransform: 'uppercase',
+  letterSpacing: 0,
+};
+
+const hiddenFileInputStyle: React.CSSProperties = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  opacity: 0,
+  pointerEvents: 'none',
+};
+
+const itemHeaderStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '0.5rem',
+  flexWrap: 'wrap',
+};
+
+const itemActionsStyle: React.CSSProperties = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: '0.35rem',
+};
+
+const itemActionColumnStyle: React.CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, minmax(4.35rem, 1fr))',
+  alignContent: 'start',
+  justifyItems: 'stretch',
+  gap: '0.35rem',
+  minWidth: '9.1rem',
+};
+
+const compactButtonStyle: React.CSSProperties = {
+  border: '1px solid rgba(103, 232, 249, 0.32)',
+  borderRadius: '0.45rem',
+  background: 'rgba(8, 47, 73, 0.58)',
+  color: '#cffafe',
+  padding: '0.32rem 0.5rem',
+  fontSize: '0.7rem',
+  fontWeight: 800,
+  cursor: 'pointer',
+};
+
+const itemImageButtonStyle: React.CSSProperties = {
+  ...compactButtonStyle,
+  position: 'relative',
+  display: 'grid',
+  placeItems: 'center',
+  minHeight: '4.25rem',
+  padding: '0.35rem',
+  overflow: 'hidden',
+};
+
+const itemImageActionTextStyle: React.CSSProperties = {
+  position: 'absolute',
+  insetInline: '0.35rem',
+  bottom: '0.35rem',
+  borderRadius: '0.35rem',
+  background: 'rgba(2, 6, 23, 0.72)',
+  color: '#cffafe',
+  fontSize: '0.66rem',
+  fontWeight: 900,
+  padding: '0.18rem 0.28rem',
+  textAlign: 'center',
 };
 
 const buttonStyle: React.CSSProperties = {
@@ -348,29 +458,20 @@ function colorWithAlpha(value: string, alpha: number): string {
     : `rgba(${r}, ${g}, ${b}, ${Number(nextAlpha.toFixed(2))})`;
 }
 
-function parseFeatureBannerItemsDraft(value: string): FeatureBannerItem[] {
-  const parsed = JSON.parse(value) as unknown;
-  if (!Array.isArray(parsed)) {
-    throw new Error('Slots must be a JSON array.');
-  }
-
-  return parsed.map((item, index) => {
-    if (typeof item !== 'object' || item === null) {
-      throw new Error(`Slot ${index + 1} must be an object.`);
-    }
-    const record = item as Record<string, unknown>;
-    const title = typeof record.title === 'string' ? record.title.trim() : '';
-    const description = typeof record.description === 'string' ? record.description.trim() : '';
-    const imageHash = typeof record.imageHash === 'string' ? record.imageHash.trim() : '';
-    if (!title || !description || !imageHash) {
-      throw new Error(`Slot ${index + 1} needs title, description, and imageHash.`);
-    }
-    return { title, description, imageHash };
-  });
+function normalizeBannerItem(item: FeatureBannerItem): FeatureBannerItem {
+  return {
+    title: item.title,
+    description: item.description,
+    imageHash: item.imageHash,
+  };
 }
 
-function stringifyFeatureBannerItems(items?: FeatureBannerItem[]): string {
-  return JSON.stringify(items ?? [], null, 2);
+function createBannerItem(source?: FeatureBannerItem): FeatureBannerItem {
+  return {
+    title: 'New Banner',
+    description: 'Banner sub text',
+    imageHash: source?.imageHash ?? '',
+  };
 }
 
 export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameControlsPanel({
@@ -382,24 +483,20 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
   previewLayoutMode = 'auto',
   onPreviewLayoutModeChange,
   responsiveVariant = 'wide',
+  resolveImageUrl,
+  onImageUpload,
   showActions = true,
 }: HomeShowcaseFrameControlsProps) {
   const [tab, setTab] = useState<HomeShowcaseControlTab>('overall');
+  const [copySubtab, setCopySubtab] = useState<HomeShowcaseCopySubtab>('textStyle');
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
-  const [itemsDraft, setItemsDraft] = useState(() => stringifyFeatureBannerItems(controls.items));
-  const [itemsDraftError, setItemsDraftError] = useState<string | null>(null);
-  const [lastItemsDraftSource, setLastItemsDraftSource] = useState(() => stringifyFeatureBannerItems(controls.items));
 
   useEffect(() => {
-    const nextSource = stringifyFeatureBannerItems(controls.items);
-    if (nextSource !== lastItemsDraftSource) {
-      setItemsDraft(nextSource);
-      setItemsDraftError(null);
-      setLastItemsDraftSource(nextSource);
-    }
-  }, [controls.items, lastItemsDraftSource]);
+    setCopiedValue(null);
+  }, [controls]);
 
   const setNumber = (
     group: HomeShowcaseFrameNumberControlGroup,
@@ -475,25 +572,102 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     setColor(field, DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors[field]);
   };
 
-  const applyItemsDraft = () => {
+  const updateBannerItem = (
+    index: number,
+    patch: Partial<FeatureBannerItem>,
+  ) => {
+    onControlsChange((prev) => {
+      const items = [...(prev.items ?? [])];
+      const existing = items[index] ?? createBannerItem(items[index - 1]);
+      items[index] = normalizeBannerItem({ ...existing, ...patch });
+      return { ...prev, items };
+    });
+  };
+
+  const addBannerItem = () => {
+    onControlsChange((prev) => {
+      const items = [...(prev.items ?? [])];
+      items.push(createBannerItem(items.at(-1)));
+      return { ...prev, items };
+    });
+  };
+
+  const duplicateBannerItem = (index: number) => {
+    onControlsChange((prev) => {
+      const items = [...(prev.items ?? [])];
+      const source = items[index] ?? createBannerItem(items.at(-1));
+      items.splice(index + 1, 0, {
+        ...normalizeBannerItem(source),
+        title: `${source.title || 'Banner'} Copy`,
+      });
+      return { ...prev, items };
+    });
+  };
+
+  const removeBannerItem = (index: number) => {
+    onControlsChange((prev) => {
+      const items = [...(prev.items ?? [])];
+      items.splice(index, 1);
+      return { ...prev, items: items.length > 0 ? items : undefined };
+    });
+  };
+
+  const moveBannerItem = (index: number, direction: -1 | 1) => {
+    onControlsChange((prev) => {
+      const items = [...(prev.items ?? [])];
+      const nextIndex = index + direction;
+      if (nextIndex < 0 || nextIndex >= items.length) {
+        return prev;
+      }
+      const current = items[index];
+      items[index] = items[nextIndex];
+      items[nextIndex] = current;
+      return { ...prev, items };
+    });
+  };
+
+  const clearBannerItems = () => {
+    onControlsChange((prev) => ({ ...prev, items: undefined }));
+  };
+
+  const uploadBannerImage = async (index: number, file: File | null | undefined) => {
+    if (!file || !onImageUpload) {
+      return;
+    }
+    if (file.type && !file.type.startsWith('image/')) {
+      setSaveStatus('Select an image file.');
+      return;
+    }
+    setUploadingImageIndex(index);
+    setSaveStatus(null);
     try {
-      const items = parseFeatureBannerItemsDraft(itemsDraft);
-      const nextSource = stringifyFeatureBannerItems(items);
-      onControlsChange((prev) => ({ ...prev, items }));
-      setItemsDraft(nextSource);
-      setLastItemsDraftSource(nextSource);
-      setItemsDraftError(null);
+      const imageHash = await onImageUpload(file);
+      if (imageHash) {
+        updateBannerItem(index, { imageHash });
+        setSaveStatus('Image updated.');
+      }
     } catch (error) {
-      setItemsDraftError(error instanceof Error ? error.message : 'Invalid slots JSON.');
+      setSaveStatus(error instanceof Error ? error.message : 'Image upload failed.');
+    } finally {
+      setUploadingImageIndex(null);
     }
   };
 
-  const clearItemsDraft = () => {
-    const nextSource = stringifyFeatureBannerItems(undefined);
-    onControlsChange((prev) => ({ ...prev, items: undefined }));
-    setItemsDraft(nextSource);
-    setLastItemsDraftSource(nextSource);
-    setItemsDraftError(null);
+  const handleBannerImageDrop = (event: React.DragEvent, index: number) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      void uploadBannerImage(index, file);
+      return;
+    }
+    const droppedImageHash =
+      event.dataTransfer.getData('text/asset-hash') ||
+      event.dataTransfer.getData('text/asset-guid') ||
+      event.dataTransfer.getData('text/plain');
+    if (droppedImageHash) {
+      updateBannerItem(index, { imageHash: droppedImageHash });
+      setSaveStatus('Image updated.');
+    }
   };
 
   const getSerializedControls = (): HomeShowcaseFrameControls =>
@@ -744,36 +918,101 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     </label>
   );
 
-  const aboutSlotsField = () => (
-    <section style={{ ...groupStyle, gridColumn: '1 / -1' }}>
-      <div style={{ color: '#a5f3fc', fontWeight: 800, marginBottom: '0.5rem' }}>About Slots</div>
-      <label style={{ ...fieldStyle, marginBottom: '0.5rem' }}>
-        <span style={fieldLabelStyle}>Slide Items</span>
-        <textarea
-          style={{
-            ...textareaStyle,
-            borderColor: itemsDraftError ? 'rgba(251, 113, 133, 0.72)' : 'rgba(103, 232, 249, 0.3)',
-          }}
-          value={itemsDraft}
-          spellCheck={false}
-          onChange={(event) => setItemsDraft(event.target.value)}
-        />
-      </label>
-      {itemsDraftError ? (
-        <div style={{ color: '#fecdd3', fontSize: '0.72rem', marginBottom: '0.5rem' }}>
-          {itemsDraftError}
+  const aboutSlotsField = () => {
+    const items = controls.items ?? [];
+    return (
+      <section style={{ ...groupStyle, gridColumn: '1 / -1' }}>
+        <div style={itemHeaderStyle}>
+          <div style={{ color: '#a5f3fc', fontWeight: 900 }}>Rotation Items</div>
+          <div style={itemActionsStyle}>
+            <button type="button" style={buttonStyle} onClick={addBannerItem}>
+              Add Item
+            </button>
+            <button type="button" style={buttonStyle} onClick={clearBannerItems}>
+              Clear Items
+            </button>
+          </div>
         </div>
-      ) : null}
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button type="button" style={buttonStyle} onClick={applyItemsDraft}>
-          Apply Slots
-        </button>
-        <button type="button" style={buttonStyle} onClick={clearItemsDraft}>
-          Clear Slots
-        </button>
-      </div>
-    </section>
-  );
+        <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.75rem' }}>
+          {items.length === 0 ? (
+            <div style={{ ...fieldStyle, color: 'rgba(207, 250, 254, 0.68)' }}>
+              No rotation items are overriding the source asset.
+            </div>
+          ) : null}
+          {items.map((item, index) => {
+            const imageUrl = item.imageHash ? resolveImageUrl?.(item.imageHash) : null;
+            return (
+              <article key={`rotation-item-${index}`} style={itemCardStyle}>
+                <div style={itemPreviewStyle}>
+                  <span style={{ color: '#cffafe', fontSize: '0.72rem', fontWeight: 900 }}>
+                    Item {index + 1}
+                  </span>
+                  <label
+                    style={itemImageButtonStyle}
+                    onDrop={(event) => handleBannerImageDrop(event, index)}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = 'copy';
+                    }}
+                  >
+                    {imageUrl ? (
+                      <img src={imageUrl} alt="" style={itemImageStyle} />
+                    ) : (
+                      <div style={itemImageFallbackStyle}>Image</div>
+                    )}
+                    <span style={itemImageActionTextStyle}>
+                      {uploadingImageIndex === index ? 'Uploading...' : 'Change Image'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={hiddenFileInputStyle}
+                      disabled={!onImageUpload || uploadingImageIndex !== null}
+                      aria-label={`Change image for item ${index + 1}`}
+                      onChange={(event) => {
+                        void uploadBannerImage(index, event.currentTarget.files?.[0]);
+                        event.currentTarget.value = '';
+                      }}
+                    />
+                  </label>
+                </div>
+                <label style={compactFieldStyle}>
+                  <span style={fieldLabelStyle}>Banner Title</span>
+                  <input
+                    style={inputStyle}
+                    value={item.title}
+                    onChange={(event) => updateBannerItem(index, { title: event.target.value })}
+                  />
+                </label>
+                <label style={compactFieldStyle}>
+                  <span style={fieldLabelStyle}>Banner Sub Text</span>
+                  <input
+                    style={inputStyle}
+                    value={item.description}
+                    onChange={(event) => updateBannerItem(index, { description: event.target.value })}
+                  />
+                </label>
+                <div style={itemActionColumnStyle}>
+                  <button type="button" style={compactButtonStyle} disabled={index === 0} onClick={() => moveBannerItem(index, -1)}>
+                    Up
+                  </button>
+                  <button type="button" style={compactButtonStyle} disabled={index === items.length - 1} onClick={() => moveBannerItem(index, 1)}>
+                    Down
+                  </button>
+                  <button type="button" style={compactButtonStyle} onClick={() => duplicateBannerItem(index)}>
+                    Duplicate
+                  </button>
+                  <button type="button" style={{ ...compactButtonStyle, borderColor: 'rgba(251, 113, 133, 0.5)', color: '#fecdd3' }} onClick={() => removeBannerItem(index)}>
+                    Remove
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    );
+  };
 
   const renderSection = (sectionTitle: string, fields: React.ReactNode[]) => (
     <section style={groupStyle}>
@@ -815,6 +1054,10 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     { id: 'sideB', label: 'Side B' },
     { id: 'copy', label: 'Copy/Text' },
     { id: 'footer', label: 'Footer' },
+  ];
+  const copySubtabs: { id: HomeShowcaseCopySubtab; label: string }[] = [
+    { id: 'textStyle', label: 'Text Style' },
+    { id: 'bannerCopy', label: 'Banner Copy' },
   ];
   const isCopyCurrent = copiedValue === getCopyValue();
 
@@ -960,25 +1203,45 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
       ) : null}
 
       {tab === 'copy' ? (
-        <div style={sectionGridStyle}>
-          {renderSection('Main Text', [
-            numberField({ group: 'copy', field: 'titleMaxFont', label: 'Title Max Font', min: 10, max: 120 }),
-            numberField({ group: 'copy', field: 'titleMinFont', label: 'Title Min Font', min: 8, max: 80 }),
-            numberField({ group: 'copy', field: 'titleLetterSpacing', label: 'Title Letter Spacing', min: 0, max: 0.4, step: 0.01 }),
-            copyColorField({ field: 'titleColor', label: 'Title Color' }),
-            copyColorField({ field: 'titleGlowColor', label: 'Title Glow' }),
-          ])}
-          {renderSection('Sub Text', [
-            numberField({ group: 'copy', field: 'bodyMaxFont', label: 'Body Max Font', min: 8, max: 60 }),
-            numberField({ group: 'copy', field: 'bodyMinFont', label: 'Body Min Font', min: 6, max: 40 }),
-            numberField({ group: 'copy', field: 'bodyLineHeight', label: 'Body Line Height', min: 0.8, max: 2.2, step: 0.01 }),
-            numberField({ group: 'copy', field: 'gap', label: 'Text Gap', min: 0, max: 80 }),
-            copyColorField({ field: 'bodyColor', label: 'Body Color' }),
-            bodyColorModeField(),
-            copyTextField({ field: 'bodyAccentPalette', label: 'Line Palette' }),
-            textAlignField(),
-          ])}
-          {aboutSlotsField()}
+        <div>
+          <div style={secondaryTabRowStyle}>
+            {copySubtabs.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                style={copySubtab === item.id ? activeButtonStyle : buttonStyle}
+                onClick={() => setCopySubtab(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          {copySubtab === 'textStyle' ? (
+            <div style={sectionGridStyle}>
+              {renderSection('Main Text', [
+                numberField({ group: 'copy', field: 'titleMaxFont', label: 'Title Max Font', min: 10, max: 120 }),
+                numberField({ group: 'copy', field: 'titleMinFont', label: 'Title Min Font', min: 8, max: 80 }),
+                numberField({ group: 'copy', field: 'titleLetterSpacing', label: 'Title Letter Spacing', min: 0, max: 0.4, step: 0.01 }),
+                copyColorField({ field: 'titleColor', label: 'Title Color' }),
+                copyColorField({ field: 'titleGlowColor', label: 'Title Glow' }),
+              ])}
+              {renderSection('Sub Text', [
+                numberField({ group: 'copy', field: 'bodyMaxFont', label: 'Body Max Font', min: 8, max: 60 }),
+                numberField({ group: 'copy', field: 'bodyMinFont', label: 'Body Min Font', min: 6, max: 40 }),
+                numberField({ group: 'copy', field: 'bodyLineHeight', label: 'Body Line Height', min: 0.8, max: 2.2, step: 0.01 }),
+                numberField({ group: 'copy', field: 'gap', label: 'Text Gap', min: 0, max: 80 }),
+                copyColorField({ field: 'bodyColor', label: 'Body Color' }),
+                bodyColorModeField(),
+                copyTextField({ field: 'bodyAccentPalette', label: 'Line Palette' }),
+                textAlignField(),
+              ])}
+            </div>
+          ) : null}
+          {copySubtab === 'bannerCopy' ? (
+            <div style={sectionGridStyle}>
+              {aboutSlotsField()}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
