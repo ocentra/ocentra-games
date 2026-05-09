@@ -10,6 +10,7 @@ import { initTauriAssetEventHandler } from '@/adapters/assets/TauriAssetEventHan
 import { AssetLoader } from '@/adapters/assets/AssetLoader';
 import { Resources } from '@ocentra/asset-domain/resources/Resources';
 import { TypeRegistry } from '@ocentra/game-asset-domain/TypeRegistry';
+import { installOcentraScrollActivityTracker } from '@ocentra/core-ui/scrollbars';
 import { assetTypeMap } from '@/lib/core/registry/assetTypeMap.generated';
 import { assetConstructorLoaders } from '@/lib/core/registry/assetConstructorLoaders.generated';
 import '@ocentra/game-asset-domain/gameRegistry/GameRegistry';
@@ -28,6 +29,7 @@ const profileTimeToMainMs = typeof window !== 'undefined' ? Math.round(performan
 
 initAssetEditorLogging();
 pushBoot('post initLogging');
+installOcentraScrollActivityTracker();
 TypeRegistry.configure({ assetTypeMap, assetConstructorLoaders });
 initTauriAssetEventHandler();
 pushBoot('pre render');

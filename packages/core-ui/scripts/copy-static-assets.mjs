@@ -5,6 +5,7 @@ const packageRoot = path.resolve(import.meta.dirname, '..');
 
 const fileCopies = [
   ['src/tokens.css', 'dist/'],
+  ['src/scrollbars.css', 'dist/'],
   ['src/Auth/LoginDialog.css', 'dist/Auth/'],
   ['src/Footer/GameFooter.module.css', 'dist/Footer/'],
   ['src/Footer/UnifiedFooter.css', 'dist/Footer/'],
@@ -13,6 +14,7 @@ const fileCopies = [
   ['src/Shell/UnifiedPageShell.css', 'dist/Shell/'],
   ['src/Background/DynamicBackground2DFallback.css', 'dist/Background/'],
   ['src/Background/DynamicBackground3D.css', 'dist/Background/'],
+  ['src/Loading/BrandedLoadingSpinner.css', 'dist/Loading/'],
   ['src/Common/FeaturedGameCarousel/FeaturedGameCarousel.css', 'dist/Common/FeaturedGameCarousel/'],
   ['src/Common/HomeShowcaseFrame/HomeShowcaseFrame.css', 'dist/Common/HomeShowcaseFrame/'],
   ['src/Common/FeatureBanner/FeatureBannerSection.css', 'dist/Common/FeatureBanner/'],

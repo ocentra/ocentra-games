@@ -160,6 +160,7 @@ export const LogsPage: React.FC = () => {
     <>
       <UnifiedPageShell
         className="logs-page-shell"
+        workScrollMode="auto"
         header={
           <UnifiedHeader
             profileName="main_screen"

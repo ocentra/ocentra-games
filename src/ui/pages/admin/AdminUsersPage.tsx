@@ -266,6 +266,7 @@ export const AdminUsersPage: React.FC = () => {
     <UnifiedPageShell
       className="admin-users-page"
       workClassName="admin-users-work"
+      workScrollMode="auto"
       background={
         <DynamicBackground
           controlRef={rotationRef}

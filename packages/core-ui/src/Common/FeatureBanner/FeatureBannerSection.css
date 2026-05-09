@@ -34,12 +34,17 @@
     radial-gradient(circle at 37% 52%, rgba(83, 184, 255, 0.44), transparent 34%),
     radial-gradient(circle at 67% 36%, rgba(240, 73, 255, 0.3), transparent 32%),
     radial-gradient(circle, rgba(47, 242, 154, 0.18), transparent 48%);
-  opacity: var(--feature-banner-cube-glow-opacity, 0.64);
+  opacity: 0;
   filter: blur(var(--feature-banner-cube-glow-blur, 18px));
   mask-image: radial-gradient(circle, #000 0 38%, rgba(0, 0, 0, 0.74) 48%, transparent 72%);
   -webkit-mask-image: radial-gradient(circle, #000 0 38%, rgba(0, 0, 0, 0.74) 48%, transparent 72%);
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.18s ease;
+}
+
+.feature-banner-showcase__cube-panel--ready::before {
+  opacity: var(--feature-banner-cube-glow-opacity, 0.64);
 }
 
 .feature-banner-showcase__cube-panel .rubik-banner-cube {
@@ -47,7 +52,6 @@
   z-index: 1;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 0.9rem rgba(100, 216, 255, 0.28));
 }
 
 .feature-banner-showcase__empty-cube {

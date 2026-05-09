@@ -10,6 +10,7 @@ import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogge
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { ImageResourceEntry } from '@ocentra/asset-domain/resourceEntry/ImageResourceEntry';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import '@/lib/core/inspector/InspectorPanel.css';
 
 const LOG_INSPECTOR_CONSTRUCTOR = false;
@@ -154,7 +155,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
       <div className="inspector-panel inspector-panel--empty">
         <div className="inspector-panel__placeholder">
           <div className="inspector-panel__loading">
-            <div className="inspector-panel__spinner"></div>
+            <BrandedLoadingSpinner size="small" />
           </div>
           <p className="inspector-panel__placeholder-subtitle">Loading asset...</p>
         </div>

@@ -84,11 +84,14 @@ declare global {
     }
 }
 
-const MIN_CARD_SIZE = 20;
-const MAX_CARD_SIZE = 80;
+const MIN_CARD_SIZE = 16;
+const MAX_CARD_SIZE = 56;
 const MAX_CARDS = 300;
-const LARGE_CARD_CHANCE = 0.1;
-const CARD_SCALE_FACTOR = 1.0;
+const LARGE_CARD_CHANCE = 0.04;
+const CARD_SCALE_FACTOR = 0.72;
+const MIN_CARD_OPACITY = 0.14;
+const CARD_OPACITY_RANGE = 0.28;
+const CARD_TWINKLE_OPACITY = 0.05;
 
 const CARD_TWINKLE_RATE = 0.17;
 const SHOOTING_STAR_TWINKLE_RATE = 12.0;
@@ -392,12 +395,19 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
     }), [startRandomRotation, performFullReset, forceCleanup]);
 
     useEffect(() => {
+        if (!threeBase?.isReady) return;
         if (controlRef) {
             controlRef.current = rotationAPI;
         }
-    }, [controlRef, rotationAPI]);
+        return () => {
+            if (controlRef) {
+                controlRef.current = null;
+            }
+        };
+    }, [controlRef, rotationAPI, threeBase?.isReady]);
 
     useEffect(() => {
+        if (!threeBase?.isReady) return;
         if (typeof window !== 'undefined') {
             window.dynamicBgRotate = rotationAPI.rotate;
             window.dynamicBgReset = rotationAPI.reset;
@@ -411,7 +421,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
                 delete window.dynamicBgForceCleanup;
             }
         };
-    }, [rotationAPI]);
+    }, [rotationAPI, threeBase?.isReady]);
 
     const createStarTexture = (): THREE.Texture => {
         const size = 128;
@@ -849,7 +859,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
             const style = CARD_STYLES[Math.floor(Math.random() * CARD_STYLES.length)];
             const isFilled = Math.random() > 0.5;
 
-            const baseOpacity = Math.random() * 0.7 + 0.3;
+            const baseOpacity = Math.random() * CARD_OPACITY_RANGE + MIN_CARD_OPACITY;
 
             const materialKey = `${style}-${suit}-${isFilled ? 'filled' : 'hollow'}`;
             const materialIndex = materialMap[materialKey];
@@ -1116,7 +1126,7 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
                 }
 
                 if (sprite.material) {
-                    (sprite.material as THREE.SpriteMaterial).opacity = c.baseOpacity + Math.sin(elapsed * 2 + i * 0.1) * 0.1;
+                    (sprite.material as THREE.SpriteMaterial).opacity = c.baseOpacity + Math.sin(elapsed * 2 + i * 0.1) * CARD_TWINKLE_OPACITY;
                 }
             }
         }

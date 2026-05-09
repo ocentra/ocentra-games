@@ -140,77 +140,6 @@
   transition: width 160ms ease;
 }
 
-.branded-loading-spinner {
-  --branded-loader-size: clamp(5rem, 14vw, 8rem);
-
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: var(--branded-loader-size);
-  height: var(--branded-loader-size);
-  pointer-events: none;
-  color-scheme: light;
-  contain: layout style;
-  overflow: visible;
-}
-
-.branded-loading-spinner--small {
-  --branded-loader-size: clamp(3.5rem, 9vw, 5rem);
-}
-
-.branded-loading-spinner--large {
-  --branded-loader-size: clamp(7rem, 18vw, 11rem);
-}
-
-.branded-loading-spinner__orbit,
-.branded-loading-spinner__comet-layer,
-.branded-loading-spinner__comet,
-.branded-loading-spinner__logo {
-  position: absolute;
-  inset: 0;
-}
-
-.branded-loading-spinner__orbit {
-  animation: branded-loader-spin 10s linear infinite;
-  z-index: 1;
-}
-
-.branded-loading-spinner__comet-layer {
-  animation: branded-loader-pulse 2s ease-in-out infinite alternate;
-}
-
-.branded-loading-spinner__comet,
-.branded-loading-spinner__logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.branded-loading-spinner__logo {
-  z-index: 0;
-  opacity: 0.95;
-  animation: branded-loader-pulse 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 1.4rem rgba(56, 189, 248, 0.22));
-}
-
-.branded-loading-spinner__comet-head {
-  position: absolute;
-  left: calc(50% + 0.16rem);
-  top: 6%;
-  width: 8%;
-  height: 8%;
-  min-width: 0.7rem;
-  min-height: 0.7rem;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow:
-    0 0 0.45rem #fff,
-    0 0 0.9rem rgba(255, 255, 255, 0.95),
-    0 0 1.7rem rgba(255, 255, 255, 0.6);
-  transform: translate(-50%, -50%);
-  animation: branded-comet-flicker 0.95s steps(10, end) infinite;
-}
-
 .screen-loading-fallback,
 .shell-loading-fallback {
   display: grid;
@@ -232,27 +161,6 @@
   position: fixed;
   inset: 0;
   z-index: 9998;
-}
-
-@keyframes branded-loader-spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes branded-loader-pulse {
-  0% { transform: scale(1); opacity: 0.9; }
-  100% { transform: scale(1.1); opacity: 1; }
-}
-
-@keyframes branded-comet-flicker {
-  0% { opacity: 0.82; transform: translate(-50%, -50%) scale(0.92); }
-  8% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
-  16% { opacity: 0.88; transform: translate(-50%, -50%) scale(0.96); }
-  24% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-  36% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.98); }
-  52% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
-  68% { opacity: 0.84; transform: translate(-50%, -50%) scale(0.94); }
-  82% { opacity: 0.98; transform: translate(-50%, -50%) scale(1.04); }
-  100% { opacity: 0.82; transform: translate(-50%, -50%) scale(0.92); }
 }
 
 @media (max-width: 640px) {

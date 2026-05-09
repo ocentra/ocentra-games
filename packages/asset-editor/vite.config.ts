@@ -510,5 +510,6 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
+  publicDir: false as const,
   envDir: __dirname,
 }));

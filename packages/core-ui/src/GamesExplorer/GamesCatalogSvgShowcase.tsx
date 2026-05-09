@@ -9,7 +9,6 @@ import {
 import type {
   MouseEvent as ReactMouseEvent,
   ReactNode,
-  WheelEvent as ReactWheelEvent,
 } from 'react';
 import { getPlaceholderImageUrl, placeholderImageCount } from '@ocentra/app-assets/placeholders';
 import type {
@@ -436,6 +435,27 @@ function useViewportSize() {
   }, []);
 
   return { ref, size };
+}
+
+function useNonPassiveWheel<TElement extends Element>(onWheel: (event: WheelEvent) => void) {
+  const nodeRef = useRef<TElement | null>(null);
+  const handlerRef = useRef(onWheel);
+
+  useEffect(() => {
+    handlerRef.current = onWheel;
+  }, [onWheel]);
+
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return undefined;
+    const listener: EventListener = (event) => {
+      if (event instanceof WheelEvent) handlerRef.current(event);
+    };
+    node.addEventListener('wheel', listener, { passive: false });
+    return () => node.removeEventListener('wheel', listener);
+  }, []);
+
+  return nodeRef;
 }
 
 function SvgText({
@@ -1052,18 +1072,19 @@ function Sidebar({
   const thumbH = Math.max(34, trackH * Math.min(1, viewportH / Math.max(viewportH, contentH)));
   const thumbY = trackY + (maxScroll <= 0 ? 0 : (trackH - thumbH) * (clampedScrollY / maxScroll));
   const scrollTo = (next: number) => setScrollY(Math.min(maxScroll, Math.max(0, next)));
-  const handleWheel = (event: ReactWheelEvent<SVGGElement>) => {
+  const handleWheel = (event: WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
     scrollTo(clampedScrollY + event.deltaY * WHEEL_SCROLL_SPEED);
   };
+  const wheelRef = useNonPassiveWheel<SVGGElement>(handleWheel);
   const modes: Array<{ key: PlayerModeFilter; label: string; count: number }> = [
     { key: 'all', label: 'All', count: playerModeCounts.all },
     { key: 'singleplayer', label: 'Single Player', count: playerModeCounts.singleplayer },
     { key: 'multiplayer', label: 'Multiplayer', count: playerModeCounts.multiplayer },
   ];
   return (
-    <g id="games-catalog-svg-sidebar" onWheel={handleWheel}>
+    <g id="games-catalog-svg-sidebar" ref={wheelRef}>
       <BackdropBlurRect x={x} y={y} w={sidebarW} h={layout.bodyH} rx={16} blur={controls.sidebarBackdropBlur} />
       <path d={`M ${x + 16} ${y} H ${x + sidebarW} V ${y + layout.bodyH} H ${x + 16} Q ${x} ${y + layout.bodyH} ${x} ${y + layout.bodyH - 16} V ${y + 16} Q ${x} ${y} ${x + 16} ${y} Z`} fill={controls.sidebarFillColor} fillOpacity={controls.sidebarFillOpacity} stroke={controls.sidebarStrokeColor} strokeWidth={controls.sidebarStrokeWidth} />
       <rect x={x + 1} y={y + 1} width={sidebarW - 2} height={headerH} fill={controls.sidebarHeaderFillColor} fillOpacity={controls.sidebarHeaderFillOpacity} />
@@ -1478,11 +1499,12 @@ function GamesArea({
   const thumbH = Math.max(34, trackH * visibleRatio);
   const thumbY = trackY + (maxScroll <= 0 ? 0 : (trackH - thumbH) * (clampedScrollY / maxScroll));
   const scrollTo = (next: number) => setScrollY(Math.min(maxScroll, Math.max(0, next)));
-  const handleWheel = (event: ReactWheelEvent<SVGGElement>) => {
+  const handleWheel = (event: WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
     scrollTo(clampedScrollY + event.deltaY * WHEEL_SCROLL_SPEED);
   };
+  const wheelRef = useNonPassiveWheel<SVGGElement>(handleWheel);
   const gridStartRow = Math.max(0, Math.floor((clampedScrollY - pad - cardTopClearance) / (cardH + gap)) - VIRTUAL_ROW_BUFFER);
   const gridEndRow = Math.min(gridRows - 1, Math.ceil((clampedScrollY + viewportH - pad - cardTopClearance) / (cardH + gap)) + VIRTUAL_ROW_BUFFER);
   const gridStartIndex = gridStartRow * cols;
@@ -1491,7 +1513,7 @@ function GamesArea({
   const listEndRow = Math.min(games.length - 1, Math.ceil((clampedScrollY + viewportH - pad - listHeaderH) / listRowH) + VIRTUAL_ROW_BUFFER);
 
   return (
-    <g id="games-catalog-svg-games-area" onWheel={handleWheel}>
+    <g id="games-catalog-svg-games-area" ref={wheelRef}>
       <BackdropBlurRect x={x} y={y} w={w} h={areaH} rx={16} blur={controls.gamesAreaBackdropBlur} />
       <path d={`M ${x} ${y} H ${x + w - 16} Q ${x + w} ${y} ${x + w} ${y + 16} V ${y + areaH - 16} Q ${x + w} ${y + areaH} ${x + w - 16} ${y + areaH} H ${x} V ${y} Z`} fill={controls.gamesAreaFillColor} fillOpacity={controls.gamesAreaFillOpacity} stroke={controls.gamesAreaStrokeColor} strokeWidth={controls.gamesAreaStrokeWidth} />
       <rect x={x + 1} y={y + 1} width={w - 2} height={areaH - 2} fill="transparent" />

@@ -27,6 +27,7 @@ import {
   type SelectedGameDeckVisualControls,
 } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { DeckPreviewView } from '@ocentra/core-ui/Common/DeckPreview/DeckPreviewView';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getResourceByGuidDb, loadAsset } from '@/adapters/assets/TauriAssetAdapter';
@@ -133,7 +134,7 @@ export const DeckPreview: React.FC<DeckPreviewProps> = ({
       <div className="preview-panel__content">
         <div className="preview-panel__placeholder">
           <div className="preview-panel__loading">
-            <div className="preview-panel__spinner"></div>
+            <BrandedLoadingSpinner size="small" />
           </div>
           <p className="preview-panel__placeholder-subtitle">Loading deck...</p>
         </div>

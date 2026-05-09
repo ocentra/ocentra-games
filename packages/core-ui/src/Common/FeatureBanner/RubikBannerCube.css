@@ -5,9 +5,16 @@
   min-height: 0;
   overflow: hidden;
   flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.rubik-banner-cube--ready {
+  opacity: 1;
 }
 
 .rubik-banner-cube--fallback {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,6 +22,13 @@
     radial-gradient(circle at top, rgba(93, 169, 255, 0.18), transparent 52%),
     linear-gradient(180deg, rgba(7, 24, 61, 0.96), rgba(3, 10, 28, 0.98));
   border-radius: min(1rem, 3vw);
+}
+
+.rubik-banner-cube--sliced {
+  background:
+    radial-gradient(circle at 50% 46%, rgba(99, 218, 255, 0.22), transparent 54%),
+    linear-gradient(180deg, rgba(7, 24, 61, 0.18), rgba(3, 10, 28, 0.26));
+  box-shadow: inset 0 0 0 1px rgba(145, 231, 255, 0.28);
 }
 
 .rubik-banner-cube-fallback-image {
@@ -25,9 +39,81 @@
   border-radius: inherit;
 }
 
+.rubik-banner-fallback-base,
+.rubik-banner-fallback-previous,
+.rubik-banner-fallback-slices {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.rubik-banner-fallback-base,
+.rubik-banner-fallback-previous {
+  background-position: center;
+  background-size: cover;
+}
+
+.rubik-banner-fallback-base {
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.rubik-banner-fallback-previous {
+  animation: rubik-fallback-previous-out 0.72s ease forwards;
+  filter: brightness(0.78) blur(0.06rem);
+}
+
+.rubik-banner-fallback-slices {
+  display: grid;
+  grid-template-columns: repeat(var(--fallback-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--fallback-rows), minmax(0, 1fr));
+}
+
+.rubik-banner-fallback-tile {
+  background-size: calc(var(--fallback-cols) * 100%) calc(var(--fallback-rows) * 100%);
+  animation: rubik-fallback-tile-in 0.82s cubic-bezier(0.18, 0.86, 0.24, 1) both;
+  animation-delay: var(--fallback-delay);
+  box-shadow: inset 0 0 0 1px rgba(220, 250, 255, 0.14);
+  transform-origin: center;
+}
+
 .rubik-banner-cube canvas {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+@keyframes rubik-fallback-tile-in {
+  0% {
+    opacity: 0;
+    filter: blur(0.22rem) brightness(1.22) saturate(1.24);
+    transform:
+      translate3d(var(--fallback-x), var(--fallback-y), 0)
+      rotate(var(--fallback-rot))
+      scale(0.92);
+  }
+
+  62% {
+    opacity: 1;
+    filter: blur(0.04rem) brightness(1.08) saturate(1.12);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0) brightness(1) saturate(1.04);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes rubik-fallback-previous-out {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.03);
+  }
 }

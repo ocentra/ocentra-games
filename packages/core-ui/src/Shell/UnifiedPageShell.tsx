@@ -16,6 +16,7 @@ export interface UnifiedPageShellProps {
   children: ReactNode;
   className?: string;
   workClassName?: string;
+  workScrollMode?: 'auto' | 'hidden';
   embedded?: boolean;
   viewportLocked?: boolean;
 }
@@ -114,6 +115,7 @@ export function UnifiedPageShell({
   children,
   className,
   workClassName,
+  workScrollMode = 'hidden',
   embedded = false,
   viewportLocked = false,
 }: UnifiedPageShellProps) {
@@ -178,6 +180,7 @@ export function UnifiedPageShell({
       ref={rootRef}
       className={[
         'oc-unified-shell',
+        workScrollMode === 'auto' ? 'oc-unified-shell--work-scroll' : '',
         viewportLocked ? 'oc-unified-shell--viewport-locked' : '',
         embedded ? 'oc-unified-shell--embedded' : '',
         className ?? '',

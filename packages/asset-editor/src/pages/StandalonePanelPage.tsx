@@ -73,6 +73,7 @@ import {
   normalizeAppPageSvgControls,
   type AppPageSvgControls,
 } from '@ocentra/core-ui/AppPages/AppPageSvgSurfaceControls';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import type {
   SerializedUnifiedHeaderConfig,
@@ -168,6 +169,12 @@ type StandalonePanel =
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
   | 'page-layout-controls';
+
+const StandalonePanelLoading: React.FC<{ label?: string }> = ({ label = 'Loading' }) => (
+  <div className="standalone-panel-page__loading" role="status" aria-label={label}>
+    <BrandedLoadingSpinner size="medium" />
+  </div>
+);
 
 function useStandaloneAsset(assetPath: string | null) {
   const [assetData, setAssetData] = useState<AssetData | null>(null);
@@ -3743,7 +3750,7 @@ export const StandalonePanelPage: React.FC = () => {
     if (!assetData && !isLoading && !error) {
       return (
         <div className="standalone-panel-page standalone-panel-page--empty">
-          <p>Loading card game layout...</p>
+          <StandalonePanelLoading label="Loading card game layout" />
         </div>
       );
     }
@@ -3761,7 +3768,7 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'isolation') {
     return (
-      <Suspense fallback={<div className="standalone-panel-page__loading">Loading Isolation Hub…</div>}>
+      <Suspense fallback={<StandalonePanelLoading label="Loading Isolation Hub" />}>
         <LazyIsolationHubPage />
       </Suspense>
     );
@@ -3789,7 +3796,7 @@ export const StandalonePanelPage: React.FC = () => {
 
   return (
     <div className="standalone-panel-page">
-      <Suspense fallback={<div className="standalone-panel-page__loading">Loading…</div>}>
+      <Suspense fallback={<StandalonePanelLoading />}>
         {params.panel === 'preview' ? (
           <StandalonePreview assetPath={params.assetPath} />
         ) : (

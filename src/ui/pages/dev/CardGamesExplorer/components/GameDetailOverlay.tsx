@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { BrandedLoadingSpinner } from '@/ui/components/Loading/BrandedLoadingSpinner';
 import type { Game, GameDetail } from '../types';
 import { SECTIONS, SECTION_LABELS, CATEGORY_ICONS } from '../types';
 import { renderSection } from '../helpers';
@@ -110,7 +111,7 @@ export function GameDetailOverlay({ game, detail, loading, onClose }: Props) {
         <div className="cge-overlay__body">
           {loading ? (
             <div className="cge-overlay__loading">
-              <div className="cge-spinner" />
+              <BrandedLoadingSpinner size="medium" />
               <p>Loading details…</p>
             </div>
           ) : detail ? (

@@ -10,6 +10,7 @@ type BootGlobal = typeof globalThis & {
 const bootGlobal = globalThis as BootGlobal;
 const pushBoot = (label: string) => bootGlobal.__OCENTRA_BOOT_PUSH?.(label);
 import { createRoot, type Root } from 'react-dom/client'
+import { installOcentraScrollActivityTracker } from '@ocentra/core-ui/scrollbars'
 import './index.css'
 import AppWrapper from './App.tsx'
 import { initializeCritical } from '@/lib/core/AppInitializer';
@@ -24,6 +25,7 @@ const sendProfileReport = createProfileReporter(bootGlobal, profileTimeToMainMs)
 
 const { logInfo, logError } = initMainLogging(import.meta.url);
 pushBoot('post initLogging');
+installOcentraScrollActivityTracker();
 setupApiClientWithAuthBridge();
 logStorageConfigAtStartup(pushBoot);
 

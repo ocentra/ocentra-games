@@ -306,6 +306,7 @@ export function DevPanelPage() {
   return (
     <UnifiedPageShell
       className="dp-root"
+      workScrollMode="auto"
       header={
         <UnifiedHeader
           dynamicData={{

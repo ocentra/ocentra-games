@@ -1,4 +1,5 @@
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
+import { ocentraFaviconImageUrl } from '@ocentra/app-assets/commons';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminPermissions } from '@/hooks/useAdminPermissions';
@@ -70,6 +71,20 @@ export const AssetEditorPage: React.FC = () => {
       });
     }
   }, [isAdmin, user, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) {
+      return undefined;
+    }
+    const timeoutId = window.setTimeout(() => {
+      void import('@/pages/PreviewPanel/preloadPreviewPanelModules').then(module => {
+        module.preloadPreviewPanelModules();
+      });
+      void import('@/pages/InspectorPanel/InspectorPanel');
+      void import('@/pages/ResourceTree/ResourceTree');
+    }, 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [isAuthenticated, isAdmin]);
 
   const [syncStatus, setSyncStatus] = useState<ReturnType<typeof useSyncMenu>['syncStatus']>(null);
 
@@ -255,7 +270,7 @@ export const AssetEditorPage: React.FC = () => {
             } : null}
             onLogout={headerProps.onLogout}
             getImageUrl={headerProps.getImageUrl}
-            centerIconSrc="/favicon.svg"
+            centerIconSrc={ocentraFaviconImageUrl}
             rightSuffixContent={<WindowControls />}
             leftContent={
               <div className="asset-editor__topbar">

@@ -15,9 +15,24 @@ import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferr
 import { GetSelectedGamePageInfosEvent } from '@ocentra/eventing-domain/events/game/GetSelectedGamePageInfosEvent';
 import type { ViewMode } from './types';
 import type { AssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { assetTypeMap } from '@/lib/core/registry/assetTypeMap.generated';
+import {
+  loadAssetCatalogPreviewModule,
+  loadCardGameLayoutPreviewModule,
+  loadCardGameMechanicsPreviewModule,
+  loadCardPreviewModule,
+  loadCardRankingPreviewModule,
+  loadDeckManagerPreviewModule,
+  loadDeckPreviewModule,
+  loadGameInfoTabsModule,
+  loadGameRegistryPreviewModule,
+  loadImageCarouselPreviewModule,
+  loadImageListPreviewModule,
+  preloadPreviewPanelModules,
+} from './preloadPreviewPanelModules';
 import './PreviewPanel.css';
 
 const log = AssetEditorLogger.instance;
@@ -58,54 +73,53 @@ const CARD_RANKING_PREVIEW_ASSET_TYPES = new Set<string>([
 ]);
 
 const LazyAssetCatalogPreview = React.lazy(async () => ({
-  default: (await import('./AssetCatalogPreview')).AssetCatalogPreview,
+  default: (await loadAssetCatalogPreviewModule()).AssetCatalogPreview,
 }));
 
 const LazyGameRegistryPreview = React.lazy(async () => ({
-  default: (await import('./GameRegistryPreview')).GameRegistryPreview,
+  default: (await loadGameRegistryPreviewModule()).GameRegistryPreview,
 }));
 
 const LazyDeckManagerPreview = React.lazy(async () => ({
-  default: (await import('@/lib/assets/deck/DeckManagerPreview')).DeckManagerPreview,
+  default: (await loadDeckManagerPreviewModule()).DeckManagerPreview,
 }));
 
 const LazyDeckPreview = React.lazy(async () => ({
-  default: (await import('@/lib/assets/card/deck/DeckPreview')).DeckPreview,
+  default: (await loadDeckPreviewModule()).DeckPreview,
 }));
 
 const LazyCardPreview = React.lazy(async () => ({
-  default: (await import('@/lib/assets/card/cardBase/CardPreview')).CardPreview,
+  default: (await loadCardPreviewModule()).CardPreview,
 }));
 
 const LazyCardRankingPreview = React.lazy(async () => ({
-  default: (await import('@/lib/assets/card/cardRanking/CardRankingPreview'))
-    .CardRankingPreview,
+  default: (await loadCardRankingPreviewModule()).CardRankingPreview,
 }));
 
 const LazyImageListPreview = React.lazy(async () => ({
-  default: (await import('./ImageListPreview')).ImageListPreview,
+  default: (await loadImageListPreviewModule()).ImageListPreview,
 }));
 
 const LazyImageCarouselPreview = React.lazy(async () => ({
-  default: (await import('./ImageCarouselPreview')).ImageCarouselPreview,
+  default: (await loadImageCarouselPreviewModule()).ImageCarouselPreview,
 }));
 
 const LazyCardGameLayoutPreview = React.lazy(async () => ({
-  default: (await import('./CardGameLayoutPreview')).CardGameLayoutPreview,
+  default: (await loadCardGameLayoutPreviewModule()).CardGameLayoutPreview,
 }));
 
 const LazyCardGameMechanicsPreview = React.lazy(async () => ({
-  default: (await import('./CardGameMechanicsPreview')).CardGameMechanicsPreview,
+  default: (await loadCardGameMechanicsPreviewModule()).CardGameMechanicsPreview,
 }));
 
 const LazyGameInfoTabs = React.lazy(async () => ({
-  default: (await import('@/ui/components/GameInfo/GameInfoTabs')).GameInfoTabs,
+  default: (await loadGameInfoTabsModule()).GameInfoTabs,
 }));
 
 const PreviewPanelLoading: React.FC<{ message: string }> = ({ message }) => (
-  <div className="preview-panel__placeholder">
+  <div className="preview-panel__placeholder preview-panel__placeholder--loading">
     <div className="preview-panel__loading">
-      <div className="preview-panel__spinner"></div>
+      <BrandedLoadingSpinner size="small" />
     </div>
     <p className="preview-panel__placeholder-subtitle">{message}</p>
   </div>
@@ -251,6 +265,11 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   onBack,
   onAssetUpdate,
 }) => {
+  useEffect(() => {
+    const timeoutId = window.setTimeout(preloadPreviewPanelModules, 250);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
   const {
     viewMode,
     setViewMode,

@@ -51,6 +51,7 @@ export interface RubikConfig {
   idleDriftSec?: number;
   useSharedContext?: boolean;
   renderPixelScale?: number;
+  sideTextureBlurPx?: number;
 }
 
 export interface RubikCubeController {
@@ -84,9 +85,10 @@ function getTextureCacheKey(
   imageIndex: number,
   gridSize: number,
   col: number,
-  row: number
+  row: number,
+  variant: string
 ): string {
-  return `${imageIndex}|${gridSize}|${col}|${row}`;
+  return `${variant}|${imageIndex}|${gridSize}|${col}|${row}`;
 }
 
 function createFaceTexture(
@@ -269,6 +271,9 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
     itemCount: 0,
     currentFaceImages: { pz: 0, px: 1, nx: 2, py: 3, ny: 4, nz: 5 },
     textureCache: new Map<string, THREE.CanvasTexture>(),
+    softenedSourceCache: new Map<string, HTMLCanvasElement>(),
+    sideTextureBlurPx: config.sideTextureBlurPx ?? 1.5,
+    sideBlurFacingThreshold: 0.72,
     scene: null as THREE.Scene | null,
     camera: null as THREE.PerspectiveCamera | null,
     renderer: null as THREE.WebGLRenderer | null,
@@ -338,18 +343,48 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
     });
   }
 
+  function getSoftenedSourceCanvas(imageIndex: number): HTMLCanvasElement | null {
+    if (imageIndex < 0 || imageIndex >= state.bannerImages.length) return null;
+    const sourceCanvas = state.bannerImages[imageIndex];
+    const blurPx = Math.max(0, state.sideTextureBlurPx);
+    if (blurPx <= 0) return sourceCanvas;
+
+    const key = `${imageIndex}|${sourceCanvas.width}x${sourceCanvas.height}|${blurPx.toFixed(2)}`;
+    let softenedCanvas = state.softenedSourceCache.get(key);
+    if (!softenedCanvas) {
+      softenedCanvas = document.createElement('canvas');
+      softenedCanvas.width = sourceCanvas.width;
+      softenedCanvas.height = sourceCanvas.height;
+      const ctx = softenedCanvas.getContext('2d')!;
+      ctx.drawImage(sourceCanvas, 0, 0);
+      ctx.filter = `blur(${blurPx}px)`;
+      ctx.globalAlpha = 0.86;
+      ctx.drawImage(sourceCanvas, 0, 0);
+      ctx.filter = 'none';
+      ctx.globalAlpha = 1;
+      state.softenedSourceCache.set(key, softenedCanvas);
+    }
+    return softenedCanvas;
+  }
+
   function getCachedFaceTexture(
     imageIndex: number,
     col: number,
     row: number,
-    gridSize: number
+    gridSize: number,
+    softened = false
   ): THREE.CanvasTexture | null {
     if (imageIndex < 0 || imageIndex >= state.bannerImages.length) return null;
-    const key = getTextureCacheKey(imageIndex, gridSize, col, row);
+    const sourceCanvas = softened
+      ? getSoftenedSourceCanvas(imageIndex)
+      : state.bannerImages[imageIndex];
+    if (!sourceCanvas) return null;
+
+    const key = getTextureCacheKey(imageIndex, gridSize, col, row, softened ? 'soft' : 'sharp');
     let texture = state.textureCache.get(key);
     if (!texture) {
       texture = createFaceTexture(
-        state.bannerImages[imageIndex],
+        sourceCanvas,
         col,
         row,
         gridSize,
@@ -363,6 +398,7 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
   function disposeTextureCache(): void {
     state.textureCache.forEach((t) => t.dispose());
     state.textureCache.clear();
+    state.softenedSourceCache.clear();
   }
 
   function buildCube(n: number) {
@@ -487,6 +523,13 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
         const row = tile.row;
         const map = getCachedFaceTexture(imageIndex, col, row, gridSize);
         if (map) {
+          const softMap = state.sideTextureBlurPx > 0
+            ? getCachedFaceTexture(imageIndex, col, row, gridSize, true)
+            : null;
+          material.userData.ocentraTextureMaps = {
+            sharp: map,
+            soft: softMap,
+          };
           material.map = map;
           material.needsUpdate = true;
         }
@@ -738,9 +781,8 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
   }
 
   function getRendererPixelRatio(): number {
-    const basePixelRatio = isTauriRuntime()
-      ? Math.min(window.devicePixelRatio, 2)
-      : 1;
+    const devicePixelRatio = Number.isFinite(window.devicePixelRatio) ? window.devicePixelRatio : 1;
+    const basePixelRatio = Math.min(Math.max(1, devicePixelRatio), 2);
     return Math.max(1, Math.min(4, basePixelRatio * state.renderPixelScale));
   }
 
@@ -769,6 +811,40 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
         animateTurn(state.cube, deltaMs);
         if (!state.cube.activeTurn && state.activePlan) {
           advancePlan();
+        }
+      }
+      updateSideTextureSoftness(state.cube);
+    }
+  }
+
+  function updateSideTextureSoftness(cube: ReturnType<typeof buildCube>): void {
+    if (!state.camera || state.sideTextureBlurPx <= 0) return;
+
+    state.scene?.updateMatrixWorld(true);
+    const cameraPosition = new THREE.Vector3();
+    const cubiePosition = new THREE.Vector3();
+    const cubieQuaternion = new THREE.Quaternion();
+    const faceNormal = new THREE.Vector3();
+    const toCamera = new THREE.Vector3();
+    state.camera.getWorldPosition(cameraPosition);
+
+    for (const cubie of cube.cubies) {
+      cubie.mesh.getWorldPosition(cubiePosition);
+      cubie.mesh.getWorldQuaternion(cubieQuaternion);
+      toCamera.copy(cameraPosition).sub(cubiePosition).normalize();
+
+      for (const [faceKey, material] of Object.entries(cubie.stickers)) {
+        const maps = material.userData.ocentraTextureMaps as
+          | { sharp?: THREE.Texture; soft?: THREE.Texture | null }
+          | undefined;
+        if (!maps?.sharp || !maps.soft) continue;
+
+        faceNormal.copy(FACE_VECTORS[faceKey]).applyQuaternion(cubieQuaternion).normalize();
+        const facing = faceNormal.dot(toCamera);
+        const nextMap = facing < state.sideBlurFacingThreshold ? maps.soft : maps.sharp;
+        if (material.map !== nextMap) {
+          material.map = nextMap;
+          material.needsUpdate = true;
         }
       }
     }
@@ -834,19 +910,19 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
           }]
         : [
             {
+              antialias: true,
+              alpha: true,
+              powerPreference: 'high-performance',
+              stencil: false,
+              depth: true,
+            },
+            {
               antialias: false,
               alpha: true,
               powerPreference: 'low-power',
               stencil: false,
               depth: false,
               precision: 'mediump',
-            },
-            {
-              antialias: true,
-              alpha: true,
-              powerPreference: 'low-power',
-              stencil: false,
-              depth: true,
             },
           ];
 
@@ -1017,6 +1093,13 @@ export function createRubikCubeController(config: RubikConfig = {}): RubikCubeCo
           const nextRenderPixelScale = Math.max(1, Math.min(4, partial.renderPixelScale));
           shouldResizeRenderer = nextRenderPixelScale !== state.renderPixelScale;
           state.renderPixelScale = nextRenderPixelScale;
+        }
+        if (partial.sideTextureBlurPx != null) {
+          const nextSideTextureBlurPx = Math.max(0, Math.min(4, partial.sideTextureBlurPx));
+          if (nextSideTextureBlurPx !== state.sideTextureBlurPx) {
+            state.sideTextureBlurPx = nextSideTextureBlurPx;
+            shouldRebuildCube = true;
+          }
         }
         if (partial.idleDriftSec != null) state.idleDurationSec = Math.max(1, partial.idleDriftSec);
         if (state.cube) {

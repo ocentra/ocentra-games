@@ -24,6 +24,7 @@ export default defineConfig(async ({ command }) => {
             outDir: 'dist',
             sourcemap: true,
         },
+        publicDir: false,
         optimizeDeps: {
             include: ['react', 'react-dom'],
         },

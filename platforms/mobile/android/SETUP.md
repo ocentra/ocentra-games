@@ -24,7 +24,7 @@ Or on Windows PowerShell: `& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.e
 
 ## App Icon (Ocentra Logo)
 
-The launcher icon uses the Ocentra logo from `resources/icon-foreground.png` (copied from `src/Images/commons/Mlogo.png`). To regenerate icons after changing the logo:
+The launcher icon generator uses shared source images from `packages/app-assets/src/images/mobile-icons`, with the foreground and icon-only images generated from `packages/app-assets/src/images/commons/OcentraLogo.svg`. To regenerate icons after changing the logo:
 
 ```bash
 npm run generate:icons

@@ -25,7 +25,6 @@ import type { PluginOption } from 'vite'
 const devWatchRoots = [
   'index.html',
   'test-harness.html',
-  'public',
   'src',
   'packages/core-ui/src',
   'packages/card-game-ui/src',
@@ -274,6 +273,6 @@ export default defineConfig(async ({ mode, command }) => {
       },
     }
   },
-  publicDir: 'public',
+  publicDir: false as const,
   }
 })

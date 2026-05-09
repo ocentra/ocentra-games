@@ -4,6 +4,7 @@ import { DeckManager } from '@ocentra/game-asset-domain/deck/DeckManager';
 import { getSerializableFields, type SerializableField } from '@ocentra/asset-domain/serialization/decorators';
 import { InspectorGroup } from '@/lib/core/inspector/components/InspectorGroup';
 import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { AssetTypeCategory } from '@ocentra/boundary-domain/types/asset-category';
@@ -62,7 +63,11 @@ export const DeckManagerInspector: InspectorComponent<DeckManager | Record<strin
   }, []);
 
   if (!fieldMetadata) {
-    return <div>Loading...</div>;
+    return (
+      <div className="inspector-panel__loading" role="status" aria-label="Loading deck manager">
+        <BrandedLoadingSpinner size="small" />
+      </div>
+    );
   }
 
   const dataObjData = assetData as Record<string, unknown>;

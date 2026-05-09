@@ -1,0 +1,95 @@
+:root {
+  --oc-scrollbar-size: 0.625rem;
+  --oc-scrollbar-radius: 999rem;
+  --oc-scrollbar-track: rgba(3, 14, 28, 0.22);
+  --oc-scrollbar-track-border: rgba(126, 230, 255, 0.2);
+  --oc-scrollbar-thumb-top: rgba(122, 236, 255, 0.5);
+  --oc-scrollbar-thumb-mid: rgba(108, 112, 255, 0.48);
+  --oc-scrollbar-thumb-bottom: rgba(249, 74, 213, 0.5);
+  --oc-scrollbar-thumb-border: rgba(218, 252, 255, 0.68);
+  --oc-scrollbar-thumb-shadow: rgba(100, 218, 255, 0.2);
+  --oc-scrollbar-active-top: rgba(107, 255, 206, 0.76);
+  --oc-scrollbar-active-mid: rgba(39, 221, 164, 0.72);
+  --oc-scrollbar-active-bottom: rgba(179, 255, 77, 0.68);
+  --oc-scrollbar-active-edge: rgba(217, 255, 235, 0.92);
+  --oc-scrollbar-active-glow: rgba(72, 255, 186, 0.48);
+}
+
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--oc-scrollbar-thumb-top) var(--oc-scrollbar-track);
+  }
+}
+
+*::-webkit-scrollbar {
+  width: var(--oc-scrollbar-size);
+  height: var(--oc-scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 48, 86, 0.2),
+      var(--oc-scrollbar-track) 52%,
+      rgba(10, 20, 42, 0.28)
+    );
+  border-left: 1px solid var(--oc-scrollbar-track-border);
+}
+
+*::-webkit-scrollbar-thumb {
+  min-height: 2.5rem;
+  background:
+    linear-gradient(
+      180deg,
+      var(--oc-scrollbar-thumb-top),
+      var(--oc-scrollbar-thumb-mid) 52%,
+      var(--oc-scrollbar-thumb-bottom)
+    );
+  border: 2px solid var(--oc-scrollbar-thumb-border);
+  border-radius: var(--oc-scrollbar-radius);
+  background-clip: padding-box;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.24),
+    0 0 0.75rem var(--oc-scrollbar-thumb-shadow);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(178, 249, 255, 0.62),
+      rgba(128, 133, 255, 0.6) 52%,
+      rgba(255, 108, 225, 0.58)
+    );
+  border-color: rgba(241, 254, 255, 0.9);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.34),
+    0 0 0.4rem rgba(198, 252, 255, 0.5),
+    0 0 0.95rem rgba(108, 186, 255, 0.34);
+}
+
+[data-oc-scroll-active="true"] {
+  scrollbar-color: var(--oc-scrollbar-active-top) var(--oc-scrollbar-track);
+}
+
+[data-oc-scroll-active="true"]::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb:active {
+  background:
+    linear-gradient(
+      180deg,
+      var(--oc-scrollbar-active-top),
+      var(--oc-scrollbar-active-mid) 52%,
+      var(--oc-scrollbar-active-bottom)
+    );
+  border-color: var(--oc-scrollbar-active-edge);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    0 0 0.45rem var(--oc-scrollbar-active-glow),
+    0 0 1.1rem rgba(188, 255, 102, 0.28);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

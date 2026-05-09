@@ -12,6 +12,7 @@ import DockLayout, { addHandlers, removeHandlers, DragState, addDragStateListene
 import type { DockContext, LayoutData, PanelData, TabData, TabGroup } from 'rc-dock';
 import 'rc-dock/dist/rc-dock-dark.css';
 import { useEditorState } from '@/context/EditorStateContext';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import './EditorDockLayout.css';
 import {
   cloneLockedSnapshot,
@@ -196,7 +197,7 @@ const DockPanelLoading: React.FC<{ label: string }> = ({ label }) => (
   <div className="preview-panel preview-panel--empty">
     <div className="preview-panel__placeholder">
       <div className="preview-panel__loading">
-        <div className="preview-panel__spinner"></div>
+        <BrandedLoadingSpinner size="small" />
       </div>
       <p className="preview-panel__placeholder-subtitle">Loading {label}...</p>
     </div>

@@ -6,6 +6,7 @@ import { toAssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { AssetIdentifier } from '@ocentra/asset-domain/types/assetIdentifier';
 import type { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import type { GameMode } from '@ocentra/game-asset-domain/gameMode/core/GameMode';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import './GameRegistryPreview.css';
 
 interface GameRegistryPreviewProps {
@@ -116,7 +117,9 @@ export const GameRegistryPreview: React.FC<GameRegistryPreviewProps> = ({
       </div>
       <div className="grp-list__content">
         {loading ? (
-          <div className="grp-list__empty">Loading…</div>
+          <div className="grp-list__empty grp-list__empty--loading" role="status" aria-label="Loading game registry">
+            <BrandedLoadingSpinner size="small" />
+          </div>
         ) : filteredEntries.length === 0 ? (
           <div className="grp-list__empty">
             {entries.length === 0

@@ -52,6 +52,7 @@ export function FeatureBannerSection({
   previewLayoutMode = 'auto',
 }: FeatureBannerSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [cubeReady, setCubeReady] = useState(false);
   const activeFeatureBannerItems =
     Array.isArray(controls?.items) && controls.items.length > 0
       ? controls.items
@@ -146,7 +147,7 @@ export function FeatureBannerSection({
       allowDebugBounds={allowDebugBounds}
       previewLayoutMode={previewLayoutMode}
       sideA={() => (
-        <div className="feature-banner-showcase__cube-panel">
+        <div className={`feature-banner-showcase__cube-panel ${cubeReady ? 'feature-banner-showcase__cube-panel--ready' : ''}`}>
           {imageSources.length > 0 ? (
             <Suspense fallback={null}>
               <RubikBannerCube
@@ -154,6 +155,7 @@ export function FeatureBannerSection({
                 targetIndex={targetIndex}
                 renderScale={cubeRenderScale}
                 onIdleComplete={handleIdleComplete}
+                onReadyChange={setCubeReady}
               />
             </Suspense>
           ) : (

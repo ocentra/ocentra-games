@@ -4,10 +4,12 @@ import { LoginScreen } from '@/components/LoginScreen';
 import { AssetEditorPage } from '@/pages/MainPage/AssetEditorPage';
 import { StandalonePanelPage } from '@/pages/StandalonePanelPage';
 import { WindowControls } from '@/components/WindowControls';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isE2EBypassAuthEnabled } from '@/utils/e2eAuth';
 import '@ocentra/core-ui/tokens.css';
+import '@ocentra/core-ui/scrollbars.css';
 import './styles/editor.css';
 
 const appLog = AssetEditorLogger.instance;
@@ -46,23 +48,12 @@ export function App() {
 
   if (isLoading) {
     return (
-      <div className="editor-loading-wrap" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0f1117' }}>
-        <div className="editor-loading__header" style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 4px 0 0' }}>
+      <div className="editor-loading-wrap">
+        <div className="editor-loading__header">
           <WindowControls />
         </div>
-        <div
-          className="editor-loading"
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#94a3b8',
-            fontSize: '1rem',
-            fontFamily: 'system-ui, sans-serif',
-          }}
-        >
-          Loading…
+        <div className="editor-loading" role="status" aria-label="Loading asset editor">
+          <BrandedLoadingSpinner size="large" />
         </div>
       </div>
     );

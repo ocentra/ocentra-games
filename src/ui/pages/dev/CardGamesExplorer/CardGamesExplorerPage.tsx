@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DynamicBackground, type RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { GamesCatalogSvgShowcase } from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcase';
 import type { GamesExplorerDetailSection, GamesExplorerGame } from '@ocentra/core-ui/GamesExplorer/types';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
-import { ThreeBaseProvider } from '@ocentra/core-ui/Background/ThreeBaseContext';
 import { APP_VERSION } from '@/constants/version';
+import { BrandedLoadingSpinner } from '@/ui/components/Loading/BrandedLoadingSpinner';
 import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { buildCardGamesCatalogPath, buildGamePath, buildRulesPath } from '@/ui/navigation/appRoutes';
 import { useGameDetail } from './hooks/useGameDetail';
@@ -46,10 +45,14 @@ function getGamePageRouteId(game: GamesExplorerGame): string {
   return game.source === 'asset' && game.guid ? `${game.slug}:${game.guid}` : game.slug;
 }
 
-export function CardGamesExplorerPage({ catalogScope = 'card-games', initialCategorySlug, initialGameSlug, initialDetailSection = 'overview' }: CardGamesExplorerPageProps) {
+export function CardGamesExplorerPage({
+  catalogScope = 'card-games',
+  initialCategorySlug,
+  initialGameSlug,
+  initialDetailSection = 'overview',
+}: CardGamesExplorerPageProps) {
   const navigate = useNavigate();
   const headerProps = useCoreUIHeaderProps();
-  const rotationRef = useRef<RotationControlAPI | null>(null);
   const dismissedRouteGameSlugRef = useRef<string | null>(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -186,7 +189,7 @@ export function CardGamesExplorerPage({ catalogScope = 'card-games', initialCate
   const content =
     loading && games.length === 0 ? (
       <div className="cge-page__state">
-        <div className="cge-spinner" />
+        <BrandedLoadingSpinner size="large" />
         <p>Loading games...</p>
       </div>
     ) : loadError && games.length === 0 ? (
@@ -234,34 +237,31 @@ export function CardGamesExplorerPage({ catalogScope = 'card-games', initialCate
     );
 
   return (
-    <ThreeBaseProvider>
-      <UnifiedPageShell
-        viewportLocked
-        className="home-page cge-page"
-        workClassName="home-shell-work cge-page__work"
-        background={<DynamicBackground controlRef={rotationRef} />}
-        header={
-            <UnifiedHeader
-            showPrimaryNavigation={false}
-            includeAdminNavigation={Boolean(headerProps.user?.isAdmin)}
-            dynamicData={{
-              gameName: pageTitle,
-              tagline: catalogTagline,
-            }}
-            config={{
-              left: {
-                onClick: () => navigate('/'),
-              },
-              right: headerProps.rightConfig,
-            }}
-          />
-        }
-        footer={<GameFooter appVersion={APP_VERSION} />}
-      >
-        <div className="cge-page__svg-stage" aria-label={seoDescription}>
-          {content}
-        </div>
-      </UnifiedPageShell>
-    </ThreeBaseProvider>
+    <UnifiedPageShell
+      viewportLocked
+      className="home-page cge-page"
+      workClassName="home-shell-work cge-page__work"
+      header={
+        <UnifiedHeader
+          showPrimaryNavigation={false}
+          includeAdminNavigation={Boolean(headerProps.user?.isAdmin)}
+          dynamicData={{
+            gameName: pageTitle,
+            tagline: catalogTagline,
+          }}
+          config={{
+            left: {
+              onClick: () => navigate('/'),
+            },
+            right: headerProps.rightConfig,
+          }}
+        />
+      }
+      footer={<GameFooter appVersion={APP_VERSION} />}
+    >
+      <div className="cge-page__svg-stage" aria-label={seoDescription}>
+        {content}
+      </div>
+    </UnifiedPageShell>
   );
 }

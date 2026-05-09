@@ -17,6 +17,7 @@ import { syncSavedLayoutAssetToR2 } from '@/utils/layoutEditorSync';
 import { CARD_GAME_LAYOUT_DRAFT_CHANNEL, ISOLATION_REQUEST_CHANNEL, type IsolationRequestMessage, type CardGameLayoutDraftMessage } from '@ocentra/game-layout-domain/draftChannel';
 import { cloneCardGameLayoutDocument } from '@ocentra/game-layout-domain/cardGameLayoutRuntime';
 import { createDraftSessionId } from '@ocentra/game-layout-domain/draftSession';
+import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { AssetEditorLogger } from '@ocentra/logging-domain/core/assetEditorLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { isolationStore } from '@/services/IsolationStore';
@@ -333,8 +334,8 @@ export const CardGameLayoutPreview: React.FC<CardGameLayoutPreviewProps> = ({
 
   if (!document) {
     return (
-      <div className="card-game-layout-preview-loading">
-        Loading Layout Asset...
+      <div className="card-game-layout-preview-loading" role="status" aria-label="Loading layout asset">
+        <BrandedLoadingSpinner size="medium" />
       </div>
     );
   }

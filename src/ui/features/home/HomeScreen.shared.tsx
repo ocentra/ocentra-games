@@ -301,6 +301,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     <UnifiedPageShell
       className={`home-page ${DEBUG_PAGE_STRUCTURE ? 'debug-page-structure' : ''}`}
       workClassName="home-shell-work"
+      workScrollMode="auto"
       header={
         <UnifiedHeader
           config={homeHeaderConfig}

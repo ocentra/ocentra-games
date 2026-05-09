@@ -136,6 +136,7 @@ export const AIPlaygroundPage: React.FC = () => {
   return (
     <UnifiedPageShell
       className="ai-playground"
+      workScrollMode="auto"
       header={
         <UnifiedHeader
           profileName="main_screen"
