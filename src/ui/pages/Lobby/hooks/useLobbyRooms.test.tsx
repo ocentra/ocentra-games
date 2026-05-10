@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  addLobbyAIRoomSeat,
   buildLobbyRoomWebSocketUrl,
   createLobbyRoom,
   joinLobbyRoom,
@@ -16,6 +17,7 @@ import { useLobbyRooms } from './useLobbyRooms';
 import { createDefaultLobbyRoomForm } from '@/ui/pages/Lobby/types';
 
 vi.mock('@ocentra/api-domain/multiplayer', () => ({
+  addLobbyAIRoomSeat: vi.fn(),
   buildLobbyRoomWebSocketUrl: vi.fn(),
   createLobbyRoom: vi.fn(),
   joinLobbyRoom: vi.fn(),
@@ -109,6 +111,19 @@ describe('useLobbyRooms', () => {
       matchId: 'match-1',
       room: { ...room, gameStatus: 'starting', matchId: 'match-1' },
     });
+    vi.mocked(addLobbyAIRoomSeat).mockResolvedValue({
+      joined: true,
+      roomId: room.roomId,
+      room: {
+        ...room,
+        currentPlayers: 2,
+        aiCount: 1,
+        players: [
+          ...room.players,
+          { userId: 'ai:room-1:1', displayName: 'AI Seat 1', seatIndex: 1, isAI: true, isReady: true },
+        ],
+      },
+    });
   });
 
   it('creates a joined room and opens the shard-aware lobby socket', async () => {
@@ -182,5 +197,53 @@ describe('useLobbyRooms', () => {
     });
     expect(startLobbyRoom).toHaveBeenCalledWith(room.roomId, { userId: 'user-1' }, { gameType: 'claim' });
     expect(result.current.joinedRoom?.gameStatus).toBe('starting');
+  });
+
+  it('passes list filters and add-AI actions to the lobby contracts', async () => {
+    const { result } = renderHook(() => useLobbyRooms('claim'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.setFilters({
+        search: 'ranked',
+        mode: 'ranked',
+        visibility: 'public',
+        status: 'waiting',
+        stakeType: 'free',
+        allowAI: false,
+        sort: 'fullest',
+      });
+    });
+
+    await waitFor(() => expect(listLobbyRooms).toHaveBeenLastCalledWith(expect.objectContaining({
+      gameType: 'claim',
+      search: 'ranked',
+      mode: 'ranked',
+      visibility: 'public',
+      status: 'waiting',
+      stakeType: 'free',
+      allowAI: false,
+      sort: 'fullest',
+    })));
+
+    await act(async () => {
+      await result.current.createRoom(createDefaultLobbyRoomForm('claim'), 'user-1', 'Host');
+    });
+    await waitFor(() => expect(sockets).toHaveLength(1));
+
+    await act(async () => {
+      await result.current.addAIRoomSeat(room.roomId, 'user-1', { aiRole: 'opponent', difficulty: 'normal' });
+    });
+
+    expect(addLobbyAIRoomSeat).toHaveBeenCalledWith(room.roomId, {
+      userId: 'user-1',
+      displayName: undefined,
+      aiProviderId: undefined,
+      aiModelId: undefined,
+      difficulty: 'normal',
+      aiRole: 'opponent',
+    }, { gameType: 'claim' });
+    expect(result.current.joinedRoom?.players?.some(player => player.isAI)).toBe(true);
   });
 });

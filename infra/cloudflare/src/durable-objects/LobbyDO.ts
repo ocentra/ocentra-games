@@ -258,7 +258,8 @@ export class LobbyDO implements DurableObject {
         action === LobbyDOSegment.Spectate ||
         action === LobbyDOSegment.Ready ||
         action === LobbyDOSegment.Unready ||
-        action === LobbyDOSegment.Start
+        action === LobbyDOSegment.Start ||
+        action === LobbyDOSegment.AddAI
       ) ? (parts[segmentIndex] ?? '') : null;
 
       if (request.method === HttpMethod.Get && (segment === LobbyDOSegment.Rooms || pathname.endsWith(`/${LobbyDOSegment.Rooms}`))) {
@@ -288,6 +289,9 @@ export class LobbyDO implements DurableObject {
       if (request.method === HttpMethod.Post && action === LobbyDOSegment.Start && roomIdForAction) {
         return this.startRoom(roomIdForAction, request);
       }
+      if (request.method === HttpMethod.Post && action === LobbyDOSegment.AddAI && roomIdForAction) {
+        return this.addAISeat(roomIdForAction, request);
+      }
       if (request.method === HttpMethod.Post && (segment === LobbyDOSegment.Message || pathname.endsWith(`/${LobbyDOSegment.Message}`))) {
         return this.json({ sent: true });
       }
@@ -307,6 +311,7 @@ export class LobbyDO implements DurableObject {
     const mode = url.searchParams.get(QueryParam.Mode) ?? '';
     const visibility = url.searchParams.get(QueryParam.Visibility) ?? '';
     const status = url.searchParams.get(QueryParam.Status) ?? 'waiting';
+    const search = this.cleanText(url.searchParams.get(QueryParam.Search), 128)?.toLowerCase() ?? '';
     const stakeType = url.searchParams.get(QueryParam.StakeType) ?? '';
     const allowAI = url.searchParams.get(QueryParam.AllowAI);
     const sort = url.searchParams.get(QueryParam.Sort) ?? 'newest';
@@ -324,6 +329,7 @@ export class LobbyDO implements DurableObject {
         if (stakeType && room.stakeType !== stakeType) continue;
         if (allowAI === 'true' && room.allowAI === false) continue;
         if (allowAI === 'false' && room.allowAI !== false) continue;
+        if (search && !this.roomMatchesSearch(room, search)) continue;
         const spectatorIds = room.spectatorIds ?? [];
         if (this.roomVisibility(room) === 'private' && (!userId || (!room.playerIds.includes(userId) && !spectatorIds.includes(userId)))) continue;
         const view = this.toRoomView(room, userId);
@@ -450,6 +456,63 @@ export class LobbyDO implements DurableObject {
     const result = await this.startRoomForUser(roomId, body.userId ?? '');
     if ('error' in result) return this.json({ error: result.error }, result.status);
     return this.json(result);
+  }
+
+  private async addAISeat(roomId: string, request: Request): Promise<Response> {
+    let body: {
+      userId: string;
+      displayName?: string;
+      aiProviderId?: string;
+      aiModelId?: string;
+      difficulty?: string;
+      aiRole?: string;
+    };
+    try {
+      body = await request.json();
+    } catch {
+      return this.json({ error: 'Invalid JSON' }, HttpStatus.BadRequest);
+    }
+    const userId = body.userId ?? '';
+    if (!userId) return this.json({ error: 'userId required' }, HttpStatus.BadRequest);
+    const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
+    if (!room) return this.json({ error: 'Room not found' }, HttpStatus.NotFound);
+    if (room.hostId !== userId) return this.json({ error: 'Only host can add AI seats' }, HttpStatus.Forbidden);
+    if (room.gameStatus !== 'waiting') return this.json({ error: 'Room not in waiting state' }, HttpStatus.Conflict);
+    if (room.allowAI === false) return this.json({ error: 'AI seats are disabled for this room' }, HttpStatus.Conflict);
+    if (room.playerIds.length >= room.maxPlayers) return this.json({ error: 'Room full' }, HttpStatus.Conflict);
+
+    const players = this.roomPlayers(room);
+    const occupiedSeats = new Set(players.map((player) => player.seatIndex));
+    let seatIndex = 0;
+    while (occupiedSeats.has(seatIndex)) seatIndex += 1;
+    const aiIndex = players.filter((player) => player.isAI).length + 1;
+    const aiId = `ai:${room.roomId}:${aiIndex}:${crypto.randomUUID()}`;
+    const aiRole = this.normalizeAIRole(body.aiRole ?? room.aiRole);
+    const aiDifficulty = this.normalizeAIDifficulty(body.difficulty ?? room.difficulty);
+    const aiPlayer: RoomPlayerStored = {
+      userId: aiId,
+      displayName: this.cleanText(body.displayName, 80) ?? `AI Seat ${aiIndex}`,
+      seatIndex,
+      isHost: false,
+      isReady: true,
+      isAI: true,
+      aiProviderId: this.cleanText(body.aiProviderId, 128) ?? room.aiProviderId,
+      aiModelId: this.cleanText(body.aiModelId, 128) ?? room.aiModelId,
+      difficulty: aiDifficulty,
+      role: aiRole,
+      joinedAt: Date.now(),
+    };
+    room.playerIds.push(aiId);
+    room.players = [...players, aiPlayer].sort((a, b) => a.seatIndex - b.seatIndex);
+    room.aiCount = (room.aiCount ?? 0) + 1;
+    room.stateVersion = (room.stateVersion ?? 0) + 1;
+    room.lastActivityAt = Date.now();
+    await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
+    await this.scheduleCleanupAlarm();
+    const view = this.toRoomView(room, userId);
+    this.broadcastToRoom(roomId, { type: 'ai-added', roomId, userId: aiId, room: view });
+    this.broadcastToRoom(roomId, { type: 'player-joined', userId: aiId, displayName: aiPlayer.displayName, room: view });
+    return this.json({ joined: true, roomId, room: view });
   }
 
   private async quickJoinRoom(request: Request): Promise<Response> {
@@ -739,6 +802,24 @@ export class LobbyDO implements DurableObject {
     if (typeof value !== 'string') return undefined;
     const next = value.trim().slice(0, maxLength);
     return next.length > 0 ? next : undefined;
+  }
+
+  private roomMatchesSearch(room: RoomStored, query: string): boolean {
+    const values = [
+      room.roomId,
+      room.roomName,
+      room.gameType,
+      room.variantId,
+      room.joinCode,
+      room.mode,
+      room.visibility,
+      room.aiProviderId,
+      room.aiModelId,
+      room.coachModelId,
+      room.region,
+      ...this.roomPlayers(room).map((player) => player.displayName ?? player.userId),
+    ];
+    return values.some((value) => typeof value === 'string' && value.toLowerCase().includes(query));
   }
 
   private createJoinCode(roomId: string): string {

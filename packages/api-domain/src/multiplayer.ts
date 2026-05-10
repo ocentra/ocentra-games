@@ -138,6 +138,7 @@ export interface ListLobbyRoomsOptions {
   status?: string;
   stakeType?: string;
   allowAI?: boolean;
+  search?: string;
   sort?: string;
   limit?: number;
   cursor?: string;
@@ -176,6 +177,15 @@ export interface StartLobbyRoomResponse {
     status: string;
   };
   room?: LobbyRoom;
+}
+
+export interface AddLobbyAISeatRequest {
+  userId: string;
+  displayName?: string;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty | string;
+  aiRole?: LobbyAIRole | string;
 }
 
 export interface MatchmakingQueueRequest {
@@ -240,6 +250,7 @@ export async function listLobbyRooms(options: ListLobbyRoomsOptions = {}): Promi
     [QueryParam.Status]: options.status,
     [QueryParam.StakeType]: options.stakeType,
     [QueryParam.AllowAI]: options.allowAI,
+    [QueryParam.Search]: options.search,
     [QueryParam.Sort]: options.sort,
     [QueryParam.Limit]: options.limit,
     [QueryParam.Cursor]: options.cursor,
@@ -316,6 +327,17 @@ export async function startLobbyRoom(
 ): Promise<StartLobbyRoomResponse> {
   return requestJson<StartLobbyRoomResponse, JoinLeaveLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Start(roomId), { [QueryParam.GameType]: options.gameType }),
+    { method: HttpMethod.Post, body: payload, authMode: 'required' }
+  );
+}
+
+export async function addLobbyAIRoomSeat(
+  roomId: string,
+  payload: AddLobbyAISeatRequest,
+  options: LobbyRoomPathOptions = {}
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, AddLobbyAISeatRequest>(
+    appendQuery(ApiEndpoint.Rooms.AddAI(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
 }

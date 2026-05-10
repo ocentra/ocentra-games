@@ -84,10 +84,38 @@ export type LobbyQuickJoinDraft = {
   maxPlayers?: number;
 };
 
+export type LobbyAddAISeatDraft = {
+  displayName?: string;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: 'easy' | 'normal' | 'hard' | 'expert';
+  aiRole?: 'opponent' | 'coach' | 'benchmark';
+};
+
+export type LobbyRoomListFilterDraft = {
+  search?: string;
+  mode?: 'casual' | 'ranked' | 'training' | 'benchmark' | 'stakes';
+  visibility?: 'public' | 'private' | 'friends';
+  status?: string;
+  stakeType?: 'free' | 'game-coin' | 'real-money';
+  allowAI?: boolean;
+  sort?: 'newest' | 'oldest' | 'fullest' | 'emptiest';
+};
+
 export type LobbyJoinCodeDraft = {
   code: string;
   displayName?: string;
 };
+
+export type LobbyNavigationTarget =
+  | 'lobby'
+  | 'tournaments'
+  | 'leaderboard'
+  | 'rewards'
+  | 'shop'
+  | 'profile'
+  | 'settings'
+  | 'social';
 
 export type LobbyPanelRect = {
   x: number;

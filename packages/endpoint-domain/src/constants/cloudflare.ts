@@ -94,6 +94,7 @@ export const EndpointIds = {
   LobbyRoomReady: 'lobby.roomReady' as EndpointId,
   LobbyRoomUnready: 'lobby.roomUnready' as EndpointId,
   LobbyRoomStart: 'lobby.roomStart' as EndpointId,
+  LobbyRoomAddAI: 'lobby.roomAddAI' as EndpointId,
   MatchmakingQueue: 'matchmaking.queue' as EndpointId,
   PresenceById: 'presence.byId' as EndpointId,
   PresenceFriends: 'presence.friends' as EndpointId,
@@ -428,6 +429,7 @@ export const ApiEndpoint = {
     Ready: (roomId: string): ApiPath => `${roomsBase}/${roomId}/ready` as ApiPath,
     Unready: (roomId: string): ApiPath => `${roomsBase}/${roomId}/unready` as ApiPath,
     Start: (roomId: string): ApiPath => `${roomsBase}/${roomId}/start` as ApiPath,
+    AddAI: (roomId: string): ApiPath => `${roomsBase}/${roomId}/ai` as ApiPath,
   },
 
   Ws: {

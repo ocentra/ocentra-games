@@ -296,14 +296,26 @@ export function Btn({
   onClick?: () => void;
   disabled?: boolean;
 }) {
+  const isDisabled = disabled || !onClick;
   const fill = active ? (tone === 'cyan' ? 'url(#lobbyCyan)' : tone === 'red' ? 'url(#lobbyRed)' : tone === 'gold' ? 'url(#lobbyGold)' : 'url(#lobbyPurple)') : '#071426';
   const stroke = active ? (tone === 'cyan' ? '#20e6ff' : tone === 'red' ? '#ff4655' : tone === 'gold' ? '#ffca4b' : '#6d35ff') : '#263d58';
+  const handleKeyDown = (event: React.KeyboardEvent<SVGGElement>) => {
+    if (isDisabled) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    onClick?.();
+  };
   return (
     <g
-      className={`lobby-ui-hit ${active ? 'is-active' : ''}`}
-      onClick={disabled ? undefined : onClick}
-      opacity={disabled ? 0.55 : 1}
+      className={`${isDisabled ? '' : 'lobby-ui-hit'} ${active ? 'is-active' : ''}`}
+      onClick={isDisabled ? undefined : onClick}
+      onKeyDown={handleKeyDown}
+      opacity={isDisabled ? 0.55 : 1}
       filter={active ? (tone === 'cyan' ? 'url(#lobbyCyanGlow)' : tone === 'gold' ? 'url(#lobbyGoldGlow)' : 'url(#lobbyPurpleGlow)') : undefined}
+      role="button"
+      aria-label={label}
+      aria-disabled={isDisabled}
+      tabIndex={isDisabled ? -1 : 0}
     >
       <rect x={x} y={y} width={w} height={h} rx={rx} fill={fill} stroke={stroke} strokeWidth="1" />
       <rect x={x + 2} y={y + 2} width={w - 4} height={Math.max(2, h * 0.3)} rx={Math.max(1, rx - 1)} fill="#fff" opacity="0.08" />

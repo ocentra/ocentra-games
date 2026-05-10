@@ -178,6 +178,7 @@ export const LobbyDOSegment = {
   Ready: 'ready',
   Unready: 'unready',
   Start: 'start',
+  AddAI: 'ai',
   Message: 'message',
 } as const;
 export const LobbyDO = {
@@ -190,6 +191,7 @@ export const LobbyDO = {
   Ready: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Ready}` as DOPath,
   Unready: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Unready}` as DOPath,
   Start: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Start}` as DOPath,
+  AddAI: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.AddAI}` as DOPath,
   Message: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}/${LobbyDOSegment.Message}` as DOPath,
 } as const;
 

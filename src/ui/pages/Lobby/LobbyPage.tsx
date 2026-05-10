@@ -8,17 +8,30 @@ import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import {
   LobbyPageContent,
+  type LobbyAddAISeatDraft,
   type LobbyCreateRoomDraft,
   type LobbyHeroMedia,
   type LobbyJoinCodeDraft,
+  type LobbyNavigationTarget,
   type LobbyQuickJoinDraft,
+  type LobbyRoomListFilterDraft,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
 import { APP_VERSION } from '@/constants/version';
 import { CreateRoomModal } from '@/ui/pages/Lobby/components/CreateRoomModal';
 import { useLobbyRooms } from '@/ui/pages/Lobby/hooks/useLobbyRooms';
 import { createDefaultLobbyRoomForm, type CreateLobbyRoomForm } from '@/ui/pages/Lobby/types';
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
-import { AppScreenToken, buildGameMatchmakingPath } from '@/ui/navigation/appRoutes';
+import {
+  AppScreenToken,
+  buildGameLobbyPath,
+  buildGameMatchmakingPath,
+  buildLeaderboardPath,
+  buildPlayerHubPath,
+  buildSettingsPath,
+  buildShopPath,
+  buildSocialPath,
+  buildTournamentsPath,
+} from '@/ui/navigation/appRoutes';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
@@ -75,6 +88,16 @@ function createRoomFormFromDraft(gameType: string, draft: LobbyCreateRoomDraft):
   };
 }
 
+function buildLobbyNavigationPath(target: LobbyNavigationTarget, gameType: string): string {
+  if (target === 'lobby') return buildGameLobbyPath(gameType);
+  if (target === 'tournaments') return buildTournamentsPath();
+  if (target === 'leaderboard') return buildLeaderboardPath();
+  if (target === 'profile') return buildPlayerHubPath();
+  if (target === 'settings') return buildSettingsPath();
+  if (target === 'social') return buildSocialPath();
+  return buildShopPath();
+}
+
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [assetContext, setAssetContext] = useState<LobbyAssetContext | null>(null);
@@ -121,7 +144,10 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     readyRoom,
     unreadyRoom,
     startRoom,
+    addAIRoomSeat,
     sendRoomChat,
+    filters,
+    setFilters,
   } = useLobbyRooms(activeGameType);
   const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
   const lobbyViewer = user
@@ -269,8 +295,23 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
             await startRoom(roomId, activeUser.uid);
           });
         }}
+        onAddAIRoom={(roomId, draft?: LobbyAddAISeatDraft) => {
+          void runWithSession(async (activeUser) => {
+            await addAIRoomSeat(roomId, activeUser.uid, draft);
+          });
+        }}
         onSendRoomChat={sendRoomChat}
         onMatchmaking={() => EventBus.instance.publish(new ShowScreenEvent(buildGameMatchmakingPath(activeGameType)))}
+        filters={filters}
+        onFilterRooms={(nextFilters: LobbyRoomListFilterDraft) => {
+          setFilters(nextFilters);
+        }}
+        onNavigate={(target: LobbyNavigationTarget) => {
+          EventBus.instance.publish(new ShowScreenEvent(buildLobbyNavigationPath(target, activeGameType)));
+        }}
+        onWallet={() => {
+          EventBus.instance.publish(new ShowScreenEvent(buildShopPath()));
+        }}
         layoutControls={assetContext?.layoutControls}
       />
 

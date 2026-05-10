@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import {
   LOBBY_CONFIG,
   MODE_TABS,
@@ -23,16 +23,65 @@ import type {
   LobbyFriendItem,
   LobbyHeaderStats,
   LobbyHeroMedia,
+  LobbyNavigationTarget,
   LobbyPanelRect,
+  LobbyRoomListFilterDraft,
   LobbyServerStatus,
   LobbyTableRow,
   LobbyUserSummary,
 } from './LobbyPageSvgTypes';
 import type { LobbyPageSvgControls } from './LobbyPageSvgSurfaceControls';
 
+const NavigationTargetByLabel: Record<string, LobbyNavigationTarget> = {
+  LOBBY: 'lobby',
+  TOURNAMENTS: 'tournaments',
+  LEADERBOARD: 'leaderboard',
+  REWARDS: 'rewards',
+  STORE: 'shop',
+  PROFILE: 'profile',
+  SETTINGS: 'settings',
+};
+
+function titleCaseFilter(value: string | undefined): string {
+  if (!value) return 'All';
+  return value
+    .split('-')
+    .map(part => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(' ');
+}
+
+function filterSummaryValue(label: string, filters?: LobbyRoomListFilterDraft): string {
+  if (!filters) return label === 'Status' ? 'Waiting' : label === 'Sort By' ? 'Newest' : 'All';
+  if (label === 'Mode') return titleCaseFilter(filters.mode);
+  if (label === 'Status') return titleCaseFilter(filters.status ?? 'waiting');
+  if (label === 'Visibility') return titleCaseFilter(filters.visibility);
+  if (label === 'Stakes') return titleCaseFilter(filters.stakeType);
+  if (label === 'AI') {
+    if (filters.allowAI === true) return 'Allowed';
+    if (filters.allowAI === false) return 'No AI';
+    return 'All';
+  }
+  if (label === 'Sort By') return titleCaseFilter(filters.sort ?? 'newest');
+  return 'All';
+}
+
+function handleSvgButtonKey(event: KeyboardEvent<SVGGElement>, action: () => void) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  action();
+}
+
 export function SidebarAction({ x, y, w, h, label, sub, icon, active, onClick }: { x: number; y: number; w: number; h: number; label: string; sub: string; icon: string; active: boolean; onClick: () => void }) {
   return (
-    <g className={`lobby-ui-hit ${active ? 'is-active' : ''}`} onClick={onClick} filter={active ? 'url(#lobbyPurpleGlow)' : undefined}>
+    <g
+      className={`lobby-ui-hit ${active ? 'is-active' : ''}`}
+      onClick={onClick}
+      onKeyDown={(event) => handleSvgButtonKey(event, onClick)}
+      filter={active ? 'url(#lobbyPurpleGlow)' : undefined}
+      role="button"
+      aria-label={label}
+      tabIndex={0}
+    >
       <rect x={x} y={y} width={w} height={h} rx="8" fill={active ? 'url(#lobbyPurpleSoft)' : '#071322'} stroke={active ? '#6d35ff' : '#1d344c'} />
       <rect x={x + 1} y={y + 1} width={w - 2} height={Math.min(18, h * 0.35)} rx="8" fill="#fff" opacity="0.045" />
       <Icon x={x + 18} y={y + (h - Math.min(28, h * 0.5)) / 2 - 2} type={icon} />
@@ -61,7 +110,7 @@ export function MiniRewardSpinner({ x, y, w, h, onClick }: { x: number; y: numbe
     return `M${p0x} ${p0y} L${p1x} ${p1y} A${r - 2} ${r - 2} 0 0 1 ${p2x} ${p2y} L${p3x} ${p3y} A${innerR} ${innerR} 0 0 0 ${p0x} ${p0y} Z`;
   };
   return (
-    <g className="lobby-ui-hit" onClick={onClick} filter="url(#lobbyPurpleGlow)">
+    <g className="lobby-ui-hit" onClick={onClick} onKeyDown={(event) => handleSvgButtonKey(event, onClick)} filter="url(#lobbyPurpleGlow)" role="button" aria-label={REWARD_SPINNER.title} tabIndex={0}>
       <rect x={x} y={y} width={w} height={h} rx="10" fill="#100f2d" stroke="#6d35ff" strokeWidth="1.2" />
       <CenterTxt x={x + 12} y={y + 10} w={w - 24} h={26} text={REWARD_SPINNER.title} size={12.8} weight="950" />
       <ellipse cx={cx} cy={cy + r * 0.96} rx={r * 0.92} ry="8" fill="#000" opacity="0.34" />
@@ -84,7 +133,19 @@ export function MiniRewardSpinner({ x, y, w, h, onClick }: { x: number; y: numbe
   );
 }
 
-export function Sidebar({ controls, panel, useSampleData, onOpenActionPopup }: { controls: LobbyPageSvgControls; panel: LobbyPanelRect; useSampleData: boolean; onOpenActionPopup: (type: string) => void }) {
+export function Sidebar({
+  controls,
+  panel,
+  useSampleData,
+  onOpenActionPopup,
+  onNavigate,
+}: {
+  controls: LobbyPageSvgControls;
+  panel: LobbyPanelRect;
+  useSampleData: boolean;
+  onOpenActionPopup: (type: string) => void;
+  onNavigate?: (target: LobbyNavigationTarget) => void;
+}) {
   const side = { ...controls.leftPanel, ...panel };
   const innerX = side.x + side.pad;
   const innerW = side.w - side.pad * 2;
@@ -115,7 +176,15 @@ export function Sidebar({ controls, panel, useSampleData, onOpenActionPopup }: {
         {SIDEBAR_NAV_ITEMS.map(([label, icon, color, active], i) => {
           const y = nav.y + 8 + i * (itemH + side.navGap);
           return (
-            <g key={label} className={`lobby-ui-hit ${active ? 'is-active' : ''}`}>
+            <g
+              key={label}
+              className={`lobby-ui-hit ${active ? 'is-active' : ''}`}
+              onClick={() => onNavigate?.(NavigationTargetByLabel[label] ?? 'lobby')}
+              onKeyDown={(event) => handleSvgButtonKey(event, () => onNavigate?.(NavigationTargetByLabel[label] ?? 'lobby'))}
+              role="button"
+              aria-label={label}
+              tabIndex={0}
+            >
               <rect x={nav.x + 4} y={y} width={nav.w - 8} height={itemH} rx="6" fill={active ? 'url(#lobbyPurpleSoft)' : '#06111f'} stroke={active ? '#6d35ff' : '#172b42'} />
               {active ? <rect x={nav.x + 4} y={y} width="4" height={itemH} rx="2" fill="#7d49ff" /> : null}
               <Icon x={nav.x + 22} y={y + Math.max(5, (itemH - 30) / 2)} type={icon} color={color} />
@@ -142,7 +211,7 @@ export function LayoutIconButton({ x, y, side, active, onClick, h }: { x: number
   const stroke = active ? '#ffcc4e' : '#54b7ff';
   const cy = y + h / 2;
   return (
-    <g className="lobby-ui-hit lobby-layout-icon" onClick={onClick} filter={active ? 'url(#lobbyGoldGlow)' : 'url(#lobbyFrameGlow)'}>
+    <g className="lobby-ui-hit lobby-layout-icon" onClick={onClick} onKeyDown={(event) => handleSvgButtonKey(event, onClick)} filter={active ? 'url(#lobbyGoldGlow)' : 'url(#lobbyFrameGlow)'} role="button" aria-label={`${side === 'left' ? 'Left' : 'Right'} panel toggle`} tabIndex={0}>
       <path d={bodyPath} fill={active ? '#17122b' : '#06111f'} stroke={stroke} strokeWidth="1.4" opacity="0.96" />
       <g stroke={stroke} strokeWidth="1.45" fill="none" strokeLinecap="round" strokeLinejoin="round">
         {side === 'left' ? (
@@ -169,6 +238,7 @@ export function Header({
   rightVisible,
   onToggleLeft,
   onToggleRight,
+  onWallet,
   controls,
   gameTitle,
   gameSubtitle,
@@ -180,6 +250,7 @@ export function Header({
   rightVisible: boolean;
   onToggleLeft: () => void;
   onToggleRight: () => void;
+  onWallet?: () => void;
   controls: LobbyPageSvgControls;
   gameTitle?: string;
   gameSubtitle?: string;
@@ -249,7 +320,7 @@ export function Header({
       <Panel x={rightGroupRight - header.statLargeW} y={header.statY} w={header.statLargeW} h={header.statLargeH} r={{ tl: 0, tr: 8, br: 8, bl: 0 }}>
         <CenterTxt x={rightGroupRight - header.statLargeW} y={header.statY + 10} w={header.statLargeW} h={22} text="Your Balance" size={10.4} opacity={0.75} />
         <CenterTxt x={rightGroupRight - header.statLargeW} y={header.statY + 33} w={header.statLargeW} h={25} text={stats.balance} size={14.5} weight="900" fill={controls.colors.gold} />
-        <Btn x={rightGroupRight - header.statLargeW + 12} y={header.statY + 62} w={header.statLargeW - 24} h={18} label="WALLET" active size={8.8} rx={5} />
+        <Btn x={rightGroupRight - header.statLargeW + 12} y={header.statY + 62} w={header.statLargeW - 24} h={18} label="WALLET" active size={8.8} rx={5} onClick={onWallet} disabled={!onWallet} />
       </Panel>
       <g textAnchor="middle">
         {heroMedia?.logoUrl ? (
@@ -282,7 +353,7 @@ export function ModeTabs({ selectedMode, onSelectMode, mainB, controls }: { sele
         const active = selectedMode === title;
         const radius = i === 0 ? { tl: 6, tr: 0, br: 0, bl: 6 } : i === MODE_TABS.length - 1 ? { tl: 0, tr: 6, br: 6, bl: 0 } : 0;
         return (
-          <g key={title} className={`lobby-ui-hit ${active ? 'is-active' : ''}`} onClick={() => onSelectMode(title)} filter={active ? 'url(#lobbyPurpleGlow)' : undefined}>
+          <g key={title} className={`lobby-ui-hit ${active ? 'is-active' : ''}`} onClick={() => onSelectMode(title)} onKeyDown={(event) => handleSvgButtonKey(event, () => onSelectMode(title))} filter={active ? 'url(#lobbyPurpleGlow)' : undefined} role="button" aria-label={title} tabIndex={0}>
             <path d={roundedRectPath(currentX, tabY, width, tabH, radius)} fill={active ? 'url(#lobbyPurpleSoft)' : '#071426'} stroke={active ? '#6d35ff' : '#243b56'} strokeWidth="1.15" />
             <CenterTxt x={currentX} y={tabY + (sub ? 5 : 0)} w={width} h={sub ? tabH * 0.54 : tabH} text={title} size={12} weight={active ? 900 : 760} fill={active ? '#f4edff' : '#d7e3f4'} />
             {sub ? <CenterTxt x={currentX} y={tabY + tabH * 0.52} w={width} h={tabH * 0.38} text={sub} size={9.2} weight="650" fill="#aebbd0" opacity={0.72} /> : null}
@@ -491,28 +562,28 @@ export function AllTableRow({
   );
 }
 
-export function FiltersBox({ x, y, w, h = 44, onOpenFilter }: { x: number; y: number; w: number; h?: number; onOpenFilter: () => void }) {
-  const filters = [
-    ['Players', 'Any', 118],
-    ['Status', 'Waiting', 132],
-    ['Visibility', 'All', 134],
-    ['Stakes', 'All', 118],
-    ['AI Allowed', 'All', 142],
-    ['Sort By', 'Newest', 144],
+export function FiltersBox({ x, y, w, h = 44, filters, onOpenFilter }: { x: number; y: number; w: number; h?: number; filters?: LobbyRoomListFilterDraft; onOpenFilter: () => void }) {
+  const filterItems = [
+    ['Mode', filterSummaryValue('Mode', filters), 118],
+    ['Status', filterSummaryValue('Status', filters), 132],
+    ['Visibility', filterSummaryValue('Visibility', filters), 134],
+    ['Stakes', filterSummaryValue('Stakes', filters), 118],
+    ['AI', filterSummaryValue('AI', filters), 142],
+    ['Sort By', filterSummaryValue('Sort By', filters), 144],
   ] as const;
   const gap = 10;
   const filterButtonW = 126;
-  const fixedW = filters.reduce((sum, f) => sum + f[2], 0) + filterButtonW + gap * filters.length;
+  const fixedW = filterItems.reduce((sum, f) => sum + f[2], 0) + filterButtonW + gap * filterItems.length;
   const scale = Math.min(1, (w - 16) / fixedW);
   let cursor = x + 8;
   return (
     <Panel x={x} y={y} w={w} h={h} r={8} stroke="#1d3b55" fill="#06101d">
-      {filters.map(([label, value, baseW]) => {
+      {filterItems.map(([label, value, baseW]) => {
         const currentX = cursor;
         const currentW = baseW * scale;
         cursor += currentW + gap * scale;
         return (
-          <g key={label} className="lobby-ui-hit">
+          <g key={label} className="lobby-ui-hit" onClick={onOpenFilter}>
             <rect x={currentX} y={y + (h - 34) / 2} width={currentW} height="34" rx="6" fill="#071321" stroke="#213a56" strokeWidth="1" />
             <Txt x={currentX + 14} y={y + h / 2 + 4} text={label} maxWidth={currentW * 0.48} size={11} weight="650" />
             <Txt x={currentX + currentW - 30} y={y + h / 2 + 4} text={value} maxWidth={currentW * 0.44} size={11} weight="760" anchor="end" />
@@ -534,10 +605,12 @@ export function Featured({
   onOpenPlayers,
   onOpenFeaturedCard,
   onOpenFilter,
+  onRefresh,
   onJoinRoom,
   onLeaveRoom,
   onSpectateRoom,
   busyRoomId,
+  filters,
   mainB,
   controls,
   featuredCards,
@@ -552,10 +625,12 @@ export function Featured({
   onOpenPlayers: (row: LobbyTableRow) => void;
   onOpenFeaturedCard: (card: FeaturedCardData) => void;
   onOpenFilter: () => void;
+  onRefresh: () => void;
   onJoinRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
   onSpectateRoom: (roomId: string) => void;
   busyRoomId: string | null;
+  filters?: LobbyRoomListFilterDraft;
   mainB: { x: number; w: number };
   controls: LobbyPageSvgControls;
   featuredCards: FeaturedCardData[];
@@ -613,8 +688,8 @@ export function Featured({
         }}>
           <Txt x={innerX + 16} y={innerY + 37} text="AVAILABLE TABLES" maxWidth={260} size={16} weight="950" />
           <Txt x={innerX + innerW - 220} y={innerY + 37} text={`Showing ${Math.min(tableRows.length, visibleRows)} of ${tableRows.length} tables`} maxWidth={180} size={12} opacity={0.78} />
-          <Btn x={innerX + innerW - 48} y={innerY + 20} w={34} h={28} label="⟳" size={14} />
-          <FiltersBox x={innerX + 12} y={innerY + 56} w={innerW - 24} h={44} onOpenFilter={onOpenFilter} />
+          <Btn x={innerX + innerW - 48} y={innerY + 20} w={34} h={28} label="REF" size={9} onClick={onRefresh} />
+          <FiltersBox x={innerX + 12} y={innerY + 56} w={innerW - 24} h={44} filters={filters} onOpenFilter={onOpenFilter} />
           <clipPath id="lobbyAllTablesRowsClip"><rect x={innerX + 10} y={innerY + 110} width={innerW - 20} height={innerH - 156} rx="8" /></clipPath>
           <g clipPath="url(#lobbyAllTablesRowsClip)">
             <g transform={`translate(0 ${-safeScroll * (rowH + rowGap)})`}>
@@ -805,6 +880,7 @@ export function RightRail({
   friends: friendItems,
   chatMessages,
   systemMessage,
+  onNavigate,
 }: {
   controls: LobbyPageSvgControls;
   panel: LobbyPanelRect;
@@ -814,6 +890,7 @@ export function RightRail({
   friends: LobbyFriendItem[];
   chatMessages: LobbyChatMessageItem[];
   systemMessage: string | null;
+  onNavigate?: (target: LobbyNavigationTarget) => void;
 }) {
   const rail = { ...controls.rightPanel, ...panel };
   const pad = 10;
@@ -832,7 +909,7 @@ export function RightRail({
         )) : (
           <LobbyEmptyState x={friends.x + 18} y={friends.y + 86} w={friends.w - 36} h={friends.h - 138} title="NO FRIENDS ONLINE" body="Friend presence will appear here when social data is connected." />
         )}
-        <Btn x={friends.x + 20} y={friends.y + friends.h - 38} w={friends.w - 40} h={34} label="VIEW ALL FRIENDS" size={11} />
+        <Btn x={friends.x + 20} y={friends.y + friends.h - 38} w={friends.w - 40} h={34} label="VIEW ALL FRIENDS" size={11} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
       </Panel>
       <Panel x={chat.x} y={chat.y} w={chat.w} h={chat.h} r={10} stroke="#193750" fill="rgba(4,10,18,0.18)">
         <Txt x={chat.x + 14} y={chat.y + 36} text="LOBBY CHAT" maxWidth={140} size={15} weight="950" />

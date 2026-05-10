@@ -56,6 +56,7 @@ import {
   ProgressionXpRequestSchema,
   PenaltyAppealRequestSchema,
   PenaltyAppealReviewRequestSchema,
+  RoomAddAIRequestSchema,
   RoomCreateRequestSchema,
   RoomJoinRequestSchema,
   RoomLeaveRequestSchema,
@@ -125,7 +126,8 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   const isReady = roomActionSegment === LobbyDOSegment.Ready;
   const isUnready = roomActionSegment === LobbyDOSegment.Unready;
   const isStart = roomActionSegment === LobbyDOSegment.Start;
-  const isRoomAction = isJoin || isLeave || isSpectate || isReady || isUnready || isStart;
+  const isAddAI = roomActionSegment === LobbyDOSegment.AddAI;
+  const isRoomAction = isJoin || isLeave || isSpectate || isReady || isUnready || isStart || isAddAI;
   const roomIdFromPath = isRoomAction ? roomOrActionSegment : '';
   const supportedMethods = (isQuickJoin || isRoomAction)
     ? [HttpMethod.Post]
@@ -204,11 +206,11 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
       logInfo('Lobby room create routed', getStackTrace(), { gameType: body.gameType, roomId, shardKey: shardForCreate, status: resCreate.status });
       return lobbyResponse(env, dataCreate, resCreate.status);
     }
-    if (isJoin || isLeave || isReady || isUnready || isStart) {
+    if (isJoin || isLeave || isReady || isUnready || isStart || isAddAI) {
       const { data, errorResponse } = await validateSchemaBody(
         request.clone(),
         env,
-        isJoin ? RoomJoinRequestSchema : isLeave ? RoomLeaveRequestSchema : isStart ? RoomStartRequestSchema : RoomReadyRequestSchema
+        isJoin ? RoomJoinRequestSchema : isLeave ? RoomLeaveRequestSchema : isStart ? RoomStartRequestSchema : isAddAI ? RoomAddAIRequestSchema : RoomReadyRequestSchema
       );
       if (errorResponse) return errorResponse;
       bodyText = JSON.stringify(data!);
@@ -231,6 +233,8 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
     if (visibilityQuery) params.set(QueryParam.Visibility, visibilityQuery);
     const statusQuery = url.searchParams.get(QueryParam.Status);
     if (statusQuery) params.set(QueryParam.Status, statusQuery);
+    const searchQuery = url.searchParams.get(QueryParam.Search);
+    if (searchQuery) params.set(QueryParam.Search, searchQuery);
     const stakeTypeQuery = url.searchParams.get(QueryParam.StakeType);
     if (stakeTypeQuery) params.set(QueryParam.StakeType, stakeTypeQuery);
     const allowAIQuery = url.searchParams.get(QueryParam.AllowAI);
@@ -275,7 +279,9 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
               ? LobbyDOPaths.Unready(shardKey, roomIdFromPath)
               : isStart
                 ? LobbyDOPaths.Start(shardKey, roomIdFromPath)
-                : LobbyDOPaths.Rooms(shardKey);
+                : isAddAI
+                  ? LobbyDOPaths.AddAI(shardKey, roomIdFromPath)
+                  : LobbyDOPaths.Rooms(shardKey);
     const stub = ns.get(ns.idFromName(shardKey));
     const res = await doFetch(stub, doPath, { method: request.method, body: bodyText });
     const data = await res.json().catch(() => ({}));

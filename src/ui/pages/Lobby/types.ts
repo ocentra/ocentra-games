@@ -58,6 +58,24 @@ export interface QuickJoinLobbyRoomForm {
   maxPlayers?: number;
 }
 
+export interface AddLobbyAIRoomSeatForm {
+  displayName?: string;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty;
+  aiRole?: LobbyAIRole;
+}
+
+export interface LobbyRoomListFilters {
+  search?: string;
+  mode?: LobbyRoomMode;
+  visibility?: LobbyVisibility;
+  status?: string;
+  stakeType?: LobbyStakeType;
+  allowAI?: boolean;
+  sort?: 'newest' | 'oldest' | 'fullest' | 'emptiest';
+}
+
 export interface LobbyRoomsState {
   rooms: LobbyRoom[];
   joinedRoom: LobbyRoom | null;
@@ -77,7 +95,10 @@ export interface LobbyRoomsState {
   readyRoom: (roomId: string, userId: string) => Promise<void>;
   unreadyRoom: (roomId: string, userId: string) => Promise<void>;
   startRoom: (roomId: string, userId: string) => Promise<void>;
+  addAIRoomSeat: (roomId: string, userId: string, form?: AddLobbyAIRoomSeatForm) => Promise<void>;
   sendRoomChat: (message: string) => void;
+  filters: LobbyRoomListFilters;
+  setFilters: (filters: LobbyRoomListFilters) => void;
 }
 
 export const DefaultCreateLobbyRoomForm: CreateLobbyRoomForm = {

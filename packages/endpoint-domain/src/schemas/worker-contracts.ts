@@ -243,6 +243,15 @@ export const RoomStartRequestSchema = schema.object({
   userId: UserIdSchema,
 }).strict();
 
+export const RoomAddAIRequestSchema = schema.object({
+  userId: UserIdSchema,
+  displayName: schema.string().min(1).max(80).optional(),
+  aiProviderId: schema.string().min(1).max(128).optional(),
+  aiModelId: schema.string().min(1).max(128).optional(),
+  difficulty: schema.enum(LobbyAIDifficultyValues).optional(),
+  aiRole: schema.enum(LobbyAIRoleValues).optional(),
+}).strict();
+
 export const MatchmakingQueueRequestSchema = schema.object({
   userId: UserIdSchema,
   displayName: schema.string().min(1).optional(),

@@ -20,34 +20,104 @@ import type {
   LobbyCreateRoomDraft,
   LobbyJoinCodeDraft,
   LobbyQuickJoinDraft,
+  LobbyRoomListFilterDraft,
   LobbyTableRow,
   LobbyUserSummary,
 } from './LobbyPageSvgTypes';
 import type { LobbyPageSvgControls } from './LobbyPageSvgSurfaceControls';
 
-export function FilterPopup({ open, onClose, canvas }: { open: boolean; onClose: () => void; canvas: LobbyCanvasRect }) {
+export function FilterPopup({
+  open,
+  onClose,
+  canvas,
+  filters,
+  onApply,
+}: {
+  open: boolean;
+  onClose: () => void;
+  canvas: LobbyCanvasRect;
+  filters?: LobbyRoomListFilterDraft;
+  onApply: (filters: LobbyRoomListFilterDraft) => void;
+}) {
   if (!open) return null;
+  return <FilterPopupContent key={JSON.stringify(filters ?? {})} onClose={onClose} canvas={canvas} filters={filters} onApply={onApply} />;
+}
+
+function FilterPopupContent({
+  onClose,
+  canvas,
+  filters,
+  onApply,
+}: {
+  onClose: () => void;
+  canvas: LobbyCanvasRect;
+  filters?: LobbyRoomListFilterDraft;
+  onApply: (filters: LobbyRoomListFilterDraft) => void;
+}) {
+  const [draft, setDraft] = useState<LobbyRoomListFilterDraft>({ status: 'waiting', sort: 'newest', ...filters });
   const { x, y, w, h } = centeredPopupRect(canvas, 1012, 610);
-  const filters = [
-    ['Players', ['Any', '1 / 4', '2 / 4', 'Open Seat']],
-    ['Status', ['Waiting', 'Live', 'Full', 'Invite Only']],
-    ['Visibility', ['All', 'Public', 'Private', 'Friends']],
-    ['Stakes', ['All', 'Free', '100 OCN', '500 OCN']],
-    ['AI Allowed', ['All', 'Real Players', 'AI vs AI', 'No AI']],
-    ['Sort By', ['Newest', 'Fastest', 'Most Players', 'Highest Stakes']],
-  ] as const;
+  const optionGroups = [
+    ['Mode', [
+      ['All', { mode: undefined }],
+      ['Casual', { mode: 'casual' }],
+      ['Ranked', { mode: 'ranked' }],
+      ['Training', { mode: 'training', allowAI: true }],
+      ['Benchmark', { mode: 'benchmark', allowAI: true }],
+      ['Stakes', { mode: 'stakes' }],
+    ]],
+    ['Status', [
+      ['All', { status: undefined }],
+      ['Waiting', { status: 'waiting' }],
+      ['Starting', { status: 'starting' }],
+      ['Active', { status: 'active' }],
+    ]],
+    ['Visibility', [
+      ['All', { visibility: undefined }],
+      ['Public', { visibility: 'public' }],
+      ['Private', { visibility: 'private' }],
+      ['Friends', { visibility: 'friends' }],
+    ]],
+    ['Stakes', [
+      ['All', { stakeType: undefined }],
+      ['Free', { stakeType: 'free' }],
+      ['Game Coin', { stakeType: 'game-coin' }],
+      ['Real Money', { stakeType: 'real-money' }],
+    ]],
+    ['AI Allowed', [
+      ['All', { allowAI: undefined }],
+      ['Allowed', { allowAI: true }],
+      ['No AI', { allowAI: false }],
+    ]],
+    ['Sort By', [
+      ['Newest', { sort: 'newest' }],
+      ['Oldest', { sort: 'oldest' }],
+      ['Fullest', { sort: 'fullest' }],
+      ['Emptiest', { sort: 'emptiest' }],
+    ]],
+  ] satisfies Array<[string, Array<[string, Partial<LobbyRoomListFilterDraft>]>]>;
   const colGap = 18;
   const colW = (w - 60 - colGap * 2) / 3;
+  const cleanAndApply = (next: LobbyRoomListFilterDraft) => {
+    const search = next.search?.trim();
+    onApply({
+      ...next,
+      search: search || undefined,
+    });
+    onClose();
+  };
+  const resetFilters = () => cleanAndApply({ status: 'waiting', sort: 'newest' });
+  const isSelected = (patch: Partial<LobbyRoomListFilterDraft>) => (
+    Object.entries(patch).every(([key, value]) => draft[key as keyof LobbyRoomListFilterDraft] === value)
+  );
   return (
     <g>
       <PopupBackdrop canvas={canvas} onClose={onClose} />
       <SideHandle x={x - 24} y={y + 212} side="left" />
       <SideHandle x={x + w} y={y + 212} side="right" />
       <PopupFrame x={x} y={y} w={w} h={h} title="Search & Filters" subtitle="Search tables, then narrow results by players, status, visibility, AI rules, stakes, and sort order." onClose={onClose} />
-      <rect x={x + 30} y={y + 92} width={w - 60} height="44" rx="8" fill="#071321" stroke="#24425d" />
-      <Txt x={x + 84} y={y + 120} text="Search table name, code, friend, rule, AI model, or stake..." maxWidth={w - 230} size={12} fill="#8fa4bb" opacity={0.82} />
-      <Btn x={x + w - 170} y={y + 99} w={118} h={30} label="SEARCH" active tone="cyan" size={11} />
-      {filters.map(([title, options], index) => {
+      <PopupTextInput x={x + 30} y={y + 92} w={w - 230} label="Search" value={draft.search ?? ''} placeholder="Table name, code, player, rule, AI model, or stake" onChange={(value) => setDraft(previous => ({ ...previous, search: value }))} />
+      <Btn x={x + w - 170} y={y + 101} w={118} h={30} label="SEARCH" active tone="cyan" size={11} onClick={() => cleanAndApply(draft)} />
+      {optionGroups.map(([title, options], index) => {
         const col = index % 3;
         const row = Math.floor(index / 3);
         const gx = x + 30 + col * (colW + colGap);
@@ -56,13 +126,13 @@ export function FilterPopup({ open, onClose, canvas }: { open: boolean; onClose:
           <g key={title}>
             <rect x={gx} y={gy} width={colW} height="158" rx="8" fill="#06111f" stroke="#203a55" />
             <Txt x={gx + 16} y={gy + 24} text={title.toUpperCase()} maxWidth={colW - 32} size={12} weight="950" fill="#9ff6ff" />
-            {options.map((option, i) => {
-              const selected = i === 0;
+            {options.map(([option, patch], i) => {
+              const selected = isSelected(patch);
               const ox = gx + 14 + (i % 2) * ((colW - 38) / 2 + 10);
               const oy = gy + 44 + Math.floor(i / 2) * 42;
               const ow = (colW - 38) / 2;
               return (
-                <g key={option} className="lobby-ui-hit">
+                <g key={option} className="lobby-ui-hit" onClick={() => setDraft(previous => ({ ...previous, ...patch }))}>
                   <rect x={ox} y={oy} width={ow} height="30" rx="5" fill={selected ? 'url(#lobbyPurpleSoft)' : '#071426'} stroke={selected ? '#6d35ff' : '#263d58'} />
                   <CenterTxt x={ox} y={oy} w={ow} h={30} text={option} size={10} weight={selected ? '900' : '650'} />
                 </g>
@@ -71,8 +141,8 @@ export function FilterPopup({ open, onClose, canvas }: { open: boolean; onClose:
           </g>
         );
       })}
-      <Btn x={x + w - 294} y={y + h - 68} w={112} h={30} label="RESET" size={10.5} />
-      <Btn x={x + w - 168} y={y + h - 68} w={116} h={30} label="APPLY" active tone="purple" size={11} onClick={onClose} />
+      <Btn x={x + w - 294} y={y + h - 68} w={112} h={30} label="RESET" size={10.5} onClick={resetFilters} />
+      <Btn x={x + w - 168} y={y + h - 68} w={116} h={30} label="APPLY" active tone="purple" size={11} onClick={() => cleanAndApply(draft)} />
     </g>
   );
 }

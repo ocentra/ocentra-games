@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  addLobbyAIRoomSeat,
   buildLobbyRoomWebSocketUrl,
   createLobbyRoom,
   joinLobbyRoom,
@@ -15,7 +16,9 @@ import {
 } from '@ocentra/api-domain/multiplayer';
 import type {
   CreateLobbyRoomForm,
+  AddLobbyAIRoomSeatForm,
   LobbyRoomChatMessage,
+  LobbyRoomListFilters,
   LobbyRoomsState,
   QuickJoinLobbyRoomForm,
 } from '@/ui/pages/Lobby/types';
@@ -90,6 +93,7 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
   const [joinedRoom, setJoinedRoom] = useState<LobbyRoom | null>(null);
   const [sessionUser, setSessionUser] = useState<LobbySessionUser | null>(null);
   const [chatMessages, setChatMessages] = useState<LobbyRoomChatMessage[]>([]);
+  const [filters, setFilters] = useState<LobbyRoomListFilters>({ status: 'waiting', sort: 'newest' });
   const [socketConnected, setSocketConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busyRoomId, setBusyRoomId] = useState<string | null>(null);
@@ -115,8 +119,14 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
       const response = await listLobbyRooms({
         userId: viewerUserId,
         gameType: gameTypeFilter,
+        mode: filters.mode,
+        visibility: filters.visibility,
+        status: filters.status,
+        stakeType: filters.stakeType,
+        allowAI: filters.allowAI,
+        search: filters.search,
         limit: RoomListLimit,
-        sort: 'newest',
+        sort: filters.sort ?? 'newest',
       });
       const nextRooms = response.rooms ?? [];
       setRooms(nextRooms);
@@ -133,7 +143,7 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     } finally {
       setLoading(false);
     }
-  }, [gameTypeFilter, sessionUser?.userId]);
+  }, [filters.allowAI, filters.mode, filters.search, filters.sort, filters.stakeType, filters.status, filters.visibility, gameTypeFilter, sessionUser?.userId]);
 
   const handleSocketMessage = useCallback((payload: LobbySocketMessage) => {
     if (payload.type === 'welcome') {
@@ -441,6 +451,32 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     }
   }, [applyActionRoom, gameTypeFilter, sessionUser?.displayName]);
 
+  const addAIRoomSeat = useCallback(async (roomId: string, userId: string, form: AddLobbyAIRoomSeatForm = {}) => {
+    if (!userId) {
+      setError('Sign in required');
+      return;
+    }
+
+    setBusyRoomId(roomId);
+    setError(null);
+
+    try {
+      const response = await addLobbyAIRoomSeat(roomId, {
+        userId,
+        displayName: form.displayName,
+        aiProviderId: form.aiProviderId,
+        aiModelId: form.aiModelId,
+        difficulty: form.difficulty,
+        aiRole: form.aiRole,
+      }, { gameType: gameTypeFilter });
+      applyActionRoom(response, userId, sessionUser?.displayName);
+    } catch (responseError) {
+      setError(responseError instanceof Error ? responseError.message : 'Failed to add AI seat');
+    } finally {
+      setBusyRoomId(null);
+    }
+  }, [applyActionRoom, gameTypeFilter, sessionUser?.displayName]);
+
   const sendRoomChat = useCallback((message: string) => {
     const content = message.trim();
     if (!content) return;
@@ -483,6 +519,9 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     readyRoom,
     unreadyRoom,
     startRoom,
+    addAIRoomSeat,
     sendRoomChat,
+    filters,
+    setFilters,
   };
 }

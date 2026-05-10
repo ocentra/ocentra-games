@@ -32,6 +32,7 @@ import {
   H,
   W,
   type FeaturedCardData,
+  type LobbyAddAISeatDraft,
   type LobbyActiveFilterItem,
   type LobbyChatMessageItem,
   type LobbyCreateRoomDraft,
@@ -39,9 +40,11 @@ import {
   type LobbyHeaderStats,
   type LobbyHeroMedia,
   type LobbyJoinCodeDraft,
+  type LobbyNavigationTarget,
   type LobbyPanelRect,
   type LobbyQuickJoinDraft,
   type LobbyRoomLike,
+  type LobbyRoomListFilterDraft,
   type LobbyRoomPlayer,
   type LobbyServerStatus,
   type LobbyTableRow,
@@ -78,8 +81,13 @@ export type LobbyPageSvgSurfaceProps = {
   onReadyRoom?: (roomId: string) => void;
   onUnreadyRoom?: (roomId: string) => void;
   onStartRoom?: (roomId: string) => void;
+  onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
   onMatchmaking: () => void;
+  filters?: LobbyRoomListFilterDraft;
+  onFilterRooms?: (filters: LobbyRoomListFilterDraft) => void;
+  onNavigate?: (target: LobbyNavigationTarget) => void;
+  onWallet?: () => void;
   controls?: Partial<LobbyPageSvgControls> | null;
   useSampleData?: boolean;
   viewer?: LobbyUserSummary | null;
@@ -256,6 +264,42 @@ function buildSeatList(room: LobbyRoomLike): Array<LobbyRoomPlayer | undefined> 
   return Array.from({ length: seatCount }, (_, index) => players.find(player => (player.seatIndex ?? index) === index));
 }
 
+function filtersForModeTab(title: string, current: LobbyRoomListFilterDraft | undefined): LobbyRoomListFilterDraft {
+  const base = {
+    status: current?.status ?? 'waiting',
+    sort: current?.sort ?? 'newest',
+    search: current?.search,
+    visibility: current?.visibility,
+  } satisfies LobbyRoomListFilterDraft;
+  if (title === 'REAL PLAYERS' || title === 'NO AI ALLOWED') return { ...base, allowAI: false, mode: undefined, stakeType: undefined };
+  if (title === 'AI VS AI BENCHMARK') return { ...base, mode: 'benchmark', allowAI: true, stakeType: undefined };
+  if (title === 'TRAINING (AI GUIDE)') return { ...base, mode: 'training', allowAI: true, stakeType: undefined };
+  if (title === 'STAKES / ENTRY') return { ...base, mode: 'stakes', stakeType: 'game-coin', allowAI: undefined };
+  return { ...base, mode: undefined, stakeType: undefined, allowAI: undefined };
+}
+
+function filtersForActivePreset(presetKey: string | null, current: LobbyRoomListFilterDraft | undefined): LobbyRoomListFilterDraft {
+  const base = {
+    status: current?.status ?? 'waiting',
+    sort: current?.sort ?? 'newest',
+    search: current?.search,
+    visibility: current?.visibility,
+  } satisfies LobbyRoomListFilterDraft;
+  if (!presetKey || presetKey === 'all') return { ...base, mode: undefined, stakeType: undefined, allowAI: undefined };
+  if (presetKey === 'ai-showdown') return { ...base, mode: 'benchmark', allowAI: true };
+  if (presetKey === 'ai-coach') return { ...base, mode: 'training', allowAI: true };
+  if (presetKey === 'high-stake') return { ...base, mode: 'stakes', stakeType: 'game-coin' };
+  if (presetKey === 'ranked' || presetKey === 'master') return { ...base, mode: 'ranked', allowAI: false };
+  if (presetKey === 'casual') return { ...base, mode: 'casual' };
+  return { ...base, allowAI: true };
+}
+
+function addAIRoleForRoom(room: LobbyRoomLike): LobbyAddAISeatDraft['aiRole'] {
+  if (room.mode === 'training') return 'coach';
+  if (room.mode === 'benchmark') return 'benchmark';
+  return 'opponent';
+}
+
 function JoinedRoomPanel({
   room,
   viewerUserId,
@@ -269,6 +313,7 @@ function JoinedRoomPanel({
   onReadyRoom,
   onUnreadyRoom,
   onStartRoom,
+  onAddAIRoom,
   onSendRoomChat,
   onLeaveRoom,
   onJoinRoom,
@@ -286,6 +331,7 @@ function JoinedRoomPanel({
   onReadyRoom?: (roomId: string) => void;
   onUnreadyRoom?: (roomId: string) => void;
   onStartRoom?: (roomId: string) => void;
+  onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
   onLeaveRoom: (roomId: string) => void;
   onJoinRoom: (roomId: string) => void;
@@ -311,6 +357,7 @@ function JoinedRoomPanel({
   const seatW = (leftW - 28 - (seatCols - 1) * 10) / seatCols;
   const seatH = 74;
   const disabled = busyRoomId === roomId;
+  const canAddAI = Boolean(onAddAIRoom && room.allowAI && isHost && !disabled && roomId && (room.currentPlayers ?? room.players?.length ?? 0) < (room.maxPlayers ?? 0));
 
   return (
     <g>
@@ -351,7 +398,7 @@ function JoinedRoomPanel({
           <Btn x={112} y={0} w={106} h={38} label="START" tone="gold" active={isHost && allHumansReady} disabled={!roomId || disabled || !isHost || !allHumansReady} onClick={() => roomId && onStartRoom?.(roomId)} />
           <Btn x={228} y={0} w={94} h={38} label="LEAVE" tone="red" active disabled={!roomId || disabled} onClick={() => roomId && onLeaveRoom(roomId)} />
           <Btn x={332} y={0} w={92} h={38} label="INVITE" tone="purple" disabled />
-          <Btn x={434} y={0} w={88} h={38} label="ADD AI" tone="purple" disabled={!room.allowAI} />
+          <Btn x={434} y={0} w={88} h={38} label="ADD AI" tone="purple" active={canAddAI} disabled={!canAddAI} onClick={() => roomId && onAddAIRoom?.(roomId, { aiRole: addAIRoleForRoom(room), difficulty: 'normal' })} />
           <Txt x={0} y={58} text={`CODE ${room.joinCode ?? room.roomId ?? ''}`} maxWidth={250} size={11} weight="850" fill="#9dc7d9" />
           <Txt x={268} y={58} text={`${room.stakeType ?? 'free'} / ${room.stakeStatus ?? 'none'} / ${room.chainStatus ?? 'local'}`} maxWidth={300} size={11} weight="850" fill="#9dc7d9" />
         </g>
@@ -426,6 +473,7 @@ export function LobbyPageSvgSurface({
   gameName,
   rooms,
   busyRoomId,
+  onRefresh,
   onCreateRoom,
   onQuickJoin,
   onJoinRoom,
@@ -435,8 +483,13 @@ export function LobbyPageSvgSurface({
   onReadyRoom,
   onUnreadyRoom,
   onStartRoom,
+  onAddAIRoom,
   onSendRoomChat,
   onMatchmaking,
+  filters,
+  onFilterRooms,
+  onNavigate,
+  onWallet,
   controls: controlsInput,
   useSampleData = false,
   viewer,
@@ -573,6 +626,16 @@ export function LobbyPageSvgSurface({
     setSeatedByRow(previous => ({ ...previous, [code]: seatIndex }));
     setPlayersPopupRow(null);
   };
+  const selectModeTab = (mode: string) => {
+    setSelectedMode(mode);
+    setActiveNowFilter(null);
+    onFilterRooms?.(filtersForModeTab(mode, filters));
+  };
+  const selectActiveFilter = (filter: string | null) => {
+    setActiveNowFilter(filter);
+    setSelectedFeaturedTab('FEATURED');
+    onFilterRooms?.(filtersForActivePreset(filter, filters));
+  };
 
   return (
     <div ref={hostRef} style={{ width: '100%', height: '100%', minHeight: 0, display: 'block', overflow: 'hidden', backgroundColor: 'transparent' }}>
@@ -627,7 +690,7 @@ export function LobbyPageSvgSurface({
         <g filter={hasPopup ? 'url(#lobbyPopupBgBlur)' : undefined} opacity={hasPopup ? controls.layout.popupBlurOpacity : 1} pointerEvents={hasPopup ? 'none' : 'auto'}>
           <Panel x={mainB.x} y={mainB.y} w={mainB.w} h={mainB.h} r={{ tl: controls.layout.mainRadius, tr: controls.layout.mainRadius, br: 0, bl: 0 }} stroke={controls.colors.panelStroke} fill="url(#lobbyPanelWarm)" shine={false} strokeWidth={controls.layout.panelStrokeWidth} />
           <g className={`lobby-left-panel-motion ${leftVisible ? 'is-visible' : 'is-hidden'}`} pointerEvents={leftVisible ? 'auto' : 'none'}>
-            <Sidebar controls={controls} panel={leftPanel} useSampleData={useSampleData} onOpenActionPopup={setActionPopup} />
+            <Sidebar controls={controls} panel={leftPanel} useSampleData={useSampleData} onOpenActionPopup={setActionPopup} onNavigate={onNavigate} />
           </g>
           <Header
             mainB={mainB}
@@ -635,13 +698,14 @@ export function LobbyPageSvgSurface({
             rightVisible={rightVisible}
             onToggleLeft={() => setLeftCollapsed(value => !value)}
             onToggleRight={() => setRightCollapsed(value => !value)}
+            onWallet={onWallet}
             controls={controls}
             gameTitle={(gameName ?? LOBBY_CONFIG.game.title).toUpperCase()}
             gameSubtitle={gameTagline}
             heroMedia={heroMedia}
             stats={headerStats}
           />
-          <ModeTabs selectedMode={selectedMode} onSelectMode={setSelectedMode} mainB={mainB} controls={controls} />
+          <ModeTabs selectedMode={selectedMode} onSelectMode={selectModeTab} mainB={mainB} controls={controls} />
           {activeJoinedRoom ? (
             <JoinedRoomPanel
               room={activeJoinedRoom}
@@ -656,6 +720,7 @@ export function LobbyPageSvgSurface({
               onReadyRoom={onReadyRoom}
               onUnreadyRoom={onUnreadyRoom}
               onStartRoom={onStartRoom}
+              onAddAIRoom={onAddAIRoom}
               onSendRoomChat={onSendRoomChat}
               onLeaveRoom={onLeaveRoom}
               onJoinRoom={onJoinRoom}
@@ -671,10 +736,12 @@ export function LobbyPageSvgSurface({
               onOpenPlayers={setPlayersPopupRow}
               onOpenFeaturedCard={setFeaturedCardPopup}
               onOpenFilter={() => setFilterPopup(true)}
+              onRefresh={onRefresh}
               onJoinRoom={onJoinRoom}
               onLeaveRoom={onLeaveRoom}
               onSpectateRoom={onSpectateRoom}
               busyRoomId={busyRoomId}
+              filters={filters}
               mainB={mainB}
               controls={controls}
               featuredCards={featuredCards}
@@ -683,10 +750,7 @@ export function LobbyPageSvgSurface({
             />
           )}
           {selectedFeaturedTab === 'FEATURED' && !activeJoinedRoom ? (
-            <ActiveNow mainB={mainB} controls={controls} y={controls.mainBody.filtersY} items={activeFilters} activeFilter={activeNowFilter} onSelectFilter={filter => {
-              setActiveNowFilter(filter);
-              setSelectedFeaturedTab('FEATURED');
-            }} />
+            <ActiveNow mainB={mainB} controls={controls} y={controls.mainBody.filtersY} items={activeFilters} activeFilter={activeNowFilter} onSelectFilter={selectActiveFilter} />
           ) : null}
           <g className={`lobby-right-panel-motion ${rightVisible ? 'is-visible' : 'is-hidden'}`} pointerEvents={rightVisible ? 'auto' : 'none'}>
             <RightRail
@@ -698,6 +762,7 @@ export function LobbyPageSvgSurface({
               friends={rightRailFriends}
               chatMessages={rightRailMessages}
               systemMessage={useSampleData ? 'High Stakes table is now full.' : null}
+              onNavigate={onNavigate}
             />
           </g>
           <FooterStatus serverOpen={serverOpen} onToggleServer={() => setServerOpen(value => !value)} mainB={mainB} controls={controls} server={serverStatus} />
@@ -733,7 +798,11 @@ export function LobbyPageSvgSurface({
             else if (card.roomId) onSpectateRoom(card.roomId);
           }}
         />
-        <FilterPopup open={filterPopup} onClose={() => setFilterPopup(false)} canvas={canvas} />
+        <FilterPopup open={filterPopup} onClose={() => setFilterPopup(false)} canvas={canvas} filters={filters} onApply={(nextFilters) => {
+          setSelectedFeaturedTab('ALL TABLES');
+          setActiveNowFilter(null);
+          onFilterRooms?.(nextFilters);
+        }} />
       </svg>
     </div>
   );

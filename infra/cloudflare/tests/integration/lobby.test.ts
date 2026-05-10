@@ -280,6 +280,15 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(secondPage.rooms?.[0]?.roomId).not.toBe(roomB.roomId);
     expect([roomA.roomId, roomC.roomId]).toContain(secondPage.rooms?.[0]?.roomId);
 
+    const searchRes = await worker.fetch(buildApiUrlWithQueryParams(ApiEndpoint.Rooms.Base, {
+      [QueryParam.GameType]: gameType,
+      [QueryParam.Search]: 'List B',
+      [QueryParam.Limit]: '10',
+    }, { baseUrl }), { method: HttpMethod.Get, headers: headers() }, token);
+    expect(searchRes.status).toBe(HttpStatus.Ok);
+    const searchData = await searchRes.json() as LobbyActionResponse;
+    expect(searchData.rooms?.map(room => room.roomId)).toEqual([roomB.roomId]);
+
     const unscopedRes = await worker.fetch(buildApiUrl(ApiEndpoint.Rooms.Base, { baseUrl }), {
       method: HttpMethod.Get,
       headers: headers(),
@@ -478,6 +487,60 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(aiSeat?.aiModelId).toBe('test-model');
     expect(aiSeat?.difficulty).toBe('normal');
     expect(aiSeat?.role).toBe('coach');
+
+    const hostId = `host-add-ai-${crypto.randomUUID().slice(0, 8)}`;
+    const gameType = `claim-add-ai-${crypto.randomUUID().slice(0, 8)}`;
+    const noAiRoom = await createLobbyRoom(token, {
+      hostId,
+      hostDisplayName: 'No AI Host',
+      gameType,
+      roomName: 'No AI Add Table',
+      maxPlayers: 3,
+      allowAI: false,
+      aiCount: 0,
+    });
+    const noAiAddRes = await worker.fetch(gameScopedUrl(ApiEndpoint.Rooms.AddAI(noAiRoom.roomId!), gameType), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ userId: hostId, aiRole: 'opponent', difficulty: 'normal' }),
+    }, token);
+    expect(noAiAddRes.status).toBe(HttpStatus.Conflict);
+    await noAiAddRes.text().catch(() => undefined);
+
+    const aiHostId = `host-ai-add-${crypto.randomUUID().slice(0, 8)}`;
+    const aiGameType = `claim-ai-add-${crypto.randomUUID().slice(0, 8)}`;
+    const aiRoom = await createLobbyRoom(token, {
+      hostId: aiHostId,
+      hostDisplayName: 'AI Add Host',
+      gameType: aiGameType,
+      roomName: 'AI Add Table',
+      mode: 'benchmark',
+      maxPlayers: 3,
+      allowAI: true,
+      aiCount: 0,
+    });
+    const nonHostAddRes = await worker.fetch(gameScopedUrl(ApiEndpoint.Rooms.AddAI(aiRoom.roomId!), aiGameType), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ userId: `guest-ai-${crypto.randomUUID().slice(0, 8)}`, aiRole: 'benchmark', difficulty: 'hard' }),
+    }, token);
+    expect(nonHostAddRes.status).toBe(HttpStatus.Forbidden);
+    await nonHostAddRes.text().catch(() => undefined);
+
+    const addRes = await worker.fetch(gameScopedUrl(ApiEndpoint.Rooms.AddAI(aiRoom.roomId!), aiGameType), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ userId: aiHostId, aiProviderId: 'test-provider', aiModelId: 'test-model', aiRole: 'benchmark', difficulty: 'hard' }),
+    }, token);
+    expect(addRes.status).toBe(HttpStatus.Ok);
+    const addData = await addRes.json() as LobbyActionResponse;
+    expect(addData.joined).toBe(true);
+    expect(addData.room?.aiCount).toBe(1);
+    const addedSeat = addData.room?.players?.find(player => player.isAI);
+    expect(addedSeat?.aiProviderId).toBe('test-provider');
+    expect(addedSeat?.aiModelId).toBe('test-model');
+    expect(addedSeat?.difficulty).toBe('hard');
+    expect(addedSeat?.role).toBe('benchmark');
   });
 
   it(testName('Lobby stakes: blocks unsupported real-money and failed game-coin locks'), async () => {

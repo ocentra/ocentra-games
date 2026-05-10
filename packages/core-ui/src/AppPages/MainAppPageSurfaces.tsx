@@ -8,12 +8,15 @@ import type {
 } from './AppPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type {
+  LobbyAddAISeatDraft,
   LobbyCreateRoomDraft,
   LobbyChatMessageItem,
   LobbyFriendItem,
   LobbyHeroMedia,
   LobbyJoinCodeDraft,
+  LobbyNavigationTarget,
   LobbyQuickJoinDraft,
+  LobbyRoomListFilterDraft,
   LobbyRoomPlayer,
   LobbyServerStatus,
   LobbyUserSummary,
@@ -26,10 +29,13 @@ export type {
 } from './AppPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type {
+  LobbyAddAISeatDraft,
   LobbyCreateRoomDraft,
   LobbyHeroMedia,
   LobbyJoinCodeDraft,
+  LobbyNavigationTarget,
   LobbyQuickJoinDraft,
+  LobbyRoomListFilterDraft,
 } from './Lobby/LobbyPageSvgTypes';
 
 export type SocialFriend = { friendId: string };
@@ -914,8 +920,13 @@ export function LobbyPageContent({
   onReadyRoom,
   onUnreadyRoom,
   onStartRoom,
+  onAddAIRoom,
   onSendRoomChat,
   onMatchmaking,
+  filters,
+  onFilterRooms,
+  onNavigate,
+  onWallet,
   layoutControls,
 }: {
   loading: boolean;
@@ -946,8 +957,13 @@ export function LobbyPageContent({
   onReadyRoom?: (roomId: string) => void;
   onUnreadyRoom?: (roomId: string) => void;
   onStartRoom?: (roomId: string) => void;
+  onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
   onMatchmaking: () => void;
+  filters?: LobbyRoomListFilterDraft;
+  onFilterRooms?: (filters: LobbyRoomListFilterDraft) => void;
+  onNavigate?: (target: LobbyNavigationTarget) => void;
+  onWallet?: () => void;
 } & LobbyPageSurfaceControlProps) {
   return (
     <LobbyPageSvgSurface
@@ -979,8 +995,13 @@ export function LobbyPageContent({
       onReadyRoom={onReadyRoom}
       onUnreadyRoom={onUnreadyRoom}
       onStartRoom={onStartRoom}
+      onAddAIRoom={onAddAIRoom}
       onSendRoomChat={onSendRoomChat}
       onMatchmaking={onMatchmaking}
+      filters={filters}
+      onFilterRooms={onFilterRooms}
+      onNavigate={onNavigate}
+      onWallet={onWallet}
       controls={layoutControls}
     />
   );
