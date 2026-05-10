@@ -15,13 +15,26 @@ export type LobbyRoomLike = {
   gameStatus?: string;
   status?: string;
   hostId?: string;
+  joinCode?: string;
   allowAI?: boolean;
   aiCount?: number;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: string;
+  aiRole?: string;
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: string;
   allowSpectators?: boolean;
   stakeType?: string;
   stakeAmount?: number;
+  stakeStatus?: string;
+  stakeEscrowId?: string;
+  chainStatus?: string;
   turnTimerSeconds?: number;
   region?: string;
+  matchId?: string;
+  stateVersion?: number;
   viewerJoined?: boolean;
   viewerSpectating?: boolean;
   players?: LobbyRoomPlayer[];
@@ -35,6 +48,10 @@ export type LobbyRoomPlayer = {
   isHost?: boolean;
   isReady?: boolean;
   isAI?: boolean;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: string;
+  role?: string;
 };
 
 export type LobbyCreateRoomDraft = {
@@ -45,6 +62,13 @@ export type LobbyCreateRoomDraft = {
   maxPlayers?: number;
   allowAI?: boolean;
   aiCount?: number;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: 'easy' | 'normal' | 'hard' | 'expert';
+  aiRole?: 'opponent' | 'coach' | 'benchmark';
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: 'off' | 'hints' | 'guided' | 'review';
   allowSpectators?: boolean;
   stakeType?: 'free' | 'game-coin' | 'real-money';
   stakeAmount?: number;

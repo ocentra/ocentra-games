@@ -1,4 +1,4 @@
-import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
+import { cloudflarePool, cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import { defineConfig, type UserConfig, type PluginOption } from 'vitest/config';
 
 type WorkerConfigFactory = (context: { inject: (key: string) => string }) => Record<string, unknown>;
@@ -23,6 +23,9 @@ function normalizePlugins(plugins: UserConfig['plugins']): PluginOption[] {
 export function defineWorkersConfig(config: LegacyWorkersConfig): ReturnType<typeof defineConfig> {
   const testConfig: LegacyTestConfig = { ...(config.test ?? {}) };
   const workerFactory = testConfig.poolOptions?.workers;
+  const workersOptions = workerFactory
+    ? ({ inject }: { inject: (key: string) => string }) => workerFactory({ inject })
+    : undefined;
 
   if (testConfig.poolOptions) {
     const poolOptions = { ...testConfig.poolOptions };
@@ -38,10 +41,15 @@ export function defineWorkersConfig(config: LegacyWorkersConfig): ReturnType<typ
     ...config,
     plugins: workerFactory
       ? [
-        cloudflareTest(({ inject }) => workerFactory({ inject })),
+        cloudflareTest(workersOptions),
         ...normalizePlugins(config.plugins),
       ]
       : normalizePlugins(config.plugins),
-    test: testConfig,
+    test: workerFactory
+      ? {
+        ...testConfig,
+        pool: cloudflarePool(workersOptions),
+      }
+      : testConfig,
   });
 }

@@ -5,6 +5,7 @@ export const QueryParam = {
   Type: 'type',
   Info: 'info',
   GameId: 'gameId',
+  UserId: 'userId',
   GameType: 'gameType',
   RoomId: 'roomId',
   AssetPath: 'assetPath',

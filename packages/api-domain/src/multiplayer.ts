@@ -1,6 +1,7 @@
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
+import { buildApiUrlWithQueryParams } from '@ocentra/endpoint-domain/utils/url-builder';
 import { requestJson } from './httpClient';
 
 export type LobbyRoomType = 'lobby' | 'game' | 'tournament' | 'private';
@@ -73,6 +74,25 @@ export interface LobbyRoomsResponse {
   limit?: number;
 }
 
+export interface LobbyRoomActionResponse {
+  joined?: boolean;
+  spectating?: boolean;
+  created?: boolean;
+  left?: boolean;
+  ready?: boolean;
+  started?: boolean;
+  roomId?: string;
+  matchId?: string;
+  reconnectToken?: string;
+  room?: LobbyRoom;
+  handoff?: {
+    roomId: string;
+    matchId: string;
+    gameType?: string;
+    status: string;
+  };
+}
+
 export interface CreateLobbyRoomRequest {
   hostId: string;
   hostDisplayName?: string;
@@ -111,6 +131,7 @@ export interface JoinLeaveLobbyRoomRequest {
 }
 
 export interface ListLobbyRoomsOptions {
+  userId?: string;
   gameType?: string;
   mode?: string;
   visibility?: string;
@@ -136,6 +157,12 @@ export interface QuickJoinLobbyRoomRequest {
   stakeType?: LobbyStakeType | string;
   maxPlayers?: number;
   createIfMissing?: boolean;
+}
+
+export interface LobbyRoomWebSocketOptions {
+  gameType: string;
+  roomId: string;
+  baseUrl?: string;
 }
 
 export interface StartLobbyRoomResponse {
@@ -184,8 +211,29 @@ function appendQuery(
   return raw.length === 0 ? endpoint : `${endpoint}?${raw}`;
 }
 
+function getBrowserBaseUrl(baseUrl?: string): string {
+  if (baseUrl && baseUrl.length > 0) return baseUrl;
+  if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin;
+  throw new Error('Base URL unavailable');
+}
+
+function toWebSocketUrl(url: string): string {
+  const resolved = new URL(url);
+  resolved.protocol = resolved.protocol === 'https:' ? 'wss:' : 'ws:';
+  return resolved.toString();
+}
+
+export function buildLobbyRoomWebSocketUrl(options: LobbyRoomWebSocketOptions): string {
+  const httpUrl = buildApiUrlWithQueryParams(ApiEndpoint.Ws.Lobby, {
+    [QueryParam.GameType]: options.gameType,
+    [QueryParam.RoomId]: options.roomId,
+  }, { baseUrl: getBrowserBaseUrl(options.baseUrl) });
+  return toWebSocketUrl(httpUrl);
+}
+
 export async function listLobbyRooms(options: ListLobbyRoomsOptions = {}): Promise<LobbyRoomsResponse> {
   return requestJson<LobbyRoomsResponse>(appendQuery(ApiEndpoint.Rooms.Base, {
+    [QueryParam.UserId]: options.userId,
     [QueryParam.GameType]: options.gameType,
     [QueryParam.Mode]: options.mode,
     [QueryParam.Visibility]: options.visibility,
@@ -198,8 +246,8 @@ export async function listLobbyRooms(options: ListLobbyRoomsOptions = {}): Promi
   }));
 }
 
-export async function createLobbyRoom(payload: CreateLobbyRoomRequest): Promise<LobbyRoom> {
-  return requestJson<LobbyRoom, CreateLobbyRoomRequest>(ApiEndpoint.Rooms.Base, {
+export async function createLobbyRoom(payload: CreateLobbyRoomRequest): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, CreateLobbyRoomRequest>(ApiEndpoint.Rooms.Base, {
     method: HttpMethod.Post,
     body: payload,
     authMode: 'required',
@@ -210,8 +258,8 @@ export async function joinLobbyRoom(
   roomId: string,
   payload: JoinLobbyRoomRequest,
   options: LobbyRoomPathOptions = {}
-): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, JoinLobbyRoomRequest>(
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, JoinLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Join(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
@@ -221,8 +269,8 @@ export async function leaveLobbyRoom(
   roomId: string,
   payload: JoinLeaveLobbyRoomRequest,
   options: LobbyRoomPathOptions = {}
-): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, JoinLeaveLobbyRoomRequest>(
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, JoinLeaveLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Leave(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
@@ -232,8 +280,8 @@ export async function spectateLobbyRoom(
   roomId: string,
   payload: JoinLobbyRoomRequest,
   options: LobbyRoomPathOptions = {}
-): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, JoinLobbyRoomRequest>(
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, JoinLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Spectate(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
@@ -243,8 +291,8 @@ export async function readyLobbyRoom(
   roomId: string,
   payload: JoinLeaveLobbyRoomRequest,
   options: LobbyRoomPathOptions = {}
-): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, JoinLeaveLobbyRoomRequest>(
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, JoinLeaveLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Ready(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
@@ -254,8 +302,8 @@ export async function unreadyLobbyRoom(
   roomId: string,
   payload: JoinLeaveLobbyRoomRequest,
   options: LobbyRoomPathOptions = {}
-): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, JoinLeaveLobbyRoomRequest>(
+): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, JoinLeaveLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Unready(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
@@ -272,8 +320,8 @@ export async function startLobbyRoom(
   );
 }
 
-export async function quickJoinLobbyRoom(payload: QuickJoinLobbyRoomRequest): Promise<Record<string, unknown>> {
-  return requestJson<Record<string, unknown>, QuickJoinLobbyRoomRequest>(
+export async function quickJoinLobbyRoom(payload: QuickJoinLobbyRoomRequest): Promise<LobbyRoomActionResponse> {
+  return requestJson<LobbyRoomActionResponse, QuickJoinLobbyRoomRequest>(
     ApiEndpoint.Rooms.QuickJoin,
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );

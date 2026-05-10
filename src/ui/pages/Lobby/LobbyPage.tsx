@@ -59,6 +59,13 @@ function createRoomFormFromDraft(gameType: string, draft: LobbyCreateRoomDraft):
     gameType,
     allowAI: draft.allowAI ?? true,
     aiCount: draft.aiCount ?? 0,
+    aiProviderId: draft.aiProviderId,
+    aiModelId: draft.aiModelId,
+    difficulty: draft.difficulty,
+    aiRole: draft.aiRole,
+    coachEnabled: draft.coachEnabled,
+    coachModelId: draft.coachModelId,
+    guideMode: draft.guideMode,
     allowSpectators: draft.allowSpectators ?? true,
     stakeType: draft.stakeType ?? 'free',
     stakeAmount: draft.stakeAmount ?? 0,
@@ -98,6 +105,9 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
   }, [requestedGameType]);
   const {
     rooms,
+    joinedRoom,
+    chatMessages,
+    server,
     loading,
     busyRoomId,
     creating,
@@ -108,6 +118,10 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     joinRoom,
     spectateRoom,
     leaveRoom,
+    readyRoom,
+    unreadyRoom,
+    startRoom,
+    sendRoomChat,
   } = useLobbyRooms(activeGameType);
   const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
   const lobbyViewer = user
@@ -190,9 +204,11 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         busyRoomId={busyRoomId}
         useSampleData={false}
         viewer={lobbyViewer}
+        viewerUserId={user?.uid}
+        joinedRoom={joinedRoom}
         friends={[]}
-        chatMessages={[]}
-        server={null}
+        chatMessages={chatMessages}
+        server={server}
         minPlayers={assetContext?.minPlayers}
         maxPlayers={assetContext?.maxPlayers}
         gameTagline={assetContext?.tagline}
@@ -238,6 +254,22 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
             await leaveRoom(roomId, activeUser.uid);
           });
         }}
+        onReadyRoom={(roomId) => {
+          void runWithSession(async (activeUser) => {
+            await readyRoom(roomId, activeUser.uid);
+          });
+        }}
+        onUnreadyRoom={(roomId) => {
+          void runWithSession(async (activeUser) => {
+            await unreadyRoom(roomId, activeUser.uid);
+          });
+        }}
+        onStartRoom={(roomId) => {
+          void runWithSession(async (activeUser) => {
+            await startRoom(roomId, activeUser.uid);
+          });
+        }}
+        onSendRoomChat={sendRoomChat}
         onMatchmaking={() => EventBus.instance.publish(new ShowScreenEvent(buildGameMatchmakingPath(activeGameType)))}
         layoutControls={assetContext?.layoutControls}
       />

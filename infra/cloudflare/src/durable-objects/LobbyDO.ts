@@ -302,7 +302,7 @@ export class LobbyDO implements DurableObject {
   private async listRooms(request: Request): Promise<Response> {
     await this.cleanupStaleRooms(Date.now());
     const url = new URL(request.url, 'http://dummy');
-    const userId = url.searchParams.get('userId') ?? undefined;
+    const userId = url.searchParams.get(QueryParam.UserId) ?? undefined;
     const gameType = url.searchParams.get(QueryParam.GameType) ?? '';
     const mode = url.searchParams.get(QueryParam.Mode) ?? '';
     const visibility = url.searchParams.get(QueryParam.Visibility) ?? '';

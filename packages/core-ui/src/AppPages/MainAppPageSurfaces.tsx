@@ -105,13 +105,26 @@ export type LobbyRoomLike = {
   gameStatus?: string;
   status?: string;
   hostId?: string;
+  joinCode?: string;
   allowAI?: boolean;
   aiCount?: number;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: string;
+  aiRole?: string;
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: string;
   allowSpectators?: boolean;
   stakeType?: string;
   stakeAmount?: number;
+  stakeStatus?: string;
+  stakeEscrowId?: string;
+  chainStatus?: string;
   turnTimerSeconds?: number;
   region?: string;
+  matchId?: string;
+  stateVersion?: number;
   viewerJoined?: boolean;
   viewerSpectating?: boolean;
   players?: LobbyRoomPlayer[];
@@ -882,6 +895,8 @@ export function LobbyPageContent({
   busyRoomId,
   useSampleData,
   viewer,
+  viewerUserId,
+  joinedRoom,
   friends,
   chatMessages,
   server,
@@ -896,6 +911,10 @@ export function LobbyPageContent({
   onJoinRoomCode,
   onSpectateRoom,
   onLeaveRoom,
+  onReadyRoom,
+  onUnreadyRoom,
+  onStartRoom,
+  onSendRoomChat,
   onMatchmaking,
   layoutControls,
 }: {
@@ -908,6 +927,8 @@ export function LobbyPageContent({
   busyRoomId: string | null;
   useSampleData?: boolean;
   viewer?: LobbyUserSummary | null;
+  viewerUserId?: string | null;
+  joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
   server?: LobbyServerStatus | null;
@@ -922,6 +943,10 @@ export function LobbyPageContent({
   onJoinRoomCode: (draft: LobbyJoinCodeDraft) => void;
   onSpectateRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
+  onReadyRoom?: (roomId: string) => void;
+  onUnreadyRoom?: (roomId: string) => void;
+  onStartRoom?: (roomId: string) => void;
+  onSendRoomChat?: (message: string) => void;
   onMatchmaking: () => void;
 } & LobbyPageSurfaceControlProps) {
   return (
@@ -935,6 +960,8 @@ export function LobbyPageContent({
       busyRoomId={busyRoomId}
       useSampleData={useSampleData}
       viewer={viewer}
+      viewerUserId={viewerUserId ?? undefined}
+      joinedRoom={joinedRoom}
       friends={friends}
       chatMessages={chatMessages}
       server={server}
@@ -949,6 +976,10 @@ export function LobbyPageContent({
       onJoinRoomCode={onJoinRoomCode}
       onSpectateRoom={onSpectateRoom}
       onLeaveRoom={onLeaveRoom}
+      onReadyRoom={onReadyRoom}
+      onUnreadyRoom={onUnreadyRoom}
+      onStartRoom={onStartRoom}
+      onSendRoomChat={onSendRoomChat}
       onMatchmaking={onMatchmaking}
       controls={layoutControls}
     />

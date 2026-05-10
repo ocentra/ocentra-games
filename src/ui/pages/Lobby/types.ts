@@ -1,8 +1,11 @@
 import type {
   LobbyRoom,
+  LobbyAIDifficulty,
+  LobbyAIRole,
   LobbyRoomMode,
   LobbyRoomType,
   LobbyStakeType,
+  LobbyTrainingGuideMode,
   LobbyVisibility,
 } from '@ocentra/api-domain/multiplayer';
 
@@ -16,12 +19,36 @@ export interface CreateLobbyRoomForm {
   variantId?: string;
   allowAI: boolean;
   aiCount: number;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty;
+  aiRole?: LobbyAIRole;
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: LobbyTrainingGuideMode;
   allowSpectators: boolean;
   stakeType: LobbyStakeType;
   stakeAmount: number;
   turnTimerSeconds: number;
   region: string;
   isPrivate: boolean;
+}
+
+export interface LobbyRoomChatMessage {
+  name: string;
+  msg: string;
+  ago: string;
+  avatarUrl?: string | null;
+}
+
+export interface LobbyRoomServerStatus {
+  active: string;
+  ping: string;
+  options: Array<{
+    name: string;
+    ping: string;
+    active: boolean;
+  }>;
 }
 
 export interface QuickJoinLobbyRoomForm {
@@ -33,6 +60,10 @@ export interface QuickJoinLobbyRoomForm {
 
 export interface LobbyRoomsState {
   rooms: LobbyRoom[];
+  joinedRoom: LobbyRoom | null;
+  chatMessages: LobbyRoomChatMessage[];
+  server: LobbyRoomServerStatus | null;
+  socketConnected: boolean;
   loading: boolean;
   busyRoomId: string | null;
   creating: boolean;
@@ -43,6 +74,10 @@ export interface LobbyRoomsState {
   joinRoom: (roomId: string, userId: string, displayName?: string) => Promise<void>;
   spectateRoom: (roomId: string, userId: string, displayName?: string) => Promise<void>;
   leaveRoom: (roomId: string, userId: string) => Promise<void>;
+  readyRoom: (roomId: string, userId: string) => Promise<void>;
+  unreadyRoom: (roomId: string, userId: string) => Promise<void>;
+  startRoom: (roomId: string, userId: string) => Promise<void>;
+  sendRoomChat: (message: string) => void;
 }
 
 export const DefaultCreateLobbyRoomForm: CreateLobbyRoomForm = {
@@ -53,6 +88,10 @@ export const DefaultCreateLobbyRoomForm: CreateLobbyRoomForm = {
   gameType: 'claim',
   allowAI: true,
   aiCount: 0,
+  difficulty: 'normal',
+  aiRole: 'opponent',
+  coachEnabled: false,
+  guideMode: 'off',
   allowSpectators: true,
   stakeType: 'free',
   stakeAmount: 0,

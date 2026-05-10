@@ -12,8 +12,12 @@ import {
 } from './LobbyPageSvgData';
 import { roundedRectPath } from './LobbyPageSvgGeometry';
 import {
+  Avatar,
+  Btn,
+  CenterTxt,
   Defs,
   Panel,
+  Txt,
 } from './LobbyPageSvgPrimitives';
 import {
   ActiveNow,
@@ -38,6 +42,7 @@ import {
   type LobbyPanelRect,
   type LobbyQuickJoinDraft,
   type LobbyRoomLike,
+  type LobbyRoomPlayer,
   type LobbyServerStatus,
   type LobbyTableRow,
   type LobbyUserSummary,
@@ -70,10 +75,16 @@ export type LobbyPageSvgSurfaceProps = {
   onJoinRoomCode: (draft: LobbyJoinCodeDraft) => void;
   onSpectateRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
+  onReadyRoom?: (roomId: string) => void;
+  onUnreadyRoom?: (roomId: string) => void;
+  onStartRoom?: (roomId: string) => void;
+  onSendRoomChat?: (message: string) => void;
   onMatchmaking: () => void;
   controls?: Partial<LobbyPageSvgControls> | null;
   useSampleData?: boolean;
   viewer?: LobbyUserSummary | null;
+  viewerUserId?: string;
+  joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
   server?: LobbyServerStatus | null;
@@ -217,6 +228,196 @@ function tableRowToFeaturedCard(row: LobbyTableRow): FeaturedCardData {
   };
 }
 
+function sortPlayers(players: LobbyRoomPlayer[] = []): LobbyRoomPlayer[] {
+  return [...players].sort((a, b) => (a.seatIndex ?? 99) - (b.seatIndex ?? 99));
+}
+
+function roomStatusLabel(room: LobbyRoomLike): string {
+  const status = room.gameStatus ?? room.status ?? 'waiting';
+  if (status === 'starting') return room.matchId ? `STARTING ${room.matchId.slice(-6)}` : 'STARTING';
+  return status.toUpperCase();
+}
+
+function playerSeatLabel(player: LobbyRoomPlayer | undefined): string {
+  if (!player) return 'Open Seat';
+  return player.displayName ?? player.userId;
+}
+
+function playerBadgeLabel(player: LobbyRoomPlayer | undefined): string {
+  if (!player) return 'JOINABLE';
+  if (player.isAI) return (player.role ?? 'AI').toUpperCase();
+  if (player.isHost) return player.isReady ? 'HOST READY' : 'HOST';
+  return player.isReady ? 'READY' : 'NOT READY';
+}
+
+function buildSeatList(room: LobbyRoomLike): Array<LobbyRoomPlayer | undefined> {
+  const players = sortPlayers(room.players);
+  const seatCount = Math.min(8, Math.max(2, room.maxPlayers ?? players.length, players.length));
+  return Array.from({ length: seatCount }, (_, index) => players.find(player => (player.seatIndex ?? index) === index));
+}
+
+function JoinedRoomPanel({
+  room,
+  viewerUserId,
+  mainB,
+  controls,
+  tableRows,
+  chatMessages,
+  chatDraft,
+  busyRoomId,
+  onChatDraftChange,
+  onReadyRoom,
+  onUnreadyRoom,
+  onStartRoom,
+  onSendRoomChat,
+  onLeaveRoom,
+  onJoinRoom,
+  onSpectateRoom,
+}: {
+  room: LobbyRoomLike;
+  viewerUserId?: string;
+  mainB: LobbyPanelRect;
+  controls: LobbyPageSvgControls;
+  tableRows: LobbyTableRow[];
+  chatMessages: LobbyChatMessageItem[];
+  chatDraft: string;
+  busyRoomId: string | null;
+  onChatDraftChange: (value: string) => void;
+  onReadyRoom?: (roomId: string) => void;
+  onUnreadyRoom?: (roomId: string) => void;
+  onStartRoom?: (roomId: string) => void;
+  onSendRoomChat?: (message: string) => void;
+  onLeaveRoom: (roomId: string) => void;
+  onJoinRoom: (roomId: string) => void;
+  onSpectateRoom: (roomId: string) => void;
+}) {
+  const roomId = room.roomId ?? '';
+  const x = mainB.x + 30;
+  const y = controls.mainBody.featuredY;
+  const w = mainB.w - 60;
+  const h = Math.min(440, Math.max(330, controls.mainBody.featuredH + 92));
+  const leftW = Math.max(420, w * 0.56);
+  const rightX = x + leftW + 22;
+  const rightW = Math.max(260, w - leftW - 22);
+  const seats = buildSeatList(room);
+  const viewerSeat = viewerUserId ? room.players?.find(player => player.userId === viewerUserId && !player.isAI) : undefined;
+  const humanPlayers = room.players?.filter(player => !player.isAI) ?? [];
+  const allHumansReady = humanPlayers.length >= 2 && humanPlayers.every(player => player.isReady);
+  const isHost = Boolean(viewerSeat?.isHost);
+  const isReady = Boolean(viewerSeat?.isReady);
+  const chatItems = chatMessages.slice(-4);
+  const openRows = tableRows.filter(row => row.roomId && row.roomId !== roomId && !row.full).slice(0, 3);
+  const seatCols = Math.min(4, Math.max(2, seats.length));
+  const seatW = (leftW - 28 - (seatCols - 1) * 10) / seatCols;
+  const seatH = 74;
+  const disabled = busyRoomId === roomId;
+
+  return (
+    <g>
+      <Panel x={x} y={y} w={w} h={h} r={14} fill="#071426" stroke="#2cecff" strokeWidth={1.1} glow>
+        <rect x={x + 10} y={y + 10} width={w - 20} height={58} rx={10} fill="#0b2034" stroke="#244b68" strokeWidth="1" />
+        <Txt x={x + 28} y={y + 35} text={room.roomName ?? 'Waiting Room'} maxWidth={leftW - 120} size={22} weight="950" />
+        <Txt x={x + 30} y={y + 57} text={`${room.mode ?? 'casual'} / ${room.visibility ?? 'public'} / ${room.region ?? 'global'}`} maxWidth={leftW - 80} size={11} fill="#9dc7d9" opacity={0.86} />
+        <g transform={`translate(${x + w - 260} ${y + 20})`}>
+          <rect width="232" height="34" rx="8" fill="#0f1c2b" stroke="#365773" strokeWidth="1" />
+          <Txt x={14} y={21} text={roomStatusLabel(room)} maxWidth={126} size={11} weight="900" fill="#ffda74" />
+          <Txt x={150} y={21} text={`v${room.stateVersion ?? 0}`} maxWidth={58} size={11} weight="850" fill="#74e8ff" />
+        </g>
+
+        <g transform={`translate(${x + 14} ${y + 84})`}>
+          {seats.map((player, index) => {
+            const col = index % seatCols;
+            const row = Math.floor(index / seatCols);
+            const sx = col * (seatW + 10);
+            const sy = row * (seatH + 10);
+            const readyColor = player?.isReady ? '#4effb1' : player?.isAI ? '#b987ff' : '#ffca4b';
+            return (
+              <g key={`${player?.userId ?? 'open'}-${index}`} transform={`translate(${sx} ${sy})`}>
+                <rect width={seatW} height={seatH} rx="9" fill={player ? '#0c1e2f' : '#08131f'} stroke={player ? readyColor : '#2b4159'} strokeWidth="1" strokeDasharray={player ? undefined : '6 5'} />
+                <Avatar cx={26} cy={37} r={19} bot={Boolean(player?.isAI)} open={!player} ring={readyColor} />
+                <Txt x={54} y={31} text={playerSeatLabel(player)} maxWidth={seatW - 66} size={12} weight="900" />
+                <Txt x={54} y={51} text={playerBadgeLabel(player)} maxWidth={seatW - 66} size={9} weight="850" fill={readyColor} />
+              </g>
+            );
+          })}
+        </g>
+
+        <g transform={`translate(${x + 14} ${y + h - 80})`}>
+          <Btn x={0} y={0} w={102} h={38} label={isReady ? 'UNREADY' : 'READY'} tone={isReady ? 'gold' : 'cyan'} active={!disabled} disabled={!roomId || disabled || !viewerSeat} onClick={() => {
+            if (!roomId || !viewerSeat) return;
+            if (isReady) onUnreadyRoom?.(roomId);
+            else onReadyRoom?.(roomId);
+          }} />
+          <Btn x={112} y={0} w={106} h={38} label="START" tone="gold" active={isHost && allHumansReady} disabled={!roomId || disabled || !isHost || !allHumansReady} onClick={() => roomId && onStartRoom?.(roomId)} />
+          <Btn x={228} y={0} w={94} h={38} label="LEAVE" tone="red" active disabled={!roomId || disabled} onClick={() => roomId && onLeaveRoom(roomId)} />
+          <Btn x={332} y={0} w={92} h={38} label="INVITE" tone="purple" disabled />
+          <Btn x={434} y={0} w={88} h={38} label="ADD AI" tone="purple" disabled={!room.allowAI} />
+          <Txt x={0} y={58} text={`CODE ${room.joinCode ?? room.roomId ?? ''}`} maxWidth={250} size={11} weight="850" fill="#9dc7d9" />
+          <Txt x={268} y={58} text={`${room.stakeType ?? 'free'} / ${room.stakeStatus ?? 'none'} / ${room.chainStatus ?? 'local'}`} maxWidth={300} size={11} weight="850" fill="#9dc7d9" />
+        </g>
+
+        <g transform={`translate(${rightX} ${y + 84})`}>
+          <Txt x={0} y={0} text="ROOM CHAT" maxWidth={rightW} size={13} weight="950" fill="#80eaff" />
+          <rect x={0} y={14} width={rightW} height={124} rx="10" fill="#06121e" stroke="#263d58" strokeWidth="1" />
+          {chatItems.length === 0 ? (
+            <CenterTxt x={0} y={14} w={rightW} h={124} text="No table messages yet" size={11} fill="#83a3b4" opacity={0.78} />
+          ) : chatItems.map((message, index) => (
+            <g key={`${message.name}-${message.msg}-${index}`} transform={`translate(14 ${36 + index * 25})`}>
+              <Txt x={0} y={0} text={message.name} maxWidth={82} size={10} weight="900" fill="#ffda74" />
+              <Txt x={88} y={0} text={message.msg} maxWidth={rightW - 116} size={10} fill="#dcefff" />
+            </g>
+          ))}
+          <foreignObject x={0} y={150} width={rightW} height={44}>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                const next = chatDraft.trim();
+                if (!next) return;
+                onSendRoomChat?.(next);
+                onChatDraftChange('');
+              }}
+              style={{ display: 'flex', height: '38px', gap: '6px' }}
+            >
+              <input
+                aria-label="Room chat message"
+                value={chatDraft}
+                maxLength={180}
+                onChange={(event) => onChatDraftChange(event.currentTarget.value)}
+                style={{ flex: 1, minWidth: 0, border: '1px solid #2b526e', borderRadius: '8px', background: '#06121e', color: '#edf7ff', font: '600 12px Inter, sans-serif', padding: '0 10px', outline: 'none' }}
+              />
+              <button
+                type="submit"
+                disabled={!onSendRoomChat}
+                style={{ width: '58px', border: '1px solid #20e6ff', borderRadius: '8px', background: '#0a2a3e', color: '#f5fdff', font: '850 11px Inter, sans-serif' }}
+              >
+                SEND
+              </button>
+            </form>
+          </foreignObject>
+          <Txt x={0} y={222} text="OPEN TABLES" maxWidth={rightW} size={13} weight="950" fill="#80eaff" />
+          {openRows.length === 0 ? (
+            <Txt x={0} y={248} text="No other open tables in this shard." maxWidth={rightW} size={11} fill="#83a3b4" />
+          ) : openRows.map((row, index) => {
+            const rowY = 236 + index * 49;
+            return (
+              <g key={row.code} transform={`translate(0 ${rowY})`}>
+                <rect width={rightW} height="40" rx="8" fill="#081827" stroke="#223a52" strokeWidth="1" />
+                <Txt x={12} y={17} text={row.title} maxWidth={rightW - 108} size={11} weight="900" />
+                <Txt x={12} y={32} text={`${row.players} / ${row.tags[0] ?? 'TABLE'}`} maxWidth={rightW - 108} size={9} fill="#9dc7d9" />
+                <Btn x={rightW - 82} y={7} w={70} h={26} label={row.live ? 'WATCH' : 'JOIN'} tone={row.live ? 'purple' : 'cyan'} active disabled={Boolean(row.roomId && busyRoomId === row.roomId)} onClick={() => {
+                  if (!row.roomId) return;
+                  if (row.live) onSpectateRoom(row.roomId);
+                  else onJoinRoom(row.roomId);
+                }} />
+              </g>
+            );
+          })}
+        </g>
+      </Panel>
+    </g>
+  );
+}
+
 export function LobbyPageSvgSurface({
   loading,
   creating,
@@ -231,10 +432,16 @@ export function LobbyPageSvgSurface({
   onJoinRoomCode,
   onSpectateRoom,
   onLeaveRoom,
+  onReadyRoom,
+  onUnreadyRoom,
+  onStartRoom,
+  onSendRoomChat,
   onMatchmaking,
   controls: controlsInput,
   useSampleData = false,
   viewer,
+  viewerUserId,
+  joinedRoom,
   friends,
   chatMessages,
   server,
@@ -260,6 +467,7 @@ export function LobbyPageSvgSurface({
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [seatedByRow, setSeatedByRow] = useState<Record<string, number>>({});
+  const [chatDraft, setChatDraft] = useState('');
   const hasPopup = Boolean(playersPopupRow || actionPopup || featuredCardPopup || filterPopup);
   const leftVisible = !leftCollapsed;
   const rightVisible = !rightCollapsed;
@@ -307,6 +515,10 @@ export function LobbyPageSvgSurface({
   const { canvasW, leftPanel, rightPanel, mainB } = resolvedLayout;
   const canvas = { x: 0, y: 0, w: canvasW, h: H };
   const activeViewer = useSampleData ? sampleViewer : viewer ?? null;
+  const activeJoinedRoom = useMemo(
+    () => (useSampleData ? null : joinedRoom ?? rooms.find(room => room.viewerJoined) ?? null),
+    [joinedRoom, rooms, useSampleData],
+  );
   const tableRows = useMemo(() => {
     const runtimeRows = rooms.slice(0, 6).map(roomToTableRow);
     const mergedRows = useSampleData ? (runtimeRows.length > 0 ? [...runtimeRows, ...DEFAULT_TABLE_ROWS] : DEFAULT_TABLE_ROWS) : runtimeRows;
@@ -430,26 +642,47 @@ export function LobbyPageSvgSurface({
             stats={headerStats}
           />
           <ModeTabs selectedMode={selectedMode} onSelectMode={setSelectedMode} mainB={mainB} controls={controls} />
-          <Featured
-            selectedFeaturedTab={selectedFeaturedTab}
-            onSelectFeaturedTab={setSelectedFeaturedTab}
-            tableRows={tableRows}
-            tableScroll={tableScroll}
-            onTableScroll={setTableScroll}
-            onOpenPlayers={setPlayersPopupRow}
-            onOpenFeaturedCard={setFeaturedCardPopup}
-            onOpenFilter={() => setFilterPopup(true)}
-            onJoinRoom={onJoinRoom}
-            onLeaveRoom={onLeaveRoom}
-            onSpectateRoom={onSpectateRoom}
-            busyRoomId={busyRoomId}
-            mainB={mainB}
-            controls={controls}
-            featuredCards={featuredCards}
-            featuredScroll={featuredScroll}
-            onFeaturedScroll={setFeaturedScroll}
-          />
-          {selectedFeaturedTab === 'FEATURED' ? (
+          {activeJoinedRoom ? (
+            <JoinedRoomPanel
+              room={activeJoinedRoom}
+              viewerUserId={viewerUserId}
+              mainB={mainB}
+              controls={controls}
+              tableRows={tableRows}
+              chatMessages={rightRailMessages}
+              chatDraft={chatDraft}
+              busyRoomId={busyRoomId}
+              onChatDraftChange={setChatDraft}
+              onReadyRoom={onReadyRoom}
+              onUnreadyRoom={onUnreadyRoom}
+              onStartRoom={onStartRoom}
+              onSendRoomChat={onSendRoomChat}
+              onLeaveRoom={onLeaveRoom}
+              onJoinRoom={onJoinRoom}
+              onSpectateRoom={onSpectateRoom}
+            />
+          ) : (
+            <Featured
+              selectedFeaturedTab={selectedFeaturedTab}
+              onSelectFeaturedTab={setSelectedFeaturedTab}
+              tableRows={tableRows}
+              tableScroll={tableScroll}
+              onTableScroll={setTableScroll}
+              onOpenPlayers={setPlayersPopupRow}
+              onOpenFeaturedCard={setFeaturedCardPopup}
+              onOpenFilter={() => setFilterPopup(true)}
+              onJoinRoom={onJoinRoom}
+              onLeaveRoom={onLeaveRoom}
+              onSpectateRoom={onSpectateRoom}
+              busyRoomId={busyRoomId}
+              mainB={mainB}
+              controls={controls}
+              featuredCards={featuredCards}
+              featuredScroll={featuredScroll}
+              onFeaturedScroll={setFeaturedScroll}
+            />
+          )}
+          {selectedFeaturedTab === 'FEATURED' && !activeJoinedRoom ? (
             <ActiveNow mainB={mainB} controls={controls} y={controls.mainBody.filtersY} items={activeFilters} activeFilter={activeNowFilter} onSelectFilter={filter => {
               setActiveNowFilter(filter);
               setSelectedFeaturedTab('FEATURED');

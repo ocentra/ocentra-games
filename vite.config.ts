@@ -22,6 +22,9 @@ import { seoRoutesPlugin } from './vite/plugins/seo-routes'
 import { workspaceSourceResolver } from './vite/plugins/workspaceSourceResolver'
 import type { PluginOption } from 'vite'
 import {
+  ApiEndpoint,
+} from '@ocentra/endpoint-domain/constants/cloudflare'
+import {
   CloudflareLocalConfig,
   LocalWebConfig,
   createLocalHttpBaseUrl,
@@ -277,6 +280,11 @@ export default defineConfig(async ({ mode, command }) => {
         target: workerBaseUrl,
         changeOrigin: true,
         rewrite: (urlPath: string) => urlPath.replace(/^\/local\/api/, '/api/v1'),
+      },
+      [ApiEndpoint.Ws.Base]: {
+        target: workerBaseUrl,
+        changeOrigin: true,
+        ws: true,
       },
     }
   },
