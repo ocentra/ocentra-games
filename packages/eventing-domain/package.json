@@ -848,7 +848,7 @@
   "scripts": {
     "generate:event-types": "npx tsx scripts/generate-event-type-maps.ts",
     "pretest": "cd ../.. && npm run build:domains",
-    "build": "npm run generate:event-types && tsc && tsc-alias && node scripts/fix-dist-aliases.mjs && node ../../scripts/fix-esm-imports.mjs",
+    "build": "npm run generate:event-types && tsc --build --force && tsc-alias && node scripts/fix-dist-aliases.mjs && node ../../scripts/fix-esm-imports.mjs",
     "type-check": "tsc --noEmit",
     "lint": "node -e \"const cmd = process.env.TURBO_HASH ? 'npm run lint:exec' : 'npx turbo run lint:exec --filter=@ocentra/eventing-domain'; require('child_process').spawnSync(cmd.split(' ')[0], cmd.split(' ').slice(1), { stdio: 'inherit', shell: true });\"",
     "lint:eslint": "eslint --cache src scripts",
