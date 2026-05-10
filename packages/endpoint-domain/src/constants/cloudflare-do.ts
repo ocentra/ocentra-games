@@ -169,10 +169,11 @@ export const StateSyncCoordinatorDO = {
 
 const lobbyPrefix = '/lobby';
 export const LobbyDODefaultInstanceName = 'lobby' as const;
-export const LobbyDOSegment = { Rooms: 'rooms', Join: 'join', Leave: 'leave', Spectate: 'spectate', Message: 'message' } as const;
+export const LobbyDOSegment = { Rooms: 'rooms', QuickJoin: 'quick-join', Join: 'join', Leave: 'leave', Spectate: 'spectate', Message: 'message' } as const;
 export const LobbyDO = {
   Base: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}` as DOPath,
   Rooms: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}/${LobbyDOSegment.Rooms}` as DOPath,
+  QuickJoin: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}/${LobbyDOSegment.QuickJoin}` as DOPath,
   Join: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Join}` as DOPath,
   Leave: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Leave}` as DOPath,
   Spectate: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Spectate}` as DOPath,

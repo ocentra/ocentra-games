@@ -5,6 +5,7 @@ export const QueryParam = {
   Type: 'type',
   Info: 'info',
   GameId: 'gameId',
+  GameType: 'gameType',
   AssetPath: 'assetPath',
   Category: 'category',
   GameModeCategory: 'gameModeCategory',
@@ -27,6 +28,9 @@ export const QueryParam = {
   StripeEventId: 'stripeEventId',
   Url: 'url',
   Search: 'q',
+  Mode: 'mode',
+  Visibility: 'visibility',
+  RoomCode: 'roomCode',
 } as const;
 
 export type QueryParam = typeof QueryParam[keyof typeof QueryParam];

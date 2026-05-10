@@ -21,6 +21,9 @@ import {
   FeedReportTypeValues,
   ComplianceReportTypeValues,
   FiatCurrencyValues,
+  LobbyModeValues,
+  LobbyStakeTypeValues,
+  LobbyVisibilityValues,
   PresenceStatusValues,
   ProfileVisibilityValues,
   RoomTypeValues,
@@ -179,10 +182,32 @@ export const RoomCreateRequestSchema = schema.object({
   roomId: RoomIdSchema.optional(),
   hostId: UserIdSchema,
   hostDisplayName: schema.string().min(1).optional(),
+  roomName: schema.string().min(1).max(128).optional(),
   roomType: schema.enum(RoomTypeValues).optional(),
+  mode: schema.enum(LobbyModeValues).optional(),
+  visibility: schema.enum(LobbyVisibilityValues).optional(),
   maxPlayers: schema.coerce.number().int().min(1).max(13).optional(),
   gameType: schema.string().min(1).optional(),
+  variantId: schema.string().min(1).max(128).optional(),
+  allowAI: schema.boolean().optional(),
+  aiCount: schema.coerce.number().int().min(0).max(12).optional(),
+  allowSpectators: schema.boolean().optional(),
+  stakeType: schema.enum(LobbyStakeTypeValues).optional(),
+  stakeAmount: schema.coerce.number().nonnegative().optional(),
+  turnTimerSeconds: schema.coerce.number().int().min(5).max(3600).optional(),
+  region: schema.string().min(1).max(64).optional(),
   isPrivate: schema.boolean().optional(),
+}).strict();
+
+export const RoomQuickJoinRequestSchema = schema.object({
+  userId: UserIdSchema,
+  displayName: schema.string().min(1).optional(),
+  gameType: schema.string().min(1),
+  mode: schema.enum(LobbyModeValues).optional(),
+  allowAI: schema.boolean().optional(),
+  stakeType: schema.enum(LobbyStakeTypeValues).optional(),
+  maxPlayers: schema.coerce.number().int().min(1).max(13).optional(),
+  createIfMissing: schema.boolean().optional(),
 }).strict();
 
 export const RoomJoinRequestSchema = schema.object({

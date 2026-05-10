@@ -88,6 +88,9 @@ export const EndpointIds = {
   ReplayVerify: 'replay.verify' as EndpointId,
   LobbyRooms: 'lobby.rooms' as EndpointId,
   LobbyRoomJoin: 'lobby.roomJoin' as EndpointId,
+  LobbyRoomSpectate: 'lobby.roomSpectate' as EndpointId,
+  LobbyRoomLeave: 'lobby.roomLeave' as EndpointId,
+  LobbyRoomQuickJoin: 'lobby.roomQuickJoin' as EndpointId,
   MatchmakingQueue: 'matchmaking.queue' as EndpointId,
   PresenceById: 'presence.byId' as EndpointId,
   PresenceFriends: 'presence.friends' as EndpointId,
@@ -415,6 +418,7 @@ export const ApiEndpoint = {
 
   Rooms: {
     Base: roomsBase as ApiPath,
+    QuickJoin: `${roomsBase}/quick-join` as ApiPath,
     Join: (roomId: string): ApiPath => `${roomsBase}/${roomId}/join` as ApiPath,
     Leave: (roomId: string): ApiPath => `${roomsBase}/${roomId}/leave` as ApiPath,
     Spectate: (roomId: string): ApiPath => `${roomsBase}/${roomId}/spectate` as ApiPath,

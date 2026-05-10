@@ -12,6 +12,12 @@ export const SettingsThemeValues = ['light', 'dark', 'auto'] as const;
 
 export const RoomTypeValues = ['lobby', 'game', 'tournament', 'private'] as const;
 
+export const LobbyModeValues = ['casual', 'ranked', 'training', 'benchmark', 'stakes'] as const;
+
+export const LobbyVisibilityValues = ['public', 'private', 'friends'] as const;
+
+export const LobbyStakeTypeValues = ['free', 'game-coin', 'real-money'] as const;
+
 export const SecurityPenaltyTypeValues = ['warning', 'mute', 'suspension', 'ban'] as const;
 
 export const FeedReportTypeValues = ['pci', 'gdpr', 'soc2'] as const;

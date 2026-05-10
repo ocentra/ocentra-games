@@ -70,6 +70,11 @@ export function getLobbyShardKey(roomId: string): string {
   return `lobby-${fnv1a(roomId) % LOBBY_SHARD_COUNT}`;
 }
 
+export function getLobbyGameShardKey(gameType: string): string {
+  const normalizedGameType = gameType.trim().toLowerCase();
+  return normalizedGameType ? `lobby-${fnv1a(`game:${normalizedGameType}`) % LOBBY_SHARD_COUNT}` : DEFAULT_SHARD;
+}
+
 export async function doFetch(
   stub: DurableObjectStub,
   path: string,

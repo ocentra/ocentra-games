@@ -32,6 +32,9 @@ import {
   FraudCheckField,
   FraudCheckRequiredFields,
   MatchIdRequiredFields,
+  LobbyModeValues,
+  LobbyStakeTypeValues,
+  LobbyVisibilityValues,
   PresenceStatusValues,
   ProfileVisibilityValues,
   RoomTypeValues,
@@ -2426,12 +2429,43 @@ function createLobbyPaths() {
               type: OpenApiSchemaType.String,
               enum: RoomTypeValues,
             },
+            roomName: { type: OpenApiSchemaType.String, minLength: 1 },
+            mode: {
+              type: OpenApiSchemaType.String,
+              enum: LobbyModeValues,
+            },
+            visibility: {
+              type: OpenApiSchemaType.String,
+              enum: LobbyVisibilityValues,
+            },
             maxPlayers: {
               type: OpenApiSchemaType.Integer,
               minimum: 1,
               maximum: 13,
             },
             gameType: { type: OpenApiSchemaType.String, minLength: 1 },
+            variantId: { type: OpenApiSchemaType.String, minLength: 1 },
+            allowAI: { type: OpenApiSchemaType.Boolean },
+            aiCount: {
+              type: OpenApiSchemaType.Integer,
+              minimum: 0,
+              maximum: 12,
+            },
+            allowSpectators: { type: OpenApiSchemaType.Boolean },
+            stakeType: {
+              type: OpenApiSchemaType.String,
+              enum: LobbyStakeTypeValues,
+            },
+            stakeAmount: {
+              type: OpenApiSchemaType.Number,
+              minimum: 0,
+            },
+            turnTimerSeconds: {
+              type: OpenApiSchemaType.Integer,
+              minimum: 5,
+              maximum: 3600,
+            },
+            region: { type: OpenApiSchemaType.String, minLength: 1 },
             isPrivate: { type: OpenApiSchemaType.Boolean },
           },
           example: OpenApiExampleValue.LobbyCreateRequest,
@@ -2444,6 +2478,58 @@ function createLobbyPaths() {
               properties: {
                 roomId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
                 joined: { type: OpenApiSchemaType.Boolean, example: true },
+                spectating: { type: OpenApiSchemaType.Boolean, example: false },
+                room: {
+                  type: OpenApiSchemaType.Object,
+                  example: OpenApiExampleValue.LobbyRoom,
+                },
+              },
+            })
+          )
+        ),
+      },
+    },
+    [ApiEndpoint.Rooms.QuickJoin]: {
+      [OpenApiMethod.Post]: {
+        tags: [OpenApiTag.Lobby],
+        summary: 'Quick join lobby room',
+        description: 'Joins the best available table for a game lobby, creating a fallback room when requested',
+        security: bearerAuthSecurity,
+        requestBody: createJsonRequestBody({
+          type: OpenApiSchemaType.Object,
+          required: ['userId', 'gameType'],
+          additionalProperties: false,
+          properties: {
+            userId: { type: OpenApiSchemaType.String, pattern: userIdPattern },
+            displayName: { type: OpenApiSchemaType.String, minLength: 1 },
+            gameType: { type: OpenApiSchemaType.String, minLength: 1 },
+            mode: {
+              type: OpenApiSchemaType.String,
+              enum: LobbyModeValues,
+            },
+            allowAI: { type: OpenApiSchemaType.Boolean },
+            stakeType: {
+              type: OpenApiSchemaType.String,
+              enum: LobbyStakeTypeValues,
+            },
+            maxPlayers: {
+              type: OpenApiSchemaType.Integer,
+              minimum: 1,
+              maximum: 13,
+            },
+            createIfMissing: { type: OpenApiSchemaType.Boolean },
+          },
+          example: OpenApiExampleValue.LobbyQuickJoinRequest,
+        }),
+        responses: withAuthErrors(
+          withStandardErrors(
+            createJsonResponse(String(HttpStatus.Ok), 'Room joined', {
+              type: OpenApiSchemaType.Object,
+              example: OpenApiExampleValue.LobbyJoinResponse,
+              properties: {
+                joined: { type: OpenApiSchemaType.Boolean, example: true },
+                created: { type: OpenApiSchemaType.Boolean, example: false },
+                roomId: { type: OpenApiSchemaType.String, example: OpenApiExampleValue.MatchId },
                 spectating: { type: OpenApiSchemaType.Boolean, example: false },
                 room: {
                   type: OpenApiSchemaType.Object,
