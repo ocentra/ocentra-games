@@ -81,7 +81,7 @@ export default defineConfig({
         : process.env.PLAYWRIGHT_REUSE_SERVER === '1'
           ? true
           : !process.env.CI,
-    timeout: 180 * 1000, // Increased timeout for dev server startup
+    timeout: process.env.CI ? 420 * 1000 : 180 * 1000,
     stdout: 'pipe',
     stderr: 'pipe',
   },
