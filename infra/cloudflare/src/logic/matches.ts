@@ -21,6 +21,11 @@ export interface ValidateMatchResult {
   error?: string;
 }
 
+function isUnexpectedFieldsError(error: string | undefined): boolean {
+  return error?.includes('Unrecognized key(s) in object') === true ||
+    error?.includes('Unknown key') === true;
+}
+
 export function validateMatchLogic(
   input: ValidateMatchInput
 ): ValidateMatchResult {
@@ -28,7 +33,7 @@ export function validateMatchLogic(
     const data = JSON.parse(input.body);
     const validation = input.validateMatchRecord(data);
     if (!validation.valid) {
-      const unexpectedFields = validation.error?.includes('Unrecognized key(s) in object');
+      const unexpectedFields = isUnexpectedFieldsError(validation.error);
       return {
         success: false,
         error: unexpectedFields

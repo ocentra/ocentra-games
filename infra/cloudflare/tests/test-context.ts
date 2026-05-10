@@ -9,11 +9,16 @@ import { TestConfig, TestEnvVar, TestEnvValue } from '@tests/constants/test-cons
 import {
   createTestContext,
   createSetupContextToken,
+  getTokenForFetch,
   ensureContextReady,
   type SetupContextToken,
 } from './test-setup-core.js';
 
-if (typeof process !== 'undefined' && process.env) {
+function isPoolContext(): boolean {
+  return (globalThis as { __TEST_POOL_CONTEXT?: boolean }).__TEST_POOL_CONTEXT === true;
+}
+
+if (typeof process !== 'undefined' && process.env && !isPoolContext()) {
   process.env[TestEnvVar.TestRunner] = TestRunMode.Unstable;
 }
 (globalThis as typeof globalThis & { __WORKER_LOGS_API_KEY__?: string }).__WORKER_LOGS_API_KEY__ = TestConfig.TestLogsApiKey;
@@ -37,6 +42,9 @@ export async function createToken(): Promise<SetupContextToken> {
   }
 
   await ensureContextReady();
+  const token = getTokenForFetch();
+  if (token) return token;
+
   const task = getCurrentTest();
   if (!task) {
     throw new Error('[FAIL-FAST] getCurrentTest() returned null. Cannot create context.');

@@ -113,6 +113,10 @@ function getRealWorkerRequestBudgets(): { perTest: number; perRun: number } {
 }
 
 function shouldUseUnstableDev(): boolean {
+  if ((globalThis as { __TEST_POOL_CONTEXT?: boolean }).__TEST_POOL_CONTEXT === true) {
+    return false;
+  }
+
   if (process.env[TestEnvVar.TestRunner] === TestRunMode.Unstable) {
     return true;
   }
