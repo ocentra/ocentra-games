@@ -8,6 +8,8 @@ export const CardGameModeDataSchema = schema.object({
     rankingAsset: AssetRefSchema.refine(v => v.assetType === 'DeckRanking', { message: 'rankingAsset must be a DeckRanking' }).optional(),
     cardRankingAsset: AssetRefSchema.refine(v => v.assetType === 'CardRanking', { message: 'cardRankingAsset must be a CardRanking' }).optional(),
     layoutAsset: AssetRefSchema.refine(v => v.assetType === 'CardGameLayout' || v.assetType === 'Layout', { message: 'layoutAsset must be a Layout or CardGameLayout' }),
+    selectedGameLayoutAsset: AssetRefSchema.refine(v => v.assetType === 'PageLayout', { message: 'selectedGameLayoutAsset must be a PageLayout' }),
+    lobbyLayoutAsset: AssetRefSchema.refine(v => v.assetType === 'PageLayout', { message: 'lobbyLayoutAsset must be a PageLayout' }),
     gameInfoAsset: AssetRefSchema.refine(v => v.assetType === 'GameInfo', { message: 'gameInfoAsset must be a GameInfo' }),
     deckAsset: AssetRefSchema.refine(v => v.assetType === 'Deck', { message: 'deckAsset must be a Deck' }),
     carouselImagesAsset: AssetRefSchema.refine(v => v.assetType === 'ImageCarousel', { message: 'carouselImagesAsset must be an ImageCarousel' }).optional(),

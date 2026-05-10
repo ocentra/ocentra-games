@@ -11,8 +11,10 @@
  */
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
+import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const DEPS_META = resolve(process.cwd(), 'node_modules/.vite/deps/_metadata.json');
+const inspectUrl = `${LocalWebConfig.BaseUrl}/__inspect/`;
 
 interface DepMeta {
   optimized?: Record<
@@ -26,7 +28,7 @@ function main(): void {
     console.error(
       'Not found: node_modules/.vite/deps/_metadata.json\n' +
         'Vite 7 may use a different cache layout.\n' +
-        'Use vite-plugin-inspect instead: start dev, then visit http://localhost:3000/__inspect/\n' +
+        `Use vite-plugin-inspect instead: start dev, then visit ${inspectUrl}\n` +
         'See docs/ocentra/performance-chunk-identification.md'
     );
     process.exit(1);

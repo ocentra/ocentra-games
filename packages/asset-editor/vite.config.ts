@@ -9,7 +9,12 @@ import { getAssetEditorLogDir, wipeAssetEditorLogs } from './scripts/asset-edito
 import { createAppLogStorage } from '@ocentra/logging-domain/app-log/createAppLogStorage';
 import type { LogEntry } from '@ocentra/logging-domain/types/logEntry';
 import type { LogLevel } from '@ocentra/logging-domain/types/logLevel';
-import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
+import {
+  CloudflareLocalConfig,
+  LocalApiEndpoint,
+  LocalWebConfig,
+  createLocalHttpBaseUrl,
+} from '@ocentra/endpoint-domain/constants/local';
 import { loadWorkspaceEnv } from '../../scripts/shared/loadWorkspaceEnv';
 import { workspaceSourceResolver } from '../../vite/plugins/workspaceSourceResolver';
 import JSON5 from 'json5';
@@ -27,6 +32,8 @@ const rootDir = path.resolve(__dirname, '../..');
 const assetEditorResourcesDir = path.resolve(__dirname, 'Resources');
 const coreUiHeaderProfilesDir = path.resolve(__dirname, '../core-ui/src/Header/profiles');
 loadWorkspaceEnv(__dirname, rootDir);
+const workerPort = parseInt(process.env.WORKER_PORT ?? String(CloudflareLocalConfig.Port), 10);
+const workerBaseUrl = createLocalHttpBaseUrl(CloudflareLocalConfig.Host, workerPort);
 
 const workspaceSourcePackages = [
   { name: '@ocentra/app-assets', rootDir: path.resolve(__dirname, '../app-assets') },
@@ -363,7 +370,7 @@ export default defineConfig(({ command }) => ({
                 return;
               }
 
-              const requestUrl = new URL(req.url ?? '', 'http://localhost');
+              const requestUrl = new URL(req.url ?? '', LocalWebConfig.BaseUrl);
               const requestedName = requestUrl.searchParams.get('name');
               if (requestedName) {
                 const profileName = normalizeHeaderProfileName(requestedName);
@@ -505,11 +512,11 @@ export default defineConfig(({ command }) => ({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:8787',
+        target: workerBaseUrl,
         changeOrigin: true,
       },
     },
   },
-  publicDir: false as const,
+  publicDir: 'public',
   envDir: __dirname,
 }));

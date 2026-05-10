@@ -58,13 +58,15 @@ export function normalizeSelectedGameLayoutConfig(
   };
 }
 
-export async function loadSelectedGameLayoutFromDisk(): Promise<{
+export async function loadSelectedGameLayoutFromDisk(
+  assetPath = SELECTED_GAME_LAYOUT_ASSET_PATH
+): Promise<{
   envelope: AssetEnvelope;
   config: SelectedGameLayoutConfig;
 }> {
-  const response = await readAsset(SELECTED_GAME_LAYOUT_ASSET_PATH);
+  const response = await readAsset(assetPath);
   if (!response.ok) {
-    throw new Error(`Failed to load ${SELECTED_GAME_LAYOUT_ASSET_PATH}`);
+    throw new Error(`Failed to load ${assetPath}`);
   }
   const envelope = normalizeEnvelope(JSON5.parse(await response.text()));
   return {
@@ -74,9 +76,10 @@ export async function loadSelectedGameLayoutFromDisk(): Promise<{
 }
 
 export async function saveSelectedGameLayoutToDisk(
-  config: SelectedGameLayoutConfig
+  config: SelectedGameLayoutConfig,
+  assetPath = SELECTED_GAME_LAYOUT_ASSET_PATH
 ): Promise<SelectedGameLayoutAssetDocument> {
-  const { envelope } = await loadSelectedGameLayoutFromDisk();
+  const { envelope } = await loadSelectedGameLayoutFromDisk(assetPath);
   const previousPreview = asRecord(envelope.data.preview);
   const previousSampleRef = asRecord(previousPreview.sampleGameRef);
   const nextDocument: SelectedGameLayoutAssetDocument = {
@@ -97,6 +100,6 @@ export async function saveSelectedGameLayoutToDisk(
   const payload = new TextEncoder().encode(
     `${JSON.stringify({ ...envelope, data: nextDocument }, null, 2)}\n`
   );
-  await writeAsset(SELECTED_GAME_LAYOUT_ASSET_PATH, payload);
+  await writeAsset(assetPath, payload);
   return nextDocument;
 }

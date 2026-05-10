@@ -1,16 +1,27 @@
 import { useMemo, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
+import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
 import type {
   AppPageSvgAction,
   AppPageSvgControls,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+import type {
+  LobbyChatMessageItem,
+  LobbyFriendItem,
+  LobbyHeroMedia,
+  LobbyServerStatus,
+  LobbyUserSummary,
+} from './Lobby/LobbyPageSvgTypes';
 export type {
   AppPageSvgAction,
   AppPageSvgControls,
   AppPageSvgMetric,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+export type { LobbyHeroMedia } from './Lobby/LobbyPageSvgTypes';
 
 export type SocialFriend = { friendId: string };
 export type SocialPartyMember = { userId: string };
@@ -95,6 +106,10 @@ export type MatchmakingStatusLike = {
 
 type AppPageSurfaceControlProps = {
   layoutControls?: Partial<AppPageSvgControls> | null;
+};
+
+type LobbyPageSurfaceControlProps = {
+  layoutControls?: Partial<LobbyPageSvgControls> | null;
 };
 
 function formatValue(value: unknown): string {
@@ -836,8 +851,18 @@ export function LobbyPageContent({
   creating,
   error,
   gameId,
+  gameName,
   rooms,
   busyRoomId,
+  useSampleData,
+  viewer,
+  friends,
+  chatMessages,
+  server,
+  minPlayers,
+  maxPlayers,
+  gameTagline,
+  heroMedia,
   onRefresh,
   onCreateRoom,
   onJoinRoom,
@@ -849,74 +874,47 @@ export function LobbyPageContent({
   creating: boolean;
   error: string | null;
   gameId: string;
+  gameName?: string;
   rooms: LobbyRoomLike[];
   busyRoomId: string | null;
+  useSampleData?: boolean;
+  viewer?: LobbyUserSummary | null;
+  friends?: LobbyFriendItem[];
+  chatMessages?: LobbyChatMessageItem[];
+  server?: LobbyServerStatus | null;
+  minPlayers?: number;
+  maxPlayers?: number;
+  gameTagline?: string;
+  heroMedia?: LobbyHeroMedia;
   onRefresh: () => void;
   onCreateRoom: () => void;
   onJoinRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
   onMatchmaking: () => void;
-} & AppPageSurfaceControlProps) {
-  const firstRoom = rooms[0];
-  const firstRoomId = firstRoom?.roomId ?? '';
-  const panels: AppPageSvgPanel[] = [
-    {
-      title: 'Active Rooms',
-      subtitle: routeScopeLabel(gameId),
-      rows: rooms.slice(0, 5).map(room => ({
-        label: room.roomId ?? 'room',
-        value: `${room.currentPlayers ?? 0}/${room.maxPlayers ?? '-'} ${room.status ?? 'open'}`,
-      })),
-      actions: [
-        { label: 'Join', onClick: () => onJoinRoom(firstRoomId), disabled: !firstRoomId || busyRoomId === firstRoomId },
-        { label: 'Leave', onClick: () => onLeaveRoom(firstRoomId), disabled: !firstRoomId || busyRoomId === firstRoomId },
-      ],
-    },
-    {
-      title: 'Room Controls',
-      subtitle: 'Create and refresh multiplayer rooms',
-      rows: [
-        { label: 'Game', value: routeScopeLabel(gameId) },
-        { label: 'Rooms', value: rooms.length },
-        { label: 'Busy room', value: busyRoomId ?? '-' },
-        { label: 'Creating', value: creating ? 'yes' : 'no' },
-      ],
-      actions: [
-        { label: creating ? 'Creating' : 'Create', onClick: onCreateRoom, disabled: creating },
-        { label: 'Refresh', onClick: onRefresh },
-      ],
-    },
-    {
-      title: 'Matchmaking Bridge',
-      subtitle: 'Queue players before a lobby',
-      rows: [
-        { label: 'Route', value: gameId ? `/games/${gameId}/lobby` : '/lobby' },
-        { label: 'Queue', value: 'available' },
-      ],
-      actions: [{ label: 'Matchmaking', onClick: onMatchmaking }],
-    },
-  ];
-
+} & LobbyPageSurfaceControlProps) {
   return (
-    <AppPageSvgSurface
-      title="Lobby"
-      eyebrow="Multiplayer"
-      subtitle="Create or join a room, then coordinate players before moving into the game."
-      routeLabel={gameId ? `/games/${gameId}/lobby` : '/lobby'}
-      metrics={[
-        { label: 'Rooms', value: rooms.length },
-        { label: 'Game', value: routeScopeLabel(gameId) },
-        { label: 'Busy', value: busyRoomId ?? '-' },
-        { label: 'Creating', value: creating ? 'yes' : 'no' },
-      ]}
-      panels={panels}
-      actions={[
-        { label: 'Refresh', onClick: onRefresh },
-        { label: creating ? 'Creating' : 'Create', onClick: onCreateRoom, disabled: creating },
-        { label: 'Queue', onClick: onMatchmaking },
-      ]}
+    <LobbyPageSvgSurface
       loading={loading}
+      creating={creating}
       error={error}
+      gameId={gameId}
+      gameName={gameName}
+      rooms={rooms}
+      busyRoomId={busyRoomId}
+      useSampleData={useSampleData}
+      viewer={viewer}
+      friends={friends}
+      chatMessages={chatMessages}
+      server={server}
+      minPlayers={minPlayers}
+      maxPlayers={maxPlayers}
+      gameTagline={gameTagline}
+      heroMedia={heroMedia}
+      onRefresh={onRefresh}
+      onCreateRoom={onCreateRoom}
+      onJoinRoom={onJoinRoom}
+      onLeaveRoom={onLeaveRoom}
+      onMatchmaking={onMatchmaking}
       controls={layoutControls}
     />
   );

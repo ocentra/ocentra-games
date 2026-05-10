@@ -22,10 +22,28 @@ interface LobbyPageProps {
   onLogoutClick?: () => void;
 }
 
+function getLobbyGameName(gameId: string): string {
+  const base = gameId.split(':')[0] || gameId;
+  return base
+    .replace(/[-_]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .map(part => `${part.charAt(0).toUpperCase()}${part.slice(1).toLowerCase()}`)
+    .join(' ') || 'Claim';
+}
+
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const { runWithSession } = useAuthAccess();
   const activeGameType = gameId ?? readMultiplayerConfig().gameId;
+  const gameName = getLobbyGameName(activeGameType);
+  const handleLogout = () => {
+    if (onLogoutClick) {
+      onLogoutClick();
+    }
+    onLogout();
+  };
+  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
   const {
     rooms,
     loading,
@@ -37,33 +55,39 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     joinRoom,
     leaveRoom,
   } = useLobbyRooms(activeGameType);
-
-  const handleLogout = () => {
-    if (onLogoutClick) {
-      onLogoutClick();
+  const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
+  const lobbyViewer = user
+    ? {
+      name: user.displayName || user.email,
+      level: user.isGuest ? 'Guest' : `ELO ${Math.round(user.eloRating)}`,
+      xp: `${user.gamesPlayed} games`,
+      balance: user.walletAddress ? 'Wallet linked' : 'No wallet',
+      xpRatio: viewerWinRatio,
     }
-    onLogout();
-  };
-  const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
+    : null;
 
   return (
     <UnifiedPageShell
       className="lb-page"
+      workClassName="lb-shell-work"
       background={<DynamicBackground />}
       header={
         <UnifiedHeader
           dynamicData={{
-            gameName: "Lobby",
-            tagline: "Create or join a room, then start a multiplayer session."
+            gameName: `${gameName} Lobby`,
+            tagline: 'Create or join tables before the match starts.',
           }}
+          showPrimaryNavigation={false}
+          includeAdminNavigation={false}
           config={{
             right: headerRightConfig,
             left: {
-              onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home))
-            }
+              onClick: () => EventBus.instance.publish(new ShowScreenEvent(AppScreenToken.Home)),
+            },
           }}
         />
       }
+      toolbar={<div className="lb-top-divider" aria-hidden="true" />}
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
       <LobbyPageContent
@@ -71,8 +95,14 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         creating={creating}
         error={error}
         gameId={activeGameType}
+        gameName={gameName}
         rooms={rooms}
         busyRoomId={busyRoomId}
+        useSampleData={false}
+        viewer={lobbyViewer}
+        friends={[]}
+        chatMessages={[]}
+        server={null}
         onRefresh={() => {
           void refresh();
         }}

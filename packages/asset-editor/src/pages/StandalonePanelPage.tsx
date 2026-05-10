@@ -77,6 +77,12 @@ import {
   normalizeAppPageSvgControls,
   type AppPageSvgControls,
 } from '@ocentra/core-ui/AppPages/AppPageSvgSurfaceControls';
+import { LobbyPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgControlsPanel';
+import {
+  DEFAULT_LOBBY_PAGE_SVG_CONTROLS,
+  normalizeLobbyPageSvgControls,
+  type LobbyPageSvgControls,
+} from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls';
 import { BrandedLoadingSpinner } from '@ocentra/core-ui/Loading/BrandedLoadingSpinner';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import type {
@@ -144,6 +150,14 @@ import {
   saveGamesCatalogLayoutControlsToDisk,
 } from '@/utils/gamesCatalogLayoutControlsPersistence';
 import {
+  LOBBY_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type LobbyPageLayoutControlsMessage,
+} from '@/utils/lobbyPageLayoutControlsChannel';
+import {
+  loadLobbyPageLayoutControlsFromDisk,
+  saveLobbyPageLayoutControlsToDisk,
+} from '@/utils/lobbyPageLayoutControlsPersistence';
+import {
   SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL,
   type SelectedGameLayoutControlsMessage,
   type SelectedGamePreviewLayoutMode,
@@ -152,7 +166,6 @@ import {
   loadSelectedGameLayoutFromDisk,
   normalizeSelectedGameLayoutConfig,
   saveSelectedGameLayoutToDisk,
-  SELECTED_GAME_LAYOUT_ASSET_PATH,
   type SelectedGameLayoutConfig,
 } from '@/utils/selectedGameLayoutPersistence';
 import { readAsset, writeAsset } from '@/adapters/assets/TauriAssetAdapter';
@@ -162,6 +175,20 @@ log.register(import.meta.url);
 const logInfo = (message: string, data?: unknown) => log.logInfo(message, getStackTrace(), data);
 const logError = (message: string, error?: unknown) => log.logError(message, getStackTrace(), error);
 
+function inferGameIdFromPageLayoutAssetPath(assetPath: string): string | null {
+  const normalized = assetPath.replace(/\\/g, '/');
+  const match = normalized.match(/Resources\/GameMode\/[^/]+\/Games\/([^/]+)\//);
+  return match?.[1] ? match[1].toLowerCase() : null;
+}
+
+function formatGameIdLabel(gameId: string): string {
+  return gameId
+    .split(/[-_]/)
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 type StandalonePanel =
   | 'preview'
   | 'inspector'
@@ -170,6 +197,7 @@ type StandalonePanel =
   | 'isolation'
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
+  | 'lobby-page-layout-controls'
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
   | 'page-layout-controls';
@@ -3027,12 +3055,14 @@ const selectedGameTabOrder: SelectedGameTabId[] = [
   'systems',
 ];
 
-const StandaloneSelectedGameLayoutControls: React.FC = () => {
+const StandaloneSelectedGameLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const lockedGameId = useMemo(() => inferGameIdFromPageLayoutAssetPath(assetPath), [assetPath]);
+  const defaultPreviewSampleGameId = lockedGameId ?? 'claim';
   const [tab, setTab] = useState<SelectedGameLayoutControlTab>('layout');
   const [layoutControls, setLayoutControls] = useState<SelectedGameLayoutControls>({});
   const [contentPlan, setContentPlan] =
     useState<SelectedGameContentPlan>(DEFAULT_SELECTED_GAME_CONTENT_PLAN);
-  const [previewSampleGameId, setPreviewSampleGameId] = useState('claim');
+  const [previewSampleGameId, setPreviewSampleGameId] = useState(defaultPreviewSampleGameId);
   const [previewLayoutMode, setPreviewLayoutMode] =
     useState<SelectedGamePreviewLayoutMode>('auto');
   const [debugBounds, setDebugBounds] = useState(false);
@@ -3044,9 +3074,9 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
   const config = useMemo<SelectedGameLayoutConfig>(() => ({
     layoutControls,
     contentPlan,
-    previewSampleGameId,
+    previewSampleGameId: lockedGameId ?? previewSampleGameId,
     debugBounds,
-  }), [contentPlan, debugBounds, layoutControls, previewSampleGameId]);
+  }), [contentPlan, debugBounds, layoutControls, lockedGameId, previewSampleGameId]);
 
   const copyValue = useMemo(() => JSON.stringify(config, null, 2), [config]);
   const isCopyCurrent = copiedValue === copyValue;
@@ -3062,16 +3092,19 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
   }, []);
 
   const applyConfig = useCallback((nextConfig: SelectedGameLayoutConfig) => {
-    setLayoutControls(nextConfig.layoutControls);
-    setContentPlan(nextConfig.contentPlan);
-    setPreviewSampleGameId(nextConfig.previewSampleGameId);
-    setDebugBounds(nextConfig.debugBounds);
-    broadcastUpdate(nextConfig);
-  }, [broadcastUpdate]);
+    const effectiveConfig = lockedGameId
+      ? { ...nextConfig, previewSampleGameId: lockedGameId }
+      : nextConfig;
+    setLayoutControls(effectiveConfig.layoutControls);
+    setContentPlan(effectiveConfig.contentPlan);
+    setPreviewSampleGameId(effectiveConfig.previewSampleGameId);
+    setDebugBounds(effectiveConfig.debugBounds);
+    broadcastUpdate(effectiveConfig);
+  }, [broadcastUpdate, lockedGameId]);
 
   useEffect(() => {
     let cancelled = false;
-    void loadSelectedGameLayoutFromDisk().then(({ config: loadedConfig }) => {
+    void loadSelectedGameLayoutFromDisk(assetPath).then(({ config: loadedConfig }) => {
       if (!cancelled) {
         applyConfig(loadedConfig);
       }
@@ -3083,7 +3116,7 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [applyConfig]);
+  }, [applyConfig, assetPath]);
 
   useEffect(() => {
     const channel = new BroadcastChannel(SELECTED_GAME_LAYOUT_CONTROLS_CHANNEL);
@@ -3144,9 +3177,10 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
   }, [broadcastUpdate, config]);
 
   const updatePreviewSample = useCallback((value: string) => {
-    setPreviewSampleGameId(value);
-    broadcastUpdate({ ...config, previewSampleGameId: value });
-  }, [broadcastUpdate, config]);
+    const nextValue = lockedGameId ?? value;
+    setPreviewSampleGameId(nextValue);
+    broadcastUpdate({ ...config, previewSampleGameId: nextValue });
+  }, [broadcastUpdate, config, lockedGameId]);
 
   const updateDebugBounds = useCallback((value: boolean) => {
     setDebugBounds(value);
@@ -3173,10 +3207,10 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
     setIsSaving(true);
     setStatus('Saving...');
     try {
-      const savedDocument = await saveSelectedGameLayoutToDisk(config);
+      const savedDocument = await saveSelectedGameLayoutToDisk(config, assetPath);
       const savedConfig = normalizeSelectedGameLayoutConfig(savedDocument);
       applyConfig(savedConfig);
-      const syncResult = await syncSavedLayoutAssetToR2(SELECTED_GAME_LAYOUT_ASSET_PATH);
+      const syncResult = await syncSavedLayoutAssetToR2(assetPath);
       setStatus(syncResult.message);
     } catch (error) {
       logError('[StandaloneSelectedGameLayoutControls] save failed', error);
@@ -3184,7 +3218,7 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
-  }, [applyConfig, config, isSaving]);
+  }, [applyConfig, assetPath, config, isSaving]);
 
   const handleResetBlock = useCallback(() => {
     if (tab === 'contentPlan') {
@@ -3216,11 +3250,11 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
     applyConfig({
       layoutControls: {},
       contentPlan: DEFAULT_SELECTED_GAME_CONTENT_PLAN,
-      previewSampleGameId: 'claim',
+      previewSampleGameId: defaultPreviewSampleGameId,
       debugBounds: false,
     });
     handlePreviewLayoutModeChange('auto');
-  }, [applyConfig, handlePreviewLayoutModeChange]);
+  }, [applyConfig, defaultPreviewSampleGameId, handlePreviewLayoutModeChange]);
 
   const previewModes: { id: SelectedGamePreviewLayoutMode; label: string }[] = [
     { id: 'auto', label: 'Auto' },
@@ -3246,15 +3280,22 @@ const StandaloneSelectedGameLayoutControls: React.FC = () => {
               {item.label}
             </button>
           ))}
-          <label style={selectedGameToolbarFieldStyle}>
-            Sample
-            <input
-              type="text"
-              value={previewSampleGameId}
-              style={selectedGameToolbarInputStyle}
-              onChange={(event) => updatePreviewSample(event.target.value)}
-            />
-          </label>
+          {lockedGameId ? (
+            <span style={selectedGameToolbarFieldStyle}>
+              Game
+              <strong>{formatGameIdLabel(lockedGameId)}</strong>
+            </span>
+          ) : (
+            <label style={selectedGameToolbarFieldStyle}>
+              Sample
+              <input
+                type="text"
+                value={previewSampleGameId}
+                style={selectedGameToolbarInputStyle}
+                onChange={(event) => updatePreviewSample(event.target.value)}
+              />
+            </label>
+          )}
           <label style={standaloneHomepageToggleLabelStyle}>
             <input
               type="checkbox"
@@ -3551,6 +3592,86 @@ function normalizePageLayoutControlsEnvelope(value: unknown): PageLayoutControls
   };
 }
 
+const StandaloneLobbyPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [controls, setControls] = useState<LobbyPageSvgControls>(DEFAULT_LOBBY_PAGE_SVG_CONTROLS);
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadLobbyPageLayoutControlsFromDisk(assetPath)
+      .then(result => {
+        if (cancelled) return;
+        setControls(result.controls);
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    const channel = new BroadcastChannel(LOBBY_PAGE_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<LobbyPageLayoutControlsMessage>) => {
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setControls(normalizeLobbyPageSvgControls(event.data.controls));
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies LobbyPageLayoutControlsMessage);
+
+    return () => {
+      cancelled = true;
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [assetPath]);
+
+  const updateControls = useCallback<React.Dispatch<React.SetStateAction<LobbyPageSvgControls>>>((value) => {
+    setControls((previous: LobbyPageSvgControls) => {
+      const next = normalizeLobbyPageSvgControls(
+        typeof value === 'function' ? value(previous) : value
+      );
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: next,
+      } satisfies LobbyPageLayoutControlsMessage);
+      return next;
+    });
+  }, []);
+
+  const handleSave = useCallback(async (nextControls: LobbyPageSvgControls) => {
+    const savedControls = await saveLobbyPageLayoutControlsToDisk(nextControls, assetPath);
+    setControls(savedControls);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: savedControls,
+    } satisfies LobbyPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath]);
+
+  if (isLoading) {
+    return <StandalonePanelLoading label="Loading lobby layout controls" />;
+  }
+
+  return (
+    <main className="standalone-panel-page standalone-panel-page--homepage-layout">
+      <LobbyPageSvgControlsPanel
+        controls={controls}
+        onControlsChange={updateControls}
+        onSave={handleSave}
+      />
+      {status && (
+        <p className="standalone-panel-page__status">{status}</p>
+      )}
+    </main>
+  );
+};
+
 const StandalonePageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [envelope, setEnvelope] = useState<PageLayoutControlsEnvelope | null>(null);
   const [controls, setControls] = useState<AppPageSvgControls>(DEFAULT_APP_PAGE_SVG_CONTROLS);
@@ -3716,6 +3837,7 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'isolation' ||
         panel === 'featured-showcase-controls' ||
         panel === 'homepage-layout-controls' ||
+        panel === 'lobby-page-layout-controls' ||
         panel === 'selected-game-layout-controls' ||
         panel === 'games-catalog-layout-controls' ||
         panel === 'page-layout-controls'
@@ -3749,6 +3871,7 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'isolation' &&
     params.panel !== 'featured-showcase-controls' &&
     params.panel !== 'homepage-layout-controls' &&
+    params.panel !== 'lobby-page-layout-controls' &&
     params.panel !== 'selected-game-layout-controls' &&
     params.panel !== 'games-catalog-layout-controls';
   const { assetData, assetRawContent, isLoading, error } = useStandaloneAsset(
@@ -3799,8 +3922,12 @@ export const StandalonePanelPage: React.FC = () => {
     return <StandaloneHomepageLayoutControls />;
   }
 
+  if (params.panel === 'lobby-page-layout-controls') {
+    return <StandaloneLobbyPageLayoutControls assetPath={params.assetPath} />;
+  }
+
   if (params.panel === 'selected-game-layout-controls') {
-    return <StandaloneSelectedGameLayoutControls />;
+    return <StandaloneSelectedGameLayoutControls assetPath={params.assetPath} />;
   }
 
   if (params.panel === 'games-catalog-layout-controls') {

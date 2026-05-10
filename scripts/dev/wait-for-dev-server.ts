@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
+
 function getArg(name: string, fallback: string): string {
   const match = process.argv.find((arg) => arg.startsWith(`${name}=`));
   return match?.split('=').slice(1).join('=') || fallback;
@@ -26,7 +28,7 @@ async function waitForUrl(url: string, timeoutMs: number): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const url = getArg('--url', 'http://localhost:3000');
+  const url = getArg('--url', LocalWebConfig.BaseUrl);
   const timeoutMs = parseInt(getArg('--timeout', '180000'), 10);
 
   console.log(`[wait-for-dev-server] Waiting for ${url}...`);

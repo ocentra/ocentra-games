@@ -4,6 +4,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -176,7 +177,7 @@ async function main(): Promise<void> {
         'main Vite start'
       );
 
-      await waitForWorkerHealth('http://127.0.0.1:8787', 30_000);
+      await waitForWorkerHealth(CloudflareLocalConfig.BaseUrl, 30_000);
       log('Smoke pass complete: editor and main stacks overlapped and main reused the existing worker.');
     } finally {
       killTree(mainApp);

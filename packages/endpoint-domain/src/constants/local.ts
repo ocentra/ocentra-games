@@ -1,7 +1,9 @@
 import type { ApiPath } from '@/types/brands';
+import { Hostname } from './hostname';
 
 const localApiPrefix = '/local/api';
 const apiPrefix = '/api';
+const localHttpProtocol = 'http';
 
 export const LocalApiEndpoint = {
   Profile: '/_dev/profile' as ApiPath,
@@ -44,8 +46,20 @@ export const LocalApiEndpoint = {
 
 export const CloudflareLocalConfig = {
   Port: 8787,
-  Host: 'localhost',
+  Host: Hostname.Localhost,
   get BaseUrl() {
-    return `http://${this.Host}:${this.Port}`;
+    return createLocalHttpBaseUrl(this.Host, this.Port);
   },
 } as const;
+
+export const LocalWebConfig = {
+  Port: 3000,
+  Host: Hostname.Localhost,
+  get BaseUrl() {
+    return createLocalHttpBaseUrl(this.Host, this.Port);
+  },
+} as const;
+
+export function createLocalHttpBaseUrl(host: string, port: number): string {
+  return `${localHttpProtocol}://${host}:${port}`;
+}

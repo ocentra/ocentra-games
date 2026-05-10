@@ -15,6 +15,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { auth } from '@/adapters/firebase/config';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
@@ -22,7 +23,7 @@ import { useCoreUIHeaderProps } from '@/hooks/useCoreUIHeaderProps';
 import { APP_VERSION } from '@/constants/version';
 import './DevPanelPage.css';
 
-const BASE = 'http://localhost:8787';
+const BASE = CloudflareLocalConfig.BaseUrl;
 
 // ── tiny fetch helpers ──────────────────────────────────────────────────────
 
@@ -344,7 +345,7 @@ export function DevPanelPage() {
           <h1 className="dp-title">Cloudflare Dev Panel</h1>
           <p className="dp-subtitle">
             Local Cloudflare feature tester. Worker must be running on{' '}
-            <a href="http://localhost:8787" target="_blank" rel="noopener noreferrer">localhost:8787</a>.
+            <a href={BASE} target="_blank" rel="noopener noreferrer">{new URL(BASE).host}</a>.
             <br />
             Start everything with: <code>npm run dev:full</code>
           </p>

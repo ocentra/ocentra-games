@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-09
+**Last Updated:** 2026-05-10
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -98,11 +98,12 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - Site page-shell/layout work is now asset-backed with `PageLayout` assets under `packages/asset-editor/Resources/Pages/*`.
 - In the asset editor, use the dedicated `Pages` resource tab for this workflow; it filters to the `Pages` root and `PageLayout` assets instead of the full resource tree.
 - For homepage/page-layout tuning, prefer the standalone page/homepage layout control panels and save from there so the editor does the local write plus targeted R2 sync.
+- Lobby page tuning now uses `packages/asset-editor/Resources/Pages/LobbyPageLayout.asset`; open the standalone lobby layout controls from the editor and use Save there so the editor writes the updated `lobbyControls` and performs the targeted R2 sync for that asset.
 - Selected-game page tuning now uses `packages/asset-editor/Resources/Pages/SelectedGameLayout.asset`; adjust its standalone selected-game layout controls (`layoutControls` / `contentPlan`) there, then use Save + Sync for the local write plus targeted R2 sync flow.
 
 ### Shared Main-App Page Surfaces
 - Main-app home/showcase and app-page body surfaces are now shared out of `packages/core-ui` (`AppPages/*`, `Common/HomePage/*`, `Common/SelectedGameShowcase/*`).
-- When changing homepage, selected-game, shop, social, player-hub, settings, competition, or admin page bodies, prefer editing the shared `@ocentra/core-ui` surface first instead of rebuilding page-local markup.
+- When changing homepage, selected-game, lobby, matchmaking, shop, social, player-hub, settings, competition, or admin page bodies, prefer editing the shared `@ocentra/core-ui` surface first instead of rebuilding page-local markup.
 
 ---
 

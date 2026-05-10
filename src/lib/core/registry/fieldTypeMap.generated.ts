@@ -521,6 +521,8 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "rankingAsset": "AssetResourceEntry<DeckRanking>",
     "cardRankingAsset": "AssetResourceEntry<CardRanking>",
     "layoutAsset": "AssetResourceEntry<CardGameLayout>",
+    "selectedGameLayoutAsset": "AssetResourceEntry<PageLayout>",
+    "lobbyLayoutAsset": "AssetResourceEntry<PageLayout>",
     "carouselImagesAsset": "AssetResourceEntry<ImageCarousel>",
     "mechanicsAsset": "AssetResourceEntry<CardGameMechanics>",
     "minPlayers": "Number",
@@ -658,6 +660,7 @@ export const fieldTypeMap: Record<string, Record<string, string>> = {
     "layout": "LayoutStructure",
     "pageControls": "PageLayoutDocument['pageControls']",
     "layoutControls": "SelectedGameLayoutControls",
+    "lobbyControls": "Record<string, unknown>",
     "contentPlan": "SelectedGameContentPlan",
     "preview": "PageLayoutDocument['preview']"
   },

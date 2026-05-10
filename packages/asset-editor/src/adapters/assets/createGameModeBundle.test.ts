@@ -42,6 +42,7 @@ const requiredAssetTypes = [
   'CardGameScoring',
   'GameInfo',
   'CardGameLayout',
+  'PageLayout',
   'ImageCarousel',
   'CardGameMechanics',
   'GamePlayerModel',
@@ -91,7 +92,7 @@ describe('createGameModeBundle', () => {
       category: 'CardGames',
     });
 
-    expect(bundle.files).toHaveLength(16);
+    expect(bundle.files).toHaveLength(18);
     expect(bundle.mainAssetGuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/claim/claim.asset');
 
@@ -101,6 +102,8 @@ describe('createGameModeBundle', () => {
       'Resources/GameMode/CardGames/claim/claimCarousel.asset',
       'Resources/GameMode/CardGames/claim/info.asset',
       'Resources/GameMode/CardGames/claim/claimLayout.asset',
+      'Resources/GameMode/CardGames/claim/claimSelectedGameLayout.asset',
+      'Resources/GameMode/CardGames/claim/claimLobbyLayout.asset',
       'Resources/GameMode/CardGames/claim/claimMechanics.asset',
       'Resources/GameMode/CardGames/claim/claimPlayerModel.asset',
       'Resources/GameMode/CardGames/claim/claimSessionModel.asset',
@@ -161,7 +164,7 @@ describe('createGameModeBundle', () => {
       category: 'CardGames',
     });
 
-    expect(bundle.files).toHaveLength(16);
+    expect(bundle.files).toHaveLength(18);
 
     const filesByType = new Map<string, { path: string; content: string }>();
     for (const file of bundle.files) {
@@ -194,6 +197,19 @@ describe('createGameModeBundle', () => {
     expect(data).toBeDefined();
     expect((data.deckAsset as { assetType?: string; path?: string }).assetType).toBe('Deck');
     expect((data.deckAsset as { path?: string }).path).toContain('GameMode/CardGames/Decks/');
+    expect((data.selectedGameLayoutAsset as { assetType?: string; path?: string }).assetType).toBe('PageLayout');
+    expect((data.selectedGameLayoutAsset as { path?: string }).path).toBe('Resources/GameMode/CardGames/solitaire/solitaireSelectedGameLayout.asset');
+    expect((data.lobbyLayoutAsset as { assetType?: string; path?: string }).assetType).toBe('PageLayout');
+    expect((data.lobbyLayoutAsset as { path?: string }).path).toBe('Resources/GameMode/CardGames/solitaire/solitaireLobbyLayout.asset');
+
+    const pageLayoutFiles = bundle.files.filter((file) => file.metadata.assetType === 'PageLayout');
+    expect(pageLayoutFiles).toHaveLength(2);
+    for (const file of pageLayoutFiles) {
+      const parsed = JSON5.parse(file.content) as { data?: { preview?: { sampleGameRef?: { guid?: string; gameId?: string; path?: string } } } };
+      expect(parsed.data?.preview?.sampleGameRef?.gameId).toBe('solitaire');
+      expect(parsed.data?.preview?.sampleGameRef?.guid).toBe(bundle.mainAssetGuid);
+      expect(parsed.data?.preview?.sampleGameRef?.path).toBe(bundle.mainAssetPath);
+    }
 
     const refGuids = new Set<string>();
     const collectGuids = (obj: unknown): void => {
@@ -243,7 +259,7 @@ describe('createGameModeBundle', () => {
     });
 
     expect(bundle.mainAssetPath).toBe('Resources/GameMode/CardGames/Imported/brag-3-card/brag-3-card.asset');
-    expect(bundle.files).toHaveLength(16);
+    expect(bundle.files).toHaveLength(18);
 
     const assetTypes = bundle.files.map((file) => {
       const parsed = JSON5.parse(file.content) as { system?: { assetType?: string } };
@@ -264,6 +280,8 @@ describe('createGameModeBundle', () => {
         deckAsset?: { assetType?: string; path?: string };
         mechanicsAsset?: { assetType?: string; checksum?: string | null };
         gameInfoAsset?: { checksum?: string | null };
+        selectedGameLayoutAsset?: { assetType?: string; path?: string };
+        lobbyLayoutAsset?: { assetType?: string; path?: string };
       };
     };
 
@@ -272,5 +290,7 @@ describe('createGameModeBundle', () => {
     expect(parsedMain.data?.mechanicsAsset?.assetType).toBe('CardGameMechanics');
     expect(parsedMain.data?.mechanicsAsset?.checksum).toMatch(/^[0-9a-f]{64}$/);
     expect(parsedMain.data?.gameInfoAsset?.checksum).toMatch(/^[0-9a-f]{64}$/);
+    expect(parsedMain.data?.selectedGameLayoutAsset?.assetType).toBe('PageLayout');
+    expect(parsedMain.data?.lobbyLayoutAsset?.assetType).toBe('PageLayout');
   });
 });

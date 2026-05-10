@@ -1,3 +1,5 @@
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+
 export const AssetEditorSyncTarget = {
   LocalDev: 'local-dev',
   RealCloud: 'real-cloud',
@@ -80,7 +82,7 @@ export function getAssetEditorSyncTargetDetails(
       getEnv('VITE_CLAIM_STORAGE_URL') ||
       getEnv('VITE_ASSETS_WORKER_URL') ||
       getEnv('VITE_R2_WORKER_URL') ||
-      'http://127.0.0.1:8787'
+      CloudflareLocalConfig.BaseUrl
   );
   const localAssetsPublicUrl = buildAssetsPublicUrl(
     localWorkerUrl,

@@ -55,6 +55,8 @@ export const requiredFieldsMap: Record<string, Record<string, string>> = {
     "gameInfoAsset": "Game Info Asset is required for game mode to function",
     "deckAsset": "Deck Asset is required for card game mode to function",
     "layoutAsset": "Layout Asset is required for game mode to function",
+    "selectedGameLayoutAsset": "Selected Game Layout Asset is required for game page authoring",
+    "lobbyLayoutAsset": "Lobby Layout Asset is required for game lobby authoring",
     "carouselImagesAsset": "Carousel Images Asset is required for game mode to function",
     "mechanicsAsset": "Mechanics Asset is required for game mode to function"
   },

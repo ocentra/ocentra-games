@@ -20,6 +20,7 @@ import path from 'path';
 import { createHash } from 'node:crypto';
 import Database from 'better-sqlite3';
 import { ViteLogger, getStackTrace } from '../../vite/utils/viteLogger';
+import { LocalWebConfig, createLocalHttpBaseUrl } from '@ocentra/endpoint-domain/constants/local';
 
 const VERBOSE_DEV_SCRIPT = process.env.VITE_VERBOSE_DEV_SCRIPT === 'true';
 const log = ViteLogger.instance;
@@ -47,8 +48,8 @@ interface LockData {
 // Configuration
 // ============================================================================
 
-const PREFERRED_PORT = 3000;
-const RANGE_START = 3000;
+const PREFERRED_PORT: number = LocalWebConfig.Port;
+const RANGE_START: number = LocalWebConfig.Port;
 const RANGE_END = 3100;
 const PROCESS_NAMES = ['node', 'vite']; // Process names we consider "ours"
 const LOCK_FILE = path.join(process.cwd(), '.vite-dev.lock');
@@ -480,7 +481,7 @@ async function startViteServer(port: number) {
   
   console.log(`🚀 Starting Vite development server on port ${port}...\n`);
   
-  const viteHost = process.env.VITE_HOST || '127.0.0.1';
+  const viteHost = process.env.VITE_HOST || LocalWebConfig.Host;
   const viteCliPath = path.join(process.cwd(), 'node_modules', 'vite', 'bin', 'vite.js');
 
   process.env.PORT = port.toString();
@@ -676,7 +677,7 @@ async function main() {
     if (VERBOSE_DEV_SCRIPT) {
       stageLog(`Port allocation completed in ${Date.now() - allocateStartedAt}ms`);
       log.logInfo('Port allocated successfully', getStackTrace(), { port });
-      log.logInfo('Dev Server started', getStackTrace(), { url: `http://localhost:${port}` });
+      log.logInfo('Dev Server started', getStackTrace(), { url: createLocalHttpBaseUrl(LocalWebConfig.Host, port) });
     }
     
     stageLog(`Handing off to Vite on port ${port}`);

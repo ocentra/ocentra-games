@@ -251,6 +251,37 @@ function buildActionModel(game: Game): Record<string, unknown> {
   };
 }
 
+function asMechanicsRecord(value: unknown, fallbackKey: string): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (Array.isArray(value)) {
+    return { [fallbackKey]: value };
+  }
+  return {};
+}
+
+function normalizePhaseFlowPhases(value: unknown): Record<string, unknown>[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .filter((phase): phase is Record<string, unknown> => !!phase && typeof phase === 'object' && !Array.isArray(phase))
+    .map((phase) => {
+      const next = { ...phase };
+      if (typeof next.notes === 'string' && next.notes.trim().length === 0) {
+        delete next.notes;
+      }
+      if (!Array.isArray(next.conditionalNext)) {
+        next.conditionalNext = [];
+      }
+      if (!next.cardVisibilityChanges || typeof next.cardVisibilityChanges !== 'object' || Array.isArray(next.cardVisibilityChanges)) {
+        next.cardVisibilityChanges = {};
+      }
+      return next;
+    });
+}
+
 function buildMechanicsModelDataOverrides(
   game: Game,
   slug: string,
@@ -272,13 +303,13 @@ function buildMechanicsModelDataOverrides(
         optimalPlayers: game.engine.playerConfig.optimalPlayers,
         dealerRotates: game.engine.turnOrder.dealerRotates,
       },
-      playerModel: game.engine.roles,
+      playerModel: asMechanicsRecord(game.engine.roles, 'roles'),
     },
     session: {
       ...shared,
       sessionModel: game.engine.constants,
-      bankingConfig: game.engine.bankingConfig,
-      roundConfig: game.engine.roundConfig,
+      bankingConfig: asMechanicsRecord(game.engine.bankingConfig, 'banking'),
+      roundConfig: asMechanicsRecord(game.engine.roundConfig, 'rounds'),
       endConditions: [
         {
           id: 'round_end',
@@ -299,8 +330,8 @@ function buildMechanicsModelDataOverrides(
       rankSet: game.engine.rankSet,
       deckCount: game.engine.deckCount,
       initialHandSize: game.engine.initialHandSize,
-      drawConfig: game.engine.drawConfig,
-      discardConfig: game.engine.discardConfig,
+      drawConfig: asMechanicsRecord(game.engine.drawConfig, 'draw'),
+      discardConfig: asMechanicsRecord(game.engine.discardConfig, 'discard'),
       deckModel: {
         deckAssetRef: 'deck',
         rankingAssetRef: 'ranking',
@@ -311,8 +342,8 @@ function buildMechanicsModelDataOverrides(
         drawDirection: 'top_is_index_0',
         jokers: /joker/i.test(game.setup.deck),
       },
-      handRanks: game.engine.handRanks,
-      specialCards: game.engine.specialCards,
+      handRanks: asMechanicsRecord(game.engine.handRanks, 'ranks'),
+      specialCards: asMechanicsRecord(game.engine.specialCards, 'cards'),
       assetRefs: {
         deck: linkedDeckAsset,
         ranking: rankingAsset,
@@ -321,12 +352,12 @@ function buildMechanicsModelDataOverrides(
     zones: {
       ...shared,
       zones: game.engine.zones,
-      zoneModel: game.engine.zones,
-      cardVisibility: game.engine.cardVisibility,
+      zoneModel: asMechanicsRecord(game.engine.zones, 'zones'),
+      cardVisibility: asMechanicsRecord(game.engine.cardVisibility, 'visibility'),
     },
     phaseFlow: {
       ...shared,
-      phases: game.engine.phases,
+      phases: normalizePhaseFlowPhases(game.engine.phases),
       turnPolicy: {
         direction: game.engine.turnOrder.direction,
         startsWith: game.engine.turnOrder.startsWith,
@@ -339,7 +370,7 @@ function buildMechanicsModelDataOverrides(
         turnOrder: game.engine.turnOrder,
         trickConfig: game.engine.trickConfig,
       },
-      runtimeIntegration: game.engine.implementationHints,
+      runtimeIntegration: asMechanicsRecord(game.engine.implementationHints, 'implementationHints'),
       progression: game.engine.progression,
     },
     actions: {
@@ -352,8 +383,8 @@ function buildMechanicsModelDataOverrides(
       ...shared,
       stateModel: {
         zones: game.engine.zones,
-        cardVisibility: game.engine.cardVisibility,
-        constants: game.engine.constants,
+        cardVisibility: asMechanicsRecord(game.engine.cardVisibility, 'visibility'),
+        constants: asMechanicsRecord(game.engine.constants, 'constants'),
       },
       eventModel: {
         phases: game.engine.phases.map((phase) => phase.id),

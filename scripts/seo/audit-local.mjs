@@ -10,11 +10,12 @@ import {
   buildPublicGamePlayPath,
   buildPublicRulesPath,
 } from '@ocentra/endpoint-domain/constants/public-routes';
+import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
 
 const REPO_ROOT_URL = new URL('../../', import.meta.url);
 const CATALOG_INDEX_URL = new URL('packages/asset-editor/Resources/catalog/index.json', REPO_ROOT_URL);
 const CATALOG_REPLACEMENTS_URL = new URL('scripts/seo/catalog-replacements.json', REPO_ROOT_URL);
-const DEFAULT_BASE_URL = 'http://127.0.0.1:3000';
+const DEFAULT_BASE_URL = LocalWebConfig.BaseUrl;
 const DEFAULT_TIMEOUT_MS = 10000;
 const DEFAULT_MAX_PAGES = 180;
 const DEFAULT_MAX_DEPTH = 2;

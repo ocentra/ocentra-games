@@ -8,6 +8,7 @@ import { dirname, join, relative } from 'node:path';
 import { config as loadDotenv } from 'dotenv';
 import { S3Client, PutObjectCommand, DeleteObjectCommand, ListObjectsV2Command, type ListObjectsV2CommandOutput } from '@aws-sdk/client-s3';
 import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 import { resolveAssetSourceRoot } from './assets/assetSourceRoot';
 import { buildAppAssetSlices } from './assets/buildAppAssetSlices';
 
@@ -90,7 +91,7 @@ async function getSyncConfig(args: string[]): Promise<SyncConfig> {
       process.env.ASSETS_WORKER_URL_DEV ||
       process.env.ASSETS_WORKER_URL ||
       process.env.WORKER_URL ||
-      'http://127.0.0.1:8787'
+      CloudflareLocalConfig.BaseUrl
     )
     : (
       process.env.CLAIM_STORAGE_ASSETS_URL_PROD ||

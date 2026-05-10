@@ -6,6 +6,7 @@ import {
   killManagedProcesses,
   spawnManaged,
 } from './cloudflare-dev-bootstrap';
+import { LocalWebConfig } from '@ocentra/endpoint-domain/constants/local';
 
 type CompareTarget = 'web' | 'tauri' | 'android' | 'ios';
 
@@ -73,8 +74,8 @@ async function main(): Promise<void> {
     VITE_MAIN_ASSET_TARGET_FORCE: 'local-dev',
   });
 
-  await waitForUrl('http://127.0.0.1:3000', 180000);
-  log('Shared dev server is ready on http://localhost:3000');
+  await waitForUrl(LocalWebConfig.BaseUrl, 180000);
+  log(`Shared dev server is ready on ${LocalWebConfig.BaseUrl}`);
 
   if (targets.includes('tauri')) {
     log('Attaching desktop Tauri shell to shared dev server...');
@@ -132,7 +133,7 @@ async function main(): Promise<void> {
     );
   }
 
-  log('Web shell is available at http://localhost:3000');
+  log(`Web shell is available at ${LocalWebConfig.BaseUrl}`);
   await new Promise(() => undefined);
 }
 

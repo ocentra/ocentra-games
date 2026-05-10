@@ -64,6 +64,7 @@ export interface PageLayoutDocument {
     showGuides?: boolean;
   };
   layoutControls?: SelectedGameLayoutControls;
+  lobbyControls?: Record<string, unknown>;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
     sampleGameRef?: {
@@ -161,6 +162,9 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Layout Controls' })
   layoutControls: SelectedGameLayoutControls = {};
+
+  @serializable({ label: 'Lobby Controls' })
+  lobbyControls: Record<string, unknown> = {};
 
   @serializable({ label: 'Content Plan' })
   contentPlan: SelectedGameContentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;

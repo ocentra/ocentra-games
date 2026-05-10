@@ -21,6 +21,11 @@ import { headerConfigPlugin } from './vite/plugins/header-config'
 import { seoRoutesPlugin } from './vite/plugins/seo-routes'
 import { workspaceSourceResolver } from './vite/plugins/workspaceSourceResolver'
 import type { PluginOption } from 'vite'
+import {
+  CloudflareLocalConfig,
+  LocalWebConfig,
+  createLocalHttpBaseUrl,
+} from '@ocentra/endpoint-domain/constants/local'
 
 const devWatchRoots = [
   'index.html',
@@ -89,14 +94,16 @@ export default defineConfig(async ({ mode, command }) => {
   })
 
   if (mode === 'development') {
-    const localBase = 'http://127.0.0.1:8787'
+    const localBase = CloudflareLocalConfig.BaseUrl
     process.env.VITE_CLAIM_STORAGE_URL = process.env.VITE_CLAIM_STORAGE_URL || process.env.VITE_ASSETS_WORKER_URL || localBase
     process.env.VITE_ASSETS_PUBLIC_URL = process.env.VITE_ASSETS_PUBLIC_URL || `${(process.env.VITE_CLAIM_STORAGE_URL || localBase).replace(/\/$/, '')}/api/v1/assets`
   }
 
-  const serverHost = process.env.VITE_HOST || '127.0.0.1'
-  const serverPort = parseInt(process.env.PORT || process.env.VITE_PORT || '3000')
-  const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || process.env.PORT || process.env.VITE_PORT || '3000')
+  const workerPort = parseInt(process.env.WORKER_PORT || String(CloudflareLocalConfig.Port))
+  const workerBaseUrl = createLocalHttpBaseUrl(CloudflareLocalConfig.Host, workerPort)
+  const serverHost = process.env.VITE_HOST || LocalWebConfig.Host
+  const serverPort = parseInt(process.env.PORT || process.env.VITE_PORT || String(LocalWebConfig.Port))
+  const hmrClientPort = parseInt(process.env.VITE_HMR_CLIENT_PORT || process.env.PORT || process.env.VITE_PORT || String(LocalWebConfig.Port))
 
   const plugins: PluginOption[] = [
     workspaceSourceResolver({
@@ -259,20 +266,20 @@ export default defineConfig(async ({ mode, command }) => {
     },
     proxy: {
       '/api/v1': {
-        target: `http://localhost:${process.env.WORKER_PORT || '8787'}`,
+        target: workerBaseUrl,
         changeOrigin: true,
       },
       '/api/games': {
-        target: `http://localhost:${process.env.WORKER_PORT || '8787'}`,
+        target: workerBaseUrl,
         changeOrigin: true,
       },
       '/local/api': {
-        target: `http://localhost:${process.env.WORKER_PORT || '8787'}`,
+        target: workerBaseUrl,
         changeOrigin: true,
         rewrite: (urlPath: string) => urlPath.replace(/^\/local\/api/, '/api/v1'),
       },
     }
   },
-  publicDir: false as const,
+  publicDir: 'public',
   }
 })

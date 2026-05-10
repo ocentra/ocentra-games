@@ -14,8 +14,9 @@ import { Connection, Keypair, Transaction, VersionedTransaction } from '@solana/
 import { AnchorClient } from '@ocentra/solana-domain/AnchorClient';
 import { GameClient } from '@ocentra/solana-domain/GameClient';
 import { Wallet } from '@coral-xyz/anchor';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 
-const R2_WORKER_URL = process.env.R2_WORKER_URL || 'http://localhost:8787';
+const R2_WORKER_URL = process.env.R2_WORKER_URL || CloudflareLocalConfig.BaseUrl;
 // COORDINATOR_PRIVATE_KEY not used in this tool - signing handled by wallet
 // const COORDINATOR_PRIVATE_KEY = process.env.COORDINATOR_PRIVATE_KEY;
 const SOLANA_RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
@@ -178,7 +179,7 @@ if (!options.file) {
   console.error('  --anchor solana:program Anchor on Solana using program instruction');
   console.error('  --batch-id <id>        Associate with batch ID');
   console.error('\nEnvironment variables:');
-  console.error('  R2_WORKER_URL: Cloudflare Worker URL (default: http://localhost:8787)');
+  console.error(`  R2_WORKER_URL: Cloudflare Worker URL (default: ${CloudflareLocalConfig.BaseUrl})`);
   console.error('  SOLANA_RPC_URL: Solana RPC URL (default: https://api.devnet.solana.com)');
   console.error('  SOLANA_PRIVATE_KEY: Solana wallet private key (required for --anchor)');
   console.error('  COORDINATOR_PRIVATE_KEY: Optional coordinator private key for signing');

@@ -15,6 +15,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const ROOT = path.resolve(__dirname, '../..');
 export const GAME_WORKER_DIR = path.join(ROOT, 'infra/cloudflare');
+const WRANGLER_ENTRYPOINT = path.join(ROOT, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
+const NODE_EXECUTABLE = process.platform === 'win32' ? 'node' : process.execPath;
 export const GAME_WORKER_PORT = parseInt(process.env.WORKER_PORT ?? String(CloudflareLocalConfig.Port), 10);
 export const GAME_WORKER_HOST = CloudflareLocalConfig.Host;
 export const GAME_WORKER_BASE = `http://${GAME_WORKER_HOST}:${GAME_WORKER_PORT}`;
@@ -245,7 +247,7 @@ async function waitForPort(port: number, timeoutMs: number): Promise<void> {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const attempt = () => {
-      const socket = net.createConnection({ port, host: 'localhost' });
+      const socket = net.createConnection({ port, host: GAME_WORKER_HOST });
       socket.once('connect', () => {
         socket.destroy();
         resolve();
@@ -361,6 +363,18 @@ function runCommand(
   log(`${description} completed in ${formatDurationMs(Date.now() - startedAt)}.`);
 }
 
+function quoteShellArg(value: string): string {
+  return `"${value.replace(/"/g, '\\"')}"`;
+}
+
+function createWranglerShellCommand(args: string[]): string {
+  return [
+    quoteShellArg(process.execPath),
+    quoteShellArg(WRANGLER_ENTRYPOINT),
+    ...args.map(quoteShellArg),
+  ].join(' ');
+}
+
 function seedAiCatalog(log: (message: string) => void): void {
   log('Seeding AI_CATALOG_KV...');
   try {
@@ -370,7 +384,7 @@ function seedAiCatalog(log: (message: string) => void): void {
       stdio: 'pipe',
     });
     execSync(
-      'npx wrangler kv key put "catalog" --path="ai-catalog-seed.json" --namespace-id=0000000000000000000000000000000c --local',
+      createWranglerShellCommand(['kv', 'key', 'put', 'catalog', '--path=ai-catalog-seed.json', '--namespace-id=0000000000000000000000000000000c', '--local']),
       { cwd: GAME_WORKER_DIR, stdio: 'pipe' }
     );
     log('AI_CATALOG_KV seeded.');
@@ -495,14 +509,14 @@ export async function ensureLocalCloudflareWorker(
 
   log(`Starting claim-storage worker on fixed port ${GAME_WORKER_PORT}...`);
   const generatedWorkerEnvFile = writeGeneratedWorkerEnvFile();
-  const wranglerArgs = ['wrangler', 'dev', '--env', 'development', '--ip', GAME_WORKER_HOST, '--port', String(GAME_WORKER_PORT)];
+  const wranglerArgs = ['dev', '--env', 'development', '--ip', GAME_WORKER_HOST, '--port', String(GAME_WORKER_PORT)];
   if (generatedWorkerEnvFile) {
     wranglerArgs.push('--env-file', generatedWorkerEnvFile);
   }
   spawnManaged(
     registry,
-    'npx',
-    wranglerArgs,
+    NODE_EXECUTABLE,
+    [WRANGLER_ENTRYPOINT, ...wranglerArgs],
     GAME_WORKER_DIR,
     'game-worker'
   );

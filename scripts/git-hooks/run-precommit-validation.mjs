@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
-const validationArgs = ['turbo', 'run', 'build', 'lint:exec', 'type-check'];
+const validationArgs = ['turbo', 'run', 'build', 'lint:exec', 'type-check', '--force'];
 
 const runValidation = () => {
   if (process.platform === 'win32') {

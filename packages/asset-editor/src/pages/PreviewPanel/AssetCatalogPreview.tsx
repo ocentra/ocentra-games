@@ -62,6 +62,10 @@ import {
   type GamesCatalogSvgLayoutControls,
 } from '@ocentra/core-ui/GamesExplorer/GamesCatalogSvgShowcaseControls'
 import {
+  normalizeLobbyPageSvgControls,
+  type LobbyPageSvgControls,
+} from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls'
+import {
   AdminUsersPageContent,
   CompetitionPageContent,
   LobbyPageContent,
@@ -75,6 +79,7 @@ import {
   type AdminActivityRow,
   type AdminUserRow,
   type LeaderboardRow,
+  type LobbyHeroMedia,
   type ShopProduct,
   type ShopTab,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces'
@@ -137,6 +142,11 @@ import {
   type GamesCatalogLayoutControlsMessage,
 } from '@/utils/gamesCatalogLayoutControlsChannel'
 import {
+  LOBBY_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type LobbyPageLayoutControlsMessage,
+} from '@/utils/lobbyPageLayoutControlsChannel'
+import { LOBBY_PAGE_LAYOUT_ASSET_PATH } from '@/utils/lobbyPageLayoutControlsPersistence'
+import {
   HEADER_PROFILE_CONTROLS_CHANNEL,
   type HeaderProfileControlsMessage,
 } from '@/utils/headerProfileControlsChannel'
@@ -154,7 +164,10 @@ import {
   type SelectedGameLayoutControlsMessage,
   type SelectedGamePreviewLayoutMode,
 } from '@/utils/selectedGameLayoutControlsChannel'
-import { normalizeSelectedGameLayoutConfig } from '@/utils/selectedGameLayoutPersistence'
+import {
+  SELECTED_GAME_LAYOUT_ASSET_PATH,
+  normalizeSelectedGameLayoutConfig,
+} from '@/utils/selectedGameLayoutPersistence'
 import {
   readStoredLayoutEditorCameraState,
   writeStoredLayoutEditorCameraState,
@@ -688,6 +701,88 @@ function asStringArray(value: unknown): string[] | undefined {
 
 function asNumberValue(value: unknown): number | undefined {
   return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+function resolvePreviewImageHashUrl(
+  value: unknown,
+  resolveImageUrl: (hash: ImageHash) => string | null
+): string | null {
+  if (typeof value !== 'string' || !isImageHash(value)) {
+    return null
+  }
+  return resolveImageUrl(value)
+}
+
+function buildLobbyHeroMediaFromBundle(
+  selectedGame: GameWithMetadata | null,
+  bundle: SelectedGamePreviewBundle,
+  resolveImageUrl: (hash: ImageHash) => string | null
+): LobbyHeroMedia {
+  const gameMode = dataOfPreview(bundle.gameMode)
+  const gameInfo = dataOfPreview(bundle.gameInfo)
+  const images = dataOfPreview(bundle.images)
+  const hero = asPreviewRecord(gameInfo.hero)
+  const titleText =
+    asStringValue(hero.title) ??
+    asStringValue(gameMode.displayName) ??
+    selectedGame?.home.name ??
+    selectedGame?.entry.displayName ??
+    'Template'
+  const tagline =
+    asStringValue(gameInfo.tagline) ??
+    asStringValue(hero.subtitle) ??
+    selectedGame?.home.tagline ??
+    selectedGame?.home.shortDescription ??
+    'Create or join tables before a match starts.'
+  const slides: NonNullable<LobbyHeroMedia['slides']> = []
+  for (const [index, slide] of (Array.isArray(images.slides) ? images.slides : []).entries()) {
+    const slideRecord = asPreviewRecord(slide)
+    const imageUrl = resolvePreviewImageHashUrl(slideRecord.imageHash, resolveImageUrl)
+    if (imageUrl) {
+      slides.push({
+        id: asStringValue(slideRecord.id) ?? `slide-${index + 1}`,
+        imageUrl,
+        alt: asStringValue(slideRecord.alt) ?? `${titleText} lobby slide ${index + 1}`,
+      })
+    }
+  }
+  const logoUrl =
+    resolvePreviewImageHashUrl(images.logoImageHash, resolveImageUrl) ??
+    resolvePreviewImageHashUrl(gameInfo.gameIconImage, resolveImageUrl)
+  return {
+    slides,
+    logoUrl,
+    logoAlt: `${titleText} logo`,
+    titleText,
+    tagline,
+    overlayTintColor: asStringValue(images.overlayTintColor),
+    overlayTintOpacity: asNumberValue(images.overlayTintOpacity),
+  }
+}
+
+function buildLobbyPlayerBoundsFromBundle(
+  selectedGame: GameWithMetadata | null,
+  bundle: SelectedGamePreviewBundle
+): { minPlayers?: number; maxPlayers?: number } {
+  const gameMode = dataOfPreview(bundle.gameMode)
+  const gameInfo = dataOfPreview(bundle.gameInfo)
+  const rules = dataOfPreview(bundle.rules)
+  const mechanicsPlayerCount = asPreviewRecord(asPreviewRecord(gameInfo.mechanicsContract).playerCount)
+  const rulesPlayerCount = asPreviewRecord(rules.playerCount)
+  return {
+    minPlayers:
+      asNumberValue(gameMode.minPlayers) ??
+      asNumberValue(gameInfo.minPlayers) ??
+      asNumberValue(mechanicsPlayerCount.min) ??
+      asNumberValue(rulesPlayerCount.min) ??
+      selectedGame?.home.minPlayers,
+    maxPlayers:
+      asNumberValue(gameMode.maxPlayers) ??
+      asNumberValue(gameInfo.maxPlayers) ??
+      asNumberValue(mechanicsPlayerCount.max) ??
+      asNumberValue(rulesPlayerCount.max) ??
+      selectedGame?.home.maxPlayers,
+  }
 }
 
 function normalizePlayerMode(value: unknown): PlayerModeFilter | null {
@@ -1652,17 +1747,36 @@ function PageLayoutMainAppPreview({
   headerConfigOverride = null,
   gamesExplorerContent = null,
   selectedGameContent = null,
+  lobbyControls,
+  lobbySampleGameId = null,
+  lobbySampleGameName = null,
+  lobbyGameTagline = null,
+  lobbyHeroMedia,
+  lobbyMinPlayers,
+  lobbyMaxPlayers,
+  lobbyUseSampleData = true,
   debugBounds = false,
 }: {
   document: PageLayoutPreviewData
   headerConfigOverride?: UnifiedHeaderConfigInput | null
   gamesExplorerContent?: React.ReactNode
   selectedGameContent?: React.ReactNode
+  lobbyControls?: LobbyPageSvgControls
+  lobbySampleGameId?: string | null
+  lobbySampleGameName?: string | null
+  lobbyGameTagline?: string | null
+  lobbyHeroMedia?: LobbyHeroMedia
+  lobbyMinPlayers?: number
+  lobbyMaxPlayers?: number
+  lobbyUseSampleData?: boolean
   debugBounds?: boolean
 }) {
   const routePath = document.routePath || '/'
   const kind = getPageLayoutKind(document)
-  const headerDynamicData = getPageLayoutHeaderData(document)
+  const headerDynamicData =
+    kind === 'lobby' && lobbySampleGameName
+      ? { gameName: `${lobbySampleGameName} Lobby`, tagline: lobbyGameTagline ?? 'Create or join tables before a match starts.' }
+      : getPageLayoutHeaderData(document)
   const [shopTab, setShopTab] = useState<ShopTab>('Treasury')
   const [settingsTab, setSettingsTab] = useState<'models' | 'inference' | 'providers' | 'native' | 'assets'>('models')
   const [adminSearch, setAdminSearch] = useState('')
@@ -1801,18 +1915,24 @@ function PageLayoutMainAppPreview({
         loading={false}
         creating={false}
         error={null}
-        gameId="claim:preview"
-        rooms={[
-          { roomId: 'room-alpha', roomType: 'public', gameType: 'claim', currentPlayers: 2, maxPlayers: 4, status: 'open' },
-          { roomId: 'room-beta', roomType: 'private', gameType: 'claim', currentPlayers: 3, maxPlayers: 4, status: 'waiting' },
-        ]}
+        gameId={lobbySampleGameId ?? 'claim'}
+        gameName={lobbySampleGameName ?? undefined}
+        gameTagline={lobbyGameTagline ?? undefined}
+        heroMedia={lobbyHeroMedia}
+        minPlayers={lobbyMinPlayers}
+        maxPlayers={lobbyMaxPlayers}
+        useSampleData={lobbyUseSampleData}
+        rooms={lobbyUseSampleData ? [
+          { roomId: 'room-alpha', roomType: 'public', gameType: lobbySampleGameId ?? 'claim', currentPlayers: 2, maxPlayers: 4, status: 'open' },
+          { roomId: 'room-beta', roomType: 'private', gameType: lobbySampleGameId ?? 'claim', currentPlayers: 3, maxPlayers: 4, status: 'waiting' },
+        ] : []}
         busyRoomId={null}
         onRefresh={() => undefined}
         onCreateRoom={() => undefined}
         onJoinRoom={() => undefined}
         onLeaveRoom={() => undefined}
         onMatchmaking={() => undefined}
-        layoutControls={pageControls}
+        layoutControls={lobbyControls ?? normalizeLobbyPageSvgControls(document.lobbyControls as Partial<LobbyPageSvgControls> | undefined)}
       />
     ) : kind === 'matchmaking' ? (
       <MatchmakingPageContent
@@ -1841,6 +1961,8 @@ function PageLayoutMainAppPreview({
     ? <ShopPageToolbar activeTab={shopTab} acBalance={12450} onTabChange={setShopTab} />
     : kind === 'settings'
       ? <SettingsPageToolbar activeTab={settingsTab} showAssetsTab onTabChange={setSettingsTab} />
+      : kind === 'lobby'
+        ? <div className="lb-top-divider" aria-hidden="true" />
       : null
 
   const shellClassName = kind === 'shop'
@@ -1857,6 +1979,8 @@ function PageLayoutMainAppPreview({
               ? 'settings-page'
               : kind === 'selected-game'
                 ? 'selected-game-page'
+                : kind === 'lobby'
+                  ? 'lb-page'
                 : 'home-page'
 
   const workClassName = kind === 'admin'
@@ -1865,8 +1989,10 @@ function PageLayoutMainAppPreview({
       ? `selected-game-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
       : kind === 'games' || kind === 'game-catalog'
         ? `games-catalog-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+        : kind === 'lobby'
+          ? `lb-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
         : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
-  const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games' && kind !== 'game-catalog'
+  const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games' && kind !== 'game-catalog' && kind !== 'lobby'
 
   return (
     <AssetCatalogMainAppPreviewShell
@@ -2264,6 +2390,13 @@ function extractGameIdFromPath(path: string): string | null {
   return segments.length >= 3 ? (segments[segments.length - 2] ?? null) : null
 }
 
+function inferGameIdFromPageLayoutAssetPath(path?: string): string | null {
+  if (!path) return null
+  const normalized = path.replace(/\\/g, '/')
+  const match = normalized.match(/Resources\/GameMode\/[^/]+\/Games\/([^/]+)\//)
+  return match?.[1] ? match[1].toLowerCase() : null
+}
+
 function toReleaseStatus(value: string | undefined): GameHome['releaseStatus'] {
   if (value && RELEASE_STATUSES.has(value as NonNullable<GameHome['releaseStatus']>)) {
     return value as GameHome['releaseStatus']
@@ -2466,6 +2599,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     () => isPageLayoutMode ? readPageLayoutData(assetData) : null,
     [assetData, isPageLayoutMode]
   )
+  const pageLayoutAssetPath = assetPath ?? assetId
+  const pageLayoutGameId = isPageLayoutMode
+    ? inferGameIdFromPageLayoutAssetPath(pageLayoutAssetPath)
+    : null
+  const isGameScopedPageLayout = Boolean(pageLayoutGameId)
   const isHomePageLayout =
     !isPageLayoutMode ||
     pageLayoutData?.kind === 'home' ||
@@ -2473,18 +2611,32 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const pageLayoutKind = pageLayoutData ? getPageLayoutKind(pageLayoutData) : 'generic'
   const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
   const isGamesPageLayout = isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog')
+  const isLobbyPageLayout = isPageLayoutMode && pageLayoutKind === 'lobby'
   const shouldLoadGamesForPageLayout =
-    isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog' || pageLayoutKind === 'selected-game')
+    isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog' || pageLayoutKind === 'selected-game' || pageLayoutKind === 'lobby')
   const initialSelectedGameLayoutConfig = useMemo(
     () => normalizeSelectedGameLayoutConfig(pageLayoutData),
     [pageLayoutData]
   )
+  const initialLobbyPageLayoutControls = useMemo(
+    () => normalizeLobbyPageSvgControls(pageLayoutData?.lobbyControls as Partial<LobbyPageSvgControls> | undefined),
+    [pageLayoutData]
+  )
+  const initialPreviewSampleGameId =
+    isSelectedGameLayout || isLobbyPageLayout
+      ? pageLayoutGameId ||
+        initialSelectedGameLayoutConfig.previewSampleGameId ||
+        pageLayoutData?.preview?.sampleGameRef?.gameId ||
+        'claim'
+      : null
+  const showSelectedGameSamplePicker = isSelectedGameLayout && !isGameScopedPageLayout
+  const showLobbyGameSamplePicker = isLobbyPageLayout && !isGameScopedPageLayout
   const hasCachedHomepagePreview = hasHomepagePreviewContent(cachedHomepagePreviewData)
   const [activeTab, setActiveTab] = useState<AssetCatalogTab>(
     isPageLayoutMode ? 'homepage' : 'games'
   )
   const [selectedGameId, setSelectedGameId] = useState<string | null>(
-    () => isSelectedGameLayout ? initialSelectedGameLayoutConfig.previewSampleGameId || null : null
+    () => initialPreviewSampleGameId
   )
   const [homepageData, setHomepageDataState] = useState<HomePageGamesDocument>(
     () => cachedHomepagePreviewData ?? EMPTY_HOMEPAGE_PREVIEW_DATA
@@ -2559,11 +2711,13 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const [selectedGameContentPlan, setSelectedGameContentPlan] =
     useState<SelectedGameContentPlan>(() => initialSelectedGameLayoutConfig.contentPlan)
   const [selectedGamePreviewSampleGameId, setSelectedGamePreviewSampleGameId] =
-    useState(() => initialSelectedGameLayoutConfig.previewSampleGameId)
+    useState(() => initialPreviewSampleGameId ?? initialSelectedGameLayoutConfig.previewSampleGameId)
   const [selectedGameDebugBounds, setSelectedGameDebugBounds] =
     useState(() => initialSelectedGameLayoutConfig.debugBounds)
   const [selectedGamePreviewLayoutMode, setSelectedGamePreviewLayoutMode] =
     useState<SelectedGamePreviewLayoutMode>('auto')
+  const [lobbyPageLayoutControls, setLobbyPageLayoutControls] =
+    useState<LobbyPageSvgControls>(() => initialLobbyPageLayoutControls)
   const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
   const pageLayoutViewportFrameRef = useRef<PageLayoutViewportFrameHandle | null>(null)
   const [pageLayoutPreviewResolution, setPageLayoutPreviewResolution] = useState('fit')
@@ -2613,6 +2767,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const selectedGameDebugBoundsRef = useRef(false)
   const selectedGamePreviewLayoutModeRef =
     useRef<SelectedGamePreviewLayoutMode>('auto')
+  const lobbyPageLayoutControlsRef = useRef<LobbyPageSvgControls>(
+    initialLobbyPageLayoutControls
+  )
   const headerConfigOverrideRef = useRef<SerializedUnifiedHeaderConfig | null>(null)
   const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
   const [homepageContentFrameWidth, setHomepageContentFrameWidth] = useState<number | null>(null)
@@ -2731,6 +2888,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [selectedGameLayoutControls])
 
   useEffect(() => {
+    lobbyPageLayoutControlsRef.current = lobbyPageLayoutControls
+  }, [lobbyPageLayoutControls])
+
+  useEffect(() => {
     selectedGameContentPlanRef.current = selectedGameContentPlan
   }, [selectedGameContentPlan])
 
@@ -2738,7 +2899,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     if (!isSelectedGameLayout) {
       return undefined
     }
-    const nextSampleGameId = initialSelectedGameLayoutConfig.previewSampleGameId || 'claim'
+    const nextSampleGameId = initialPreviewSampleGameId || 'claim'
     const timeoutId = window.setTimeout(() => {
       setSelectedGameLayoutControls(initialSelectedGameLayoutConfig.layoutControls)
       setSelectedGameContentPlan(initialSelectedGameLayoutConfig.contentPlan)
@@ -2747,7 +2908,18 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       setSelectedGameDebugBounds(initialSelectedGameLayoutConfig.debugBounds)
     }, 0)
     return () => window.clearTimeout(timeoutId)
-  }, [initialSelectedGameLayoutConfig, isSelectedGameLayout])
+  }, [initialPreviewSampleGameId, initialSelectedGameLayoutConfig, isSelectedGameLayout])
+
+  useEffect(() => {
+    if (!isLobbyPageLayout) {
+      return undefined
+    }
+    const timeoutId = window.setTimeout(() => {
+      setLobbyPageLayoutControls(initialLobbyPageLayoutControls)
+      setSelectedGameId(initialPreviewSampleGameId)
+    }, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [initialLobbyPageLayoutControls, initialPreviewSampleGameId, isLobbyPageLayout])
 
   useEffect(() => {
     selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
@@ -3013,7 +3185,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       }
 
       if (event.data.type === 'update') {
-        const nextSampleGameId = event.data.previewSampleGameId || 'claim'
+        const nextSampleGameId = pageLayoutGameId || event.data.previewSampleGameId || 'claim'
         setSelectedGameLayoutControls(event.data.layoutControls)
         setSelectedGameContentPlan(event.data.contentPlan)
         setSelectedGamePreviewSampleGameId(nextSampleGameId)
@@ -3024,6 +3196,30 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
 
       if (event.data.type === 'preview-layout-mode') {
         setSelectedGamePreviewLayoutMode(event.data.previewLayoutMode)
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [pageLayoutGameId])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(LOBBY_PAGE_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<LobbyPageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: lobbyPageLayoutControlsRef.current,
+        } satisfies LobbyPageLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setLobbyPageLayoutControls(
+          normalizeLobbyPageSvgControls(event.data.controls)
+        )
       }
     }
     channel.addEventListener('message', handler)
@@ -3683,8 +3879,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     [gamesWithMetadata]
   )
 
+  const shouldLoadSelectedGamePreviewBundle = isSelectedGameLayout || isLobbyPageLayout
+
   useEffect(() => {
-    if (!isSelectedGameLayout) {
+    if (!shouldLoadSelectedGamePreviewBundle) {
       const timeoutId = window.setTimeout(() => setSelectedGamePreviewBundle(null), 0)
       return () => window.clearTimeout(timeoutId)
     }
@@ -3700,13 +3898,26 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     return () => {
       cancelled = true
     }
-  }, [isSelectedGameLayout, selectedGame])
+  }, [shouldLoadSelectedGamePreviewBundle, selectedGame])
 
   const selectedGameFallbackBundle = useMemo(
     () => buildSelectedGameFallbackBundle(selectedGame),
     [selectedGame]
   )
   const selectedGameRenderBundle = selectedGamePreviewBundle ?? selectedGameFallbackBundle
+
+  const lobbyHeroMedia = useMemo(
+    () => isLobbyPageLayout
+      ? buildLobbyHeroMediaFromBundle(selectedGame, selectedGameRenderBundle, resolveImageUrl)
+      : undefined,
+    [isLobbyPageLayout, resolveImageUrl, selectedGame, selectedGameRenderBundle]
+  )
+  const lobbyPlayerBounds = useMemo(
+    () => isLobbyPageLayout
+      ? buildLobbyPlayerBoundsFromBundle(selectedGame, selectedGameRenderBundle)
+      : {},
+    [isLobbyPageLayout, selectedGame, selectedGameRenderBundle]
+  )
 
   const selectedGamePresentation = useMemo(() => {
     if (!isSelectedGameLayout) {
@@ -4130,7 +4341,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const handleOpenSelectedGameLayoutControls = () => {
     void createPanelWindow(
       'selected-game-layout-controls',
-      'Resources/Pages/SelectedGameLayout.asset',
+      assetPath ?? SELECTED_GAME_LAYOUT_ASSET_PATH,
       'Selected Game Layout Controls',
       true
     )
@@ -4145,10 +4356,19 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenLobbyPageLayoutControls = () => {
+    void createPanelWindow(
+      'lobby-page-layout-controls',
+      assetPath ?? LOBBY_PAGE_LAYOUT_ASSET_PATH,
+      'Lobby Layout Controls',
+      true
+    )
+  }
+
   const handleOpenPageLayoutControls = () => {
     void createPanelWindow(
       'page-layout-controls',
-      assetPath ?? assetId,
+      pageLayoutAssetPath,
       `${pageLayoutData?.title ?? 'Page'} Layout Controls`,
       true
     )
@@ -4311,7 +4531,16 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && (
+        {isLobbyPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenLobbyPageLayoutControls}
+          >
+            Edit
+          </button>
+        )}
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && (
           <button
             type="button"
             className="asset-catalog-preview__edit-featured-button"
@@ -4331,7 +4560,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           </label>
         )}
       </div>
-      {isSelectedGameLayout && (
+      {showSelectedGameSamplePicker && (
         <div className="asset-catalog-preview__games-mode">
           <label htmlFor="asset-catalog-selected-game-sample">Sample</label>
           <select
@@ -4343,6 +4572,26 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
               setSelectedGamePreviewSampleGameId(nextGameId ?? '')
             }}
             aria-label="Selected game preview sample"
+          >
+            <option value="">Template placeholders</option>
+            {selectedGameSampleOptions.map(game => (
+              <option key={game.id} value={game.id}>
+                {game.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      {showLobbyGameSamplePicker && (
+        <div className="asset-catalog-preview__games-mode">
+          <label htmlFor="asset-catalog-lobby-game-sample">Sample</label>
+          <select
+            id="asset-catalog-lobby-game-sample"
+            value={selectedGameId ?? ''}
+            onChange={e => {
+              setSelectedGameId(e.target.value || null)
+            }}
+            aria-label="Lobby preview sample"
           >
             <option value="">Template placeholders</option>
             {selectedGameSampleOptions.map(game => (
@@ -4429,6 +4678,14 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           headerConfigOverride={headerConfigOverride}
           gamesExplorerContent={gamesExplorerPreviewContent}
           selectedGameContent={selectedGamePagePreviewContent}
+          lobbyControls={lobbyPageLayoutControls}
+          lobbySampleGameId={selectedGameId}
+          lobbySampleGameName={selectedGame?.home.name ?? selectedGame?.entry.displayName ?? (selectedGameId ? null : 'Template')}
+          lobbyGameTagline={lobbyHeroMedia?.tagline ?? null}
+          lobbyHeroMedia={lobbyHeroMedia}
+          lobbyMinPlayers={lobbyPlayerBounds.minPlayers}
+          lobbyMaxPlayers={lobbyPlayerBounds.maxPlayers}
+          lobbyUseSampleData={!isGameScopedPageLayout}
           debugBounds={pageLayoutBoundsOverlay}
         />
       )}

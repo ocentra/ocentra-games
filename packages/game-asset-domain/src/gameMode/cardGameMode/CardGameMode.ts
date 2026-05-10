@@ -10,6 +10,7 @@ import type { BaseBonusRule } from '@/game/rules/BaseBonusRule';
 import { Strategy } from '@/game/strategy/Strategy';
 import { GameInfo } from '@/game/gameInfo/GameInfo';
 import { CardGameLayout } from '@/ui/layout/CardGameLayout';
+import { PageLayout } from '@/ui/pageLayout/PageLayout';
 import { ImageCarousel } from '@/content/imageCarousel/ImageCarousel';
 import { Deck } from '@/card/deck/Deck';
 import { DeckManager } from '@/deck/DeckManager';
@@ -114,6 +115,8 @@ export interface CardGameAssetLinks {
   scoring: AssetResourceEntry<CardGameScoring>;
   gameInfo: AssetResourceEntry<GameInfo>;
   layout: AssetResourceEntry<CardGameLayout>;
+  selectedGameLayout: AssetResourceEntry<PageLayout>;
+  lobbyLayout: AssetResourceEntry<PageLayout>;
   deck: AssetResourceEntry<Deck>;
   ranking?: AssetResourceEntry<DeckRanking>;
   cardRanking?: AssetResourceEntry<CardRanking>;
@@ -138,6 +141,8 @@ export class CardGameMode extends TurnBasedGameMode {
     this.strategyAsset = new AssetResourceEntry<Strategy>(Strategy.assetType! as AssetType);
     this.gameInfoAsset = new AssetResourceEntry<GameInfo>(GameInfo.assetType! as AssetType);
     this.layoutAsset = new AssetResourceEntry<CardGameLayout>(CardGameLayout.assetType! as AssetType);
+    this.selectedGameLayoutAsset = new AssetResourceEntry<PageLayout>(PageLayout.assetType! as AssetType);
+    this.lobbyLayoutAsset = new AssetResourceEntry<PageLayout>(PageLayout.assetType! as AssetType);
     this.rankingAsset = new AssetResourceEntry<DeckRanking>(DeckRanking.assetType! as AssetType);
     this.cardRankingAsset = new AssetResourceEntry<CardRanking>(CardRanking.assetType! as AssetType);
     this.carouselImagesAsset = new AssetResourceEntry<ImageCarousel>(ImageCarousel.assetType! as AssetType);
@@ -161,6 +166,8 @@ export class CardGameMode extends TurnBasedGameMode {
       strategyAsset: null,
       gameInfoAsset: null,
       layoutAsset: null,
+      selectedGameLayoutAsset: null,
+      lobbyLayoutAsset: null,
       rankingAsset: null,
       carouselImagesAsset: null,
       mechanicsAsset: null,
@@ -223,6 +230,14 @@ export class CardGameMode extends TurnBasedGameMode {
   @required('Layout Asset is required for game mode to function')
   @serializable({ label: 'Layout Asset', group: 'Asset References', elementType: AssetResourceEntry })
   override layoutAsset!: AssetResourceEntry<CardGameLayout>;
+
+  @required('Selected Game Layout Asset is required for game page authoring')
+  @serializable({ label: 'Selected Game Layout Asset', group: 'Asset References', elementType: AssetResourceEntry })
+  selectedGameLayoutAsset!: AssetResourceEntry<PageLayout>;
+
+  @required('Lobby Layout Asset is required for game lobby authoring')
+  @serializable({ label: 'Lobby Layout Asset', group: 'Asset References', elementType: AssetResourceEntry })
+  lobbyLayoutAsset!: AssetResourceEntry<PageLayout>;
 
   @required('Carousel Images Asset is required for game mode to function')
   @serializable({ label: 'Carousel Images Asset', group: 'Asset References', elementType: AssetResourceEntry })
@@ -971,6 +986,8 @@ export class CardGameMode extends TurnBasedGameMode {
       strategyAsset: links.strategy,
       gameInfoAsset: links.gameInfo,
       layoutAsset: links.layout,
+      selectedGameLayoutAsset: links.selectedGameLayout,
+      lobbyLayoutAsset: links.lobbyLayout,
       deckAsset: links.deck,
       rankingAsset: links.ranking ?? links.cardRanking ?? null,
       carouselImagesAsset: links.carouselImages,

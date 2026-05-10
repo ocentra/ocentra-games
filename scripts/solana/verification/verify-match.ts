@@ -9,12 +9,14 @@ import { Connection, PublicKey, Keypair } from '@solana/web3.js';
 import { Wallet } from '@coral-xyz/anchor';
 import { AnchorClient } from '@ocentra/solana-domain/AnchorClient';
 import { GameClient } from '@ocentra/solana-domain/GameClient';
+import { StorageBucketName } from '@ocentra/boundary-domain/constants/buckets';
+import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
 import { MatchVerifier } from '@services/verification/MatchVerifier';
 import { R2Service } from '../../../src/adapters/storage/R2Service';
 import type { MatchRecord } from '@ocentra/verification-domain/types';
 
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-const R2_WORKER_URL = process.env.R2_WORKER_URL || 'http://localhost:8787';
+const R2_WORKER_URL = process.env.R2_WORKER_URL || CloudflareLocalConfig.BaseUrl;
 
 async function verifyMatch(matchId: string, matchRecordPath?: string): Promise<void> {
   console.log(`Verifying match: ${matchId}`);
@@ -28,7 +30,7 @@ async function verifyMatch(matchId: string, matchRecordPath?: string): Promise<v
     // Fetch from R2
     const r2Service = new R2Service({
       workerUrl: R2_WORKER_URL,
-      bucketName: 'matches',
+      bucketName: StorageBucketName.DefaultMatches,
     });
     const recordJson = await r2Service.getMatchRecord(matchId);
     if (!recordJson) {
@@ -57,7 +59,7 @@ async function verifyMatch(matchId: string, matchRecordPath?: string): Promise<v
   const gameClient = new GameClient(anchorClient);
   const r2Service = new R2Service({
     workerUrl: R2_WORKER_URL,
-    bucketName: 'matches',
+    bucketName: StorageBucketName.DefaultMatches,
   });
   const verifier = new MatchVerifier(gameClient, r2Service);
 

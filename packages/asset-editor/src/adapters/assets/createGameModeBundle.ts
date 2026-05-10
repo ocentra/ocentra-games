@@ -1,11 +1,12 @@
 import JSON5 from 'json5';
-import { MimeTypes } from '@ocentra/asset-domain/constants/assets';
+import { AssetTypeCategory, MimeTypes } from '@ocentra/asset-domain/constants/assets';
 import type { AssetMetadata } from '@ocentra/boundary-domain/types/asset-metadata';
 import { CardGameRules } from '@ocentra/game-asset-domain/game/gameRules/CardGameRules';
 import { Strategy } from '@ocentra/game-asset-domain/game/strategy/Strategy';
 import { CardGameScoring } from '@ocentra/game-asset-domain/game/scoring/CardGameScoring';
 import { GameInfo } from '@ocentra/game-asset-domain/game/gameInfo/GameInfo';
 import { CardGameLayout } from '@ocentra/game-asset-domain/ui/layout/CardGameLayout';
+import { PageLayout, type PageLayoutDocument } from '@ocentra/game-asset-domain/ui/pageLayout/PageLayout';
 import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { ImageCarousel } from '@ocentra/game-asset-domain/content/imageCarousel/ImageCarousel';
 import { CardGameMode, type CardGameAssetLinks } from '@ocentra/game-asset-domain/gameMode/cardGameMode/CardGameMode';
@@ -23,7 +24,7 @@ import {
 } from '@ocentra/game-asset-domain/game/gameMechanics/GameMechanicsModel';
 import { AssetResourceEntry } from '@ocentra/asset-domain/resourceEntry/AssetResourceEntry';
 import { asAssetType } from '@ocentra/asset-domain/types/assetType';
-import type { CreatedAsset, AssetCreationContext } from '@ocentra/game-asset-domain/AssetCreation';
+import { generateAssetGuid, type CreatedAsset, type AssetCreationContext } from '@ocentra/game-asset-domain/AssetCreation';
 import { getSerializableClassMetadata, type SerializableConstructor } from '@ocentra/asset-domain/serialization/decorators';
 import { ScriptableObject } from '@ocentra/asset-domain/ScriptableObject';
 import { tryGameId, type AssetChecksum } from '@ocentra/asset-domain/types/assetIdentifier';
@@ -34,7 +35,7 @@ export interface CreateGameModeBundleOptions {
   displayName: string;
   category: string;
   copyFromTemplate?: Record<string, unknown>;
-  assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
+  assetDataOverrides?: Partial<Record<'rules' | 'strategy' | 'scoring' | 'gameInfo' | 'layout' | 'selectedGameLayout' | 'lobbyLayout' | 'deck' | 'carousel' | 'mechanics' | 'cardGame', Record<string, unknown>>>;
   mechanicsModelDataOverrides?: Partial<Record<GameMechanicsModelRefKey, Record<string, unknown>>>;
   linkedDeckAsset?: AssetResourceEntry<Deck>;
 }
@@ -65,6 +66,8 @@ interface MechanicsModelCreation {
   fallbackDisplayName: string;
   fallbackCategory: string;
 }
+
+type GeneratedChildAssetKey = Exclude<keyof CardGameAssetLinks, 'deck' | 'selectedGameLayout' | 'lobbyLayout'>;
 
 function createEntry<T extends ScriptableObject>(guid: string, type: string, displayName: string, path = ''): AssetResourceEntry<T> {
   const entry = AssetResourceEntry.fromGuid<T>(guid, asAssetType(type), displayName);
@@ -126,6 +129,119 @@ function applyDataOverrides(asset: CreatedAsset, overrides: Record<string, unkno
       ...overrides,
     },
   };
+}
+
+function formatPageTitle(displayName: string, suffix: string): string {
+  return `${displayName.trim() || 'Card Game'} ${suffix}`;
+}
+
+async function createPageLayoutAsset(
+  context: AssetCreationContext,
+  kind: 'selected-game' | 'lobby',
+  layoutPath: string,
+  gameModePath: string,
+  gameModeGuid = '',
+  overrides: Record<string, unknown> | undefined,
+): Promise<CreatedAsset> {
+  const fileSuffix = kind === 'selected-game' ? 'SelectedGameLayout' : 'LobbyLayout';
+  const sliceId = kind === 'selected-game' ? 'selected-game-showcase' : 'lobby-shell';
+  const document: PageLayoutDocument = kind === 'selected-game'
+    ? {
+      pageId: `${context.gameId}-selected-game`,
+      routePath: `/games/${context.gameId}`,
+      title: formatPageTitle(context.displayName, 'Selected Game'),
+      kind,
+      slices: [
+        {
+          id: sliceId,
+          type: 'selected-game',
+          enabled: true,
+          order: 10,
+          title: formatPageTitle(context.displayName, 'Selected Game'),
+          sourceAssetPath: gameModePath,
+          controlsAssetPath: `${layoutPath}#${sliceId}`,
+        },
+      ],
+      layout: {
+        type: 'custom',
+        sections: [
+          { id: sliceId, type: 'selected-game', order: 10 },
+        ],
+      },
+      layoutControls: {},
+      preview: {
+        sampleGameRef: {
+          gameId: context.gameId,
+          guid: gameModeGuid,
+          path: gameModePath,
+        },
+      },
+    }
+    : {
+      pageId: `${context.gameId}-lobby`,
+      routePath: `/games/${context.gameId}/lobby`,
+      title: formatPageTitle(context.displayName, 'Lobby'),
+      kind,
+      slices: [
+        {
+          id: sliceId,
+          type: 'custom',
+          enabled: true,
+          order: 10,
+          title: formatPageTitle(context.displayName, 'Lobby'),
+          sourceAssetPath: `${layoutPath}#${sliceId}`,
+          controlsAssetPath: `${layoutPath}#${sliceId}`,
+        },
+      ],
+      layout: {
+        type: 'custom',
+        sections: [
+          { id: sliceId, type: 'custom', order: 10 },
+        ],
+      },
+      lobbyControls: {},
+      preview: {
+        sampleGameRef: {
+          gameId: context.gameId,
+          guid: gameModeGuid,
+          path: gameModePath,
+        },
+      },
+    };
+
+  return {
+    assetId: `${context.gameId}-${kind}-layout`,
+    fileName: `${context.gameId}${fileSuffix}.asset`,
+    guid: await generateAssetGuid('PageLayout', context.gameId),
+    data: {
+      ...document,
+      ...overrides,
+    } as Record<string, unknown>,
+  };
+}
+
+function bindPageLayoutToGame(asset: CreatedAsset, gameId: string, gameModeGuid: string, gameModePath: string): void {
+  const data = asset.data as unknown as PageLayoutDocument;
+  data.preview = {
+    ...(data.preview ?? {}),
+    sampleGameRef: {
+      gameId,
+      guid: gameModeGuid,
+      path: gameModePath,
+    },
+  };
+  data.slices = data.slices.map((slice) => ({
+    ...slice,
+    sourceAssetPath: slice.type === 'selected-game' ? gameModePath : slice.sourceAssetPath,
+  }));
+}
+
+function createDraftPageLayoutEntry(asset: CreatedAsset, displayName: string, path: string, gameId: string): AssetResourceEntry<PageLayout> {
+  const entry = createEntry<PageLayout>(asset.guid, PageLayout.assetType!, displayName, path);
+  entry.gameId = tryGameId(gameId) ?? null;
+  entry.category = AssetTypeCategory.UI as typeof entry.category;
+  entry.mimeType = MimeTypes.Json;
+  return entry;
 }
 
 async function enrichSerializedAsset(
@@ -333,7 +449,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     options.assetDataOverrides?.mechanics,
   );
 
-  const childAssetMap: Array<{ key: keyof Omit<CardGameAssetLinks, 'deck'>; asset: CreatedAsset; constructor: SerializableConstructor; fallbackDisplayName: string; fallbackCategory: string }> = [
+  const childAssetMap: Array<{ key: GeneratedChildAssetKey; asset: CreatedAsset; constructor: SerializableConstructor; fallbackDisplayName: string; fallbackCategory: string }> = [
     { asset: rules, constructor: CardGameRules, fallbackDisplayName: 'Game Rules', fallbackCategory: 'Game' },
     { asset: strategy, constructor: Strategy, fallbackDisplayName: 'Strategy', fallbackCategory: 'Game' },
     { asset: scoring, constructor: CardGameScoring, fallbackDisplayName: 'Scoring', fallbackCategory: 'Game' },
@@ -342,7 +458,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     { asset: carousel, constructor: ImageCarousel, fallbackDisplayName: 'Carousel Images', fallbackCategory: 'Content' },
     { asset: mechanics, constructor: CardGameMechanics, fallbackDisplayName: 'Mechanics', fallbackCategory: 'Game' },
   ].map((entry, index) => ({
-    key: ['rules', 'strategy', 'scoring', 'gameInfo', 'layout', 'carouselImages', 'mechanics'][index] as keyof Omit<CardGameAssetLinks, 'deck'>,
+    key: ['rules', 'strategy', 'scoring', 'gameInfo', 'layout', 'carouselImages', 'mechanics'][index] as GeneratedChildAssetKey,
     ...entry,
   }));
 
@@ -357,10 +473,30 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     )
   ));
 
-  const childFilesByKey = new Map<keyof Omit<CardGameAssetLinks, 'deck'>, GameModeBundleFile>();
+  const childFilesByKey = new Map<GeneratedChildAssetKey, GameModeBundleFile>();
   childAssetMap.forEach((entry, index) => {
     childFilesByKey.set(entry.key, childFiles[index]);
   });
+
+  const gameModePath = `Resources/${folder}/${normalizedGameId}.asset`;
+  const selectedGameLayoutPath = `Resources/${folder}/${normalizedGameId}SelectedGameLayout.asset`;
+  const lobbyLayoutPath = `Resources/${folder}/${normalizedGameId}LobbyLayout.asset`;
+  const selectedGameLayout = await createPageLayoutAsset(
+    context,
+    'selected-game',
+    selectedGameLayoutPath,
+    gameModePath,
+    '',
+    options.assetDataOverrides?.selectedGameLayout,
+  );
+  const lobbyLayout = await createPageLayoutAsset(
+    context,
+    'lobby',
+    lobbyLayoutPath,
+    gameModePath,
+    '',
+    options.assetDataOverrides?.lobbyLayout,
+  );
 
   const cardGameLinks = {
     rules: createEntryFromBundleFile<CardGameRules>(childFilesByKey.get('rules')!),
@@ -368,6 +504,8 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
     scoring: createEntryFromBundleFile<CardGameScoring>(childFilesByKey.get('scoring')!),
     gameInfo: createEntryFromBundleFile<GameInfo>(childFilesByKey.get('gameInfo')!),
     layout: createEntryFromBundleFile<CardGameLayout>(childFilesByKey.get('layout')!),
+    selectedGameLayout: createDraftPageLayoutEntry(selectedGameLayout, `${context.displayName} Selected Page Layout`, selectedGameLayoutPath, normalizedGameId),
+    lobbyLayout: createDraftPageLayoutEntry(lobbyLayout, `${context.displayName} Lobby Layout`, lobbyLayoutPath, normalizedGameId),
     deck: linkedDeckAsset,
     ranking: linkedCardRankingAsset,
     carouselImages: createEntryFromBundleFile<ImageCarousel>(childFilesByKey.get('carouselImages')!),
@@ -377,6 +515,31 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
   const cardGame = applyDataOverrides(await CardGameMode.create(context, cardGameLinks), options.assetDataOverrides?.cardGame);
 
   applyTemplateToCardGame(cardGame, options.copyFromTemplate);
+
+  bindPageLayoutToGame(selectedGameLayout, normalizedGameId, cardGame.guid, gameModePath);
+  bindPageLayoutToGame(lobbyLayout, normalizedGameId, cardGame.guid, gameModePath);
+
+  const pageLayoutFiles = await Promise.all([
+    enrichSerializedAsset(
+      selectedGameLayout,
+      PageLayout,
+      selectedGameLayoutPath,
+      `${context.displayName} Selected Page Layout`,
+      'UI',
+      normalizedGameId
+    ),
+    enrichSerializedAsset(
+      lobbyLayout,
+      PageLayout,
+      lobbyLayoutPath,
+      `${context.displayName} Lobby Layout`,
+      'UI',
+      normalizedGameId
+    ),
+  ]);
+  const cardGameData = cardGame.data as Record<string, unknown>;
+  cardGameData.selectedGameLayoutAsset = createEntryFromBundleFile<PageLayout>(pageLayoutFiles[0]);
+  cardGameData.lobbyLayoutAsset = createEntryFromBundleFile<PageLayout>(pageLayoutFiles[1]);
 
   const mainFile = await enrichSerializedAsset(
     cardGame,
@@ -390,6 +553,7 @@ export async function createGameModeBundle(options: CreateGameModeBundleOptions)
   const files = [
     mainFile,
     ...childFiles,
+    ...pageLayoutFiles,
     ...modelFiles,
   ];
 
