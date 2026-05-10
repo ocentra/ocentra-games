@@ -1,4 +1,4 @@
-import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config';
+import { defineWorkersConfig } from './test-runner/vitest-workers-config';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync, readFileSync } from 'node:fs';

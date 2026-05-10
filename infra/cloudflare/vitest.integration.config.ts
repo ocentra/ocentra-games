@@ -4,7 +4,7 @@
  * Files that declare runIn: RunIn.Unstable in the test are excluded from the pool
  * (they run in the unstable phase via suite-type-map).
  */
-import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config';
+import { defineWorkersConfig } from './test-runner/vitest-workers-config';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync, existsSync } from 'node:fs';

@@ -1,4 +1,4 @@
-import { getCurrentTest } from 'vitest/suite';
+import { TestRunner } from 'vitest';
 import { setRunId } from '@ocentra/logging-domain/test-log/testLogBuffer';
 import { RunType } from '@ocentra/logging-domain/test-log/types';
 import { initLogConfig } from '@/logging/log-config';
@@ -37,7 +37,7 @@ export async function createToken(): Promise<SetupContextToken> {
   }
 
   await ensureContextReady();
-  const task = getCurrentTest();
+  const task = TestRunner.getCurrentTest();
   if (!task) {
     throw new Error('[FAIL-FAST] getCurrentTest() returned null. Cannot create context.');
   }

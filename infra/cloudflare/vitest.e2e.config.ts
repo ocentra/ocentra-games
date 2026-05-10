@@ -2,7 +2,7 @@
  * Vitest config for e2e tests only
  * Uses pool-workers with only e2e test patterns
  */
-import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config';
+import { defineWorkersConfig } from './test-runner/vitest-workers-config';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'node:fs';
