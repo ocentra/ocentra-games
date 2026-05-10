@@ -76,8 +76,9 @@ export async function handleWsRequest(
     return stub.fetch(request);
   }
 
-  if (pathname.startsWith('/ws/signaling/')) {
-    const sessionId = pathname.replace('/ws/signaling/', '').split('/')[0] ?? 'default';
+  const signalingWsPrefix = ApiEndpoint.Ws.Signaling('');
+  if (pathname.startsWith(signalingWsPrefix)) {
+    const sessionId = pathname.slice(signalingWsPrefix.length).split('/')[0] ?? 'default';
     const ns = env.SIGNALING_DO;
     if (!ns) {
       return new Response(JSON.stringify({ error: 'Signaling not available' }), {
@@ -95,7 +96,7 @@ export async function handleWsRequest(
     });
   }
 
-  const presenceWsPrefix = '/ws/presence/';
+  const presenceWsPrefix = ApiEndpoint.Ws.Presence('');
   if (pathname.startsWith(presenceWsPrefix)) {
     const userId = pathname.slice(presenceWsPrefix.length).split('/')[0] ?? '';
     if (!userId) {

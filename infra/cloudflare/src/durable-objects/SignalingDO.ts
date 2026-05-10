@@ -8,16 +8,20 @@ const MAX_PEERS = 2;
 const MAX_ICE_QUEUE = 64;
 
 interface SignalingMessage {
-  type: 'offer' | 'answer' | 'ice';
+  type: 'offer' | 'answer' | 'ice' | 'ice-candidate';
+  from?: string;
+  to?: string;
   payload?: unknown;
+  sdp?: unknown;
+  candidate?: unknown;
 }
 
 export class SignalingDO implements DurableObject {
   private readonly log = Logger.instance;
   private readonly peers: WebSocket[] = [];
-  private pendingOffer: unknown = null;
-  private pendingAnswer: unknown = null;
-  private readonly iceQueue: unknown[] = [];
+  private pendingOffer: SignalingMessage | null = null;
+  private pendingAnswer: SignalingMessage | null = null;
+  private readonly iceQueue: SignalingMessage[] = [];
 
   constructor(
     private readonly ctx: DurableObjectState,
@@ -56,10 +60,10 @@ export class SignalingDO implements DurableObject {
         const pair = new WebSocketPair();
         this.ctx.acceptWebSocket(pair[1]);
         this.peers.push(pair[1]);
-        this.flushPendingToPeers();
+        this.flushPendingToPeer(pair[1]);
         this.logInfo('Accepting WebSocket connection', getStackTrace(), {
           sessionId: this.ctx.id.toString(),
-          peerCount: this.peers.length + 1
+          peerCount: this.peers.length
         });
         return new Response(null, { status: HttpStatus.SwitchingProtocols, webSocket: pair[0] });
       }
@@ -68,21 +72,22 @@ export class SignalingDO implements DurableObject {
 
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${SignalingDOSegment.Offer}`)) {
         const body = (await request.json().catch(() => ({}))) as { sdp?: unknown };
-        this.pendingOffer = body.sdp ?? body;
-        this.broadcast({ type: 'offer', payload: this.pendingOffer });
+        this.pendingOffer = { type: 'offer', payload: body.sdp ?? body };
+        this.broadcast(this.pendingOffer);
         return this.json({ accepted: true });
       }
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${SignalingDOSegment.Answer}`)) {
         const body = (await request.json().catch(() => ({}))) as { sdp?: unknown };
-        this.pendingAnswer = body.sdp ?? body;
-        this.broadcast({ type: 'answer', payload: this.pendingAnswer });
+        this.pendingAnswer = { type: 'answer', payload: body.sdp ?? body };
+        this.broadcast(this.pendingAnswer);
         return this.json({ accepted: true });
       }
       if (request.method === HttpMethod.Post && pathname.endsWith(`/${SignalingDOSegment.Ice}`)) {
         const body = (await request.json().catch(() => ({}))) as { candidate?: unknown };
         const candidate = body.candidate ?? body;
-        if (this.iceQueue.length < MAX_ICE_QUEUE) this.iceQueue.push(candidate);
-        this.broadcast({ type: 'ice', payload: candidate });
+        const message: SignalingMessage = { type: 'ice', payload: candidate };
+        if (this.iceQueue.length < MAX_ICE_QUEUE) this.iceQueue.push(message);
+        this.broadcast(message);
         return this.json({ accepted: true });
       }
 
@@ -95,17 +100,28 @@ export class SignalingDO implements DurableObject {
 
   webSocketMessage(ws: WebSocket, message: string | ArrayBuffer): void {
     const raw = typeof message === 'string' ? message : new TextDecoder().decode(message);
+    let parsed: SignalingMessage;
     try {
-      const msg = JSON.parse(raw) as SignalingMessage;
-      if (msg.type === 'offer') this.pendingOffer = msg.payload ?? null;
-      if (msg.type === 'answer') this.pendingAnswer = msg.payload ?? null;
-      if (msg.type === 'ice' && msg.payload != null && this.iceQueue.length < MAX_ICE_QUEUE) {
-        this.iceQueue.push(msg.payload);
-      }
+      parsed = JSON.parse(raw) as SignalingMessage;
     } catch {
-      //
+      this.logWarn('Dropping malformed signaling message', getStackTrace(), {
+        sessionId: this.ctx.id.toString()
+      });
+      return;
     }
-    this.broadcastToOthers(ws, raw);
+    if (!this.isValidSignal(parsed)) {
+      this.logWarn('Dropping unsupported signaling message', getStackTrace(), {
+        sessionId: this.ctx.id.toString(),
+        type: typeof parsed?.type === 'string' ? parsed.type : undefined
+      });
+      return;
+    }
+    if (parsed.type === 'offer') this.pendingOffer = parsed;
+    if (parsed.type === 'answer') this.pendingAnswer = parsed;
+    if ((parsed.type === 'ice' || parsed.type === 'ice-candidate') && this.iceQueue.length < MAX_ICE_QUEUE) {
+      this.iceQueue.push(parsed);
+    }
+    this.broadcastToOthers(ws, JSON.stringify(parsed));
   }
 
   webSocketClose(ws: WebSocket): void {
@@ -122,7 +138,7 @@ export class SignalingDO implements DurableObject {
     const raw = JSON.stringify(msg);
     for (const peer of this.peers) {
       try {
-        if (peer.readyState === WebSocket.OPEN) peer.send(raw);
+        this.sendIfOpen(peer, raw);
       } catch {
         //
       }
@@ -133,7 +149,7 @@ export class SignalingDO implements DurableObject {
     for (const peer of this.peers) {
       if (peer !== sender && peer.readyState === WebSocket.OPEN) {
         try {
-          peer.send(raw);
+          this.sendIfOpen(peer, raw);
         } catch {
           //
         }
@@ -141,16 +157,24 @@ export class SignalingDO implements DurableObject {
     }
   }
 
-  private flushPendingToPeers(): void {
-    if (this.pendingOffer != null) {
-      this.broadcast({ type: 'offer', payload: this.pendingOffer });
-    }
-    if (this.pendingAnswer != null) {
-      this.broadcast({ type: 'answer', payload: this.pendingAnswer });
-    }
+  private flushPendingToPeer(peer: WebSocket): void {
+    if (this.pendingOffer != null) this.sendIfOpen(peer, JSON.stringify(this.pendingOffer));
+    if (this.pendingAnswer != null) this.sendIfOpen(peer, JSON.stringify(this.pendingAnswer));
     for (const candidate of this.iceQueue) {
-      this.broadcast({ type: 'ice', payload: candidate });
+      this.sendIfOpen(peer, JSON.stringify(candidate));
     }
+  }
+
+  private sendIfOpen(peer: WebSocket, raw: string): void {
+    if (peer.readyState === WebSocket.OPEN) peer.send(raw);
+  }
+
+  private isValidSignal(message: SignalingMessage): boolean {
+    if (!message || typeof message !== 'object') return false;
+    if (message.type === 'offer') return message.payload != null || message.sdp != null;
+    if (message.type === 'answer') return message.payload != null || message.sdp != null;
+    if (message.type === 'ice' || message.type === 'ice-candidate') return message.payload != null || message.candidate != null;
+    return false;
   }
 
   private json(data: unknown, status: number = HttpStatus.Ok): Response {
