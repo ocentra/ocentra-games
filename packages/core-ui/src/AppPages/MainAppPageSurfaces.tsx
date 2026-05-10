@@ -15,7 +15,9 @@ import type {
   LobbyHeroMedia,
   LobbyJoinCodeDraft,
   LobbyNavigationTarget,
+  LobbyPartyStatus,
   LobbyQuickJoinDraft,
+  LobbyRewardStatus,
   LobbyRoomListFilterDraft,
   LobbyRoomPlayer,
   LobbyServerStatus,
@@ -30,12 +32,17 @@ export type {
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type {
   LobbyAddAISeatDraft,
+  LobbyChatMessageItem,
   LobbyCreateRoomDraft,
+  LobbyFriendItem,
   LobbyHeroMedia,
   LobbyJoinCodeDraft,
   LobbyNavigationTarget,
+  LobbyPartyStatus,
   LobbyQuickJoinDraft,
+  LobbyRewardStatus,
   LobbyRoomListFilterDraft,
+  LobbyServerStatus,
 } from './Lobby/LobbyPageSvgTypes';
 
 export type SocialFriend = { friendId: string };
@@ -905,6 +912,9 @@ export function LobbyPageContent({
   joinedRoom,
   friends,
   chatMessages,
+  lobbyChatMessages,
+  reward,
+  party,
   server,
   minPlayers,
   maxPlayers,
@@ -922,6 +932,15 @@ export function LobbyPageContent({
   onStartRoom,
   onAddAIRoom,
   onSendRoomChat,
+  onSendLobbyChat,
+  onAddFriend,
+  onInviteFriend,
+  onCreateParty,
+  onLeaveParty: onLeavePartyService,
+  onClaimReward,
+  onSelectServer,
+  onRefreshLobbyServices,
+  onShareRoomCode,
   onMatchmaking,
   filters,
   onFilterRooms,
@@ -942,6 +961,9 @@ export function LobbyPageContent({
   joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
+  lobbyChatMessages?: LobbyChatMessageItem[];
+  reward?: LobbyRewardStatus | null;
+  party?: LobbyPartyStatus | null;
   server?: LobbyServerStatus | null;
   minPlayers?: number;
   maxPlayers?: number;
@@ -959,6 +981,15 @@ export function LobbyPageContent({
   onStartRoom?: (roomId: string) => void;
   onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
+  onSendLobbyChat?: (message: string) => void;
+  onAddFriend?: (friendId: string) => void;
+  onInviteFriend?: (friendId: string) => void;
+  onCreateParty?: () => void;
+  onLeaveParty?: () => void;
+  onClaimReward?: () => void;
+  onSelectServer?: (regionId: string) => void;
+  onRefreshLobbyServices?: () => void;
+  onShareRoomCode?: (room: LobbyRoomLike) => void;
   onMatchmaking: () => void;
   filters?: LobbyRoomListFilterDraft;
   onFilterRooms?: (filters: LobbyRoomListFilterDraft) => void;
@@ -980,6 +1011,9 @@ export function LobbyPageContent({
       joinedRoom={joinedRoom}
       friends={friends}
       chatMessages={chatMessages}
+      lobbyChatMessages={lobbyChatMessages}
+      reward={reward}
+      party={party}
       server={server}
       minPlayers={minPlayers}
       maxPlayers={maxPlayers}
@@ -997,6 +1031,15 @@ export function LobbyPageContent({
       onStartRoom={onStartRoom}
       onAddAIRoom={onAddAIRoom}
       onSendRoomChat={onSendRoomChat}
+      onSendLobbyChat={onSendLobbyChat}
+      onAddFriend={onAddFriend}
+      onInviteFriend={onInviteFriend}
+      onCreateParty={onCreateParty}
+      onLeaveParty={onLeavePartyService}
+      onClaimReward={onClaimReward}
+      onSelectServer={onSelectServer}
+      onRefreshLobbyServices={onRefreshLobbyServices}
+      onShareRoomCode={onShareRoomCode}
       onMatchmaking={onMatchmaking}
       filters={filters}
       onFilterRooms={onFilterRooms}

@@ -217,7 +217,18 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
       if (progressionResult) return progressionResult;
     }
 
-    return rewardResult;
+    const balance = await this.readCreditBalance(context);
+    if (!balance) return rewardResult;
+    const rewardBody = rewardResult.body && typeof rewardResult.body === 'object' && !Array.isArray(rewardResult.body)
+      ? rewardResult.body as Record<string, unknown>
+      : {};
+    return {
+      status: rewardResult.status,
+      body: {
+        ...rewardBody,
+        balance,
+      },
+    };
   }
 
   private async forwardRewardMutation(
@@ -294,6 +305,22 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
     }
     await res.text().catch(() => undefined);
     return null;
+  }
+
+  private async readCreditBalance(context: FlowContext): Promise<Record<string, unknown> | null> {
+    const ns = context.env.CREDITS_DO;
+    const userId = context.authUserId;
+    if (!ns || !userId) return null;
+
+    const stub = ns.get(ns.idFromName(userId));
+    const res = await fetchFromDO(stub, CreditsDOPaths.Balance, {
+      method: HttpMethod.Get,
+    });
+    if (!res.ok) {
+      await res.text().catch(() => undefined);
+      return null;
+    }
+    return await res.json().catch(() => null) as Record<string, unknown> | null;
   }
 
   private async awardXp(

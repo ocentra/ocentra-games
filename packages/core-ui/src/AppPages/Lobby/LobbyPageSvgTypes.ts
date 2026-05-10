@@ -183,15 +183,20 @@ export type LobbyHeroMedia = {
 };
 
 export type LobbyFriendItem = {
+  userId?: string;
   name: string;
   state: string;
   avatarUrl?: string | null;
+  inviteState?: 'idle' | 'inviting' | 'invited' | 'failed';
 };
 
 export type LobbyChatMessageItem = {
+  messageId?: string;
+  senderId?: string;
   name: string;
   msg: string;
   ago: string;
+  timestamp?: number;
   avatarUrl?: string | null;
 };
 
@@ -207,6 +212,7 @@ export type LobbyActiveFilterItem = {
 };
 
 export type LobbyServerOption = {
+  regionId?: string;
   name: string;
   ping: string;
   active: boolean;
@@ -215,7 +221,30 @@ export type LobbyServerOption = {
 export type LobbyServerStatus = {
   active: string;
   ping: string;
+  selectedRegionId?: string;
+  selecting?: boolean;
   options: LobbyServerOption[];
+};
+
+export type LobbyRewardStatus = {
+  available: boolean;
+  claiming?: boolean;
+  claimed?: boolean;
+  alreadyClaimed?: boolean;
+  currentDay?: number;
+  loginStreak?: number;
+  nextAt?: number | null;
+  rewardLabel: string;
+  readyLabel: string;
+  balanceLabel?: string;
+};
+
+export type LobbyPartyStatus = {
+  partyId?: string;
+  leaderId?: string;
+  memberCount: number;
+  inviteCount: number;
+  members: Array<{ userId: string; displayName?: string }>;
 };
 
 export type FeaturedCardData = {

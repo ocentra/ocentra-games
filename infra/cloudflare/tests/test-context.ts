@@ -10,6 +10,7 @@ import {
   createTestContext,
   createSetupContextToken,
   getTokenForFetch,
+  getCurrentSetupContextToken,
   ensureContextReady,
   type SetupContextToken,
 } from './test-setup-core.js';
@@ -42,7 +43,7 @@ export async function createToken(): Promise<SetupContextToken> {
   }
 
   await ensureContextReady();
-  const token = getTokenForFetch();
+  const token = getTokenForFetch() ?? getCurrentSetupContextToken();
   if (token) return token;
 
   const task = getCurrentTest();

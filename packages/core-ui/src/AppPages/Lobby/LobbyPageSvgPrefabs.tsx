@@ -24,7 +24,9 @@ import type {
   LobbyHeaderStats,
   LobbyHeroMedia,
   LobbyNavigationTarget,
+  LobbyPartyStatus,
   LobbyPanelRect,
+  LobbyRewardStatus,
   LobbyRoomListFilterDraft,
   LobbyServerStatus,
   LobbyTableRow,
@@ -91,11 +93,30 @@ export function SidebarAction({ x, y, w, h, label, sub, icon, active, onClick }:
   );
 }
 
-export function MiniRewardSpinner({ x, y, w, h, onClick }: { x: number; y: number; w: number; h: number; onClick: () => void }) {
+export function MiniRewardSpinner({
+  x,
+  y,
+  w,
+  h,
+  onClick,
+  reward,
+  disabled,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  onClick: () => void;
+  reward?: LobbyRewardStatus | null;
+  disabled?: boolean;
+}) {
   const cx = x + w * 0.5;
   const cy = y + h * 0.56;
   const r = Math.min(w, h) * 0.31;
   const innerR = r * 0.22;
+  const title = reward?.rewardLabel ?? REWARD_SPINNER.title;
+  const readyLabel = reward?.claiming ? 'CLAIMING...' : reward?.readyLabel ?? REWARD_SPINNER.readyLabel;
+  const isDisabled = Boolean(disabled || reward?.claiming || (reward && !reward.available && !reward.claimed));
   const toPt = (ang: number, rad: number) => {
     const a = (ang - 90) * Math.PI / 180;
     return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad];
@@ -110,9 +131,22 @@ export function MiniRewardSpinner({ x, y, w, h, onClick }: { x: number; y: numbe
     return `M${p0x} ${p0y} L${p1x} ${p1y} A${r - 2} ${r - 2} 0 0 1 ${p2x} ${p2y} L${p3x} ${p3y} A${innerR} ${innerR} 0 0 0 ${p0x} ${p0y} Z`;
   };
   return (
-    <g className="lobby-ui-hit" onClick={onClick} onKeyDown={(event) => handleSvgButtonKey(event, onClick)} filter="url(#lobbyPurpleGlow)" role="button" aria-label={REWARD_SPINNER.title} tabIndex={0}>
+    <g
+      className={isDisabled ? '' : 'lobby-ui-hit'}
+      onClick={() => {
+        if (!isDisabled) onClick();
+      }}
+      onKeyDown={(event) => {
+        if (!isDisabled) handleSvgButtonKey(event, onClick);
+      }}
+      filter="url(#lobbyPurpleGlow)"
+      role="button"
+      aria-label="DAILY REWARD"
+      tabIndex={isDisabled ? -1 : 0}
+      opacity={isDisabled ? 0.78 : 1}
+    >
       <rect x={x} y={y} width={w} height={h} rx="10" fill="#100f2d" stroke="#6d35ff" strokeWidth="1.2" />
-      <CenterTxt x={x + 12} y={y + 10} w={w - 24} h={26} text={REWARD_SPINNER.title} size={12.8} weight="950" />
+      <CenterTxt x={x + 12} y={y + 10} w={w - 24} h={26} text={title} size={12.8} weight="950" />
       <ellipse cx={cx} cy={cy + r * 0.96} rx={r * 0.92} ry="8" fill="#000" opacity="0.34" />
       <circle cx={cx} cy={cy} r={r + 12} fill="#071321" stroke="#58bfff" strokeWidth="1.1" filter="url(#lobbyCyanGlow)" />
       <circle cx={cx} cy={cy} r={r + 2} fill="#06111f" stroke="#7d49ff" strokeWidth="2.2" filter="url(#lobbyPurpleGlow)" />
@@ -128,7 +162,8 @@ export function MiniRewardSpinner({ x, y, w, h, onClick }: { x: number; y: numbe
       })}
       <circle cx={cx} cy={cy} r={r * 0.33} fill="url(#lobbyGold)" stroke="#ffca4b" strokeWidth="0.7" filter="url(#lobbyGoldGlow)" />
       <rect x={x + 46} y={y + h - 32} width={w - 92} height="20" rx="8" fill="#17143c" stroke="#5f35e8" opacity="0.96" />
-      <CenterTxt x={x + 46} y={y + h - 32} w={w - 92} h={20} text={REWARD_SPINNER.readyLabel} size={9.5} weight="900" />
+      <CenterTxt x={x + 46} y={y + h - 32} w={w - 92} h={20} text={readyLabel} size={9.5} weight="900" />
+      {reward?.balanceLabel ? <CenterTxt x={x + 12} y={y + h - 54} w={w - 24} h={18} text={reward.balanceLabel} size={9.2} weight="850" fill="#95e8ff" /> : null}
     </g>
   );
 }
@@ -139,12 +174,16 @@ export function Sidebar({
   useSampleData,
   onOpenActionPopup,
   onNavigate,
+  reward,
+  onClaimReward,
 }: {
   controls: LobbyPageSvgControls;
   panel: LobbyPanelRect;
   useSampleData: boolean;
   onOpenActionPopup: (type: string) => void;
   onNavigate?: (target: LobbyNavigationTarget) => void;
+  reward?: LobbyRewardStatus | null;
+  onClaimReward?: () => void;
 }) {
   const side = { ...controls.leftPanel, ...panel };
   const innerX = side.x + side.pad;
@@ -197,7 +236,15 @@ export function Sidebar({
         {useSampleData ? (
           <MiniRewardSpinner x={promo.x + 8} y={promo.y + 6} w={promo.w - 16} h={(promo.h - 12) * controls.leftPanel.eventCardScale} onClick={() => onOpenActionPopup('spinner')} />
         ) : (
-          <LobbyEmptyState x={promo.x + 8} y={promo.y + 8} w={promo.w - 16} h={promo.h - 16} title="REWARDS" body="Daily reward data will appear here when the reward service is connected." />
+          <MiniRewardSpinner
+            x={promo.x + 8}
+            y={promo.y + 6}
+            w={promo.w - 16}
+            h={(promo.h - 12) * controls.leftPanel.eventCardScale}
+            reward={reward}
+            disabled={!onClaimReward || !reward?.available}
+            onClick={() => onClaimReward?.()}
+          />
         )}
       </Panel>
     </Panel>
@@ -881,6 +928,17 @@ export function RightRail({
   chatMessages,
   systemMessage,
   onNavigate,
+  party,
+  friendSearchDraft,
+  lobbyChatDraft,
+  onFriendSearchDraftChange,
+  onLobbyChatDraftChange,
+  onAddFriend,
+  onInviteFriend,
+  onCreateParty,
+  onLeaveParty,
+  onSendLobbyChat,
+  onRefreshLobbyServices,
 }: {
   controls: LobbyPageSvgControls;
   panel: LobbyPanelRect;
@@ -891,6 +949,17 @@ export function RightRail({
   chatMessages: LobbyChatMessageItem[];
   systemMessage: string | null;
   onNavigate?: (target: LobbyNavigationTarget) => void;
+  party?: LobbyPartyStatus | null;
+  friendSearchDraft?: string;
+  lobbyChatDraft?: string;
+  onFriendSearchDraftChange?: (value: string) => void;
+  onLobbyChatDraftChange?: (value: string) => void;
+  onAddFriend?: (friendId: string) => void;
+  onInviteFriend?: (friendId: string) => void;
+  onCreateParty?: () => void;
+  onLeaveParty?: () => void;
+  onSendLobbyChat?: (message: string) => void;
+  onRefreshLobbyServices?: () => void;
 }) {
   const rail = { ...controls.rightPanel, ...panel };
   const pad = 10;
@@ -899,26 +968,83 @@ export function RightRail({
   const profile = { x: innerX, y: rail.y + rail.profileY, w: innerW, h: 82 };
   const friends = { x: innerX, y: rail.y + rail.friendsY, w: innerW, h: 372 };
   const chat = { x: innerX, y: rail.y + rail.chatY, w: innerW, h: rail.y + rail.h - (rail.y + rail.chatY) };
+  const showingParty = selectedFriendsTab === 'PARTY';
+  const friendDraft = friendSearchDraft ?? '';
+  const chatDraft = lobbyChatDraft ?? '';
   return (
     <Panel x={rail.x} y={rail.y} w={rail.w} h={rail.h} r={{ tl: 0, tr: 12, br: 12, bl: 0 }} stroke={controls.colors.panelStroke} fill="url(#lobbySide)" strokeWidth={controls.layout.panelStrokeWidth}>
       <PlayerMiniCard x={profile.x} y={profile.y} w={profile.w} h={profile.h} viewer={viewer} />
       <Panel x={friends.x} y={friends.y} w={friends.w} h={friends.h} r={10} stroke="#193750" fill="rgba(4,10,18,0.18)">
         <FriendsTabs x={friends.x} y={friends.y} w={friends.w} activeTab={selectedFriendsTab} onlineCount={friendItems.length} onSelectTab={onSelectFriendsTab} />
-        {friendItems.length > 0 ? friendItems.map(({ name, state }, i) => (
-          <Friend key={name} x={friends.x + 22} y={friends.y + 76 + i * 52} w={friends.w - 44} name={name} state={state} avatarUrl={friendItems[i]?.avatarUrl} />
-        )) : (
-          <LobbyEmptyState x={friends.x + 18} y={friends.y + 86} w={friends.w - 36} h={friends.h - 138} title="NO FRIENDS ONLINE" body="Friend presence will appear here when social data is connected." />
+        {showingParty ? (
+          <g>
+            <Txt x={friends.x + 20} y={friends.y + 91} text={party?.partyId ? 'ACTIVE PARTY' : 'NO ACTIVE PARTY'} maxWidth={friends.w - 40} size={13} weight="950" fill="#8ff6ff" />
+            <rect x={friends.x + 20} y={friends.y + 106} width={friends.w - 40} height="132" rx="8" fill="#071426" stroke="#1d3550" />
+            <Txt x={friends.x + 34} y={friends.y + 132} text={`Members ${party?.memberCount ?? 0}`} maxWidth={friends.w - 68} size={11} weight="850" />
+            <Txt x={friends.x + 34} y={friends.y + 154} text={`Invites ${party?.inviteCount ?? 0}`} maxWidth={friends.w - 68} size={11} weight="850" />
+            <Txt x={friends.x + 34} y={friends.y + 176} text={party?.partyId ? `Party ${party.partyId.slice(0, 12)}` : 'Create a party before inviting friends.'} maxWidth={friends.w - 68} size={10} fill="#9dc7d9" />
+            {(party?.members ?? []).slice(0, 3).map((member, index) => (
+              <Txt key={member.userId} x={friends.x + 34} y={friends.y + 204 + index * 18} text={member.displayName ?? member.userId} maxWidth={friends.w - 68} size={10} fill="#dcefff" />
+            ))}
+            <Btn x={friends.x + 20} y={friends.y + friends.h - 76} w={friends.w - 40} h={34} label={party?.partyId ? 'LEAVE PARTY' : 'CREATE PARTY'} size={11} tone={party?.partyId ? 'red' : 'purple'} active onClick={() => party?.partyId ? onLeaveParty?.() : onCreateParty?.()} disabled={party?.partyId ? !onLeaveParty : !onCreateParty} />
+          </g>
+        ) : (
+          <g>
+            <foreignObject x={friends.x + 18} y={friends.y + 70} width={friends.w - 36} height={42}>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const friendId = friendDraft.trim();
+                  if (!friendId) return;
+                  onAddFriend?.(friendId);
+                }}
+                style={{ display: 'flex', height: '34px', gap: '6px' }}
+              >
+                <input
+                  aria-label="Find or add friend"
+                  value={friendDraft}
+                  maxLength={80}
+                  onChange={(event) => onFriendSearchDraftChange?.(event.currentTarget.value)}
+                  placeholder="Friend ID"
+                  style={{ flex: 1, minWidth: 0, border: '1px solid #244761', borderRadius: '8px', background: '#06121e', color: '#edf7ff', font: '700 11px Inter, sans-serif', padding: '0 9px', outline: 'none' }}
+                />
+                <button
+                  type="submit"
+                  disabled={!onAddFriend}
+                  style={{ width: '50px', border: '1px solid #20e6ff', borderRadius: '8px', background: '#0a2a3e', color: '#f5fdff', font: '850 10px Inter, sans-serif' }}
+                >
+                  ADD
+                </button>
+              </form>
+            </foreignObject>
+            {friendItems.length > 0 ? friendItems.slice(0, 4).map((friend, i) => (
+              <Friend
+                key={friend.userId ?? friend.name}
+                x={friends.x + 22}
+                y={friends.y + 126 + i * 48}
+                w={friends.w - 44}
+                name={friend.name}
+                state={friend.state}
+                avatarUrl={friend.avatarUrl}
+                inviteState={friend.inviteState}
+                onInvite={() => friend.userId && onInviteFriend?.(friend.userId)}
+                inviteDisabled={!friend.userId || !onInviteFriend}
+              />
+            )) : (
+              <LobbyEmptyState x={friends.x + 18} y={friends.y + 126} w={friends.w - 36} h={friends.h - 178} title="NO FRIENDS ONLINE" body="Add a friend by user ID or open the social hub." />
+            )}
+          </g>
         )}
-        <Btn x={friends.x + 20} y={friends.y + friends.h - 38} w={friends.w - 40} h={34} label="VIEW ALL FRIENDS" size={11} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
+        <Btn x={friends.x + 20} y={friends.y + friends.h - 38} w={friends.w - 40} h={34} label={showingParty ? 'VIEW ALL FRIENDS' : 'SOCIAL HUB'} size={11} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
       </Panel>
       <Panel x={chat.x} y={chat.y} w={chat.w} h={chat.h} r={10} stroke="#193750" fill="rgba(4,10,18,0.18)">
         <Txt x={chat.x + 14} y={chat.y + 36} text="LOBBY CHAT" maxWidth={140} size={15} weight="950" />
-        <Btn x={chat.x + chat.w - 102} y={chat.y + 14} w={28} h={28} label="◎" size={12} />
-        <Btn x={chat.x + chat.w - 64} y={chat.y + 14} w={34} h={28} label="⋯" size={13} />
+        <Btn x={chat.x + chat.w - 102} y={chat.y + 14} w={28} h={28} label="◎" size={12} onClick={() => onRefreshLobbyServices?.()} disabled={!onRefreshLobbyServices} />
+        <Btn x={chat.x + chat.w - 64} y={chat.y + 14} w={34} h={28} label="⋯" size={13} onClick={() => onNavigate?.('social')} disabled={!onNavigate} />
         {chatMessages.length > 0 ? chatMessages.map(({ name, msg, ago }, i) => (
           <Chat key={`${name}-${i}`} x={chat.x + 14} y={chat.y + 58 + i * 54} w={chat.w - 28} name={name} msg={msg} ago={ago} avatarUrl={chatMessages[i]?.avatarUrl} />
         )) : (
-          <LobbyEmptyState x={chat.x + 14} y={chat.y + 62} w={chat.w - 28} h={chat.h - 162} title="NO CHAT YET" body="Messages will appear here after the lobby chat service is wired." />
+          <LobbyEmptyState x={chat.x + 14} y={chat.y + 62} w={chat.w - 28} h={chat.h - 162} title="NO CHAT YET" body="Send the first lobby message." />
         )}
         {systemMessage ? (
           <>
@@ -927,9 +1053,33 @@ export function RightRail({
             <Txt x={chat.x + 26} y={chat.y + chat.h - 62} text={systemMessage} maxWidth={chat.w - 50} size={10} opacity={0.82} />
           </>
         ) : null}
-        <rect x={chat.x + 14} y={chat.y + chat.h - 40} width={chat.w - 74} height="34" rx="7" fill="#071426" stroke="#1d3550" strokeWidth="1" />
-        <Txt x={chat.x + 26} y={chat.y + chat.h - 18} text="Type a message..." maxWidth={chat.w - 122} size={10} fill="#7f91aa" opacity={0.8} />
-        <Btn x={chat.x + chat.w - 48} y={chat.y + chat.h - 40} w={34} h={34} label="▶" active tone="purple" size={12} />
+        <foreignObject x={chat.x + 14} y={chat.y + chat.h - 42} width={chat.w - 28} height={38}>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              const message = chatDraft.trim();
+              if (!message) return;
+              onSendLobbyChat?.(message);
+            }}
+            style={{ display: 'flex', height: '34px', gap: '6px' }}
+          >
+            <input
+              aria-label="Lobby chat message"
+              value={chatDraft}
+              maxLength={180}
+              onChange={(event) => onLobbyChatDraftChange?.(event.currentTarget.value)}
+              placeholder="Type a message..."
+              style={{ flex: 1, minWidth: 0, border: '1px solid #244761', borderRadius: '8px', background: '#06121e', color: '#edf7ff', font: '700 11px Inter, sans-serif', padding: '0 9px', outline: 'none' }}
+            />
+            <button
+              type="submit"
+              disabled={!onSendLobbyChat}
+              style={{ width: '42px', border: '1px solid #6d35ff', borderRadius: '8px', background: '#17143c', color: '#f5fdff', font: '900 12px Inter, sans-serif' }}
+            >
+              ▶
+            </button>
+          </form>
+        </foreignObject>
       </Panel>
     </Panel>
   );
@@ -956,15 +1106,36 @@ export function FriendsTabs({ x, y, w, activeTab, onlineCount, onSelectTab }: { 
   );
 }
 
-export function Friend({ x, y, w, name, state, avatarUrl }: { x: number; y: number; w: number; name: string; state: string; avatarUrl?: string | null }) {
+export function Friend({
+  x,
+  y,
+  w,
+  name,
+  state,
+  avatarUrl,
+  inviteState,
+  onInvite,
+  inviteDisabled,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  name: string;
+  state: string;
+  avatarUrl?: string | null;
+  inviteState?: LobbyFriendItem['inviteState'];
+  onInvite?: () => void;
+  inviteDisabled?: boolean;
+}) {
   const color = state === 'In Game' ? '#35ff92' : '#c88cff';
+  const label = inviteState === 'inviting' ? '...' : inviteState === 'invited' ? 'SENT' : inviteState === 'failed' ? 'RETRY' : 'INVITE';
   return (
     <g>
       <circle cx={x + 8} cy={y + 18} r="4" fill="#38f28b" />
       <Avatar cx={x + 28} cy={y + 18} r={18} imageUrl={avatarUrl} />
       <Txt x={x + 56} y={y + 14} text={name} maxWidth={85} size={13} weight="850" />
       <Txt x={x + 56} y={y + 31} text={state} maxWidth={85} size={10} fill={color} opacity={0.82} />
-      <Btn x={x + w - 66} y={y} w={66} h={32} label="INVITE" active size={11} />
+      <Btn x={x + w - 66} y={y} w={66} h={32} label={label} active size={11} onClick={onInvite} disabled={inviteDisabled || inviteState === 'inviting'} />
     </g>
   );
 }
@@ -981,7 +1152,21 @@ export function Chat({ x, y, w, name, msg, ago, avatarUrl }: { x: number; y: num
   );
 }
 
-export function FooterStatus({ serverOpen, onToggleServer, mainB, controls, server }: { serverOpen: boolean; onToggleServer: () => void; mainB: { x: number; w: number }; controls: LobbyPageSvgControls; server: LobbyServerStatus | null }) {
+export function FooterStatus({
+  serverOpen,
+  onToggleServer,
+  mainB,
+  controls,
+  server,
+  onSelectServer,
+}: {
+  serverOpen: boolean;
+  onToggleServer: () => void;
+  mainB: { x: number; w: number };
+  controls: LobbyPageSvgControls;
+  server: LobbyServerStatus | null;
+  onSelectServer?: (regionId: string) => void;
+}) {
   const y = controls.mainBody.footerY;
   const items = [
     [mainB.x + 20, 'Solana Secured'],
@@ -998,7 +1183,7 @@ export function FooterStatus({ serverOpen, onToggleServer, mainB, controls, serv
           <Txt x={x + 24} y={y + 21} text={label} maxWidth={150} size={12} fill="#8d9bad" opacity={0.92} weight="560" />
         </g>
       ))}
-      <g className="lobby-ui-hit" onClick={onToggleServer}>
+      <g className="lobby-ui-hit" onClick={onToggleServer} onKeyDown={(event) => handleSvgButtonKey(event, onToggleServer)} role="button" aria-label={`Server: ${server?.active ?? 'Auto'}`} tabIndex={0}>
         <rect x={mainB.x + mainB.w - 218} y={y + 3} width="132" height="24" rx="6" fill={serverOpen ? '#071426' : 'transparent'} stroke={serverOpen ? '#1d3550' : 'transparent'} />
         <Txt x={mainB.x + mainB.w - 202} y={y + 21} text={`Server: ${server?.active ?? 'Auto'}`} maxWidth={104} size={12} fill="#8d9bad" opacity={0.9} />
         <Txt x={mainB.x + mainB.w - 42} y={y + 21} text={server?.ping ?? '--'} maxWidth={48} size={12} fill="#d3dbe7" opacity={0.92} />
@@ -1007,10 +1192,19 @@ export function FooterStatus({ serverOpen, onToggleServer, mainB, controls, serv
         <g filter="url(#lobbyFrameGlow)">
           <rect x={mainB.x + mainB.w - 222} y={y - 116} width="188" height="108" rx="8" fill="#06101d" stroke="#24516f" />
           <Txt x={mainB.x + mainB.w - 208} y={y - 94} text="SELECT SERVER" maxWidth={130} size={11} weight="950" fill="#9ff6ff" />
-          {(server?.options ?? []).map(({ name, ping, active }, i) => {
+          {(server?.options ?? []).map(({ name, ping, active, regionId }, i) => {
             const sy = y - 82 + i * 23;
+            const targetRegion = regionId ?? name;
             return (
-              <g key={name} className="lobby-ui-hit">
+              <g
+                key={name}
+                className="lobby-ui-hit"
+                onClick={() => onSelectServer?.(targetRegion)}
+                onKeyDown={(event) => handleSvgButtonKey(event, () => onSelectServer?.(targetRegion))}
+                role="button"
+                aria-label={`Select server ${name}`}
+                tabIndex={0}
+              >
                 <rect x={mainB.x + mainB.w - 212} y={sy} width="168" height="20" rx="4" fill={active ? 'url(#lobbyPurpleSoft)' : '#071426'} stroke={active ? '#6d35ff' : '#1d3550'} opacity="0.98" />
                 <Txt x={mainB.x + mainB.w - 202} y={sy + 14} text={name} maxWidth={82} size={10} weight={active ? '900' : '650'} />
                 <Txt x={mainB.x + mainB.w - 56} y={sy + 14} text={ping} maxWidth={38} size={10} anchor="end" fill={active ? '#54eca0' : '#8d9bad'} />

@@ -17,6 +17,7 @@ import {
   cleanupTestContext,
   ensureContextReady,
   setCurrentContext,
+  setCurrentSetupContextToken,
   getCurrentContext,
   isSetupContextToken,
   type SetupContextToken,
@@ -59,7 +60,9 @@ export function setSetupContext(testName: string, suitePath: string): SetupConte
   ctx.origin = TestLogOrigin.Test;
   setCurrentContext(ctx);
 
-  return createSetupContextToken(ctx);
+  const token = createSetupContextToken(ctx);
+  setCurrentSetupContextToken(token);
+  return token;
 }
 
 const REQUIRED_BINDINGS = ['TEST_MODE', 'ENVIRONMENT', 'CORS_ORIGIN'] as const;
@@ -119,6 +122,7 @@ beforeEach(async (ctx: TestContext) => {
   const context = createTestContext(ctx.task, RunType.SinglePool, RunType.SinglePool);
   if (context) {
     setCurrentContext(context);
+    setCurrentSetupContextToken(createSetupContextToken(context));
   }
 });
 

@@ -780,6 +780,7 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
       ...(body.notificationsEnabled !== undefined && body.notifications === undefined ? { notifications: body.notificationsEnabled } : {}),
       ...(body.soundEnabled !== undefined ? { soundEnabled: body.soundEnabled } : {}),
       ...(body.language !== undefined ? { language: body.language } : {}),
+      ...(body.preferredServerRegion !== undefined ? { preferredServerRegion: body.preferredServerRegion } : {}),
     };
     const res = await doFetch(stub, SettingsDOPaths.Update, { method: HttpMethod.Post, body: JSON.stringify(settingsBody) });
     const result = await res.json().catch(() => ({}));
@@ -801,6 +802,7 @@ export async function handleSettingsRequest(request: Request, env: Env, path: st
       ...(body.notificationsEnabled !== undefined && body.notifications === undefined ? { notifications: body.notificationsEnabled } : {}),
       ...(body.soundEnabled !== undefined ? { soundEnabled: body.soundEnabled } : {}),
       ...(body.language !== undefined ? { language: body.language } : {}),
+      ...(body.preferredServerRegion !== undefined ? { preferredServerRegion: body.preferredServerRegion } : {}),
     });
   }
   const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });

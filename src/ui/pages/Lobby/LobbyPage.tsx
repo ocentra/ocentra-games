@@ -19,6 +19,7 @@ import {
 import { APP_VERSION } from '@/constants/version';
 import { CreateRoomModal } from '@/ui/pages/Lobby/components/CreateRoomModal';
 import { useLobbyRooms } from '@/ui/pages/Lobby/hooks/useLobbyRooms';
+import { useLobbySideServices } from '@/ui/pages/Lobby/hooks/useLobbySideServices';
 import { createDefaultLobbyRoomForm, type CreateLobbyRoomForm } from '@/ui/pages/Lobby/types';
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
 import {
@@ -98,6 +99,15 @@ function buildLobbyNavigationPath(target: LobbyNavigationTarget, gameType: strin
   return buildShopPath();
 }
 
+async function writeRoomShareText(room: { joinCode?: string; roomId?: string; roomName?: string }, gameType: string): Promise<void> {
+  const code = room.joinCode ?? room.roomId ?? '';
+  const url = `${window.location.origin}${buildGameLobbyPath(gameType)}`;
+  const text = code ? `Join ${room.roomName ?? 'my table'} with code ${code}: ${url}` : url;
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+  }
+}
+
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [assetContext, setAssetContext] = useState<LobbyAssetContext | null>(null);
@@ -149,13 +159,14 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     filters,
     setFilters,
   } = useLobbyRooms(activeGameType);
+  const sideServices = useLobbySideServices(activeGameType, user?.uid, joinedRoom);
   const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
   const lobbyViewer = user
     ? {
       name: user.displayName || user.email,
       level: user.isGuest ? 'Guest' : `ELO ${Math.round(user.eloRating)}`,
       xp: `${user.gamesPlayed} games`,
-      balance: user.walletAddress ? 'Wallet linked' : 'No wallet',
+      balance: sideServices.reward?.balanceLabel ?? (user.walletAddress ? 'Wallet linked' : 'No wallet'),
       xpRatio: viewerWinRatio,
     }
     : null;
@@ -223,7 +234,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
       <LobbyPageContent
         loading={loading}
         creating={creating}
-        error={error}
+        error={error ?? sideServices.error}
         gameId={activeGameType}
         gameName={gameName}
         rooms={rooms}
@@ -232,15 +243,19 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         viewer={lobbyViewer}
         viewerUserId={user?.uid}
         joinedRoom={joinedRoom}
-        friends={[]}
+        friends={sideServices.friends}
         chatMessages={chatMessages}
-        server={server}
+        lobbyChatMessages={sideServices.lobbyChatMessages}
+        reward={sideServices.reward}
+        party={sideServices.party}
+        server={sideServices.server ?? server}
         minPlayers={assetContext?.minPlayers}
         maxPlayers={assetContext?.maxPlayers}
         gameTagline={assetContext?.tagline}
         heroMedia={heroMedia}
         onRefresh={() => {
           void refresh();
+          void sideServices.refresh();
         }}
         onCreateRoom={(draft?: LobbyCreateRoomDraft) => {
           if (!draft) {
@@ -301,6 +316,49 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
           });
         }}
         onSendRoomChat={sendRoomChat}
+        onSendLobbyChat={(message) => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.sendLobbyChat(message, activeUser.uid);
+          });
+        }}
+        onAddFriend={(friendId) => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.addFriend(friendId, activeUser.uid);
+          });
+        }}
+        onInviteFriend={(friendId) => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.inviteFriend(friendId, activeUser.uid);
+          });
+        }}
+        onCreateParty={() => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.createParty(activeUser.uid);
+          });
+        }}
+        onLeaveParty={() => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.leaveParty(activeUser.uid);
+          });
+        }}
+        onClaimReward={() => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.claimReward(activeUser.uid);
+          });
+        }}
+        onSelectServer={(regionId) => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.selectServer(regionId, activeUser.uid);
+          });
+        }}
+        onRefreshLobbyServices={() => {
+          void runWithSession(async (activeUser) => {
+            await sideServices.refresh(activeUser.uid);
+          });
+        }}
+        onShareRoomCode={(room) => {
+          void writeRoomShareText(room, activeGameType);
+        }}
         onMatchmaking={() => EventBus.instance.publish(new ShowScreenEvent(buildGameMatchmakingPath(activeGameType)))}
         filters={filters}
         onFilterRooms={(nextFilters: LobbyRoomListFilterDraft) => {

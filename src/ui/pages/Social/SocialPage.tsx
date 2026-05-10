@@ -76,7 +76,7 @@ export function SocialPage({ user, onLogout, onLogoutClick }: SocialPageProps) {
         presenceStatus={presence?.status ?? 'offline'}
         friends={friends}
         partyId={party?.partyId ?? ''}
-        partyMembers={party?.members ?? []}
+        partyMembers={(party?.members ?? []).map(member => typeof member === 'string' ? { userId: member } : member)}
         messages={messages}
         activeConversationId={activeConversationId}
         notifications={notifications}

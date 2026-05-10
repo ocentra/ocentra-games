@@ -39,6 +39,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   const headers = () => getValidRequestHeaders(TestConfig.TestUserId);
   const queueUrl = () => buildApiUrl(ApiEndpoint.Matchmaking.Queue, { baseUrl });
   const leaveUrl = () => `${baseUrl}${ApiEndpoint.Matchmaking.Base}/leave`;
+  const uniqueGameType = () => Number.parseInt(crypto.randomUUID().slice(0, 8), 16);
   const statusUrl = (ticketId?: string, userId?: string) => {
     const base = `${baseUrl}${ApiEndpoint.Matchmaking.Base}/status`;
     const params = new URLSearchParams();
@@ -51,10 +52,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Matchmaking POST queue: returns 200 with ticketId and status'), async () => {
     const token = getTokenForFetch();
     const userId = `mm-user-${crypto.randomUUID().slice(0, 8)}`;
+    const gameType = uniqueGameType();
     const response = await worker.fetch(queueUrl(), {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, gameType }),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
     const data = (await response.json()) as { ticketId?: string; status?: string; position?: number };
@@ -62,22 +64,30 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(data.ticketId!.length).toBeGreaterThan(0);
     expect(['queued', 'matched']).toContain(data.status);
     expect(typeof data.position).toBe('number');
+
+    const leaveRes = await worker.fetch(leaveUrl(), {
+      method: HttpMethod.Post,
+      headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
+      body: JSON.stringify({ userId }),
+    }, token);
+    await leaveRes.text().catch(() => undefined);
   });
 
   it(testName('Matchmaking POST queue twice with same userId: second returns 409 Already in queue'), async () => {
     const token = getTokenForFetch();
     const userId = `mm-dup-${crypto.randomUUID().slice(0, 8)}`;
+    const gameType = uniqueGameType();
     const first = await worker.fetch(queueUrl(), {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, gameType }),
     }, token);
     expect(first.status).toBe(HttpStatus.Ok);
 
     const second = await worker.fetch(queueUrl(), {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, gameType }),
     }, token);
     expect(second.status).toBe(HttpStatus.Conflict);
     const data = (await second.json()) as { error?: string; ticketId?: string };
@@ -95,10 +105,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
   it(testName('Matchmaking join then leave then status is idle'), async () => {
     const token = getTokenForFetch();
     const userId = `mm-leave-${crypto.randomUUID().slice(0, 8)}`;
+    const gameType = uniqueGameType();
     const joinRes = await worker.fetch(queueUrl(), {
       method: HttpMethod.Post,
       headers: { ...headers(), [HttpHeader.ContentType]: 'application/json' },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, gameType }),
     }, token);
     expect(joinRes.status).toBe(HttpStatus.Ok);
     const joinData = (await joinRes.json()) as { ticketId?: string };

@@ -408,9 +408,6 @@ export async function handleFriendsRequest(request: Request, env: Env, path: str
       return new Response(JSON.stringify({ error: friendIdResult.error ?? 'Friend ID required' }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
     }
     const friendId = friendIdResult.id;
-    if (env.TEST_MODE === QueryValue.True && request.method === HttpMethod.Post) {
-      return stubJson(env, { friends: [{ friendId, status: 'accepted' }] });
-    }
     if (!ns) return stubJson(env, { friends: [] });
     const stub = ns.get(ns.idFromName(shardKey));
     if (request.method === HttpMethod.Post) {

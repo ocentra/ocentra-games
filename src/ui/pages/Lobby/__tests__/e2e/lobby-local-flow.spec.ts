@@ -41,6 +41,29 @@ async function sendRoomChat(page: Page, message: string) {
   await page.locator('form').filter({ has: page.getByLabel('Room chat message') }).getByRole('button', { name: 'SEND' }).click();
 }
 
+async function exerciseSideServices(page: Page) {
+  const friendId = `playwright-friend-${Date.now()}`;
+  await page.getByLabel('Find or add friend').fill(friendId);
+  await page.locator('form').filter({ has: page.getByLabel('Find or add friend') }).getByRole('button', { name: 'ADD' }).click();
+  await expect(page.getByText(friendId).first()).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'INVITE' }).first().click();
+  await expect(page.getByRole('button', { name: 'SENT' }).first()).toBeVisible({ timeout: 15000 });
+
+  const lobbyMessage = `global lobby ${Date.now()}`;
+  await page.getByLabel('Lobby chat message').fill(lobbyMessage);
+  await page.locator('form').filter({ has: page.getByLabel('Lobby chat message') }).getByRole('button', { name: '▶' }).click();
+  await expect(page.getByText(lobbyMessage).first()).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: /Server:/ }).click();
+  await page.getByRole('button', { name: 'Select server NA West' }).click();
+  await expect(page.getByRole('button', { name: /Server: NA West/ })).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: 'DAILY REWARD' }).click();
+  await expect(page.getByText(/GP \/ .*AC|CLAIMED/).first()).toBeVisible({ timeout: 15000 });
+
+  await page.getByRole('button', { name: 'SHARE' }).click();
+}
+
 async function closeContexts(contexts: BrowserContext[]) {
   await Promise.all(contexts.map(context => context.close().catch(() => undefined)));
 }
@@ -56,6 +79,7 @@ test.describe('Claim lobby local multiplayer flow', () => {
 
       await openClaimLobby(hostPage);
       const joinCode = await createTableFromLobby(hostPage);
+      await exerciseSideServices(hostPage);
 
       await openClaimLobby(guestPage);
       await joinTableByCode(guestPage, joinCode);

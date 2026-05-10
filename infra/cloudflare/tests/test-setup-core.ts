@@ -83,6 +83,16 @@ export function createSetupContextToken(context: RequestContext): SetupContextTo
   return { [__setupContextToken]: true, context } as SetupContextToken;
 }
 
+let currentSetupContextToken: SetupContextToken | null = null;
+
+export function setCurrentSetupContextToken(token: SetupContextToken | null): void {
+  currentSetupContextToken = token;
+}
+
+export function getCurrentSetupContextToken(): SetupContextToken | undefined {
+  return currentSetupContextToken ?? undefined;
+}
+
 export function isSetupContextToken(value: unknown): value is SetupContextToken {
   return (
     typeof value === 'object' &&
@@ -126,7 +136,9 @@ export async function setSetupContext(testName: string, suitePath: string): Prom
   ctx.origin = TestLogOrigin.Test;
   setCurrentContext(ctx);
 
-  return createSetupContextToken(ctx);
+  const token = createSetupContextToken(ctx);
+  setCurrentSetupContextToken(token);
+  return token;
 }
 
 function isInvalidSuitePath(value: string | undefined): boolean {
@@ -258,6 +270,7 @@ export function createTestContext(
 export async function cleanupTestContext(): Promise<void> {
   await flushAllBatchesAndTestLogs();
   setCurrentTestName(null);
+  setCurrentSetupContextToken(null);
   // CRITICAL: Clear context to prevent race condition in concurrent requests
   setCurrentContext(null);
 }

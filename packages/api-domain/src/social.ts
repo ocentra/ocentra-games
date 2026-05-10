@@ -6,6 +6,7 @@ import {
   PartyDOSegment,
 } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { HttpMethod } from '@ocentra/endpoint-domain/constants/http';
+import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { requestJson } from './httpClient';
 
 export interface PresenceResponse {
@@ -14,7 +15,7 @@ export interface PresenceResponse {
 }
 
 export interface FriendsResponse {
-  friends: Array<{ friendId: string }>;
+  friends: Array<{ friendId: string; status?: string }>;
 }
 
 export interface PartyMember {
@@ -23,7 +24,9 @@ export interface PartyMember {
 
 export interface PartyStateResponse {
   partyId: string;
-  members: PartyMember[];
+  leaderId?: string;
+  members: Array<PartyMember | string>;
+  invites?: Array<string | { userId: string; invitedBy?: string; invitedAt?: number }>;
 }
 
 export interface MessageItem {
@@ -35,6 +38,11 @@ export interface MessageItem {
 
 export interface MessagesResponse {
   messages: MessageItem[];
+}
+
+export interface MessageListOptions {
+  limit?: number;
+  before?: string;
 }
 
 export interface NotificationsResponse {
@@ -121,8 +129,16 @@ export async function inviteToParty(partyId: string, inviteeId: string): Promise
   });
 }
 
-export async function listMessages(conversationId: string): Promise<MessagesResponse> {
-  return requestJson<MessagesResponse>(ApiEndpoint.Message.ByConversation(conversationId), {
+function withMessageQuery(endpoint: string, options?: MessageListOptions): string {
+  const params = new URLSearchParams();
+  if (options?.limit !== undefined) params.set(QueryParam.Limit, String(options.limit));
+  if (options?.before) params.set('before', options.before);
+  const query = params.toString();
+  return query ? `${endpoint}?${query}` : endpoint;
+}
+
+export async function listMessages(conversationId: string, options?: MessageListOptions): Promise<MessagesResponse> {
+  return requestJson<MessagesResponse>(withMessageQuery(ApiEndpoint.Message.ByConversation(conversationId), options), {
     method: HttpMethod.Get,
     authMode: 'required',
   });

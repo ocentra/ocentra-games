@@ -11,6 +11,7 @@ interface UserSettings {
   notifications?: boolean;
   soundEnabled?: boolean;
   language?: string;
+  preferredServerRegion?: string;
   [key: string]: unknown;
 }
 
@@ -69,7 +70,7 @@ export class SettingsDO implements DurableObject {
 
   private async updateSettings(patch: Partial<UserSettings>): Promise<UserSettings> {
     const current = await this.getSettings();
-    const allowed: (keyof UserSettings)[] = ['theme', 'notifications', 'soundEnabled', 'language'];
+    const allowed: (keyof UserSettings)[] = ['theme', 'notifications', 'soundEnabled', 'language', 'preferredServerRegion'];
     const next: UserSettings = { ...current };
     for (const key of allowed) {
       if (patch[key] !== undefined) {

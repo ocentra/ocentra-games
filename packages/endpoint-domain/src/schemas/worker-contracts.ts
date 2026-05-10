@@ -179,6 +179,7 @@ export const SettingsUpdateRequestSchema = schema.object({
   notificationsEnabled: schema.boolean().optional(),
   soundEnabled: schema.boolean().optional(),
   language: schema.string().min(1).max(16).optional(),
+  preferredServerRegion: schema.string().min(1).max(32).optional(),
 }).strict();
 
 export const RoomCreateRequestSchema = schema.object({

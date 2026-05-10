@@ -41,8 +41,10 @@ import {
   type LobbyHeroMedia,
   type LobbyJoinCodeDraft,
   type LobbyNavigationTarget,
+  type LobbyPartyStatus,
   type LobbyPanelRect,
   type LobbyQuickJoinDraft,
+  type LobbyRewardStatus,
   type LobbyRoomLike,
   type LobbyRoomListFilterDraft,
   type LobbyRoomPlayer,
@@ -83,6 +85,15 @@ export type LobbyPageSvgSurfaceProps = {
   onStartRoom?: (roomId: string) => void;
   onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
+  onSendLobbyChat?: (message: string) => void;
+  onAddFriend?: (friendId: string) => void;
+  onInviteFriend?: (friendId: string) => void;
+  onCreateParty?: () => void;
+  onLeaveParty?: () => void;
+  onClaimReward?: () => void;
+  onSelectServer?: (regionId: string) => void;
+  onRefreshLobbyServices?: () => void;
+  onShareRoomCode?: (room: LobbyRoomLike) => void;
   onMatchmaking: () => void;
   filters?: LobbyRoomListFilterDraft;
   onFilterRooms?: (filters: LobbyRoomListFilterDraft) => void;
@@ -95,6 +106,9 @@ export type LobbyPageSvgSurfaceProps = {
   joinedRoom?: LobbyRoomLike | null;
   friends?: LobbyFriendItem[];
   chatMessages?: LobbyChatMessageItem[];
+  lobbyChatMessages?: LobbyChatMessageItem[];
+  reward?: LobbyRewardStatus | null;
+  party?: LobbyPartyStatus | null;
   server?: LobbyServerStatus | null;
   minPlayers?: number;
   maxPlayers?: number;
@@ -315,6 +329,7 @@ function JoinedRoomPanel({
   onStartRoom,
   onAddAIRoom,
   onSendRoomChat,
+  onShareRoomCode,
   onLeaveRoom,
   onJoinRoom,
   onSpectateRoom,
@@ -333,6 +348,7 @@ function JoinedRoomPanel({
   onStartRoom?: (roomId: string) => void;
   onAddAIRoom?: (roomId: string, draft?: LobbyAddAISeatDraft) => void;
   onSendRoomChat?: (message: string) => void;
+  onShareRoomCode?: (room: LobbyRoomLike) => void;
   onLeaveRoom: (roomId: string) => void;
   onJoinRoom: (roomId: string) => void;
   onSpectateRoom: (roomId: string) => void;
@@ -397,7 +413,7 @@ function JoinedRoomPanel({
           }} />
           <Btn x={112} y={0} w={106} h={38} label="START" tone="gold" active={isHost && allHumansReady} disabled={!roomId || disabled || !isHost || !allHumansReady} onClick={() => roomId && onStartRoom?.(roomId)} />
           <Btn x={228} y={0} w={94} h={38} label="LEAVE" tone="red" active disabled={!roomId || disabled} onClick={() => roomId && onLeaveRoom(roomId)} />
-          <Btn x={332} y={0} w={92} h={38} label="INVITE" tone="purple" disabled />
+          <Btn x={332} y={0} w={92} h={38} label="SHARE" tone="purple" active disabled={!onShareRoomCode || !roomId} onClick={() => onShareRoomCode?.(room)} />
           <Btn x={434} y={0} w={88} h={38} label="ADD AI" tone="purple" active={canAddAI} disabled={!canAddAI} onClick={() => roomId && onAddAIRoom?.(roomId, { aiRole: addAIRoleForRoom(room), difficulty: 'normal' })} />
           <Txt x={0} y={58} text={`CODE ${room.joinCode ?? room.roomId ?? ''}`} maxWidth={250} size={11} weight="850" fill="#9dc7d9" />
           <Txt x={268} y={58} text={`${room.stakeType ?? 'free'} / ${room.stakeStatus ?? 'none'} / ${room.chainStatus ?? 'local'}`} maxWidth={300} size={11} weight="850" fill="#9dc7d9" />
@@ -485,6 +501,15 @@ export function LobbyPageSvgSurface({
   onStartRoom,
   onAddAIRoom,
   onSendRoomChat,
+  onSendLobbyChat,
+  onAddFriend,
+  onInviteFriend,
+  onCreateParty,
+  onLeaveParty: onLeavePartyService,
+  onClaimReward,
+  onSelectServer,
+  onRefreshLobbyServices,
+  onShareRoomCode,
   onMatchmaking,
   filters,
   onFilterRooms,
@@ -497,6 +522,9 @@ export function LobbyPageSvgSurface({
   joinedRoom,
   friends,
   chatMessages,
+  lobbyChatMessages,
+  reward,
+  party,
   server,
   minPlayers,
   maxPlayers,
@@ -521,6 +549,8 @@ export function LobbyPageSvgSurface({
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [seatedByRow, setSeatedByRow] = useState<Record<string, number>>({});
   const [chatDraft, setChatDraft] = useState('');
+  const [lobbyChatDraft, setLobbyChatDraft] = useState('');
+  const [friendSearchDraft, setFriendSearchDraft] = useState('');
   const hasPopup = Boolean(playersPopupRow || actionPopup || featuredCardPopup || filterPopup);
   const leftVisible = !leftCollapsed;
   const rightVisible = !rightCollapsed;
@@ -602,6 +632,10 @@ export function LobbyPageSvgSurface({
     [friends, useSampleData],
   );
   const rightRailMessages = useMemo<LobbyChatMessageItem[]>(
+    () => (useSampleData ? LOBBY_CHAT_MESSAGES.map(([name, msg, ago, avatarUrl]) => ({ name, msg, ago, avatarUrl })) : lobbyChatMessages ?? []),
+    [lobbyChatMessages, useSampleData],
+  );
+  const roomChatMessages = useMemo<LobbyChatMessageItem[]>(
     () => (useSampleData ? LOBBY_CHAT_MESSAGES.map(([name, msg, ago, avatarUrl]) => ({ name, msg, ago, avatarUrl })) : chatMessages ?? []),
     [chatMessages, useSampleData],
   );
@@ -690,7 +724,15 @@ export function LobbyPageSvgSurface({
         <g filter={hasPopup ? 'url(#lobbyPopupBgBlur)' : undefined} opacity={hasPopup ? controls.layout.popupBlurOpacity : 1} pointerEvents={hasPopup ? 'none' : 'auto'}>
           <Panel x={mainB.x} y={mainB.y} w={mainB.w} h={mainB.h} r={{ tl: controls.layout.mainRadius, tr: controls.layout.mainRadius, br: 0, bl: 0 }} stroke={controls.colors.panelStroke} fill="url(#lobbyPanelWarm)" shine={false} strokeWidth={controls.layout.panelStrokeWidth} />
           <g className={`lobby-left-panel-motion ${leftVisible ? 'is-visible' : 'is-hidden'}`} pointerEvents={leftVisible ? 'auto' : 'none'}>
-            <Sidebar controls={controls} panel={leftPanel} useSampleData={useSampleData} onOpenActionPopup={setActionPopup} onNavigate={onNavigate} />
+            <Sidebar
+              controls={controls}
+              panel={leftPanel}
+              useSampleData={useSampleData}
+              onOpenActionPopup={setActionPopup}
+              onNavigate={onNavigate}
+              reward={reward}
+              onClaimReward={onClaimReward}
+            />
           </g>
           <Header
             mainB={mainB}
@@ -713,7 +755,7 @@ export function LobbyPageSvgSurface({
               mainB={mainB}
               controls={controls}
               tableRows={tableRows}
-              chatMessages={rightRailMessages}
+              chatMessages={roomChatMessages}
               chatDraft={chatDraft}
               busyRoomId={busyRoomId}
               onChatDraftChange={setChatDraft}
@@ -722,6 +764,7 @@ export function LobbyPageSvgSurface({
               onStartRoom={onStartRoom}
               onAddAIRoom={onAddAIRoom}
               onSendRoomChat={onSendRoomChat}
+              onShareRoomCode={onShareRoomCode}
               onLeaveRoom={onLeaveRoom}
               onJoinRoom={onJoinRoom}
               onSpectateRoom={onSpectateRoom}
@@ -763,9 +806,26 @@ export function LobbyPageSvgSurface({
               chatMessages={rightRailMessages}
               systemMessage={useSampleData ? 'High Stakes table is now full.' : null}
               onNavigate={onNavigate}
+              party={party}
+              friendSearchDraft={friendSearchDraft}
+              lobbyChatDraft={lobbyChatDraft}
+              onFriendSearchDraftChange={setFriendSearchDraft}
+              onLobbyChatDraftChange={setLobbyChatDraft}
+              onAddFriend={(friendId) => {
+                onAddFriend?.(friendId);
+                setFriendSearchDraft('');
+              }}
+              onInviteFriend={onInviteFriend}
+              onCreateParty={onCreateParty}
+              onLeaveParty={onLeavePartyService}
+              onSendLobbyChat={(message) => {
+                onSendLobbyChat?.(message);
+                setLobbyChatDraft('');
+              }}
+              onRefreshLobbyServices={onRefreshLobbyServices}
             />
           </g>
-          <FooterStatus serverOpen={serverOpen} onToggleServer={() => setServerOpen(value => !value)} mainB={mainB} controls={controls} server={serverStatus} />
+          <FooterStatus serverOpen={serverOpen} onToggleServer={() => setServerOpen(value => !value)} mainB={mainB} controls={controls} server={serverStatus} onSelectServer={onSelectServer} />
           <OuterShellGlow mainB={mainB} controls={controls} leftPanel={leftPanel} rightPanel={rightPanel} leftVisible={leftVisible} rightVisible={rightVisible} />
           <StatusOverlay loading={loading} error={error} creating={creating} canvas={canvas} />
         </g>

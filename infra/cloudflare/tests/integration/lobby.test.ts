@@ -6,6 +6,7 @@ import { getTokenForFetch } from '@tests/test-setup-core';
 import { buildApiUrl, buildApiUrlWithQueryParams } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
+import { PartyDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { HttpMethod, HttpStatus, HttpHeader, WebSocketProtocol, ConnectionValue, WebSocketCloseCode } from '@ocentra/endpoint-domain/constants/http';
 import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { TestConfig, TestTimeout, TestValues } from '@tests/constants/test-constants';
@@ -685,6 +686,124 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(joinData.joined).toBe(true);
     expect(joinData.roomId).toBe(createData.roomId);
     expect(joinData.room?.currentPlayers).toBe(2);
+  });
+
+  it(testName('Lobby side services: friends, party invite, lobby chat, settings, and reward balance are durable'), async () => {
+    const token = getTokenForFetch();
+    const friendId = `friend-side-${crypto.randomUUID().slice(0, 8)}`;
+    const conversationId = `lobby-side-${crypto.randomUUID().slice(0, 8)}`;
+    const messageText = `side-chat-${crypto.randomUUID().slice(0, 8)}`;
+
+    const addFriendRes = await worker.fetch(buildApiUrl(ApiEndpoint.Friends.ById(friendId), { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({}),
+    }, token);
+    expect(addFriendRes.status).toBe(HttpStatus.Ok);
+    await addFriendRes.text().catch(() => undefined);
+
+    const friendsRes = await worker.fetch(buildApiUrl(ApiEndpoint.Friends.Base, { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(friendsRes.status).toBe(HttpStatus.Ok);
+    const friendsData = await friendsRes.json() as { friends?: Array<{ friendId?: string }> };
+    expect(friendsData.friends?.some(friend => friend.friendId === friendId)).toBe(true);
+
+    const createPartyRes = await worker.fetch(buildApiUrl(ApiEndpoint.Party.Base, { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({}),
+    }, token);
+    expect(createPartyRes.status).toBe(HttpStatus.Ok);
+    const createPartyData = await createPartyRes.json() as { partyId?: string };
+    expect(typeof createPartyData.partyId).toBe('string');
+    const partyId = createPartyData.partyId!;
+
+    const inviteRes = await worker.fetch(buildApiUrl(`${ApiEndpoint.Party.ById(partyId)}/${PartyDOSegment.Invite}`, { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ inviteeId: friendId }),
+    }, token);
+    expect(inviteRes.status).toBe(HttpStatus.Ok);
+    await inviteRes.text().catch(() => undefined);
+
+    const partyRes = await worker.fetch(buildApiUrl(ApiEndpoint.Party.ById(partyId), { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(partyRes.status).toBe(HttpStatus.Ok);
+    const partyData = await partyRes.json() as { partyId?: string; invites?: Array<string | { userId?: string }> };
+    expect(partyData.partyId).toBe(partyId);
+    expect(partyData.invites?.some(invite => (typeof invite === 'string' ? invite : invite.userId) === friendId)).toBe(true);
+
+    const sendMessageRes = await worker.fetch(buildApiUrl(ApiEndpoint.Message.Send(conversationId), { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ content: messageText }),
+    }, token);
+    expect(sendMessageRes.status).toBe(HttpStatus.Ok);
+    await sendMessageRes.text().catch(() => undefined);
+
+    const listMessagesRes = await worker.fetch(buildApiUrlWithQueryParams(ApiEndpoint.Message.ByConversation(conversationId), {
+      [QueryParam.Limit]: '5',
+    }, { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(listMessagesRes.status).toBe(HttpStatus.Ok);
+    const listMessagesData = await listMessagesRes.json() as { messages?: Array<{ content?: string }> };
+    expect(listMessagesData.messages?.some(message => message.content === messageText)).toBe(true);
+
+    const settingsUpdateRes = await worker.fetch(buildApiUrl(ApiEndpoint.Settings.Update(TestConfig.TestUserId), { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ preferredServerRegion: 'eu-west' }),
+    }, token);
+    expect(settingsUpdateRes.status).toBe(HttpStatus.Ok);
+    await settingsUpdateRes.text().catch(() => undefined);
+
+    const settingsRes = await worker.fetch(buildApiUrl(ApiEndpoint.Settings.ByUser(TestConfig.TestUserId), { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(settingsRes.status).toBe(HttpStatus.Ok);
+    const settingsData = await settingsRes.json() as { settings?: { preferredServerRegion?: string } };
+    expect(settingsData.settings?.preferredServerRegion).toBe('eu-west');
+
+    const balanceBeforeRes = await worker.fetch(buildApiUrl(ApiEndpoint.Credits.Balance(TestConfig.TestUserId), { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(balanceBeforeRes.status).toBe(HttpStatus.Ok);
+    const balanceBefore = await balanceBeforeRes.json() as { gp_balance?: number };
+
+    const claimOneRes = await worker.fetch(buildApiUrl(ApiEndpoint.Rewards.DailyClaim, { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ idempotencyKey: crypto.randomUUID() }),
+    }, token);
+    expect(claimOneRes.status).toBe(HttpStatus.Ok);
+    const claimOne = await claimOneRes.json() as { reward?: { gp?: number }; balance?: { gp_balance?: number } };
+    expect(typeof claimOne.balance?.gp_balance).toBe('number');
+
+    const claimTwoRes = await worker.fetch(buildApiUrl(ApiEndpoint.Rewards.DailyClaim, { baseUrl }), {
+      method: HttpMethod.Post,
+      headers: jsonHeaders(),
+      body: JSON.stringify({ idempotencyKey: crypto.randomUUID() }),
+    }, token);
+    expect(claimTwoRes.status).toBe(HttpStatus.Ok);
+    const claimTwo = await claimTwoRes.json() as { reward?: { gp?: number }; balance?: { gp_balance?: number } };
+    expect(typeof claimTwo.balance?.gp_balance).toBe('number');
+
+    const balanceAfterRes = await worker.fetch(buildApiUrl(ApiEndpoint.Credits.Balance(TestConfig.TestUserId), { baseUrl }), {
+      method: HttpMethod.Get,
+      headers: headers(),
+    }, token);
+    expect(balanceAfterRes.status).toBe(HttpStatus.Ok);
+    const balanceAfter = await balanceAfterRes.json() as { gp_balance?: number };
+    const expectedGain = (claimOne.reward?.gp ?? 0) + (claimTwo.reward?.gp ?? 0);
+    expect(balanceAfter.gp_balance ?? 0).toBeGreaterThanOrEqual((balanceBefore.gp_balance ?? 0) + expectedGain);
   });
 
   it(testName('Lobby POST rooms with missing hostId: returns 400'), async () => {

@@ -3863,6 +3863,11 @@ function createSettingsPaths() {
               minLength: 1,
               maxLength: 16,
             },
+            preferredServerRegion: {
+              type: OpenApiSchemaType.String,
+              minLength: 1,
+              maxLength: 32,
+            },
           },
         }),
         responses: withAuthErrors(
