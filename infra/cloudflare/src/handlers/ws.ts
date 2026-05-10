@@ -2,9 +2,11 @@ import type { Env } from '@/constants/env';
 import { getCorsHeaders } from '@/utils/cors';
 import { HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { DOBaseUrl, LobbyDODefaultInstanceName, PresenceDO as PresenceDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
+import { getLobbyRoomShardKey } from '@/handlers/feature-handlers-helpers';
 
 const PRESENCE_SHARD_COUNT = 256;
 function fnv1a(str: string): number {
@@ -66,7 +68,11 @@ export async function handleWsRequest(
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
-    const stub = ns.get(ns.idFromName(LobbyDODefaultInstanceName));
+    const gameType = url.searchParams.get(QueryParam.GameType) ?? '';
+    const roomId = url.searchParams.get(QueryParam.RoomId) ?? '';
+    const shardKey = gameType && roomId ? getLobbyRoomShardKey(gameType, roomId) : LobbyDODefaultInstanceName;
+    const stub = ns.get(ns.idFromName(shardKey));
+    logDebug('Routing to Lobby DO', getStackTrace(), { gameType: gameType || undefined, roomId: roomId || undefined, shardKey });
     return stub.fetch(request);
   }
 

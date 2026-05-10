@@ -60,6 +60,8 @@ import {
   RoomJoinRequestSchema,
   RoomLeaveRequestSchema,
   RoomQuickJoinRequestSchema,
+  RoomReadyRequestSchema,
+  RoomStartRequestSchema,
   RoomSpectateRequestSchema,
   SecurityPenaltyIssueRequestSchema,
 } from '@ocentra/endpoint-domain/schemas/worker-contracts';
@@ -73,7 +75,8 @@ import {
   DEFAULT_SHARD,
   LOBBY_SHARD_COUNT,
   doFetch,
-  getLobbyGameShardKey,
+  getLobbyGameBucketKeys,
+  getLobbyRoomShardKey,
   getLobbyShardKey,
   getPresenceShardKey,
   isBlockedBy,
@@ -82,6 +85,14 @@ import {
   normalizeOpenApiPathSegment,
   validateOpenApiUserIdPath,
 } from '@/handlers/feature-handlers-helpers';
+import {
+  clampLobbyListLimit,
+  encodeLobbyCursor,
+  getLobbyRoomActionShardKeys,
+  lobbyResponse,
+  sortLobbyRooms,
+  type LobbyRoomListItem,
+} from '@/handlers/feature-handlers-lobby';
 const log = Logger.instance;
 log.register(import.meta.url);
 
@@ -111,8 +122,12 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   const isJoin = roomActionSegment === LobbyDOSegment.Join;
   const isLeave = roomActionSegment === LobbyDOSegment.Leave;
   const isSpectate = roomActionSegment === LobbyDOSegment.Spectate;
-  const roomIdFromPath = isJoin || isLeave || isSpectate ? roomOrActionSegment : '';
-  const supportedMethods = (isQuickJoin || isJoin || isLeave || isSpectate)
+  const isReady = roomActionSegment === LobbyDOSegment.Ready;
+  const isUnready = roomActionSegment === LobbyDOSegment.Unready;
+  const isStart = roomActionSegment === LobbyDOSegment.Start;
+  const isRoomAction = isJoin || isLeave || isSpectate || isReady || isUnready || isStart;
+  const roomIdFromPath = isRoomAction ? roomOrActionSegment : '';
+  const supportedMethods = (isQuickJoin || isRoomAction)
     ? [HttpMethod.Post]
     : [HttpMethod.Get, HttpMethod.Post];
   const methodCheck = rejectUnsupportedMethod(request, env, supportedMethods);
@@ -124,7 +139,7 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   }
   const requestOrigin = request.headers.get(HttpHeader.Origin) ?? undefined;
   let authUserId = '';
-  if (request.method === HttpMethod.Get && !isQuickJoin && !isJoin && !isLeave && !isSpectate) {
+  if (request.method === HttpMethod.Get && !isQuickJoin && !isRoomAction) {
     const authHeader = request.headers.get(HttpHeader.Authorization);
     if (authHeader) {
       const optionalAuthResult = await verifyAuth(request, env.FIREBASE_PROJECT_ID || '', env);
@@ -137,28 +152,47 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
   }
   const url = new URL(request.url);
   const gameTypeQuery = url.searchParams.get(QueryParam.GameType) ?? '';
-  const shardKey = roomIdFromPath && (isJoin || isLeave || isSpectate)
-    ? (gameTypeQuery ? getLobbyGameShardKey(gameTypeQuery) : getLobbyShardKey(roomIdFromPath))
-    : DEFAULT_SHARD;
   let bodyText: string | undefined;
   if (request.method === HttpMethod.Post) {
     if (isQuickJoin) {
       const { data, errorResponse } = await validateSchemaBody(request.clone(), env, RoomQuickJoinRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
-      const shardForQuickJoin = getLobbyGameShardKey(body.gameType);
-      const stubQuickJoin = ns.get(ns.idFromName(shardForQuickJoin));
-      const resQuickJoin = await doFetch(stubQuickJoin, LobbyDOPaths.QuickJoin(shardForQuickJoin), { method: HttpMethod.Post, body: JSON.stringify(body) });
-      const dataQuickJoin = await resQuickJoin.json().catch(() => ({}));
-      return new Response(JSON.stringify(dataQuickJoin), { status: resQuickJoin.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+      const bucketKeys = getLobbyGameBucketKeys(body.gameType);
+      for (const shardForQuickJoin of bucketKeys) {
+        const stubQuickJoin = ns.get(ns.idFromName(shardForQuickJoin));
+        const resQuickJoin = await doFetch(stubQuickJoin, LobbyDOPaths.QuickJoin(shardForQuickJoin), {
+          method: HttpMethod.Post,
+          body: JSON.stringify({ ...body, createIfMissing: false }),
+        });
+        if (resQuickJoin.status !== HttpStatus.NotFound) {
+          const dataQuickJoin = await resQuickJoin.json().catch(() => ({}));
+          logInfo('Lobby quick join routed', getStackTrace(), { gameType: body.gameType, shardKey: shardForQuickJoin, status: resQuickJoin.status });
+          return lobbyResponse(env, dataQuickJoin, resQuickJoin.status);
+        }
+        await resQuickJoin.text().catch(() => undefined);
+      }
+      if (body.createIfMissing === false) {
+        return lobbyResponse(env, { error: 'No joinable room found' }, HttpStatus.NotFound);
+      }
+      const roomId = body.roomId ?? crypto.randomUUID();
+      const shardForCreate = getLobbyRoomShardKey(body.gameType, roomId);
+      const stubQuickJoinCreate = ns.get(ns.idFromName(shardForCreate));
+      const resQuickJoinCreate = await doFetch(stubQuickJoinCreate, LobbyDOPaths.QuickJoin(shardForCreate), {
+        method: HttpMethod.Post,
+        body: JSON.stringify({ ...body, roomId, createIfMissing: true }),
+      });
+      const dataQuickJoinCreate = await resQuickJoinCreate.json().catch(() => ({}));
+      logInfo('Lobby quick join created room', getStackTrace(), { gameType: body.gameType, roomId, shardKey: shardForCreate, status: resQuickJoinCreate.status });
+      return lobbyResponse(env, dataQuickJoinCreate, resQuickJoinCreate.status);
     }
-    const isCreateRoom = roomsIndex >= 0 && roomOrActionSegment === '' && !isJoin && !isLeave && !isSpectate;
+    const isCreateRoom = roomsIndex >= 0 && roomOrActionSegment === '' && !isRoomAction;
     if (isCreateRoom) {
       const { data, errorResponse } = await validateSchemaBody(request.clone(), env, RoomCreateRequestSchema);
       if (errorResponse) return errorResponse;
       const body = data!;
       const roomId = body.roomId ?? crypto.randomUUID();
-      const shardForCreate = body.gameType ? getLobbyGameShardKey(body.gameType) : getLobbyShardKey(roomId);
+      const shardForCreate = body.gameType ? getLobbyRoomShardKey(body.gameType, roomId) : getLobbyShardKey(roomId);
       const lobbyBodyText = JSON.stringify({
         ...body,
         roomId,
@@ -167,13 +201,14 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
       const doPathCreate = LobbyDOPaths.Rooms(shardForCreate);
       const resCreate = await doFetch(stubCreate, doPathCreate, { method: HttpMethod.Post, body: lobbyBodyText });
       const dataCreate = await resCreate.json().catch(() => ({}));
-      return new Response(JSON.stringify(dataCreate), { status: resCreate.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+      logInfo('Lobby room create routed', getStackTrace(), { gameType: body.gameType, roomId, shardKey: shardForCreate, status: resCreate.status });
+      return lobbyResponse(env, dataCreate, resCreate.status);
     }
-    if (isJoin || isLeave) {
+    if (isJoin || isLeave || isReady || isUnready || isStart) {
       const { data, errorResponse } = await validateSchemaBody(
         request.clone(),
         env,
-        isJoin ? RoomJoinRequestSchema : RoomLeaveRequestSchema
+        isJoin ? RoomJoinRequestSchema : isLeave ? RoomLeaveRequestSchema : isStart ? RoomStartRequestSchema : RoomReadyRequestSchema
       );
       if (errorResponse) return errorResponse;
       bodyText = JSON.stringify(data!);
@@ -184,7 +219,9 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
       bodyText = JSON.stringify(data!);
     }
   }
-  if (request.method === HttpMethod.Get && !isJoin && !isLeave && !isSpectate) {
+  if (request.method === HttpMethod.Get && !isRoomAction) {
+    const limit = clampLobbyListLimit(url.searchParams.get(QueryParam.Limit));
+    const sort = url.searchParams.get(QueryParam.Sort) ?? 'newest';
     const params = new URLSearchParams();
     if (authUserId) params.set('userId', authUserId);
     if (gameTypeQuery) params.set(QueryParam.GameType, gameTypeQuery);
@@ -192,22 +229,62 @@ export async function handleLobbyRequest(request: Request, env: Env, path: strin
     if (modeQuery) params.set(QueryParam.Mode, modeQuery);
     const visibilityQuery = url.searchParams.get(QueryParam.Visibility);
     if (visibilityQuery) params.set(QueryParam.Visibility, visibilityQuery);
+    const statusQuery = url.searchParams.get(QueryParam.Status);
+    if (statusQuery) params.set(QueryParam.Status, statusQuery);
+    const stakeTypeQuery = url.searchParams.get(QueryParam.StakeType);
+    if (stakeTypeQuery) params.set(QueryParam.StakeType, stakeTypeQuery);
+    const allowAIQuery = url.searchParams.get(QueryParam.AllowAI);
+    if (allowAIQuery !== null) params.set(QueryParam.AllowAI, allowAIQuery);
+    const cursorQuery = url.searchParams.get(QueryParam.Cursor);
+    if (cursorQuery) params.set(QueryParam.Cursor, cursorQuery);
+    params.set(QueryParam.Sort, sort);
+    params.set(QueryParam.Limit, String(limit));
     const query = params.size > 0 ? `?${params.toString()}` : '';
-    const allRooms: Array<{ roomId: string; roomType: string; maxPlayers: number; currentPlayers: number; currentSpectators: number; gameStatus: string; hostId: string; gameType?: string; isPrivate?: boolean; createdAt: number }> = [];
-    const shardKeys = gameTypeQuery ? [getLobbyGameShardKey(gameTypeQuery)] : Array.from({ length: LOBBY_SHARD_COUNT }, (_, i) => `lobby-${i}`);
+    const adminDebug = url.searchParams.get(QueryParam.AdminDebug) === QueryValue.True;
+    if (!gameTypeQuery && !adminDebug) {
+      return lobbyResponse(env, { rooms: [], nextCursor: null, limit, scope: 'gameType-required' });
+    }
+    const allRooms: LobbyRoomListItem[] = [];
+    let bucketHasMore = false;
+    const shardKeys = gameTypeQuery ? getLobbyGameBucketKeys(gameTypeQuery) : Array.from({ length: LOBBY_SHARD_COUNT }, (_, i) => `lobby-${i}`);
     for (const sk of shardKeys) {
       const stub = ns.get(ns.idFromName(sk));
       const res = await doFetch(stub, LobbyDOPaths.Rooms(sk) + query, { method: HttpMethod.Get });
-      const data = (await res.json().catch(() => ({}))) as { rooms?: typeof allRooms };
+      const data = (await res.json().catch(() => ({}))) as { rooms?: LobbyRoomListItem[]; hasMore?: boolean };
       if (Array.isArray(data.rooms)) allRooms.push(...data.rooms);
+      bucketHasMore = bucketHasMore || data.hasMore === true;
     }
-    return new Response(JSON.stringify({ rooms: allRooms }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+    const sortedRooms = sortLobbyRooms(allRooms, sort);
+    const rooms = sortedRooms.slice(0, limit);
+    const hasMore = bucketHasMore || sortedRooms.length > limit;
+    const nextCursor = hasMore && rooms.length > 0 ? encodeLobbyCursor(rooms[rooms.length - 1], sort) : null;
+    logInfo('Lobby rooms listed', getStackTrace(), { gameType: gameTypeQuery || undefined, shardCount: shardKeys.length, limit, returned: rooms.length, hasMore });
+    return lobbyResponse(env, { rooms, nextCursor, limit });
   }
-  const doPath = isJoin ? LobbyDOPaths.Join(shardKey, roomIdFromPath) : isLeave ? LobbyDOPaths.Leave(shardKey, roomIdFromPath) : isSpectate ? LobbyDOPaths.Spectate(shardKey, roomIdFromPath) : LobbyDOPaths.Rooms(shardKey);
-  const stub = ns.get(ns.idFromName(shardKey));
-  const res = await doFetch(stub, doPath, { method: request.method, body: bodyText });
-  const data = await res.json().catch(() => ({}));
-  return new Response(JSON.stringify(data), { status: res.status, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) } });
+  const shardKeys = getLobbyRoomActionShardKeys(gameTypeQuery, roomIdFromPath);
+  for (const shardKey of shardKeys) {
+    const doPath = isJoin
+      ? LobbyDOPaths.Join(shardKey, roomIdFromPath)
+      : isLeave
+        ? LobbyDOPaths.Leave(shardKey, roomIdFromPath)
+        : isSpectate
+          ? LobbyDOPaths.Spectate(shardKey, roomIdFromPath)
+          : isReady
+            ? LobbyDOPaths.Ready(shardKey, roomIdFromPath)
+            : isUnready
+              ? LobbyDOPaths.Unready(shardKey, roomIdFromPath)
+              : isStart
+                ? LobbyDOPaths.Start(shardKey, roomIdFromPath)
+                : LobbyDOPaths.Rooms(shardKey);
+    const stub = ns.get(ns.idFromName(shardKey));
+    const res = await doFetch(stub, doPath, { method: request.method, body: bodyText });
+    const data = await res.json().catch(() => ({}));
+    if (res.status !== HttpStatus.NotFound || shardKey === shardKeys[shardKeys.length - 1]) {
+      logInfo('Lobby room action routed', getStackTrace(), { gameType: gameTypeQuery || undefined, roomId: roomIdFromPath, action: roomActionSegment, shardKey, status: res.status });
+      return lobbyResponse(env, data, res.status);
+    }
+  }
+  return lobbyResponse(env, { error: 'Room not found' }, HttpStatus.NotFound);
 }
 
 export async function handleMatchmakingRequest(request: Request, env: Env, path: string): Promise<Response> {

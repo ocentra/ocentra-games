@@ -9,6 +9,7 @@ export const DEFAULT_SHARD = 'default';
 export const DEFAULT_REGION = 'default';
 export const PRESENCE_SHARD_COUNT = 256;
 export const LOBBY_SHARD_COUNT = 64;
+export const LOBBY_GAME_BUCKET_COUNT = 8;
 export const ADMIN_AUTH_TRACE_HEADER_VALUE = 'admin-auth-flow';
 export const LOG_ADMIN_AUTH = false;
 
@@ -70,9 +71,34 @@ export function getLobbyShardKey(roomId: string): string {
   return `lobby-${fnv1a(roomId) % LOBBY_SHARD_COUNT}`;
 }
 
+export function normalizeLobbyGameType(gameType: string): string {
+  return gameType.trim().toLowerCase().replace(/[^a-z0-9._:-]+/g, '-').slice(0, 128);
+}
+
 export function getLobbyGameShardKey(gameType: string): string {
-  const normalizedGameType = gameType.trim().toLowerCase();
+  const normalizedGameType = normalizeLobbyGameType(gameType);
   return normalizedGameType ? `lobby-${fnv1a(`game:${normalizedGameType}`) % LOBBY_SHARD_COUNT}` : DEFAULT_SHARD;
+}
+
+export function getLobbyGameBucketIndex(roomId: string): number {
+  return fnv1a(roomId) % LOBBY_GAME_BUCKET_COUNT;
+}
+
+export function getLobbyGameBucketKey(gameType: string, bucket: number): string {
+  const normalizedGameType = normalizeLobbyGameType(gameType);
+  const safeBucket = Math.max(0, Math.min(LOBBY_GAME_BUCKET_COUNT - 1, Math.trunc(bucket)));
+  return normalizedGameType ? `lobby:game:${normalizedGameType}:bucket:${safeBucket}` : DEFAULT_SHARD;
+}
+
+export function getLobbyGameBucketKeys(gameType: string): string[] {
+  const normalizedGameType = normalizeLobbyGameType(gameType);
+  if (!normalizedGameType) return [DEFAULT_SHARD];
+  return Array.from({ length: LOBBY_GAME_BUCKET_COUNT }, (_, bucket) => getLobbyGameBucketKey(normalizedGameType, bucket));
+}
+
+export function getLobbyRoomShardKey(gameType: string, roomId: string): string {
+  const normalizedGameType = normalizeLobbyGameType(gameType);
+  return normalizedGameType ? getLobbyGameBucketKey(normalizedGameType, getLobbyGameBucketIndex(roomId)) : getLobbyShardKey(roomId);
 }
 
 export async function doFetch(

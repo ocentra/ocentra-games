@@ -6,6 +6,7 @@ export const QueryParam = {
   Info: 'info',
   GameId: 'gameId',
   GameType: 'gameType',
+  RoomId: 'roomId',
   AssetPath: 'assetPath',
   Category: 'category',
   GameModeCategory: 'gameModeCategory',
@@ -22,7 +23,10 @@ export const QueryParam = {
   Context: 'context',
   Since: 'since',
   Limit: 'limit',
+  Cursor: 'cursor',
   Offset: 'offset',
+  Sort: 'sort',
+  Status: 'status',
   Scope: 'scope',
   PaymentId: 'paymentId',
   StripeEventId: 'stripeEventId',
@@ -30,7 +34,10 @@ export const QueryParam = {
   Search: 'q',
   Mode: 'mode',
   Visibility: 'visibility',
+  StakeType: 'stakeType',
+  AllowAI: 'allowAI',
   RoomCode: 'roomCode',
+  AdminDebug: 'adminDebug',
 } as const;
 
 export type QueryParam = typeof QueryParam[keyof typeof QueryParam];

@@ -11,7 +11,10 @@ export const LobbyDOStoragePrefix = {
   RoomIds: 'roomIds',
   RoomPrefix: 'room:',
   ReconnectPrefix: 'reconnect:',
+  ReconnectTokens: 'reconnectTokens',
   CountdownAlarmRoom: 'countdownAlarmRoom',
+  CountdownAlarmAt: 'countdownAlarmAt',
+  CleanupAlarmAt: 'cleanupAlarmAt',
 } as const;
 
 export const ActivityFeedDOStoragePrefix = {

@@ -21,8 +21,11 @@ import {
   FeedReportTypeValues,
   ComplianceReportTypeValues,
   FiatCurrencyValues,
+  LobbyAIDifficultyValues,
+  LobbyAIRoleValues,
   LobbyModeValues,
   LobbyStakeTypeValues,
+  LobbyTrainingGuideModeValues,
   LobbyVisibilityValues,
   PresenceStatusValues,
   ProfileVisibilityValues,
@@ -191,6 +194,13 @@ export const RoomCreateRequestSchema = schema.object({
   variantId: schema.string().min(1).max(128).optional(),
   allowAI: schema.boolean().optional(),
   aiCount: schema.coerce.number().int().min(0).max(12).optional(),
+  aiProviderId: schema.string().min(1).max(128).optional(),
+  aiModelId: schema.string().min(1).max(128).optional(),
+  difficulty: schema.enum(LobbyAIDifficultyValues).optional(),
+  aiRole: schema.enum(LobbyAIRoleValues).optional(),
+  coachEnabled: schema.boolean().optional(),
+  coachModelId: schema.string().min(1).max(128).optional(),
+  guideMode: schema.enum(LobbyTrainingGuideModeValues).optional(),
   allowSpectators: schema.boolean().optional(),
   stakeType: schema.enum(LobbyStakeTypeValues).optional(),
   stakeAmount: schema.coerce.number().nonnegative().optional(),
@@ -200,6 +210,7 @@ export const RoomCreateRequestSchema = schema.object({
 }).strict();
 
 export const RoomQuickJoinRequestSchema = schema.object({
+  roomId: RoomIdSchema.optional(),
   userId: UserIdSchema,
   displayName: schema.string().min(1).optional(),
   gameType: schema.string().min(1),
@@ -222,6 +233,14 @@ export const RoomLeaveRequestSchema = schema.object({
 export const RoomSpectateRequestSchema = schema.object({
   userId: UserIdSchema,
   displayName: schema.string().min(1).optional(),
+}).strict();
+
+export const RoomReadyRequestSchema = schema.object({
+  userId: UserIdSchema,
+}).strict();
+
+export const RoomStartRequestSchema = schema.object({
+  userId: UserIdSchema,
 }).strict();
 
 export const MatchmakingQueueRequestSchema = schema.object({

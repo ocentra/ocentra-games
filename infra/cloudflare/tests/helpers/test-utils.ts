@@ -1,4 +1,5 @@
-import { describe as vitestDescribe, it, expect, TestRunner } from 'vitest';
+import { describe as vitestDescribe, it, expect } from 'vitest';
+import { getCurrentSuite } from 'vitest/suite';
 import { TestSuiteType, SUITE_TYPE_META_KEY } from '@ocentra/logging-domain/test-log/types';
 import { StorageType } from '@/constants/storage-type';
 import { RunIn } from '@/constants/run-in';
@@ -14,7 +15,7 @@ export type DescribeOptions = {
 };
 
 function runWithSuiteType(type: TestSuiteType, fn: DescribeFn): void {
-  const cur = TestRunner.getCurrentSuite();
+  const cur = getCurrentSuite();
   const suite = cur?.suite as { meta: (() => Record<string, unknown>) | Record<string, unknown> } | undefined;
   if (!suite?.meta) {
     fn();

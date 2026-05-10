@@ -18,6 +18,16 @@ export const LobbyVisibilityValues = ['public', 'private', 'friends'] as const;
 
 export const LobbyStakeTypeValues = ['free', 'game-coin', 'real-money'] as const;
 
+export const LobbyStakeStatusValues = ['none', 'pending', 'locked', 'refunded', 'settled'] as const;
+
+export const LobbyChainStatusValues = ['local', 'pending-chain', 'confirmed', 'conflict', 'reconciled'] as const;
+
+export const LobbyAIRoleValues = ['opponent', 'coach', 'benchmark'] as const;
+
+export const LobbyAIDifficultyValues = ['easy', 'normal', 'hard', 'expert'] as const;
+
+export const LobbyTrainingGuideModeValues = ['off', 'hints', 'guided', 'review'] as const;
+
 export const SecurityPenaltyTypeValues = ['warning', 'mute', 'suspension', 'ban'] as const;
 
 export const FeedReportTypeValues = ['pci', 'gdpr', 'soc2'] as const;

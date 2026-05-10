@@ -169,7 +169,17 @@ export const StateSyncCoordinatorDO = {
 
 const lobbyPrefix = '/lobby';
 export const LobbyDODefaultInstanceName = 'lobby' as const;
-export const LobbyDOSegment = { Rooms: 'rooms', QuickJoin: 'quick-join', Join: 'join', Leave: 'leave', Spectate: 'spectate', Message: 'message' } as const;
+export const LobbyDOSegment = {
+  Rooms: 'rooms',
+  QuickJoin: 'quick-join',
+  Join: 'join',
+  Leave: 'leave',
+  Spectate: 'spectate',
+  Ready: 'ready',
+  Unready: 'unready',
+  Start: 'start',
+  Message: 'message',
+} as const;
 export const LobbyDO = {
   Base: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}` as DOPath,
   Rooms: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}/${LobbyDOSegment.Rooms}` as DOPath,
@@ -177,6 +187,9 @@ export const LobbyDO = {
   Join: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Join}` as DOPath,
   Leave: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Leave}` as DOPath,
   Spectate: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Spectate}` as DOPath,
+  Ready: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Ready}` as DOPath,
+  Unready: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Unready}` as DOPath,
+  Start: (shardKey: string, roomId: string): DOPath => `${lobbyPrefix}/${shardKey}/${roomId}/${LobbyDOSegment.Start}` as DOPath,
   Message: (shardKey: string): DOPath => `${lobbyPrefix}/${shardKey}/${LobbyDOSegment.Message}` as DOPath,
 } as const;
 

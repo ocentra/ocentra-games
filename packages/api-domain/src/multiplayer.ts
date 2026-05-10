@@ -7,6 +7,11 @@ export type LobbyRoomType = 'lobby' | 'game' | 'tournament' | 'private';
 export type LobbyRoomMode = 'casual' | 'ranked' | 'training' | 'benchmark' | 'stakes';
 export type LobbyVisibility = 'public' | 'private' | 'friends';
 export type LobbyStakeType = 'free' | 'game-coin' | 'real-money';
+export type LobbyStakeStatus = 'none' | 'pending' | 'locked' | 'refunded' | 'settled';
+export type LobbyChainStatus = 'local' | 'pending-chain' | 'confirmed' | 'conflict' | 'reconciled';
+export type LobbyAIRole = 'opponent' | 'coach' | 'benchmark';
+export type LobbyAIDifficulty = 'easy' | 'normal' | 'hard' | 'expert';
+export type LobbyTrainingGuideMode = 'off' | 'hints' | 'guided' | 'review';
 
 export interface LobbyRoomPlayer {
   userId: string;
@@ -15,6 +20,10 @@ export interface LobbyRoomPlayer {
   isHost?: boolean;
   isReady?: boolean;
   isAI?: boolean;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty | string;
+  role?: LobbyAIRole | string;
 }
 
 export interface LobbyRoom {
@@ -36,9 +45,21 @@ export interface LobbyRoom {
   allowSpectators?: boolean;
   stakeType?: LobbyStakeType | string;
   stakeAmount?: number;
+  stakeStatus?: LobbyStakeStatus | string;
+  stakeEscrowId?: string;
+  chainStatus?: LobbyChainStatus | string;
   turnTimerSeconds?: number;
   region?: string;
   isPrivate?: boolean;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty | string;
+  aiRole?: LobbyAIRole | string;
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: LobbyTrainingGuideMode | string;
+  matchId?: string;
+  stateVersion?: number;
   viewerJoined?: boolean;
   viewerSpectating?: boolean;
   joinCode?: string;
@@ -48,6 +69,8 @@ export interface LobbyRoom {
 
 export interface LobbyRoomsResponse {
   rooms: LobbyRoom[];
+  nextCursor?: string | null;
+  limit?: number;
 }
 
 export interface CreateLobbyRoomRequest {
@@ -62,6 +85,13 @@ export interface CreateLobbyRoomRequest {
   variantId?: string;
   allowAI?: boolean;
   aiCount?: number;
+  aiProviderId?: string;
+  aiModelId?: string;
+  difficulty?: LobbyAIDifficulty | string;
+  aiRole?: LobbyAIRole | string;
+  coachEnabled?: boolean;
+  coachModelId?: string;
+  guideMode?: LobbyTrainingGuideMode | string;
   allowSpectators?: boolean;
   stakeType?: LobbyStakeType | string;
   stakeAmount?: number;
@@ -84,6 +114,12 @@ export interface ListLobbyRoomsOptions {
   gameType?: string;
   mode?: string;
   visibility?: string;
+  status?: string;
+  stakeType?: string;
+  allowAI?: boolean;
+  sort?: string;
+  limit?: number;
+  cursor?: string;
 }
 
 export interface LobbyRoomPathOptions {
@@ -91,6 +127,7 @@ export interface LobbyRoomPathOptions {
 }
 
 export interface QuickJoinLobbyRoomRequest {
+  roomId?: string;
   userId: string;
   displayName?: string;
   gameType: string;
@@ -99,6 +136,19 @@ export interface QuickJoinLobbyRoomRequest {
   stakeType?: LobbyStakeType | string;
   maxPlayers?: number;
   createIfMissing?: boolean;
+}
+
+export interface StartLobbyRoomResponse {
+  started: boolean;
+  roomId: string;
+  matchId?: string;
+  handoff?: {
+    roomId: string;
+    matchId: string;
+    gameType?: string;
+    status: string;
+  };
+  room?: LobbyRoom;
 }
 
 export interface MatchmakingQueueRequest {
@@ -124,11 +174,11 @@ export interface MatchmakingStatusResponse {
 
 function appendQuery(
   endpoint: string,
-  query: Record<string, string | undefined>
+  query: Record<string, string | number | boolean | null | undefined>
 ): string {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
-    if (value) params.set(key, value);
+    if (value !== undefined && value !== null && value !== '') params.set(key, String(value));
   });
   const raw = params.toString();
   return raw.length === 0 ? endpoint : `${endpoint}?${raw}`;
@@ -139,6 +189,12 @@ export async function listLobbyRooms(options: ListLobbyRoomsOptions = {}): Promi
     [QueryParam.GameType]: options.gameType,
     [QueryParam.Mode]: options.mode,
     [QueryParam.Visibility]: options.visibility,
+    [QueryParam.Status]: options.status,
+    [QueryParam.StakeType]: options.stakeType,
+    [QueryParam.AllowAI]: options.allowAI,
+    [QueryParam.Sort]: options.sort,
+    [QueryParam.Limit]: options.limit,
+    [QueryParam.Cursor]: options.cursor,
   }));
 }
 
@@ -179,6 +235,39 @@ export async function spectateLobbyRoom(
 ): Promise<Record<string, unknown>> {
   return requestJson<Record<string, unknown>, JoinLobbyRoomRequest>(
     appendQuery(ApiEndpoint.Rooms.Spectate(roomId), { [QueryParam.GameType]: options.gameType }),
+    { method: HttpMethod.Post, body: payload, authMode: 'required' }
+  );
+}
+
+export async function readyLobbyRoom(
+  roomId: string,
+  payload: JoinLeaveLobbyRoomRequest,
+  options: LobbyRoomPathOptions = {}
+): Promise<Record<string, unknown>> {
+  return requestJson<Record<string, unknown>, JoinLeaveLobbyRoomRequest>(
+    appendQuery(ApiEndpoint.Rooms.Ready(roomId), { [QueryParam.GameType]: options.gameType }),
+    { method: HttpMethod.Post, body: payload, authMode: 'required' }
+  );
+}
+
+export async function unreadyLobbyRoom(
+  roomId: string,
+  payload: JoinLeaveLobbyRoomRequest,
+  options: LobbyRoomPathOptions = {}
+): Promise<Record<string, unknown>> {
+  return requestJson<Record<string, unknown>, JoinLeaveLobbyRoomRequest>(
+    appendQuery(ApiEndpoint.Rooms.Unready(roomId), { [QueryParam.GameType]: options.gameType }),
+    { method: HttpMethod.Post, body: payload, authMode: 'required' }
+  );
+}
+
+export async function startLobbyRoom(
+  roomId: string,
+  payload: JoinLeaveLobbyRoomRequest,
+  options: LobbyRoomPathOptions = {}
+): Promise<StartLobbyRoomResponse> {
+  return requestJson<StartLobbyRoomResponse, JoinLeaveLobbyRoomRequest>(
+    appendQuery(ApiEndpoint.Rooms.Start(roomId), { [QueryParam.GameType]: options.gameType }),
     { method: HttpMethod.Post, body: payload, authMode: 'required' }
   );
 }
