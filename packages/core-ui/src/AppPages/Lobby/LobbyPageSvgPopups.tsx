@@ -14,7 +14,15 @@ import {
   Txt,
 } from './LobbyPageSvgPrimitives';
 import { CardBadge, ImageCardArt, LobbyCarouselShell } from './LobbyPageSvgPrefabs';
-import type { FeaturedCardData, LobbyCanvasRect, LobbyTableRow, LobbyUserSummary } from './LobbyPageSvgTypes';
+import type {
+  FeaturedCardData,
+  LobbyCanvasRect,
+  LobbyCreateRoomDraft,
+  LobbyJoinCodeDraft,
+  LobbyQuickJoinDraft,
+  LobbyTableRow,
+  LobbyUserSummary,
+} from './LobbyPageSvgTypes';
 import type { LobbyPageSvgControls } from './LobbyPageSvgSurfaceControls';
 
 export function FilterPopup({ open, onClose, canvas }: { open: boolean; onClose: () => void; canvas: LobbyCanvasRect }) {
@@ -76,6 +84,79 @@ const STAKE_OPTIONS = ['Any', 'Free', 'Game Coin', 'Real Money'];
 const ENTRY_OPTIONS = ['Free', 'Game Coin', 'Real Money'];
 const VISIBILITY_OPTIONS = ['Public', 'Private', 'Friends'];
 const AI_POLICY_OPTIONS = ['Allowed', 'Banned'];
+
+function modeForPreset(presetKey: string | undefined): LobbyCreateRoomDraft['mode'] {
+  if (presetKey === 'ranked' || presetKey === 'master') return 'ranked';
+  if (presetKey === 'ai-showdown') return 'benchmark';
+  if (presetKey === 'ai-coach') return 'training';
+  if (presetKey === 'high-stake') return 'stakes';
+  return 'casual';
+}
+
+function stakeTypeForLabel(label: string): LobbyCreateRoomDraft['stakeType'] | undefined {
+  if (label === 'Any') return undefined;
+  if (label === 'Game Coin') return 'game-coin';
+  if (label === 'Real Money') return 'real-money';
+  return 'free';
+}
+
+function stakeAmountForType(stakeType: LobbyCreateRoomDraft['stakeType'] | undefined): number {
+  if (stakeType === 'game-coin') return 100;
+  if (stakeType === 'real-money') return 5;
+  return 0;
+}
+
+function visibilityForLabel(label: string): LobbyCreateRoomDraft['visibility'] {
+  if (label === 'Private') return 'private';
+  if (label === 'Friends') return 'friends';
+  return 'public';
+}
+
+function parsedPlayerCount(value: string, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function createRoomDraftFromCard(card: FeaturedCardData, options: {
+  visibility?: string;
+  players?: string;
+  aiPolicy?: string;
+  entry?: string;
+  roomName?: string;
+  aiCount?: number;
+} = {}): LobbyCreateRoomDraft {
+  const maxPlayers = parsedPlayerCount(options.players ?? card.players, 4);
+  const stakeType = stakeTypeForLabel(options.entry ?? card.entry ?? 'Free') ?? 'free';
+  const allowAI = options.aiPolicy !== 'Banned' && Boolean(card.ai || options.aiCount);
+  return {
+    presetKey: card.presetKey,
+    roomName: options.roomName ?? card.title,
+    mode: modeForPreset(card.presetKey),
+    visibility: visibilityForLabel(options.visibility ?? 'Public'),
+    maxPlayers,
+    allowAI,
+    aiCount: allowAI ? Math.max(0, Math.min(maxPlayers - 1, options.aiCount ?? (card.ai ? 1 : 0))) : 0,
+    allowSpectators: true,
+    stakeType,
+    stakeAmount: stakeAmountForType(stakeType),
+    turnTimerSeconds: 60,
+    region: 'global',
+  };
+}
+
+function quickJoinDraftFromCard(card: FeaturedCardData, options: {
+  aiPolicy?: string;
+  stake?: string;
+} = {}): LobbyQuickJoinDraft {
+  return {
+    presetKey: card.presetKey,
+    mode: modeForPreset(card.presetKey),
+    allowAI: options.aiPolicy !== 'Banned',
+    stakeType: stakeTypeForLabel(options.stake ?? 'Any'),
+    maxPlayers: parsedPlayerCount(card.players, 4),
+  };
+}
+
 function aiProviderModelLabel(providerId: ProviderId): string {
   const provider = ProviderCatalog[providerId];
   const model = ProviderDefaultModels[providerId]?.[0];
@@ -286,6 +367,8 @@ export function ActionPopup({
   type,
   onClose,
   onCreateRoom,
+  onQuickJoin,
+  onJoinRoomCode,
   onMatchmaking,
   canvas,
   viewer,
@@ -295,7 +378,9 @@ export function ActionPopup({
 }: {
   type: string | null;
   onClose: () => void;
-  onCreateRoom: () => void;
+  onCreateRoom: (draft?: LobbyCreateRoomDraft) => void;
+  onQuickJoin: (draft?: LobbyQuickJoinDraft) => void;
+  onJoinRoomCode: (draft: LobbyJoinCodeDraft) => void;
   onMatchmaking: () => void;
   canvas: LobbyCanvasRect;
   viewer: LobbyUserSummary | null;
@@ -412,7 +497,13 @@ export function ActionPopup({
         />
         <rect x={controlX} y={bodyY + 126} width={controlW} height="44" rx="6" fill="#06111f" stroke="#203a55" />
         <Txt x={controlX + 16} y={bodyY + 153} text={`Match target: ${selectedCard.title} - AI ${quickAiPolicy.toLowerCase()} - ${quickStake} stake`} maxWidth={controlW - 32} size={11.5} opacity={0.8} />
-        <Btn x={controlX} y={y + h - 58} w={controlW} h={38} label="JOIN BEST TABLE" active tone="cyan" size={12} onClick={() => closeAfter(onMatchmaking)} />
+        <Btn x={controlX} y={y + h - 58} w={controlW} h={38} label="JOIN BEST TABLE" active tone="cyan" size={12} onClick={() => closeAfter(() => {
+          if (useSampleData) {
+            onMatchmaking();
+            return;
+          }
+          onQuickJoin(quickJoinDraftFromCard(selectedCard, { aiPolicy: quickAiPolicy, stake: quickStake }));
+        })} />
         </LobbyCarouselShell>
       </g>
     );
@@ -529,7 +620,14 @@ export function ActionPopup({
         />
         <rect x={controlX} y={bodyY + 140} width={controlW} height="46" rx="6" fill="#06111f" stroke="#203a55" />
         <Txt x={controlX + 16} y={bodyY + 168} text={`${selectedCard.title}: ${createVisibility}, ${createPlayers} players, AI ${createAiPolicy.toLowerCase()}, ${createEntry} entry`} maxWidth={controlW - 32} size={11.5} opacity={0.82} />
-        <Btn x={controlX} y={y + h - 58} w={controlW} h={38} label="CREATE TABLE" active tone="purple" size={12} onClick={() => closeAfter(onCreateRoom)} />
+        <Btn x={controlX} y={y + h - 58} w={controlW} h={38} label="CREATE TABLE" active tone="purple" size={12} onClick={() => closeAfter(() => onCreateRoom(createRoomDraftFromCard(selectedCard, {
+          visibility: createVisibility,
+          players: createPlayers,
+          aiPolicy: createAiPolicy,
+          entry: createEntry,
+          roomName: `${selectedCard.title} Table`,
+          aiCount: createAiPolicy === 'Banned' ? 0 : selectedCard.ai ? Math.max(1, parsedPlayerCount(createPlayers, 4) - 1) : 0,
+        })))} />
         </LobbyCarouselShell>
       </g>
     );
@@ -550,7 +648,21 @@ export function ActionPopup({
         </g>
         <rect x={x + 34} y={y + h - 108} width={w - 68} height="42" rx="6" fill="#06111f" stroke="#203a55" />
         <Txt x={x + 50} y={y + h - 82} text="Private room lookup will validate the code before seating the player." maxWidth={w - 100} size={11} opacity={0.76} />
-        <Btn x={x + 34} y={y + h - 56} w={w - 68} h={38} label="JOIN ROOM" active tone="cyan" size={12} onClick={onClose} />
+        <Btn
+          x={x + 34}
+          y={y + h - 56}
+          w={w - 68}
+          h={38}
+          label="JOIN ROOM"
+          active
+          tone="cyan"
+          size={12}
+          disabled={joinRoomCode.trim().length === 0}
+          onClick={() => closeAfter(() => onJoinRoomCode({
+            code: joinRoomCode.trim(),
+            displayName: joinDisplayName.trim() || undefined,
+          }))}
+        />
       </g>
     );
   }
@@ -680,7 +792,14 @@ export function ActionPopup({
         ))}
         <rect x={controlX} y={bodyY + 336} width={controlW} height="38" rx="6" fill="#06111f" stroke="#203a55" />
         <Txt x={controlX + 16} y={bodyY + 360} text={`${selectedCard.title}: ${playAiPlayers} seats, ${visibleAiSlots.length} AI, ${slotModels.join(', ')}`} maxWidth={controlW - 32} size={10.8} opacity={0.82} />
-        <Btn x={controlX} y={y + h - 62} w={controlW} h={40} label="START AI TABLE" active tone="purple" size={12} onClick={() => closeAfter(onMatchmaking)} />
+        <Btn x={controlX} y={y + h - 62} w={controlW} h={40} label="START AI TABLE" active tone="purple" size={12} onClick={() => closeAfter(() => onCreateRoom(createRoomDraftFromCard(selectedCard, {
+          visibility: 'Public',
+          players: playAiPlayers,
+          aiPolicy: 'Allowed',
+          entry: 'Free',
+          roomName: `${selectedCard.title} AI Table`,
+          aiCount: parsedPlayerCount(playAiCount, 1),
+        })))} />
         </LobbyCarouselShell>
       </g>
     );
@@ -689,7 +808,7 @@ export function ActionPopup({
   return null;
 }
 
-export function FeaturedCardPopup({ card, onClose, canvas, onPrimaryAction }: { card: FeaturedCardData | null; onClose: () => void; canvas: LobbyCanvasRect; onPrimaryAction?: (card: FeaturedCardData) => void }) {
+export function FeaturedCardPopup({ card, onClose, canvas, onPrimaryAction, onSecondaryAction }: { card: FeaturedCardData | null; onClose: () => void; canvas: LobbyCanvasRect; onPrimaryAction?: (card: FeaturedCardData) => void; onSecondaryAction?: (card: FeaturedCardData) => void }) {
   if (!card) return null;
   const { x, y, w, h } = centeredPopupRect(canvas, 1160, 664);
   const imageX = x + 28;
@@ -741,7 +860,18 @@ export function FeaturedCardPopup({ card, onClose, canvas, onPrimaryAction }: { 
           onClose();
         }}
       />
-      <Btn x={infoX + 20} y={imageY + imageH - 44} w={infoW - 40} h={30} label={card.cardType === 'starter' ? 'CUSTOMIZE' : 'SPECTATE'} size={10} />
+      <Btn
+        x={infoX + 20}
+        y={imageY + imageH - 44}
+        w={infoW - 40}
+        h={30}
+        label={card.cardType === 'starter' ? 'CUSTOMIZE' : 'SPECTATE'}
+        size={10}
+        onClick={() => {
+          onSecondaryAction?.(card);
+          onClose();
+        }}
+      />
     </g>
   );
 }

@@ -8,9 +8,13 @@ import type {
 } from './AppPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type {
+  LobbyCreateRoomDraft,
   LobbyChatMessageItem,
   LobbyFriendItem,
   LobbyHeroMedia,
+  LobbyJoinCodeDraft,
+  LobbyQuickJoinDraft,
+  LobbyRoomPlayer,
   LobbyServerStatus,
   LobbyUserSummary,
 } from './Lobby/LobbyPageSvgTypes';
@@ -21,7 +25,12 @@ export type {
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
-export type { LobbyHeroMedia } from './Lobby/LobbyPageSvgTypes';
+export type {
+  LobbyCreateRoomDraft,
+  LobbyHeroMedia,
+  LobbyJoinCodeDraft,
+  LobbyQuickJoinDraft,
+} from './Lobby/LobbyPageSvgTypes';
 
 export type SocialFriend = { friendId: string };
 export type SocialPartyMember = { userId: string };
@@ -84,12 +93,29 @@ export type CompetitionPageMode =
 
 export type LobbyRoomLike = {
   roomId?: string;
+  roomName?: string;
   roomType?: string;
   gameType?: string;
+  mode?: string;
+  visibility?: string;
   currentPlayers?: number;
+  currentSpectators?: number;
   maxPlayers?: number;
   isPrivate?: boolean;
+  gameStatus?: string;
   status?: string;
+  hostId?: string;
+  allowAI?: boolean;
+  aiCount?: number;
+  allowSpectators?: boolean;
+  stakeType?: string;
+  stakeAmount?: number;
+  turnTimerSeconds?: number;
+  region?: string;
+  viewerJoined?: boolean;
+  viewerSpectating?: boolean;
+  players?: LobbyRoomPlayer[];
+  createdAt?: number;
 };
 
 export type MatchmakingTicketLike = {
@@ -865,7 +891,10 @@ export function LobbyPageContent({
   heroMedia,
   onRefresh,
   onCreateRoom,
+  onQuickJoin,
   onJoinRoom,
+  onJoinRoomCode,
+  onSpectateRoom,
   onLeaveRoom,
   onMatchmaking,
   layoutControls,
@@ -887,8 +916,11 @@ export function LobbyPageContent({
   gameTagline?: string;
   heroMedia?: LobbyHeroMedia;
   onRefresh: () => void;
-  onCreateRoom: () => void;
+  onCreateRoom: (draft?: LobbyCreateRoomDraft) => void;
+  onQuickJoin: (draft?: LobbyQuickJoinDraft) => void;
   onJoinRoom: (roomId: string) => void;
+  onJoinRoomCode: (draft: LobbyJoinCodeDraft) => void;
+  onSpectateRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
   onMatchmaking: () => void;
 } & LobbyPageSurfaceControlProps) {
@@ -912,7 +944,10 @@ export function LobbyPageContent({
       heroMedia={heroMedia}
       onRefresh={onRefresh}
       onCreateRoom={onCreateRoom}
+      onQuickJoin={onQuickJoin}
       onJoinRoom={onJoinRoom}
+      onJoinRoomCode={onJoinRoomCode}
+      onSpectateRoom={onSpectateRoom}
       onLeaveRoom={onLeaveRoom}
       onMatchmaking={onMatchmaking}
       controls={layoutControls}

@@ -4,11 +4,13 @@ import {
   joinLobbyRoom,
   leaveLobbyRoom,
   listLobbyRooms,
+  quickJoinLobbyRoom,
+  spectateLobbyRoom,
   type LobbyRoom,
 } from '@ocentra/api-domain/multiplayer';
-import type { CreateLobbyRoomForm, LobbyRoomsState } from '@/ui/pages/Lobby/types';
+import type { CreateLobbyRoomForm, LobbyRoomsState, QuickJoinLobbyRoomForm } from '@/ui/pages/Lobby/types';
 
-const RoomPollIntervalMs = 5000;
+const RoomPollIntervalMs = 10000;
 
 export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
   const [rooms, setRooms] = useState<LobbyRoom[]>([]);
@@ -21,12 +23,8 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     setError(null);
 
     try {
-      const response = await listLobbyRooms();
-      const allRooms = response.rooms ?? [];
-      const filteredRooms = gameTypeFilter
-        ? allRooms.filter((room) => room.gameType === gameTypeFilter)
-        : allRooms;
-      setRooms(filteredRooms);
+      const response = await listLobbyRooms({ gameType: gameTypeFilter });
+      setRooms(response.rooms ?? []);
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to load rooms');
     } finally {
@@ -40,6 +38,9 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
+      if (document.hidden) {
+        return;
+      }
       void refresh();
     }, RoomPollIntervalMs);
 
@@ -48,7 +49,7 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     };
   }, [refresh]);
 
-  const createRoom = useCallback(async (form: CreateLobbyRoomForm, userId: string) => {
+  const createRoom = useCallback(async (form: CreateLobbyRoomForm, userId: string, displayName?: string) => {
     if (!userId) {
       setError('Sign in required');
       return;
@@ -60,9 +61,21 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     try {
       await createLobbyRoom({
         hostId: userId,
+        hostDisplayName: displayName,
+        roomName: form.roomName,
         roomType: form.roomType,
+        mode: form.mode,
+        visibility: form.visibility,
         maxPlayers: form.maxPlayers,
         gameType: form.gameType || gameTypeFilter || '',
+        variantId: form.variantId,
+        allowAI: form.allowAI,
+        aiCount: form.aiCount,
+        allowSpectators: form.allowSpectators,
+        stakeType: form.stakeType,
+        stakeAmount: form.stakeAmount,
+        turnTimerSeconds: form.turnTimerSeconds,
+        region: form.region,
         isPrivate: form.isPrivate,
       });
       await refresh();
@@ -73,7 +86,35 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     }
   }, [gameTypeFilter, refresh]);
 
-  const joinRoom = useCallback(async (roomId: string, userId: string) => {
+  const quickJoin = useCallback(async (form: QuickJoinLobbyRoomForm, userId: string, displayName?: string) => {
+    if (!userId) {
+      setError('Sign in required');
+      return;
+    }
+
+    setBusyRoomId('quick-join');
+    setError(null);
+
+    try {
+      await quickJoinLobbyRoom({
+        userId,
+        displayName,
+        gameType: gameTypeFilter || 'claim',
+        mode: form.mode,
+        allowAI: form.allowAI,
+        stakeType: form.stakeType,
+        maxPlayers: form.maxPlayers,
+        createIfMissing: true,
+      });
+      await refresh();
+    } catch (responseError) {
+      setError(responseError instanceof Error ? responseError.message : 'Failed to quick join');
+    } finally {
+      setBusyRoomId(null);
+    }
+  }, [gameTypeFilter, refresh]);
+
+  const joinRoom = useCallback(async (roomId: string, userId: string, displayName?: string) => {
     if (!userId) {
       setError('Sign in required');
       return;
@@ -83,14 +124,33 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     setError(null);
 
     try {
-      await joinLobbyRoom(roomId, { userId });
+      await joinLobbyRoom(roomId, { userId, displayName }, { gameType: gameTypeFilter });
       await refresh();
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to join room');
     } finally {
       setBusyRoomId(null);
     }
-  }, [refresh]);
+  }, [gameTypeFilter, refresh]);
+
+  const spectateRoom = useCallback(async (roomId: string, userId: string, displayName?: string) => {
+    if (!userId) {
+      setError('Sign in required');
+      return;
+    }
+
+    setBusyRoomId(roomId);
+    setError(null);
+
+    try {
+      await spectateLobbyRoom(roomId, { userId, displayName }, { gameType: gameTypeFilter });
+      await refresh();
+    } catch (responseError) {
+      setError(responseError instanceof Error ? responseError.message : 'Failed to spectate room');
+    } finally {
+      setBusyRoomId(null);
+    }
+  }, [gameTypeFilter, refresh]);
 
   const leaveRoom = useCallback(async (roomId: string, userId: string) => {
     if (!userId) {
@@ -102,14 +162,14 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     setError(null);
 
     try {
-      await leaveLobbyRoom(roomId, { userId });
+      await leaveLobbyRoom(roomId, { userId }, { gameType: gameTypeFilter });
       await refresh();
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to leave room');
     } finally {
       setBusyRoomId(null);
     }
-  }, [refresh]);
+  }, [gameTypeFilter, refresh]);
 
   return {
     rooms,
@@ -119,7 +179,9 @@ export function useLobbyRooms(gameTypeFilter?: string): LobbyRoomsState {
     error,
     refresh,
     createRoom,
+    quickJoin,
     joinRoom,
+    spectateRoom,
     leaveRoom,
   };
 }

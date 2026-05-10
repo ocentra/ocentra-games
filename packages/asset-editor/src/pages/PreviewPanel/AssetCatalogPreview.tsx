@@ -1929,7 +1929,10 @@ function PageLayoutMainAppPreview({
         busyRoomId={null}
         onRefresh={() => undefined}
         onCreateRoom={() => undefined}
+        onQuickJoin={() => undefined}
         onJoinRoom={() => undefined}
+        onJoinRoomCode={() => undefined}
+        onSpectateRoom={() => undefined}
         onLeaveRoom={() => undefined}
         onMatchmaking={() => undefined}
         layoutControls={lobbyControls ?? normalizeLobbyPageSvgControls(document.lobbyControls as Partial<LobbyPageSvgControls> | undefined)}

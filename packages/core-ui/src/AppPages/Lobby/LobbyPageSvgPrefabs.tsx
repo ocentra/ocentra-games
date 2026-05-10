@@ -420,7 +420,29 @@ export function PlayerStrip({ x, y, w, h, names, ai, avatarUrls, onOpen }: { x: 
   );
 }
 
-export function AllTableRow({ row, x, y, w, h, onOpenPlayers, onJoinRoom, busyRoomId }: { row: LobbyTableRow; x: number; y: number; w: number; h: number; onOpenPlayers: (row: LobbyTableRow) => void; onJoinRoom: (roomId: string) => void; busyRoomId: string | null }) {
+export function AllTableRow({
+  row,
+  x,
+  y,
+  w,
+  h,
+  onOpenPlayers,
+  onJoinRoom,
+  onLeaveRoom,
+  onSpectateRoom,
+  busyRoomId,
+}: {
+  row: LobbyTableRow;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  onOpenPlayers: (row: LobbyTableRow) => void;
+  onJoinRoom: (roomId: string) => void;
+  onLeaveRoom: (roomId: string) => void;
+  onSpectateRoom: (roomId: string) => void;
+  busyRoomId: string | null;
+}) {
   const stroke = row.full ? '#bb2838' : row.ai ? '#7d49ff' : row.tone === 'cyan' ? '#13d9ef' : '#6d35ff';
   const codeW = 72;
   const remainingW = w - codeW;
@@ -433,7 +455,16 @@ export function AllTableRow({ row, x, y, w, h, onOpenPlayers, onJoinRoom, busyRo
   const countBoxW = statW * 0.38;
   const actionBoxX = statX + countBoxW;
   const actionBoxW = statW - countBoxW;
-  const primaryDisabled = row.full || !row.roomId || busyRoomId === row.roomId;
+  const primaryDisabled = !row.roomId || busyRoomId === row.roomId || (row.full && !row.viewerJoined);
+  const primaryTone = row.viewerJoined ? 'gold' : row.full ? 'red' : row.action === 'JOIN TABLE' ? 'cyan' : 'purple';
+  const handlePrimary = () => {
+    if (!row.roomId || primaryDisabled) return;
+    if (row.viewerJoined) {
+      onLeaveRoom(row.roomId);
+      return;
+    }
+    onJoinRoom(row.roomId);
+  };
   return (
     <g className="lobby-all-table-row lobby-ui-hit">
       <rect x={x} y={y} width={w} height={h} rx="7" fill={row.ai ? '#0b0820' : row.full ? '#0f080d' : '#04111c'} stroke={stroke} strokeWidth="1" opacity="0.97" />
@@ -454,8 +485,8 @@ export function AllTableRow({ row, x, y, w, h, onOpenPlayers, onJoinRoom, busyRo
       <CenterTxt x={statX + 8} y={y + 112} w={countBoxW - 16} h={22} text={row.spectators} size={15} weight="900" />
       {row.live ? <TablePill x={actionBoxX + actionBoxW - 68} y={y + 10} label="● LIVE" color="#ff4f61" /> : null}
       {row.entry ? <CenterTxt x={actionBoxX + 12} y={y + 28} w={actionBoxW - 24} h={28} text={`${row.entry} Entry`} size={11.2} weight="950" fill="#ffca45" /> : null}
-      <Btn x={actionBoxX + 12} y={y + 58} w={actionBoxW - 24} h={34} label={row.action} active tone={row.full ? 'red' : row.action === 'JOIN TABLE' ? 'cyan' : 'purple'} size={11} disabled={primaryDisabled && row.action === 'JOIN TABLE'} onClick={() => row.roomId && onJoinRoom(row.roomId)} />
-      <Btn x={actionBoxX + 12} y={y + 98} w={actionBoxW - 24} h={28} label="SPECTATE" size={9.5} onClick={() => onOpenPlayers(row)} />
+      <Btn x={actionBoxX + 12} y={y + 58} w={actionBoxW - 24} h={34} label={row.action} active tone={primaryTone} size={11} disabled={primaryDisabled} onClick={handlePrimary} />
+      <Btn x={actionBoxX + 12} y={y + 98} w={actionBoxW - 24} h={28} label={row.viewerJoined ? 'PLAYERS' : 'SPECTATE'} size={9.5} onClick={() => row.roomId && !row.viewerJoined ? onSpectateRoom(row.roomId) : onOpenPlayers(row)} />
     </g>
   );
 }
@@ -504,6 +535,8 @@ export function Featured({
   onOpenFeaturedCard,
   onOpenFilter,
   onJoinRoom,
+  onLeaveRoom,
+  onSpectateRoom,
   busyRoomId,
   mainB,
   controls,
@@ -520,6 +553,8 @@ export function Featured({
   onOpenFeaturedCard: (card: FeaturedCardData) => void;
   onOpenFilter: () => void;
   onJoinRoom: (roomId: string) => void;
+  onLeaveRoom: (roomId: string) => void;
+  onSpectateRoom: (roomId: string) => void;
   busyRoomId: string | null;
   mainB: { x: number; w: number };
   controls: LobbyPageSvgControls;
@@ -584,7 +619,19 @@ export function Featured({
           <g clipPath="url(#lobbyAllTablesRowsClip)">
             <g transform={`translate(0 ${-safeScroll * (rowH + rowGap)})`}>
               {tableRows.map((row, i) => (
-                <AllTableRow key={`${row.code}-${i}`} row={row} x={innerX + 12} y={innerY + 112 + i * (rowH + rowGap)} w={innerW - 38} h={rowH} onOpenPlayers={onOpenPlayers} onJoinRoom={onJoinRoom} busyRoomId={busyRoomId} />
+                <AllTableRow
+                  key={`${row.code}-${i}`}
+                  row={row}
+                  x={innerX + 12}
+                  y={innerY + 112 + i * (rowH + rowGap)}
+                  w={innerW - 38}
+                  h={rowH}
+                  onOpenPlayers={onOpenPlayers}
+                  onJoinRoom={onJoinRoom}
+                  onLeaveRoom={onLeaveRoom}
+                  onSpectateRoom={onSpectateRoom}
+                  busyRoomId={busyRoomId}
+                />
               ))}
             </g>
           </g>

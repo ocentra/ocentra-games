@@ -3,12 +3,66 @@ export const H = 930;
 
 export type LobbyRoomLike = {
   roomId?: string;
+  roomName?: string;
   roomType?: string;
   gameType?: string;
+  mode?: string;
+  visibility?: string;
   currentPlayers?: number;
+  currentSpectators?: number;
   maxPlayers?: number;
   isPrivate?: boolean;
+  gameStatus?: string;
   status?: string;
+  hostId?: string;
+  allowAI?: boolean;
+  aiCount?: number;
+  allowSpectators?: boolean;
+  stakeType?: string;
+  stakeAmount?: number;
+  turnTimerSeconds?: number;
+  region?: string;
+  viewerJoined?: boolean;
+  viewerSpectating?: boolean;
+  players?: LobbyRoomPlayer[];
+  createdAt?: number;
+};
+
+export type LobbyRoomPlayer = {
+  userId: string;
+  displayName?: string;
+  seatIndex?: number;
+  isHost?: boolean;
+  isReady?: boolean;
+  isAI?: boolean;
+};
+
+export type LobbyCreateRoomDraft = {
+  presetKey?: string;
+  roomName?: string;
+  mode?: 'casual' | 'ranked' | 'training' | 'benchmark' | 'stakes';
+  visibility?: 'public' | 'private' | 'friends';
+  maxPlayers?: number;
+  allowAI?: boolean;
+  aiCount?: number;
+  allowSpectators?: boolean;
+  stakeType?: 'free' | 'game-coin' | 'real-money';
+  stakeAmount?: number;
+  turnTimerSeconds?: number;
+  region?: string;
+};
+
+export type LobbyQuickJoinDraft = {
+  presetKey?: string;
+  mode?: 'casual' | 'ranked' | 'training' | 'benchmark' | 'stakes';
+  allowAI?: boolean;
+  stakeType?: 'free' | 'game-coin' | 'real-money';
+  maxPlayers?: number;
+};
+
+export type LobbyJoinCodeDraft = {
+  code: string;
+  displayName?: string;
 };
 
 export type LobbyPanelRect = {
@@ -37,6 +91,8 @@ export type LobbyTableRow = {
   ai: boolean;
   live: boolean;
   full: boolean;
+  viewerJoined?: boolean;
+  viewerSpectating?: boolean;
   names: string[];
   avatarUrls?: Array<string | null>;
   roomId?: string;

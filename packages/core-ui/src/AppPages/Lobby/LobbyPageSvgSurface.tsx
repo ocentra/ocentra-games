@@ -30,10 +30,13 @@ import {
   type FeaturedCardData,
   type LobbyActiveFilterItem,
   type LobbyChatMessageItem,
+  type LobbyCreateRoomDraft,
   type LobbyFriendItem,
   type LobbyHeaderStats,
   type LobbyHeroMedia,
+  type LobbyJoinCodeDraft,
   type LobbyPanelRect,
+  type LobbyQuickJoinDraft,
   type LobbyRoomLike,
   type LobbyServerStatus,
   type LobbyTableRow,
@@ -61,8 +64,11 @@ export type LobbyPageSvgSurfaceProps = {
   rooms: LobbyRoomLike[];
   busyRoomId: string | null;
   onRefresh: () => void;
-  onCreateRoom: () => void;
+  onCreateRoom: (draft?: LobbyCreateRoomDraft) => void;
+  onQuickJoin: (draft?: LobbyQuickJoinDraft) => void;
   onJoinRoom: (roomId: string) => void;
+  onJoinRoomCode: (draft: LobbyJoinCodeDraft) => void;
+  onSpectateRoom: (roomId: string) => void;
   onLeaveRoom: (roomId: string) => void;
   onMatchmaking: () => void;
   controls?: Partial<LobbyPageSvgControls> | null;
@@ -109,6 +115,34 @@ function starterCardForPreset(presetKey: string): FeaturedCardData | undefined {
   return DEFAULT_FEATURED_CARDS.find(card => card.presetKey === presetKey);
 }
 
+function modeForPreset(presetKey: string | undefined): LobbyCreateRoomDraft['mode'] {
+  if (presetKey === 'ranked' || presetKey === 'master') return 'ranked';
+  if (presetKey === 'ai-showdown') return 'benchmark';
+  if (presetKey === 'ai-coach') return 'training';
+  if (presetKey === 'high-stake') return 'stakes';
+  return 'casual';
+}
+
+function starterDraftForCard(card: FeaturedCardData): LobbyCreateRoomDraft {
+  const playerCount = Number(card.players);
+  const maxPlayers = Number.isFinite(playerCount) && playerCount > 0 ? playerCount : 4;
+  const stakeType = card.entry ? 'game-coin' : 'free';
+  return {
+    presetKey: card.presetKey,
+    roomName: `${card.title} Table`,
+    mode: modeForPreset(card.presetKey),
+    visibility: 'public',
+    maxPlayers,
+    allowAI: Boolean(card.ai),
+    aiCount: card.ai ? Math.max(1, maxPlayers - 1) : 0,
+    allowSpectators: true,
+    stakeType,
+    stakeAmount: stakeType === 'game-coin' ? 100 : 0,
+    turnTimerSeconds: 60,
+    region: 'global',
+  };
+}
+
 function buildRuntimeActiveFilters(rows: LobbyTableRow[]): LobbyActiveFilterItem[] {
   const colorByTone = {
     cyan: '#13d8f0',
@@ -148,7 +182,10 @@ function buildHeaderStats({
     };
   }
   const playerCount = rooms.reduce((sum, room) => sum + Math.max(0, room.currentPlayers ?? 0), 0);
-  const activeMatches = rooms.filter(room => room.status === 'active' || room.status === 'live').length;
+  const activeMatches = rooms.filter(room => {
+    const status = room.gameStatus ?? room.status;
+    return status === 'active' || status === 'live' || status === 'starting' || status === 'in-progress';
+  }).length;
   return {
     playersOnline: String(playerCount),
     activeMatches: String(activeMatches),
@@ -189,7 +226,11 @@ export function LobbyPageSvgSurface({
   rooms,
   busyRoomId,
   onCreateRoom,
+  onQuickJoin,
   onJoinRoom,
+  onJoinRoomCode,
+  onSpectateRoom,
+  onLeaveRoom,
   onMatchmaking,
   controls: controlsInput,
   useSampleData = false,
@@ -311,6 +352,12 @@ export function LobbyPageSvgSurface({
   );
 
   const takeSeat = (code: string, seatIndex: number) => {
+    const row = tableRows.find(item => item.code === code);
+    if (row?.roomId) {
+      onJoinRoom(row.roomId);
+      setPlayersPopupRow(null);
+      return;
+    }
     setSeatedByRow(previous => ({ ...previous, [code]: seatIndex }));
     setPlayersPopupRow(null);
   };
@@ -393,6 +440,8 @@ export function LobbyPageSvgSurface({
             onOpenFeaturedCard={setFeaturedCardPopup}
             onOpenFilter={() => setFilterPopup(true)}
             onJoinRoom={onJoinRoom}
+            onLeaveRoom={onLeaveRoom}
+            onSpectateRoom={onSpectateRoom}
             busyRoomId={busyRoomId}
             mainB={mainB}
             controls={controls}
@@ -427,6 +476,8 @@ export function LobbyPageSvgSurface({
           type={actionPopup === 'spinner' ? null : actionPopup}
           onClose={() => setActionPopup(null)}
           onCreateRoom={onCreateRoom}
+          onQuickJoin={onQuickJoin}
+          onJoinRoomCode={onJoinRoomCode}
           onMatchmaking={onMatchmaking}
           canvas={canvas}
           viewer={activeViewer}
@@ -440,8 +491,13 @@ export function LobbyPageSvgSurface({
           onClose={() => setFeaturedCardPopup(null)}
           canvas={canvas}
           onPrimaryAction={(card) => {
-            if (card.cardType === 'starter') onCreateRoom();
-            else if (card.roomId) onJoinRoom(card.roomId);
+            if (card.cardType === 'starter') onCreateRoom(starterDraftForCard(card));
+            else if (card.roomId && card.cta === 'LEAVE TABLE') onLeaveRoom(card.roomId);
+            else if (card.roomId && card.cta !== 'FULL') onJoinRoom(card.roomId);
+          }}
+          onSecondaryAction={(card) => {
+            if (card.cardType === 'starter') setActionPopup('createTable');
+            else if (card.roomId) onSpectateRoom(card.roomId);
           }}
         />
         <FilterPopup open={filterPopup} onClose={() => setFilterPopup(false)} canvas={canvas} />

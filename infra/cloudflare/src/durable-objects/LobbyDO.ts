@@ -267,20 +267,20 @@ export class LobbyDO implements DurableObject {
     }
     const userId = body.userId ?? '';
     if (!userId) return this.json({ error: 'userId required' }, HttpStatus.BadRequest);
-    const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`);
+    const room = await this.getRoomByIdOrCode(roomId);
     if (!room) return this.json({ error: 'Room not found' }, HttpStatus.NotFound);
     if (room.gameStatus !== 'waiting') return this.json({ error: 'Room not joinable' }, HttpStatus.Conflict);
     const spectatorIds = room.spectatorIds ?? [];
     room.spectatorIds = spectatorIds.filter((id) => id !== userId);
     if (room.playerIds.includes(userId)) {
-      await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
-      return this.json({ joined: true, roomId, spectating: false, room: this.toRoomView(room, userId) });
+      await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${room.roomId}`, room);
+      return this.json({ joined: true, roomId: room.roomId, spectating: false, room: this.toRoomView(room, userId) });
     }
     if (room.playerIds.length >= room.maxPlayers) return this.json({ error: 'Room full' }, HttpStatus.Conflict);
     this.addPlayer(room, userId, body.displayName);
     room.lastActivityAt = Date.now();
-    await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
-    return this.json({ joined: true, roomId, spectating: false, room: this.toRoomView(room, userId) });
+    await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${room.roomId}`, room);
+    return this.json({ joined: true, roomId: room.roomId, spectating: false, room: this.toRoomView(room, userId) });
   }
 
   private async spectateRoom(roomId: string, request: Request): Promise<Response> {
@@ -445,6 +445,19 @@ export class LobbyDO implements DurableObject {
     await this.ctx.storage.put(`${LobbyDOStoragePrefix.RoomPrefix}${roomId}`, room);
     await this.ctx.storage.put(LobbyDOStoragePrefix.RoomIds, [...roomIds.filter((id) => id !== roomId), roomId]);
     return { room };
+  }
+
+  private async getRoomByIdOrCode(value: string): Promise<RoomStored | null> {
+    const exact = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${value}`);
+    if (exact) return exact;
+    const normalizedCode = value.trim().toUpperCase();
+    if (!normalizedCode) return null;
+    const roomIds = (await this.ctx.storage.get<string[]>(LobbyDOStoragePrefix.RoomIds)) ?? [];
+    for (const id of roomIds) {
+      const room = await this.ctx.storage.get<RoomStored>(`${LobbyDOStoragePrefix.RoomPrefix}${id}`);
+      if (room?.joinCode === normalizedCode) return room;
+    }
+    return null;
   }
 
   private async findQuickJoinRoom(filters: { gameType: string; mode?: string; allowAI?: boolean; stakeType?: string; maxPlayers?: number }): Promise<RoomStored | null> {

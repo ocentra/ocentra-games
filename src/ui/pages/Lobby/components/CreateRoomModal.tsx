@@ -36,11 +36,45 @@ export function CreateRoomModal({ open, loading, defaultGameType, onClose, onCre
           id="lb-room-type"
           className="lb-input"
           value={form.roomType}
-          onChange={(event) => setForm((previous) => ({ ...previous, roomType: event.target.value }))}
+          onChange={(event) => setForm((previous) => ({ ...previous, roomType: event.target.value as CreateLobbyRoomForm['roomType'] }))}
+        >
+          <option value="game">Game</option>
+          <option value="tournament">Tournament</option>
+          <option value="private">Private</option>
+        </select>
+
+        <label className="lb-label" htmlFor="lb-room-mode">
+          Mode
+        </label>
+        <select
+          id="lb-room-mode"
+          className="lb-input"
+          value={form.mode}
+          onChange={(event) => setForm((previous) => ({ ...previous, mode: event.target.value as CreateLobbyRoomForm['mode'] }))}
+        >
+          <option value="casual">Casual</option>
+          <option value="ranked">Ranked</option>
+          <option value="training">Training</option>
+          <option value="benchmark">Benchmark</option>
+          <option value="stakes">Stakes</option>
+        </select>
+
+        <label className="lb-label" htmlFor="lb-room-visibility">
+          Visibility
+        </label>
+        <select
+          id="lb-room-visibility"
+          className="lb-input"
+          value={form.visibility}
+          onChange={(event) => setForm((previous) => ({
+            ...previous,
+            visibility: event.target.value as CreateLobbyRoomForm['visibility'],
+            isPrivate: event.target.value === 'private',
+          }))}
         >
           <option value="public">Public</option>
-          <option value="ranked">Ranked</option>
           <option value="private">Private</option>
+          <option value="friends">Friends</option>
         </select>
 
         <label className="lb-label" htmlFor="lb-max-players">
@@ -72,7 +106,11 @@ export function CreateRoomModal({ open, loading, defaultGameType, onClose, onCre
           <input
             type="checkbox"
             checked={form.isPrivate}
-            onChange={(event) => setForm((previous) => ({ ...previous, isPrivate: event.target.checked }))}
+            onChange={(event) => setForm((previous) => ({
+              ...previous,
+              isPrivate: event.target.checked,
+              visibility: event.target.checked ? 'private' : previous.visibility === 'private' ? 'public' : previous.visibility,
+            }))}
           />
           <span>Private room</span>
         </label>

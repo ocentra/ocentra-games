@@ -115,23 +115,36 @@ export function roomToTableRow(room: LobbyRoomLike, index: number): LobbyTableRo
   const currentPlayers = room.currentPlayers ?? 0;
   const maxPlayers = room.maxPlayers ?? 4;
   const full = currentPlayers >= maxPlayers;
-  const code = `R${String(index + 1).padStart(2, '0')}`;
-  const type = room.roomType || (room.isPrivate ? 'private' : 'public');
+  const status = room.gameStatus ?? room.status ?? 'waiting';
+  const code = room.roomId ? room.roomId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 4).toUpperCase() : `R${String(index + 1).padStart(2, '0')}`;
+  const type = room.visibility || room.roomType || (room.isPrivate ? 'private' : 'public');
+  const mode = room.mode || 'casual';
+  const stakeAmount = room.stakeAmount ?? 0;
+  const stakeType = room.stakeType ?? 'free';
+  const entry = stakeType === 'free' || stakeAmount === 0 ? null : `${stakeAmount} ${stakeType === 'game-coin' ? 'OCN' : 'USD'}`;
+  const sortedPlayers = [...(room.players ?? [])].sort((a, b) => (a.seatIndex ?? 0) - (b.seatIndex ?? 0));
+  const names = Array.from({ length: maxPlayers }, (_, seatIndex) => {
+    const player = sortedPlayers.find(item => (item.seatIndex ?? 0) === seatIndex) ?? sortedPlayers[seatIndex];
+    if (!player) return 'Open Seat';
+    if (player.isAI) return player.displayName || `AI Seat ${seatIndex + 1}`;
+    return player.displayName || player.userId || 'Occupied';
+  });
+  const normalizedStatus = status === 'waiting' ? 'OPEN' : status.toUpperCase();
   return {
     code,
-    title: `${room.gameType || 'Claim'} ${type} room`,
-    tags: [type.toUpperCase(), room.status?.toUpperCase() || 'OPEN'],
+    title: room.roomName || `${room.gameType || 'Claim'} ${mode} table`,
+    tags: [mode.toUpperCase(), type.toUpperCase(), normalizedStatus],
     players: `${currentPlayers} / ${maxPlayers}`,
-    spectators: '0',
-    entry: null,
-    action: full ? 'FULL' : 'JOIN TABLE',
-    tone: full ? 'red' : type === 'private' ? 'purple' : 'cyan',
-    ai: false,
-    live: room.status === 'active',
+    spectators: String(room.currentSpectators ?? 0),
+    entry,
+    action: room.viewerJoined ? 'LEAVE TABLE' : full ? 'FULL' : 'JOIN TABLE',
+    tone: full ? 'red' : type === 'private' ? 'purple' : entry ? 'gold' : 'cyan',
+    ai: Boolean(room.allowAI || (room.aiCount ?? 0) > 0 || sortedPlayers.some(player => player.isAI)),
+    live: status === 'active' || status === 'starting' || status === 'in-progress',
     full,
-    names: Array.from({ length: maxPlayers }, (_, seatIndex) => (
-      seatIndex < currentPlayers ? 'Occupied' : 'Open Seat'
-    )),
+    viewerJoined: room.viewerJoined,
+    viewerSpectating: room.viewerSpectating,
+    names,
     roomId: room.roomId,
   };
 }

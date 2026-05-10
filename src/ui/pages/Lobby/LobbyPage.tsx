@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
@@ -6,14 +6,23 @@ import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
-import { LobbyPageContent } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import {
+  LobbyPageContent,
+  type LobbyCreateRoomDraft,
+  type LobbyHeroMedia,
+  type LobbyJoinCodeDraft,
+  type LobbyQuickJoinDraft,
+} from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
 import { APP_VERSION } from '@/constants/version';
 import { CreateRoomModal } from '@/ui/pages/Lobby/components/CreateRoomModal';
 import { useLobbyRooms } from '@/ui/pages/Lobby/hooks/useLobbyRooms';
+import { createDefaultLobbyRoomForm, type CreateLobbyRoomForm } from '@/ui/pages/Lobby/types';
 import { readMultiplayerConfig } from '@/ui/pages/Matchmaking/types';
 import { AppScreenToken, buildGameMatchmakingPath } from '@/ui/navigation/appRoutes';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
+import { useResolveImageUrl } from '@/hooks/useResolveImageUrl';
+import { loadLobbyAssetContext, type LobbyAssetContext } from '@/ui/pages/Lobby/lobbyAssetSections';
 
 interface LobbyPageProps {
   user: UserProfile | null;
@@ -21,6 +30,8 @@ interface LobbyPageProps {
   onLogout: () => void;
   onLogoutClick?: () => void;
 }
+
+type ImageResolverInput = Parameters<typeof useResolveImageUrl>[0];
 
 function getLobbyGameName(gameId: string): string {
   const base = gameId.split(':')[0] || gameId;
@@ -32,11 +43,38 @@ function getLobbyGameName(gameId: string): string {
     .join(' ') || 'Claim';
 }
 
+function getDisplayName(activeUser: UserProfile): string {
+  return activeUser.displayName || activeUser.email || activeUser.uid;
+}
+
+function createRoomFormFromDraft(gameType: string, draft: LobbyCreateRoomDraft): CreateLobbyRoomForm {
+  const visibility = draft.visibility ?? 'public';
+  return {
+    ...createDefaultLobbyRoomForm(gameType),
+    roomName: draft.roomName,
+    roomType: 'game',
+    mode: draft.mode ?? 'casual',
+    visibility,
+    maxPlayers: draft.maxPlayers ?? 4,
+    gameType,
+    allowAI: draft.allowAI ?? true,
+    aiCount: draft.aiCount ?? 0,
+    allowSpectators: draft.allowSpectators ?? true,
+    stakeType: draft.stakeType ?? 'free',
+    stakeAmount: draft.stakeAmount ?? 0,
+    turnTimerSeconds: draft.turnTimerSeconds ?? 60,
+    region: draft.region ?? 'global',
+    isPrivate: visibility !== 'public',
+  };
+}
+
 export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPageProps) {
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+  const [assetContext, setAssetContext] = useState<LobbyAssetContext | null>(null);
   const { runWithSession } = useAuthAccess();
-  const activeGameType = gameId ?? readMultiplayerConfig().gameId;
-  const gameName = getLobbyGameName(activeGameType);
+  const requestedGameType = gameId ?? readMultiplayerConfig().gameId;
+  const activeGameType = assetContext?.routeId ?? requestedGameType;
+  const gameName = assetContext?.gameName ?? getLobbyGameName(activeGameType);
   const handleLogout = () => {
     if (onLogoutClick) {
       onLogoutClick();
@@ -44,6 +82,20 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     onLogout();
   };
   const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout: handleLogout });
+  useEffect(() => {
+    let cancelled = false;
+    setAssetContext(null);
+    void loadLobbyAssetContext(requestedGameType)
+      .then((context) => {
+        if (!cancelled) setAssetContext(context);
+      })
+      .catch(() => {
+        if (!cancelled) setAssetContext(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [requestedGameType]);
   const {
     rooms,
     loading,
@@ -52,7 +104,9 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
     error,
     refresh,
     createRoom,
+    quickJoin,
     joinRoom,
+    spectateRoom,
     leaveRoom,
   } = useLobbyRooms(activeGameType);
   const viewerWinRatio = user ? Math.max(0, Math.min(1, user.winRate > 1 ? user.winRate / 100 : user.winRate)) : 0;
@@ -65,6 +119,41 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
       xpRatio: viewerWinRatio,
     }
     : null;
+  const lobbyImageResolverInput = useMemo<ImageResolverInput>(() => {
+    const hero = assetContext?.hero;
+    if (!hero) return {};
+    const hashes = [
+      ...hero.slides.map(slide => slide.imageHash),
+      hero.logoImageHash,
+    ].filter((hash): hash is NonNullable<typeof hash> => Boolean(hash));
+    return {
+      featureBannerItems: hashes.map((imageHash, index) => ({
+        title: `Lobby image ${index + 1}`,
+        description: '',
+        imageHash,
+      })),
+    };
+  }, [assetContext]);
+  const { resolveImageUrl, ImageLoaders } = useResolveImageUrl(lobbyImageResolverInput);
+  const heroMedia = useMemo<LobbyHeroMedia | undefined>(() => {
+    const hero = assetContext?.hero;
+    if (!hero) return undefined;
+    const slides = hero.slides
+      .map(slide => {
+        const imageUrl = resolveImageUrl(slide.imageHash);
+        return imageUrl ? { id: slide.id, imageUrl, alt: slide.alt } : null;
+      })
+      .filter((slide): slide is NonNullable<typeof slide> => Boolean(slide));
+    return {
+      slides,
+      logoUrl: hero.logoImageHash ? resolveImageUrl(hero.logoImageHash) : null,
+      logoAlt: hero.logoAlt,
+      titleText: hero.titleText,
+      tagline: hero.tagline,
+      overlayTintColor: hero.overlayTintColor,
+      overlayTintOpacity: hero.overlayTintOpacity,
+    };
+  }, [assetContext, resolveImageUrl]);
 
   return (
     <UnifiedPageShell
@@ -90,6 +179,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
       toolbar={<div className="lb-top-divider" aria-hidden="true" />}
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
+      {ImageLoaders}
       <LobbyPageContent
         loading={loading}
         creating={creating}
@@ -103,13 +193,44 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         friends={[]}
         chatMessages={[]}
         server={null}
+        minPlayers={assetContext?.minPlayers}
+        maxPlayers={assetContext?.maxPlayers}
+        gameTagline={assetContext?.tagline}
+        heroMedia={heroMedia}
         onRefresh={() => {
           void refresh();
         }}
-        onCreateRoom={() => setShowCreateRoomModal(true)}
+        onCreateRoom={(draft?: LobbyCreateRoomDraft) => {
+          if (!draft) {
+            setShowCreateRoomModal(true);
+            return;
+          }
+          void runWithSession(async (activeUser) => {
+            await createRoom(createRoomFormFromDraft(activeGameType, draft), activeUser.uid, getDisplayName(activeUser));
+          });
+        }}
+        onQuickJoin={(draft?: LobbyQuickJoinDraft) => {
+          void runWithSession(async (activeUser) => {
+            await quickJoin(draft ?? {}, activeUser.uid, getDisplayName(activeUser));
+          });
+        }}
         onJoinRoom={(roomId) => {
           void runWithSession(async (activeUser) => {
-            await joinRoom(roomId, activeUser.uid);
+            await joinRoom(roomId, activeUser.uid, getDisplayName(activeUser));
+          });
+        }}
+        onJoinRoomCode={(draft: LobbyJoinCodeDraft) => {
+          const code = draft.code.trim();
+          if (!code) {
+            return;
+          }
+          void runWithSession(async (activeUser) => {
+            await joinRoom(code, activeUser.uid, draft.displayName ?? getDisplayName(activeUser));
+          });
+        }}
+        onSpectateRoom={(roomId) => {
+          void runWithSession(async (activeUser) => {
+            await spectateRoom(roomId, activeUser.uid, getDisplayName(activeUser));
           });
         }}
         onLeaveRoom={(roomId) => {
@@ -118,6 +239,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
           });
         }}
         onMatchmaking={() => EventBus.instance.publish(new ShowScreenEvent(buildGameMatchmakingPath(activeGameType)))}
+        layoutControls={assetContext?.layoutControls}
       />
 
       <CreateRoomModal
@@ -127,7 +249,7 @@ export function LobbyPage({ user, gameId, onLogout, onLogoutClick }: LobbyPagePr
         onClose={() => setShowCreateRoomModal(false)}
         onCreate={async (form) => {
           const created = await runWithSession(async (activeUser) => {
-            await createRoom(form, activeUser.uid);
+            await createRoom(form, activeUser.uid, getDisplayName(activeUser));
             return true;
           });
           if (!created) {
