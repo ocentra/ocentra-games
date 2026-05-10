@@ -7,9 +7,8 @@ if (typeof process !== 'undefined' && process.env) {
 }
 (globalThis as typeof globalThis & { __WORKER_LOGS_API_KEY__?: string }).__WORKER_LOGS_API_KEY__ = TestConfig.TestLogsApiKey;
 
-import { beforeAll, beforeEach, afterEach } from 'vitest';
+import { beforeAll, beforeEach, afterEach, TestRunner } from 'vitest';
 import type { TestContext } from 'vitest';
-import { getCurrentTest } from 'vitest/suite';
 import { setRunId } from '@ocentra/logging-domain/test-log/testLogBuffer';
 import { RunType } from '@ocentra/logging-domain/test-log/types';
 import { initLogConfig } from '@/logging/log-config';
@@ -38,7 +37,7 @@ beforeAll(() => {
 
 beforeEach(async (ctx: TestContext) => {
   await ensureContextReady();
-  const task = ctx?.task ?? getCurrentTest();
+  const task = ctx?.task ?? TestRunner.getCurrentTest();
   const context = createTestContext(task, RunType.SingleThreads);
   if (context) setCurrentContext(context);
 });

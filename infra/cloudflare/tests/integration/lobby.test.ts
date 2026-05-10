@@ -150,7 +150,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     const response = await worker.fetch(buildApiUrl(ApiEndpoint.Rooms.Base, { baseUrl }), {
       method: HttpMethod.Post,
       headers: jsonHeaders(),
-      body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, ...overrides }),
+      body: JSON.stringify({ ...OpenApiExampleValue.LobbyCreateRequest, roomId: crypto.randomUUID(), ...overrides }),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
     return await response.json() as LobbyActionResponse;
