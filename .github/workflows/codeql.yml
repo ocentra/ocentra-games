@@ -37,6 +37,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Install iOS package dependencies
+      if: matrix.language == 'swift'
+      uses: ./.github/actions/setup-ci
+      with:
+        install-mode: ci-only
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
