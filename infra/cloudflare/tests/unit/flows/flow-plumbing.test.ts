@@ -198,7 +198,7 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     );
 
     expect(result.status).toBe(HttpStatus.Ok);
-    expect(result.body).toEqual({ claimed: true, reward: { xp: 500, gp: 25 } });
+    expect(result.body).toEqual({ claimed: true, reward: { xp: 500, gp: 25 }, balance: {} });
     expect(requests).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const forwarded = await requests[0].clone().json() as { idempotencyKey?: string; userId?: string };
