@@ -1,7 +1,7 @@
 import { describe, it, expect, extractName, TestSuiteType } from '@tests/helpers/test-utils';
 import { testName } from '@tests/helpers/test-name';
 import { beforeAll, afterAll } from 'vitest';
-import { createToken } from '@tests/test-context';
+import { createToken, type SetupContextToken } from '@tests/test-context';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import {
   buildTestMatchApiUrl,
@@ -51,6 +51,39 @@ async function consumeResponseBody(response: Response): Promise<void> {
 async function waitForR2Locks(maxRetries = 5, initialDelay = 100): Promise<void> {
   for (let i = 0; i < maxRetries; i++) {
     await new Promise(resolve => setTimeout(resolve, initialDelay * (i + 1)));
+  }
+}
+
+async function runAbortedMatchUpload(
+  worker: TestWorker,
+  token: SetupContextToken,
+  userId: string,
+  matchId: string,
+  payload: unknown,
+  abortAfterMs: number
+): Promise<void> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), abortAfterMs);
+
+  try {
+    const response = await worker.fetch(
+      buildTestApiUrlForEndpointWithPath(ApiEndpoint.Matches.Base, matchId),
+      {
+        method: HttpMethod.Put,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      },
+      token
+    );
+    await consumeResponseBody(response);
+  } catch {
+    return;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -842,31 +875,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const parsed = JSON.parse(matchData);
       parsed.match_id = matchId;
 
-      const controller = new AbortController();
-      setTimeout(() => controller.abort(), 5);
-
-      const abortPromise = worker.fetch(
-        buildTestApiUrlForEndpointWithPath(ApiEndpoint.Matches.Base, matchId),
-        {
-          method: HttpMethod.Put,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-          },
-          body: JSON.stringify(parsed),
-          signal: controller.signal
-        },
-        token
-      ).catch(() => null);
-
-      try {
-        const abortResponse = await abortPromise;
-        if (abortResponse) {
-          await consumeResponseBody(abortResponse);
-        }
-      } catch {
-        // Ignore - abort errors are expected when aborting requests
-      }
+      await runAbortedMatchUpload(worker, token, userId, matchId, parsed, 5);
 
       await waitForR2Locks(5, 100);
 
@@ -914,30 +923,10 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const initialGP = initialData.gp_balance;
       await consumeResponseBody(initialBalance);
 
-      const abortRequests = Array.from({ length: abortCount }, () => {
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 10);
-        return worker.fetch(
-          buildTestApiUrlForEndpointWithPath(ApiEndpoint.Matches.Base, matchId),
-          {
-            method: HttpMethod.Put,
-            headers: {
-              ...getValidRequestHeaders(userId),
-              [HttpHeader.ContentType]: HttpContentType.ApplicationJson
-            },
-            body: JSON.stringify(parsed),
-            signal: controller.signal
-          },
-          token
-        ).catch(() => null);
-      });
-
-      const abortResults = await Promise.all(abortRequests);
-      for (const result of abortResults) {
-        if (result) {
-          await consumeResponseBody(result);
-        }
-      }
+      await Promise.all(Array.from(
+        { length: abortCount },
+        () => runAbortedMatchUpload(worker, token, userId, matchId, parsed, 10)
+      ));
       await waitForR2Locks(5, 100);
 
       const finalBalanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
