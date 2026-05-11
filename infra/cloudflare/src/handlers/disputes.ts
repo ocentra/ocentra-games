@@ -104,6 +104,75 @@ function validateEvidenceMetadataField(value: unknown, fieldName: string, requir
   return null;
 }
 
+function getMultipartBoundary(contentType: string): string | null {
+  const boundaryPart = contentType
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.toLowerCase().startsWith('boundary='));
+  const rawBoundary = boundaryPart?.slice('boundary='.length).trim();
+  if (!rawBoundary) {
+    return null;
+  }
+
+  const boundary = rawBoundary.startsWith('"') && rawBoundary.endsWith('"')
+    ? rawBoundary.slice(1, -1)
+    : rawBoundary;
+  if (!/^[A-Za-z0-9'()+_,./:=?-]{1,70}$/.test(boundary)) {
+    return null;
+  }
+
+  return boundary;
+}
+
+async function multipartBodyStartsWithBoundary(request: Request, boundary: string): Promise<boolean | null> {
+  const body = request.clone().body;
+  if (!body) {
+    return null;
+  }
+
+  const reader = body.getReader();
+  const expectedPrefix = `--${boundary}`;
+  const targetBytes = expectedPrefix.length;
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  try {
+    while (total < targetBytes) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      if (!value || value.byteLength === 0) {
+        continue;
+      }
+      const needed = targetBytes - total;
+      const slice = value.byteLength > needed ? value.slice(0, needed) : value;
+      chunks.push(slice);
+      total += slice.byteLength;
+    }
+  } catch (error) {
+    logWarn('[DISPUTES-EVIDENCE] Multipart boundary preflight failed', getStackTrace(), {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  } finally {
+    await reader.cancel().catch(() => undefined);
+  }
+
+  if (total < targetBytes) {
+    return false;
+  }
+
+  const prefixBytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    prefixBytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  return new TextDecoder().decode(prefixBytes) === expectedPrefix;
+}
+
 export async function handleDisputeRequest(
   request: Request,
   env: Env,
@@ -403,6 +472,34 @@ async function handleDisputeEvidenceUpload(
 
     if (!contentType.includes(HttpContentType.MultipartFormData)) {
       return new Response(JSON.stringify({ error: 'Content-Type must be multipart/form-data for evidence upload' }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const boundary = getMultipartBoundary(contentType);
+    if (!boundary) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Invalid multipart/form-data boundary',
+      }), {
+        status: HttpStatus.BadRequest,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          ...getCorsHeaders(env),
+        },
+      });
+    }
+
+    const bodyMatchesBoundary = await multipartBodyStartsWithBoundary(request, boundary);
+    if (bodyMatchesBoundary === false) {
+      return new Response(JSON.stringify({
+        error: ErrorMessage.BadRequest,
+        message: 'Multipart request body does not match declared boundary',
+      }), {
         status: HttpStatus.BadRequest,
         headers: {
           [HttpHeader.ContentType]: HttpContentType.ApplicationJson,

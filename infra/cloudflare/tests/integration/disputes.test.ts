@@ -471,6 +471,42 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       await response.text().catch(() => undefined);
     });
 
+  it(testName('Evidence Upload: should reject mismatched multipart boundary before parsing'), async () => {
+      const token = await createToken();
+      const disputeId = `test-dispute-evidence-boundary-${Date.now()}`;
+      const headerBoundary = 'header-boundary';
+      const bodyBoundary = 'body-boundary';
+      const body = [
+        `--${bodyBoundary}`,
+        `Content-Disposition: form-data; name="${FormField.MatchId}"`,
+        '',
+        TestConfig.TestMatchId,
+        `--${bodyBoundary}`,
+        `Content-Disposition: form-data; name="${FormField.Evidence}"`,
+        HttpHeader.ContentType + ': ' + HttpContentType.TextPlain,
+        '',
+        'evidence.txt',
+        `--${bodyBoundary}--`,
+        '',
+      ].join('\r\n');
+
+      const evidenceUrl = buildTestDisputesEvidenceApiUrl(disputeId);
+      const response = await worker.fetch(evidenceUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(TestConfig.TestUserId),
+          [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
+          [HttpHeader.ContentType]: `${HttpContentType.MultipartFormData}; boundary=${headerBoundary}`,
+        },
+        body,
+      }, token);
+
+      expect(response.status).toBe(HttpStatus.BadRequest);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe(ErrorMessage.BadRequest);
+      expect(data.message).toContain('boundary');
+    });
+
   it(testName('Evidence Upload: should reject file exceeding maximum size'), async () => {
       const token = await createToken();
       const disputeId = `test-dispute-evidence-size-${Date.now()}`;
