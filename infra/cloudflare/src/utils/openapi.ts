@@ -2393,23 +2393,21 @@ function createLobbyPaths() {
         tags: [OpenApiTag.Lobby],
         summary: 'List lobby rooms',
         description: 'Lists available lobby rooms or gets room details',
-        security: bearerAuthSecurity,
-        responses: withAuthErrors(
-          withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Room listing', {
-              type: OpenApiSchemaType.Object,
-              example: OpenApiExampleValue.LobbyRoomsResponse,
-              properties: {
-                rooms: {
-                  type: OpenApiSchemaType.Array,
-                  items: {
-                    type: OpenApiSchemaType.Object,
-                    example: OpenApiExampleValue.LobbyRoom,
-                  },
+        security: [],
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Room listing', {
+            type: OpenApiSchemaType.Object,
+            example: OpenApiExampleValue.LobbyRoomsResponse,
+            properties: {
+              rooms: {
+                type: OpenApiSchemaType.Array,
+                items: {
+                  type: OpenApiSchemaType.Object,
+                  example: OpenApiExampleValue.LobbyRoom,
                 },
               },
-            })
-          )
+            },
+          })
         ),
       },
       [OpenApiMethod.Post]: {
@@ -3685,14 +3683,12 @@ function createTournamentPaths() {
         tags: [OpenApiTag.Tournament],
         summary: 'Get tournament bracket',
         description: 'Retrieves the current tournament bracket',
-        security: bearerAuthSecurity,
+        security: [],
         parameters: [tournamentIdParameter],
-        responses: withAuthErrors(
-          withStandardErrors(
-            createJsonResponse(String(HttpStatus.Ok), 'Tournament bracket', {
-              type: OpenApiSchemaType.Object,
-            })
-          )
+        responses: withStandardErrors(
+          createJsonResponse(String(HttpStatus.Ok), 'Tournament bracket', {
+            type: OpenApiSchemaType.Object,
+          })
         ),
       },
     },

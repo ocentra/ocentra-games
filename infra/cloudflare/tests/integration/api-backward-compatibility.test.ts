@@ -10,11 +10,15 @@ import { QueryParam } from '@ocentra/endpoint-domain/constants/query';
 import { ResourceType } from '@ocentra/endpoint-domain/constants/resources';
 import { ErrorMessage } from '@ocentra/endpoint-domain/constants/errors';
 import { OpenApiParameterName } from '@ocentra/endpoint-domain/constants/openapi';
+import { TournamentDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
 import { flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
 type OpenApiDocument = {
   openapi: string;
-  paths: Record<string, unknown>;
+  paths: Record<string, Record<string, {
+    security?: unknown[];
+    responses?: Record<string, unknown>;
+  }>>;
 };
 
 describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
@@ -84,5 +88,32 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(pathKeys.includes(`/api/v1/matches/{${OpenApiParameterName.MatchId}}/anonymize`)).toBe(true);
     expect(pathKeys.includes(`/api/v1/disputes/{${OpenApiParameterName.DisputeId}}/evidence`)).toBe(true);
     expect(pathKeys.includes(`${ApiEndpoint.Leaderboard.Base}/{gameType}/user/{userId}`)).toBe(true);
+  });
+
+  it(testName('backward compatibility: OpenAPI marks public read endpoints without auth'), async () => {
+    const token = await createToken();
+    const response = await worker.fetch(
+      buildTestApiUrlForEndpoint(ApiEndpoint.OpenApiJson),
+      {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(),
+      },
+      token
+    );
+
+    expect(response.status).toBe(HttpStatus.Ok);
+    const parsed = (await response.json()) as OpenApiDocument;
+    const getMethod = HttpMethod.Get.toLowerCase();
+    const bracketPath = `${ApiEndpoint.Tournament.ById(`{${OpenApiParameterName.TournamentId}}`)}/${TournamentDOSegment.Bracket}`;
+    const publicOperations = [
+      parsed.paths[ApiEndpoint.Rooms.Base]?.[getMethod],
+      parsed.paths[bracketPath]?.[getMethod],
+    ];
+
+    for (const operation of publicOperations) {
+      expect(operation).toBeDefined();
+      expect(operation?.security).toEqual([]);
+      expect(operation?.responses?.[String(HttpStatus.Unauthorized)]).toBeUndefined();
+    }
   });
 });
