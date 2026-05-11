@@ -923,10 +923,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       const initialGP = initialData.gp_balance;
       await consumeResponseBody(initialBalance);
 
-      await Promise.all(Array.from(
-        { length: abortCount },
-        () => runAbortedMatchUpload(worker, token, userId, matchId, parsed, 10)
-      ));
+      for (let i = 0; i < abortCount; i += 1) {
+        await runAbortedMatchUpload(worker, token, userId, matchId, parsed, 10);
+      }
       await waitForR2Locks(5, 100);
 
       const finalBalanceUrl = buildCreditsApiUrl(userId, CreditAction.Balance);
