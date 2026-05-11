@@ -801,7 +801,15 @@ export function LobbyEmptyState({ x, y, w, h, title, body }: { x: number; y: num
 export function FrameTab({ x, y, count, label, active, onClick, wide = false }: { x: number; y: number; count: string; label: string; active: boolean; onClick: () => void; wide?: boolean }) {
   const labelW = wide ? 130 : 100;
   return (
-    <g className={`lobby-ui-hit ${active ? 'is-active' : ''}`} onClick={onClick} filter={active ? 'url(#lobbyCyanGlow)' : undefined}>
+    <g
+      className={`lobby-ui-hit ${active ? 'is-active' : ''}`}
+      onClick={onClick}
+      onKeyDown={(event) => handleSvgButtonKey(event, onClick)}
+      filter={active ? 'url(#lobbyCyanGlow)' : undefined}
+      role="button"
+      aria-label={label}
+      tabIndex={0}
+    >
       <path d={`M${x},${y + 38} V${y + 6} Q${x},${y} ${x + 6},${y} H${x + 34} Q${x + 40},${y} ${x + 40},${y + 6} V${y + 38} Z`} fill="url(#lobbyGold)" stroke="#ffec7a" strokeWidth="1" />
       <Txt x={x + 20} y={y + 24} text={count} maxWidth={24} size={13} weight="950" anchor="middle" />
       <path d={`M${x + 40},${y + 38} V${y + 7} Q${x + 40},${y} ${x + 47},${y} H${x + 40 + labelW - 7} Q${x + 40 + labelW},${y} ${x + 40 + labelW},${y + 7} V${y + 38} Z`} fill={active ? 'url(#lobbyFrameBlue)' : '#07152a'} stroke={active ? '#47caff' : '#254a6d'} strokeWidth="1" />

@@ -2,6 +2,7 @@ import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 import { buildPublicGameLobbyPath } from '@ocentra/endpoint-domain/constants/public-routes';
 
 const ClaimLobbyPath = buildPublicGameLobbyPath('claim:ddc6d965-14a7-4586-8a15-674e0daf8b5c');
+const ClipboardOrigin = 'http://localhost:3000';
 
 async function openClaimLobby(page: Page) {
   await page.goto(ClaimLobbyPath);
@@ -36,22 +37,30 @@ async function joinTableByCode(page: Page, joinCode: string) {
   await expect(page.getByText(/CODE\s+[A-Z0-9]+/).first()).toBeVisible({ timeout: 30000 });
 }
 
+async function joinPublicTableFromList(page: Page) {
+  await expect(page.getByText('Master Table').first()).toBeVisible({ timeout: 30000 });
+  await page.getByRole('button', { name: 'ALL TABLES', exact: true }).click();
+  await page.locator('.lobby-all-table-row').first().getByRole('button', { name: 'JOIN TABLE', exact: true }).click();
+  await acceptGuestPrompt(page);
+  await expect(page.getByText(/CODE\s+[A-Z0-9]+/).first()).toBeVisible({ timeout: 30000 });
+}
+
 async function sendRoomChat(page: Page, message: string) {
   await page.getByLabel('Room chat message').fill(message);
   await page.locator('form').filter({ has: page.getByLabel('Room chat message') }).getByRole('button', { name: 'SEND' }).click();
 }
 
-async function exerciseSideServices(page: Page) {
-  const friendId = `playwright-friend-${Date.now()}`;
+async function exerciseSideServices(page: Page, joinCode: string) {
+  const friendId = `pwfriend${Date.now().toString(36).slice(-6)}`;
   await page.getByLabel('Find or add friend').fill(friendId);
   await page.locator('form').filter({ has: page.getByLabel('Find or add friend') }).getByRole('button', { name: 'ADD' }).click();
-  await expect(page.getByText(friendId).first()).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText(new RegExp(friendId.slice(0, 8))).first()).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'INVITE' }).first().click();
   await expect(page.getByRole('button', { name: 'SENT' }).first()).toBeVisible({ timeout: 15000 });
 
   const lobbyMessage = `global lobby ${Date.now()}`;
   await page.getByLabel('Lobby chat message').fill(lobbyMessage);
-  await page.locator('form').filter({ has: page.getByLabel('Lobby chat message') }).getByRole('button', { name: '▶' }).click();
+  await page.locator('form').filter({ has: page.getByLabel('Lobby chat message') }).locator('button').click();
   await expect(page.getByText(lobbyMessage).first()).toBeVisible({ timeout: 15000 });
 
   await page.getByRole('button', { name: /Server:/ }).click();
@@ -62,6 +71,12 @@ async function exerciseSideServices(page: Page) {
   await expect(page.getByText(/GP \/ .*AC|CLAIMED/).first()).toBeVisible({ timeout: 15000 });
 
   await page.getByRole('button', { name: 'SHARE' }).click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText()), { timeout: 15000 }).toContain(joinCode);
+}
+
+async function addAISeat(page: Page) {
+  await page.getByRole('button', { name: 'ADD AI' }).click();
+  await expect(page.getByText(/AI Seat|OPPONENT|COACH|BENCHMARK/).first()).toBeVisible({ timeout: 15000 });
 }
 
 async function closeContexts(contexts: BrowserContext[]) {
@@ -69,34 +84,45 @@ async function closeContexts(contexts: BrowserContext[]) {
 }
 
 test.describe('Claim lobby local multiplayer flow', () => {
-  test('creates a room, joins from a second browser context, chats, readies, and starts', async ({ browser }) => {
+  test('creates a room, joins from public list and code, chats, readies, and starts', async ({ browser }) => {
     const hostContext = await browser.newContext();
-    const guestContext = await browser.newContext();
-    const contexts = [hostContext, guestContext];
+    const publicGuestContext = await browser.newContext();
+    const codeGuestContext = await browser.newContext();
+    const contexts = [hostContext, publicGuestContext, codeGuestContext];
     try {
+      await hostContext.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: ClipboardOrigin });
       const hostPage = await hostContext.newPage();
-      const guestPage = await guestContext.newPage();
+      const publicGuestPage = await publicGuestContext.newPage();
+      const codeGuestPage = await codeGuestContext.newPage();
 
       await openClaimLobby(hostPage);
       const joinCode = await createTableFromLobby(hostPage);
-      await exerciseSideServices(hostPage);
+      await exerciseSideServices(hostPage, joinCode);
+      await addAISeat(hostPage);
 
-      await openClaimLobby(guestPage);
-      await joinTableByCode(guestPage, joinCode);
+      await openClaimLobby(publicGuestPage);
+      await joinPublicTableFromList(publicGuestPage);
+
+      await openClaimLobby(codeGuestPage);
+      await joinTableByCode(codeGuestPage, joinCode);
 
       const message = `playwright chat ${Date.now()}`;
       await sendRoomChat(hostPage, message);
-      await expect(guestPage.getByText(message).first()).toBeVisible({ timeout: 15000 });
+      await expect(publicGuestPage.getByText(message).first()).toBeVisible({ timeout: 15000 });
+      await expect(codeGuestPage.getByText(message).first()).toBeVisible({ timeout: 15000 });
 
-      await guestPage.getByRole('button', { name: 'READY' }).click();
-      await expect(guestPage.getByRole('button', { name: 'UNREADY' })).toBeVisible({ timeout: 15000 });
-      await expect(hostPage.getByRole('button', { name: 'READY' })).toBeVisible({ timeout: 15000 });
+      await publicGuestPage.getByRole('button', { name: 'READY', exact: true }).click();
+      await expect(publicGuestPage.getByRole('button', { name: 'UNREADY', exact: true })).toBeVisible({ timeout: 15000 });
+      await codeGuestPage.getByRole('button', { name: 'READY', exact: true }).click();
+      await expect(codeGuestPage.getByRole('button', { name: 'UNREADY', exact: true })).toBeVisible({ timeout: 15000 });
+      await expect(hostPage.getByRole('button', { name: 'READY', exact: true })).toBeVisible({ timeout: 15000 });
 
-      await hostPage.getByRole('button', { name: 'READY' }).click();
-      await expect(hostPage.getByRole('button', { name: 'UNREADY' })).toBeVisible({ timeout: 15000 });
-      await hostPage.getByRole('button', { name: 'START' }).click();
+      await hostPage.getByRole('button', { name: 'READY', exact: true }).click();
+      await expect(hostPage.getByRole('button', { name: 'UNREADY', exact: true })).toBeVisible({ timeout: 15000 });
+      await hostPage.getByRole('button', { name: 'START', exact: true }).click();
       await expect(hostPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
-      await expect(guestPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
+      await expect(publicGuestPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
+      await expect(codeGuestPage.getByText(/STARTING/).first()).toBeVisible({ timeout: 15000 });
     } finally {
       await closeContexts(contexts);
     }

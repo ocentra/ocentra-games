@@ -197,7 +197,7 @@ function createRoomDraftFromCard(card: FeaturedCardData, options: {
 } = {}): LobbyCreateRoomDraft {
   const maxPlayers = parsedPlayerCount(options.players ?? card.players, 4);
   const stakeType = stakeTypeForLabel(options.entry ?? card.entry ?? 'Free') ?? 'free';
-  const allowAI = options.aiPolicy !== 'Banned' && Boolean(card.ai || options.aiCount);
+  const allowAI = options.aiPolicy !== 'Banned';
   return {
     presetKey: card.presetKey,
     roomName: options.roomName ?? card.title,
