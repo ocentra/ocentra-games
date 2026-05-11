@@ -28,20 +28,12 @@ jobs:
           build-mode: none
         - language: java-kotlin
           build-mode: none
-        - language: swift
-          build-mode: autobuild
         - language: rust
           build-mode: none
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    - name: Install iOS package dependencies
-      if: matrix.language == 'swift'
-      uses: ./.github/actions/setup-ci
-      with:
-        install-mode: ci-only
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4

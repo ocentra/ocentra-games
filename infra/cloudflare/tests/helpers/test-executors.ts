@@ -22,6 +22,20 @@ export interface TestResult {
   error?: string;
 }
 
+function methodAllowsBody(method: HttpMethod): boolean {
+  return method !== HttpMethod.Get && method !== HttpMethod.Head;
+}
+
+function selectTestMethod(endpoint: EndpointConfig): HttpMethod {
+  if (endpoint.supportsBody) {
+    const bodyMethod = endpoint.methods.find(methodAllowsBody);
+    if (bodyMethod) {
+      return bodyMethod;
+    }
+  }
+  return endpoint.methods[0] || HttpMethod.Get;
+}
+
 export function buildTestUrl(
   endpoint: EndpointConfig,
   baseUrl: string,
@@ -60,7 +74,7 @@ export function buildTestRequest(
   paramName: string,
   baseUrl: string
 ): TestRequest {
-  const method = endpoint.methods[0] || HttpMethod.Get;
+  const method = selectTestMethod(endpoint);
   const headers: Record<string, string> = {
     [HttpHeader.Origin]: TestConfig.TestCorsOrigin,
   };
@@ -122,7 +136,7 @@ export function buildTestRequest(
     url,
     method,
     headers,
-    body: endpoint.supportsBody ? JSON.stringify({ test: 'data' }) : undefined,
+    body: endpoint.supportsBody && methodAllowsBody(method) ? JSON.stringify({ test: 'data' }) : undefined,
   };
 }
 
