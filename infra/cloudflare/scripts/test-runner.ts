@@ -7,7 +7,7 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
-const DEFAULT_LOG_BRIDGE_URL = 'https://ocentra-log-bridge.ocentra.ca';
+const DEFAULT_LOG_BRIDGE_URL = PUBLIC_TUNNEL_BRIDGE_URL;
 
 function checkBridgeRunning(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -38,6 +38,7 @@ import { VitestConfigFile } from '../src/constants/vitest-config.js';
 import { runSuiteTypeCollector } from '../test-runner/script/lib/suite-type-collector.js';
 import { getSuiteTypeWithFallback } from '../test-runner/script/lib/suite-type-map.js';
 import { notifyBridgeRunStarted } from '@ocentra/logging-domain/transport/bridgeTransport';
+import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

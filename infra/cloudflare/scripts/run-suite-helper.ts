@@ -30,6 +30,7 @@ import {
 } from '../test-runner/script/lib/suite-type-map.js';
 import * as http from 'http';
 import { notifyBridgeRunStarted } from '@ocentra/logging-domain/transport/bridgeTransport';
+import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -339,7 +340,7 @@ const SKIP_BRIDGE_CHECK_ENV = 'SKIP_BRIDGE_CHECK';
 const SKIP_LIVE_DUCKDB_ENV = 'SKIP_DUCKDB_LIVE_RUN_INSERT';
 const LOG_BRIDGE_URL_ENV = 'LOG_BRIDGE_URL';
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
-const DEFAULT_LOG_BRIDGE_URL = 'https://ocentra-log-bridge.ocentra.ca';
+const DEFAULT_LOG_BRIDGE_URL = PUBLIC_TUNNEL_BRIDGE_URL;
 
 function getBridgeBaseUrl(): string {
   const value = process.env[LOG_BRIDGE_URL_ENV]?.trim();
