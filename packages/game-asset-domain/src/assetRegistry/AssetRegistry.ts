@@ -346,7 +346,7 @@ export class AssetRegistry extends ScriptableSingleton implements IAssetRegistry
   }
 
   private static async onGenerateUniqueGuidEvent(event: GenerateUniqueGuidEvent): Promise<void> {
-    if (event.targetHandler && (event.targetHandler as unknown) !== AssetRegistryHandlerMarker) {
+    if ('targetHandler' in event && event.targetHandler && (event.targetHandler as unknown) !== AssetRegistryHandlerMarker) {
       return;
     }
     try {
