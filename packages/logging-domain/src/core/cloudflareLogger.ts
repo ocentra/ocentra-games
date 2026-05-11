@@ -448,9 +448,10 @@ export class CloudflareLogger extends BaseLogger {
     if (!finalEndpoint) return;
     const sendPromise = sendToBridge(entries, finalEndpoint);
     this.pendingBridgeSends.add(sendPromise);
-    sendPromise.finally(() => {
-      this.pendingBridgeSends.delete(sendPromise);
-    });
+    sendPromise.then(
+      () => this.pendingBridgeSends.delete(sendPromise),
+      () => this.pendingBridgeSends.delete(sendPromise)
+    );
     try {
       await sendPromise;
     } catch (err) {

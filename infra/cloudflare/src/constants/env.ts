@@ -50,6 +50,7 @@ export interface Env {
   EMERGENCY_SHUTDOWN?: string;
   /** Minimum log level: "debug", "info", "warn", "error" */
   LOG_LEVEL?: string;
+  LOG_BRIDGE_URL?: string;
   /** Error log sample rate 0–1 (prod free plan: 0.1) */
   ERROR_LOG_SAMPLE_RATE?: string;
   /** Warn log sample rate 0–1 (prod free plan: 0.1) */

@@ -339,10 +339,11 @@ const SKIP_BRIDGE_CHECK_ENV = 'SKIP_BRIDGE_CHECK';
 const SKIP_LIVE_DUCKDB_ENV = 'SKIP_DUCKDB_LIVE_RUN_INSERT';
 const LOG_BRIDGE_URL_ENV = 'LOG_BRIDGE_URL';
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
-const LOCAL_BRIDGE_URL = 'http://127.0.0.1:8765';
+const DEFAULT_LOG_BRIDGE_URL = 'https://ocentra-log-bridge.ocentra.ca';
 
 function getBridgeBaseUrl(): string {
-  return process.env[LOG_BRIDGE_URL_ENV] ?? LOCAL_BRIDGE_URL;
+  const value = process.env[LOG_BRIDGE_URL_ENV]?.trim();
+  return value || DEFAULT_LOG_BRIDGE_URL;
 }
 
 function checkBridgeHealthy(): Promise<boolean> {
@@ -435,7 +436,7 @@ async function ensureBridgeAndWipe(type: Type, mode: Mode, testFile?: string): P
     console.error('============================================================');
     process.exit(1);
   }
-  process.env[LOG_BRIDGE_URL_ENV] = LOCAL_BRIDGE_URL;
+  process.env[LOG_BRIDGE_URL_ENV] = getBridgeBaseUrl();
   runScopedWipe(type, mode, testFile);
   if (!process.env[SKIP_BRIDGE_CHECK_ENV]) process.env[SKIP_BRIDGE_CHECK_ENV] = '1';
 }

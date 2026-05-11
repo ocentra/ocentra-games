@@ -31,6 +31,26 @@ const DEBUG_LOG_FILE_NAME = 'test.json';
 
 const loggerBackendFailureBuffer: { message: string; error: unknown; at: number }[] = [];
 const LoggerBackendFailureBufferMax = 50;
+type LogBridgeEnv = { LOG_BRIDGE_URL?: string };
+type LoggerInitEnv = LogBridgeEnv & {
+  ERROR_LOG_SAMPLE_RATE?: string;
+  WARN_LOG_SAMPLE_RATE?: string;
+  ERROR_LOGGING_DISABLED?: string;
+};
+
+function cleanBridgeEndpoint(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function getProcessBridgeEndpoint(): string | undefined {
+  const processLike = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
+  return cleanBridgeEndpoint(processLike?.env?.LOG_BRIDGE_URL);
+}
+
+function getBridgeEndpoint(env?: LogBridgeEnv): string | undefined {
+  return cleanBridgeEndpoint(env?.LOG_BRIDGE_URL) ?? getProcessBridgeEndpoint();
+}
 
 function loggerBackendFailureFallback(message: string, error: unknown): void {
   loggerBackendFailureBuffer.push({ message, error, at: Date.now() });
@@ -247,7 +267,7 @@ export function initLogger(
   env?: string,
   testModeEnv?: string,
   logLevel?: string,
-  _fullEnv?: { ERROR_LOG_SAMPLE_RATE?: string; WARN_LOG_SAMPLE_RATE?: string; ERROR_LOGGING_DISABLED?: string }
+  fullEnv?: LoggerInitEnv
 ): void {
   analyticsBinding = analytics || null;
   r2Bucket = bucket || null;
@@ -279,6 +299,7 @@ export function initLogger(
     clearDebugLogsFromR2,
     getLogsArray,
   });
+  const bridgeEndpoint = getBridgeEndpoint(fullEnv);
 
   CloudflareLogger.initLogger(
     pathResolver,
@@ -291,6 +312,7 @@ export function initLogger(
         batchSize: 30,
         flushInterval: 100,
       },
+      ...(bridgeEndpoint ? { bridgeEndpoint } : {}),
       bridgeConsumer: LogConsumer.Cloudflare,
     }
   );
@@ -343,6 +365,7 @@ function createTestLogger(): void {
     clearDebugLogsFromR2,
     getLogsArray
   });
+  const bridgeEndpoint = getBridgeEndpoint();
 
   CloudflareLogger.initLogger(
     pathResolver,
@@ -358,6 +381,7 @@ function createTestLogger(): void {
         batchSize: 30,
         flushInterval: 100,
       },
+      ...(bridgeEndpoint ? { bridgeEndpoint } : {}),
       bridgeConsumer: LogConsumer.Cloudflare,
     }
   );

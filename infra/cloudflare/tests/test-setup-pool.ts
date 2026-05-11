@@ -58,6 +58,7 @@ export function setSetupContext(testName: string, suitePath: string): SetupConte
   ctx.suiteType = suiteType;
   ctx.runType = runType;
   ctx.origin = TestLogOrigin.Test;
+  ctx.testLogServerUrl = process.env.LOG_BRIDGE_URL;
   setCurrentContext(ctx);
 
   const token = createSetupContextToken(ctx);
@@ -67,6 +68,10 @@ export function setSetupContext(testName: string, suitePath: string): SetupConte
 
 const REQUIRED_BINDINGS = ['TEST_MODE', 'ENVIRONMENT', 'CORS_ORIGIN'] as const;
 const envRecord = env as Record<string, unknown>;
+const bridgeUrlBinding = typeof envRecord.LOG_BRIDGE_URL === 'string' ? envRecord.LOG_BRIDGE_URL.trim() : '';
+if (bridgeUrlBinding && typeof process !== 'undefined' && process.env) {
+  process.env.LOG_BRIDGE_URL = bridgeUrlBinding;
+}
 const missingBindings = REQUIRED_BINDINGS.filter((b) => envRecord[b] === undefined);
 
 if (missingBindings.length > 0) {

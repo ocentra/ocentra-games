@@ -46,6 +46,7 @@ export const TestWorkerBindings: Record<string, string> = {
   ENVIRONMENT: 'development',
   CORS_ORIGIN: 'http://localhost:5173',
   LOG_LEVEL: 'info',
+  LOG_BRIDGE_URL: pickVar('LOG_BRIDGE_URL', 'https://ocentra-log-bridge.ocentra.ca'),
   ADMIN_USER_IDS: 'test-admin-user,admin-user',
   FIREBASE_PROJECT_ID: 'claim-b020c',
   SIGNED_URL_SECRET: 'test-secret-key-for-development-only-change-in-production',

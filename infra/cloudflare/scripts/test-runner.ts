@@ -7,7 +7,7 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
-const LOCAL_BRIDGE_URL = 'http://127.0.0.1:8765';
+const DEFAULT_LOG_BRIDGE_URL = 'https://ocentra-log-bridge.ocentra.ca';
 
 function checkBridgeRunning(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -298,7 +298,7 @@ async function main(): Promise<number> {
       process.exit(1);
     }
   }
-  process.env.LOG_BRIDGE_URL = LOCAL_BRIDGE_URL;
+  process.env.LOG_BRIDGE_URL = process.env.LOG_BRIDGE_URL?.trim() || DEFAULT_LOG_BRIDGE_URL;
 
   buildLoggingDomain();
 
@@ -331,7 +331,7 @@ async function main(): Promise<number> {
   const resolvedRunType = env[TestEnvVar.TestRunType] ?? RunType.SinglePool;
   const resolvedSuiteType = env[TestEnvVar.TestSuiteType] ?? '';
   if (resolvedRunId) {
-    await notifyBridgeRunStarted(process.env.LOG_BRIDGE_URL ?? LOCAL_BRIDGE_URL, {
+    await notifyBridgeRunStarted(process.env.LOG_BRIDGE_URL ?? DEFAULT_LOG_BRIDGE_URL, {
       runId: resolvedRunId,
       runType: resolvedRunType,
       suiteType: resolvedSuiteType || undefined,
