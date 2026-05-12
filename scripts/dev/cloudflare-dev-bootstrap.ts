@@ -41,6 +41,8 @@ export type ManagedProcessRegistry = {
 
 type EnsureLocalCloudflareWorkerOptions = {
   skipDependencyPrep?: boolean;
+  waitForAssetSeed?: boolean;
+  requireAssetVerify?: boolean;
 };
 
 export function createManagedProcessRegistry(): ManagedProcessRegistry {
@@ -430,24 +432,45 @@ async function seedProductsViaWorker(baseUrl: string, log: (message: string) => 
 async function ensureSeeds(
   baseUrl: string,
   log: (message: string) => void,
-  registry: ManagedProcessRegistry
+  registry: ManagedProcessRegistry,
+  options: Pick<EnsureLocalCloudflareWorkerOptions, 'waitForAssetSeed' | 'requireAssetVerify'> = {}
 ): Promise<void> {
   const startedAt = Date.now();
   log('Starting asset seeding in background (Vite will start in parallel).');
-  spawnManaged(
+  const assetSeedEnv: Record<string, string> = {
+    ASSETS_VERIFY_BASE_URL: baseUrl,
+    SEED_ASSETS_CONTINUE_ON_ERROR: options.requireAssetVerify ? '0' : '1',
+  };
+  if (options.requireAssetVerify) {
+    assetSeedEnv.SEED_ASSETS_REQUIRE_VERIFY = '1';
+  }
+  const assetSeed = spawnManaged(
     registry,
     'npx',
     ['tsx', 'scripts/seed-assets-local.ts'],
     GAME_WORKER_DIR,
     'seed-assets-local',
-    {
-      ASSETS_VERIFY_BASE_URL: baseUrl,
-      SEED_ASSETS_CONTINUE_ON_ERROR: '1',
-    }
+    assetSeedEnv
   );
+  const assetSeedExit = new Promise<void>((resolve, reject) => {
+    assetSeed.once('error', reject);
+    assetSeed.once('exit', (code) => {
+      if (code === 0 || code === null) {
+        resolve();
+      } else {
+        reject(new Error(`Asset seed exited with code ${code}.`));
+      }
+    });
+  });
+  if (!options.waitForAssetSeed) {
+    assetSeedExit.catch(() => undefined);
+  }
 
   if (isProductSeedCacheValid()) {
     log('Product/KV seed skipped (cache hit).');
+    if (options.waitForAssetSeed) {
+      await assetSeedExit;
+    }
     log(`Local seeding stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
     return;
   }
@@ -456,6 +479,9 @@ async function ensureSeeds(
   seedAiCatalog(log);
   await seedProductsViaWorker(baseUrl, log);
   writeProductSeedCache();
+  if (options.waitForAssetSeed) {
+    await assetSeedExit;
+  }
   log(`Local seeding stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
 }
 
@@ -468,7 +494,7 @@ export async function ensureLocalCloudflareWorker(
   const existingHealthy = await isWorkerHealthy(GAME_WORKER_BASE);
   if (existingHealthy) {
     log(`Reusing existing claim-storage worker on port ${GAME_WORKER_PORT}.`);
-    await ensureSeeds(GAME_WORKER_BASE, log, registry);
+    await ensureSeeds(GAME_WORKER_BASE, log, registry, options);
     log(`Cloudflare worker stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
     return { workerBase: GAME_WORKER_BASE, reused: true };
   }
@@ -478,7 +504,7 @@ export async function ensureLocalCloudflareWorker(
       const healthy = await isWorkerHealthy(GAME_WORKER_BASE);
       if (healthy) {
         log(`Reusing existing claim-storage worker on port ${GAME_WORKER_PORT} (health confirmed after port check).`);
-        await ensureSeeds(GAME_WORKER_BASE, log, registry);
+        await ensureSeeds(GAME_WORKER_BASE, log, registry, options);
         log(`Cloudflare worker stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
         return { workerBase: GAME_WORKER_BASE, reused: true };
       }
@@ -546,7 +572,7 @@ export async function ensureLocalCloudflareWorker(
     throw new Error('Claim-storage worker did not become healthy in time.');
   }
 
-  await ensureSeeds(GAME_WORKER_BASE, log, registry);
+  await ensureSeeds(GAME_WORKER_BASE, log, registry, options);
 
   log(`Cloudflare worker stage completed in ${formatDurationMs(Date.now() - startedAt)}.`);
   return { workerBase: GAME_WORKER_BASE, reused: false };

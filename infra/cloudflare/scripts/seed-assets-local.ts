@@ -389,6 +389,7 @@ async function main(): Promise<void> {
   const verifyBaseUrl = localMode ? (process.env.ASSETS_VERIFY_BASE_URL || '').trim() : '';
   const useWorkerAssetApiEnv = (process.env.ASSETS_USE_WORKER_PUT || '').trim();
   const useWorkerAssetApi = localMode && verifyBaseUrl.length > 0 && useWorkerAssetApiEnv !== '0';
+  const requireVerify = localMode && process.env.SEED_ASSETS_REQUIRE_VERIFY === '1';
 
   await buildAppAssetSlices({
     repoRoot,
@@ -515,6 +516,9 @@ async function main(): Promise<void> {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      if (requireVerify) {
+        throw new Error(`bucket verification failed: ${message}`);
+      }
       console.warn(`[seed-assets-${modeLabel}] bucket verification skipped: ${message}`);
     }
   }

@@ -200,6 +200,17 @@ function setDefaultEnv(name: string, value: string): void {
   }
 }
 
+function configureLocalWorkerBuildEnv(workerBase: string): void {
+  const normalizedWorkerBase = workerBase.replace(/\/$/, '');
+  process.env.VITE_CLAIM_STORAGE_URL = workerBase;
+  process.env.VITE_R2_WORKER_URL = workerBase;
+  process.env.VITE_ASSETS_WORKER_URL = workerBase;
+  process.env.VITE_ASSETS_PUBLIC_URL = `${normalizedWorkerBase}${ApiEndpoint.Assets.Base}`;
+  process.env.VITE_MAIN_REAL_CLAIM_STORAGE_URL = workerBase;
+  process.env.VITE_MAIN_REAL_ASSETS_PUBLIC_URL = `${normalizedWorkerBase}${ApiEndpoint.Assets.Base}`;
+  process.env.VITE_MAIN_ASSET_TARGET_FORCE = 'local-dev';
+}
+
 function configureRemoteBuildEnv(syncEnv: RemoteAssetSyncEnv): void {
   const workerUrl = resolveRemoteWorkerUrl(syncEnv);
   const assetsListUrl = `${workerUrl}${ApiEndpoint.Assets.List}`;
@@ -269,21 +280,20 @@ async function main(): Promise<void> {
 
   try {
     const pagesParity = hasFlag('--pages');
+    const withWorker = hasFlag('--with-worker');
     const syncEnv = parseRemoteAssetSyncEnv();
 
-    if (hasFlag('--with-worker')) {
+    if (withWorker) {
       log('Preparing workspace dependencies with Turbo...');
       ensureTurboDevPrep('main', (message) => log(message));
 
       log('Starting local Cloudflare worker + seed...');
-      const { workerBase } = await ensureLocalCloudflareWorker(registry, (message) => log(message), { skipDependencyPrep: true });
-      process.env.VITE_CLAIM_STORAGE_URL = workerBase;
-      process.env.VITE_R2_WORKER_URL = workerBase;
-      process.env.VITE_ASSETS_WORKER_URL = workerBase;
-      process.env.VITE_ASSETS_PUBLIC_URL = `${workerBase.replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`;
-      process.env.VITE_MAIN_REAL_CLAIM_STORAGE_URL = workerBase;
-      process.env.VITE_MAIN_REAL_ASSETS_PUBLIC_URL = `${workerBase.replace(/\/$/, '')}${ApiEndpoint.Assets.Base}`;
-      process.env.VITE_MAIN_ASSET_TARGET_FORCE = 'local-dev';
+      const { workerBase } = await ensureLocalCloudflareWorker(registry, (message) => log(message), {
+        skipDependencyPrep: true,
+        waitForAssetSeed: pagesParity,
+        requireAssetVerify: pagesParity,
+      });
+      configureLocalWorkerBuildEnv(workerBase);
     }
 
     if (syncEnv) {
@@ -300,6 +310,16 @@ async function main(): Promise<void> {
         stdio: 'inherit',
         env: process.env,
       });
+    }
+
+    if (withWorker && pagesParity) {
+      log('Rechecking local Cloudflare worker after production build...');
+      const { workerBase } = await ensureLocalCloudflareWorker(registry, (message) => log(message), {
+        skipDependencyPrep: true,
+        waitForAssetSeed: true,
+        requireAssetVerify: true,
+      });
+      configureLocalWorkerBuildEnv(workerBase);
     }
 
     const portRaw = pagesParity
