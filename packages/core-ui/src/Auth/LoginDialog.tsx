@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   authAnnonImageUrl,
   authFacebookImageUrl,
@@ -7,6 +7,7 @@ import {
 import { avatarImageById } from '@ocentra/app-assets/avatars';
 import {
   CyberAuthSurface,
+  normalizeAuthPageSvgControls,
   type AuthPageSvgControls,
 } from './CyberAuthSurface';
 import './LoginDialog.css';
@@ -414,12 +415,25 @@ export function LoginDialog({
       setValidationErrors({ ...validationErrors, confirmPassword: undefined });
     }
   };
+  const normalizedLayoutControls = useMemo(
+    () => normalizeAuthPageSvgControls(layoutControls),
+    [layoutControls],
+  );
+  const cyberShellStyle = useMemo(() => ({
+    '--login-cyber-overlay-opacity': normalizedLayoutControls.dialogOverlayOpacity,
+    '--login-cyber-backdrop-blur': `${normalizedLayoutControls.dialogBackdropBlur}px`,
+    '--login-cyber-backdrop-saturate': normalizedLayoutControls.dialogBackdropSaturate,
+    '--login-cyber-fade-ms': `${normalizedLayoutControls.dialogFadeMs}ms`,
+    '--login-cyber-form-max-w': `${normalizedLayoutControls.dialogFormMaxWRem}rem`,
+    '--login-cyber-svg-max-w': `${normalizedLayoutControls.dialogSvgMaxWRem}rem`,
+    '--login-cyber-svg-max-h': `${normalizedLayoutControls.dialogSvgMaxHRem}rem`,
+  }) as CSSProperties, [normalizedLayoutControls]);
 
   return (
-    <div className="login-dialog-overlay login-dialog-overlay--cyber">
+    <div className="login-dialog-overlay login-dialog-overlay--cyber" style={cyberShellStyle}>
       <form className={`login-cyber-form login-cyber-form--${introTone}`} onSubmit={handleSubmit}>
         <CyberAuthSurface
-          layoutControls={layoutControls}
+          layoutControls={normalizedLayoutControls}
           mode={isSignIn ? 'signin' : 'signup'}
           signUpEnabled={signUpEnabled}
           canSendPasswordReset={Boolean(onSendPasswordReset && !disableCredentials)}

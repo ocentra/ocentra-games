@@ -88,9 +88,38 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
+      - name: Smoke Cloudflare Pages runtime locally
+        shell: bash
+        run: npm run validate:pages:dist
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=ocentra-games --branch=${{ inputs.branch }}
+
+      - name: Smoke deployed Pages HTML
+        shell: bash
+        run: |
+          if [ "${{ inputs.branch }}" = "production" ]; then
+            URL="https://ocentra-games.pages.dev/"
+          else
+            URL="https://${{ inputs.branch }}.ocentra-games.pages.dev/"
+          fi
+
+          for attempt in {1..12}; do
+            : > /tmp/ocentra-pages.html
+            HTTP_CODE=$(curl -L -sS -o /tmp/ocentra-pages.html -w "%{http_code}" "$URL" || true)
+            BYTE_COUNT=$(wc -c < /tmp/ocentra-pages.html | tr -d ' ')
+            echo "Pages smoke attempt ${attempt}: url=${URL} status=${HTTP_CODE} bytes=${BYTE_COUNT}"
+            if [ "$HTTP_CODE" = "200" ] && [ "$BYTE_COUNT" -gt 1000 ] && grep -q '<div id="root"' /tmp/ocentra-pages.html; then
+              exit 0
+            fi
+            sleep 10
+          done
+
+          echo "Cloudflare Pages deployment did not serve a non-empty app shell at ${URL}."
+          echo "Last response:"
+          cat /tmp/ocentra-pages.html || true
+          exit 1

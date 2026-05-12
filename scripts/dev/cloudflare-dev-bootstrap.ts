@@ -138,7 +138,11 @@ export function spawnManaged(
 export function killManagedProcesses(registry: ManagedProcessRegistry): void {
   for (const proc of registry.processes) {
     try {
-      proc.kill('SIGTERM');
+      if (isWindows && proc.pid) {
+        execSync(`taskkill /PID ${proc.pid} /T /F`, { stdio: 'ignore' });
+      } else {
+        proc.kill('SIGTERM');
+      }
     } catch {
       // ignore
     }

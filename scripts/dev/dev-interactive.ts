@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
 import { execSync, spawn } from 'child_process';
-import { createWriteStream, mkdirSync, existsSync } from 'fs';
+import { createWriteStream, mkdirSync, existsSync, readFileSync } from 'fs';
 import { createInterface } from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import { CloudflareLocalConfig } from '@ocentra/endpoint-domain/constants/local';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { OpenApiServer } from '@ocentra/endpoint-domain/constants/openapi';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -13,9 +16,9 @@ const TEMP_DIR = path.join(ROOT, '.temp');
 const LOG_FILE = path.join(TEMP_DIR, 'dev-output.log');
 
 type Target = 'web' | 'tauri' | 'android' | 'ios';
-type Backend = 'local' | 'production' | 'none';
+type Backend = 'local' | 'development' | 'production' | 'none';
 type AndroidMode = 'studio' | 'emulator';
-type WebFrontendMode = 'dev' | 'preview';
+type WebFrontendMode = 'dev' | 'preview' | 'pages';
 
 function question(rl: ReturnType<typeof createInterface>, prompt: string): Promise<string> {
   return new Promise((resolve) => {
@@ -25,6 +28,91 @@ function question(rl: ReturnType<typeof createInterface>, prompt: string): Promi
 
 function timestamp(): string {
   return new Date().toISOString().replace('T', ' ').slice(0, 19);
+}
+
+function applyDotenvFile(filePath: string): void {
+  if (!existsSync(filePath)) return;
+  const parsed = dotenv.parse(readFileSync(filePath, 'utf8'));
+  for (const [key, value] of Object.entries(parsed)) {
+    const existing = process.env[key];
+    if (existing === undefined || String(existing).trim().length === 0) {
+      process.env[key] = value;
+    }
+  }
+}
+
+function normalizeUrl(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  return trimmed.replace(/\/+$/, '');
+}
+
+function stripKnownAssetPath(value: string): string {
+  const normalized = normalizeUrl(value);
+  if (!normalized) return value;
+  const suffixes = [
+    ApiEndpoint.Assets.List,
+    ApiEndpoint.Assets.Base,
+  ].sort((a, b) => b.length - a.length);
+  for (const suffix of suffixes) {
+    if (normalized.endsWith(suffix)) {
+      return normalized.slice(0, -suffix.length);
+    }
+  }
+  return normalized;
+}
+
+function isLocalWorkerUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.hostname === '127.0.0.1'
+      || parsed.hostname === 'localhost'
+      || parsed.hostname === '0.0.0.0'
+      || parsed.hostname === '::1';
+  } catch {
+    return false;
+  }
+}
+
+function firstEnvValue(keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = normalizeUrl(process.env[key]);
+    if (value) return value;
+  }
+  return undefined;
+}
+
+function resolveRemoteWorkerUrl(backend: Exclude<Backend, 'local' | 'none'>): string {
+  const configured = backend === 'development'
+    ? firstEnvValue([
+      'CLAIM_STORAGE_WORKER_URL_DEV',
+      'CLAIM_STORAGE_ASSETS_URL_DEV',
+      'ASSETS_WORKER_URL_DEV',
+      'VITE_CLAIM_STORAGE_URL_DEV',
+      'VITE_ASSETS_WORKER_URL_DEV',
+      'VITE_MAIN_DEV_CLAIM_STORAGE_URL',
+      'VITE_MAIN_DEV_ASSETS_WORKER_URL',
+    ])
+    : firstEnvValue([
+      'CLAIM_STORAGE_WORKER_URL_PROD',
+      'CLAIM_STORAGE_ASSETS_URL_PROD',
+      'ASSETS_WORKER_URL_PROD',
+      'VITE_CLAIM_STORAGE_URL_PROD',
+      'VITE_ASSETS_WORKER_URL_PROD',
+      'VITE_MAIN_PROD_CLAIM_STORAGE_URL',
+      'VITE_MAIN_PROD_ASSETS_WORKER_URL',
+    ]);
+  const url = stripKnownAssetPath(
+    configured ?? (backend === 'development' ? OpenApiServer.Development : OpenApiServer.Production)
+  );
+
+  if (!url) {
+    throw new Error(`Missing explicit ${backend} Cloudflare worker URL.`);
+  }
+  if (isLocalWorkerUrl(url)) {
+    throw new Error(`Refusing to use local URL for ${backend} Cloudflare backend: ${url}`);
+  }
+  return url;
 }
 
 type OutputChoice = { teeToFile: boolean; profile: boolean };
@@ -45,8 +133,11 @@ async function promptLaunchPreset(
   console.log('    1) web preview + local worker/seed + log + profile');
   console.log('    2) web dev (HMR) + local worker/seed + log + profile');
   console.log('    3) tauri + local worker/seed + log + profile');
-  console.log('    4) normal (custom choices)');
-  const raw = await question(rl, '  Choose (1-4): ');
+  console.log('    4) Cloudflare Pages parity + local worker/seed + log + profile');
+  console.log('    5) Cloudflare Pages parity + Cloudflare dev sync/backend + log + profile');
+  console.log('    6) Cloudflare Pages parity + Cloudflare production sync/backend + log + profile');
+  console.log('    7) normal (custom choices)');
+  const raw = await question(rl, '  Choose (1-7): ');
   if (raw === '1') {
     return {
       target: 'web',
@@ -67,6 +158,30 @@ async function promptLaunchPreset(
     return {
       target: 'tauri',
       backend: 'local',
+      output: { teeToFile: true, profile: true },
+    };
+  }
+  if (raw === '4') {
+    return {
+      target: 'web',
+      webMode: 'pages',
+      backend: 'local',
+      output: { teeToFile: true, profile: true },
+    };
+  }
+  if (raw === '5') {
+    return {
+      target: 'web',
+      webMode: 'pages',
+      backend: 'development',
+      output: { teeToFile: true, profile: true },
+    };
+  }
+  if (raw === '6') {
+    return {
+      target: 'web',
+      webMode: 'pages',
+      backend: 'production',
       output: { teeToFile: true, profile: true },
     };
   }
@@ -120,11 +235,13 @@ async function promptBackend(
   }
   console.log('\n  Backend:');
   console.log('    1) local      - Start worker + seed, use localhost:8787');
-  console.log('    2) production - Use VITE_CLAIM_STORAGE_URL from .env (no worker)');
-  console.log('    3) none       - Vite only, no backend (API calls will fail)');
-  const raw = await question(rl, '  Choose (1-3): ');
-  if (raw === '2') return 'production';
-  if (raw === '3') return 'none';
+  console.log('    2) development - Use Cloudflare dev Worker/R2');
+  console.log('    3) production  - Use Cloudflare production Worker/R2');
+  console.log('    4) none        - Vite only, no backend (API calls will fail)');
+  const raw = await question(rl, '  Choose (1-4): ');
+  if (raw === '2') return 'development';
+  if (raw === '3') return 'production';
+  if (raw === '4') return 'none';
   return 'local';
 }
 
@@ -219,18 +336,19 @@ async function execute(
   const workerBase = CloudflareLocalConfig.BaseUrl;
   const env: Record<string, string> = {};
 
-  if (backend === 'production') {
-    const url = process.env.VITE_CLAIM_STORAGE_URL || process.env.VITE_ASSETS_WORKER_URL;
-    if (url) {
-      env.VITE_CLAIM_STORAGE_URL = url;
-      env.VITE_ASSETS_WORKER_URL = url;
-      env.VITE_ASSETS_PUBLIC_URL = `${url.replace(/\/$/, '')}/api/v1/assets`;
-    }
+  if (backend === 'development' || backend === 'production') {
+    const url = resolveRemoteWorkerUrl(backend);
+    env.VITE_CLAIM_STORAGE_URL = url;
+    env.VITE_R2_WORKER_URL = url;
+    env.VITE_ASSETS_WORKER_URL = url;
+    env.VITE_ASSETS_PUBLIC_URL = `${url}${ApiEndpoint.Assets.Base}`;
+    env.VITE_MAIN_REAL_CLAIM_STORAGE_URL = url;
+    env.VITE_MAIN_REAL_ASSETS_PUBLIC_URL = `${url}${ApiEndpoint.Assets.Base}`;
     env.VITE_MAIN_ASSET_TARGET_FORCE = 'real-cloud';
   } else if (backend === 'local') {
     env.VITE_CLAIM_STORAGE_URL = workerBase;
     env.VITE_ASSETS_WORKER_URL = workerBase;
-    env.VITE_ASSETS_PUBLIC_URL = `${workerBase}/api/v1/assets`;
+    env.VITE_ASSETS_PUBLIC_URL = `${workerBase}${ApiEndpoint.Assets.Base}`;
     env.VITE_MAIN_ASSET_TARGET_FORCE = 'local-dev';
   } else {
     env.VITE_MAIN_ASSET_TARGET_FORCE = 'real-cloud';
@@ -242,6 +360,13 @@ async function execute(
     if (webMode === 'preview') {
       const args = ['tsx', 'scripts/dev/preview-stack.ts'];
       if (backend === 'local') args.push('--with-worker');
+      return run('npx', args, env, teeToFile);
+    }
+    if (webMode === 'pages') {
+      const args = ['tsx', 'scripts/dev/preview-stack.ts', '--pages'];
+      if (backend === 'local') args.push('--with-worker');
+      if (backend === 'development') args.push('--sync-assets=development');
+      if (backend === 'production') args.push('--sync-assets=production');
       return run('npx', args, env, teeToFile);
     }
     if (backend === 'local') {
@@ -307,10 +432,12 @@ function parsePresetFromArgv(): {
     else if (arg === '--target=android' || arg === '--android') target = 'android';
     else if (arg === '--target=ios' || arg === '--ios') target = 'ios';
     else if (arg === '--backend=local') backend = 'local';
+    else if (arg === '--backend=development' || arg === '--backend=dev') backend = 'development';
     else if (arg === '--backend=production') backend = 'production';
     else if (arg === '--backend=none') backend = 'none';
     else if (arg === '--web-mode=dev' || arg === '--mode=dev') webMode = 'dev';
     else if (arg === '--web-mode=preview' || arg === '--mode=preview') webMode = 'preview';
+    else if (arg === '--web-mode=pages' || arg === '--mode=pages') webMode = 'pages';
     else if (arg === '--android-mode=studio') androidMode = 'studio';
     else if (arg === '--android-mode=emulator') androidMode = 'emulator';
     else if (arg === '--output' || arg === '--tee') tee = true;
@@ -320,6 +447,30 @@ function parsePresetFromArgv(): {
         target: 'web',
         webMode: 'preview',
         backend: 'local',
+        output: { teeToFile: true, profile: true },
+      };
+    }
+    else if (arg === '--quick=pages-local') {
+      preset = {
+        target: 'web',
+        webMode: 'pages',
+        backend: 'local',
+        output: { teeToFile: true, profile: true },
+      };
+    }
+    else if (arg === '--quick=pages-dev') {
+      preset = {
+        target: 'web',
+        webMode: 'pages',
+        backend: 'development',
+        output: { teeToFile: true, profile: true },
+      };
+    }
+    else if (arg === '--quick=pages-prod') {
+      preset = {
+        target: 'web',
+        webMode: 'pages',
+        backend: 'production',
         output: { teeToFile: true, profile: true },
       };
     }
@@ -344,6 +495,11 @@ async function main(): Promise<void> {
       }
     }
   }
+
+  applyDotenvFile(path.join(ROOT, '.env'));
+  applyDotenvFile(path.join(ROOT, '.env.local'));
+  applyDotenvFile(path.join(ROOT, 'infra', 'cloudflare', '.env'));
+  applyDotenvFile(path.join(ROOT, 'infra', 'cloudflare', '.dev.vars'));
 
   try {
     const { execSync } = await import('child_process');

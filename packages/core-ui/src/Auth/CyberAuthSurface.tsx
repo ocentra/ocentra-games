@@ -83,6 +83,13 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   includeExtensionsInFit: true,
   fitTopOverflow: 72,
   fitBottomOverflow: 96,
+  dialogOverlayOpacity: 0.42,
+  dialogBackdropBlur: 10,
+  dialogBackdropSaturate: 1.06,
+  dialogFadeMs: 220,
+  dialogFormMaxWRem: 44,
+  dialogSvgMaxWRem: 38,
+  dialogSvgMaxHRem: 61,
   frameW: 781,
   frameH: 1406,
   chamfer: 96,
@@ -203,7 +210,6 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   brandY: -31,
   brandH: 100,
   brandW: 534,
-  brandUseOwnFrame: false,
   brandOuterPad: 11,
   brandInnerPad: 9,
   brandCut: 11,
@@ -236,6 +242,7 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   brandOrbInnerR: 18,
   brandOrbStrokeW: 6,
   brandOrbInnerStrokeW: 2.5,
+  brandLogoSize: 38,
   brandLogoScale: 1,
   brandLogoX: 0,
   brandLogoY: 0,
@@ -249,9 +256,18 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   titleGap2: 88,
   titleLetterSpacing: 4,
   titleSize: 39,
+  titleMaxW: 650,
+  titleLineHeight: 1.08,
+  titleMaxLines: 2,
   subtitleSize: 17,
   subtitleLetterSpacing: 4.5,
+  subtitleMaxW: 430,
+  subtitleLineHeight: 1.15,
+  subtitleMaxLines: 1,
   helperSize: 21,
+  helperMaxW: 500,
+  helperLineHeight: 1.25,
+  helperMaxLines: 2,
   modeY: 222,
   modeX: 0,
   modeW: 452,
@@ -302,6 +318,13 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   avatarInnerFill: '#253447',
   avatarText: 'SC',
   avatarTextSize: 10,
+  avatarImageSize: 114,
+  avatarSelectorPanelY: -4,
+  avatarSelectorMinH: 520,
+  avatarSelectorBottomPad: 42,
+  avatarSelectorPadRem: 0.9,
+  avatarSelectorColumns: 5,
+  avatarSelectorGapRem: 0.5,
   fieldY: 512,
   fieldX: 0,
   fieldW: 478,
@@ -432,11 +455,17 @@ export const DEFAULT_AUTH_PAGE_SVG_CONTROLS = {
   socialClipToPanel: true,
   socialChildY: 0,
   socialChildInset: 18,
+  socialShowOuterRing: false,
+  socialShowMidRing: false,
+  socialShowInnerFace: false,
+  socialShowBottomGlow: true,
   socialX: 0,
   socialR: 38,
   socialGap: 144,
+  socialIconPadding: 9,
   socialRingR: 48,
   socialGlow: 11,
+  socialFaceFill: '#07111d',
   socialOuterRingFill: '#07111d',
   socialOuterRingStroke: '#5c6f86',
   socialOuterRingW: 5,
@@ -547,7 +576,7 @@ export type AuthPageSvgTextField = {
 
 export const AUTH_PAGE_SVG_BOOLEAN_FIELDS: Record<Exclude<AuthPageSvgControlGroup, 'colors'>, AuthPageSvgBooleanField[]> = {
   fit: [
-    { group: 'fit', key: 'previewShow3dBackground', label: 'Preview 3D background' },
+    { group: 'fit', key: 'previewShow3dBackground', label: 'Editor preview 3D background' },
     { group: 'fit', key: 'scaleWholeSvg', label: 'Scale as centered unit' },
     { group: 'fit', key: 'includeExtensionsInFit', label: 'Fit close and dock extensions' },
   ],
@@ -573,7 +602,6 @@ export const AUTH_PAGE_SVG_BOOLEAN_FIELDS: Record<Exclude<AuthPageSvgControlGrou
     { group: 'auth', key: 'modeShowSideTicks', label: 'Show mode side ticks' },
   ],
   brand: [
-    { group: 'brand', key: 'brandUseOwnFrame', label: 'Use brand-specific frame values' },
     { group: 'brand', key: 'brandShowInnerEdge', label: 'Show brand face edge' },
     { group: 'brand', key: 'brandShowInnerGlow', label: 'Show brand face glow' },
   ],
@@ -590,6 +618,10 @@ export const AUTH_PAGE_SVG_BOOLEAN_FIELDS: Record<Exclude<AuthPageSvgControlGrou
   social: [
     { group: 'social', key: 'continueShowSideArt', label: 'Show divider side art' },
     { group: 'social', key: 'socialClipToPanel', label: 'Clip social buttons to panel' },
+    { group: 'social', key: 'socialShowOuterRing', label: 'Show outer ring' },
+    { group: 'social', key: 'socialShowMidRing', label: 'Show mid ring' },
+    { group: 'social', key: 'socialShowInnerFace', label: 'Show inner face' },
+    { group: 'social', key: 'socialShowBottomGlow', label: 'Show bottom glow' },
   ],
   decor: [
     { group: 'decor', key: 'showDecor', label: 'Show frame decor' },
@@ -634,6 +666,13 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
     { group: 'fit', key: 'fitPadding', label: 'Fit Padding', min: 0, max: 120 },
     { group: 'fit', key: 'fitTopOverflow', label: 'Top Overflow', min: 0, max: 180 },
     { group: 'fit', key: 'fitBottomOverflow', label: 'Bottom Overflow', min: 0, max: 220 },
+    { group: 'fit', key: 'dialogOverlayOpacity', label: 'Overlay Opacity', min: 0, max: 0.9, step: 0.01 },
+    { group: 'fit', key: 'dialogBackdropBlur', label: 'Backdrop Blur', min: 0, max: 24, step: 0.5 },
+    { group: 'fit', key: 'dialogBackdropSaturate', label: 'Backdrop Saturate', min: 0.5, max: 1.8, step: 0.01 },
+    { group: 'fit', key: 'dialogFadeMs', label: 'Overlay Fade MS', min: 0, max: 800 },
+    { group: 'fit', key: 'dialogFormMaxWRem', label: 'Form Max W Rem', min: 24, max: 72, step: 0.5 },
+    { group: 'fit', key: 'dialogSvgMaxWRem', label: 'SVG Max W Rem', min: 24, max: 72, step: 0.5 },
+    { group: 'fit', key: 'dialogSvgMaxHRem', label: 'SVG Max H Rem', min: 40, max: 82, step: 0.5 },
   ],
   frame: [
     { group: 'frame', key: 'frameW', label: 'Frame W', min: 560, max: 980 },
@@ -705,9 +744,18 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
     { group: 'auth', key: 'titleGap2', label: 'Title Gap 2', min: 0, max: 170 },
     { group: 'auth', key: 'titleSize', label: 'Title Size', min: 20, max: 56 },
     { group: 'auth', key: 'titleLetterSpacing', label: 'Title Letter Gap', min: 0, max: 12, step: 0.5 },
+    { group: 'auth', key: 'titleMaxW', label: 'Title Max W', min: 180, max: 760 },
+    { group: 'auth', key: 'titleLineHeight', label: 'Title Line H', min: 0.9, max: 1.6, step: 0.01 },
+    { group: 'auth', key: 'titleMaxLines', label: 'Title Lines', min: 1, max: 4 },
     { group: 'auth', key: 'subtitleSize', label: 'Eyebrow Size', min: 10, max: 24 },
     { group: 'auth', key: 'subtitleLetterSpacing', label: 'Eyebrow Letter Gap', min: 0, max: 12, step: 0.5 },
+    { group: 'auth', key: 'subtitleMaxW', label: 'Eyebrow Max W', min: 160, max: 700 },
+    { group: 'auth', key: 'subtitleLineHeight', label: 'Eyebrow Line H', min: 0.9, max: 1.8, step: 0.01 },
+    { group: 'auth', key: 'subtitleMaxLines', label: 'Eyebrow Lines', min: 1, max: 3 },
     { group: 'auth', key: 'helperSize', label: 'Helper Size', min: 10, max: 28 },
+    { group: 'auth', key: 'helperMaxW', label: 'Helper Max W', min: 180, max: 760 },
+    { group: 'auth', key: 'helperLineHeight', label: 'Helper Line H', min: 0.9, max: 1.8, step: 0.01 },
+    { group: 'auth', key: 'helperMaxLines', label: 'Helper Lines', min: 1, max: 4 },
     { group: 'auth', key: 'modeX', label: 'Mode X', min: -180, max: 180 },
     { group: 'auth', key: 'modeY', label: 'Mode Y', min: 140, max: 420 },
     { group: 'auth', key: 'modeW', label: 'Mode W', min: 220, max: 620 },
@@ -740,8 +788,8 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
   ],
   brand: [
     { group: 'brand', key: 'brandY', label: 'Brand Y', min: -140, max: 140 },
-    { group: 'brand', key: 'brandW', label: 'Brand W', min: 320, max: 680 },
-    { group: 'brand', key: 'brandH', label: 'Brand H', min: 52, max: 150 },
+    { group: 'brand', key: 'brandW', label: 'Brand W', min: 220, max: 860 },
+    { group: 'brand', key: 'brandH', label: 'Brand H', min: 36, max: 240 },
     { group: 'brand', key: 'brandOuterPad', label: 'Plate Outer Pad', min: 0, max: 40 },
     { group: 'brand', key: 'brandInnerPad', label: 'Plate Inner Pad', min: 0, max: 30 },
     { group: 'brand', key: 'brandCut', label: 'Plate Cut', min: 0, max: 60 },
@@ -758,15 +806,16 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
     { group: 'brand', key: 'brandGlowBlur', label: 'Plate Glow', min: 0, max: 24, step: 0.5 },
     { group: 'brand', key: 'brandOrbX', label: 'Orb X', min: -120, max: 120 },
     { group: 'brand', key: 'brandOrbY', label: 'Orb Y', min: -80, max: 80 },
-    { group: 'brand', key: 'brandOrbR', label: 'Orb R', min: 24, max: 84 },
-    { group: 'brand', key: 'brandOrbInnerR', label: 'Orb Inner R', min: 2, max: 60 },
-    { group: 'brand', key: 'brandOrbStrokeW', label: 'Orb Stroke W', min: 0, max: 20, step: 0.5 },
-    { group: 'brand', key: 'brandOrbInnerStrokeW', label: 'Orb Inner Stroke W', min: 0, max: 10, step: 0.5 },
-    { group: 'brand', key: 'brandLogoScale', label: 'Logo Scale', min: 0.2, max: 2, step: 0.01 },
-    { group: 'brand', key: 'brandLogoX', label: 'Logo X', min: -50, max: 50 },
-    { group: 'brand', key: 'brandLogoY', label: 'Logo Y', min: -50, max: 50 },
-    { group: 'brand', key: 'brandTextSize', label: 'Text Size', min: 14, max: 36 },
-    { group: 'brand', key: 'brandGap', label: 'Text Gap', min: -12, max: 48 },
+    { group: 'brand', key: 'brandOrbR', label: 'Orb R', min: 8, max: 140 },
+    { group: 'brand', key: 'brandOrbInnerR', label: 'Orb Inner R', min: 0, max: 100 },
+    { group: 'brand', key: 'brandOrbStrokeW', label: 'Orb Stroke W', min: 0, max: 32, step: 0.5 },
+    { group: 'brand', key: 'brandOrbInnerStrokeW', label: 'Orb Inner Stroke W', min: 0, max: 18, step: 0.5 },
+    { group: 'brand', key: 'brandLogoSize', label: 'Logo Size', min: 8, max: 120, step: 0.5 },
+    { group: 'brand', key: 'brandLogoScale', label: 'Logo Scale', min: 0.1, max: 4, step: 0.01 },
+    { group: 'brand', key: 'brandLogoX', label: 'Logo X', min: -120, max: 120 },
+    { group: 'brand', key: 'brandLogoY', label: 'Logo Y', min: -120, max: 120 },
+    { group: 'brand', key: 'brandTextSize', label: 'Text Size', min: 8, max: 64 },
+    { group: 'brand', key: 'brandGap', label: 'Text Gap', min: -80, max: 120 },
     { group: 'brand', key: 'brandLeftTextX', label: 'Left Text X', min: -140, max: 140 },
     { group: 'brand', key: 'brandRightTextX', label: 'Right Text X', min: -140, max: 140 },
     { group: 'brand', key: 'brandTextY', label: 'Text Y', min: -50, max: 60 },
@@ -780,6 +829,13 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
     { group: 'fields', key: 'avatarOuterStrokeW', label: 'Avatar Outer W', min: 0, max: 24, step: 0.5 },
     { group: 'fields', key: 'avatarInnerStrokeW', label: 'Avatar Inner W', min: 0, max: 18, step: 0.5 },
     { group: 'fields', key: 'avatarTextSize', label: 'Avatar Text', min: 8, max: 70 },
+    { group: 'fields', key: 'avatarImageSize', label: 'Avatar Image Size', min: 24, max: 170 },
+    { group: 'fields', key: 'avatarSelectorPanelY', label: 'Avatar Picker Y', min: -160, max: 160 },
+    { group: 'fields', key: 'avatarSelectorMinH', label: 'Avatar Picker Min H', min: 220, max: 760 },
+    { group: 'fields', key: 'avatarSelectorBottomPad', label: 'Avatar Picker Bottom Pad', min: -80, max: 180 },
+    { group: 'fields', key: 'avatarSelectorPadRem', label: 'Avatar Picker Pad Rem', min: 0, max: 2.5, step: 0.05 },
+    { group: 'fields', key: 'avatarSelectorColumns', label: 'Avatar Picker Columns', min: 2, max: 8 },
+    { group: 'fields', key: 'avatarSelectorGapRem', label: 'Avatar Picker Gap Rem', min: 0, max: 1.5, step: 0.05 },
     { group: 'fields', key: 'fieldX', label: 'Fields X', min: -200, max: 200 },
     { group: 'fields', key: 'fieldY', label: 'Fields Y', min: 340, max: 760 },
     { group: 'fields', key: 'fieldW', label: 'Field W', min: 320, max: 620 },
@@ -879,24 +935,25 @@ export const AUTH_PAGE_SVG_NUMBER_FIELDS: Record<Exclude<AuthPageSvgControlGroup
     { group: 'social', key: 'continueArtOpacity', label: 'Art Opacity', min: 0, max: 1, step: 0.01 },
     { group: 'social', key: 'socialPanelX', label: 'Social Panel X', min: -220, max: 220 },
     { group: 'social', key: 'socialPanelY', label: 'Social Panel Y', min: 940, max: 1340 },
-    { group: 'social', key: 'socialPanelW', label: 'Social Panel W', min: 320, max: 660 },
-    { group: 'social', key: 'socialPanelH', label: 'Social Panel H', min: 84, max: 210 },
-    { group: 'social', key: 'socialPanelCut', label: 'Social Panel Cut', min: 0, max: 80 },
-    { group: 'social', key: 'socialPanelRadius', label: 'Social Panel Radius', min: 0, max: 50 },
-    { group: 'social', key: 'socialPanelStrokeW', label: 'Panel Stroke W', min: 0, max: 12, step: 0.5 },
-    { group: 'social', key: 'socialPanelInnerInset', label: 'Panel Inner Inset', min: 0, max: 40 },
-    { group: 'social', key: 'socialChildY', label: 'Child Y', min: -80, max: 80 },
-    { group: 'social', key: 'socialChildInset', label: 'Child Inset', min: 0, max: 60 },
+    { group: 'social', key: 'socialPanelW', label: 'Social Panel W', min: 140, max: 900 },
+    { group: 'social', key: 'socialPanelH', label: 'Social Panel H', min: 40, max: 340 },
+    { group: 'social', key: 'socialPanelCut', label: 'Social Panel Cut', min: 0, max: 140 },
+    { group: 'social', key: 'socialPanelRadius', label: 'Social Panel Radius', min: 0, max: 120 },
+    { group: 'social', key: 'socialPanelStrokeW', label: 'Panel Stroke W', min: 0, max: 24, step: 0.5 },
+    { group: 'social', key: 'socialPanelInnerInset', label: 'Panel Inner Inset', min: 0, max: 90 },
+    { group: 'social', key: 'socialChildY', label: 'Child Y', min: -160, max: 160 },
+    { group: 'social', key: 'socialChildInset', label: 'Child Inset', min: 0, max: 140 },
     { group: 'social', key: 'socialX', label: 'Social X', min: -220, max: 220 },
-    { group: 'social', key: 'socialR', label: 'Social R', min: 24, max: 64 },
-    { group: 'social', key: 'socialGap', label: 'Social Gap', min: 70, max: 190 },
+    { group: 'social', key: 'socialR', label: 'Button Radius', min: 8, max: 110 },
+    { group: 'social', key: 'socialGap', label: 'Button Gap', min: 20, max: 320 },
+    { group: 'social', key: 'socialIconPadding', label: 'Icon Padding', min: 0, max: 36, step: 0.5 },
     { group: 'social', key: 'socialGlow', label: 'Social Glow', min: 0, max: 24, step: 0.5 },
-    { group: 'social', key: 'socialRingR', label: 'Outer Ring R', min: 20, max: 90 },
-    { group: 'social', key: 'socialOuterRingW', label: 'Outer Ring W', min: 0, max: 16, step: 0.5 },
-    { group: 'social', key: 'socialMidRingW', label: 'Mid Ring W', min: 0, max: 16, step: 0.5 },
-    { group: 'social', key: 'socialInnerRingW', label: 'Inner Ring W', min: 0, max: 16, step: 0.5 },
-    { group: 'social', key: 'socialBottomGlowW', label: 'Bottom Glow W', min: 0, max: 80 },
-    { group: 'social', key: 'socialBottomGlowY', label: 'Bottom Glow Y', min: 0, max: 80 },
+    { group: 'social', key: 'socialRingR', label: 'Outer Ring R', min: 8, max: 150 },
+    { group: 'social', key: 'socialOuterRingW', label: 'Outer Ring W', min: 0, max: 32, step: 0.5 },
+    { group: 'social', key: 'socialMidRingW', label: 'Mid Ring W', min: 0, max: 32, step: 0.5 },
+    { group: 'social', key: 'socialInnerRingW', label: 'Inner Ring W', min: 0, max: 32, step: 0.5 },
+    { group: 'social', key: 'socialBottomGlowW', label: 'Bottom Glow W', min: 0, max: 140 },
+    { group: 'social', key: 'socialBottomGlowY', label: 'Bottom Glow Y', min: -20, max: 140 },
     { group: 'social', key: 'socialBottomGlowOpacity', label: 'Bottom Glow Opacity', min: 0, max: 1, step: 0.01 },
   ],
   decor: [
@@ -1034,6 +1091,7 @@ export const AUTH_PAGE_SVG_COLOR_FIELDS: AuthPageSvgColorField[] = [
   { key: 'socialPanelFill', label: 'Social Panel Fill' },
   { key: 'socialPanelStroke', label: 'Social Panel Stroke' },
   { key: 'socialPanelInnerStroke', label: 'Social Panel Inner' },
+  { key: 'socialFaceFill', label: 'Social Face Fill' },
   { key: 'socialOuterRingFill', label: 'Social Outer Fill' },
   { key: 'socialOuterRingStroke', label: 'Social Outer Stroke' },
   { key: 'socialMidRingFill', label: 'Social Mid Fill' },
@@ -1656,51 +1714,34 @@ function BrandPlate({ x, y, w, h, cx, brandTitle }: { x: number; y: number; w: n
   const c = useAuthPageSvgControls();
   const orbCx = cx + c.brandOrbX;
   const orbCy = y + h / 2 + c.brandOrbY;
-  const logoSize = 38 * c.brandLogoScale;
+  const logoSize = c.brandLogoSize * c.brandLogoScale;
   const parts = resolveBrandParts(brandTitle);
-  const scale = h / c.ctaH;
-  const brandConfig: CyberAuthConfig = c.brandUseOwnFrame
-    ? {
-        ...c,
-        ctaOuterPad: c.brandOuterPad,
-        ctaInnerPad: c.brandInnerPad,
-        ctaCut: c.brandCut,
-        ctaRadius: c.brandRadius,
-        ctaOuterStroke: c.brandOuterStroke,
-        ctaInnerStroke: c.brandInnerStroke,
-        ctaDarkStroke: c.brandDarkStroke,
-        ctaDarkStrokeW: c.brandDarkStrokeW,
-        ctaOuterStrokeW: c.brandOuterStrokeW,
-        ctaInnerStrokeW: c.brandInnerStrokeW,
-        ctaInnerEdgeColor: c.brandInnerEdgeColor,
-        ctaInnerEdgeW: c.brandInnerEdgeW,
-        ctaInnerEdgeInset: c.brandInnerEdgeInset,
-        ctaInnerEdgeOpacity: c.brandInnerEdgeOpacity,
-        ctaShowInnerEdge: c.brandShowInnerEdge,
-        ctaInnerGlowColor: c.brandInnerGlowColor,
-        ctaInnerGlowBlur: c.brandInnerGlowBlur,
-        ctaInnerGlowW: c.brandInnerGlowW,
-        ctaInnerGlowOpacity: c.brandInnerGlowOpacity,
-        ctaShowInnerGlow: c.brandShowInnerGlow,
-        ctaGlowBlur: c.brandGlowBlur,
-        ctaShowSideTicks: false,
-        ctaSideTickCount: 0,
-      }
-    : {
-        ...c,
-        ctaOuterPad: c.ctaOuterPad * scale,
-        ctaInnerPad: c.ctaInnerPad * scale,
-        ctaCut: c.ctaCut * scale,
-        ctaRadius: 18,
-        ctaInnerEdgeW: c.ctaInnerEdgeW * scale,
-        ctaInnerGlowW: c.ctaInnerGlowW * scale,
-        ctaInnerGlowBlur: c.ctaInnerGlowBlur * scale,
-        ctaGlowBlur: c.ctaGlowBlur * scale,
-        ctaShowInnerGlow: true,
-        ctaShowInnerEdge: true,
-        ctaShowSideTicks: false,
-        ctaSideTickCount: 0,
-      };
+  const brandConfig: CyberAuthConfig = {
+    ...c,
+    ctaOuterPad: c.brandOuterPad,
+    ctaInnerPad: c.brandInnerPad,
+    ctaCut: c.brandCut,
+    ctaRadius: c.brandRadius,
+    ctaOuterStroke: c.brandOuterStroke,
+    ctaInnerStroke: c.brandInnerStroke,
+    ctaDarkStroke: c.brandDarkStroke,
+    ctaDarkStrokeW: c.brandDarkStrokeW,
+    ctaOuterStrokeW: c.brandOuterStrokeW,
+    ctaInnerStrokeW: c.brandInnerStrokeW,
+    ctaInnerEdgeColor: c.brandInnerEdgeColor,
+    ctaInnerEdgeW: c.brandInnerEdgeW,
+    ctaInnerEdgeInset: c.brandInnerEdgeInset,
+    ctaInnerEdgeOpacity: c.brandInnerEdgeOpacity,
+    ctaShowInnerEdge: c.brandShowInnerEdge,
+    ctaInnerGlowColor: c.brandInnerGlowColor,
+    ctaInnerGlowBlur: c.brandInnerGlowBlur,
+    ctaInnerGlowW: c.brandInnerGlowW,
+    ctaInnerGlowOpacity: c.brandInnerGlowOpacity,
+    ctaShowInnerGlow: c.brandShowInnerGlow,
+    ctaGlowBlur: c.brandGlowBlur,
+    ctaShowSideTicks: false,
+    ctaSideTickCount: 0,
+  };
 
   return (
     <CyberButtonFrame x={x} y={y} w={w} h={h} config={brandConfig} faceFill={c.brandFaceFill} showTicks={false} glowFilterId="brandGlow" innerGlowFilterId="brandInnerGlow">
@@ -1771,14 +1812,15 @@ function ContinueDivider({ cx, y }: { cx: number; y: number }) {
 
 function SocialButton({ cx, cy, option }: { cx: number; cy: number; option: CyberSocialOption }) {
   const c = useAuthPageSvgControls();
+  const buttonSize = c.socialR * 2;
   return (
     <g filter="url(#socialGlow)" opacity={option.disabled ? 0.5 : 1}>
-      <circle cx={cx} cy={cy} r={c.socialRingR} fill={c.socialOuterRingFill} stroke={c.socialOuterRingStroke} strokeWidth={c.socialOuterRingW} />
-      <circle cx={cx} cy={cy} r={Math.max(0, c.socialRingR - 9)} fill={c.socialMidRingFill} stroke={c.socialMidRingStroke} strokeWidth={c.socialMidRingW} />
-      <circle cx={cx} cy={cy} r={c.socialR} fill="#07111d" stroke={c.authStroke} strokeWidth={c.socialInnerRingW} />
-      <path d={`M ${cx - c.socialBottomGlowW / 2} ${cy + c.socialBottomGlowY} L ${cx + c.socialBottomGlowW / 2} ${cy + c.socialBottomGlowY}`} stroke={c.authBlue} strokeWidth="6" strokeLinecap="round" opacity={c.socialBottomGlowOpacity} />
-      <foreignObject x={cx - c.socialR} y={cy - c.socialR} width={c.socialR * 2} height={c.socialR * 2}>
-        <button className="login-cyber-social-button" type="button" onClick={option.onClick} disabled={option.disabled} aria-label={option.alt}>
+      {c.socialShowOuterRing ? <circle cx={cx} cy={cy} r={c.socialRingR} fill={c.socialOuterRingFill} stroke={c.socialOuterRingStroke} strokeWidth={c.socialOuterRingW} /> : null}
+      {c.socialShowMidRing ? <circle cx={cx} cy={cy} r={Math.max(0, c.socialRingR - 9)} fill={c.socialMidRingFill} stroke={c.socialMidRingStroke} strokeWidth={c.socialMidRingW} /> : null}
+      {c.socialShowInnerFace ? <circle cx={cx} cy={cy} r={c.socialR} fill={c.socialFaceFill} stroke={c.authStroke} strokeWidth={c.socialInnerRingW} /> : null}
+      {c.socialShowBottomGlow ? <path d={`M ${cx - c.socialBottomGlowW / 2} ${cy + c.socialBottomGlowY} L ${cx + c.socialBottomGlowW / 2} ${cy + c.socialBottomGlowY}`} stroke={c.authBlue} strokeWidth="6" strokeLinecap="round" opacity={c.socialBottomGlowOpacity} /> : null}
+      <foreignObject x={cx - c.socialR} y={cy - c.socialR} width={buttonSize} height={buttonSize}>
+        <button className="login-cyber-social-button" type="button" onClick={option.onClick} disabled={option.disabled} aria-label={option.alt} style={{ padding: `${c.socialIconPadding}px` }}>
           <img src={option.icon} alt="" />
         </button>
       </foreignObject>
@@ -1968,11 +2010,12 @@ function AvatarControl({
   const c = useAuthPageSvgControls();
   const avatarCx = cx + c.avatarX;
   const avatarCy = y + c.avatarY;
+  const avatarImageSize = c.avatarImageSize;
   return (
     <g filter="url(#authGlow)">
       <circle cx={avatarCx} cy={avatarCy} r={c.avatarR} fill={c.avatarFill} stroke={c.authStroke} strokeWidth={c.avatarOuterStrokeW} />
       <circle cx={avatarCx} cy={avatarCy} r={c.avatarR - c.avatarRingW} fill={c.avatarInnerFill} stroke={c.authCyan} strokeWidth={c.avatarInnerStrokeW} />
-      {avatar ? <image href={avatar} x={avatarCx - 57} y={avatarCy - 57} width="114" height="114" preserveAspectRatio="xMidYMid slice" clipPath="url(#avatarClip)" /> : null}
+      {avatar ? <image href={avatar} x={avatarCx - avatarImageSize / 2} y={avatarCy - avatarImageSize / 2} width={avatarImageSize} height={avatarImageSize} preserveAspectRatio="xMidYMid slice" clipPath="url(#avatarClip)" /> : null}
       {!avatar ? <text x={avatarCx} y={avatarCy + c.avatarTextSize / 3} textAnchor="middle" fill={c.authText} fontSize={c.avatarTextSize} fontWeight="900">{c.avatarText}</text> : null}
       <foreignObject x={avatarCx - c.avatarR} y={avatarCy - c.avatarR} width={c.avatarR * 2} height={c.avatarR * 2}>
         <button className="login-cyber-avatar-button" type="button" onClick={onToggleAvatarSelector} aria-label="Select avatar" aria-expanded={showAvatarSelector} />
@@ -1995,13 +2038,14 @@ function AvatarSelectorPanel({
 }: Pick<CyberAuthSurfaceProps, 'avatar' | 'avatarOptions' | 'onToggleAvatarSelector' | 'onAvatarSelect' | 'onAvatarUploadClick' | 'onFileChange' | 'avatarSelectorRef' | 'fileInputRef'> & { cx: number; y: number }) {
   const c = useAuthPageSvgControls();
   const panelX = cx - c.fieldW / 2;
-  const panelY = y + c.fieldY - 4;
-  const panelH = Math.max(520, c.ctaY - c.fieldY + c.ctaH + 42);
+  const panelY = y + c.fieldY + c.avatarSelectorPanelY;
+  const panelH = Math.max(c.avatarSelectorMinH, c.ctaY - c.fieldY + c.ctaH + c.avatarSelectorBottomPad);
+  const avatarColumns = Math.max(1, Math.round(c.avatarSelectorColumns));
 
   return (
     <foreignObject x={panelX} y={panelY} width={c.fieldW} height={panelH}>
-      <div className="login-cyber-avatar-selector-panel" ref={avatarSelectorRef}>
-        <div className="login-cyber-avatar-grid">
+      <div className="login-cyber-avatar-selector-panel" ref={avatarSelectorRef} style={{ padding: `${c.avatarSelectorPadRem}rem` }}>
+        <div className="login-cyber-avatar-grid" style={{ gridTemplateColumns: `repeat(${avatarColumns}, minmax(0, 1fr))`, gap: `${c.avatarSelectorGapRem}rem` }}>
           {avatarOptions.map((option) => (
             <button key={option.id} type="button" className={`login-cyber-avatar-option ${avatar === option.url ? 'is-selected' : ''}`} onClick={() => onAvatarSelect(option.url)} aria-label={`Select avatar ${option.id}`}>
               <img src={option.url} alt="" />
@@ -2076,6 +2120,111 @@ function SecondaryActions({ cx, y, actions }: { cx: number; y: number; actions: 
   );
 }
 
+function clampLines(value: number) {
+  return Math.max(1, Math.round(value));
+}
+
+function lineClampStyle(maxLines: number): Pick<React.CSSProperties, 'display' | 'overflow' | 'WebkitLineClamp' | 'WebkitBoxOrient'> {
+  const lines = clampLines(maxLines);
+  return {
+    display: '-webkit-box',
+    overflow: 'hidden',
+    WebkitLineClamp: lines,
+    WebkitBoxOrient: 'vertical',
+  };
+}
+
+function AuthCopyBlock({
+  x,
+  y,
+  eyebrow,
+  title,
+  helper,
+  warning,
+}: {
+  x: number;
+  y: number;
+  eyebrow: string;
+  title: string;
+  helper: string;
+  warning: boolean;
+}) {
+  const c = useAuthPageSvgControls();
+  const width = Math.max(c.subtitleMaxW, c.titleMaxW, c.helperMaxW);
+  const eyebrowLine = c.subtitleSize * c.subtitleLineHeight;
+  const titleLine = c.titleSize * c.titleLineHeight;
+  const helperLine = c.helperSize * c.helperLineHeight;
+  const titleMargin = Math.max(0, c.titleGap1 - eyebrowLine);
+  const helperMargin = Math.max(0, c.titleGap2 - c.titleGap1 - titleLine);
+  const height = eyebrowLine * clampLines(c.subtitleMaxLines)
+    + titleMargin
+    + titleLine * clampLines(c.titleMaxLines)
+    + helperMargin
+    + helperLine * clampLines(c.helperMaxLines)
+    + 12;
+  const baseTextStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: '100%',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    overflowWrap: 'anywhere',
+    wordBreak: 'normal',
+    fontFamily: 'inherit',
+  };
+
+  return (
+    <foreignObject x={x - width / 2} y={y} width={width} height={height}>
+      <div style={{ width: '100%', height: '100%', display: 'grid', justifyItems: 'center', alignContent: 'start' }}>
+        <div
+          style={{
+            ...baseTextStyle,
+            ...lineClampStyle(c.subtitleMaxLines),
+            maxWidth: `${c.subtitleMaxW}px`,
+            color: warning ? '#ffcf54' : c.authBlue,
+            fontSize: `${c.subtitleSize}px`,
+            fontWeight: 900,
+            letterSpacing: `${c.subtitleLetterSpacing}px`,
+            lineHeight: c.subtitleLineHeight,
+          }}
+        >
+          {eyebrow}
+        </div>
+        <div
+          style={{
+            ...baseTextStyle,
+            ...lineClampStyle(c.titleMaxLines),
+            maxWidth: `${c.titleMaxW}px`,
+            marginTop: `${titleMargin}px`,
+            color: c.authText,
+            fontSize: `${c.titleSize}px`,
+            fontWeight: 950,
+            letterSpacing: `${c.titleLetterSpacing}px`,
+            lineHeight: c.titleLineHeight,
+          }}
+        >
+          {title}
+        </div>
+        <div
+          style={{
+            ...baseTextStyle,
+            ...lineClampStyle(c.helperMaxLines),
+            maxWidth: `${c.helperMaxW}px`,
+            marginTop: `${helperMargin}px`,
+            color: c.authMuted,
+            fontSize: `${c.helperSize}px`,
+            fontWeight: 650,
+            letterSpacing: 0,
+            lineHeight: c.helperLineHeight,
+            textTransform: 'none',
+          }}
+        >
+          {helper}
+        </div>
+      </div>
+    </foreignObject>
+  );
+}
+
 function AuthLayer(props: CyberAuthSurfaceProps) {
   const c = useAuthPageSvgControls();
   const y = c.authY;
@@ -2106,17 +2255,7 @@ function AuthLayer(props: CyberAuthSurfaceProps) {
   return (
     <g>
       <BrandPlate x={brandX} y={y + c.brandY} w={c.brandW} h={c.brandH} cx={cx} brandTitle={props.brandTitle} />
-      <g textAnchor="middle">
-        <text x={cx + c.titleX} y={y + c.titleY} fill={props.warning ? '#ffcf54' : c.authBlue} fontSize={c.subtitleSize} fontWeight="900" letterSpacing={c.subtitleLetterSpacing}>
-          {props.eyebrow}
-        </text>
-        <text x={cx + c.titleX} y={y + c.titleY + c.titleGap1} fill={c.authText} fontSize={c.titleSize} fontWeight="950" letterSpacing={c.titleLetterSpacing}>
-          {titleText}
-        </text>
-        <text x={cx + c.titleX} y={y + c.titleY + c.titleGap2} fill={c.authMuted} fontSize={c.helperSize} fontWeight="650">
-          {helperText}
-        </text>
-      </g>
+      <AuthCopyBlock x={cx + c.titleX} y={y + c.titleY - c.subtitleSize} eyebrow={props.eyebrow} title={titleText} helper={helperText} warning={props.warning} />
       <NoticePanel cx={cx} y={y} notice={props.notice} />
       <g>
         {props.signUpEnabled && !props.showForgotPassword ? (

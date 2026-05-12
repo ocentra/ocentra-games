@@ -193,7 +193,7 @@ function getControlSection(group: AuthPageSvgControlGroup, key: keyof AuthPageSv
     return 'Shared Rail';
   }
   if (group === 'auth') {
-    if (name.startsWith('title') || name.startsWith('subtitle') || name === 'helperSize') return 'Title Copy';
+    if (name.startsWith('title') || name.startsWith('subtitle') || name.startsWith('helper')) return 'Title Copy';
     if (name.startsWith('mode')) return 'Mode Buttons';
     return 'Auth Block';
   }

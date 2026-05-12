@@ -35,7 +35,7 @@ function isWorkerOrAssetRoute(pathname: string): boolean {
 
 async function fetchIndexHtml(request: Request, env: PagesEnv): Promise<string> {
   const url = new URL(request.url);
-  url.pathname = '/index.html';
+  url.pathname = '/';
   url.search = '';
   const response = await env.ASSETS.fetch(new Request(url, request));
   return response.text();

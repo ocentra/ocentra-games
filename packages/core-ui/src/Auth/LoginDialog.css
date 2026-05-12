@@ -23,14 +23,23 @@
 }
 
 .login-dialog-overlay--cyber {
+  --login-cyber-overlay-opacity: 0.42;
+  --login-cyber-backdrop-blur: 10px;
+  --login-cyber-backdrop-saturate: 1.06;
+  --login-cyber-fade-ms: 220ms;
+  --login-cyber-form-max-w: 44rem;
+  --login-cyber-svg-max-w: 38rem;
+  --login-cyber-svg-max-h: 61rem;
   padding: 0;
-  background: rgba(2, 6, 17, 0.18);
-  backdrop-filter: blur(12px) saturate(1.08);
-  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+  background: rgba(2, 6, 17, var(--login-cyber-overlay-opacity));
+  backdrop-filter: blur(var(--login-cyber-backdrop-blur)) saturate(var(--login-cyber-backdrop-saturate));
+  -webkit-backdrop-filter: blur(var(--login-cyber-backdrop-blur)) saturate(var(--login-cyber-backdrop-saturate));
+  animation: loginCyberOverlayFade var(--login-cyber-fade-ms) ease-out both;
+  will-change: opacity;
 }
 
 .login-cyber-form {
-  width: min(100vw, 38rem);
+  width: min(100vw, var(--login-cyber-form-max-w));
   height: 100dvh;
   max-height: 100dvh;
   display: grid;
@@ -41,8 +50,8 @@
 
 .login-cyber-svg {
   display: block;
-  width: min(100%, 32rem);
-  height: min(100dvh, 56rem);
+  width: min(100%, var(--login-cyber-svg-max-w));
+  height: min(100dvh, var(--login-cyber-svg-max-h));
   max-width: 100%;
   max-height: 100%;
   overflow: visible;
@@ -374,6 +383,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes loginCyberOverlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
