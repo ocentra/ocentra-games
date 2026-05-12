@@ -1996,7 +1996,7 @@ function AvatarSelectorPanel({
   const c = useAuthPageSvgControls();
   const panelX = cx - c.fieldW / 2;
   const panelY = y + c.fieldY - 4;
-  const panelH = Math.max(260, c.ctaY - c.fieldY - 28);
+  const panelH = Math.max(520, c.ctaY - c.fieldY + c.ctaH + 42);
 
   return (
     <foreignObject x={panelX} y={panelY} width={c.fieldW} height={panelH}>
