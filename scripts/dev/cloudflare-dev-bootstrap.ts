@@ -107,6 +107,7 @@ export function spawnManaged(
     cwd,
     stdio: 'pipe',
     shell: isWindows,
+    detached: !isWindows,
     env: { ...process.env, ...envOverrides },
   });
 
@@ -137,15 +138,27 @@ export function spawnManaged(
 
 export function killManagedProcesses(registry: ManagedProcessRegistry): void {
   for (const proc of registry.processes) {
+    proc.stdout?.destroy();
+    proc.stderr?.destroy();
+    proc.stdin?.destroy();
+
     try {
       if (isWindows && proc.pid) {
         execSync(`taskkill /PID ${proc.pid} /T /F`, { stdio: 'ignore' });
+      } else if (proc.pid) {
+        try {
+          process.kill(-proc.pid, 'SIGTERM');
+        } catch {
+          proc.kill('SIGTERM');
+        }
       } else {
         proc.kill('SIGTERM');
       }
     } catch {
       // ignore
     }
+
+    proc.unref();
   }
 }
 
