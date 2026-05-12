@@ -24,6 +24,7 @@ export type PageLayoutKind =
   | 'admin'
   | 'settings'
   | 'lobby'
+  | 'auth'
   | 'matchmaking'
   | 'tournament-detail'
   | 'selected-game'
@@ -65,6 +66,7 @@ export interface PageLayoutDocument {
   };
   layoutControls?: SelectedGameLayoutControls;
   lobbyControls?: Record<string, unknown>;
+  authControls?: Record<string, unknown>;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
     sampleGameRef?: {
@@ -165,6 +167,9 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Lobby Controls' })
   lobbyControls: Record<string, unknown> = {};
+
+  @serializable({ label: 'Auth Controls' })
+  authControls: Record<string, unknown> = {};
 
   @serializable({ label: 'Content Plan' })
   contentPlan: SelectedGameContentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;

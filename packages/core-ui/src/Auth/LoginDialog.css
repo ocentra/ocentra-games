@@ -12,7 +12,7 @@
     max(clamp(0.85rem, 2vw, 1.25rem), calc(var(--safe-area-top) + clamp(0.85rem, 2vw, 1.25rem)))
     clamp(0.75rem, 2vw, 1.25rem)
     calc(clamp(1rem, 2.4vw, 1.5rem) + var(--safe-area-bottom) + 2rem);
-  overflow-y: auto;
+  overflow: hidden;
   box-sizing: border-box;
   z-index: 2000;
   animation: fadeIn 1s ease-out;
@@ -20,6 +20,343 @@
     radial-gradient(circle at top, rgba(0, 132, 255, 0.24), transparent 42%),
     linear-gradient(to top, rgba(0, 5, 15, 0.98) 0%, rgba(0, 50, 120, 0.7) 46%, rgba(0, 89, 255, 0.34) 100%);
   backdrop-filter: blur(14px);
+}
+
+.login-dialog-overlay--cyber {
+  padding: 0;
+  background: rgba(2, 6, 17, 0.18);
+  backdrop-filter: blur(12px) saturate(1.08);
+  -webkit-backdrop-filter: blur(12px) saturate(1.08);
+}
+
+.login-cyber-form {
+  width: min(100vw, 38rem);
+  height: 100dvh;
+  max-height: 100dvh;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  overflow: hidden;
+}
+
+.login-cyber-svg {
+  display: block;
+  width: min(100%, 32rem);
+  height: min(100dvh, 56rem);
+  max-width: 100%;
+  max-height: 100%;
+  overflow: visible;
+}
+
+.login-cyber-copy {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  font-family: inherit;
+}
+
+.login-cyber-copy p,
+.login-cyber-copy h2,
+.login-cyber-copy span {
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.login-cyber-copy p {
+  color: #198eff;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.login-cyber-copy h2 {
+  color: #e9fbff;
+  font-size: clamp(1.45rem, 5vw, 2.15rem);
+  line-height: 1.05;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.login-cyber-copy span {
+  color: #9fb4c8;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 650;
+}
+
+.login-cyber-copy--warning p {
+  color: #ffcf54;
+}
+
+.login-cyber-input,
+.login-cyber-segment-button,
+.login-cyber-cta-button,
+.login-cyber-social-button,
+.login-cyber-close-button,
+.login-cyber-avatar-button,
+.login-cyber-avatar-option,
+.login-cyber-avatar-upload,
+.login-cyber-forgot-button,
+.login-cyber-back-button,
+.login-cyber-secondary-actions button {
+  font-family: inherit;
+}
+
+.login-cyber-input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #d9f2ff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding: 0;
+}
+
+.login-cyber-input::placeholder {
+  color: #7f93a8;
+  opacity: 1;
+}
+
+.login-cyber-input:disabled {
+  opacity: 0.62;
+}
+
+.login-cyber-segment-button,
+.login-cyber-cta-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #f8fdff;
+  cursor: pointer;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.login-cyber-segment-button {
+  font-size: 1.05rem;
+  letter-spacing: 0.32em;
+}
+
+.login-cyber-cta-button {
+  display: grid;
+  place-items: center;
+  padding-left: 4.75rem;
+  font-size: 2rem;
+  letter-spacing: 0.22em;
+}
+
+.login-cyber-segment-button:disabled,
+.login-cyber-cta-button:disabled,
+.login-cyber-social-button:disabled,
+.login-cyber-secondary-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.login-cyber-social-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  padding: 0.55rem;
+}
+
+.login-cyber-social-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.login-cyber-close-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 2.25rem;
+  line-height: 1;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.login-cyber-avatar-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.login-cyber-avatar-popover,
+.login-cyber-avatar-selector-panel {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid rgba(45, 248, 255, 0.42);
+  border-radius: 0.8rem;
+  background: rgba(3, 9, 20, 0.96);
+  padding: 0.7rem;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.45);
+}
+
+.login-cyber-avatar-popover {
+  max-height: 16rem;
+}
+
+.login-cyber-avatar-selector-panel {
+  height: 100%;
+  padding: 0.9rem;
+}
+
+.login-cyber-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.login-cyber-avatar-option {
+  aspect-ratio: 1;
+  border: 1px solid rgba(84, 112, 142, 0.85);
+  border-radius: 999px;
+  background: rgba(11, 22, 36, 0.9);
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+}
+
+.login-cyber-avatar-option img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.login-cyber-avatar-option.is-selected {
+  border-color: #2df8ff;
+  box-shadow: 0 0 0.8rem rgba(45, 248, 255, 0.55);
+}
+
+.login-cyber-avatar-upload {
+  color: #d9f2ff;
+  font-size: 1.7rem;
+  font-weight: 900;
+}
+
+.login-cyber-avatar-back-button {
+  width: 100%;
+  min-height: 2.1rem;
+  margin-top: 0.65rem;
+  letter-spacing: 0.16em;
+}
+
+.login-cyber-forgot-button,
+.login-cyber-back-button,
+.login-cyber-secondary-actions button {
+  border: 1px solid rgba(84, 112, 142, 0.5);
+  background: rgba(5, 13, 28, 0.72);
+  color: #b8cadc;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.login-cyber-forgot-button {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  text-align: right;
+  padding: 0 1rem;
+  color: #d4e5f6;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
+.login-cyber-back-button {
+  width: 100%;
+  height: 100%;
+}
+
+.login-cyber-notice {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(84, 112, 142, 0.48);
+  border-radius: 0.7rem;
+  background: rgba(5, 13, 28, 0.88);
+  color: #d9f2ff;
+  padding: 0.5rem 0.85rem;
+  text-align: center;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.login-cyber-notice--error {
+  border-color: rgba(255, 122, 168, 0.58);
+  color: #ffc7d7;
+}
+
+.login-cyber-notice--success {
+  border-color: rgba(40, 228, 143, 0.58);
+  color: #bcf8d8;
+}
+
+.login-cyber-secondary-actions {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.login-cyber-secondary-actions button {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.8rem;
+}
+
+@media (max-width: 40rem) {
+  .login-cyber-form {
+    width: 100vw;
+  }
+
+  .login-cyber-svg {
+    width: 100vw;
+    height: 100dvh;
+  }
+
+  .login-cyber-copy h2 {
+    font-size: 1.7rem;
+  }
+
+  .login-cyber-copy span {
+    font-size: 0.88rem;
+  }
+
+  .login-cyber-cta-button {
+    font-size: 1.55rem;
+  }
 }
 
 @keyframes fadeIn {

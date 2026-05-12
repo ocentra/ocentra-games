@@ -26,6 +26,7 @@ type StandalonePanelKind =
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
   | 'lobby-page-layout-controls'
+  | 'auth-page-layout-controls'
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
   | 'page-layout-controls'
@@ -34,6 +35,7 @@ function isLayoutControlsPanel(panel: StandalonePanelKind): boolean {
   return panel === 'featured-showcase-controls' ||
     panel === 'homepage-layout-controls' ||
     panel === 'lobby-page-layout-controls' ||
+    panel === 'auth-page-layout-controls' ||
     panel === 'selected-game-layout-controls' ||
     panel === 'games-catalog-layout-controls' ||
     panel === 'page-layout-controls'

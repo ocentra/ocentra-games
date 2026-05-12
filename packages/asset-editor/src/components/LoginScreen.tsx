@@ -1,5 +1,7 @@
 import React from 'react';
 import { LoginDialog, type LoginDialogStatusMessage } from '@ocentra/core-ui/Auth/LoginDialog';
+import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
+import { ThreeBaseProvider } from '@ocentra/core-ui/Background/ThreeBaseContext';
 import { WindowControls } from '@/components/WindowControls';
 import { useAuth } from '@/hooks/useAuth';
 import { canUseDevMockAdmin, setDevAuthQueryEnabled } from '@/utils/devAuth';
@@ -27,6 +29,11 @@ export function LoginScreen({ contextTitle, contextDescription, secondaryActions
 
   return (
     <div className="login-screen-shell">
+      <div className="login-screen-shell__background" aria-hidden="true">
+        <ThreeBaseProvider>
+          <DynamicBackground />
+        </ThreeBaseProvider>
+      </div>
       <div className="login-screen-shell__window-controls">
         <WindowControls />
       </div>

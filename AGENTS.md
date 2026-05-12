@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-10
+**Last Updated:** 2026-05-11
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -78,6 +78,7 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - **Two Tauri apps:** Main app binary **ocentraplatform** (platforms/desktop/tauri), editor **ocentraeditor** (packages/asset-editor/src-tauri). They do not depend on each other; each is built and run from its own directory with its own `CARGO_TARGET_DIR`.
 - **Asset editor Tauri launchers:** `npm --prefix packages/asset-editor run dev:tauri` is the direct launcher backed by `scripts/dev/dev-editor-tauri.ts`; it kills stale `ocentraeditor` processes and uses `packages/asset-editor/src-tauri/target-editor` as its dedicated Cargo target dir. `npm run dev:editor:tauri` is the simpler root shortcut that currently runs plain `cargo tauri dev` from `packages/asset-editor`.
 - **Interactive editor launcher:** `npm --prefix packages/asset-editor run dev` uses `scripts/dev/dev-editor-interactive.ts` when you need preset/local-vs-production backend selection, optional `.temp/dev-editor-output.log`, or `--force` Vite cache clearing before launch.
+- **Mobile stack launcher:** `npm run dev:android:stack` / `npm run dev:ios:stack` uses `scripts/dev/dev-mobile-full.ts` to ensure shared dev prep, start or reuse the local Cloudflare worker, and point mobile asset/storage URLs at the local worker. For Android emulator runs, the worker is exposed as `http://10.0.2.2:8787`.
 
 ### Domain Build Standard (No .js in Source)
 - **Never** add `.js` to relative or path-alias imports in domain source (e.g. `from './foo'` not `from './foo.js'`)
@@ -214,6 +215,8 @@ npm run dev:prep:main    # Prebuild shared workspace deps for main app
 npm run dev:prep:editor  # Prebuild shared workspace deps for asset editor
 npm run dev:prep:worker  # Prebuild shared workspace deps for Cloudflare worker
 npm run dev:compare      # Shared web stack + desktop/mobile compare targets
+npm run dev:android:stack # Main app + local worker + Capacitor Android flow
+npm run dev:ios:stack   # Main app + local worker + Capacitor iOS flow
 npm run dev:editor:stack # Asset editor with shared backend/dev stack
 npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
 npm run dev:editor:tauri # Root shortcut: plain cargo tauri dev from packages/asset-editor
@@ -236,6 +239,9 @@ npm run validate:editor  # Asset-editor focused lint + type-check
 npm run logs:main        # Query local main-app logs
 npm run logs:main:errors # Query local main-app errors
 npm run logs:main:stats  # Query local main-app log stats
+npm run logs:android     # Follow filtered Android logcat output
+npm run logs:android:dump # Dump filtered Android logcat output once
+npm run logs:android:auth # Filter Android logcat to auth/login flow only
 npm run logs:vite        # Query local Vite/dev-server logs
 npm run logs:vite:errors # Query local Vite/dev-server errors
 npm run logs:query       # Flexible local log queries (recent/errors/stats/search)

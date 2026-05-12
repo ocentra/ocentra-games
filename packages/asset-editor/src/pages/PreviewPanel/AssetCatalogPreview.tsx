@@ -66,6 +66,11 @@ import {
   type LobbyPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls'
 import {
+  CyberAuthSurface,
+  normalizeAuthPageSvgControls,
+  type AuthPageSvgControls,
+} from '@ocentra/core-ui/Auth/CyberAuthSurface'
+import {
   AdminUsersPageContent,
   CompetitionPageContent,
   LobbyPageContent,
@@ -92,6 +97,12 @@ import type {
 } from '@ocentra/core-ui/Header/UnifiedHeader.config'
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
 import { mlogoImageUrl } from '@ocentra/app-assets/commons'
+import {
+  authAnnonImageUrl,
+  authFacebookImageUrl,
+  authGoogleImageUrl,
+} from '@ocentra/app-assets/auth'
+import { avatarImageById } from '@ocentra/app-assets/avatars'
 import { DynamicBackground, type RotationControlAPI } from '@ocentra/core-ui/Background/DynamicBackground'
 import { ThreeBaseProvider } from '@ocentra/core-ui/Background/ThreeBaseContext'
 import { useResolveImageUrl } from '@/hooks/useResolveImageUrl'
@@ -146,6 +157,11 @@ import {
   type LobbyPageLayoutControlsMessage,
 } from '@/utils/lobbyPageLayoutControlsChannel'
 import { LOBBY_PAGE_LAYOUT_ASSET_PATH } from '@/utils/lobbyPageLayoutControlsPersistence'
+import {
+  AUTH_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type AuthPageLayoutControlsMessage,
+} from '@/utils/authPageLayoutControlsChannel'
+import { AUTH_PAGE_LAYOUT_ASSET_PATH } from '@/utils/authPageLayoutControlsPersistence'
 import {
   HEADER_PROFILE_CONTROLS_CHANNEL,
   type HeaderProfileControlsMessage,
@@ -1397,6 +1413,7 @@ function AssetCatalogMainAppPreviewShell({
   workClassName = 'home-shell-work',
   includeAdminNavigation = true,
   showPrimaryNavigation = true,
+  showBackground = true,
 }: {
   children: React.ReactNode
   routePath?: string
@@ -1407,6 +1424,7 @@ function AssetCatalogMainAppPreviewShell({
   workClassName?: string
   includeAdminNavigation?: boolean
   showPrimaryNavigation?: boolean
+  showBackground?: boolean
 }) {
   const rotationControlRef = useRef<RotationControlAPI | null>(null)
   const headerLogoConfig = useMemo(() => createOcentraHeaderLogoConfig(mlogoImageUrl), [])
@@ -1423,7 +1441,7 @@ function AssetCatalogMainAppPreviewShell({
             embedded
             className={`asset-catalog-preview__main-app-shell ${shellClassName}`}
             workClassName={workClassName}
-            background={<DynamicBackground controlRef={rotationControlRef} />}
+            background={showBackground ? <DynamicBackground controlRef={rotationControlRef} /> : null}
             header={
               <UnifiedHeader
                 config={headerConfig}
@@ -1610,6 +1628,7 @@ function getPageLayoutKind(document: PageLayoutPreviewData): NonNullable<PageLay
   if (document.pageId === 'admin') return 'admin'
   if (document.pageId === 'settings') return 'settings'
   if (document.pageId === 'lobby') return 'lobby'
+  if (document.pageId === 'auth') return 'auth'
   if (document.pageId === 'matchmaking') return 'matchmaking'
   return 'generic'
 }
@@ -1657,6 +1676,9 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
   }
   if (kind === 'lobby') {
     return { gameName: 'Lobby', tagline: 'Create or join rooms before a match starts.' }
+  }
+  if (kind === 'auth') {
+    return { gameName: 'Authentication', tagline: 'Shared sign-in and sign-up prompt.' }
   }
   if (kind === 'matchmaking') {
     return { gameName: 'Matchmaking', tagline: 'Find players, queue up, and move into a lobby.' }
@@ -1748,6 +1770,7 @@ function PageLayoutMainAppPreview({
   gamesExplorerContent = null,
   selectedGameContent = null,
   lobbyControls,
+  authControls,
   lobbySampleGameId = null,
   lobbySampleGameName = null,
   lobbyGameTagline = null,
@@ -1762,6 +1785,7 @@ function PageLayoutMainAppPreview({
   gamesExplorerContent?: React.ReactNode
   selectedGameContent?: React.ReactNode
   lobbyControls?: LobbyPageSvgControls
+  authControls?: AuthPageSvgControls
   lobbySampleGameId?: string | null
   lobbySampleGameName?: string | null
   lobbyGameTagline?: string | null
@@ -1780,7 +1804,31 @@ function PageLayoutMainAppPreview({
   const [shopTab, setShopTab] = useState<ShopTab>('Treasury')
   const [settingsTab, setSettingsTab] = useState<'models' | 'inference' | 'providers' | 'native' | 'assets'>('models')
   const [adminSearch, setAdminSearch] = useState('')
+  const [authPreviewMode, setAuthPreviewMode] = useState<'signin' | 'signup'>('signup')
+  const [authPreviewAvatar, setAuthPreviewAvatar] = useState('')
+  const [authPreviewShowAvatarSelector, setAuthPreviewShowAvatarSelector] = useState(false)
+  const authAvatarSelectorRef = useRef<HTMLDivElement | null>(null)
+  const authFileInputRef = useRef<HTMLInputElement | null>(null)
   const pageControls = document.pageControls
+  const resolvedAuthControls = useMemo(
+    () => normalizeAuthPageSvgControls(authControls ?? document.authControls as Partial<AuthPageSvgControls> | undefined),
+    [authControls, document.authControls]
+  )
+  const authPreviewAvatarOptions = useMemo(
+    () => Object.entries(avatarImageById)
+      .map(([key, url]) => ({ id: Number(key), url: url as string }))
+      .filter((entry) => entry.id >= 1 && entry.id <= 18)
+      .sort((a, b) => a.id - b.id),
+    []
+  )
+  const handleAuthPreviewModeChange = useCallback((mode: 'signin' | 'signup') => {
+    setAuthPreviewShowAvatarSelector(false)
+    setAuthPreviewMode(mode)
+  }, [])
+  const handleAuthPreviewAvatarSelect = useCallback((avatarUrl: string) => {
+    setAuthPreviewAvatar(avatarUrl)
+    setAuthPreviewShowAvatarSelector(false)
+  }, [])
 
   const content =
     kind === 'games' || kind === 'game-catalog' ? (
@@ -1937,6 +1985,52 @@ function PageLayoutMainAppPreview({
         onMatchmaking={() => undefined}
         layoutControls={lobbyControls ?? normalizeLobbyPageSvgControls(document.lobbyControls as Partial<LobbyPageSvgControls> | undefined)}
       />
+    ) : kind === 'auth' ? (
+      <main className="asset-catalog-preview__auth-layout-stage">
+        <CyberAuthSurface
+          layoutControls={resolvedAuthControls}
+          mode={authPreviewMode}
+          signUpEnabled
+          canSendPasswordReset
+          brandTitle="Ocentra Games"
+          eyebrow="Quick Multiplayer Access"
+          title="Unlock Your Session"
+          description="Create or access your multiplayer experience"
+          warning={false}
+          alias=""
+          email=""
+          password=""
+          confirmPassword=""
+          avatar={authPreviewAvatar}
+          avatarOptions={authPreviewAvatarOptions}
+          showAvatarSelector={authPreviewShowAvatarSelector}
+          showForgotPassword={false}
+          notice={null}
+          validationErrors={{}}
+          isLoading={false}
+          disableCredentials={false}
+          socialOptions={[
+            { key: 'facebook', icon: authFacebookImageUrl, alt: 'Facebook', onClick: () => undefined },
+            { key: 'google', icon: authGoogleImageUrl, alt: 'Google', onClick: () => undefined },
+            { key: 'guest', icon: authAnnonImageUrl, alt: 'Guest', onClick: () => undefined },
+          ]}
+          secondaryActions={[]}
+          closeAriaLabel="Close authentication preview"
+          onModeChange={handleAuthPreviewModeChange}
+          onAliasChange={() => undefined}
+          onEmailChange={() => undefined}
+          onPasswordChange={() => undefined}
+          onConfirmPasswordChange={() => undefined}
+          onToggleAvatarSelector={() => setAuthPreviewShowAvatarSelector((value) => !value)}
+          onAvatarSelect={handleAuthPreviewAvatarSelect}
+          onAvatarUploadClick={() => authFileInputRef.current?.click()}
+          onFileChange={() => undefined}
+          onForgotPassword={() => undefined}
+          onBackToSignIn={() => handleAuthPreviewModeChange('signin')}
+          avatarSelectorRef={authAvatarSelectorRef}
+          fileInputRef={authFileInputRef}
+        />
+      </main>
     ) : kind === 'matchmaking' ? (
       <MatchmakingPageContent
         gameId="claim:preview"
@@ -1968,6 +2062,21 @@ function PageLayoutMainAppPreview({
         ? <div className="lb-top-divider" aria-hidden="true" />
       : null
 
+  if (kind === 'auth') {
+    return (
+      <div className="asset-catalog-preview__auth-module-preview">
+        {resolvedAuthControls.previewShow3dBackground ? (
+          <div className="asset-catalog-preview__auth-module-background" aria-hidden="true">
+            <ThreeBaseProvider>
+              <DynamicBackground />
+            </ThreeBaseProvider>
+          </div>
+        ) : null}
+        {content}
+      </div>
+    )
+  }
+
   const shellClassName = kind === 'shop'
     ? 'sp-root'
     : kind === 'social'
@@ -1984,7 +2093,7 @@ function PageLayoutMainAppPreview({
                 ? 'selected-game-page'
                 : kind === 'lobby'
                   ? 'lb-page'
-                : 'home-page'
+                  : 'home-page'
 
   const workClassName = kind === 'admin'
     ? `admin-users-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
@@ -1994,7 +2103,7 @@ function PageLayoutMainAppPreview({
         ? `games-catalog-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
         : kind === 'lobby'
           ? `lb-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
-        : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
+          : `home-shell-work${debugBounds ? ' asset-catalog-preview__page-bounds-work' : ''}`
   const showPagePrimaryNavigation = kind !== 'selected-game' && kind !== 'games' && kind !== 'game-catalog' && kind !== 'lobby'
 
   return (
@@ -2020,6 +2129,7 @@ const PageLayoutViewportFrame = React.forwardRef<
     viewport: PagePreviewViewportSize
     isPortrait: boolean
     children: React.ReactNode
+    surfaceClassName?: string
     onZoomPercentChange?: (value: number) => void
   }
 >(function PageLayoutViewportFrame(
@@ -2028,6 +2138,7 @@ const PageLayoutViewportFrame = React.forwardRef<
     viewport,
     isPortrait,
     children,
+    surfaceClassName,
     onZoomPercentChange,
   },
   ref
@@ -2358,7 +2469,7 @@ const PageLayoutViewportFrame = React.forwardRef<
       ref={containerRef}
     >
       <div
-        className="asset-catalog-preview__page-viewport-device"
+        className={`asset-catalog-preview__page-viewport-device ${surfaceClassName ?? ''}`}
         style={{
           width: `${viewport.w}px`,
           height: `${viewport.h}px`,
@@ -2615,6 +2726,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   const isSelectedGameLayout = isPageLayoutMode && pageLayoutKind === 'selected-game'
   const isGamesPageLayout = isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog')
   const isLobbyPageLayout = isPageLayoutMode && pageLayoutKind === 'lobby'
+  const isAuthPageLayout = isPageLayoutMode && pageLayoutKind === 'auth'
   const shouldLoadGamesForPageLayout =
     isPageLayoutMode && (pageLayoutKind === 'games' || pageLayoutKind === 'game-catalog' || pageLayoutKind === 'selected-game' || pageLayoutKind === 'lobby')
   const initialSelectedGameLayoutConfig = useMemo(
@@ -2623,6 +2735,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const initialLobbyPageLayoutControls = useMemo(
     () => normalizeLobbyPageSvgControls(pageLayoutData?.lobbyControls as Partial<LobbyPageSvgControls> | undefined),
+    [pageLayoutData]
+  )
+  const initialAuthPageLayoutControls = useMemo(
+    () => normalizeAuthPageSvgControls(pageLayoutData?.authControls as Partial<AuthPageSvgControls> | undefined),
     [pageLayoutData]
   )
   const initialPreviewSampleGameId =
@@ -2721,6 +2837,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<SelectedGamePreviewLayoutMode>('auto')
   const [lobbyPageLayoutControls, setLobbyPageLayoutControls] =
     useState<LobbyPageSvgControls>(() => initialLobbyPageLayoutControls)
+  const [authPageLayoutControls, setAuthPageLayoutControls] =
+    useState<AuthPageSvgControls>(() => initialAuthPageLayoutControls)
   const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
   const pageLayoutViewportFrameRef = useRef<PageLayoutViewportFrameHandle | null>(null)
   const [pageLayoutPreviewResolution, setPageLayoutPreviewResolution] = useState('fit')
@@ -2772,6 +2890,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useRef<SelectedGamePreviewLayoutMode>('auto')
   const lobbyPageLayoutControlsRef = useRef<LobbyPageSvgControls>(
     initialLobbyPageLayoutControls
+  )
+  const authPageLayoutControlsRef = useRef<AuthPageSvgControls>(
+    initialAuthPageLayoutControls
   )
   const headerConfigOverrideRef = useRef<SerializedUnifiedHeaderConfig | null>(null)
   const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
@@ -2895,6 +3016,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [lobbyPageLayoutControls])
 
   useEffect(() => {
+    authPageLayoutControlsRef.current = authPageLayoutControls
+  }, [authPageLayoutControls])
+
+  useEffect(() => {
     selectedGameContentPlanRef.current = selectedGameContentPlan
   }, [selectedGameContentPlan])
 
@@ -2923,6 +3048,16 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }, 0)
     return () => window.clearTimeout(timeoutId)
   }, [initialLobbyPageLayoutControls, initialPreviewSampleGameId, isLobbyPageLayout])
+
+  useEffect(() => {
+    if (!isAuthPageLayout) {
+      return undefined
+    }
+    const timeoutId = window.setTimeout(() => {
+      setAuthPageLayoutControls(initialAuthPageLayoutControls)
+    }, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [initialAuthPageLayoutControls, isAuthPageLayout])
 
   useEffect(() => {
     selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
@@ -3222,6 +3357,30 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
       if (event.data.type === 'state' || event.data.type === 'update') {
         setLobbyPageLayoutControls(
           normalizeLobbyPageSvgControls(event.data.controls)
+        )
+      }
+    }
+    channel.addEventListener('message', handler)
+    return () => {
+      channel.removeEventListener('message', handler)
+      channel.close()
+    }
+  }, [])
+
+  useEffect(() => {
+    const channel = new BroadcastChannel(AUTH_PAGE_LAYOUT_CONTROLS_CHANNEL)
+    const handler = (event: MessageEvent<AuthPageLayoutControlsMessage>) => {
+      if (event.data.type === 'request-state') {
+        channel.postMessage({
+          type: 'state',
+          controls: authPageLayoutControlsRef.current,
+        } satisfies AuthPageLayoutControlsMessage)
+        return
+      }
+
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        setAuthPageLayoutControls(
+          normalizeAuthPageSvgControls(event.data.controls)
         )
       }
     }
@@ -4368,6 +4527,15 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     )
   }
 
+  const handleOpenAuthPageLayoutControls = () => {
+    void createPanelWindow(
+      'auth-page-layout-controls',
+      assetPath ?? AUTH_PAGE_LAYOUT_ASSET_PATH,
+      'Auth Layout Controls',
+      true
+    )
+  }
+
   const handleOpenPageLayoutControls = () => {
     void createPanelWindow(
       'page-layout-controls',
@@ -4543,7 +4711,16 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && (
+        {isAuthPageLayout && (
+          <button
+            type="button"
+            className="asset-catalog-preview__edit-featured-button"
+            onClick={handleOpenAuthPageLayoutControls}
+          >
+            Edit
+          </button>
+        )}
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isLobbyPageLayout && !isAuthPageLayout && (
           <button
             type="button"
             className="asset-catalog-preview__edit-featured-button"
@@ -4552,7 +4729,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
             Edit
           </button>
         )}
-        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && (
+        {isPageLayoutMode && !isHomePageLayout && !isSelectedGameLayout && !isGamesPageLayout && !isAuthPageLayout && (
           <label className="asset-catalog-preview__bounds-toggle">
             <input
               type="checkbox"
@@ -4682,6 +4859,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           gamesExplorerContent={gamesExplorerPreviewContent}
           selectedGameContent={selectedGamePagePreviewContent}
           lobbyControls={lobbyPageLayoutControls}
+          authControls={authPageLayoutControls}
           lobbySampleGameId={selectedGameId}
           lobbySampleGameName={selectedGame?.home.name ?? selectedGame?.entry.displayName ?? (selectedGameId ? null : 'Template')}
           lobbyGameTagline={lobbyHeroMedia?.tagline ?? null}
@@ -4750,6 +4928,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
                 assetPath={assetPath ?? assetId}
                 viewport={pageLayoutPreviewViewport}
                 isPortrait={pageLayoutPreviewIsPortrait}
+                surfaceClassName={isAuthPageLayout ? 'asset-catalog-preview__page-viewport-device--auth-module' : undefined}
                 onZoomPercentChange={setPageLayoutPreviewZoomPercent}
               >
                 {homepagePreviewContent}
