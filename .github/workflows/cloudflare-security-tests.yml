@@ -199,8 +199,11 @@ jobs:
 
       - name: Start Worker for dynamic tests
         run: |
-          npx wrangler dev --env development --port 8787 --local &
-          echo "WRANGLER_PID=$!" >> $GITHUB_ENV
+          mkdir -p infra/cloudflare/test-runner/logs
+          env -u RUNNER_TRACKING_ID nohup npx wrangler dev --env development --port 8787 --local > infra/cloudflare/test-runner/logs/wrangler-dynamic-security.log 2>&1 < /dev/null &
+          WRANGLER_PID=$!
+          echo "WRANGLER_PID=$WRANGLER_PID" >> "$GITHUB_ENV"
+          disown || true
           sleep 10
           for i in {1..30}; do
             if curl -fsS http://127.0.0.1:8787/health > /dev/null; then
@@ -210,6 +213,7 @@ jobs:
             sleep 1
           done
           echo "Worker did not become ready"
+          cat infra/cloudflare/test-runner/logs/wrangler-dynamic-security.log || true
           exit 1
 
       - name: Generate k6 constants
