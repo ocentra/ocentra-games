@@ -1687,14 +1687,17 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
 }
 
 const previewShopProducts: ShopProduct[] = [
-  { productId: 'ac-100', productType: 'AC_CREDITS', displayName: 'Starter Credits', acAmount: 100, unitPriceCents: 100, currency: 'usd', active: true },
-  { productId: 'ac-500', productType: 'AC_CREDITS', displayName: 'Arena Credits', acAmount: 500, unitPriceCents: 500, currency: 'usd', active: true },
-  { productId: 'ac-1200', productType: 'AC_CREDITS', displayName: 'Best Value Credits', acAmount: 1200, unitPriceCents: 999, currency: 'usd', active: true },
-  { productId: 'ac-3500', productType: 'AC_CREDITS', displayName: 'Season Supply', acAmount: 3500, unitPriceCents: 2499, currency: 'usd', active: true },
-  { productId: 'sub-arena-pass', productType: 'SUBSCRIPTION', displayName: 'Arena Pass', unitPriceCents: 999, currency: 'usd', active: true },
-  { productId: 'sub-champions-pass', productType: 'SUBSCRIPTION', displayName: "Champion's Pass", unitPriceCents: 1999, currency: 'usd', active: true },
-  { productId: 'vault-card-back-neon', productType: 'MARKETPLACE', displayName: 'Neon Card Back', currency: 'ac', active: true },
-  { productId: 'vault-table-classic', productType: 'MARKETPLACE', displayName: 'Classic Felt Table', currency: 'ac', active: true },
+  { productId: 'ac-100', productType: 'AC_CREDITS', displayName: 'Starter Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 100, unitPriceCents: 100, currency: 'usd', active: true },
+  { productId: 'ac-500', productType: 'AC_CREDITS', displayName: 'Arena Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 500, unitPriceCents: 500, currency: 'usd', active: true },
+  { productId: 'ac-1200', productType: 'AC_CREDITS', displayName: 'Best Value Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 1200, unitPriceCents: 999, currency: 'usd', active: true },
+  { productId: 'ac-3500', productType: 'AC_CREDITS', displayName: 'Season Supply', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 3500, unitPriceCents: 2499, currency: 'usd', active: true },
+  { productId: 'sub-arena-pass', productType: 'SUBSCRIPTION', displayName: 'Arena Pass', shopTab: 'Elite', entitlementKind: 'pass', availability: 'preview', unitPriceCents: 999, currency: 'usd', active: true },
+  { productId: 'sub-champions-pass', productType: 'SUBSCRIPTION', displayName: "Champion's Pass", shopTab: 'Elite', entitlementKind: 'pass', availability: 'preview', unitPriceCents: 1999, currency: 'usd', active: true },
+  { productId: 'vault-card-back-neon', productType: 'MARKETPLACE', displayName: 'Neon Card Back', shopTab: 'Vault', entitlementKind: 'cosmetic', availability: 'preview', acPrice: 200, priceLabel: '200 AC', currency: 'usd', active: true },
+  { productId: 'vault-table-classic', productType: 'MARKETPLACE', displayName: 'Classic Felt Table', shopTab: 'Vault', entitlementKind: 'cosmetic', availability: 'preview', acPrice: 100, priceLabel: '100 AC', currency: 'usd', active: true },
+  { productId: 'access-private-tables', productType: 'MARKETPLACE', displayName: 'Private Table Hosting', shopTab: 'Play Access', entitlementKind: 'play_access', availability: 'preview', acPrice: 300, priceLabel: '300 AC', currency: 'usd', active: true },
+  { productId: 'ticket-claim-weekly', productType: 'TOURNAMENT_ENTRY', displayName: 'Weekly Claim Ticket', shopTab: 'Events', entitlementKind: 'event_ticket', availability: 'coming_soon', acPrice: 250, priceLabel: '250 AC', currency: 'usd', active: true },
+  { productId: 'creator-table-pack-claim-night', productType: 'MARKETPLACE', displayName: 'Claim Night Creator Pack', shopTab: 'Creator Market', entitlementKind: 'creator_good', availability: 'preview', acPrice: 450, priceLabel: '450 AC', currency: 'usd', active: true },
 ]
 
 const previewLeaderboardEntries: LeaderboardRow[] = [

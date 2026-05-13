@@ -41,6 +41,12 @@ const mockEnv = {
       productId: 'ac-100',
       stripePriceId: 'price_ac100',
       displayName: '100 AC',
+      description: 'Starter refill',
+      shopTab: 'Treasury',
+      badge: 'Starter',
+      benefits: ['AI analysis fuel'],
+      entitlementKind: 'credits',
+      availability: 'live',
       currency: 'usd',
       active: true,
       acAmount: 100,
@@ -153,6 +159,8 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(product).not.toBeNull();
     expect(product?.productId).toBe('ac-100');
     expect(product?.acAmount).toBe(100);
+    expect(product?.shopTab).toBe('Treasury');
+    expect(product?.benefits).toContain('AI analysis fuel');
   });
 
   it(testName('validateProduct: returns null for wrong productType'), async () => {

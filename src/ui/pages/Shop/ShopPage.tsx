@@ -8,12 +8,14 @@ import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
 import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
 import { StripeEndpoint } from '@ocentra/endpoint-domain/constants/stripe';
-import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { HttpAuthScheme, HttpContentType, HttpHeader, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { APP_VERSION } from '@/constants/version';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
+import { fetchShopProducts } from '@/ui/pages/Shop/shopApi';
+import { getShopApiBaseUrl, getShopAppOrigin } from '@/ui/pages/Shop/shopApiBase';
 import {
   ShopPageContent,
   ShopPageToolbar,
@@ -37,20 +39,23 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ShopTab>('Treasury');
 
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const appOrigin = getShopAppOrigin();
+  const apiBaseUrl = getShopApiBaseUrl();
 
   useEffect(() => {
     let cancelled = false;
     setLoadingProducts(true);
-    fetch(buildApiUrl(ApiEndpoint.Shop.Products, { baseUrl }))
-      .then(r => r.json())
-      .then((data: { products?: ShopProduct[] }) => {
-        if (!cancelled) setProducts(data.products ?? []);
+    setError(null);
+    fetchShopProducts(apiBaseUrl)
+      .then((shopProducts) => {
+        if (!cancelled) setProducts(shopProducts);
       })
-      .catch(() => { if (!cancelled) setError('Failed to load shop'); })
+      .catch((shopError) => {
+        if (!cancelled) setError(shopError instanceof Error ? shopError.message : 'Failed to load shop');
+      })
       .finally(() => { if (!cancelled) setLoadingProducts(false); });
     return () => { cancelled = true; };
-  }, [baseUrl]);
+  }, [apiBaseUrl]);
 
   const acBalance = (user as UserProfile & { ac_balance?: number } | null)?.ac_balance ?? 0;
   const handleBack = () => EventBus.instance.publish(new ShowScreenEvent('home'));
@@ -61,15 +66,18 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     try {
       const token = auth?.currentUser ? await auth.currentUser.getIdToken(true) : null;
       if (!token) { setError('Not authenticated'); return; }
-      const res = await fetch(buildApiUrl(StripeEndpoint.CreateCheckoutSession, { baseUrl }), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, Origin: baseUrl },
+      const res = await fetch(buildApiUrl(StripeEndpoint.CreateCheckoutSession, { baseUrl: apiBaseUrl }), {
+        method: HttpMethod.Post,
+        headers: {
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
+        },
         body: JSON.stringify({
           productType: product.productType,
           productId: product.productId,
           quantity: 1,
-          successUrl: `${window.location.origin}/shop?success=true`,
-          cancelUrl:  `${window.location.origin}/shop?canceled=true`,
+          successUrl: `${appOrigin}/shop?success=true`,
+          cancelUrl:  `${appOrigin}/shop?canceled=true`,
         }),
       });
       if (!res.ok) {

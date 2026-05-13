@@ -84,14 +84,22 @@ export type AdminActivityRow = {
   timestamp: string | number | Date;
 };
 
-export type ShopTab = 'Treasury' | 'Elite' | 'Vault' | 'Tickets';
+export type ShopTab = 'Treasury' | 'Elite' | 'Vault' | 'Play Access' | 'Events' | 'Creator Market';
 
 export type ShopProduct = {
   productId: string;
   productType: 'AC_CREDITS' | 'SUBSCRIPTION' | 'TOURNAMENT_ENTRY' | 'MARKETPLACE';
   displayName: string;
+  description?: string;
+  shopTab?: ShopTab;
+  badge?: string;
+  benefits?: string[];
+  entitlementKind?: 'credits' | 'pass' | 'cosmetic' | 'play_access' | 'event_ticket' | 'creator_good';
+  availability?: 'live' | 'preview' | 'coming_soon';
   acAmount?: number;
+  acPrice?: number;
   unitPriceCents?: number;
+  priceLabel?: string;
   currency: string;
   active: boolean;
 };
@@ -178,6 +186,14 @@ function formatPrice(cents?: number): string {
   return `$${((cents ?? 0) / 100).toFixed(2)}`;
 }
 
+function productPriceLabel(product: ShopProduct | null | undefined): string {
+  if (!product) return '-';
+  if (product.priceLabel) return product.priceLabel;
+  if (typeof product.acPrice === 'number') return `${product.acPrice.toLocaleString()} AC`;
+  if (typeof product.unitPriceCents === 'number') return formatPrice(product.unitPriceCents);
+  return 'Included';
+}
+
 function formatDate(value: string | number | Date | null | undefined): string {
   if (!value) return 'Never';
   const date = new Date(value);
@@ -190,6 +206,44 @@ function productCount(products: ShopProduct[], type: ShopProduct['productType'])
 
 function primaryShopProduct(products: ShopProduct[], type: ShopProduct['productType']): ShopProduct | null {
   return products.find(product => product.productType === type && product.active) ?? products.find(product => product.productType === type) ?? null;
+}
+
+function shopTabForProduct(product: ShopProduct): ShopTab {
+  if (product.shopTab) return product.shopTab;
+  if (product.productType === 'AC_CREDITS') return 'Treasury';
+  if (product.productType === 'SUBSCRIPTION') return 'Elite';
+  if (product.productType === 'MARKETPLACE') return 'Vault';
+  return 'Events';
+}
+
+function productsForShopTab(products: ShopProduct[], tab: ShopTab): ShopProduct[] {
+  return products.filter(product => shopTabForProduct(product) === tab);
+}
+
+function productCountByTab(products: ShopProduct[], tab: ShopTab): number {
+  return productsForShopTab(products, tab).length;
+}
+
+function productAvailabilityLabel(product: ShopProduct | null | undefined): string {
+  const availability = product?.availability ?? (product?.active ? 'live' : 'coming_soon');
+  if (availability === 'coming_soon') return 'Coming Soon';
+  if (availability === 'preview') return 'Preview';
+  return 'Live';
+}
+
+function isShopProductPurchasable(product: ShopProduct | null | undefined): product is ShopProduct {
+  return Boolean(product?.active && (product.availability ?? 'live') === 'live');
+}
+
+function shopProductActionLabel(product: ShopProduct | null | undefined): string {
+  if (!product) return 'Unavailable';
+  const availability = product.availability ?? 'live';
+  if (availability === 'coming_soon') return 'Coming Soon';
+  if (availability === 'preview') return 'Preview';
+  if (product.productType === 'AC_CREDITS') return 'Refill';
+  if (product.productType === 'SUBSCRIPTION') return 'Subscribe';
+  if (product.productType === 'TOURNAMENT_ENTRY') return 'Enter';
+  return 'Unlock';
 }
 
 function noopAction(label: string): AppPageSvgAction {
@@ -778,7 +832,7 @@ export function ShopPageToolbar({
   acBalance: number;
   onTabChange: (tab: ShopTab) => void;
 }) {
-  const tabs: ShopTab[] = ['Treasury', 'Elite', 'Vault', 'Tickets'];
+  const tabs: ShopTab[] = ['Treasury', 'Elite', 'Vault', 'Play Access', 'Events', 'Creator Market'];
   return (
     <div className="app-page-svg-toolbar">
       <div className="app-page-svg-toolbar__tabs">
@@ -820,37 +874,25 @@ export function ShopPageContent({
 } & AppPageSurfaceControlProps) {
   const creditProduct = primaryShopProduct(products, 'AC_CREDITS');
   const subscriptionProduct = primaryShopProduct(products, 'SUBSCRIPTION');
-  const marketplaceProduct = primaryShopProduct(products, 'MARKETPLACE');
   const ticketProduct = primaryShopProduct(products, 'TOURNAMENT_ENTRY');
-  const visibleProducts = products.filter(product => {
-    if (activeTab === 'Treasury') return product.productType === 'AC_CREDITS';
-    if (activeTab === 'Elite') return product.productType === 'SUBSCRIPTION';
-    if (activeTab === 'Vault') return product.productType === 'MARKETPLACE';
-    return product.productType === 'TOURNAMENT_ENTRY';
-  });
-  const primaryProduct = visibleProducts[0] ?? creditProduct ?? subscriptionProduct ?? marketplaceProduct ?? ticketProduct;
+  const vaultProduct = productsForShopTab(products, 'Vault')[0] ?? primaryShopProduct(products, 'MARKETPLACE');
+  const playAccessProduct = productsForShopTab(products, 'Play Access')[0] ?? null;
+  const eventProduct = productsForShopTab(products, 'Events')[0] ?? ticketProduct;
+  const creatorProduct = productsForShopTab(products, 'Creator Market')[0] ?? null;
+  const visibleProducts = productsForShopTab(products, activeTab);
+  const primaryProduct = visibleProducts[0] ?? creditProduct ?? subscriptionProduct ?? vaultProduct ?? ticketProduct;
   const panels: AppPageSvgPanel[] = [
     {
-      title: `${activeTab} Offers`,
-      subtitle: 'Active marketplace products',
-      rows: visibleProducts.slice(0, 5).map(product => ({
-        label: product.displayName,
-        value: `${formatPrice(product.unitPriceCents)} ${product.currency}`,
-      })),
-      actions: [
-        { label: loadingId ? 'Buying' : 'Buy', onClick: () => primaryProduct && onBuy(primaryProduct), disabled: !primaryProduct || Boolean(loadingId) },
-        { label: 'Clear Error', onClick: onClearError, disabled: !error },
-      ],
-    },
-    {
-      title: 'Arena Credits',
+      title: 'Treasury',
       subtitle: 'Spendable AI and tournament balance',
       rows: [
         { label: 'Balance', value: `${acBalance.toLocaleString()} AC` },
         { label: 'Credit packs', value: productCount(products, 'AC_CREDITS') },
         { label: 'Best pack', value: creditProduct?.displayName ?? '-' },
+        { label: 'Price', value: productPriceLabel(creditProduct) },
+        { label: 'Uses', value: 'AI, vault, events' },
       ],
-      actions: [{ label: 'Reload', onClick: () => creditProduct && onBuy(creditProduct), disabled: !creditProduct }],
+      actions: [{ label: shopProductActionLabel(creditProduct), onClick: () => creditProduct && onBuy(creditProduct), disabled: !isShopProductPurchasable(creditProduct) }],
     },
     {
       title: 'Elite',
@@ -858,18 +900,54 @@ export function ShopPageContent({
       rows: [
         { label: 'Subscriptions', value: productCount(products, 'SUBSCRIPTION') },
         { label: 'Featured', value: subscriptionProduct?.displayName ?? '-' },
-        { label: 'Price', value: formatPrice(subscriptionProduct?.unitPriceCents) },
+        { label: 'Price', value: productPriceLabel(subscriptionProduct) },
+        { label: 'Status', value: productAvailabilityLabel(subscriptionProduct) },
       ],
-      actions: [{ label: 'Subscribe', onClick: () => subscriptionProduct && onBuy(subscriptionProduct), disabled: !subscriptionProduct }],
+      actions: [{ label: shopProductActionLabel(subscriptionProduct), onClick: () => subscriptionProduct && onBuy(subscriptionProduct), disabled: !isShopProductPurchasable(subscriptionProduct) }],
     },
     {
-      title: 'Vault And Tickets',
-      subtitle: 'Cosmetics and event entry',
+      title: 'Vault',
+      subtitle: 'Cosmetics and owned identity',
       rows: [
-        { label: 'Vault items', value: productCount(products, 'MARKETPLACE') },
-        { label: 'Tickets', value: productCount(products, 'TOURNAMENT_ENTRY') },
-        { label: 'Featured ticket', value: ticketProduct?.displayName ?? '-' },
+        { label: 'Vault items', value: productCountByTab(products, 'Vault') },
+        { label: 'Featured', value: vaultProduct?.displayName ?? '-' },
+        { label: 'Price', value: productPriceLabel(vaultProduct) },
+        { label: 'Status', value: productAvailabilityLabel(vaultProduct) },
       ],
+      actions: [{ label: shopProductActionLabel(vaultProduct), onClick: () => vaultProduct && onBuy(vaultProduct), disabled: !isShopProductPurchasable(vaultProduct) }],
+    },
+    {
+      title: 'Play Access',
+      subtitle: 'Private rooms and better table hosting',
+      rows: [
+        { label: 'Access offers', value: productCountByTab(products, 'Play Access') },
+        { label: 'Featured', value: playAccessProduct?.displayName ?? '-' },
+        { label: 'Price', value: productPriceLabel(playAccessProduct) },
+        { label: 'Status', value: productAvailabilityLabel(playAccessProduct) },
+      ],
+      actions: [{ label: shopProductActionLabel(playAccessProduct), onClick: () => playAccessProduct && onBuy(playAccessProduct), disabled: !isShopProductPurchasable(playAccessProduct) }],
+    },
+    {
+      title: 'Events',
+      subtitle: 'Tickets, seasons, and structured competition',
+      rows: [
+        { label: 'Tickets', value: productCountByTab(products, 'Events') },
+        { label: 'Featured', value: eventProduct?.displayName ?? '-' },
+        { label: 'Price', value: productPriceLabel(eventProduct) },
+        { label: 'Status', value: productAvailabilityLabel(eventProduct) },
+      ],
+      actions: [{ label: shopProductActionLabel(eventProduct), onClick: () => eventProduct && onBuy(eventProduct), disabled: !isShopProductPurchasable(eventProduct) }],
+    },
+    {
+      title: 'Creator Market',
+      subtitle: 'Curated creator and publisher goods',
+      rows: [
+        { label: 'Creator goods', value: productCountByTab(products, 'Creator Market') },
+        { label: 'Featured', value: creatorProduct?.displayName ?? '-' },
+        { label: 'Price', value: productPriceLabel(creatorProduct) },
+        { label: 'Status', value: productAvailabilityLabel(creatorProduct) },
+      ],
+      actions: [{ label: shopProductActionLabel(creatorProduct), onClick: () => creatorProduct && onBuy(creatorProduct), disabled: !isShopProductPurchasable(creatorProduct) }],
     },
   ];
 
@@ -877,17 +955,18 @@ export function ShopPageContent({
     <AppPageSvgSurface
       title="Arena Marketplace"
       eyebrow="Shop"
-      subtitle="Arena Credits, memberships, vault items, and tournament tickets use the shared SVG commerce surface."
+      subtitle="Arena Credits, passes, vault cosmetics, play access, events, and creator goods use the shared SVG commerce surface."
       routeLabel="/shop"
       metrics={[
         { label: 'Balance', value: `${acBalance.toLocaleString()} AC` },
         { label: 'Products', value: products.length },
         { label: 'Tab', value: activeTab },
         { label: 'Loading', value: loadingProducts ? 'yes' : 'no' },
+        { label: 'Live', value: products.filter(product => isShopProductPurchasable(product)).length },
       ]}
       panels={panels}
       actions={[
-        { label: 'Buy', onClick: () => primaryProduct && onBuy(primaryProduct), disabled: !primaryProduct || Boolean(loadingId) },
+        { label: shopProductActionLabel(primaryProduct), onClick: () => primaryProduct && onBuy(primaryProduct), disabled: !isShopProductPurchasable(primaryProduct) || Boolean(loadingId) },
         { label: 'Clear', onClick: onClearError, disabled: !error },
         noopAction(activeTab),
       ]}
