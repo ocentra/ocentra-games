@@ -1,0 +1,170 @@
+.sp-shell-work {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.shop-page-svg-main {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.shop-page-svg-surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.shop-page-svg-clickable {
+  cursor: pointer;
+  outline: none;
+}
+
+.shop-page-svg-clickable text,
+.shop-page-svg-clickable image {
+  pointer-events: none;
+}
+
+.shop-page-svg-clickable:focus-visible rect,
+.shop-page-svg-clickable:focus-visible path {
+  stroke: rgba(255, 255, 255, 0.9);
+}
+
+.shop-page-svg-clickable.is-disabled {
+  cursor: default;
+}
+
+.shop-deck-preview-host {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(84, 226, 255, 0.26);
+  border-radius: 0.7rem;
+  background: rgba(2, 9, 20, 0.72);
+  color: rgba(240, 248, 255, 0.94);
+}
+
+.shop-deck-preview-host__empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: rgba(188, 236, 255, 0.82);
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.shop-preview-track,
+.shop-preview-item-track {
+  transform-box: fill-box;
+  will-change: transform;
+}
+
+.lobby-ui-hit {
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease, filter 160ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lobby-ui-hit:hover {
+  transform: translateY(-1px);
+  filter: url("#lobbyCyanGlow");
+}
+
+.lobby-ui-hit:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.lobby-spinner-wheel {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(.08, .72, .08, 1);
+  transform-box: view-box;
+}
+
+.lobby-spinner-wheel.is-spinning {
+  filter: url("#lobbyGoldGlow");
+}
+
+.lobby-spinner-center-button {
+  transition: filter 180ms ease, transform 180ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lobby-spinner-center-button:hover {
+  filter: url("#lobbyCyanGlow");
+  transform: scale(1.025);
+}
+
+.lobby-spinner-center-button:hover .lobby-spinner-center-hover-ring {
+  opacity: 0.18;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-blue {
+  animation: lobbySpinnerRingPulseBlue 520ms ease-in-out infinite alternate;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-purple {
+  animation: lobbySpinnerRingPulsePurple 430ms ease-in-out infinite alternate;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-dark {
+  animation: lobbySpinnerRingPulseDark 620ms ease-in-out infinite alternate;
+}
+
+@keyframes lobbySpinnerRingPulseBlue {
+  from {
+    stroke-width: 2.4;
+    opacity: 0.72;
+    filter: url("#lobbyCyanGlow");
+  }
+
+  to {
+    stroke-width: 5.2;
+    opacity: 1;
+    filter: url("#lobbyCyanGlow");
+  }
+}
+
+@keyframes lobbySpinnerRingPulsePurple {
+  from {
+    stroke-width: 4.2;
+    opacity: 0.62;
+    filter: url("#lobbyPurpleGlow");
+  }
+
+  to {
+    stroke-width: 7.2;
+    opacity: 1;
+    filter: url("#lobbyPurpleGlow");
+  }
+}
+
+@keyframes lobbySpinnerRingPulseDark {
+  from {
+    stroke: #193b5a;
+    stroke-width: 5;
+    opacity: 0.65;
+  }
+
+  to {
+    stroke: #12eaff;
+    stroke-width: 6.5;
+    opacity: 0.95;
+  }
+}

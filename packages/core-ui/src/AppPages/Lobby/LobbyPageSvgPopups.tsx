@@ -1179,7 +1179,8 @@ function SpinnerPopupContent({ onClose, controls, canvas }: { onClose: () => voi
   const arcId = `lobbySpinnerOuterArcText-${Math.round(cx)}-${Math.round(cy)}`;
   return (
     <g>
-      <PopupBackdrop canvas={canvas} opacity={0.62} />
+      <PopupBackdrop canvas={canvas} opacity={0.62} onClose={onClose} />
+      <Btn x={cx + r + 68} y={cy - r - 74} w={78} h={30} label="CLOSE" size={10} onClick={onClose} />
       <ellipse cx={cx} cy={cy + r + 34} rx={r * 0.82} ry="26" fill="#000" opacity="0.34" />
       <g className={`lobby-spinner-wheel ${isSpinning ? 'is-spinning' : ''}`} style={{ transform: `rotate(${spinRotation}deg)`, transformOrigin: `${cx}px ${cy}px`, transitionDuration: `${controls.spinner.spinMs}ms` }}>
         <circle className="lobby-spinner-ring-blue" cx={cx} cy={cy} r={r + 42} fill="#071321" stroke="#58bfff" strokeWidth="2.4" filter="url(#lobbyCyanGlow)" />

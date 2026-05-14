@@ -18,15 +18,92 @@ import { fetchShopProducts } from '@/ui/pages/Shop/shopApi';
 import { getShopApiBaseUrl, getShopAppOrigin } from '@/ui/pages/Shop/shopApiBase';
 import {
   ShopPageContent,
-  ShopPageToolbar,
   type ShopProduct,
   type ShopTab,
+  type ShopVaultDeckPreviewItem,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import type { ShopPageSvgControls } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
+import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
+import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
+import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
+import { AppDeckPreview } from '@/ui/components/DeckPreview/AppDeckPreview';
 
 interface ShopPageProps {
   user: UserProfile | null;
   onLogout: () => void;
   onLogoutClick?: () => void;
+}
+
+type ResourceEntryRef = { guid?: string; path?: string; assetType?: string };
+type LooseRecord = Record<string, unknown>;
+
+const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
+const SHOP_DECK_ASSET_TYPE = Deck.assetType as string;
+
+function asRecord(value: unknown): LooseRecord {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as LooseRecord : {};
+}
+
+function dataOf(document: unknown): LooseRecord {
+  const record = asRecord(document);
+  const data = asRecord(record.data);
+  return Object.keys(data).length > 0 ? data : record;
+}
+
+function normalizePath(path: string): string {
+  return path.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
+}
+
+function findGuidByPath(resources: ResourceEntryRef[], path: string, assetType = ''): string {
+  const normalizedPath = normalizePath(path);
+  if (!normalizedPath) return '';
+  return resources.find((resource) => (
+    resource.guid &&
+    normalizePath(resource.path ?? '') === normalizedPath &&
+    (!assetType || resource.assetType === assetType)
+  ))?.guid ?? '';
+}
+
+async function loadShopPageLayoutControls(): Promise<Partial<ShopPageSvgControls> | undefined> {
+  const resources = await getEntryIndexResourceEntries();
+  const guid = findGuidByPath(resources, SHOP_PAGE_LAYOUT_ASSET_PATH, 'PageLayout');
+  if (!guid) return undefined;
+  const layoutDocument = await loadRawAssetDocumentByGuid(guid, { cache: 'no-store' });
+  const controls = asRecord(dataOf(layoutDocument).shopControls);
+  return Object.keys(controls).length > 0 ? controls as Partial<ShopPageSvgControls> : undefined;
+}
+
+function shopDeckTitleFromPath(path: string | undefined, fallback: string): string {
+  const fileName = (path ?? '').replace(/\\/g, '/').split('/').pop() ?? fallback;
+  return fileName
+    .replace(/\.asset$/i, '')
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim() || fallback;
+}
+
+async function loadShopVaultDeckItems(): Promise<ShopVaultDeckPreviewItem[]> {
+  const resources = await getEntryIndexResourceEntries();
+  const seen = new Set<string>();
+  return resources
+    .filter((resource) => resource.assetType === SHOP_DECK_ASSET_TYPE && (resource.guid || resource.path))
+    .map((resource, index) => {
+      const id = resource.guid ?? resource.path ?? `deck-${index}`;
+      return {
+        id,
+        title: shopDeckTitleFromPath(resource.path, `Deck ${index + 1}`),
+        guid: resource.guid,
+        path: resource.path,
+      };
+    })
+    .filter((item) => {
+      if (seen.has(item.id)) {
+        return false;
+      }
+      seen.add(item.id);
+      return true;
+    })
+    .slice(0, 48);
 }
 
 export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: ShopPageProps) {
@@ -38,6 +115,8 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ShopTab>('Treasury');
+  const [layoutControls, setLayoutControls] = useState<Partial<ShopPageSvgControls> | undefined>(undefined);
+  const [vaultDeckItems, setVaultDeckItems] = useState<ShopVaultDeckPreviewItem[]>([]);
 
   const appOrigin = getShopAppOrigin();
   const apiBaseUrl = getShopApiBaseUrl();
@@ -56,6 +135,28 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
       .finally(() => { if (!cancelled) setLoadingProducts(false); });
     return () => { cancelled = true; };
   }, [apiBaseUrl]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadShopPageLayoutControls()
+      .then((controls) => {
+        if (!cancelled) setLayoutControls(controls);
+      })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadShopVaultDeckItems()
+      .then((items) => {
+        if (!cancelled) setVaultDeckItems(items);
+      })
+      .catch(() => {
+        if (!cancelled) setVaultDeckItems([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   const acBalance = (user as UserProfile & { ac_balance?: number } | null)?.ac_balance ?? 0;
   const handleBack = () => EventBus.instance.publish(new ShowScreenEvent('home'));
@@ -104,28 +205,22 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   return (
     <UnifiedPageShell
       className="sp-root"
+      workClassName="sp-shell-work"
       background={<DynamicBackground />}
       footer={<GameFooter appVersion={APP_VERSION} />}
       header={
         <UnifiedHeader
-        dynamicData={{
-          gameName: "Arena Marketplace",
-          tagline: "Gear up. Outthink. Outplay."
-        }}
-        config={{
-          right: headerRightConfig,
-          left: {
-            onClick: handleBack
-          }
-        }}
-        />
-      }
-
-      toolbar={
-        <ShopPageToolbar
-          activeTab={activeTab}
-          acBalance={acBalance}
-          onTabChange={setActiveTab}
+          dynamicData={{
+            gameName: "Arena Marketplace",
+            tagline: "Gear up. Outthink. Outplay."
+          }}
+          config={{
+            right: headerRightConfig,
+            left: {
+              onClick: handleBack
+            }
+          }}
+          showPrimaryNavigation={false}
         />
       }
     >
@@ -137,8 +232,20 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         loadingId={loadingId}
         error={error}
         acBalance={acBalance}
+        onTabChange={setActiveTab}
         onClearError={() => setError(null)}
         onBuy={handleProtectedBuy}
+        layoutControls={layoutControls}
+        vaultDeckItems={vaultDeckItems}
+        renderVaultDeckPreview={(item) => (
+          <AppDeckPreview
+            asset={item ? {
+              title: item.title,
+              guid: item.guid,
+              path: item.path,
+            } : null}
+          />
+        )}
       />
     </UnifiedPageShell>
   );

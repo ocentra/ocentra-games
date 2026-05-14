@@ -23,6 +23,7 @@ const fileCopies = [
   ['src/Common/ExploreGamesPanel/ExploreGamesPanel.css', 'dist/Common/ExploreGamesPanel/'],
   ['src/Common/GameBadgesOverlay/GameBadgesOverlay.css', 'dist/Common/GameBadgesOverlay/'],
   ['src/AppPages/AppPageSvgSurface.css', 'dist/AppPages/'],
+  ['src/AppPages/Shop/ShopPageSvgSurface.css', 'dist/AppPages/Shop/'],
   ['src/GamesExplorer/GameCard.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/GameListRow.css', 'dist/GamesExplorer/'],
   ['src/GamesExplorer/ExplorerContentBar.css', 'dist/GamesExplorer/'],
