@@ -32,7 +32,7 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled?: 
 log.register(import.meta.url);
 
 const LOG_ASSET_EXISTS_VERBOSE = false;
-const LOG_ASSET_FLOW = true;
+const LOG_ASSET_FLOW = import.meta.env.DEV;
 const BATCH_KEY_RESOLVE_URL = 'AssetLoader.resolveAssetUrl';
 
 log.registerBatchContext(BATCH_KEY_RESOLVE_URL, {
@@ -75,7 +75,9 @@ export class AssetLoader {
   }
 
   async loadAssetByGuid(guid: string): Promise<Response> {
-    logInfo('[ASSET-FLOW] AssetLoader.loadAssetByGuid requested', { data: { guid } }, LOG_ASSET_FLOW);
+    if (LOG_ASSET_FLOW) {
+      logInfo('[ASSET-FLOW] AssetLoader.loadAssetByGuid requested', { data: { guid } }, true);
+    }
     const deferred = new OperationDeferred<Response>();
     await EventBus.instance.publishAsync(new GetResourceEvent({ guid }, deferred));
     const result = await deferred.promise;
@@ -86,7 +88,9 @@ export class AssetLoader {
   }
 
   async loadImageByHash(hash: string): Promise<Response> {
-    logInfo('[ASSET-FLOW] AssetLoader.loadImageByHash requested', { data: { hash: hash.slice(0, 16) + '...' } }, LOG_ASSET_FLOW);
+    if (LOG_ASSET_FLOW) {
+      logInfo('[ASSET-FLOW] AssetLoader.loadImageByHash requested', { data: { hash: hash.slice(0, 16) + '...' } }, true);
+    }
     const deferred = new OperationDeferred<Response>();
     await EventBus.instance.publishAsync(new GetResourceEvent({ hash }, deferred));
     const result = await deferred.promise;
@@ -137,4 +141,3 @@ export class AssetLoader {
     }
   }
 }
-

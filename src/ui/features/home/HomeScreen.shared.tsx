@@ -51,8 +51,8 @@ log.register(import.meta.url);
 const DEBUG_LAYOUT = false;
 const DEBUG_PAGE_STRUCTURE = false;
 
-const LOG_NAVIGATION = true;
-const LOG_CACHE = true;
+const LOG_NAVIGATION = import.meta.env.DEV;
+const LOG_CACHE = import.meta.env.DEV;
 
 const GAMES_CACHE_KEY = 'homePageGames';
 
@@ -190,7 +190,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
   ]);
 
   useEffect(() => {
-    logInfo('HomePage mounted', { timestamp: Date.now() }, true);
+    logInfo('HomePage mounted', { timestamp: Date.now() }, LOG_NAVIGATION);
     document.documentElement.classList.add('home-page-active');
     document.body.classList.add('home-page-active');
 
@@ -311,7 +311,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      <div className="home-work-math">
+      <main className="home-work-math">
         <HomePageShowcaseContent
           contentRef={homepageContentRef}
           imageLoaders={ImageLoaders}
@@ -337,7 +337,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           onGameClick={handlePlayGame}
           onExploreClick={() => navigate(buildCardGamesCatalogPath())}
         />
-      </div>
+      </main>
     </UnifiedPageShell>
   );
 }

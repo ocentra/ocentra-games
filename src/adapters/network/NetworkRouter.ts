@@ -3,7 +3,7 @@ import { getStorageConfig } from '@/services/storage/StorageConfig';
 import type { ResourceRequest } from '@ocentra/network-domain/router-types';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
-import { HttpHeader, HttpMethod, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
+import { HttpHeader, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { EventRegistrar } from '@ocentra/eventing-domain/core/EventRegistrar';
 import { OperationResult } from '@ocentra/eventing-domain/core/OperationResult';
 import { GetResourceEvent } from '@ocentra/eventing-domain/events/assets/GetResourceEvent';
@@ -23,9 +23,9 @@ import { MainAppAssetTarget } from '@/services/storage/assetTarget';
 const log = MainAppLogger.instance;
 log.register(import.meta.url);
 
-const LOG_RESOURCE_RESPONSES = true;
-const LOG_NETWORK_ROUTER_INIT = true;
-const LOG_ASSET_FLOW = true;
+const LOG_RESOURCE_RESPONSES = import.meta.env.DEV;
+const LOG_NETWORK_ROUTER_INIT = import.meta.env.DEV;
+const LOG_ASSET_FLOW = import.meta.env.DEV;
 
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
   if (typeof dataOrEnabled === 'boolean') {
@@ -51,6 +51,24 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled?: 
   }
 };
 
+function canUseLocalLogEndpoint(): boolean {
+  const storageConfig = getStorageConfig();
+  return import.meta.env.DEV
+    || isLocalHostname(window.location.hostname)
+    || storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+}
+
+function emptyLogStats(): Record<string, unknown> {
+  return {
+    total_logs: 0,
+    by_level: { error: 0, info: 0, log: 0, debug: 0, warn: 0 },
+    by_source: {},
+    by_context: {},
+    oldest_timestamp: null,
+    newest_timestamp: null,
+  };
+}
+
 export class NetworkRouter implements INetworkRouterHandler {
   static executionOrder = -102;
   static readonly HANDLER_MARKER = NetworkRouterHandlerMarker;
@@ -68,17 +86,19 @@ export class NetworkRouter implements INetworkRouterHandler {
   private constructor() {
     this.isDev = import.meta.env.DEV || isLocalHostname(window.location.hostname);
 
-    logInfo(
-      '[ASSET-FLOW] NetworkRouter initialized',
-      {
-        data: {
-          assetsPublicUrl: getStorageConfig().assetsPublicUrl || '(empty)',
-          hasR2Assets: !!getStorageConfig().r2Assets,
-          isDev: this.isDev,
+    if (LOG_NETWORK_ROUTER_INIT) {
+      logInfo(
+        '[ASSET-FLOW] NetworkRouter initialized',
+        {
+          data: {
+            assetsPublicUrl: getStorageConfig().assetsPublicUrl || '(empty)',
+            hasR2Assets: !!getStorageConfig().r2Assets,
+            isDev: this.isDev,
+          },
         },
-      },
-      LOG_NETWORK_ROUTER_INIT
-    );
+        true
+      );
+    }
   }
 
   get HANDLER_MARKER(): typeof NetworkRouterHandlerMarker {
@@ -137,24 +157,30 @@ export class NetworkRouter implements INetworkRouterHandler {
       return;
     }
 
-    logInfo(
-      '[ASSET-FLOW] GetResourceEvent received',
-      { data: { request: event.request } },
-      true
-    );
-    try {
-      const response = await NetworkRouter.getInstance().getResource(event.request);
+    if (LOG_ASSET_FLOW) {
       logInfo(
-        '[ASSET-FLOW] GetResourceEvent success',
-        { data: { ok: response.ok, status: response.status } },
+        '[ASSET-FLOW] GetResourceEvent received',
+        { data: { request: event.request } },
         true
       );
+    }
+    try {
+      const response = await NetworkRouter.getInstance().getResource(event.request);
+      if (LOG_ASSET_FLOW) {
+        logInfo(
+          '[ASSET-FLOW] GetResourceEvent success',
+          { data: { ok: response.ok, status: response.status } },
+          true
+        );
+      }
       if (!event.deferred.isSettled()) {
         event.deferred.resolve(OperationResult.success(response));
       }
     } catch (error) {
       const failureMessage = error instanceof Error ? error.message : 'Failed to get resource';
-      logError('[ASSET-FLOW] GetResourceEvent failed', { data: { error: failureMessage, request: event.request } });
+      if (LOG_ASSET_FLOW) {
+        logError('[ASSET-FLOW] GetResourceEvent failed', { data: { error: failureMessage, request: event.request } });
+      }
       if (!event.deferred.isSettled()) {
         event.deferred.resolve(OperationResult.failure(failureMessage));
       }
@@ -166,24 +192,30 @@ export class NetworkRouter implements INetworkRouterHandler {
       return;
     }
 
-    logInfo(
-      '[ASSET-FLOW] BatchGetResourcesEvent received',
-      { data: { guids: event.guids, count: event.guids.length } },
-      true
-    );
-    try {
-      const results = await NetworkRouter.getInstance().batchGetResources(event.guids);
+    if (LOG_ASSET_FLOW) {
       logInfo(
-        '[ASSET-FLOW] BatchGetResourcesEvent success',
-        { data: { requested: event.guids.length, received: results.size } },
+        '[ASSET-FLOW] BatchGetResourcesEvent received',
+        { data: { guids: event.guids, count: event.guids.length } },
         true
       );
+    }
+    try {
+      const results = await NetworkRouter.getInstance().batchGetResources(event.guids);
+      if (LOG_ASSET_FLOW) {
+        logInfo(
+          '[ASSET-FLOW] BatchGetResourcesEvent success',
+          { data: { requested: event.guids.length, received: results.size } },
+          true
+        );
+      }
       if (!event.deferred.isSettled()) {
         event.deferred.resolve(OperationResult.success(results));
       }
     } catch (error) {
       const failureMessage = error instanceof Error ? error.message : 'Failed to batch get resources';
-      logError('[ASSET-FLOW] BatchGetResourcesEvent failed', { data: { error: failureMessage, guids: event.guids } });
+      if (LOG_ASSET_FLOW) {
+        logError('[ASSET-FLOW] BatchGetResourcesEvent failed', { data: { error: failureMessage, guids: event.guids } });
+      }
       if (!event.deferred.isSettled()) {
         event.deferred.resolve(OperationResult.failure(failureMessage));
       }
@@ -192,33 +224,11 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onSaveLogsEvent(event: SaveLogsEvent): Promise<void> {
     try {
-      const storageConfig = getStorageConfig();
-      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
-
-      // Use Cloudflare Worker for logs if in Real Cloud mode
-      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        const url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs`;
-        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
-
-        const response = await fetch(url, {
-          method: HttpMethod.Post,
-          headers: {
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-            [HttpHeader.Authorization]: `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({ logs: event.logs }),
-        });
-
-        if (!response.ok) {
-          event.deferred.reject(new Error(`Save logs to cloud failed: ${response.status}`));
-          return;
-        }
-        await response.text().catch(() => undefined);
+      if (!canUseLocalLogEndpoint()) {
         event.deferred.resolve(OperationResult.success(undefined));
         return;
       }
 
-      // Fallback to local bridge
       const ndjson = event.logs.map((entry) => JSON.stringify(entry)).join('\n');
       const response = await fetch(LocalApiEndpoint.Logs.Base, {
         method: HttpMethod.Post,
@@ -238,21 +248,13 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onQueryLogsEvent(event: QueryLogsEvent): Promise<void> {
     try {
-      const storageConfig = getStorageConfig();
-      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
-
-      let url: string;
-      const headers: Record<string, string> = {};
-
-      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/query?${event.queryParams.toString()}`;
-        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
-        headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
-      } else {
-        url = `${LocalApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
+      if (!canUseLocalLogEndpoint()) {
+        event.deferred.resolve(OperationResult.success({ logs: [] }));
+        return;
       }
 
-      const response = await fetch(url, { method: HttpMethod.Get, headers });
+      const url = `${LocalApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
+      const response = await fetch(url, { method: HttpMethod.Get });
       if (!response.ok) {
         await response.text().catch(() => undefined);
         event.deferred.reject(new Error(`Query logs failed: ${response.status}`));
@@ -267,24 +269,15 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onGetLogStatsEvent(event: GetLogStatsEvent): Promise<void> {
     try {
-      const storageConfig = getStorageConfig();
-      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
-
-      let url: string;
-      const headers: Record<string, string> = {};
-
-      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        const baseUrl = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/stats`;
-        url = event.source ? `${baseUrl}?source=${encodeURIComponent(event.source)}` : baseUrl;
-        const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
-        headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
-      } else {
-        url = event.source
-          ? `${LocalApiEndpoint.Logs.Stats}?source=${encodeURIComponent(event.source)}`
-          : String(LocalApiEndpoint.Logs.Stats);
+      if (!canUseLocalLogEndpoint()) {
+        event.deferred.resolve(OperationResult.success(emptyLogStats()));
+        return;
       }
 
-      const response = await fetch(url, { method: HttpMethod.Get, headers });
+      const url = event.source
+        ? `${LocalApiEndpoint.Logs.Stats}?source=${encodeURIComponent(event.source)}`
+        : String(LocalApiEndpoint.Logs.Stats);
+      const response = await fetch(url, { method: HttpMethod.Get });
       if (!response.ok) {
         await response.text().catch(() => undefined);
         event.deferred.reject(new Error(`Get log stats failed: ${response.status}`));
@@ -299,12 +292,7 @@ export class NetworkRouter implements INetworkRouterHandler {
 
   private static async onClearLogsEvent(event: ClearLogsEvent): Promise<void> {
     try {
-      const storageConfig = getStorageConfig();
-      const isLocalTarget = storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
-
-      if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        // We typically don't allow clearing remote logs via the frontend for security,
-        // but if we did, we'd implementation it here. For now, just resolve success or no-op.
+      if (!canUseLocalLogEndpoint()) {
         event.deferred.resolve(OperationResult.success(undefined));
         return;
       }
@@ -328,14 +316,18 @@ export class NetworkRouter implements INetworkRouterHandler {
     const shouldUseDesktopGuidCache =
       !this.isDev &&
       storageConfig.assetTarget?.key !== MainAppAssetTarget.LocalDev;
-    logInfo('[ASSET-FLOW] getResource called', { data: { request, hasBase: !!base } }, LOG_ASSET_FLOW);
+    if (LOG_ASSET_FLOW) {
+      logInfo('[ASSET-FLOW] getResource called', { data: { request, hasBase: !!base } }, true);
+    }
 
     const resolvedRequest = await resolvePlatformAssetRequest(request);
 
     if (base && (resolvedRequest.guid || resolvedRequest.hash || resolvedRequest.checksum)) {
       const key = resolvedRequest.guid ?? resolvedRequest.hash ?? resolvedRequest.checksum ?? '';
       const url = `${base}/${encodeURIComponent(key)}`;
-      logInfo('[ASSET-FLOW] fetching asset URL', { data: { url } }, LOG_ASSET_FLOW);
+      if (LOG_ASSET_FLOW) {
+        logInfo('[ASSET-FLOW] fetching asset URL', { data: { url } }, true);
+      }
       const runtime = getPlatformAssetRuntime();
       const response = resolvedRequest.guid
         ? await runtime.getAssetByGuid(resolvedRequest.guid, storageConfig, {
@@ -360,7 +352,9 @@ export class NetworkRouter implements INetworkRouterHandler {
       return response;
     }
 
-    logWarn('[ASSET-FLOW] getResource cannot proceed: no base URL and no identifier', { data: { request: resolvedRequest } }, true);
+    if (LOG_ASSET_FLOW) {
+      logWarn('[ASSET-FLOW] getResource cannot proceed: no base URL and no identifier', { data: { request: resolvedRequest } }, true);
+    }
     throw new Error(
       `Cannot fetch resource: assetsPublicUrl is empty and request has no guid/hash/checksum. ` +
       `Set VITE_ASSETS_PUBLIC_URL or VITE_CLAIM_STORAGE_URL.`

@@ -7,9 +7,9 @@ import { LogLevel } from '@ocentra/logging-domain/types/logLevel';
 import { LogConsumer } from '@ocentra/logging-domain/transport/bridgeLogPayload';
 import { BridgeTransport } from '@ocentra/logging-domain/transport/bridgeTransport';
 import { TauriTransport } from '@ocentra/logging-domain/transport/tauriTransport';
-import { AnalyticsTransport } from '@ocentra/logging-domain/transport/analyticsTransport';
 import { deleteAppNdjsonFiles } from '@ocentra/logging-domain/app-log/appNdjsonWriter';
 import { getFilePathFromUrl, getSourceFromFilePath } from '@ocentra/app-core/path';
+import { isLocalHostname } from '@ocentra/endpoint-domain/constants/hostname';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { OperationDeferred } from '@ocentra/eventing-domain/core/OperationDeferred';
 import { SaveLogsEvent } from '@ocentra/eventing-domain/events/logs/SaveLogsEvent';
@@ -83,21 +83,22 @@ export function initLogging(): void {
   const bridgeEndpoint = typeof process !== 'undefined' && process.env?.TEST_LOG_SERVER_URL
     ? process.env.TEST_LOG_SERVER_URL
     : undefined;
+  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  const isProductionBuild = typeof import.meta !== 'undefined' && import.meta.env?.PROD === true;
+  const isLocalWeb = typeof window !== 'undefined' && isLocalHostname(window.location.hostname);
+  const shouldUseBrowserLogStorage = !isProductionBuild || isLocalWeb || isTauri || !!bridgeEndpoint;
 
-  MainAppLogger.initLogger(eventBusStorage, pathResolver, {
+  MainAppLogger.initLogger(shouldUseBrowserLogStorage ? eventBusStorage : null, pathResolver, {
     bridgeConsumer: LogConsumer.Main,
     bridgeEndpoint,
-    consoleEnabled: true,
+    consoleEnabled: shouldUseBrowserLogStorage,
   }, requestContextProvider);
 
-  // Clean up old logs based on platform
-  const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
   if (typeof process !== 'undefined' && process.versions?.node) {
-    const keepCount = isTauri ? 10 : 5; // More for desktop, less for dev/web
+    const keepCount = isTauri ? 10 : 5;
     deleteAppNdjsonFiles('main', keepCount);
   }
 
-  // Add platform-specific transports
   if (isTauri) {
     import('@tauri-apps/api/core').then(({ invoke }) => {
       MainAppLogger.instance.addTransport(new TauriTransport(invoke));
@@ -105,15 +106,13 @@ export function initLogging(): void {
       // eslint-disable-next-line no-console
       console.error('[Logging] Failed to initialize Tauri transport:', err);
     });
-  } else if (typeof import.meta !== 'undefined' && import.meta.env?.PROD) {
-    // For production Web, add Analytics
-    MainAppLogger.instance.addTransport(new AnalyticsTransport({ minLevel: LogLevel.Warn }));
   } else if (bridgeEndpoint) {
-    // In dev/test if bridge is explicitly provided, ensure BridgeTransport is active
     MainAppLogger.instance.addTransport(new BridgeTransport(bridgeEndpoint));
   }
 
-  setInterval(() => void flushBuffer(), FLUSH_INTERVAL_MS);
+  if (shouldUseBrowserLogStorage) {
+    setInterval(() => void flushBuffer(), FLUSH_INTERVAL_MS);
+  }
 }
 
 export async function flushTestLogs(): Promise<void> {

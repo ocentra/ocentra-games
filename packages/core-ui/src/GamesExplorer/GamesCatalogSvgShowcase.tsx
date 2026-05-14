@@ -1261,6 +1261,7 @@ function GameCardSvg({
   const compactDeckText = compactDeck(game.deck);
   const compactDurationText = compactDuration(game.duration);
   const compactDifficultyText = compactDifficulty(game.difficulty);
+  const imageLabel = `${game.name} catalog preview artwork`;
   const metaItems = [
     compactPlayerText ? { key: 'players', label: `${ICONS.players} ${compactPlayerText}` } : null,
     compactDeckText ? { key: 'deck', label: `${ICONS.card} ${compactDeckText}` } : null,
@@ -1302,7 +1303,9 @@ function GameCardSvg({
               <rect x={bannerX} y={bannerY} width={bannerW} height={bannerH} rx={14} />
             </clipPath>
             <g clipPath={`url(#${clipId})`}>
-              <image className="games-catalog-svg-showcase__card-image" href={imgSrc} x={bannerX} y={bannerY - 18} width={bannerW} height={bannerH + 36} preserveAspectRatio="xMidYMid slice" opacity={0.92} />
+              <image className="games-catalog-svg-showcase__card-image" href={imgSrc} x={bannerX} y={bannerY - 18} width={bannerW} height={bannerH + 36} preserveAspectRatio="xMidYMid slice" opacity={0.92} role="img" aria-label={imageLabel}>
+                <title>{imageLabel}</title>
+              </image>
               <rect x={bannerX} y={bannerY} width={bannerW} height={bannerH} fill={controls.cardImageOverlayColor} opacity={controls.cardImageOverlayOpacity} />
               <path d={`M ${bannerX} ${bannerY + bannerH - 52} C ${bannerX + bannerW * 0.25} ${bannerY + bannerH - 96} ${bannerX + bannerW * 0.44} ${bannerY + bannerH - 8} ${bannerX + bannerW} ${bannerY + bannerH - 62} V ${bannerY + bannerH + 10} H ${bannerX} Z`} fill={controls.cardImageOverlayColor} opacity={controls.cardImageCurveOpacity} />
             </g>
