@@ -60,10 +60,11 @@ async function fetchMobileJsonSlice<T>(
 
 async function fetchMobileAssetResponse(
   request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
-  storageConfig: StorageConfig
+  storageConfig: StorageConfig,
+  options?: PlatformAssetFetchOptions
 ): Promise<Response> {
   const resolved = await resolveAssetDownloadUrl(request, storageConfig);
-  return await fetch(resolved);
+  return await fetch(resolved, options?.cache ? { cache: options.cache } : undefined);
 }
 
 function createLazyDesktopRuntime(): IPlatformAssetRuntime {
@@ -229,11 +230,11 @@ class WebPlatformAssetRuntime implements IPlatformAssetRuntime {
   async fetchAsset(
     request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
     storageConfig: StorageConfig,
-    _options?: PlatformAssetFetchOptions
+    options?: PlatformAssetFetchOptions
   ) {
     return await measureRuntimeAssetOperation('web', 'fetchAsset', async () => {
       const resolved = await resolveAssetDownloadUrl(request, storageConfig);
-      return fetch(resolved);
+      return fetch(resolved, options?.cache ? { cache: options.cache } : undefined);
     });
   }
 
@@ -332,10 +333,10 @@ class MobilePlatformAssetRuntime extends WebPlatformAssetRuntime {
   override async fetchAsset(
     request: Pick<ResourceRequest, 'guid' | 'hash' | 'checksum'>,
     storageConfig: StorageConfig,
-    _options?: PlatformAssetFetchOptions
+    options?: PlatformAssetFetchOptions
   ) {
     return await measureRuntimeAssetOperation('mobile', 'fetchAsset', async () =>
-      fetchMobileAssetResponse(request, storageConfig)
+      fetchMobileAssetResponse(request, storageConfig, options)
     );
   }
 

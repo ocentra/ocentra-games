@@ -35,6 +35,7 @@ export { clearAssetDownloadUrlResolveCache, getWorkerBaseUrl, resolveAssetDownlo
 export interface PlatformAssetFetchOptions {
   useGuidCache?: boolean;
   fetchConcurrency?: number;
+  cache?: RequestCache;
 }
 
 export const DEFAULT_PLATFORM_ASSET_FETCH_CONCURRENCY = 12;

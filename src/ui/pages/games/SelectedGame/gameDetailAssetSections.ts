@@ -5,6 +5,7 @@ import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 
 type LooseRecord = Record<string, unknown>;
 type LoadAssetDocumentOptions = { cache?: RequestCache };
+type AssetDocumentResource = { guid?: string; path?: string; assetType?: string; checksum?: string | null };
 
 const SELECTED_GAME_LAYOUT_ASSET_PATH = 'Resources/Pages/SelectedGameLayout.asset';
 
@@ -39,7 +40,7 @@ export interface SelectedGameAssetBundle {
 
 export async function loadSelectedGameAssetBundle(gameGuid: string): Promise<SelectedGameAssetBundle> {
   const resources = await getEntryIndexResourceEntries();
-  const gameDocument = await loadRawAssetDocumentByGuid(gameGuid);
+  const gameDocument = await loadAssetDocumentByGuid(gameGuid, resources);
   const gameData = dataOf(gameDocument);
   const infoDocument = await loadAssetDocumentFromRef(gameData.gameInfoAsset, resources);
   const rulesDocument = await loadAssetDocumentFromRef(gameData.gameRulesAsset, resources);
@@ -93,7 +94,7 @@ export async function loadGameDetailAssetContent(
   fallbackSections: PageSection[],
 ): Promise<GameDetailAssetContent> {
   const resources = await getEntryIndexResourceEntries();
-  const gameDocument = await loadRawAssetDocumentByGuid(gameGuid);
+  const gameDocument = await loadAssetDocumentByGuid(gameGuid, resources);
   const gameData = dataOf(gameDocument);
   const infoDocument = await loadAssetDocumentFromRef(gameData.gameInfoAsset, resources);
   const rulesDocument = await loadAssetDocumentFromRef(gameData.gameRulesAsset, resources);
@@ -161,27 +162,27 @@ function normalizePath(path: string): string {
   return path.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
 }
 
-async function loadAssetDocumentFromRef(ref: unknown, resources: Array<{ guid?: string; path?: string; assetType?: string }>): Promise<LooseRecord | null> {
+async function loadAssetDocumentFromRef(ref: unknown, resources: AssetDocumentResource[]): Promise<LooseRecord | null> {
   const refRecord = asRecord(ref);
   const pathGuid = findGuidByPath(resources, asText(refRecord.path), asText(refRecord.assetType));
   const embeddedGuid = asText(refRecord.guid);
-  return await loadAssetDocumentByCandidateGuids(pathGuid, embeddedGuid);
+  return await loadAssetDocumentByCandidateGuids(resources, pathGuid, embeddedGuid);
 }
 
 async function loadAssetDocumentByPath(
   path: string,
-  resources: Array<{ guid?: string; path?: string; assetType?: string }>,
+  resources: AssetDocumentResource[],
   assetType = '',
   options: LoadAssetDocumentOptions = {},
 ): Promise<LooseRecord | null> {
   const guid = findGuidByPath(resources, path, assetType);
-  return guid ? await loadRawAssetDocumentByGuid(guid, options) : null;
+  return guid ? await loadAssetDocumentByGuid(guid, resources, options) : null;
 }
 
 async function loadAssetDocumentByLinkedKey(
   gameTreePath: string,
   fileName: string,
-  resources: Array<{ guid?: string; path?: string; assetType?: string }>,
+  resources: AssetDocumentResource[],
 ): Promise<LooseRecord | null> {
   if (!gameTreePath || !fileName) {
     return null;
@@ -189,13 +190,26 @@ async function loadAssetDocumentByLinkedKey(
 
   const basePath = gameTreePath.replace(/\\/g, '/').replace(/\/[^/]*$/, '');
   const guid = findGuidByPath(resources, `${basePath}/${fileName}`);
-  return guid ? await loadRawAssetDocumentByGuid(guid) : null;
+  return guid ? await loadAssetDocumentByGuid(guid, resources) : null;
 }
 
-async function loadAssetDocumentByCandidateGuids(primaryGuid: string, fallbackGuid = ''): Promise<LooseRecord | null> {
+async function loadAssetDocumentByGuid(
+  guid: string,
+  resources: AssetDocumentResource[],
+  options: LoadAssetDocumentOptions = {},
+): Promise<LooseRecord | null> {
+  const checksum = resources.find((resource) => resource.guid === guid)?.checksum ?? undefined;
+  return await loadRawAssetDocumentByGuid(guid, { ...options, checksum });
+}
+
+async function loadAssetDocumentByCandidateGuids(
+  resources: AssetDocumentResource[],
+  primaryGuid: string,
+  fallbackGuid = '',
+): Promise<LooseRecord | null> {
   const candidateGuids = [primaryGuid, fallbackGuid].filter((guid, index, guids) => guid && guids.indexOf(guid) === index);
   for (const guid of candidateGuids) {
-    const document = await loadRawAssetDocumentByGuid(guid);
+    const document = await loadAssetDocumentByGuid(guid, resources);
     if (document) {
       return document;
     }
@@ -203,7 +217,7 @@ async function loadAssetDocumentByCandidateGuids(primaryGuid: string, fallbackGu
   return null;
 }
 
-function findGuidByPath(resources: Array<{ guid?: string; path?: string; assetType?: string }>, path: string, assetType = ''): string {
+function findGuidByPath(resources: AssetDocumentResource[], path: string, assetType = ''): string {
   const normalizedPath = normalizePath(path);
   if (!normalizedPath) {
     return '';

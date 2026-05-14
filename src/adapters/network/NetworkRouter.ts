@@ -14,6 +14,7 @@ import { SaveLogsEvent } from '@ocentra/eventing-domain/events/logs/SaveLogsEven
 import { QueryLogsEvent } from '@ocentra/eventing-domain/events/logs/QueryLogsEvent';
 import { GetLogStatsEvent } from '@ocentra/eventing-domain/events/logs/GetLogStatsEvent';
 import { ClearLogsEvent } from '@ocentra/eventing-domain/events/logs/ClearLogsEvent';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { isLocalHostname } from '@ocentra/endpoint-domain/constants/hostname';
 import { LocalApiEndpoint } from '@ocentra/endpoint-domain/constants/local';
 import { getPlatformAssetRuntime } from '@/adapters/assets/PlatformAssetRuntime';
@@ -26,6 +27,59 @@ log.register(import.meta.url);
 const LOG_RESOURCE_RESPONSES = true;
 const LOG_NETWORK_ROUTER_INIT = true;
 const LOG_ASSET_FLOW = true;
+
+function canUseLocalLogBridge(): boolean {
+  return Boolean(import.meta.env.DEV);
+}
+
+interface WorkerLogEntry {
+  id: string;
+  message: string;
+  level: string;
+  timestamp: number;
+  source?: string;
+  context?: string;
+  stack?: string;
+  args?: unknown[];
+}
+
+function stringField(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function serializeUnknownMessage(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function toWorkerLogEntry(value: unknown, index: number): WorkerLogEntry {
+  const entry = value && typeof value === 'object' ? value as Record<string, unknown> : {};
+  const timestamp = typeof entry.timestamp === 'number' && Number.isFinite(entry.timestamp)
+    ? entry.timestamp
+    : Date.now();
+  const output: WorkerLogEntry = {
+    id: stringField(entry.id) ?? `log-${Date.now()}-${index}`,
+    message: stringField(entry.message) ?? serializeUnknownMessage(value),
+    level: stringField(entry.level) ?? 'info',
+    timestamp,
+  };
+  const source = stringField(entry.source);
+  const context = stringField(entry.context);
+  const stack = stringField(entry.stack);
+  if (source) output.source = source;
+  if (context) output.context = context;
+  if (stack) output.stack = stack;
+  if (Array.isArray(entry.args)) {
+    output.args = entry.args;
+  }
+  return output;
+}
 
 const logInfo = (message: string, dataOrEnabled?: unknown | boolean, enabled?: boolean) => {
   if (typeof dataOrEnabled === 'boolean') {
@@ -197,7 +251,7 @@ export class NetworkRouter implements INetworkRouterHandler {
 
       // Use Cloudflare Worker for logs if in Real Cloud mode
       if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        const url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs`;
+        const url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}${ApiEndpoint.Logs.Base}`;
         const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
 
         const response = await fetch(url, {
@@ -206,7 +260,7 @@ export class NetworkRouter implements INetworkRouterHandler {
             [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
             [HttpHeader.Authorization]: `Bearer ${apiKey}`,
           },
-          body: JSON.stringify({ logs: event.logs }),
+          body: JSON.stringify({ logs: event.logs.map(toWorkerLogEntry) }),
         });
 
         if (!response.ok) {
@@ -219,6 +273,10 @@ export class NetworkRouter implements INetworkRouterHandler {
       }
 
       // Fallback to local bridge
+      if (!canUseLocalLogBridge()) {
+        event.deferred.resolve(OperationResult.success(undefined));
+        return;
+      }
       const ndjson = event.logs.map((entry) => JSON.stringify(entry)).join('\n');
       const response = await fetch(LocalApiEndpoint.Logs.Base, {
         method: HttpMethod.Post,
@@ -245,10 +303,14 @@ export class NetworkRouter implements INetworkRouterHandler {
       const headers: Record<string, string> = {};
 
       if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/query?${event.queryParams.toString()}`;
+        url = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}${ApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
         const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
         headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
       } else {
+        if (!canUseLocalLogBridge()) {
+          event.deferred.resolve(OperationResult.success({ logs: [] }));
+          return;
+        }
         url = `${LocalApiEndpoint.Logs.Query}?${event.queryParams.toString()}`;
       }
 
@@ -274,11 +336,24 @@ export class NetworkRouter implements INetworkRouterHandler {
       const headers: Record<string, string> = {};
 
       if (!isLocalTarget && storageConfig.r2Assets?.workerUrl) {
-        const baseUrl = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}/api/v1/logs/stats`;
+        const baseUrl = `${storageConfig.r2Assets.workerUrl.replace(/\/$/, '')}${ApiEndpoint.Logs.Stats}`;
         url = event.source ? `${baseUrl}?source=${encodeURIComponent(event.source)}` : baseUrl;
         const apiKey = (import.meta as unknown as { env: Record<string, string | undefined> }).env?.VITE_LOGS_API_KEY || '';
         headers[HttpHeader.Authorization] = `Bearer ${apiKey}`;
       } else {
+        if (!canUseLocalLogBridge()) {
+          event.deferred.resolve(
+            OperationResult.success({
+              total_logs: 0,
+              by_level: {},
+              by_source: {},
+              by_context: {},
+              oldest_timestamp: null,
+              newest_timestamp: null,
+            }),
+          );
+          return;
+        }
         url = event.source
           ? `${LocalApiEndpoint.Logs.Stats}?source=${encodeURIComponent(event.source)}`
           : String(LocalApiEndpoint.Logs.Stats);
@@ -309,6 +384,10 @@ export class NetworkRouter implements INetworkRouterHandler {
         return;
       }
 
+      if (!canUseLocalLogBridge()) {
+        event.deferred.resolve(OperationResult.success(undefined));
+        return;
+      }
       const response = await fetch(LocalApiEndpoint.Logs.Clear, { method: HttpMethod.Delete });
       if (!response.ok) {
         await response.text().catch(() => undefined);
