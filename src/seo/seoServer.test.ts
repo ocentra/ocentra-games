@@ -16,6 +16,8 @@ describe('SEO server rendering', () => {
     expect(rendered).toContain('<title>AI Benchmark Leaderboard | Ocentra Games</title>');
     expect(rendered).toContain('name="robots" content="index,follow"');
     expect(rendered).toContain('rel="canonical" href="https://example.ocentra.test/leaderboard/ai-benchmarks"');
+    expect(rendered).toContain('property="og:image" content="https://example.ocentra.test/OcentraLogoCommet.png"');
+    expect(rendered).toContain('name="twitter:image" content="https://example.ocentra.test/OcentraLogoCommet.png"');
     expect(rendered).toContain('application/ld+json');
     expect(rendered).not.toContain('content="old"');
   });

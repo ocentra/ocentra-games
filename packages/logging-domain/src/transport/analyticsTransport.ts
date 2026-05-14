@@ -35,10 +35,5 @@ export class AnalyticsTransport implements ILogTransport {
     });
 
     if (criticalEntries.length === 0) return;
-
-    // This is where you would call Sentry.captureEvent or similar
-    if (typeof console !== 'undefined' && console.debug) {
-      console.debug(`[AnalyticsTransport] Would send ${criticalEntries.length} entries to analytics`);
-    }
   }
 }

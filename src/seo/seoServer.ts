@@ -44,6 +44,8 @@ const duplicateCatalogGameDescriptions = new Set(
     .filter(([description, count]) => description && count > 1)
     .map(([description]) => description),
 );
+const defaultSeoImagePath = '/OcentraLogoCommet.png';
+const defaultSeoImageAlt = 'Ocentra Games card game platform artwork';
 
 interface CatalogSeoCategoryEntry {
   slug: string;
@@ -127,6 +129,10 @@ function canonicalOrigin(metadata: RouteSeoMetadata): string {
   } catch {
     return DEFAULT_SEO_SITE_ORIGIN;
   }
+}
+
+function defaultSeoImageUrl(metadata: RouteSeoMetadata): string {
+  return `${canonicalOrigin(metadata)}${defaultSeoImagePath}`;
 }
 
 function decodeRouteSegment(segment: string): string {
@@ -684,9 +690,13 @@ export function renderSeoHead(metadata: RouteSeoMetadata): string {
     `<meta property="og:description" content="${escapedDescription}" data-ocentra-seo="og-description" />`,
     `<meta property="og:url" content="${escapedCanonical}" data-ocentra-seo="og-url" />`,
     `<meta property="og:site_name" content="Ocentra Games" data-ocentra-seo="og-site-name" />`,
+    `<meta property="og:image" content="${escapeHtml(defaultSeoImageUrl(metadata))}" data-ocentra-seo="og-image" />`,
+    `<meta property="og:image:alt" content="${defaultSeoImageAlt}" data-ocentra-seo="og-image-alt" />`,
     `<meta name="twitter:card" content="summary_large_image" data-ocentra-seo="twitter-card" />`,
     `<meta name="twitter:title" content="${escapedTitle}" data-ocentra-seo="twitter-title" />`,
     `<meta name="twitter:description" content="${escapedDescription}" data-ocentra-seo="twitter-description" />`,
+    `<meta name="twitter:image" content="${escapeHtml(defaultSeoImageUrl(metadata))}" data-ocentra-seo="twitter-image" />`,
+    `<meta name="twitter:image:alt" content="${defaultSeoImageAlt}" data-ocentra-seo="twitter-image-alt" />`,
     jsonLd,
   ].filter(Boolean).join('\n    ');
 }

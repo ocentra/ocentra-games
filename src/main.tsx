@@ -13,6 +13,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { installOcentraScrollActivityTracker } from '@ocentra/core-ui/scrollbars'
 import './index.css'
 import AppWrapper from './App.tsx'
+import { preserveSeoFallbackForHydration } from '@/seo/preserveSeoFallback';
 import { initializeCritical } from '@/lib/core/AppInitializer';
 import { setupApiClientWithAuthBridge } from '@/lib/core/apiBootstrap';
 import { createProfileReporter } from '@/lib/core/mainProfileReport';
@@ -59,6 +60,7 @@ function renderRoot(node: ReactNode): void {
     return;
   }
 
+  preserveSeoFallbackForHydration(rootElement);
   root ??= createRoot(rootElement);
   if (typeof window !== 'undefined') {
     (globalThis as unknown as Record<string, unknown>).__hideAppLoading = () => {
@@ -110,8 +112,8 @@ initializeCritical()
       initDurationMs: Number(initDuration.toFixed(2)),
       totalDurationMs: Number(totalDuration.toFixed(2)),
     }, LOG_STARTUP);
-    if (bootTrace) {
-      logInfo('[boot:index] full trace (copy-paste)', { bootTrace }, LOG_STARTUP);
+    if (bootTrace && LOG_STARTUP) {
+      logInfo('[boot:index] full trace (copy-paste)', { bootTrace }, true);
     }
     pushBoot('pre renderApp');
     renderApp();

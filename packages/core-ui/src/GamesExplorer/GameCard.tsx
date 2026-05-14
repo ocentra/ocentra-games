@@ -32,6 +32,8 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
   const qualityColor = isAsset ? '#3b82f6' : (QUALITY_COLORS[quality] ?? '#6b7280');
   const completeness = game.completeness ?? {};
   const filledSections = SECTIONS.filter((s) => completeness[s]);
+  const category = game.subcategory ? `${game.category} / ${game.subcategory}` : game.category;
+  const imageAlt = `${game.name} ${category} catalog preview artwork`;
 
   const handleClick = () => onGameClick?.(game);
 
@@ -49,10 +51,9 @@ export function GameCard({ game, onGameClick }: GameCardProps) {
       <div className="cge-game-card__banner">
         <img
           src={imgSrc}
-          alt=""
+          alt={imageAlt}
           className="cge-game-card__banner-img"
           loading="lazy"
-          aria-hidden="true"
         />
         <div className="cge-game-card__banner-overlay" />
         <span className="cge-game-card__cat-badge">

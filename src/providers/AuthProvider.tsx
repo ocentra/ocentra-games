@@ -205,7 +205,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     logInfo('[useEffect] Setting up auth state listener...', LOG_AUTH_STATE);
 
-    if (!auth) {
+    if (!auth || !db) {
       logInfo('[useEffect] ⚠️ Firebase not configured, skipping auth state listener', LOG_AUTH_FLOW);
       setLoading(false);
       return;

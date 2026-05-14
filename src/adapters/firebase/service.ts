@@ -1376,7 +1376,7 @@ export const handleRedirectResult = async (): Promise<AuthResult> => {
   logInfo('handleRedirectResult: Checking for redirect result...', LOG_AUTH_REDIRECT);
 
   if (!isFirebaseConfigured()) {
-    logError('handleRedirectResult: ❌ Firebase not configured', LOG_AUTH_ERROR);
+    logInfo('handleRedirectResult: Firebase not configured, skipping redirect result check', LOG_AUTH_REDIRECT);
     return { success: false, error: 'Firebase not configured' };
   }
 

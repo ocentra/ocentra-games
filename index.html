@@ -95,10 +95,12 @@
       (function () {
         const startedAt = performance.now();
         const bootTrace = [];
+        const host = window.location.hostname;
+        const shouldLogBoot = host === 'localhost' || host === '127.0.0.1' || host === '::1' || window.location.search.includes('profile=1') || window.location.search.includes('bootlog=1');
         const push = function (label) {
           const entry = { label: label, atMs: Number((performance.now() - startedAt).toFixed(2)), readyState: document.readyState };
           bootTrace.push(entry);
-          console.info('[boot:index +' + entry.atMs + 'ms] ' + label, entry);
+          if (shouldLogBoot) console.info('[boot:index +' + entry.atMs + 'ms] ' + label, entry);
         };
         window.__OCENTRA_BOOT_TRACE = bootTrace;
         window.__OCENTRA_BOOT_PUSH = push;

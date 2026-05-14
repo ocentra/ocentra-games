@@ -8,6 +8,10 @@ import {
   setNativeContentSliceCacheBackend,
   setPreferNativeContentSliceCache,
 } from '@/adapters/assets/ContentSliceCache';
+import {
+  setNativeRawAssetDocumentCacheBackend,
+  setPreferNativeRawAssetDocumentCache,
+} from '@/adapters/assets/RawAssetDocumentCache';
 import { DesktopAssetCache } from '@/adapters/assets/DesktopAssetCache';
 import { createTauriContentSliceCacheBackend } from '@/adapters/assets/TauriContentSliceCacheBackend';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
@@ -31,8 +35,11 @@ export async function bootstrapDesktop(): Promise<void> {
   try {
     const useNativeDesktopStorage = DesktopAssetCache.isAvailable();
     if (useNativeDesktopStorage) {
-      setNativeContentSliceCacheBackend(createTauriContentSliceCacheBackend());
+      const backend = createTauriContentSliceCacheBackend();
+      setNativeContentSliceCacheBackend(backend);
       setPreferNativeContentSliceCache(true);
+      setNativeRawAssetDocumentCacheBackend(backend);
+      setPreferNativeRawAssetDocumentCache(true);
     }
 
     await Promise.all([initializeAnalyticsCache(), ...(useNativeDesktopStorage ? [] : [initContentSliceCache()])]);

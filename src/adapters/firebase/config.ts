@@ -122,6 +122,7 @@ if (hasFirebaseConfig) {
 }
 
 export async function waitForAuthResolution(timeoutMs = 5000): Promise<void> {
+  if (!hasFirebaseConfig) return;
   if (auth) return;
   const start = Date.now();
   while (!auth && Date.now() - start < timeoutMs) {
@@ -138,4 +139,3 @@ export async function waitForAuthResolution(timeoutMs = 5000): Promise<void> {
 
 export { auth, db, storage, functions };
 export default app;
-
