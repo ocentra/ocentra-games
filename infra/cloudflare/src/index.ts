@@ -25,6 +25,14 @@ log.register(import.meta.url);
 const LOG_INDEX_WARNINGS = false;
 const LOG_DIAG = false;
 const LOG_ROUTER_REQUEST_FLOW = false;
+const RESPONSE_CORS_HEADERS = [
+  HttpHeader.AccessControlAllowOrigin,
+  HttpHeader.AccessControlAllowMethods,
+  HttpHeader.AccessControlAllowHeaders,
+  HttpHeader.AccessControlAllowCredentials,
+  HttpHeader.AccessControlMaxAge,
+  HttpHeader.AccessControlAllowPrivateNetwork,
+] as const;
 
 const logInfo = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logInfo(message, stackTrace, data, enabled);
@@ -42,12 +50,35 @@ const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabl
   log.logDebug(message, stackTrace, data, enabled);
 };
 
+type ResponseWithWebSocket = Response & { webSocket?: WebSocket | null };
+
+function hasWebSocket(response: Response): boolean {
+  return Boolean((response as ResponseWithWebSocket).webSocket);
+}
+
 function afterBridgeSend(
   response: Response,
-  _env: Env,
-  _requestOrigin: string | null
+  env: Env,
+  requestOrigin: string | null
 ): Response {
-  return response;
+  if (hasWebSocket(response)) {
+    return response;
+  }
+
+  const headers = new Headers(response.headers);
+  for (const header of RESPONSE_CORS_HEADERS) {
+    headers.delete(header);
+  }
+  const corsHeaders = getCorsHeaders(env, requestOrigin || undefined);
+  for (const [header, value] of Object.entries(corsHeaders)) {
+    headers.set(header, value);
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 export { MatchCoordinatorDO } from '@/durable-objects/MatchCoordinatorDO';
