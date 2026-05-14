@@ -8,6 +8,7 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { NativeModelCacheAdapter } from '@ocentra/storage-domain/model-cache/NativeModelCacheAdapter';
 import { createInMemoryNativeBackend } from '@ocentra/storage-domain/backends/in-memory-native-backend';
 import { setNativeContentSliceCacheBackend, setPreferNativeContentSliceCache } from '@/adapters/assets/ContentSliceCache';
+import { setNativeRawAssetDocumentCacheBackend, setPreferNativeRawAssetDocumentCache } from '@/adapters/assets/RawAssetDocumentCache';
 import { setMobileImageCacheBackend } from '@/adapters/image/MobileImageCacheAdapter';
 
 const log = MainAppLogger.instance;
@@ -37,6 +38,8 @@ export async function bootstrapMobile(): Promise<void> {
 
     setNativeContentSliceCacheBackend(backend);
     setPreferNativeContentSliceCache(true);
+    setNativeRawAssetDocumentCacheBackend(backend);
+    setPreferNativeRawAssetDocumentCache(true);
     setMobileImageCacheBackend(backend);
 
     const modelCache = new NativeModelCacheAdapter(backend);

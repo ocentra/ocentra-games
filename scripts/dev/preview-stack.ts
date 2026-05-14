@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
@@ -99,6 +99,13 @@ function parseNumberArg(name: string, fallback: number): number {
   return value;
 }
 
+function parseStringArg(name: string): string | undefined {
+  return process.argv
+    .slice(2)
+    .find((arg) => arg.startsWith(`${name}=`))
+    ?.slice(name.length + 1);
+}
+
 function resolvePagesCompatibilityDate(): string {
   return process.env.CLOUDFLARE_PAGES_COMPATIBILITY_DATE?.trim()
     || process.env.PAGES_COMPATIBILITY_DATE?.trim()
@@ -159,6 +166,33 @@ async function smokePagesPreview(port: number, timeoutMs: number): Promise<void>
   throw lastError instanceof Error
     ? lastError
     : new Error(`Pages preview smoke failed after ${timeoutMs}ms`);
+}
+
+async function runPagesRouteMatrix(port: number): Promise<void> {
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const args = ['tsx', 'scripts/dev/pages-route-matrix.ts', `--base=${baseUrl}`, '--cache-check'];
+  const compareBase = parseStringArg('--compare-base') ?? process.env.PAGES_ROUTE_MATRIX_COMPARE_BASE;
+  if (compareBase?.trim()) {
+    process.env.PAGES_ROUTE_MATRIX_COMPARE_BASE = compareBase.trim();
+    args.push(`--compare-base=${compareBase.trim()}`);
+  }
+  log(`Running Pages route matrix for ${baseUrl}${compareBase ? ` against ${compareBase}` : ''}...`);
+  await new Promise<void>((resolve, reject) => {
+    const proc = spawn('npx', args, {
+      cwd: ROOT,
+      stdio: 'inherit',
+      shell: process.platform === 'win32',
+      env: process.env,
+    });
+    proc.on('error', reject);
+    proc.on('exit', (code, signal) => {
+      if (code === 0) {
+        resolve();
+        return;
+      }
+      reject(new Error(`Pages route matrix failed with ${signal ? `signal ${signal}` : `exit code ${code ?? 'unknown'}`}`));
+    });
+  });
 }
 
 function resolveRemoteWorkerUrl(syncEnv: RemoteAssetSyncEnv): string {
@@ -356,10 +390,18 @@ async function main(): Promise<void> {
       pagesParity ? 'pages-preview' : 'preview'
     );
 
-    if (hasFlag('--smoke')) {
+    const routeMatrix = hasFlag('--route-matrix');
+    if (hasFlag('--smoke') || routeMatrix) {
       const smokeTimeoutMs = parseNumberArg('--smoke-timeout-ms', 90_000);
       await smokePagesPreview(port, smokeTimeoutMs);
       log('Pages preview smoke passed.');
+      if (routeMatrix) {
+        const routeMatrixSettleMs = parseNumberArg('--route-matrix-settle-ms', 10_000);
+        log(`Waiting ${routeMatrixSettleMs}ms before route matrix...`);
+        await delay(routeMatrixSettleMs);
+        await runPagesRouteMatrix(port);
+        log('Pages route matrix passed.');
+      }
       killManagedProcesses(registry);
       return;
     }

@@ -1,9 +1,21 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { removeStaleSeoFallbackParity } from './preserveSeoFallback';
 import { DEFAULT_SEO_SITE_ORIGIN, resolveSeoMetadata, type RouteSeoMetadata } from './publicSeo';
+
+const defaultSeoImagePath = '/OcentraLogoCommet.png';
+const defaultSeoImageAlt = 'Ocentra Games card game platform artwork';
 
 function getClientSiteOrigin(): string {
   return import.meta.env.VITE_PUBLIC_SITE_ORIGIN || DEFAULT_SEO_SITE_ORIGIN;
+}
+
+function defaultSeoImageUrl(metadata: RouteSeoMetadata): string {
+  try {
+    return `${new URL(metadata.canonicalUrl).origin}${defaultSeoImagePath}`;
+  } catch {
+    return `${getClientSiteOrigin()}${defaultSeoImagePath}`;
+  }
 }
 
 function upsertMeta(attribute: 'name' | 'property', key: string, content: string): void {
@@ -50,9 +62,13 @@ function applyRouteSeo(metadata: RouteSeoMetadata): void {
   upsertMeta('property', 'og:description', metadata.description);
   upsertMeta('property', 'og:url', metadata.canonicalUrl);
   upsertMeta('property', 'og:site_name', 'Ocentra Games');
+  upsertMeta('property', 'og:image', defaultSeoImageUrl(metadata));
+  upsertMeta('property', 'og:image:alt', defaultSeoImageAlt);
   upsertMeta('name', 'twitter:card', 'summary_large_image');
   upsertMeta('name', 'twitter:title', metadata.title);
   upsertMeta('name', 'twitter:description', metadata.description);
+  upsertMeta('name', 'twitter:image', defaultSeoImageUrl(metadata));
+  upsertMeta('name', 'twitter:image:alt', defaultSeoImageAlt);
   upsertStructuredData(metadata);
 }
 
@@ -76,6 +92,7 @@ export function RouteSeo() {
   const location = useLocation();
 
   useEffect(() => {
+    removeStaleSeoFallbackParity(location.pathname);
     const metadata = resolveSeoMetadata(location.pathname, getClientSiteOrigin());
     if (shouldPreserveServerGameSeo(metadata) || shouldPreserveServerRulesSeo(metadata)) {
       return;

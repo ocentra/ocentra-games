@@ -30,7 +30,7 @@ describe('NetworkRouter', () => {
     const { NetworkRouter } = await import('@/adapters/network/NetworkRouter');
     const response = await NetworkRouter.getInstance().getResource({ guid: 'card-guid' });
 
-    expect(fetch).toHaveBeenCalledWith('https://assets.example.com/api/v1/assets/card-guid');
+    expect(fetch).toHaveBeenCalledWith('https://assets.example.com/api/v1/assets/card-guid', undefined);
     expect(await response.text()).toBe('asset-body');
   });
 
@@ -72,8 +72,8 @@ describe('NetworkRouter', () => {
     const result = await NetworkRouter.getInstance().batchGetResources(['guid-1', 'guid-2', 'guid-3']);
 
     expect(Array.from(result.keys())).toEqual(['guid-1', 'guid-3']);
-    expect(fetch).toHaveBeenNthCalledWith(1, 'https://assets.example.com/api/v1/assets/guid-1');
-    expect(fetch).toHaveBeenNthCalledWith(2, 'https://assets.example.com/api/v1/assets/guid-2');
-    expect(fetch).toHaveBeenNthCalledWith(3, 'https://assets.example.com/api/v1/assets/guid-3');
+    expect(fetch).toHaveBeenNthCalledWith(1, 'https://assets.example.com/api/v1/assets/guid-1', undefined);
+    expect(fetch).toHaveBeenNthCalledWith(2, 'https://assets.example.com/api/v1/assets/guid-2', undefined);
+    expect(fetch).toHaveBeenNthCalledWith(3, 'https://assets.example.com/api/v1/assets/guid-3', undefined);
   });
 });

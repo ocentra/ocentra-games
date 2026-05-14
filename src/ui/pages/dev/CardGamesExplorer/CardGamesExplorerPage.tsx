@@ -259,9 +259,9 @@ export function CardGamesExplorerPage({
       }
       footer={<GameFooter appVersion={APP_VERSION} />}
     >
-      <div className="cge-page__svg-stage" aria-label={seoDescription}>
+      <main className="cge-page__svg-stage" aria-label={seoDescription}>
         {content}
-      </div>
+      </main>
     </UnifiedPageShell>
   );
 }
