@@ -3,9 +3,11 @@ import type { AppPageSliceDocument } from '@ocentra/game-asset-domain/schemas/ap
 import type { GameCatalogDocument } from '@ocentra/game-asset-domain/schemas/game-catalog-entry-schema';
 import type { HomePageGamesDocument } from '@ocentra/game-asset-domain/schemas/home-page-games-schema';
 import type { GamePage } from '@ocentra/game-asset-domain/schemas/game-page-schema';
+import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { getPlatformAssetRuntime } from '@/adapters/assets/PlatformAssetRuntime';
+import { fetchJsonSlice, getSliceUrl } from '@/adapters/assets/PlatformAssetRuntimeShared';
 import { getStorageConfig } from '@/services/storage/StorageConfig';
 
 const log = MainAppLogger.instance;
@@ -59,30 +61,18 @@ export async function loadRemoteGameEngine(gameId: string): Promise<GameEngine |
 
 export async function loadRemoteCatalogIndex(): Promise<unknown | null> {
   const storageConfig = getStorageConfig();
-  const workerBase = storageConfig.r2Assets?.workerUrl?.replace(/\/$/, '') ?? '';
-  if (!workerBase) return null;
-  const url = `${workerBase}/api/v1/slices/catalog/index`;
+  const url = getSliceUrl(storageConfig, ApiEndpoint.Slices.CatalogIndex);
+  if (!url) return null;
   return await withRuntimeRead('remote catalog index', async () => {
-    const res = await fetch(url);
-    if (!res.ok) {
-      await res.text().catch(() => undefined);
-      return null;
-    }
-    return await res.json() as unknown;
+    return await fetchJsonSlice<unknown>(url);
   });
 }
 
 export async function loadRemoteCatalogGame(slug: string): Promise<unknown | null> {
   const storageConfig = getStorageConfig();
-  const workerBase = storageConfig.r2Assets?.workerUrl?.replace(/\/$/, '') ?? '';
-  if (!workerBase) return null;
-  const url = `${workerBase}/api/v1/slices/catalog/games/${encodeURIComponent(slug)}`;
+  const url = getSliceUrl(storageConfig, ApiEndpoint.Slices.CatalogGame(slug));
+  if (!url) return null;
   return await withRuntimeRead(`remote catalog game (${slug})`, async () => {
-    const res = await fetch(url);
-    if (!res.ok) {
-      await res.text().catch(() => undefined);
-      return null;
-    }
-    return await res.json() as unknown;
+    return await fetchJsonSlice<unknown>(url);
   });
 }

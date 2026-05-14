@@ -52,10 +52,7 @@ const logError = (message: string, dataOrEnabled?: unknown | boolean, enabled?: 
 };
 
 function canUseLocalLogEndpoint(): boolean {
-  const storageConfig = getStorageConfig();
-  return import.meta.env.DEV
-    || isLocalHostname(window.location.hostname)
-    || storageConfig.assetTarget?.key === MainAppAssetTarget.LocalDev;
+  return Boolean(import.meta.env.DEV);
 }
 
 function emptyLogStats(): Record<string, unknown> {

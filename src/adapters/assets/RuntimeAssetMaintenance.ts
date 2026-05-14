@@ -3,6 +3,7 @@ import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { clearContentSliceCache } from '@/adapters/assets/ContentSliceCache';
 import { clearEntryIndexCache } from '@/adapters/assets/EntryIndexService';
 import { clearGameCatalogCache } from '@/adapters/assets/GameCatalogService';
+import { clearRawAssetDocumentCache } from '@/adapters/assets/rawAssetDocument';
 import { getPlatformAssetRuntime } from '@/adapters/assets/PlatformAssetRuntime';
 import {
   getRuntimeAssetTelemetrySnapshot,
@@ -18,6 +19,7 @@ export async function clearRuntimeAssetCaches(): Promise<void> {
   clearGameCatalogCache();
   clearEntryIndexCache();
   await clearContentSliceCache();
+  await clearRawAssetDocumentCache();
 }
 
 export function clearRuntimeAssetTelemetryState(): void {

@@ -64,12 +64,20 @@ export const schema = {
 
 export const contentCacheSchema = {
   [DB_NAMES.CONTENT_CACHE]: {
-    version: DB_VERSIONS.V1,
+    version: DB_VERSIONS.V2,
     stores: {
       [STORE_NAMES.SLICES]: {
         keyPath: KEY_PATHS.URL,
         indexes: [
           { name: 'cachedAt', keyPath: 'cachedAt', unique: false },
+        ],
+      },
+      [STORE_NAMES.ASSET_DOCUMENTS]: {
+        keyPath: KEY_PATHS.KEY,
+        indexes: [
+          { name: 'cachedAt', keyPath: 'cachedAt', unique: false },
+          { name: 'guid', keyPath: 'guid', unique: false },
+          { name: 'checksum', keyPath: 'checksum', unique: false },
         ],
       },
     },
