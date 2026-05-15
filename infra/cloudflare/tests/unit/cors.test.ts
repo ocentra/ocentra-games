@@ -305,6 +305,21 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(response.headers.get(HttpHeader.AccessControlAllowCredentials)).toBe(QueryValue.True);
   });
 
+  it(testName('CORS headers: echoes request origin on routed asset errors with wildcard dev CORS'), async () => {
+    const token = await createToken();
+    const response = await worker.fetch(buildTestApiUrlForEndpoint(ApiEndpoint.Assets.DownloadUrl), {
+      method: HttpMethod.Get,
+      headers: {
+        [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
+      },
+    }, token);
+
+    expect(response.status).toBe(HttpStatus.BadRequest);
+    expect(response.headers.get(HttpHeader.AccessControlAllowOrigin)).toBe(TestConfig.LocalhostOrigin);
+    expect(response.headers.get(HttpHeader.AccessControlAllowCredentials)).toBe(QueryValue.True);
+    await response.text();
+  });
+
   it(testName('CORS headers: includes security headers'), async () => {
     const token = await createToken();
     const rootUrl = buildTestApiUrlForEndpoint(ApiEndpoint.Root);
