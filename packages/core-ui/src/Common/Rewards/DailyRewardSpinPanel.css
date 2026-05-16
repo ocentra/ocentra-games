@@ -1,0 +1,297 @@
+.daily-reward-spin-panel {
+  appearance: none;
+  width: min(100%, 15rem);
+  min-width: 0;
+  min-height: 0;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #f8fbff;
+  cursor: pointer;
+  transition:
+    filter 160ms ease,
+    transform 160ms ease;
+}
+
+.daily-reward-spin-panel--compact {
+  width: min(100%, 15rem);
+  min-width: 0;
+  min-height: 0;
+}
+
+.daily-reward-spin-panel:disabled {
+  cursor: default;
+}
+
+.daily-reward-spin-panel:not(:disabled):hover {
+  filter: saturate(1.08) brightness(1.06);
+  transform: translateY(-0.04rem);
+}
+
+.daily-reward-spin-panel:not(:disabled):active {
+  transform: translateY(0.04rem) scale(0.99);
+}
+
+.daily-reward-spin-panel__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.daily-reward-spin-dialog {
+  position: fixed;
+  top: var(--oc-shell-work-top, var(--header-height, 4rem));
+  right: 0;
+  bottom: var(--oc-shell-work-bottom, var(--footer-height, 1.5rem));
+  left: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(4, 10, 24, 0.18);
+  -webkit-backdrop-filter: blur(0.55rem) saturate(1.12);
+  backdrop-filter: blur(0.55rem) saturate(1.12);
+}
+
+.daily-reward-spin-dialog__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.daily-reward-spin-dialog--status {
+  padding: clamp(0.75rem, 2dvh, 1.5rem) clamp(0.75rem, 2dvw, 2rem);
+}
+
+.daily-reward-spin-dialog__backdrop {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.daily-reward-spin-dialog__status-card {
+  position: relative;
+  z-index: 1;
+  width: min(50rem, 100%);
+  max-height: 100%;
+  min-height: min(24rem, 100%);
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.78fr) minmax(14rem, 1fr);
+  align-items: center;
+  gap: clamp(1rem, 3dvw, 2.5rem);
+  overflow: hidden;
+  border: 1px solid rgba(88, 191, 255, 0.55);
+  border-radius: 0.6rem;
+  padding: clamp(1rem, 2.2dvw, 2rem);
+  background:
+    radial-gradient(circle at 68% 42%, rgba(125, 73, 255, 0.2), transparent 48%),
+    linear-gradient(135deg, rgba(5, 14, 31, 0.86), rgba(6, 9, 25, 0.92));
+  box-shadow:
+    0 0 0 1px rgba(125, 73, 255, 0.22) inset,
+    0 1.4rem 3.5rem rgba(0, 0, 0, 0.34),
+    0 0 1.9rem rgba(88, 191, 255, 0.18);
+}
+
+.daily-reward-spin-dialog__close,
+.daily-reward-spin-dialog__status-action {
+  appearance: none;
+  margin: 0;
+  border: 1px solid rgba(88, 191, 255, 0.45);
+  border-radius: 0.36rem;
+  background: rgba(8, 24, 42, 0.88);
+  color: #f8fbff;
+  font: inherit;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.daily-reward-spin-dialog__close {
+  position: absolute;
+  top: clamp(0.65rem, 1.5dvh, 1rem);
+  right: clamp(0.65rem, 1.5dvw, 1rem);
+  min-height: 2rem;
+  padding: 0 0.85rem;
+  font-size: 0.7rem;
+}
+
+.daily-reward-spin-dialog__status-wheel {
+  width: min(100%, 20rem);
+  aspect-ratio: 1;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+.daily-reward-spin-dialog__status-wheel .daily-reward-spin-panel__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.daily-reward-spin-dialog__status-copy {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.daily-reward-spin-dialog__status-copy h2 {
+  margin: 0;
+  color: #f8fbff;
+  font-size: clamp(1.45rem, 4dvw, 3rem);
+  font-weight: 950;
+  line-height: 0.98;
+  text-transform: uppercase;
+  text-shadow: 0 0 0.8rem rgba(88, 191, 255, 0.58);
+}
+
+.daily-reward-spin-dialog__status-copy p {
+  margin: 0;
+  max-width: 32rem;
+  color: #bcefff;
+  font-size: clamp(0.88rem, 1.8dvw, 1.12rem);
+  font-weight: 850;
+  line-height: 1.35;
+}
+
+.daily-reward-spin-dialog__status-action {
+  width: min(13rem, 100%);
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  background: linear-gradient(135deg, rgba(10, 120, 152, 0.92), rgba(86, 32, 184, 0.9));
+  box-shadow: 0 0 1rem rgba(88, 191, 255, 0.2);
+}
+
+.daily-reward-spin-dialog__close:hover,
+.daily-reward-spin-dialog__status-action:hover {
+  border-color: rgba(255, 202, 75, 0.9);
+  filter: brightness(1.08);
+}
+
+@media (max-width: 48rem) {
+  .daily-reward-spin-dialog__status-card {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .daily-reward-spin-dialog__status-wheel {
+    width: min(74dvw, 16rem);
+  }
+
+  .daily-reward-spin-dialog__status-action {
+    justify-self: center;
+  }
+}
+
+.lobby-ui-hit {
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease, filter 160ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lobby-ui-hit:hover {
+  transform: translateY(-1px);
+  filter: url("#lobbyCyanGlow");
+}
+
+.lobby-ui-hit:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.lobby-spinner-wheel {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(.08, .72, .08, 1);
+  transform-box: view-box;
+}
+
+.lobby-spinner-wheel.is-spinning {
+  filter: url("#lobbyGoldGlow");
+}
+
+.lobby-spinner-center-button {
+  transition: filter 180ms ease, transform 180ms ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.lobby-spinner-center-button:hover {
+  filter: url("#lobbyCyanGlow");
+  transform: scale(1.025);
+}
+
+.lobby-spinner-center-button:hover .lobby-spinner-center-hover-ring {
+  opacity: 0.18;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-blue {
+  animation: lobbySpinnerRingPulseBlue 520ms ease-in-out infinite alternate;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-purple {
+  animation: lobbySpinnerRingPulsePurple 430ms ease-in-out infinite alternate;
+}
+
+.lobby-spinner-wheel.is-spinning .lobby-spinner-ring-dark {
+  animation: lobbySpinnerRingPulseDark 620ms ease-in-out infinite alternate;
+}
+
+@keyframes lobbySpinnerRingPulseBlue {
+  from {
+    stroke-width: 2.4;
+    opacity: 0.72;
+    filter: url("#lobbyCyanGlow");
+  }
+
+  to {
+    stroke-width: 5.2;
+    opacity: 1;
+    filter: url("#lobbyCyanGlow");
+  }
+}
+
+@keyframes lobbySpinnerRingPulsePurple {
+  from {
+    stroke-width: 4.2;
+    opacity: 0.62;
+    filter: url("#lobbyPurpleGlow");
+  }
+
+  to {
+    stroke-width: 7.2;
+    opacity: 1;
+    filter: url("#lobbyPurpleGlow");
+  }
+}
+
+@keyframes lobbySpinnerRingPulseDark {
+  from {
+    stroke: #193b5a;
+    stroke-width: 5;
+    opacity: 0.65;
+  }
+
+  to {
+    stroke: #12eaff;
+    stroke-width: 6.5;
+    opacity: 0.95;
+  }
+}

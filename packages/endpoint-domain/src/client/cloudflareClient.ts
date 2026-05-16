@@ -69,7 +69,7 @@ export class CloudflareApiClient extends BaseClient {
   /**
    * Award credits via DO.
    */
-  async awardCredits(body: { userId: string; amount: number; currency: 'GP'; reason: string }): Promise<ApiResponse<unknown>> {
+  async awardCredits(body: { userId: string; amount: number; currency: 'GP' | 'AC'; reason: string }): Promise<ApiResponse<unknown>> {
     return this.post<unknown>(CreditsDO.Award as unknown as import('@/types/brands').ApiPath, { body });
   }
 

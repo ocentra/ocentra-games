@@ -794,6 +794,8 @@ export function ShopPageContent({
   onClearError,
   onBuy,
   layoutControls,
+  dailyRewardStatus,
+  onDailyRewardSpin,
   vaultDeckItems,
   renderVaultDeckPreview,
 }: {
@@ -806,6 +808,8 @@ export function ShopPageContent({
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
+  dailyRewardStatus?: LobbyRewardStatus | null;
+  onDailyRewardSpin?: () => void | Promise<void>;
   vaultDeckItems?: ShopVaultDeckPreviewItem[];
   renderVaultDeckPreview?: (item: ShopVaultDeckPreviewItem | null) => ReactNode;
 } & ShopPageSurfaceControlProps) {
@@ -821,6 +825,8 @@ export function ShopPageContent({
       onClearError={onClearError}
       onBuy={onBuy}
       controls={layoutControls}
+      dailyRewardStatus={dailyRewardStatus}
+      onDailyRewardSpin={onDailyRewardSpin}
       vaultDeckItems={vaultDeckItems}
       renderVaultDeckPreview={renderVaultDeckPreview}
     />

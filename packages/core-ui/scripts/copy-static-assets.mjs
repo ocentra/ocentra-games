@@ -19,6 +19,7 @@ const fileCopies = [
   ['src/Common/HomeShowcaseFrame/HomeShowcaseFrame.css', 'dist/Common/HomeShowcaseFrame/'],
   ['src/Common/FeatureBanner/FeatureBannerSection.css', 'dist/Common/FeatureBanner/'],
   ['src/Common/FeatureBanner/RubikBannerCube.css', 'dist/Common/FeatureBanner/'],
+  ['src/Common/Rewards/DailyRewardSpinPanel.css', 'dist/Common/Rewards/'],
   ['src/Common/ComingSoonCarousel/ComingSoonShowcase.css', 'dist/Common/ComingSoonCarousel/'],
   ['src/Common/ExploreGamesPanel/ExploreGamesPanel.css', 'dist/Common/ExploreGamesPanel/'],
   ['src/Common/GameBadgesOverlay/GameBadgesOverlay.css', 'dist/Common/GameBadgesOverlay/'],

@@ -27,6 +27,7 @@ import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
 import { loadRawAssetDocumentByGuid } from '@/adapters/assets/rawAssetDocument';
 import { AppDeckPreview } from '@/ui/components/DeckPreview/AppDeckPreview';
+import { useDailyRewardSpin } from '@/ui/rewards/dailyRewardSpinState';
 
 interface ShopPageProps {
   user: UserProfile | null;
@@ -109,6 +110,7 @@ async function loadShopVaultDeckItems(): Promise<ShopVaultDeckPreviewItem[]> {
 export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: ShopPageProps) {
   const { runWithAccount } = useAuthAccess();
   const headerRightConfig = useHeaderRightAuthConfig({ user, onLogout });
+  const { status: dailyRewardStatus, claim: handleDailyRewardSpin } = useDailyRewardSpin(user?.uid);
 
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -236,6 +238,8 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         onClearError={() => setError(null)}
         onBuy={handleProtectedBuy}
         layoutControls={layoutControls}
+        dailyRewardStatus={dailyRewardStatus}
+        onDailyRewardSpin={handleDailyRewardSpin}
         vaultDeckItems={vaultDeckItems}
         renderVaultDeckPreview={(item) => (
           <AppDeckPreview

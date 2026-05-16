@@ -22,7 +22,7 @@ export const TransactionHistoryQuerySchema = PaginationParamsSchema.extend({
 
 export const AwardCreditsRequestSchema = schema.object({
   amount: schema.number().positive(),
-  currency: schema.literal('GP'),
+  currency: CurrencySchema,
   reason: schema.enum(['win', 'daily_login', 'achievement', 'referral', 'other']),
   description: schema.string().optional(),
   match_id: schema.string().optional(),

@@ -604,6 +604,7 @@ function mergeHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeShowc
     body: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.body, ...controls.body },
     sideA: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideA, ...controls.sideA },
     sideB: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB, ...controls.sideB },
+    startup: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup, ...controls.startup },
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
@@ -1697,8 +1698,8 @@ function getPageLayoutHeaderData(document: PageLayoutPreviewData): { gameName: s
 const previewShopProducts: ShopProduct[] = [
   { productId: 'ac-100', productType: 'AC_CREDITS', displayName: 'Starter Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 100, unitPriceCents: 100, currency: 'usd', active: true },
   { productId: 'ac-500', productType: 'AC_CREDITS', displayName: 'Arena Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 500, unitPriceCents: 500, currency: 'usd', active: true },
-  { productId: 'ac-1200', productType: 'AC_CREDITS', displayName: 'Best Value Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 1200, unitPriceCents: 999, currency: 'usd', active: true },
-  { productId: 'ac-3500', productType: 'AC_CREDITS', displayName: 'Season Supply', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 3500, unitPriceCents: 2499, currency: 'usd', active: true },
+  { productId: 'ac-1500', productType: 'AC_CREDITS', displayName: 'Best Value Credits', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 1500, unitPriceCents: 999, currency: 'usd', active: true },
+  { productId: 'ac-3000', productType: 'AC_CREDITS', displayName: 'Season Supply', shopTab: 'Treasury', entitlementKind: 'credits', availability: 'live', acAmount: 3000, unitPriceCents: 2499, currency: 'usd', active: true },
   { productId: 'sub-arena-pass', productType: 'SUBSCRIPTION', displayName: 'Arena Pass', shopTab: 'Elite', entitlementKind: 'pass', availability: 'preview', unitPriceCents: 999, currency: 'usd', active: true },
   { productId: 'sub-champions-pass', productType: 'SUBSCRIPTION', displayName: "Champion's Pass", shopTab: 'Elite', entitlementKind: 'pass', availability: 'preview', unitPriceCents: 1999, currency: 'usd', active: true },
   { productId: 'vault-card-back-neon', productType: 'MARKETPLACE', displayName: 'Neon Card Back', shopTab: 'Vault', entitlementKind: 'cosmetic', availability: 'preview', acPrice: 200, priceLabel: '200 AC', currency: 'usd', active: true },

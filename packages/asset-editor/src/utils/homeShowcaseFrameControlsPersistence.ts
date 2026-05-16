@@ -75,6 +75,10 @@ function mergeHomeFrameGroups(record: Record<string, unknown> | null): HomeFrame
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB,
       record?.sideB
     ),
+    startup: mergePrimitiveGroup(
+      DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup,
+      record?.startup
+    ),
     copy: mergePrimitiveGroup(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy,
       record?.copy

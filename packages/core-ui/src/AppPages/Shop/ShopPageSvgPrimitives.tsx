@@ -112,7 +112,11 @@ export function Panel({
   children,
   fill,
   stroke,
+  strokeWidth,
+  strokeOpacity,
   glow = true,
+  glowStrokeWidth,
+  glowOpacity,
   cfg,
 }: {
   x: number;
@@ -123,7 +127,11 @@ export function Panel({
   children?: ReactNode;
   fill?: string;
   stroke?: string;
+  strokeWidth?: number;
+  strokeOpacity?: number;
   glow?: boolean;
+  glowStrokeWidth?: number;
+  glowOpacity?: number;
   cfg: ShopPageSvgControls;
 }) {
   const radius = r ?? cfg.primitives.panelRadius;
@@ -139,8 +147,8 @@ export function Panel({
           rx={radius}
           fill="none"
           stroke={edgeStroke}
-          strokeWidth={cfg.primitives.panelGlowStrokeWidth}
-          opacity={cfg.primitives.panelGlowOpacity}
+          strokeWidth={glowStrokeWidth ?? cfg.primitives.panelGlowStrokeWidth}
+          opacity={glowOpacity ?? cfg.primitives.panelGlowOpacity}
           filter="url(#shopSoftGlow)"
         />
       ) : null}
@@ -152,7 +160,8 @@ export function Panel({
         rx={radius}
         fill={fill ?? cfg.colors.panelFill}
         stroke={edgeStroke}
-        strokeWidth={cfg.primitives.panelStrokeWidth}
+        strokeWidth={strokeWidth ?? cfg.primitives.panelStrokeWidth}
+        strokeOpacity={strokeOpacity ?? 1}
       />
       {children}
     </g>
@@ -226,8 +235,8 @@ export function SvgButton({
   const [hovered, setHovered] = useState(false);
   const arrowW = arrow ? Math.min(26, Math.max(18, h + 4)) : 0;
   const labelW = w - arrowW;
-  const stroke = active || hovered ? cfg.colors.activeBlue : '#22557b';
-  const fill = active ? 'url(#shopActiveBlue)' : hovered ? 'rgba(14,72,112,.82)' : '#07162a';
+  const stroke = active || hovered ? cfg.colors.activeBlue : cfg.colors.buttonIdleStroke;
+  const fill = active ? 'url(#shopActiveBlue)' : hovered ? cfg.colors.buttonHoverFill : cfg.colors.buttonIdleFill;
   const handleKeyDown = (event: KeyboardEvent<SVGGElement>) => {
     if (disabled) return;
     if (event.key === 'Enter' || event.key === ' ') {
@@ -269,7 +278,7 @@ export function SvgButton({
         width={w}
         height={h}
         rx="0"
-        fill={disabled ? 'rgba(8,20,34,.48)' : fill}
+        fill={disabled ? cfg.colors.buttonDisabledFill : fill}
         stroke={stroke}
         strokeWidth={cfg.primitives.buttonStrokeWidth}
         opacity={disabled ? 0.48 : 1}
@@ -287,7 +296,7 @@ export function SvgButton({
       {arrow ? (
         <>
           <line x1={x + labelW} y1={y + 1} x2={x + labelW} y2={y + h - 1} stroke={stroke} />
-          <path d={`M ${x + w - arrowW + 9} ${y + h * 0.28} L ${x + w - 7} ${y + h * 0.5} L ${x + w - arrowW + 9} ${y + h * 0.72} Z`} fill={hovered ? '#9ff4ff' : '#78c8ff'} />
+          <path d={`M ${x + w - arrowW + 9} ${y + h * 0.28} L ${x + w - 7} ${y + h * 0.5} L ${x + w - arrowW + 9} ${y + h * 0.72} Z`} fill={hovered ? cfg.colors.buttonArrowHoverFill : cfg.colors.buttonArrowFill} />
         </>
       ) : null}
     </g>
@@ -312,16 +321,16 @@ export function ProductImage({
   if (!imageUrl) {
     return (
       <g>
-        <rect x={x} y={y} width={w} height={h} fill="rgba(7,17,31,.50)" stroke="#2d5d7b" strokeDasharray="5 5" />
-        <line x1={x + 8} y1={y + 8} x2={x + w - 8} y2={y + h - 8} stroke="#2d5d7b" strokeOpacity=".72" />
-        <line x1={x + w - 8} y1={y + 8} x2={x + 8} y2={y + h - 8} stroke="#2d5d7b" strokeOpacity=".72" />
-        <Txt x={x + w / 2} y={y + h / 2} anchor="middle" size={Math.min(10, Math.max(7, w / 18))} weight="900" fill="#8fb9d9" cfg={cfg}>ASSET NEEDED</Txt>
+        <rect x={x} y={y} width={w} height={h} fill={cfg.colors.productImageMissingFill} stroke={cfg.colors.productImageMissingStroke} strokeDasharray="5 5" />
+        <line x1={x + 8} y1={y + 8} x2={x + w - 8} y2={y + h - 8} stroke={cfg.colors.productImageMissingStroke} strokeOpacity=".72" />
+        <line x1={x + w - 8} y1={y + 8} x2={x + 8} y2={y + h - 8} stroke={cfg.colors.productImageMissingStroke} strokeOpacity=".72" />
+        <Txt x={x + w / 2} y={y + h / 2} anchor="middle" size={Math.min(10, Math.max(7, w / 18))} weight="900" fill={cfg.colors.missingText} cfg={cfg}>ASSET NEEDED</Txt>
       </g>
     );
   }
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} fill="rgba(7,17,31,.50)" />
+      <rect x={x} y={y} width={w} height={h} fill={cfg.colors.productImageFill} />
       <image href={imageUrl} x={x} y={y} width={w} height={h} preserveAspectRatio={cfg.svgDefaults.preserveAspectRatio} opacity={cfg.primitives.imageOpacity} />
       <rect x={x} y={y} width={w} height={h} fill="url(#shopImageShade)" />
       <rect x={x} y={y} width={w} height={h} fill="none" stroke={cfg.colors.edgeStroke} strokeOpacity="0.14" strokeWidth="1" />
@@ -438,9 +447,9 @@ export function InfoRow({
   const h = 26;
   return (
     <g>
-      <rect x={x} y={y} width={w} height={h} rx="0" fill="rgba(255,255,255,.026)" stroke={stroke ?? '#254a6a'} />
+      <rect x={x} y={y} width={w} height={h} rx="0" fill={cfg.colors.rowFill} stroke={stroke ?? cfg.colors.rowStroke} />
       {dotFill ? <circle cx={x + 14} cy={y + h / 2} r="4" fill={dotFill} /> : null}
-      <Txt x={x + (dotFill ? 28 : 14)} y={y + h / 2} fill="#dff5ff" size="10.6" weight="650" cfg={cfg}>{label}</Txt>
+      <Txt x={x + (dotFill ? 28 : 14)} y={y + h / 2} fill={cfg.colors.tileSubtitleText} size="10.6" weight="650" cfg={cfg}>{label}</Txt>
       {value !== undefined ? <Txt x={x + w - 12} y={y + h / 2} anchor="end" size="10.6" weight="950" cfg={cfg}>{value}</Txt> : null}
       {actionLabel ? <SvgButton x={x + w - 64} y={y + 4} w={52} h={18} label={actionLabel} small onClick={onAction} cfg={cfg} /> : null}
     </g>
