@@ -237,6 +237,8 @@ export type LobbyRewardStatus = {
   rewardLabel: string;
   readyLabel: string;
   balanceLabel?: string;
+  spinRewardLabel?: string;
+  spinRewardAmount?: number;
 };
 
 export type LobbyPartyStatus = {

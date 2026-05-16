@@ -12,14 +12,8 @@ import {
   type PartyStateResponse,
 } from '@ocentra/api-domain/social';
 import {
-  claimDailyReward,
-  getCreditsBalance,
-  getDailyReward,
   getSettings,
   updateSettings,
-  type CreditBalanceResponse,
-  type DailyRewardClaimResponse,
-  type DailyRewardStateResponse,
 } from '@ocentra/api-domain/playerHub';
 import type {
   LobbyChatMessageItem,
@@ -29,6 +23,11 @@ import type {
   LobbyRoomLike,
   LobbyServerStatus,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import {
+  claimDailyRewardSpinStatus,
+  isDailyRewardSpinCollected,
+  loadDailyRewardSpinStatus,
+} from '@/ui/rewards/dailyRewardSpinState';
 
 const LobbySideRefreshMs = 15000;
 const LobbyMessageLimit = 6;
@@ -107,52 +106,6 @@ function formatAgo(timestamp?: number): string {
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m`;
   return `${Math.floor(minutes / 60)}h`;
-}
-
-function numberValue(value: unknown): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
-}
-
-function balanceLabel(balance?: CreditBalanceResponse | null): string | undefined {
-  if (!balance) return undefined;
-  return `${numberValue(balance.gp_balance).toLocaleString()} GP / ${numberValue(balance.ac_balance).toLocaleString()} AC`;
-}
-
-function rewardLabel(reward?: DailyRewardStateResponse | DailyRewardClaimResponse | null): string {
-  const next = reward && 'rewardForNext' in reward && reward.rewardForNext && typeof reward.rewardForNext === 'object'
-    ? reward.rewardForNext as { xp?: unknown; gp?: unknown }
-    : undefined;
-  const claimed = reward && 'reward' in reward && reward.reward && typeof reward.reward === 'object'
-    ? reward.reward as { xp?: unknown; gp?: unknown; amount?: unknown }
-    : undefined;
-  const xp = numberValue(next?.xp ?? claimed?.xp ?? claimed?.amount);
-  const gp = numberValue(next?.gp ?? claimed?.gp);
-  if (gp > 0 && xp > 0) return `${gp} GP + ${xp} XP`;
-  if (gp > 0) return `${gp} GP`;
-  if (xp > 0) return `${xp} XP`;
-  return 'DAILY REWARD';
-}
-
-function toRewardStatus(
-  daily: DailyRewardStateResponse | null,
-  balance: CreditBalanceResponse | null,
-  claiming = false,
-  claim?: DailyRewardClaimResponse | null
-): LobbyRewardStatus {
-  const available = Boolean(daily?.available) && !claiming;
-  const claimed = Boolean(claim?.claimed || claim?.alreadyClaimed);
-  return {
-    available,
-    claiming,
-    claimed,
-    alreadyClaimed: Boolean(claim?.alreadyClaimed),
-    currentDay: claim?.currentDay ?? daily?.currentDay,
-    loginStreak: claim?.loginStreak ?? daily?.loginStreak,
-    nextAt: claim?.nextAt ?? daily?.nextAt,
-    rewardLabel: rewardLabel(claim ?? daily),
-    readyLabel: claiming ? 'CLAIMING...' : claimed ? 'CLAIMED' : available ? 'SPIN TO CLAIM' : 'CLAIMED TODAY',
-    balanceLabel: balanceLabel(claim?.balance ?? balance),
-  };
 }
 
 function toPartyStatus(party: PartyStateResponse | null): LobbyPartyStatus | null {
@@ -258,11 +211,7 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
   }, [gameType]);
 
   const loadReward = useCallback(async (nextUserId: string) => {
-    const [daily, balance] = await Promise.all([
-      getDailyReward().catch(() => null),
-      getCreditsBalance(nextUserId).catch(() => null),
-    ]);
-    if (daily || balance) setReward(toRewardStatus(daily, balance));
+    setReward(await loadDailyRewardSpinStatus(nextUserId));
   }, []);
 
   const loadSettings = useCallback(async (nextUserId: string) => {
@@ -386,18 +335,17 @@ export function useLobbySideServices(gameType: string, userId?: string | null, j
 
   const claimReward = useCallback(async (nextUserId = activeUserId ?? undefined) => {
     if (!nextUserId) return;
+    if (isDailyRewardSpinCollected(reward)) return;
     setRuntimeUserId(nextUserId);
     setReward(previous => previous ? { ...previous, claiming: true, readyLabel: 'CLAIMING...' } : previous);
     setError(null);
     try {
-      const claim = await claimDailyReward(crypto.randomUUID());
-      const balance = claim.balance ?? await getCreditsBalance(nextUserId).catch(() => null);
-      setReward(toRewardStatus(null, balance, false, claim));
+      setReward(await claimDailyRewardSpinStatus(nextUserId));
     } catch (responseError) {
       setError(responseError instanceof Error ? responseError.message : 'Failed to claim daily reward');
       await loadReward(nextUserId);
     }
-  }, [activeUserId, loadReward]);
+  }, [activeUserId, loadReward, reward]);
 
   const selectServer = useCallback(async (regionId: string, nextUserId = activeUserId ?? undefined) => {
     if (!nextUserId || !ServerOptions.some(option => option.regionId === regionId)) return;

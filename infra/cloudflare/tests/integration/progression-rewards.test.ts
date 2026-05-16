@@ -4,6 +4,7 @@ import { beforeAll, afterAll } from 'vitest';
 import { getTestWorker, type TestWorker } from '@tests/helpers/worker-helper';
 import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
+import { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { TestConfig } from '@tests/constants/test-constants';
@@ -110,7 +111,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       headers: getValidRequestHeaders(TestConfig.TestUserId),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
-    const data = (await response.json()) as { available?: boolean; nextAt?: number; currentDay?: number; rewardForNext?: { xp?: number; gp?: number }; freezeUsesRemaining?: number };
+    const data = (await response.json()) as { available?: boolean; nextAt?: number; currentDay?: number; rewardForNext?: { type?: string; currency?: string; amount?: number; ac?: number }; freezeUsesRemaining?: number };
     expect(typeof data.available).toBe('boolean');
     expect(typeof data.nextAt).toBe('number');
     expect(typeof data.currentDay).toBe('number');
@@ -141,11 +142,14 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       body: JSON.stringify({ idempotencyKey: `test-daily-${TestConfig.TestUserId}-${Date.now()}` }),
     }, token);
     expect([HttpStatus.Ok, HttpStatus.TooManyRequests]).toContain(response.status);
-    const data = (await response.json()) as { claimed?: boolean; alreadyClaimed?: boolean; reward?: { type?: string; amount?: number; gp?: number }; nextAt?: number };
+    const data = (await response.json()) as { claimed?: boolean; alreadyClaimed?: boolean; reward?: { type?: string; currency?: string; amount?: number; ac?: number }; nextAt?: number };
     if (response.status === HttpStatus.Ok) {
       expect(data.claimed).toBe(true);
       expect(data.reward !== undefined).toBe(true);
-      expect(typeof (data.reward?.amount ?? data.reward) === 'number' || typeof data.reward?.amount === 'number').toBe(true);
+      expect(data.reward?.type).toBe('ac');
+      expect(data.reward?.currency).toBe(Currency.AC);
+      expect(typeof data.reward?.amount).toBe('number');
+      expect(typeof data.reward?.ac).toBe('number');
     }
   });
 
@@ -310,7 +314,7 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     }
   });
 
-  it(testName('Rewards GET daily: rewardForNext has xp and gp numbers, canFreeze boolean'), async () => {
+  it(testName('Rewards GET daily: rewardForNext has AC numbers, canFreeze boolean'), async () => {
     const token = getTokenForFetch();
     const url = buildApiUrl(ApiEndpoint.Rewards.Daily, { baseUrl: TestConfig.TestApiUrlPlaceholder });
     const response = await worker.fetch(url, {
@@ -318,9 +322,11 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       headers: getValidRequestHeaders(TestConfig.TestUserId),
     }, token);
     expect(response.status).toBe(HttpStatus.Ok);
-    const data = (await response.json()) as { rewardForNext?: { xp?: number; gp?: number }; canFreeze?: boolean };
-    expect(typeof data.rewardForNext?.xp).toBe('number');
-    expect(typeof data.rewardForNext?.gp).toBe('number');
+    const data = (await response.json()) as { rewardForNext?: { type?: string; currency?: string; amount?: number; ac?: number }; canFreeze?: boolean };
+    expect(data.rewardForNext?.type).toBe('ac');
+    expect(data.rewardForNext?.currency).toBe(Currency.AC);
+    expect(typeof data.rewardForNext?.amount).toBe('number');
+    expect(typeof data.rewardForNext?.ac).toBe('number');
     expect(typeof data.canFreeze).toBe('boolean');
   });
 

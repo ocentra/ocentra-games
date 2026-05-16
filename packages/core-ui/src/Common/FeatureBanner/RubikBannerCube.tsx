@@ -255,9 +255,11 @@ export function RubikBannerCube({
   const scheduleReady = useCallback((generation: number) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        if (readyGenerationRef.current === generation) {
-          setReadyState(true);
-        }
+        requestAnimationFrame(() => {
+          if (readyGenerationRef.current === generation) {
+            setReadyState(true);
+          }
+        });
       });
     });
   }, [setReadyState]);

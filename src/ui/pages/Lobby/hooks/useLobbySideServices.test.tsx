@@ -53,7 +53,7 @@ describe('useLobbySideServices', () => {
     vi.mocked(listFriends).mockResolvedValue({ friends: [{ friendId: 'friend-1', status: 'online' }] });
     vi.mocked(getPresence).mockResolvedValue({ status: 'online' });
     vi.mocked(listMessages).mockImplementation(async () => ({ messages: [...messages] }));
-    vi.mocked(getDailyReward).mockResolvedValue({ available: true, currentDay: 2, loginStreak: 2, rewardForNext: { gp: 5, xp: 50 } });
+    vi.mocked(getDailyReward).mockResolvedValue({ available: true, currentDay: 2, loginStreak: 2, rewardForNext: { type: 'ac', currency: 'AC', amount: 50, ac: 50 } });
     vi.mocked(getCreditsBalance).mockResolvedValue({ user_id: 'user-1', gp_balance: 125, ac_balance: 9 });
     vi.mocked(getSettings).mockResolvedValue({ settings: { preferredServerRegion: 'eu-west' } });
     vi.mocked(addFriend).mockResolvedValue({ friends: [{ friendId: 'friend-2', status: 'accepted' }] });
@@ -67,8 +67,8 @@ describe('useLobbySideServices', () => {
     });
     vi.mocked(claimDailyReward).mockResolvedValue({
       claimed: true,
-      reward: { type: 'xp', amount: 50, gp: 5, xp: 50 },
-      balance: { user_id: 'user-1', gp_balance: 130, ac_balance: 9 },
+      reward: { type: 'ac', currency: 'AC', amount: 75, ac: 75 },
+      balance: { user_id: 'user-1', gp_balance: 125, ac_balance: 84 },
     });
     vi.mocked(updateSettings).mockResolvedValue({ settings: { preferredServerRegion: 'na-west' } });
   });
@@ -82,8 +82,9 @@ describe('useLobbySideServices', () => {
     expect(result.current.lobbyChatMessages).toEqual([expect.objectContaining({ msg: 'claim lobby ready' })]);
     expect(result.current.reward).toEqual(expect.objectContaining({
       available: true,
-      rewardLabel: '5 GP + 50 XP',
-      balanceLabel: '125 GP / 9 AC',
+      rewardLabel: 'DAILY REWARD',
+      balanceLabel: '9 AC',
+      spinRewardLabel: '50 AC',
     }));
     expect(result.current.server.selectedRegionId).toBe('eu-west');
     expect(listMessages).toHaveBeenCalledWith('lobby-claim', { limit: 6 });
@@ -104,7 +105,8 @@ describe('useLobbySideServices', () => {
     expect(sendMessage).toHaveBeenCalledWith('lobby-claim', 'hello lobby');
     expect(result.current.lobbyChatMessages.some(message => message.msg === 'hello lobby')).toBe(true);
     expect(claimDailyReward).toHaveBeenCalledTimes(1);
-    expect(result.current.reward?.balanceLabel).toBe('130 GP / 9 AC');
+    expect(result.current.reward?.rewardLabel).toBe('75 AC');
+    expect(result.current.reward?.balanceLabel).toBe('84 AC');
     expect(updateSettings).toHaveBeenCalledWith('user-1', { preferredServerRegion: 'na-west' });
     expect(result.current.server.selectedRegionId).toBe('na-west');
   });

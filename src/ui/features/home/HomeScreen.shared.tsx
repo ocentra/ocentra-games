@@ -6,7 +6,9 @@ import {
   type FeaturedShowcaseControls,
 } from '@ocentra/core-ui/Common/FeaturedGameCarousel/FeaturedGameShowcase.types';
 import type { ExploreGameSummary } from '@ocentra/core-ui/Common/types/ExploreGameSummary';
-import { HomePageShowcaseContent } from '@ocentra/core-ui/Common/HomePage/HomePageShowcaseContent';
+import {
+  HomePageShowcaseContent,
+} from '@ocentra/core-ui/Common/HomePage/HomePageShowcaseContent';
 import {
   DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS,
   type HomeShowcaseFrameControls,
@@ -27,6 +29,7 @@ import { MainAppLogger } from '@ocentra/logging-domain/core/mainAppLogger';
 import { getStackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
 import { buildCardGamesCatalogPath } from '@/ui/navigation/appRoutes';
+import { useDailyRewardSpin } from '@/ui/rewards/dailyRewardSpinState';
 import '@/ui/pages/Home/HomePage.css';
 
 const log = MainAppLogger.instance;
@@ -78,6 +81,7 @@ function getMergedHomeFrameControls(controls?: HomeShowcaseFrameControls): HomeS
     body: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.body, ...controls.body },
     sideA: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideA, ...controls.sideA },
     sideB: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB, ...controls.sideB },
+    startup: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup, ...controls.startup },
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...controls.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...controls.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...controls.colors },
@@ -171,6 +175,7 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
     explorerGames: [],
   });
   const [isLoadingGames, setIsLoadingGames] = useState(true);
+  const { status: dailyRewardStatus, claim: handleDailyRewardSpin } = useDailyRewardSpin(user?.uid);
   const [homepageContentWidth, setHomepageContentWidth] = useState<number | null>(null);
 
   const { resolveImageUrl, ImageLoaders } = useResolveImageUrl(gamesData);
@@ -332,6 +337,8 @@ export function HomeScreenShared({ user, onLogout, onLogoutClick }: HomeScreenSh
           aboutControls={gamesData.aboutShowcaseControls}
           featuredControls={gamesData.featuredShowcaseControls}
           comingSoonControls={gamesData.comingSoonShowcaseControls}
+          dailyRewardStatus={dailyRewardStatus}
+          onDailyRewardSpin={handleDailyRewardSpin}
           previewLayoutMode={sharedHomepagePreviewLayoutMode}
           onLearnMore={handleLearnMore}
           onGameClick={handlePlayGame}

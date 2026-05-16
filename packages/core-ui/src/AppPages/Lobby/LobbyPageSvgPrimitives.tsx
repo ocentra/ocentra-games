@@ -5,17 +5,49 @@ import {
 } from './LobbyPageSvgGeometry';
 import type { LobbyCanvasRect } from './LobbyPageSvgTypes';
 
-export function PopupBackdrop({ canvas, opacity = 0.42, onClose }: { canvas: LobbyCanvasRect; opacity?: number; onClose?: () => void }) {
+export function PopupBackdrop({
+  canvas,
+  opacity = 0.42,
+  blur = false,
+  blurRadius = 7,
+  onClose,
+}: {
+  canvas: LobbyCanvasRect;
+  opacity?: number;
+  blur?: boolean;
+  blurRadius?: number;
+  onClose?: () => void;
+}) {
+  const x = canvas.x - 14;
+  const y = canvas.y - 14;
+  const w = canvas.w + 28;
+  const h = canvas.h + 28;
   return (
-    <rect
-      x={canvas.x - 14}
-      y={canvas.y - 14}
-      width={canvas.w + 28}
-      height={canvas.h + 28}
-      fill="#000"
-      opacity={opacity}
-      onClick={onClose}
-    />
+    <g>
+      {blur ? (
+        <foreignObject x={x} y={y} width={w} height={h} pointerEvents="none">
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              backdropFilter: `blur(${blurRadius}px)`,
+              WebkitBackdropFilter: `blur(${blurRadius}px)`,
+              background: `rgba(0, 0, 0, ${opacity})`,
+            }}
+          />
+        </foreignObject>
+      ) : null}
+      <rect
+        x={x}
+        y={y}
+        width={w}
+        height={h}
+        fill="#000"
+        opacity={blur ? 0 : opacity}
+        pointerEvents="all"
+        onClick={onClose}
+      />
+    </g>
   );
 }
 
@@ -221,6 +253,17 @@ export function Defs() {
       </filter>
       <filter id="lobbyCyanGlow" x="-40%" y="-40%" width="180%" height="180%">
         <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#14eaff" floodOpacity="0.58" />
+      </filter>
+      <filter id="lobbyRedGlow" x="-40%" y="-40%" width="180%" height="180%">
+        <feDropShadow dx="0" dy="0" stdDeviation="3.4" floodColor="#ff4655" floodOpacity="0.72" />
+      </filter>
+      <filter id="lobbyVegasGoldGlow" x="-160%" y="-160%" width="420%" height="420%">
+        <feDropShadow dx="0" dy="0" stdDeviation="4.4" floodColor="#ffca4b" floodOpacity="0.95" />
+        <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#ff9f2b" floodOpacity="0.72" />
+      </filter>
+      <filter id="lobbyVegasCyanGlow" x="-160%" y="-160%" width="420%" height="420%">
+        <feDropShadow dx="0" dy="0" stdDeviation="4.4" floodColor="#58f4ff" floodOpacity="0.95" />
+        <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#14eaff" floodOpacity="0.72" />
       </filter>
       <filter id="lobbyGoldGlow" x="-40%" y="-40%" width="180%" height="180%">
         <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ff9f2b" floodOpacity="0.46" />

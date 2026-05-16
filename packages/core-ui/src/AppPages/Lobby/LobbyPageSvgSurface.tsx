@@ -1,6 +1,10 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { avatarImageById } from '@ocentra/app-assets/avatars';
 import {
+  DailySpinBadgeSvg,
+  DailySpinSpinnerSvg,
+} from '../../Common/Rewards/DailySpinSvg';
+import {
   ACTIVE_FILTERS,
   DEFAULT_FEATURED_CARDS,
   DEFAULT_TABLE_ROWS,
@@ -57,7 +61,6 @@ import {
   FeaturedCardPopup,
   FilterPopup,
   PlayersPopup,
-  SpinnerPopup,
   StatusOverlay,
 } from './LobbyPageSvgPopups';
 import {
@@ -731,7 +734,16 @@ export function LobbyPageSvgSurface({
               onOpenActionPopup={setActionPopup}
               onNavigate={onNavigate}
               reward={reward}
-              onClaimReward={onClaimReward}
+              renderRewardBadge={({ x, y, w, h, reward: rewardStatus, onOpen }) => (
+                <DailySpinBadgeSvg
+                  x={x}
+                  y={y}
+                  w={w}
+                  h={h}
+                  reward={rewardStatus}
+                  onOpen={onOpen}
+                />
+              )}
             />
           </g>
           <Header
@@ -843,7 +855,13 @@ export function LobbyPageSvgSurface({
           minPlayers={minPlayers}
           maxPlayers={maxPlayers}
         />
-        <SpinnerPopup open={actionPopup === 'spinner'} onClose={() => setActionPopup(null)} controls={controls} canvas={canvas} />
+        <DailySpinSpinnerSvg
+          open={actionPopup === 'spinner'}
+          onClose={() => setActionPopup(null)}
+          canvas={canvas}
+          reward={reward}
+          onSpin={onClaimReward}
+        />
         <FeaturedCardPopup
           card={featuredCardPopup}
           onClose={() => setFeaturedCardPopup(null)}

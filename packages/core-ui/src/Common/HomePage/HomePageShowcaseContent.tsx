@@ -6,6 +6,7 @@ import type { FeaturedGameItem } from '@ocentra/game-asset-domain/schemas/game-h
 import { ComingSoonShowcase } from '../ComingSoonCarousel/ComingSoonShowcase';
 import { FeatureBannerSection } from '../FeatureBanner/FeatureBannerSection';
 import { FeaturedGameShowcase } from '../FeaturedGameCarousel/FeaturedGameShowcase';
+import type { DailyRewardSpinStatus } from '../Rewards/DailyRewardSpinPanel';
 import type {
   FeaturedGameShowcasePreviewLayoutMode,
   FeaturedShowcaseControls,
@@ -19,6 +20,8 @@ import type { ExploreGameSummary } from '../types/ExploreGameSummary';
 type HomePagePreviewLayoutMode =
   | HomeShowcasePreviewLayoutMode
   | FeaturedGameShowcasePreviewLayoutMode;
+
+export type { DailyRewardSpinStatus };
 
 export type HomePageShowcaseContentProps = {
   contentRef?: Ref<HTMLDivElement>;
@@ -36,6 +39,8 @@ export type HomePageShowcaseContentProps = {
   aboutControls?: HomeShowcaseFrameControls;
   featuredControls?: FeaturedShowcaseControls;
   comingSoonControls?: FeaturedShowcaseControls;
+  dailyRewardStatus?: DailyRewardSpinStatus | null;
+  onDailyRewardSpin?: () => void;
   previewLayoutMode?: HomePagePreviewLayoutMode;
   onLearnMore?: (gameIdentifier: string) => void;
   onGameClick?: (gameIdentifier: string) => void;
@@ -73,6 +78,8 @@ export function HomePageShowcaseContent({
   aboutControls,
   featuredControls,
   comingSoonControls,
+  dailyRewardStatus,
+  onDailyRewardSpin,
   previewLayoutMode = 'auto',
   onLearnMore,
   onGameClick,
@@ -121,6 +128,8 @@ export function HomePageShowcaseContent({
                   controls={aboutControls}
                   previewLayoutMode={previewLayoutMode}
                   allowDebugBounds={allowDebugBounds}
+                  dailyRewardStatus={dailyRewardStatus}
+                  onDailyRewardSpin={onDailyRewardSpin}
                 />
               </section>
               <section className={classNames('featured-section', sectionClassName, featuredSectionClassName)}>

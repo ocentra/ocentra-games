@@ -3,7 +3,7 @@ import type { FlowContext } from '@/flows/core/FlowContext';
 import type { FlowResult } from '@/flows/core/FlowResult';
 import { fetchFromDO } from '@/utils/durable-object-request';
 import { RewardDO as RewardDOPaths, CreditsDO as CreditsDOPaths, ProgressionDO as ProgressionDOPaths } from '@ocentra/endpoint-domain/constants/cloudflare-do';
-import { CreditLedgerSource } from '@ocentra/endpoint-domain/constants/credits';
+import { CreditLedgerSource, Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { HttpMethod, HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 
 export type RewardClaimFlowInput =
@@ -62,7 +62,9 @@ type RewardResponse = {
   claimed?: boolean;
   alreadyClaimed?: boolean;
   reward?: {
+    ac?: number;
     amount?: number;
+    currency?: string;
     gp?: number;
     xp?: number;
     type?: string;
@@ -83,12 +85,16 @@ function toPositiveNumber(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : 0;
 }
 
-function extractRewardTotals(body: RewardResponse): { gp: number; xp: number } {
+function extractRewardTotals(body: RewardResponse): { gp: number; xp: number; ac: number } {
   const reward = body.reward;
-  if (!reward) return { gp: 0, xp: 0 };
-  const gp = toPositiveNumber(reward.gp);
-  const xp = toPositiveNumber(reward.xp) || toPositiveNumber(reward.amount);
-  return { gp, xp };
+  if (!reward) return { gp: 0, xp: 0, ac: 0 };
+  const currency = typeof reward.currency === 'string' ? reward.currency.toUpperCase() : '';
+  const type = typeof reward.type === 'string' ? reward.type.toLowerCase() : '';
+  const amount = toPositiveNumber(reward.amount);
+  const ac = toPositiveNumber(reward.ac) || (currency === Currency.AC || type === 'ac' ? amount : 0);
+  const gp = toPositiveNumber(reward.gp) || (currency === Currency.GP || type === 'gp' ? amount : 0);
+  const xp = toPositiveNumber(reward.xp) || (type === 'xp' && currency !== Currency.AC ? amount : 0);
+  return { gp, xp, ac };
 }
 
 function getRewardOperationId(context: FlowContext, input: RewardClaimOperationInput): string {
@@ -196,6 +202,17 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
 
     const body = rewardResult.body as RewardResponse;
     const reward = extractRewardTotals(body);
+    const creditSource = input.rewardOperationLabel.startsWith('daily:') ? CreditLedgerSource.Daily : CreditLedgerSource.Other;
+    if (reward.ac > 0) {
+      if (!context.env.CREDITS_DO) {
+        return {
+          status: HttpStatus.ServiceUnavailable,
+          body: { error: 'Credit service unavailable' },
+        };
+      }
+      const creditsResult = await this.awardCredits(context, input.rewardOperationId, reward.ac, input.rewardOperationLabel, Currency.AC, creditSource);
+      if (creditsResult) return creditsResult;
+    }
     if (reward.gp > 0) {
       if (!context.env.CREDITS_DO) {
         return {
@@ -203,7 +220,7 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
           body: { error: 'Credit service unavailable' },
         };
       }
-      const creditsResult = await this.awardCredits(context, input.rewardOperationId, reward.gp, input.rewardOperationLabel);
+      const creditsResult = await this.awardCredits(context, input.rewardOperationId, reward.gp, input.rewardOperationLabel, Currency.GP, creditSource);
       if (creditsResult) return creditsResult;
     }
     if (reward.xp > 0) {
@@ -268,7 +285,9 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
     context: FlowContext,
     rewardOperationId: string,
     amount: number,
-    description: string
+    description: string,
+    currency: Currency,
+    source: CreditLedgerSource
   ): Promise<FlowResult<unknown> | null> {
     const ns = context.env.CREDITS_DO;
     if (!ns) {
@@ -290,17 +309,18 @@ export class RewardClaimFlow extends BaseFlow<RewardClaimFlowRequest, unknown> {
     const res = await fetchFromDO(stub, CreditsDOPaths.Award, {
       method: HttpMethod.Post,
       body: JSON.stringify({
-        awardId: `${rewardOperationId}-gp`,
+        awardId: `${rewardOperationId}-${currency.toLowerCase()}`,
         amount,
+        currency,
         description,
-        source: CreditLedgerSource.Other,
+        source,
       }),
     });
     if (!res.ok) {
       await res.text().catch(() => undefined);
       return {
         status: HttpStatus.BadGateway,
-        body: { error: 'Failed to grant GP reward' },
+        body: { error: `Failed to grant ${currency} reward` },
       };
     }
     await res.text().catch(() => undefined);
