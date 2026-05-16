@@ -1,4 +1,4 @@
-import type { CenterLogoRenderArgs, UnifiedHeaderConfigInput } from './UnifiedHeader.config';
+import type { CenterContentRenderArgs, CenterLogoRenderArgs, UnifiedHeaderConfigInput } from './UnifiedHeader.config';
 
 export function createOcentraHeaderLogoConfig(logoImageUrl: string, size = 44): UnifiedHeaderConfigInput {
   return {
@@ -54,6 +54,68 @@ export function createOcentraHeaderLogoConfig(logoImageUrl: string, size = 44): 
             );
           },
         },
+      },
+    },
+  };
+}
+
+export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): UnifiedHeaderConfigInput {
+  return {
+    layout: {
+      centerWidth: 64,
+      centerMinWidth: 56,
+      wingUnderlap: 4,
+    },
+    center: {
+      mode: 'B',
+      contentGap: 0,
+      sidePadding: 0,
+      modeB: {
+        text: '',
+        tagline: '',
+        iconSize: 0,
+        pairGap: 0,
+        leftIcons: [],
+        rightIcons: [],
+        icons: [],
+      },
+      customRenderer: ({ box, aspectCorrection }: CenterContentRenderArgs) => {
+        const cx = box.x + box.w / 2;
+        const cy = box.y + box.h / 2;
+        const circleSize = Math.min(box.h * 0.92, box.w);
+        const circleRadius = circleSize / 2;
+        const logoSize = circleSize * 1.48;
+
+        return (
+          <g transform={`translate(${cx} ${cy}) scale(${aspectCorrection} 1) translate(${-cx} ${-cy})`}>
+            <circle
+              cx={cx}
+              cy={cy}
+              r={circleRadius}
+              fill="rgba(4, 24, 48, 0.72)"
+              stroke="rgba(84, 226, 255, 0.95)"
+              strokeWidth={1}
+              vectorEffect="non-scaling-stroke"
+            />
+            <circle
+              cx={cx}
+              cy={cy}
+              r={Math.max(1, circleRadius - 3)}
+              fill="none"
+              stroke="rgba(255, 211, 106, 0.72)"
+              strokeWidth={0.8}
+              vectorEffect="non-scaling-stroke"
+            />
+            <image
+              href={logoImageUrl}
+              x={cx - logoSize / 2}
+              y={cy - logoSize / 2}
+              width={logoSize}
+              height={logoSize}
+              preserveAspectRatio="xMidYMid meet"
+            />
+          </g>
+        );
       },
     },
   };

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react';
 import {
   isShopProductPurchasable,
   productPriceLabel,
@@ -20,6 +20,7 @@ import {
   SHOP_VAULT_SHOWCASE_GROUPS,
   type ShopIcon,
   type ShopQuest,
+  type ShopRightTab,
   type ShopStaticItem,
   type ShopTone,
   type ShopVaultShowcaseGroup,
@@ -77,9 +78,11 @@ export type ShopPageSvgSurfaceProps = {
 type Metrics = {
   leftX: number;
   leftY: number;
+  leftW: number;
   mainX: number;
   mainW: number;
   rightX: number;
+  rightW: number;
   headerSideW: number;
   headerCenterX: number;
   headerStatsX: number;
@@ -90,8 +93,25 @@ type TileItem = ShopStaticItem & {
 };
 
 type BottomPreviewTarget = ShopTab | 'Earn Free AC';
+type ShopRightTabId = ShopRightTab['id'];
+type ShopPreviewSourceRow = typeof SHOP_PREVIEWS[number];
+
+type PreviewPanelItem = {
+  key: string;
+  label: string;
+  imageUrl: string;
+};
+
+type ResolvedPreviewRow = Omit<ShopPreviewSourceRow, 'items' | 'imageUrls'> & {
+  previewItems: PreviewPanelItem[];
+};
 
 const SHOP_MAIN_USE_HOME_FEATURED_BASELINE = true;
+const MAX_BOTTOM_PREVIEW_ITEMS = 8;
+const PREFERRED_BOTTOM_PREVIEW_ITEMS = 4;
+const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
+const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
+const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
 
 function staticCreditPackForProduct(product: ShopProduct, index: number): ShopStaticItem {
   const amount = product.acAmount ?? Number(product.displayName.match(/\d+/)?.[0]);
@@ -166,17 +186,136 @@ function vaultGroupTitleFromKey(key: string | null): string | null {
   return SHOP_VAULT_SHOWCASE_GROUPS.find(group => group.key === key)?.title ?? null;
 }
 
+function rightPanelMeta(id: ShopRightTabId): ShopRightTab {
+  return SHOP_RIGHT_TABS.find(tab => tab.id === id) ?? SHOP_RIGHT_TABS[0];
+}
+
+function rightPanelSubtitle(id: ShopRightTabId): string {
+  if (id === 'wallet') return 'Arena Credit balance, tickets, season points, owned inventory, and active table capacity.';
+  if (id === 'pass') return 'Current pass state, active benefits, and the next pass management surface.';
+  if (id === 'events') return 'Upcoming competitive entries, season reset, and qualifier readiness.';
+  if (id === 'recent') return 'Recent marketplace activity and balance-changing purchases.';
+  return 'Account identity, profile progress, owned items, and marketplace status.';
+}
+
+function rightPanelDetailRows(id: ShopRightTabId, acBalance: number): Array<{ label: string; value: string; detail: string }> {
+  if (id === 'wallet') {
+    return SHOP_RIGHT_ROWS.wallet.map((row, index) => ({
+      label: row[0],
+      value: index === 0 ? `${acBalance.toLocaleString()} ${row[1]}` : row[1],
+      detail: index === 0 ? 'Spendable marketplace balance.' : 'Synced from account inventory and competitive state.',
+    }));
+  }
+  if (id === 'pass') {
+    return [
+      { label: 'Active pass', value: 'Champion', detail: 'Premium access and pass-linked benefits are active.' },
+      { label: 'Monthly AC', value: '1,200 AC', detail: 'Recurring allowance available through the current pass tier.' },
+      { label: 'Premium rooms', value: 'Enabled', detail: 'Extra room and table access for pass holders.' },
+      { label: 'Season drops', value: 'Included', detail: 'Seasonal reward drops and priority matchmaking benefits.' },
+      { label: 'Renewal', value: 'Monthly', detail: 'Management action will wire into pass/account settings later.' },
+    ];
+  }
+  if (id === 'events') {
+    return SHOP_RIGHT_ROWS.events.map(row => ({
+      label: row[0],
+      value: row[1],
+      detail: `${row[2]} state is visible here before the real event flow is wired.`,
+    }));
+  }
+  if (id === 'recent') {
+    return SHOP_RIGHT_ROWS.recent.map(row => ({
+      label: row[0],
+      value: row[1],
+      detail: row[1].startsWith('+') ? 'Credit added to marketplace balance.' : 'Spend or entitlement recorded in account history.',
+    }));
+  }
+  return [
+    { label: 'Profile', value: 'ocentra', detail: 'Current marketplace profile identity.' },
+    { label: 'Rating', value: 'ELO 1200', detail: 'Competitive account rating shown in the preview card.' },
+    { label: 'Owned items', value: '128', detail: 'Inventory count across decks, cosmetics, passes, and rewards.' },
+    { label: 'Active tables', value: '4 / 6', detail: 'Current active table usage versus available table capacity.' },
+    { label: 'Status', value: 'Linked', detail: 'Account and wallet preview state for this layout surface.' },
+  ];
+}
+
 function previewCardWidth(cfg: ShopPageSvgControls): number {
   const availableH = cfg.layout.bottomPreviewH - cfg.bottomPreview.headerH - cfg.bottomPreview.bottomPad;
   return Math.max(88, Math.min(122, availableH * 1.14));
 }
 
-function previewPanelWidth(row: typeof SHOP_PREVIEWS[number], cfg: ShopPageSvgControls): number {
-  const itemCount = Math.max(1, row.items.length);
+function previewPanelWidthForCardCount(cardCount: number, cfg: ShopPageSvgControls): number {
+  const itemCount = Math.max(1, Math.min(MAX_BOTTOM_PREVIEW_ITEMS, Math.round(cardCount)));
   return Math.max(
     260,
     cfg.bottomPreview.sidePad * 2 + itemCount * previewCardWidth(cfg) + Math.max(0, itemCount - 1) * cfg.bottomPreview.cardGap,
   );
+}
+
+function wrapPreviewIndex(value: number, count: number): number {
+  if (count <= 0) return 0;
+  return ((value % count) + count) % count;
+}
+
+function staticItemToPreviewItem(item: ShopStaticItem, index: number, prefix: string): PreviewPanelItem {
+  return {
+    key: `${prefix}-${item.title}-${index}`,
+    label: item.title,
+    imageUrl: item.imageUrl,
+  };
+}
+
+function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[]): PreviewPanelItem[] {
+  if (row.tab === 'Earn Free AC') {
+    return SHOP_QUESTS.map(quest => ({
+      key: quest.key,
+      label: quest.title,
+      imageUrl: quest.imageUrl,
+    }));
+  }
+  if (row.tab === 'Vault') {
+    return SHOP_VAULT_SHOWCASE_GROUPS.map(group => ({
+      key: group.key,
+      label: group.title,
+      imageUrl: group.heroImageUrl,
+    }));
+  }
+  if (row.tab === 'Play Access') {
+    const items = SHOP_SECTIONS['Play Access'].featured ?? SHOP_SECTIONS['Play Access'].categories ?? [];
+    return items.map((item, index) => staticItemToPreviewItem(item, index, 'play-access-preview'));
+  }
+  if (row.tab === 'Events') {
+    const items = SHOP_SECTIONS.Events.featured ?? SHOP_SECTIONS.Events.categories ?? [];
+    return items.map((item, index) => staticItemToPreviewItem(item, index, 'events-preview'));
+  }
+  return tilesForTab(products, row.tab).map((item, index) => staticItemToPreviewItem(item, index, `${row.tab.toLowerCase()}-preview`));
+}
+
+function minimumShopCanvasWidth(cfg: ShopPageSvgControls): number {
+  return Math.ceil(
+    cfg.layout.outerPad * 2
+    + SHOP_RESPONSIVE_MIN_LEFT_W
+    + SHOP_RESPONSIVE_MIN_RIGHT_W
+    + SHOP_RESPONSIVE_MIN_MAIN_W
+    + cfg.layout.mainGap * 2,
+  );
+}
+
+function shopCanvasWidthForSurface(cfg: ShopPageSvgControls, surfaceSize: { width: number; height: number }): number {
+  if (surfaceSize.width <= 0 || surfaceSize.height <= 0) return cfg.canvas.width;
+  const ratioWidth = Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height));
+  return Math.max(minimumShopCanvasWidth(cfg), Math.min(2600, ratioWidth));
+}
+
+function responsiveColumnWidths(canvasWidth: number, cfg: ShopPageSvgControls): { leftW: number; mainW: number; rightW: number } {
+  const availableW = canvasWidth - cfg.layout.outerPad * 2 - cfg.layout.mainGap * 2;
+  const desiredSideW = cfg.layout.leftW + cfg.layout.rightW;
+  const sideScale = desiredSideW > 0
+    ? clampNumber((availableW - SHOP_RESPONSIVE_MIN_MAIN_W) / desiredSideW, 0, 1)
+    : 1;
+  const leftW = clampNumber(cfg.layout.leftW * sideScale, SHOP_RESPONSIVE_MIN_LEFT_W, cfg.layout.leftW);
+  const rightW = clampNumber(cfg.layout.rightW * sideScale, SHOP_RESPONSIVE_MIN_RIGHT_W, cfg.layout.rightW);
+  const mainW = Math.max(SHOP_RESPONSIVE_MIN_MAIN_W, availableW - leftW - rightW);
+  return { leftW, mainW, rightW };
 }
 
 function isCreditPackTile(item: TileItem): boolean {
@@ -213,9 +352,9 @@ function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string
     badge: item.badge,
     imageUrl: item.imageUrl,
     price: item.price,
-    actionLabel: tileActionLabel(item),
+    actionLabel: 'View',
     loading: item.product ? loadingId === item.product.productId : false,
-    disabled: item.product ? !isShopProductPurchasable(item.product) : false,
+    disabled: false,
   };
 }
 
@@ -241,7 +380,7 @@ function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix
     badge: item.badge,
     imageUrl: item.imageUrl,
     price: item.price,
-    actionLabel: tileActionLabel(item),
+    actionLabel: 'View',
   };
 }
 
@@ -261,6 +400,20 @@ function vaultGroupToMainCarouselCard(group: ShopVaultShowcaseGroup): ShopMainCa
   };
 }
 
+function vaultGroupToTile(group: ShopVaultShowcaseGroup): TileItem {
+  const itemTitles = group.items.map(item => item.title).filter(Boolean);
+  return {
+    title: group.title,
+    subtitle: group.subtitle,
+    tone: group.tone,
+    icon: group.icon,
+    badge: group.badge,
+    imageUrl: group.heroImageUrl,
+    price: group.badge === 'FREE' ? 'Free' : group.badge === 'SOON' ? 'Coming Soon' : undefined,
+    benefits: itemTitles.length > 0 ? itemTitles : [group.subtitle],
+  };
+}
+
 function tileDisabled(item: TileItem, onClick?: () => void): boolean {
   if (item.product) return !isShopProductPurchasable(item.product);
   if (!onClick) return true;
@@ -275,6 +428,11 @@ function alphaColor(color: string, opacity: number): string {
   if (!/^#[0-9a-f]{6}$/i.test(color)) return color;
   const alpha = Math.round(clampNumber(opacity, 0, 1) * 255).toString(16).padStart(2, '0');
   return `${color}${alpha}`;
+}
+
+function fitSingleLineTextSize(text: string, width: number, min: number, max: number, factor = 0.52): number {
+  const length = Math.max(1, text.length);
+  return clampNumber(width / (length * factor), min, max);
 }
 
 function visibleCardCount(
@@ -311,11 +469,12 @@ function centeredCardRow(
   count: number,
   gap: number,
   sidePad: number,
+  minCardW: number,
   maxCardW: number,
 ): { cardW: number; rowX: number } {
   const safeCount = Math.max(1, count);
   const availableCardW = (w - sidePad * 2 - gap * Math.max(0, safeCount - 1)) / safeCount;
-  const cardW = Math.max(80, Math.min(maxCardW, availableCardW));
+  const cardW = Math.max(minCardW, Math.min(maxCardW, availableCardW));
   const rowW = safeCount * cardW + Math.max(0, safeCount - 1) * gap;
   return {
     cardW,
@@ -701,11 +860,25 @@ function HeaderLayer({
 }) {
   const token = cfg.componentTokens.headerLayer;
   const copy = SHOP_UI_COPY.header;
+  const cartOnly = w < 218;
+  const compact = w < 320;
+  const cartSize = compact ? Math.min(cfg.header.cartSize, 46, Math.max(32, w - token.pad * 2)) : cfg.header.cartSize;
+  const cartX = cartOnly ? x + w / 2 - cartSize / 2 : x + token.pad;
+  const cartY = y + h / 2 - cartSize / 2;
   const bodyX = x + token.pad + cfg.header.cartZoneW + token.bodyGap;
-  const badgeTotal = cfg.header.badgeW * 3 + cfg.header.badgeGap * 2;
+  const minTitleW = compact ? 104 : 166;
+  const badgeRoom = Math.max(0, w - token.pad * 2 - cfg.header.cartZoneW - token.bodyGap * 2 - minTitleW);
+  const visibleBadgeCount = cartOnly ? 0 : Math.max(0, Math.min(copy.badges.length, Math.floor((badgeRoom + cfg.header.badgeGap) / (cfg.header.badgeW + cfg.header.badgeGap))));
+  const visibleBadges = copy.badges.slice(0, visibleBadgeCount);
+  const badgeTotal = visibleBadgeCount > 0 ? cfg.header.badgeW * visibleBadgeCount + cfg.header.badgeGap * Math.max(0, visibleBadgeCount - 1) : 0;
   const badgesX = x + w - token.pad - badgeTotal;
+  const showTitle = !cartOnly;
+  const showSubtitle = showTitle && !compact && w >= 390;
   const balanceX = x + w + cfg.header.gap;
   const balanceW = Math.max(token.balanceMinWidth, rightX - balanceX - cfg.header.gap);
+  const titleRight = visibleBadgeCount > 0 ? badgesX - token.bodyGap : x + w - token.pad;
+  const titleW = Math.max(120, titleRight - bodyX);
+  const titleSize = Math.min(cfg.header.titleSize, fitSingleLineTextSize(copy.title, titleW, compact ? 14 : 18, cfg.header.titleSize, 0.48));
   return (
     <g>
       <Panel
@@ -720,10 +893,10 @@ function HeaderLayer({
         glowOpacity={token.panelGlowOpacity}
         cfg={cfg}
       >
-        <MarketplaceCartIcon x={x + token.pad} y={y + h / 2 - cfg.header.cartSize / 2} size={cfg.header.cartSize} cfg={cfg} />
-        <line x1={x + token.pad + cfg.header.cartZoneW} y1={y + token.dividerTopPad} x2={x + token.pad + cfg.header.cartZoneW} y2={y + h - token.dividerBottomPad} stroke={cfg.colors.line} strokeWidth={token.dividerStrokeWidth} />
-        <Txt x={bodyX} y={y + token.titleY} size={cfg.header.titleSize} weight={token.titleWeight} cfg={cfg}>{copy.title}</Txt>
-        {copy.badges.map((badge, index) => (
+        <MarketplaceCartIcon x={cartX} y={cartY} size={cartSize} cfg={cfg} />
+        {showTitle ? <line x1={x + token.pad + cfg.header.cartZoneW} y1={y + token.dividerTopPad} x2={x + token.pad + cfg.header.cartZoneW} y2={y + h - token.dividerBottomPad} stroke={cfg.colors.line} strokeWidth={token.dividerStrokeWidth} /> : null}
+        {showTitle ? <Txt x={bodyX} y={y + token.titleY} size={titleSize} weight={token.titleWeight} cfg={cfg}>{copy.title}</Txt> : null}
+        {visibleBadges.map((badge, index) => (
           <HeaderBadge
             key={badge.title}
             x={badgesX + index * (cfg.header.badgeW + cfg.header.badgeGap)}
@@ -737,8 +910,8 @@ function HeaderLayer({
             cfg={cfg}
           />
         ))}
-        <line x1={bodyX} y1={y + token.separatorY} x2={x + w - token.pad} y2={y + token.separatorY} stroke={cfg.colors.line} strokeWidth={token.separatorStrokeWidth} strokeOpacity={token.bodySeparatorOpacity} />
-        <Txt x={bodyX + (w - (bodyX - x) - token.pad) / 2} y={y + token.subtitleY} fill={cfg.colors.mutedText} size={cfg.header.subtitleSize} weight={token.subtitleWeight} anchor="middle" cfg={cfg}>{copy.subtitle}</Txt>
+        {showTitle ? <line x1={bodyX} y1={y + token.separatorY} x2={x + w - token.pad} y2={y + token.separatorY} stroke={cfg.colors.line} strokeWidth={token.separatorStrokeWidth} strokeOpacity={token.bodySeparatorOpacity} /> : null}
+        {showSubtitle ? <Txt x={bodyX + (w - (bodyX - x) - token.pad) / 2} y={y + token.subtitleY} fill={cfg.colors.mutedText} size={cfg.header.subtitleSize} weight={token.subtitleWeight} anchor="middle" cfg={cfg}>{copy.subtitle}</Txt> : null}
       </Panel>
       <g className="shop-page-svg-clickable" onClick={onArenaCreditsInfo} role="button" tabIndex={0}>
         <Panel
@@ -781,9 +954,16 @@ function TopStatsLayer({
   onElite: () => void;
 }) {
   const token = cfg.componentTokens.topStatsLayer;
-  const passW = Math.min(token.passMaxW, Math.max(token.passMinW, w * token.passRatioW));
+  const visibleStats = w < 360 ? [] : w < 500 ? SHOP_HEADER_STATS.slice(0, 1) : w < 640 ? SHOP_HEADER_STATS.slice(0, 2) : SHOP_HEADER_STATS;
+  const compactPass = w < 300;
+  const iconOnlyPass = w < 156;
+  const passW = visibleStats.length === 0
+    ? Math.max(80, w - token.padX * 2)
+    : Math.min(token.passMaxW, Math.max(Math.min(token.passMinW, w * 0.46), w * token.passRatioW));
   const statStart = x + token.padX + passW + token.gapAfterPass;
-  const statW = (w - token.padX * 2 - passW - token.gapAfterPass - token.statRightReserve) / SHOP_HEADER_STATS.length;
+  const statW = visibleStats.length > 0
+    ? Math.max(46, (w - token.padX * 2 - passW - token.gapAfterPass - token.statRightReserve - token.statGap * Math.max(0, visibleStats.length - 1)) / visibleStats.length)
+    : 0;
   return (
     <Panel
       x={x}
@@ -801,10 +981,21 @@ function TopStatsLayer({
       <g onClick={onElite} role="button" tabIndex={0} className="shop-page-svg-clickable">
         <rect x={x + token.padX} y={y + token.passY} width={passW} height={token.passH} rx={token.passRadius} fill={cfg.colors.headerFillAlt} stroke={cfg.colors.statsPassStroke} strokeWidth={token.passStrokeWidth} strokeOpacity={token.passStrokeOpacity} />
         <MiniIcon type="crown" x={x + token.padX + token.passIconX} y={y + token.passY + token.passIconY} size={token.passIconSize} tone="gold" cfg={cfg} />
-        <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passTitleY} fill={cfg.colors.balanceText} size={token.passTitleSize} weight={token.passTitleWeight} cfg={cfg}>Active Pass</Txt>
-        <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passValueY} size={token.passValueSize} weight={token.passValueWeight} cfg={cfg}>Champion</Txt>
+        {!iconOnlyPass && !compactPass ? <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passTitleY} fill={cfg.colors.balanceText} size={token.passTitleSize} weight={token.passTitleWeight} cfg={cfg}>Active Pass</Txt> : null}
+        {!iconOnlyPass ? (
+          <Txt
+            x={compactPass ? x + token.padX + passW / 2 + token.passIconSize * 0.26 : x + token.padX + token.passTextX}
+            y={compactPass ? y + token.passY + token.passH / 2 + 2 : y + token.passY + token.passValueY}
+            size={compactPass ? Math.min(token.passValueSize, fitSingleLineTextSize('Champion', passW - token.passIconSize - 22, 10, token.passValueSize, 0.55)) : token.passValueSize}
+            weight={token.passValueWeight}
+            anchor={compactPass ? 'middle' : 'start'}
+            cfg={cfg}
+          >
+            Champion
+          </Txt>
+        ) : null}
       </g>
-      {SHOP_HEADER_STATS.map((stat, index) => (
+      {visibleStats.map((stat, index) => (
         <g key={stat.label}>
           <rect x={statStart + index * (statW + token.statGap)} y={y + token.statY} width={statW} height={token.statH} rx={token.statRadius} fill={cfg.colors.statsCardFill} stroke={cfg.colors.statsCardStroke} strokeWidth={token.statStrokeWidth} strokeOpacity={token.statStrokeOpacity} />
           <Txt x={statStart + index * (statW + token.statGap) + statW / 2} y={y + token.statY + token.statLabelY} anchor="middle" size={token.statLabelSize} fill={cfg.colors.headerBadgeSubText} weight={token.statLabelWeight} cfg={cfg}>{stat.label}</Txt>
@@ -1108,6 +1299,15 @@ function passBenefits(item: TileItem): string[] {
   return [...SHOP_UI_COPY.passCard.benefits];
 }
 
+function bottomCardBenefits(item: TileItem): string[] {
+  if (item.benefits?.length) return item.benefits;
+  if (item.product?.benefits?.length) return item.product.benefits;
+  if (isCreditPackTile(item)) {
+    return ['One-time Arena Credit top-up', 'Adds to marketplace balance', 'Use for tools, vault, access, and events'];
+  }
+  return [item.subtitle].filter(Boolean);
+}
+
 function PassTile({
   x,
   y,
@@ -1221,6 +1421,7 @@ function EliteBottomActionButton({
   const arrowPath = `${innerX + arrowW * 0.36},${arrowCy - h * 0.25} ${innerX + arrowW * 0.68},${arrowCy} ${innerX + arrowW * 0.36},${arrowCy + h * 0.25}`;
   const buttonFill = lit ? 'url(#shopActiveBlue)' : cfg.colors.buttonIdleFill;
   const arrowFill = lit ? alphaColor(color, 0.34) : cfg.colors.buttonHoverFill;
+  const labelSize = Math.min(Math.max(11.8, h * 0.44), Math.max(9.2, labelW / Math.max(7, label.length * 0.56)));
   return (
     <g
       role="button"
@@ -1238,7 +1439,7 @@ function EliteBottomActionButton({
         <rect x={x - 2} y={y - 2} width={w + 4} height={h + 4} rx={radius + 2} fill="none" stroke={color} strokeWidth="2" opacity="0.32" filter="url(#shopSoftGlow)" />
       ) : null}
       <rect x={x} y={y} width={w} height={h} rx={radius} fill={disabled ? cfg.colors.buttonDisabledFill : buttonFill} stroke={color} strokeWidth="1.5" strokeOpacity={lit ? 0.98 : 0.62} opacity={disabled ? 0.48 : 1} />
-      <Txt x={x + labelW / 2} y={y + h / 2 + 1} anchor="middle" size={Math.min(11.8, Math.max(9.2, labelW / Math.max(7, label.length * 0.56)))} weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{label}</Txt>
+      <Txt x={x + labelW / 2} y={y + h / 2 + 1} anchor="middle" size={labelSize} weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{label}</Txt>
       <path d={topRoundedRectPath(innerX, y, arrowW, h, radius)} fill={arrowFill} stroke={color} strokeOpacity={lit ? 0.95 : 0.72} />
       <path d={bottomRoundedRectPath(innerX, y, arrowW, h, radius)} fill={arrowFill} stroke={color} strokeOpacity={lit ? 0.95 : 0.72} />
       <polygon points={arrowPath} fill={lit ? color : cfg.colors.buttonArrowFill} filter={lit ? 'url(#shopSoftGlow)' : undefined} />
@@ -1254,6 +1455,7 @@ function EliteBottomPassCard({
   item,
   cfg,
   loading,
+  expanded = false,
   onInspect,
   onBuy,
 }: {
@@ -1264,40 +1466,66 @@ function EliteBottomPassCard({
   item: TileItem;
   cfg: ShopPageSvgControls;
   loading?: boolean;
+  expanded?: boolean;
   onInspect: () => void;
   onBuy: (product: ShopProduct) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const color = toneColor(item.tone, cfg);
-  const headerH = Math.max(34, Math.min(42, h * 0.18));
-  const footerH = Math.max(34, Math.min(42, h * 0.18));
+  const passLike = item.product?.productType === 'SUBSCRIPTION' || SHOP_STATIC_PASSES.some(pass => pass.title === item.title);
+  const headerH = expanded ? Math.max(48, Math.min(62, h * 0.16)) : Math.max(34, Math.min(42, h * 0.18));
+  const footerH = expanded ? Math.max(46, Math.min(58, h * 0.15)) : Math.max(34, Math.min(42, h * 0.18));
   const bodyY = y + headerH;
   const footerY = y + h - footerH;
   const bodyH = Math.max(1, footerY - bodyY);
   const radius = 7;
-  const artW = Math.min(Math.max(86, w * 0.24), bodyH * 0.86);
-  const artH = Math.min(bodyH - 14, artW * 1.12);
-  const artX = x + 16;
+  const artRatio = expanded ? 0.28 : passLike ? 0.24 : 0.31;
+  const artMin = expanded ? 150 : passLike ? 86 : 104;
+  const artHeightCap = bodyH * (passLike ? 0.86 : 0.94);
+  const artW = Math.min(Math.max(artMin, w * artRatio), artHeightCap);
+  const artH = Math.min(bodyH - (expanded ? 28 : 14), artW * 1.12);
+  const artX = x + (expanded ? 30 : 16);
   const artY = bodyY + (bodyH - artH) / 2;
-  const dividerX = artX + artW + 20;
-  const textX = dividerX + 18;
-  const textW = Math.max(80, x + w - textX - 14);
+  const dividerX = artX + artW + (expanded ? 30 : 20);
+  const textX = dividerX + (expanded ? 28 : 18);
+  const textW = Math.max(80, x + w - textX - (expanded ? 30 : 14));
+  const benefitTextX = textX + (expanded ? 14 : 10);
+  const benefitTextW = Math.max(42, x + w - benefitTextX - (expanded ? 30 : 18));
   const badgeText = item.badge ?? '';
-  const badgeW = badgeText ? Math.min(106, Math.max(64, badgeText.length * 6.8 + 22)) : 0;
-  const priceW = Math.min(146, Math.max(104, (item.price?.length ?? 8) * 5.8 + 28));
-  const buttonW = Math.min(132, Math.max(96, w * 0.28));
+  const badgeW = badgeText ? Math.min(expanded ? 132 : 106, Math.max(expanded ? 86 : 64, badgeText.length * (expanded ? 8.2 : 6.8) + 22)) : 0;
+  const titleW = Math.max(72, w - badgeW - 28);
+  const footerValue = item.price ?? item.badge ?? 'Details';
+  const priceW = expanded
+    ? Math.min(230, Math.max(142, footerValue.length * 10.6 + 34))
+    : Math.min(156, Math.max(104, footerValue.length * 5.8 + 28));
+  const buttonW = expanded ? Math.min(190, Math.max(132, w * 0.24)) : Math.min(132, Math.max(96, w * 0.28));
   const disabled = item.product ? !isShopProductPurchasable(item.product) : false;
-  const buttonLabel = loading ? 'Working' : tileActionLabel(item);
-  const benefits = passBenefits(item).slice(0, Math.max(5, Math.min(9, Math.floor((bodyH - 34) / 13))));
-  const benefitStartY = bodyY + 45;
-  const benefitLineH = Math.max(11.2, Math.min(13.8, (footerY - benefitStartY - 10) / Math.max(1, benefits.length)));
-  const titleSize = w < 360 ? 12.8 : 14.2;
-  const subtitleSize = w < 360 ? 9.2 : 10.2;
-  const benefitSize = w < 360 ? 8.7 : 9.5;
+  const buttonLabel = loading ? 'Working' : expanded ? tileActionLabel(item) : 'View';
+  const subtitleText = Array.isArray(item.subtitle) ? item.subtitle.join(' ') : item.subtitle;
+  const subtitleSize = fitSingleLineTextSize(
+    subtitleText,
+    textW,
+    expanded ? 18.4 : w < 360 ? 12.2 : 13.4,
+    expanded ? 25 : w < 360 ? 15.2 : 17.2,
+    0.47,
+  );
+  const subtitleLineHeight = subtitleSize + 3;
+  const benefitStartY = bodyY + Math.max(expanded ? 76 : 48, subtitleLineHeight + (expanded ? 48 : 33));
+  const targetBenefitLineH = expanded ? 18 : 12.2;
+  const benefits = bottomCardBenefits(item).slice(0, Math.max(3, Math.min(9, Math.floor((footerY - benefitStartY - 10) / targetBenefitLineH))));
+  const benefitLineH = expanded
+    ? Math.max(15.2, Math.min(20.2, (footerY - benefitStartY - 16) / Math.max(1, benefits.length)))
+    : Math.max(11.2, Math.min(13.8, (footerY - benefitStartY - 10) / Math.max(1, benefits.length)));
+  const titleSize = fitSingleLineTextSize(item.title, titleW, expanded ? 20 : w < 360 ? 14.2 : 15.4, expanded ? 28 : w < 360 ? 16.2 : 18.2, 0.5);
+  const badgeTextSize = badgeText ? fitSingleLineTextSize(badgeText, badgeW - 16, expanded ? 12.8 : 10.4, expanded ? 15 : 12, 0.58) : 10.4;
+  const benefitSize = expanded ? Math.max(13.2, Math.min(16.2, benefitLineH * 0.72)) : w < 360 ? 8.7 : 9.5;
   const hoverRailY1 = bodyY + 12;
   const hoverRailY2 = footerY - 12;
   const hoverRailInset = 8;
   const hoverRailPairGap = 4;
+  const shineSuffix = `${item.title}-${item.price ?? ''}`.replace(/[^a-zA-Z0-9_-]+/g, '-');
+  const shineId = `shopElitePassCircularShine-${shineSuffix}`;
+  const shineClipId = `shopElitePassCircularClip-${shineSuffix}`;
   return (
     <g
       onClick={onInspect}
@@ -1305,7 +1533,21 @@ function EliteBottomPassCard({
       onMouseLeave={() => setHovered(false)}
       className="shop-page-svg-clickable"
     >
+      <defs>
+        <clipPath id={shineClipId}>
+          <path d={lobbyRoundedRectPath(x, y, w, h, radius)} />
+        </clipPath>
+        <radialGradient id={shineId} gradientUnits="userSpaceOnUse" cx={x + w * 0.5} cy={y - h * 0.02} r={Math.max(w, h) * 0.86}>
+          <stop offset="0" stopColor={color} stopOpacity="0.3" />
+          <stop offset="0.2" stopColor={cfg.colors.bodyText} stopOpacity="0.11" />
+          <stop offset="0.46" stopColor={color} stopOpacity="0.07" />
+          <stop offset="1" stopColor={color} stopOpacity="0" />
+          <animate attributeName="cx" values={`${x + w * 0.5};${x + w * 1.02};${x + w * 0.5};${x - w * 0.02};${x + w * 0.5}`} dur="13.5s" repeatCount="indefinite" />
+          <animate attributeName="cy" values={`${y - h * 0.02};${y + h * 0.5};${y + h * 1.02};${y + h * 0.5};${y - h * 0.02}`} dur="13.5s" repeatCount="indefinite" />
+        </radialGradient>
+      </defs>
       <path d={lobbyRoundedRectPath(x, y, w, h, radius)} fill={hovered ? alphaColor(color, 0.13) : cfg.colors.panelFill} stroke={color} strokeWidth="1.25" strokeOpacity={hovered ? 0.95 : 0.72} />
+      <path d={lobbyRoundedRectPath(x + 1, y + 1, w - 2, h - 2, radius - 1)} fill={`url(#${shineId})`} opacity={hovered ? 0.62 : 0.38} clipPath={`url(#${shineClipId})`} pointerEvents="none" />
       <path d={lobbyRoundedRectPath(x, y, w, h, radius)} fill="none" stroke={hovered ? cfg.svgDefaults.selectedStroke : color} strokeWidth={hovered ? 2.3 : 1.45} strokeOpacity={hovered ? 0.7 : 0.26} filter="url(#shopSoftGlow)" />
       {hovered ? (
         <>
@@ -1319,7 +1561,7 @@ function EliteBottomPassCard({
         <g>
           <path d={`M ${x + w - badgeW} ${y + 1} H ${x + w - radius} Q ${x + w - 1} ${y + 1} ${x + w - 1} ${y + radius} V ${y + headerH} H ${x + w - badgeW + 10} Q ${x + w - badgeW} ${y + headerH} ${x + w - badgeW} ${y + headerH - 10} Z`} fill={alphaColor(color, 0.26)} stroke={color} strokeOpacity="0.9" />
           <rect x={x + w - badgeW + 2} y={y + 3} width={badgeW - 4} height={Math.max(4, headerH * 0.34)} rx="3" fill="#ffffff" opacity="0.08" />
-          <Txt x={x + w - badgeW / 2} y={y + headerH / 2 + 1} anchor="middle" size="9.8" weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{badgeText}</Txt>
+          <Txt x={x + w - badgeW / 2} y={y + headerH / 2 + 1} anchor="middle" size={badgeTextSize} weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{badgeText}</Txt>
         </g>
       ) : null}
       <TransparentAssetImage x={artX} y={artY} w={artW} h={artH} imageUrl={item.imageUrl} cfg={cfg} glow={hovered} />
@@ -1340,19 +1582,22 @@ function EliteBottomPassCard({
         <line x1={dividerX - 9} y1={bodyY + bodyH * 0.5} x2={dividerX - 16} y2={bodyY + bodyH * 0.5} stroke={color} strokeWidth="1" strokeLinecap="round" strokeOpacity="0.48" />
         <line x1={dividerX + 9} y1={bodyY + bodyH * 0.5} x2={dividerX + 16} y2={bodyY + bodyH * 0.5} stroke={color} strokeWidth="1" strokeLinecap="round" strokeOpacity="0.48" />
       </g>
-      <WrappedText x={textX} y={bodyY + 21} width={textW} lines={item.subtitle} size={subtitleSize} lineHeight={12.8} fill={color} weight={850} maxLines={2} cfg={cfg} />
+      <WrappedText x={textX} y={bodyY + 24} width={textW} lines={item.subtitle} size={subtitleSize} lineHeight={subtitleLineHeight} fill={color} weight={900} maxLines={1} cfg={cfg} />
       <g>
-        {benefits.map((benefit, index) => (
-          <g key={`${item.title}-benefit-${benefit}`}>
-            <circle cx={textX + 2.5} cy={benefitStartY + index * benefitLineH - 1} r="2" fill={color} opacity="0.92" />
-            <Txt x={textX + 10} y={benefitStartY + index * benefitLineH} size={benefitSize} weight="650" fill={cfg.colors.bodyText} cfg={cfg}>{benefit}</Txt>
-          </g>
-        ))}
+        {benefits.map((benefit, index) => {
+          const fittedBenefitSize = fitSingleLineTextSize(benefit, benefitTextW, expanded ? 10.8 : 6.8, benefitSize, 0.48);
+          return (
+            <g key={`${item.title}-benefit-${benefit}`}>
+              <circle cx={textX + (expanded ? 4 : 2.5)} cy={benefitStartY + index * benefitLineH - 1} r={expanded ? 3.2 : 2} fill={color} opacity="0.92" />
+              <Txt x={benefitTextX} y={benefitStartY + index * benefitLineH} size={fittedBenefitSize} weight="650" fill={cfg.colors.bodyText} cfg={cfg}>{benefit}</Txt>
+            </g>
+          );
+        })}
       </g>
       <path d={bottomRoundedRectPath(x + 1, footerY, w - 2, footerH - 1, radius - 1)} fill={alphaColor(color, 0.1)} stroke={color} strokeOpacity="0.58" />
       <path d={`M ${x + 1} ${footerY} H ${x + priceW} V ${footerY + footerH - 10} Q ${x + priceW} ${footerY + footerH - 1} ${x + priceW - 10} ${footerY + footerH - 1} H ${x + radius} Q ${x + 1} ${footerY + footerH - 1} ${x + 1} ${footerY + footerH - radius} Z`} fill={alphaColor(color, 0.18)} stroke={color} strokeOpacity="0.82" />
       <rect x={x + 3} y={footerY + 2} width={Math.max(4, priceW - 6)} height={Math.max(4, footerH * 0.34)} rx="3" fill="#ffffff" opacity="0.07" />
-      <Txt x={x + 13} y={footerY + footerH / 2 + 1} size="12.8" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{item.price}</Txt>
+      <Txt x={x + (expanded ? 18 : 13)} y={footerY + footerH / 2 + 1} size={expanded ? 18 : 12.8} weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{footerValue}</Txt>
       <EliteBottomActionButton
         x={x + w - buttonW - 10}
         y={footerY + 7}
@@ -1362,7 +1607,8 @@ function EliteBottomPassCard({
         color={color}
         active={hovered}
         onClick={() => {
-          if (item.product) onBuy(item.product);
+          if (expanded && item.product) onBuy(item.product);
+          else onInspect();
         }}
         disabled={loading || disabled}
         cfg={cfg}
@@ -1371,41 +1617,72 @@ function EliteBottomPassCard({
   );
 }
 
-function EliteBottomLayer({
+function BottomDetailCardsLayer({
   x,
   y,
   w,
   h,
+  label,
   items,
   cfg,
   loadingId,
+  pageIndex,
   rightActionLabel,
   onRightAction,
   onInspect,
   onBuy,
+  onPageChange,
 }: {
   x: number;
   y: number;
   w: number;
   h: number;
+  label: ShopTab;
   items: TileItem[];
   cfg: ShopPageSvgControls;
   loadingId: string | null;
+  pageIndex: number;
   rightActionLabel?: string;
   onRightAction?: () => void;
   onInspect: (item: TileItem) => void;
   onBuy: (product: ShopProduct) => void;
+  onPageChange: (pageIndex: number) => void;
 }) {
   const body = mainBottomOverlayContentRect(x, y, w, h);
+  const token = cfg.componentTokens.sectionFrame;
   const pad = 10;
   const gap = 12;
   const contentX = body.x + pad;
   const contentY = body.y + pad;
   const contentW = Math.max(0, body.w - pad * 2);
   const contentH = Math.max(0, body.h - pad * 2);
-  const visibleCount = Math.min(items.length, contentW < 980 ? 2 : 3);
-  const cardW = visibleCount > 0 ? (contentW - gap * (visibleCount - 1)) / visibleCount : contentW;
-  const visibleItems = items.slice(0, visibleCount);
+  const minCardW = label === 'Treasury'
+    ? cfg.mainBody.treasuryCardMinW
+    : label === 'Elite'
+      ? cfg.mainBody.passCardMinW
+      : cfg.mainBody.productCardMinW;
+  const maxCardW = label === 'Treasury'
+    ? cfg.mainBody.treasuryCardMaxW
+    : label === 'Elite'
+      ? cfg.mainBody.passCardMaxW
+      : cfg.mainBody.productCardMaxW;
+  const maxVisible = label === 'Treasury'
+    ? Math.round(cfg.mainBody.treasuryMaxVisible)
+    : label === 'Elite'
+      ? Math.round(cfg.mainBody.passMaxVisible)
+      : Math.round(cfg.mainBody.productMaxVisible);
+  const visibleCount = visibleCardCount(contentW, items.length, gap, 0, minCardW, maxVisible);
+  const rawCardW = visibleCount > 0 ? (contentW - gap * (visibleCount - 1)) / visibleCount : contentW;
+  const cardW = Math.max(minCardW, Math.min(maxCardW, rawCardW));
+  const rowW = visibleCount * cardW + Math.max(0, visibleCount - 1) * gap;
+  const rowX = contentX + Math.max(0, (contentW - rowW) / 2);
+  const { pageItems, pageCount, safePageIndex } = carouselPage(items, visibleCount, pageIndex);
+  const canPage = pageCount > 1;
+  const dotsW = Math.max(0, pageCount - 1) * token.dotGap + pageCount * token.dotW;
+  const dotsX = x + w / 2 - dotsW / 2;
+  const dotsY = y + h - token.dotBottom - 2;
+  const hitTop = y + Math.max(16, h * 0.16);
+  const hitH = Math.max(80, h * 0.62);
   return (
     <g>
       <MainBottom
@@ -1413,15 +1690,47 @@ function EliteBottomLayer({
         y={y}
         w={w}
         h={h}
-        label="Elite"
+        label={label}
         count={items.length}
         rightActionLabel={rightActionLabel}
         onRightAction={onRightAction}
       />
-      {visibleItems.map((item, index) => (
+      {canPage ? (
+        <>
+          <g role="button" tabIndex={0} aria-label={`Previous ${label} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex - 1)}>
+            <rect x={x - 34} y={hitTop} width="74" height={hitH} fill="transparent" />
+          </g>
+          <g role="button" tabIndex={0} aria-label={`Next ${label} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex + 1)}>
+            <rect x={x + w - 40} y={hitTop} width="74" height={hitH} fill="transparent" />
+          </g>
+          <g>
+            {Array.from({ length: pageCount }, (_, dotIndex) => (
+              <g key={`${label}-bottom-dot-${dotIndex}`} role="button" tabIndex={0} aria-label={`${label} page ${dotIndex + 1}`} className="shop-page-svg-clickable" onClick={() => onPageChange(dotIndex)}>
+                <rect
+                  x={dotsX + dotIndex * (token.dotW + token.dotGap) - 2}
+                  y={dotsY - 4}
+                  width={token.dotW + 4}
+                  height={token.dotH + 8}
+                  fill="transparent"
+                />
+                <rect
+                  x={dotsX + dotIndex * (token.dotW + token.dotGap)}
+                  y={dotsY}
+                  width={token.dotW}
+                  height={token.dotH}
+                  rx={token.dotH / 2}
+                  fill={dotIndex === safePageIndex ? cfg.colors.frameDotActive : cfg.colors.frameDotInactive}
+                  opacity={dotIndex === safePageIndex ? 1 : 0.82}
+                />
+              </g>
+            ))}
+          </g>
+        </>
+      ) : null}
+      {pageItems.map((item, index) => (
         <EliteBottomPassCard
           key={item.title}
-          x={contentX + index * (cardW + gap)}
+          x={rowX + index * (cardW + gap)}
           y={contentY}
           w={cardW}
           h={contentH}
@@ -1474,7 +1783,7 @@ function EliteLayer({
   const rowBounds = sectionFrameRowBounds(x, w, cfg, fillFrame);
   const visibleCount = visibleCardCount(rowBounds.w, items.length, cardGap, 0, cfg.mainBody.passCardMinW, Math.round(cfg.mainBody.passMaxVisible));
   const { pageItems, pageCount, safePageIndex } = carouselPage(items, visibleCount, pageIndex);
-  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, cardGap, 0, cfg.mainBody.passCardMaxW);
+  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, cardGap, 0, cfg.mainBody.passCardMinW, cfg.mainBody.passCardMaxW);
   const baseCardH = fillFrame ? Math.max(104, bodyH - frameToken.bodyTopPad - 2) : Math.min(Math.max(104, bodyH - frameToken.bodyTopPad - 2), 172);
   const cardH = Math.max(64, baseCardH + slot.hShift);
   const frameH = fillFrame ? h : Math.min(h, cfg.mainBody.headerH + cardH + frameToken.footerReserve + 24);
@@ -1558,7 +1867,7 @@ function ShelfLayer({
   const maxCardW = compactTrack
     ? minimalCompact || infoOnlyShelf ? cfg.mainBody.infoCardMaxW : cfg.mainBody.compactCardMaxW
     : cfg.mainBody.productCardMaxW;
-  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, cardGap, 0, maxCardW);
+  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, cardGap, 0, minCardW, maxCardW);
   const cardH = Math.max(48, bodyH - frameToken.bodyTopPad - 2 + slot.hShift);
   return (
     <SectionFrame x={x} y={y} w={w} h={h} title={title} subtitle={subtitle} accent={cfg.colors.shelfAccent} cfg={cfg} countText={String(items.length)} pageIndex={safePageIndex} pageCount={pageCount} onPrevious={() => onPageChange(safePageIndex - 1)} onNext={() => onPageChange(safePageIndex + 1)}>
@@ -1733,6 +2042,37 @@ function VaultSelectableCircle({
   );
 }
 
+function VaultGridMessage({
+  x,
+  y,
+  w,
+  h,
+  accent,
+  cfg,
+  title,
+  lines,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  accent: string;
+  cfg: ShopPageSvgControls;
+  title: string;
+  lines: string[];
+}) {
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={alphaColor(accent, 0.12)} stroke={accent} strokeWidth="1.2" strokeOpacity="0.48" />
+      <rect x={x + 1} y={y + 1} width={w - 2} height={Math.max(28, h * 0.2)} rx={cfg.componentTokens.sectionFrame.contentRadius - 1} fill={alphaColor(accent, 0.18)} stroke={accent} strokeOpacity="0.32" />
+      <Txt x={x + 16} y={y + 26} size={Math.max(13, Math.min(18, w * 0.055))} weight="950" fill={accent} cfg={cfg}>{title}</Txt>
+      <WrappedText x={x + 16} y={y + 55} width={w - 32} lines={lines} size={Math.max(10, Math.min(13.4, w * 0.04))} lineHeight={17} fill={cfg.colors.bodyText} weight={650} maxLines={5} cfg={cfg} />
+      <line x1={x + 18} y1={y + h - 24} x2={x + w - 18} y2={y + h - 24} stroke={accent} strokeWidth="1.2" strokeOpacity="0.46" />
+      <Txt x={x + w / 2} y={y + h - 10} anchor="middle" size="10" weight="900" fill={cfg.colors.mutedText} cfg={cfg}>Check back later</Txt>
+    </g>
+  );
+}
+
 function VaultDeckPreviewLayer({
   x,
   y,
@@ -1777,6 +2117,7 @@ function VaultShowcaseLayer({
   activeGroupKey,
   vaultDeckItems,
   onGroupChange,
+  onGroupInspect,
   onDeckPreview,
 }: {
   x: number;
@@ -1787,6 +2128,7 @@ function VaultShowcaseLayer({
   activeGroupKey: string;
   vaultDeckItems?: ShopVaultDeckPreviewItem[];
   onGroupChange: (key: string) => void;
+  onGroupInspect: (group: ShopVaultShowcaseGroup) => void;
   onDeckPreview: (item: ShopVaultDeckPreviewItem | null) => void;
 }) {
   const [gridScrollState, setGridScrollState] = useState<{ groupKey: string; value: number }>({ groupKey: activeGroupKey, value: 0 });
@@ -1812,19 +2154,44 @@ function VaultShowcaseLayer({
   const isAvatarGrid = activeGroup.key === 'avatars';
   const isProfileFrameGrid = activeGroup.key === 'frames';
   const isDeckGrid = activeGroup.key === 'decks';
+  const isLimitedPlaceholderGrid = activeGroup.key === 'card-backs' || activeGroup.key === 'table-themes';
   const isSelectableCircleGrid = isAvatarGrid || isProfileFrameGrid;
   const selectableCircleImages = isAvatarGrid ? avatarImageUrls : isProfileFrameGrid ? activeGroup.items.map(item => item.imageUrl).filter(Boolean) : [];
   const deckItems = vaultDeckItems && vaultDeckItems.length > 0
     ? vaultDeckItems
     : activeGroup.items.map((item, index) => ({ id: `${activeGroup.key}-${index}`, title: item.title }));
-  const rows = isSelectableCircleGrid ? token.selectableRows : isDeckGrid ? token.deckRows : token.defaultRows;
+  const rows = isSelectableCircleGrid ? token.selectableRows : isDeckGrid ? token.deckRows : isLimitedPlaceholderGrid ? 1 : token.defaultRows;
   const scrollbarH = token.scrollbarH;
   const frameGap = isSelectableCircleGrid ? token.selectableFrameGap : token.frameGap;
   const viewportH = gridH - scrollbarH - token.scrollbarGap;
-  const frameH = (viewportH - frameGap * (rows - 1)) / rows;
+  const rawFrameH = (viewportH - frameGap * (rows - 1)) / rows;
+  const frameH = isLimitedPlaceholderGrid ? Math.min(rawFrameH, Math.max(96, viewportH * 0.58)) : rawFrameH;
+  const frameYOffset = isLimitedPlaceholderGrid ? (viewportH - frameH) / 2 : 0;
   const avatarSize = Math.max(token.avatarMinSize, Math.min(token.avatarMaxSize, frameH - 1));
   const frameW = isSelectableCircleGrid ? avatarSize + token.selectableFramePad : isDeckGrid ? Math.max(token.deckMinW, Math.min(token.deckMaxW, gridW / token.deckRatioW)) : Math.max(token.defaultMinW, Math.min(token.defaultMaxW, gridW / token.defaultRatioW));
-  const columns = isSelectableCircleGrid ? Math.ceil(selectableCircleImages.length / rows) : isDeckGrid ? Math.max(token.minDeckColumns, deckItems.length) : Math.max(token.minDeckColumns, activeGroup.items.length + token.defaultExtraColumns);
+  const gridStaticItemCount = isLimitedPlaceholderGrid ? Math.min(2, activeGroup.items.length) : activeGroup.items.length;
+  const itemColumns = isSelectableCircleGrid
+    ? Math.ceil(selectableCircleImages.length / rows)
+    : isDeckGrid
+      ? Math.max(token.minDeckColumns, deckItems.length)
+      : Math.max(1, gridStaticItemCount);
+  const showGridMessage = !isDeckGrid;
+  const messageColumnSpan = showGridMessage ? 2 : 0;
+  const columns = itemColumns + messageColumnSpan;
+  const messageTitle = activeGroup.key === 'card-backs'
+    ? 'Card backs dropping soon'
+    : activeGroup.key === 'table-themes'
+      ? 'Table themes dropping soon'
+      : activeGroup.key === 'frames'
+        ? 'Paid frames soon'
+        : 'Paid avatars soon';
+  const messageLines = activeGroup.key === 'card-backs'
+    ? ['Default card backs stay free.', 'Premium animated backs will appear in this grid when the art is ready.']
+    : activeGroup.key === 'table-themes'
+      ? ['The default table theme stays active.', 'More room surfaces and competitive table moods will drop here.']
+      : activeGroup.key === 'frames'
+        ? ['Free profile frames are available now.', 'More custom paid profile frames are dropping soon.']
+        : ['Free avatars are available now.', 'More premium paid avatars are dropping soon.'];
   const contentW = columns * frameW + (columns - 1) * frameGap;
   const maxScrollX = Math.max(0, contentW - gridW);
   const rawScrollX = gridScrollState.groupKey === activeGroupKey ? gridScrollState.value : 0;
@@ -1841,7 +2208,10 @@ function VaultShowcaseLayer({
   return (
     <SectionFrame x={x} y={y} w={w} h={h} title="VAULT" subtitle="Deck drops, card backs, table themes, frames, and free avatar identity." accent={cfg.colors.violet} cfg={cfg} countText={String(activeGroup.items.length)} pageIndex={pageIndex} pageCount={pageCount} onPrevious={() => movePage(-1)} onNext={() => movePage(1)}>
       <rect x={heroX} y={heroY} width={heroW} height={heroH} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={cfg.colors.vaultHeroFill} />
-      <g onClick={() => onGroupChange(activeGroup.key)} role="button" tabIndex={0} className="shop-page-svg-clickable">
+      <g onClick={() => {
+        onGroupChange(activeGroup.key);
+        onGroupInspect(activeGroup);
+      }} role="button" tabIndex={0} className="shop-page-svg-clickable">
         <TransparentAssetImage x={heroX + token.heroImageInset} y={heroY + token.heroImageInset} w={heroW - token.heroImageInset * 2} h={heroH - token.heroImageInset * 2} imageUrl={activeGroup.heroImageUrl} cfg={cfg} glow />
       </g>
       <line x1={dividerX} y1={heroY + 6} x2={dividerX} y2={heroY + heroH - 6} stroke={accent} strokeWidth="1.2" strokeOpacity=".42" />
@@ -1880,7 +2250,23 @@ function VaultShowcaseLayer({
             const col = Math.floor(index / rows);
             const row = index % rows;
             const frameX = col * (frameW + frameGap);
-            const frameY = row * (frameH + frameGap);
+            const frameY = frameYOffset + row * (frameH + frameGap);
+            if (showGridMessage && col >= itemColumns) {
+              if (col !== itemColumns || row !== 0) return null;
+              return (
+                <VaultGridMessage
+                  key={`${activeGroup.key}-message`}
+                  x={frameX}
+                  y={Math.max(0, frameYOffset)}
+                  w={frameW * messageColumnSpan + frameGap * Math.max(0, messageColumnSpan - 1)}
+                  h={viewportH - Math.max(0, frameYOffset) * 2}
+                  accent={accent}
+                  cfg={cfg}
+                  title={messageTitle}
+                  lines={messageLines}
+                />
+              );
+            }
             if (isSelectableCircleGrid) {
               const imageUrl = selectableCircleImages[index];
               if (!imageUrl) return null;
@@ -1901,8 +2287,10 @@ function VaultShowcaseLayer({
                 />
               );
             }
-            const deckItem = deckItems[index % deckItems.length] ?? null;
-            return <VaultGridFrame key={`${activeGroup.key}-frame-${index}`} x={frameX} y={frameY} w={frameW} h={frameH} accent={accent} cfg={cfg} deckName={deckItem?.title} onClick={isDeckGrid ? () => onDeckPreview(deckItem) : undefined} />;
+            const deckItem = isDeckGrid ? deckItems[index] ?? null : null;
+            const staticItem = isDeckGrid ? null : activeGroup.items[index] ?? null;
+            if (!isDeckGrid && !staticItem) return null;
+            return <VaultGridFrame key={`${activeGroup.key}-frame-${index}`} x={frameX} y={frameY} w={frameW} h={frameH} accent={accent} cfg={cfg} deckName={isDeckGrid ? deckItem?.title : staticItem?.title} onClick={isDeckGrid ? () => onDeckPreview(deckItem) : undefined} />;
           })}
         </g>
         <rect x="0" y={gridH - scrollbarH} width={gridW} height={scrollbarH} rx={scrollbarH / 2} fill={cfg.colors.vaultScrollbarFill} stroke={accent} strokeWidth="1" strokeOpacity=".25" />
@@ -1950,7 +2338,7 @@ function TreasuryLayer({
   const rowBounds = sectionFrameRowBounds(x, w, cfg, fillFrame);
   const itemCount = visibleCardCount(rowBounds.w, items.length, gap, 0, cfg.mainBody.treasuryCardMinW, Math.round(cfg.mainBody.treasuryMaxVisible));
   const { pageItems, pageCount, safePageIndex } = carouselPage(items, itemCount, pageIndex);
-  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, gap, 0, cfg.mainBody.treasuryCardMaxW);
+  const { cardW, rowX } = centeredCardRow(rowBounds.x, rowBounds.w, pageItems.length, gap, 0, cfg.mainBody.treasuryCardMinW, cfg.mainBody.treasuryCardMaxW);
   const baseCardH = fillFrame ? Math.max(104, bodyH - frameToken.bodyTopPad - 2) : Math.min(Math.max(104, bodyH - frameToken.bodyTopPad - 2), 158);
   const cardH = Math.max(64, baseCardH + slot.hShift);
   return (
@@ -2064,6 +2452,74 @@ function InfoDetailLayer({
   );
 }
 
+function RightPanelDetailLayer({
+  x,
+  y,
+  w,
+  h,
+  active,
+  cfg,
+  acBalance,
+  onClose,
+  onElite,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  active: ShopRightTabId;
+  cfg: ShopPageSvgControls;
+  acBalance: number;
+  onClose: () => void;
+  onElite: () => void;
+}) {
+  const meta = rightPanelMeta(active);
+  const rows = rightPanelDetailRows(active, acBalance);
+  const contentRect = sectionFrameContentRect(x, y, w, h, cfg, false);
+  const pad = Math.max(20, Math.min(34, contentRect.w * 0.03));
+  const panelX = contentRect.x + pad;
+  const panelY = contentRect.y + pad;
+  const panelW = Math.max(260, contentRect.w - pad * 2);
+  const panelH = Math.max(160, contentRect.h - pad * 2);
+  const summaryH = Math.min(92, Math.max(62, panelH * 0.2));
+  const rowGap = 10;
+  const rowAreaY = panelY + summaryH + 16;
+  const rowH = Math.max(38, Math.min(62, (panelH - summaryH - 24 - rowGap * Math.max(0, rows.length - 1)) / Math.max(1, rows.length)));
+  const ctaLabel = active === 'pass' ? 'Open Elite Shop' : 'Back To Shop';
+  return (
+    <SectionFrame x={x} y={y} w={w} h={h} title={meta.title} subtitle={rightPanelSubtitle(active)} rightText="Back To Shop" accent={meta.accent} cfg={cfg} onRightTextClick={onClose}>
+      <path d={lobbyRoundedRectPath(panelX, panelY, panelW, panelH, 8)} fill={alphaColor(meta.accent, 0.08)} stroke={meta.accent} strokeWidth="1.3" strokeOpacity="0.68" filter="url(#shopSoftGlow)" />
+      <rect x={panelX + 1} y={panelY + 1} width={panelW - 2} height={summaryH} rx={7} fill={alphaColor(meta.accent, 0.16)} stroke={meta.accent} strokeOpacity="0.58" />
+      <Txt x={panelX + 20} y={panelY + 31} size="22" weight="950" fill={meta.accent} cfg={cfg}>{meta.title}</Txt>
+      <WrappedText x={panelX + 20} y={panelY + 57} width={panelW - 40} lines={rightPanelSubtitle(active)} size={12.6} lineHeight={16} fill={cfg.colors.bodyText} weight={650} maxLines={2} cfg={cfg} />
+      {rows.map((row, index) => {
+        const rowY = rowAreaY + index * (rowH + rowGap);
+        const activeRow = index === 0;
+        return (
+          <g key={`${active}-${row.label}`}>
+            <rect x={panelX + 16} y={rowY} width={panelW - 32} height={rowH} rx="6" fill={activeRow ? alphaColor(meta.accent, 0.16) : cfg.colors.rowFill} stroke={meta.accent} strokeWidth={activeRow ? 1.35 : 1} strokeOpacity={activeRow ? 0.76 : 0.38} />
+            <rect x={panelX + 16} y={rowY} width={5} height={rowH} rx={2.5} fill={meta.accent} opacity={activeRow ? 0.95 : 0.62} />
+            <Txt x={panelX + 34} y={rowY + 19} size={activeRow ? 13.6 : 12.2} weight="950" fill={activeRow ? meta.accent : cfg.colors.bodyText} cfg={cfg}>{row.label}</Txt>
+            <Txt x={panelX + panelW - 34} y={rowY + 19} size={activeRow ? 13.2 : 11.8} weight="950" anchor="end" fill={meta.accent} cfg={cfg}>{row.value}</Txt>
+            <WrappedText x={panelX + 34} y={rowY + rowH - 14} width={panelW - 68} lines={row.detail} size={9.6} lineHeight={11.4} fill={cfg.colors.mutedText} weight={600} maxLines={1} cfg={cfg} />
+          </g>
+        );
+      })}
+      <SvgButton
+        x={panelX + panelW - 190}
+        y={panelY + panelH - 42}
+        w={170}
+        h={28}
+        label={ctaLabel}
+        active={active === 'pass'}
+        small
+        onClick={active === 'pass' ? onElite : onClose}
+        cfg={cfg}
+      />
+    </SectionFrame>
+  );
+}
+
 function TileDetailLayer({
   x,
   y,
@@ -2083,37 +2539,21 @@ function TileDetailLayer({
   onClose: () => void;
   onBuy: (product: ShopProduct) => void;
 }) {
-  const token = cfg.componentTokens.sectionFrame;
   const accent = toneColor(item.tone, cfg);
-  const bodyY = y + cfg.mainBody.headerH;
-  const imageW = Math.min(token.detailImageMaxW, w * token.detailImageRatio);
-  const imageH = h - cfg.mainBody.headerH - token.detailImageBottomPad;
-  const textX = x + token.detailImageX + imageW + token.detailTextGap;
-  const passTile = item.product?.productType === 'SUBSCRIPTION' || SHOP_STATIC_PASSES.some(pass => pass.title === item.title);
-  const detailLines = passTile
-    ? passBenefits(item)
-    : isCreditPackTile(item)
-      ? ['One-time Arena Credit purchase', 'Adds marketplace balance after checkout sync', 'Use for tools, cosmetics, access, and event entry']
-      : item.benefits?.length ? item.benefits : [item.subtitle];
-  const disabled = item.product ? !isShopProductPurchasable(item.product) : !item.price || Boolean(item.price.toLowerCase().includes('coming soon'));
+  const contentRect = sectionFrameContentRect(x, y, w, h, cfg, false);
+  const pad = Math.max(20, Math.min(34, contentRect.w * 0.03));
   return (
     <SectionFrame x={x} y={y} w={w} h={h} title={`${item.title} DETAILS`} subtitle={item.subtitle} rightText="Back To Shop" accent={accent} cfg={cfg} onRightTextClick={onClose}>
-      <TransparentAssetImage x={x + token.detailImageX} y={bodyY + token.detailImageTop} w={imageW} h={imageH} imageUrl={item.imageUrl} cfg={cfg} glow />
-      <Txt x={textX} y={bodyY + token.detailTitleTop} size={token.detailTitleSize} weight="950" fill={accent} cfg={cfg}>{item.title}</Txt>
-      {item.badge ? <Txt x={textX} y={bodyY + token.detailSubtitleTop} size={token.detailSubtitleSize} weight="950" fill={accent} cfg={cfg}>{item.badge}</Txt> : null}
-      {item.price ? <Txt x={textX} y={bodyY + token.detailBulletStartY - token.detailBulletGap} size={token.detailTitleSize} weight="950" cfg={cfg}>{item.price}</Txt> : null}
-      <WrappedText x={textX} y={bodyY + token.detailBulletStartY} width={w - (textX - x) - token.detailTextGap} lines={detailLines.map(line => `+ ${line}`)} size={token.detailBulletSize} lineHeight={token.detailBulletLineHeight} fill={cfg.colors.tileSubtitleText} weight={650} maxLines={10} cfg={cfg} />
-      <SvgButton
-        x={textX}
-        y={y + h - token.detailButtonBottom}
-        w={token.detailButtonW}
-        h={token.detailButtonH}
-        label={tileActionLabel(item)}
-        active
-        small
-        onClick={() => item.product && onBuy(item.product)}
-        disabled={disabled}
+      <EliteBottomPassCard
+        x={contentRect.x + pad}
+        y={contentRect.y + pad}
+        w={Math.max(320, contentRect.w - pad * 2)}
+        h={Math.max(180, contentRect.h - pad * 2)}
+        item={item}
         cfg={cfg}
+        expanded
+        onInspect={() => undefined}
+        onBuy={onBuy}
       />
     </SectionFrame>
   );
@@ -2126,15 +2566,19 @@ function MainBody({
   activeTab,
   products,
   loadingId,
+  acBalance,
   specialView,
   infoRequest,
   bottomPreviewTarget,
+  rightPanelDetail,
   sectionBottomY,
   cfg,
   onClearSpecial,
   onClearBottomPreview,
+  onClearRightPanelDetail,
   onInfoHandled,
   onBuy,
+  onElite,
   dailyRewardStatus,
   onDailyRewardSpin,
   vaultDeckItems,
@@ -2146,15 +2590,19 @@ function MainBody({
   activeTab: ShopTab;
   products: ShopProduct[];
   loadingId: string | null;
+  acBalance: number;
   specialView: 'earnRewards' | null;
   infoRequest: 'arenaCredits' | 'eliteBenefits' | null;
   bottomPreviewTarget: BottomPreviewTarget | null;
+  rightPanelDetail: ShopRightTabId | null;
   sectionBottomY?: number;
   cfg: ShopPageSvgControls;
   onClearSpecial: () => void;
   onClearBottomPreview: () => void;
+  onClearRightPanelDetail: () => void;
   onInfoHandled: () => void;
   onBuy: (product: ShopProduct) => void;
+  onElite: () => void;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
   vaultDeckItems?: ShopVaultDeckPreviewItem[];
@@ -2165,6 +2613,7 @@ function MainBody({
   const [activeVaultGroupKey, setActiveVaultGroupKey] = useState(SHOP_VAULT_SHOWCASE_GROUPS[0]?.key ?? '');
   const [vaultTopSelectionKey, setVaultTopSelectionKey] = useState<string | null>(null);
   const [activeDeckPreviewItem, setActiveDeckPreviewItem] = useState<ShopVaultDeckPreviewItem | null>(null);
+  const [topRoutedBottomTab, setTopRoutedBottomTab] = useState<ShopTab | null>(null);
   const [topPageByTab, setTopPageByTab] = useState<Partial<Record<ShopTab, number>>>({});
   const [bottomPageByTab, setBottomPageByTab] = useState<Partial<Record<ShopTab, number>>>({});
   const displayedInfoDetail = infoRequest ?? activeInfoDetail;
@@ -2173,16 +2622,18 @@ function MainBody({
   const bottomH = resolvedSectionBottomY - y - topH - cfg.mainBody.boxGap;
   const bottomY = y + topH + cfg.mainBody.boxGap;
   const bottomTab = nextShopTab(activeTab);
-  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : bottomTab;
+  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? bottomTab;
 
   const openInfoDetail = (mode: 'arenaCredits' | 'eliteBenefits') => {
     setSelectedTileDetail(null);
+    setActiveDeckPreviewItem(null);
     setActiveInfoDetail(mode);
     onInfoHandled();
   };
 
   const openTileDetail = (item: TileItem) => {
     setActiveInfoDetail(null);
+    setActiveDeckPreviewItem(null);
     onInfoHandled();
     setSelectedTileDetail(item);
   };
@@ -2228,71 +2679,52 @@ function MainBody({
     const bottomVaultItems = displayedBottomTab === 'Vault' ? bottomVaultGroup?.items ?? [] : [];
     const bottomPlayAccessItems = displayedBottomTab === 'Play Access' ? SHOP_SECTIONS['Play Access'].featured ?? SHOP_SECTIONS['Play Access'].categories ?? [] : [];
     const bottomEventItems = displayedBottomTab === 'Events' ? SHOP_SECTIONS.Events.featured ?? SHOP_SECTIONS.Events.categories ?? [] : [];
-    const bottomVaultPrefix = `vault-${bottomVaultGroup?.key ?? 'default'}`;
-    const bottomCards = displayedBottomTab === 'Vault'
-      ? bottomVaultItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, bottomVaultPrefix))
+    const bottomDetailItems = displayedBottomTab === 'Vault'
+      ? bottomVaultItems
       : displayedBottomTab === 'Play Access'
-        ? bottomPlayAccessItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'play-access-bottom'))
+        ? bottomPlayAccessItems
         : displayedBottomTab === 'Events'
-          ? bottomEventItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'events-bottom'))
-          : bottomTileItems.map((item, index) => tileToMainCarouselCard(item, index, loadingId));
+          ? bottomEventItems
+          : bottomTileItems;
+    const bottomPageIndex = bottomPageByTab[displayedBottomTab] ?? 0;
+    const setBottomPageIndex = (nextPageIndex: number) => {
+      setBottomPageByTab(state => ({ ...state, [displayedBottomTab]: nextPageIndex }));
+    };
+    const showVaultShowcase = displayedBottomTab === 'Vault' || (activeTab === 'Vault' && Boolean(vaultTopSelectionKey) && !bottomPreviewTarget);
+    const routeTopCardToBottom = (tab: ShopTab, itemIndex: number) => {
+      setTopRoutedBottomTab(tab);
+      setBottomPageByTab(state => ({ ...state, [tab]: Math.max(0, Math.floor(itemIndex / 3)) }));
+      setSelectedTileDetail(null);
+      setActiveInfoDetail(null);
+      setActiveDeckPreviewItem(null);
+      onInfoHandled();
+    };
     const handleTopCardAction = (card: ShopMainCarouselCardItem) => {
       if (activeTab === 'Vault') {
-        const group = topVaultGroups.find(item => `vault:${item.key}` === card.key);
+        const groupIndex = topVaultGroups.findIndex(item => `vault:${item.key}` === card.key);
+        const group = groupIndex >= 0 ? topVaultGroups[groupIndex] : undefined;
         if (!group) return;
         setActiveVaultGroupKey(group.key);
         setVaultTopSelectionKey(group.key);
-        setSelectedTileDetail(null);
-        setActiveInfoDetail(null);
-        setActiveDeckPreviewItem(null);
-        onInfoHandled();
+        routeTopCardToBottom('Vault', groupIndex);
         return;
       }
       if (activeTab === 'Play Access') {
-        const tile = topPlayAccessItems.find((item, index) => staticTopCardKey('play-access', item, index) === card.key);
-        if (!tile) return;
-        openTileDetail(tile);
+        const tileIndex = topPlayAccessItems.findIndex((item, index) => staticTopCardKey('play-access', item, index) === card.key);
+        if (tileIndex < 0) return;
+        routeTopCardToBottom('Play Access', tileIndex);
         return;
       }
       if (activeTab === 'Events') {
-        const tile = topEventItems.find((item, index) => staticTopCardKey('events', item, index) === card.key);
-        if (!tile) return;
-        openTileDetail(tile);
+        const tileIndex = topEventItems.findIndex((item, index) => staticTopCardKey('events', item, index) === card.key);
+        if (tileIndex < 0) return;
+        routeTopCardToBottom('Events', tileIndex);
         return;
       }
-      const tile = topTileItems.find((item, index) => tileCardKey(item, index) === card.key);
-      if (!tile) return;
-      if (tile.product && isShopProductPurchasable(tile.product)) {
-        onBuy(tile.product);
-        return;
-      }
-      openTileDetail(tile);
+      const tileIndex = topTileItems.findIndex((item, index) => tileCardKey(item, index) === card.key);
+      if (tileIndex < 0) return;
+      routeTopCardToBottom(activeTab, tileIndex);
     };
-    const handleBottomCardAction = (card: ShopMainCarouselCardItem) => {
-      if (displayedBottomTab === 'Vault') {
-        const item = bottomVaultItems.find((candidate, index) => staticTopCardKey(bottomVaultPrefix, candidate, index) === card.key);
-        if (item) openTileDetail(item);
-        return;
-      }
-      if (displayedBottomTab === 'Play Access') {
-        const item = bottomPlayAccessItems.find((candidate, index) => staticTopCardKey('play-access-bottom', candidate, index) === card.key);
-        if (item) openTileDetail(item);
-        return;
-      }
-      if (displayedBottomTab === 'Events') {
-        const item = bottomEventItems.find((candidate, index) => staticTopCardKey('events-bottom', candidate, index) === card.key);
-        if (item) openTileDetail(item);
-        return;
-      }
-      const tile = bottomTileItems.find((item, index) => tileCardKey(item, index) === card.key);
-      if (!tile) return;
-      if (tile.product && isShopProductPurchasable(tile.product)) {
-        onBuy(tile.product);
-        return;
-      }
-      openTileDetail(tile);
-    };
-
     if (showEarnRewards) {
       return (
         <EarnRewardsBottomLayer
@@ -2311,17 +2743,78 @@ function MainBody({
       );
     }
 
+    if (rightPanelDetail) {
+      return (
+        <RightPanelDetailLayer
+          x={bottomFrameBounds.x}
+          y={y}
+          w={bottomFrameBounds.w}
+          h={resolvedSectionBottomY - y}
+          active={rightPanelDetail}
+          cfg={cfg}
+          acBalance={acBalance}
+          onClose={onClearRightPanelDetail}
+          onElite={onElite}
+        />
+      );
+    }
+
+    if (activeDeckPreviewItem) {
+      return (
+        <VaultDeckPreviewLayer
+          x={bottomFrameBounds.x}
+          y={y}
+          w={bottomFrameBounds.w}
+          h={resolvedSectionBottomY - y}
+          cfg={cfg}
+          deckItem={activeDeckPreviewItem}
+          renderDeckPreview={renderVaultDeckPreview}
+          onClose={() => setActiveDeckPreviewItem(null)}
+        />
+      );
+    }
+
+    if (selectedTileDetail) {
+      return (
+        <TileDetailLayer
+          x={bottomFrameBounds.x}
+          y={y}
+          w={bottomFrameBounds.w}
+          h={resolvedSectionBottomY - y}
+          item={selectedTileDetail}
+          cfg={cfg}
+          onClose={closeBottomDetail}
+          onBuy={onBuy}
+        />
+      );
+    }
+
     return (
       <g>
         <MainTop x={topFrameBounds.x} y={y} w={topFrameBounds.w} h={topH} label={activeTab} cards={topCards} onCardAction={handleTopCardAction} rightActionLabel={topAction?.label} onRightAction={topAction?.onAction} />
         {displayedInfoDetail ? (
           <InfoDetailLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} mode={displayedInfoDetail} cfg={cfg} onClose={closeBottomDetail} />
-        ) : selectedTileDetail ? (
-          <TileDetailLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} item={selectedTileDetail} cfg={cfg} onClose={closeBottomDetail} onBuy={onBuy} />
-        ) : displayedBottomTab === 'Elite' ? (
-          <EliteBottomLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} items={bottomTileItems} cfg={cfg} loadingId={loadingId} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} onInspect={openTileDetail} onBuy={onBuy} />
+        ) : showVaultShowcase ? (
+          <VaultShowcaseLayer
+            x={bottomFrameBounds.x}
+            y={bottomY}
+            w={bottomFrameBounds.w}
+            h={bottomH}
+            cfg={cfg}
+            activeGroupKey={activeVaultGroupKey}
+            vaultDeckItems={vaultDeckItems}
+            onGroupChange={setActiveVaultGroupKey}
+            onGroupInspect={(group) => openTileDetail(vaultGroupToTile(group))}
+            onDeckPreview={(item) => {
+              setSelectedTileDetail(null);
+              setActiveInfoDetail(null);
+              setActiveDeckPreviewItem(item);
+            }}
+          />
+        ) : bottomDetailItems.length > 0 ? (
+          <BottomDetailCardsLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} items={bottomDetailItems} cfg={cfg} loadingId={loadingId} pageIndex={bottomPageIndex} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} onInspect={openTileDetail} onBuy={onBuy} onPageChange={setBottomPageIndex} />
         ) : (
-          <MainBottom x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} cards={bottomCards} onCardAction={handleBottomCardAction} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} />
+          <MainBottom x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} />
         )}
       </g>
     );
@@ -2348,7 +2841,7 @@ function MainBody({
       return <EliteLayer x={frameBounds.x} y={layerY} w={frameBounds.w} h={layerH} products={products} cfg={cfg} loadingId={loadingId} pageIndex={pageIndex} fillFrame={fillFrame} onBuy={onBuy} onCompare={() => openInfoDetail('eliteBenefits')} onInspect={openTileDetail} onPageChange={setPageIndex} />;
     }
     if (tab === 'Vault' && slot === 'bottom') {
-      return <VaultShowcaseLayer x={frameBounds.x} y={layerY} w={frameBounds.w} h={layerH} cfg={cfg} activeGroupKey={activeVaultGroupKey} vaultDeckItems={vaultDeckItems} onGroupChange={setActiveVaultGroupKey} onDeckPreview={(item) => {
+      return <VaultShowcaseLayer x={frameBounds.x} y={layerY} w={frameBounds.w} h={layerH} cfg={cfg} activeGroupKey={activeVaultGroupKey} vaultDeckItems={vaultDeckItems} onGroupChange={setActiveVaultGroupKey} onGroupInspect={(group) => openTileDetail(vaultGroupToTile(group))} onDeckPreview={(item) => {
         setSelectedTileDetail(null);
         setActiveInfoDetail(null);
         setActiveDeckPreviewItem(item);
@@ -2405,6 +2898,22 @@ function MainBody({
         onClose={onClearSpecial}
         dailyRewardStatus={dailyRewardStatus}
         onDailyRewardSpin={onDailyRewardSpin}
+      />
+    );
+  }
+
+  if (rightPanelDetail) {
+    return (
+      <RightPanelDetailLayer
+        x={x}
+        y={y}
+        w={w}
+        h={resolvedSectionBottomY - y}
+        active={rightPanelDetail}
+        cfg={cfg}
+        acBalance={acBalance}
+        onClose={onClearRightPanelDetail}
+        onElite={onElite}
       />
     );
   }
@@ -2466,11 +2975,15 @@ function SideNavCard({
   const [hovered, setHovered] = useState(false);
   const token = cfg.componentTokens.sideNavCard;
   const color = selected ? cfg.colors.activeBlue : toneColor(item.tone, cfg);
-  const imageSize = Math.min(cfg.leftPanel.imageMaxSize, h - token.imageHeightPad);
-  const imageX = x + token.imageInsetX;
-  const imageY = y + (h - imageSize) / 2;
-  const textX = imageX + imageSize + token.textGap;
-  const titleSize = item.title.length > token.compactTitleLength ? token.compactTitleSize : token.titleSize;
+  const stacked = w < 142;
+  const imageSize = stacked ? Math.min(34, h * 0.48) : Math.min(cfg.leftPanel.imageMaxSize, h - token.imageHeightPad);
+  const imageX = stacked ? x + w / 2 - imageSize / 2 : x + token.imageInsetX;
+  const imageY = stacked ? y + 5 : y + (h - imageSize) / 2;
+  const textX = stacked ? x + w / 2 : imageX + imageSize + token.textGap;
+  const textW = stacked ? w - 14 : w - (textX - x) - token.subtitleRightPad;
+  const titleSize = stacked
+    ? fitSingleLineTextSize(item.title, textW, 8.8, 11.2, 0.62)
+    : item.title.length > token.compactTitleLength ? token.compactTitleSize : token.titleSize;
   const activeFill = alphaColor(color, cfg.componentTokens.cardChrome.activeFillOpacity);
   return (
     <g onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={cfg.svgDefaults.cursorPointerClassName} role="button" tabIndex={0}>
@@ -2483,8 +2996,8 @@ function SideNavCard({
       {hovered && !selected ? <rect x={x - token.hoverPad} y={y - token.hoverPad} width={w + token.hoverPad * 2} height={h + token.hoverPad * 2} rx={token.hoverGlowRadius} fill="none" stroke={color} strokeWidth={token.hoverGlowStrokeWidth} opacity={token.hoverGlowOpacity} filter="url(#shopSoftGlow)" /> : null}
       <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.cardRadius} fill={selected ? alphaColor(cfg.colors.activeBlue, 0.36) : hovered ? activeFill : cfg.colors.panelFill} stroke={selected || hovered ? color : cfg.colors.tileStroke} strokeWidth={selected || hovered ? 1.6 : 1.25} />
       <TransparentAssetImage x={imageX} y={imageY} w={imageSize} h={imageSize} imageUrl={item.imageUrl} cfg={cfg} glow={selected || hovered} cyanGlow={hovered && !selected} />
-      <Txt x={textX} y={y + token.titleY} size={titleSize} weight="950" cfg={cfg}>{item.title}</Txt>
-      <WrappedText x={textX} y={y + token.subtitleY} width={w - (textX - x) - token.subtitleRightPad} lines={item.subtitle} size={token.subtitleSize} lineHeight={token.subtitleLineHeight} fill={cfg.colors.mutedText} maxLines={2} cfg={cfg} />
+      <Txt x={textX} y={stacked ? y + 48 : y + token.titleY} size={titleSize} weight="950" anchor={stacked ? 'middle' : 'start'} cfg={cfg}>{item.title}</Txt>
+      <WrappedText x={textX} y={stacked ? y + 60 : y + token.subtitleY} width={textW} lines={item.subtitle} size={stacked ? 6.8 : token.subtitleSize} lineHeight={stacked ? 7.2 : token.subtitleLineHeight} fill={cfg.colors.mutedText} maxLines={stacked ? 1 : 2} anchor={stacked ? 'middle' : 'start'} cfg={cfg} />
     </g>
   );
 }
@@ -2597,20 +3110,18 @@ function RightPreviewContent({
   x,
   y,
   w,
-  h,
+  h: _h,
   active,
   cfg,
   acBalance,
-  onElite,
 }: {
   x: number;
   y: number;
   w: number;
   h: number;
-  active: string;
+  active: ShopRightTabId;
   cfg: ShopPageSvgControls;
   acBalance: number;
-  onElite: () => void;
 }) {
   const token = cfg.componentTokens.rightPanel;
   if (active === 'wallet') {
@@ -2631,7 +3142,6 @@ function RightPreviewContent({
         <ProductImage x={x + token.imageInsetX} y={y + token.passImageY} w={w - token.imageInsetX * 2} h={token.passImageH} imageUrl={SHOP_STATIC_PASSES[1].imageUrl} cfg={cfg} />
         <rect x={x + token.imageInsetX} y={y + token.passOverlayY} width={w - token.imageInsetX * 2} height={token.passOverlayH} fill={cfg.colors.tileOverlayFill} />
         <Txt x={x + token.imageInsetX + token.rowX} y={y + token.passOverlayY + token.passOverlayH / 2 - 1} size={token.accountNameSize} weight="950" cfg={cfg}>Champion Pass</Txt>
-        <SvgButton x={x} y={y + h - token.bottomButtonH} w={w} h={token.bottomButtonH} label="Manage Pass" small onClick={onElite} cfg={cfg} />
       </g>
     );
   }
@@ -2645,7 +3155,8 @@ function RightPreviewContent({
             <rect x={x + token.rowX} y={y + token.eventFirstRowY + index * token.eventRowGap} width={w - token.rowX * 2} height={token.eventRowH} rx={cfg.svgDefaults.roundedNone} fill={cfg.colors.rowFill} stroke={cfg.colors.violet} />
             <Txt x={x + token.rowX * 2} y={y + token.eventFirstRowY + token.contentTitleSize + index * token.eventRowGap} size={token.eventButtonH / 2} weight="900" cfg={cfg}>{row[0]}</Txt>
             <Txt x={x + token.rowX * 2} y={y + token.eventFirstRowY + token.contentTitleSize + token.accountEloSize + index * token.eventRowGap} fill={cfg.colors.mutedText} size={token.accountEloSize - 3.2} cfg={cfg}>{row[1]}</Txt>
-            <SvgButton x={x + w - token.eventButtonRight} y={y + token.eventButtonY + index * token.eventRowGap} w={token.eventButtonW} h={token.eventButtonH} label={row[2]} small cfg={cfg} />
+            <rect x={x + w - token.eventButtonRight} y={y + token.eventButtonY + index * token.eventRowGap} width={token.eventButtonW} height={token.eventButtonH} rx="4" fill={alphaColor(cfg.colors.violet, 0.12)} stroke={cfg.colors.violet} strokeOpacity="0.48" />
+            <Txt x={x + w - token.eventButtonRight + token.eventButtonW / 2} y={y + token.eventButtonY + token.eventButtonH / 2 + index * token.eventRowGap + 1} anchor="middle" size="8.6" weight="900" fill={cfg.colors.tileSubtitleText} cfg={cfg}>{row[2]}</Txt>
           </g>
         ))}
       </g>
@@ -2669,7 +3180,47 @@ function RightPreviewContent({
       <Txt x={x + token.accountNameX} y={y + token.accountEloY} fill={cfg.colors.mutedText} size={token.accountEloSize} weight="600" cfg={cfg}>ELO 1200</Txt>
       <rect x={x + token.accountNameX} y={y + token.accountProgressY} width={w - token.accountNameX - token.contentTitleX * 2} height={token.accountProgressH} rx={token.accountProgressH / 2} fill={cfg.colors.headerFill} />
       <rect x={x + token.accountNameX} y={y + token.accountProgressY} width={Math.min(token.accountNameX + token.contentTitleX, w - token.accountNameX - token.contentTitleX * 3)} height={token.accountProgressH} rx={token.accountProgressH / 2} fill={cfg.colors.activeBlue} />
-      <SvgButton x={x} y={y + h - token.bottomButtonH} w={w} h={token.bottomButtonH} label="View Profile" small cfg={cfg} />
+    </g>
+  );
+}
+
+function RightPanelSelectorCard({
+  x,
+  y,
+  w,
+  h,
+  tab,
+  selected,
+  cfg,
+  onClick,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  tab: ShopRightTab;
+  selected: boolean;
+  cfg: ShopPageSvgControls;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const token = cfg.componentTokens.sideNavCard;
+  const color = selected ? cfg.colors.activeBlue : tab.accent;
+  const active = selected || hovered;
+  const activeFill = alphaColor(color, cfg.componentTokens.cardChrome.activeFillOpacity);
+  const arrowTop = y + token.arrowTopInset;
+  const arrowBottom = y + h - token.arrowTopInset;
+  return (
+    <g onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={cfg.svgDefaults.cursorPointerClassName} role="button" tabIndex={0}>
+      {selected ? (
+        <>
+          <rect x={x - token.selectedPad} y={y - token.selectedPad} width={w + token.selectedPad * 2} height={h + token.selectedPad * 2} rx={token.selectedGlowRadius} fill="none" stroke={color} strokeWidth={token.selectedGlowStrokeWidth} opacity={token.selectedGlowOpacity} filter="url(#shopSoftGlow)" />
+          <path d={`M ${x + token.arrowEdgeInset} ${arrowTop} L ${x - 18} ${y + h / 2} L ${x + token.arrowEdgeInset} ${arrowBottom} Z`} fill={color} filter="url(#shopSoftGlow)" />
+        </>
+      ) : null}
+      {hovered && !selected ? <rect x={x - token.hoverPad} y={y - token.hoverPad} width={w + token.hoverPad * 2} height={h + token.hoverPad * 2} rx={token.hoverGlowRadius} fill="none" stroke={color} strokeWidth={token.hoverGlowStrokeWidth} opacity={token.hoverGlowOpacity} filter="url(#shopSoftGlow)" /> : null}
+      <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.cardRadius} fill={selected ? alphaColor(cfg.colors.activeBlue, 0.36) : hovered ? activeFill : cfg.colors.panelFill} stroke={active ? color : cfg.colors.tileStroke} strokeWidth={active ? 1.6 : 1.25} />
+      <Txt x={x + w / 2} y={y + h / 2 + 1} size={Math.max(8.8, Math.min(10.8, w / Math.max(16, tab.title.length * 0.72)))} weight="950" fill={selected ? cfg.colors.bodyText : cfg.colors.tileSubtitleText} anchor="middle" cfg={cfg}>{tab.title}</Txt>
     </g>
   );
 }
@@ -2681,7 +3232,9 @@ function RightSidePanel({
   h,
   cfg,
   acBalance,
-  onElite,
+  active,
+  onActiveChange,
+  onPreviewOpen,
 }: {
   x: number;
   y: number;
@@ -2689,42 +3242,64 @@ function RightSidePanel({
   h: number;
   cfg: ShopPageSvgControls;
   acBalance: number;
-  onElite: () => void;
+  active: ShopRightTabId;
+  onActiveChange: (id: ShopRightTabId) => void;
+  onPreviewOpen: () => void;
 }) {
-  const [active, setActive] = useState('account');
-  const activeMeta = SHOP_RIGHT_TABS.find(tab => tab.id === active) ?? SHOP_RIGHT_TABS[0];
+  const [previewHovered, setPreviewHovered] = useState(false);
+  const activeMeta = rightPanelMeta(active);
   const token = cfg.componentTokens.rightPanel;
+  const sideToken = cfg.componentTokens.sideNavCard;
   const mainH = h - cfg.rightPanel.pad * 2 - cfg.rightPanel.tabGap * SHOP_RIGHT_TABS.length - cfg.rightPanel.tabH * SHOP_RIGHT_TABS.length;
   const mainX = x + cfg.rightPanel.pad;
   const mainY = y + cfg.rightPanel.pad;
   const mainW = w - cfg.rightPanel.pad * 2;
   const tabsY = mainY + mainH;
   const selectorH = h - cfg.rightPanel.pad - tabsY + y;
+  const arrowTop = mainY + mainH / 2 - 32;
+  const arrowBottom = mainY + mainH / 2 + 32;
   return (
     <Panel x={x} y={y} w={w} h={h} r={cfg.rightPanel.radius} stroke={cfg.colors.panelStroke} cfg={cfg}>
-      <path d={topRoundedRectPath(mainX, mainY, mainW, mainH, token.panelRadius)} fill="none" stroke={activeMeta.accent} strokeWidth={token.previewGlowWidth} opacity={token.previewGlowOpacity} filter="url(#shopSoftGlow)" />
-      <path d={topRoundedRectPath(mainX, mainY, mainW, mainH, token.panelRadius)} fill={cfg.colors.panelFill} stroke={activeMeta.accent} strokeWidth={token.previewStrokeWidth} />
-      <HeaderBar
-        x={mainX + token.previewHeaderInset}
-        y={mainY + token.previewHeaderInset}
-        w={mainW - token.previewHeaderInset * 2}
-        h={cfg.rightPanel.previewHeaderH}
-        stroke={activeMeta.accent}
-        cfg={cfg}
-      >
-        <Txt x={mainX + token.previewHeaderTitleX} y={mainY + token.previewHeaderTitleY} size={token.previewHeaderTitleSize} weight="950" fill={activeMeta.accent} cfg={cfg}>{activeMeta.title}</Txt>
-      </HeaderBar>
-      <RightPreviewContent x={mainX} y={mainY + cfg.rightPanel.previewHeaderH} w={mainW} h={mainH - cfg.rightPanel.previewHeaderH} active={active} cfg={cfg} acBalance={acBalance} onElite={onElite} />
+      <g onClick={onPreviewOpen} onMouseEnter={() => setPreviewHovered(true)} onMouseLeave={() => setPreviewHovered(false)} role="button" tabIndex={0} className={cfg.svgDefaults.cursorPointerClassName}>
+        {previewHovered ? (
+          <>
+            <rect x={mainX - sideToken.hoverPad} y={mainY - sideToken.hoverPad} width={mainW + sideToken.hoverPad * 2} height={mainH + sideToken.hoverPad * 2} rx={sideToken.hoverGlowRadius} fill="none" stroke={activeMeta.accent} strokeWidth={sideToken.hoverGlowStrokeWidth} opacity={sideToken.hoverGlowOpacity} filter="url(#shopSoftGlow)" />
+            <path d={`M ${mainX + sideToken.arrowEdgeInset} ${arrowTop} L ${mainX - 18} ${mainY + mainH / 2} L ${mainX + sideToken.arrowEdgeInset} ${arrowBottom} Z`} fill={activeMeta.accent} filter="url(#shopSoftGlow)" />
+          </>
+        ) : null}
+        <path d={topRoundedRectPath(mainX, mainY, mainW, mainH, token.panelRadius)} fill="none" stroke={activeMeta.accent} strokeWidth={previewHovered ? token.previewGlowWidth + 0.8 : token.previewGlowWidth} opacity={previewHovered ? 0.56 : token.previewGlowOpacity} filter="url(#shopSoftGlow)" />
+        <path d={topRoundedRectPath(mainX, mainY, mainW, mainH, token.panelRadius)} fill={previewHovered ? alphaColor(activeMeta.accent, 0.12) : cfg.colors.panelFill} stroke={activeMeta.accent} strokeWidth={previewHovered ? token.previewStrokeWidth + 0.6 : token.previewStrokeWidth} />
+        <HeaderBar
+          x={mainX + token.previewHeaderInset}
+          y={mainY + token.previewHeaderInset}
+          w={mainW - token.previewHeaderInset * 2}
+          h={cfg.rightPanel.previewHeaderH}
+          stroke={activeMeta.accent}
+          cfg={cfg}
+        >
+          <Txt x={mainX + token.previewHeaderTitleX} y={mainY + token.previewHeaderTitleY} size={token.previewHeaderTitleSize} weight="950" fill={activeMeta.accent} cfg={cfg}>{activeMeta.title}</Txt>
+          {previewHovered ? (
+            <g>
+              <rect x={mainX + mainW - 70} y={mainY + token.previewHeaderInset + 6} width="54" height="17" rx="4" fill={alphaColor(activeMeta.accent, 0.18)} stroke={activeMeta.accent} strokeOpacity="0.72" />
+              <Txt x={mainX + mainW - 43} y={mainY + token.previewHeaderInset + 17} anchor="middle" size="8.4" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>MORE...</Txt>
+            </g>
+          ) : null}
+        </HeaderBar>
+        <RightPreviewContent x={mainX} y={mainY + cfg.rightPanel.previewHeaderH} w={mainW} h={mainH - cfg.rightPanel.previewHeaderH} active={active} cfg={cfg} acBalance={acBalance} />
+      </g>
       <path d={bottomRoundedRectPath(mainX, tabsY, mainW, selectorH, token.panelRadius)} fill={cfg.colors.tileFooterFill} stroke={activeMeta.accent} strokeWidth={token.previewStrokeWidth} strokeOpacity=".82" />
       {SHOP_RIGHT_TABS.map((tab, index) => (
-        <g key={tab.id} onClick={() => setActive(tab.id)} role="button" tabIndex={0} className="shop-page-svg-clickable">
-          <rect x={mainX} y={tabsY + token.tabStartGap + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} width={mainW} height={cfg.rightPanel.tabH} fill={cfg.colors.frameFill} />
-          <line x1={mainX} y1={tabsY + token.tabStartGap + token.tabTopLineOffset + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} x2={mainX + mainW} y2={tabsY + token.tabStartGap + token.tabTopLineOffset + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} stroke={cfg.colors.line} />
-          <line x1={mainX} y1={tabsY + token.tabStartGap + cfg.rightPanel.tabH - token.tabBottomLineOffset + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} x2={mainX + mainW} y2={tabsY + token.tabStartGap + cfg.rightPanel.tabH - token.tabBottomLineOffset + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} stroke={tab.accent} strokeWidth={active === tab.id ? token.tabActiveStrokeWidth : token.tabDefaultStrokeWidth} />
-          <rect x={mainX + token.tabBoxInsetX} y={tabsY + token.tabStartGap + token.tabBoxInsetY + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} width={mainW - token.tabBoxInsetX * 2} height={cfg.rightPanel.tabH - token.tabBoxInsetY * 2} fill={`${tab.accent}${active === tab.id ? '26' : '12'}`} stroke={tab.accent} strokeWidth={active === tab.id ? token.tabBoxActiveStrokeWidth : token.tabBoxDefaultStrokeWidth} />
-          <rect x={mainX + token.tabBoxInsetX} y={tabsY + token.tabStartGap + token.tabBoxInsetY + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)} width={token.tabAccentW} height={cfg.rightPanel.tabH - token.tabBoxInsetY * 2} fill={tab.accent} opacity={active === tab.id ? .95 : .62} />
-          <Txt x={mainX + mainW / 2} y={tabsY + token.tabStartGap + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap) + cfg.rightPanel.tabH / 2 + 1} size={token.tabTextSize} weight="950" fill={active === tab.id ? cfg.colors.bodyText : cfg.colors.tileSubtitleText} anchor="middle" cfg={cfg}>{tab.title}</Txt>
-        </g>
+        <RightPanelSelectorCard
+          key={tab.id}
+          x={mainX + token.tabBoxInsetX}
+          y={tabsY + token.tabStartGap + token.tabBoxInsetY + index * (cfg.rightPanel.tabH + cfg.rightPanel.tabGap)}
+          w={mainW - token.tabBoxInsetX * 2}
+          h={cfg.rightPanel.tabH - token.tabBoxInsetY * 2}
+          tab={tab}
+          selected={active === tab.id}
+          cfg={cfg}
+          onClick={() => onActiveChange(tab.id)}
+        />
       ))}
     </Panel>
   );
@@ -2743,20 +3318,17 @@ function PreviewPanel({
   y: number;
   w: number;
   h: number;
-  row: typeof SHOP_PREVIEWS[number];
+  row: ResolvedPreviewRow;
   cfg: ShopPageSvgControls;
   onSelect: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
   const token = cfg.componentTokens.bottomPreviewPanel;
-  const previewItems = row.items.map((label, index) => {
-    return {
-      key: `${row.title}-${index}`,
-      label,
-      imageUrl: row.imageUrls[index],
-    };
-  });
-  const itemW = (w - cfg.bottomPreview.sidePad * 2 - cfg.bottomPreview.cardGap * Math.max(0, previewItems.length - 1)) / previewItems.length;
+  const previewItems = row.previewItems.length > 0
+    ? row.previewItems
+    : [{ key: `${row.title}-empty`, label: 'Coming Soon', imageUrl: '' }];
+  const itemW = previewCardWidth(cfg);
   const itemH = h - cfg.bottomPreview.headerH - cfg.bottomPreview.bottomPad;
   const bodyX = x + cfg.bottomPreview.sidePad;
   const bodyY = y + cfg.bottomPreview.headerH + token.cardInset;
@@ -2768,6 +3340,21 @@ function PreviewPanel({
   const labelBoxY = bodyH - footerH + token.labelBoxInsetY;
   const labelBoxH = Math.max(16, footerH - token.labelBoxInsetY * 2);
   const itemStep = itemW + cfg.bottomPreview.cardGap;
+  const fittedItemCount = Math.max(1, Math.floor((bodyW + cfg.bottomPreview.cardGap) / itemStep));
+  const visibleItemCount = Math.max(1, Math.min(MAX_BOTTOM_PREVIEW_ITEMS, previewItems.length, fittedItemCount));
+  const pageCount = Math.max(1, Math.ceil(previewItems.length / visibleItemCount));
+  const safePageIndex = wrapPreviewIndex(pageIndex, pageCount);
+  const visibleItems = previewItems.slice(safePageIndex * visibleItemCount, safePageIndex * visibleItemCount + visibleItemCount);
+  const rowContentW = Math.max(0, visibleItems.length * itemW + Math.max(0, visibleItems.length - 1) * cfg.bottomPreview.cardGap);
+  const itemStartX = Math.max(0, (bodyW - rowContentW) / 2);
+  const canPage = pageCount > 1;
+  const arrowW = 18;
+  const arrowH = Math.min(46, bodyH - 10);
+  const arrowY = bodyY + bodyH / 2 - arrowH / 2;
+  const turnPage = (delta: number) => {
+    setPageIndex(value => wrapPreviewIndex(value + delta, pageCount));
+  };
+
   return (
     <g className={cfg.svgDefaults.cursorPointerClassName} onClick={onSelect} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       {hovered ? <path d={topRoundedRectPath(x - token.hoverPad, y - token.hoverPad, w + token.hoverPad * 2, h + token.hoverPad * 2, token.radius)} fill="none" stroke={row.accent} strokeWidth={token.hoverStrokeWidth} opacity={token.hoverOpacity} filter="url(#shopSoftGlow)" /> : null}
@@ -2776,11 +3363,14 @@ function PreviewPanel({
         <MiniIcon type="crate" x={x + token.headerIconX} y={y + token.headerIconY} size={token.headerIconSize} tone="cyan" cfg={cfg} />
         <Txt x={x + token.titleX} y={y + token.titleY} size={token.titleSize} weight="950" cfg={cfg}>{row.title}</Txt>
         <Txt x={x + token.titleX} y={y + token.subtitleY} size={token.subtitleSize} fill={cfg.colors.mutedText} cfg={cfg}>{row.subtitle}</Txt>
+        {canPage ? (
+          <Txt x={x + w - 22} y={y + token.titleY} anchor="end" size={8.2} weight="950" fill={row.accent} cfg={cfg}>{safePageIndex + 1}/{pageCount}</Txt>
+        ) : null}
       </HeaderBar>
       <svg x={bodyX} y={bodyY} width={bodyW} height={bodyH} overflow="hidden">
         <g className="shop-preview-item-track">
-          {previewItems.map((item, index) => {
-            const itemX = index * itemStep;
+          {visibleItems.map((item, index) => {
+            const itemX = itemStartX + index * itemStep;
             const labelBoxX = itemX + token.labelBoxInsetX;
             const labelBoxW = Math.max(20, itemW - token.labelBoxInsetX * 2);
             const labelTextW = Math.max(8, labelBoxW - token.labelInsetX * 2);
@@ -2805,6 +3395,28 @@ function PreviewPanel({
           })}
         </g>
       </svg>
+      {canPage ? (
+        <>
+          <g
+            onClick={(event) => {
+              event.stopPropagation();
+              turnPage(-1);
+            }}
+          >
+            <rect x={bodyX + 2} y={arrowY} width={arrowW} height={arrowH} rx="5" fill={cfg.colors.headerFill} stroke={row.accent} strokeOpacity=".72" />
+            <path d={`M ${bodyX + 12} ${arrowY + arrowH / 2 - 8} L ${bodyX + 6} ${arrowY + arrowH / 2} L ${bodyX + 12} ${arrowY + arrowH / 2 + 8}`} fill="none" stroke={row.accent} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" filter="url(#shopSoftGlow)" />
+          </g>
+          <g
+            onClick={(event) => {
+              event.stopPropagation();
+              turnPage(1);
+            }}
+          >
+            <rect x={bodyX + bodyW - arrowW - 2} y={arrowY} width={arrowW} height={arrowH} rx="5" fill={cfg.colors.headerFill} stroke={row.accent} strokeOpacity=".72" />
+            <path d={`M ${bodyX + bodyW - 12} ${arrowY + arrowH / 2 - 8} L ${bodyX + bodyW - 6} ${arrowY + arrowH / 2} L ${bodyX + bodyW - 12} ${arrowY + arrowH / 2 + 8}`} fill="none" stroke={row.accent} strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" filter="url(#shopSoftGlow)" />
+          </g>
+        </>
+      ) : null}
     </g>
   );
 }
@@ -3288,11 +3900,25 @@ export function ShopPageSvgSurface({
   const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 });
   const [previewStart, setPreviewStart] = useState(0);
   const [previewResetting, setPreviewResetting] = useState(false);
+  const [previewPaused, setPreviewPaused] = useState(false);
+  const [previewDrag, setPreviewDrag] = useState<{ startX: number; startIndex: number } | null>(null);
   const [bottomPreviewTarget, setBottomPreviewTarget] = useState<BottomPreviewTarget | null>(null);
   const [bottomPreviewVersion, setBottomPreviewVersion] = useState(0);
+  const [rightPreviewTarget, setRightPreviewTarget] = useState<ShopRightTabId>('account');
+  const [rightDetailTarget, setRightDetailTarget] = useState<ShopRightTabId | null>(null);
   const [specialView, setSpecialView] = useState<'earnRewards' | null>(null);
   const [infoRequest, setInfoRequest] = useState<'arenaCredits' | 'eliteBenefits' | null>(null);
   const previewHoldMs = Math.max(cfg.bottomPreview.carouselIntervalMs, 5600);
+  const resolvedPreviewRows = useMemo<ResolvedPreviewRow[]>(() => {
+    return SHOP_PREVIEWS.map(row => ({
+      title: row.title,
+      tab: row.tab,
+      subtitle: row.subtitle,
+      accent: row.accent,
+      previewItems: previewItemsForRow(row, products),
+    }));
+  }, [products]);
+  const previewRowCount = resolvedPreviewRows.length;
 
   useEffect(() => {
     const target = mainRef.current;
@@ -3314,50 +3940,57 @@ export function ShopPageSvgSurface({
   }, []);
 
   useEffect(() => {
+    if (previewPaused || previewRowCount <= 1) return undefined;
     const id = window.setInterval(() => {
       setPreviewStart(value => value + 1);
     }, previewHoldMs);
     return () => window.clearInterval(id);
-  }, [previewHoldMs]);
+  }, [previewHoldMs, previewPaused, previewRowCount]);
 
   useEffect(() => {
-    if (previewStart < SHOP_PREVIEWS.length) return undefined;
+    if (previewRowCount <= 0 || previewStart < previewRowCount) return undefined;
     const id = window.setTimeout(() => {
       setPreviewResetting(true);
-      setPreviewStart(value => value >= SHOP_PREVIEWS.length ? value - SHOP_PREVIEWS.length : value);
+      setPreviewStart(value => value >= previewRowCount ? value - previewRowCount : value);
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => setPreviewResetting(false));
       });
     }, 1040);
     return () => window.clearTimeout(id);
-  }, [previewStart]);
+  }, [previewRowCount, previewStart]);
 
   const metrics = useMemo<Metrics>(() => {
-    const canvasWidth = surfaceSize.width > 0 && surfaceSize.height > 0
-      ? Math.max(1100, Math.min(2600, Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height))))
-      : cfg.canvas.width;
+    const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
+    const columns = responsiveColumnWidths(canvasWidth, cfg);
     const leftX = cfg.layout.outerPad;
     const leftY = cfg.layout.topY;
-    const mainX = leftX + cfg.layout.leftW + cfg.layout.mainGap;
-    const rightX = canvasWidth - cfg.layout.outerPad - cfg.layout.rightW;
+    const mainX = leftX + columns.leftW + cfg.layout.mainGap;
+    const rightX = canvasWidth - cfg.layout.outerPad - columns.rightW;
     const mainW = rightX - mainX - cfg.layout.mainGap;
     const headerTotalW = canvasWidth - cfg.layout.outerPad - mainX;
-    const headerSideW = (headerTotalW - cfg.header.arenaCreditW - cfg.header.gap * 2) / 2;
+    const headerCreditW = Math.max(cfg.header.arenaCreditW, cfg.componentTokens.headerLayer.balanceMinWidth);
+    const headerSideW = (headerTotalW - headerCreditW - cfg.header.gap * 2) / 2;
     const headerCenterX = mainX + headerSideW + cfg.header.gap;
-    const headerStatsX = headerCenterX + cfg.header.arenaCreditW + cfg.header.gap;
-    return { leftX, leftY, mainX, mainW, rightX, headerSideW, headerCenterX, headerStatsX };
+    const headerStatsX = headerCenterX + headerCreditW + cfg.header.gap;
+    return { leftX, leftY, leftW: columns.leftW, mainX, mainW, rightX, rightW: columns.rightW, headerSideW, headerCenterX, headerStatsX };
   }, [cfg, surfaceSize]);
 
-  const canvasWidth = surfaceSize.width > 0 && surfaceSize.height > 0
-    ? Math.max(1100, Math.min(2600, Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height))))
-    : cfg.canvas.width;
+  const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
 
   const previewViewportW = canvasWidth - cfg.layout.outerPad * 2;
+  const previewPreferredPanelW = previewPanelWidthForCardCount(PREFERRED_BOTTOM_PREVIEW_ITEMS, cfg);
+  const previewMaxSlots = Math.max(1, Math.min(previewRowCount, Math.round(cfg.bottomPreview.visibleCount)));
+  const previewVisibleSlots = Math.max(
+    1,
+    Math.min(
+      previewMaxSlots,
+      Math.max(1, Math.floor((previewViewportW + cfg.bottomPreview.gap) / (previewPreferredPanelW + cfg.bottomPreview.gap))),
+    ),
+  );
+  const previewPanelW = Math.max(260, (previewViewportW - cfg.bottomPreview.gap * Math.max(0, previewVisibleSlots - 1)) / previewVisibleSlots);
   const previewWidths = useMemo(() => {
-    const visiblePanels = Math.max(1, Math.round(cfg.bottomPreview.visibleCount));
-    const targetWidth = (previewViewportW - cfg.bottomPreview.gap * Math.max(0, visiblePanels - 1)) / visiblePanels;
-    return SHOP_PREVIEWS.map(row => Math.max(targetWidth, previewPanelWidth(row, cfg)));
-  }, [cfg, previewViewportW]);
+    return resolvedPreviewRows.map(() => previewPanelW);
+  }, [previewPanelW, resolvedPreviewRows]);
 
   const previewTrackLayout = useMemo(() => {
     return previewWidths.reduce(
@@ -3370,26 +4003,28 @@ export function ShopPageSvgSurface({
   }, [cfg.bottomPreview.gap, previewWidths]);
 
   const previewTrackRows = useMemo(() => {
-    return Array.from({ length: SHOP_PREVIEWS.length * 3 }).map((_, index) => {
-      const sourceIndex = index % SHOP_PREVIEWS.length;
-      const cycle = Math.floor(index / SHOP_PREVIEWS.length);
+    return Array.from({ length: previewRowCount * 3 }).map((_, index) => {
+      const sourceIndex = index % previewRowCount;
+      const cycle = Math.floor(index / previewRowCount);
       return {
-        row: SHOP_PREVIEWS[sourceIndex],
+        row: resolvedPreviewRows[sourceIndex],
         width: previewWidths[sourceIndex],
         x: cfg.layout.outerPad + cycle * previewTrackLayout.cycleWidth + previewTrackLayout.offsets[sourceIndex],
       };
     });
-  }, [cfg.layout.outerPad, previewTrackLayout, previewWidths]);
+  }, [cfg.layout.outerPad, previewRowCount, previewTrackLayout, previewWidths, resolvedPreviewRows]);
 
   const selectTab = (tab: ShopTab) => {
     setSpecialView(null);
     setInfoRequest(null);
     setBottomPreviewTarget(null);
+    setRightDetailTarget(null);
     onTabChange(tab);
   };
 
-  const selectPreview = (row: typeof SHOP_PREVIEWS[number]) => {
+  const selectPreview = (row: ResolvedPreviewRow) => {
     setInfoRequest(null);
+    setRightDetailTarget(null);
     if (row.tab === 'Earn Free AC') {
       setBottomPreviewTarget(null);
       setSpecialView('earnRewards');
@@ -3400,13 +4035,55 @@ export function ShopPageSvgSurface({
     setBottomPreviewTarget(row.tab);
     setBottomPreviewVersion(version => version + 1);
   };
-  const previewLocalIndex = previewStart % SHOP_PREVIEWS.length;
-  const previewCycleIndex = Math.floor(previewStart / SHOP_PREVIEWS.length);
-  const previewTrackX = previewCycleIndex * previewTrackLayout.cycleWidth + previewTrackLayout.offsets[previewLocalIndex];
+
+  const selectRightPreview = (id: ShopRightTabId) => {
+    setRightPreviewTarget(id);
+    setRightDetailTarget(null);
+  };
+
+  const openRightPreviewDetail = () => {
+    setSpecialView(null);
+    setInfoRequest(null);
+    setBottomPreviewTarget(null);
+    setRightDetailTarget(rightPreviewTarget);
+  };
+  const previewLocalIndex = wrapPreviewIndex(previewStart, previewRowCount);
+  const previewCycleIndex = previewRowCount > 0 ? Math.floor(previewStart / previewRowCount) : 0;
+  const previewTrackX = previewCycleIndex * previewTrackLayout.cycleWidth + (previewTrackLayout.offsets[previewLocalIndex] ?? 0);
+  const previewPanelStep = previewPanelW + cfg.bottomPreview.gap;
+  const shiftPreview = (delta: number) => {
+    if (previewRowCount <= 1) return;
+    setPreviewResetting(false);
+    setPreviewStart(value => wrapPreviewIndex(wrapPreviewIndex(value, previewRowCount) + delta, previewRowCount));
+  };
+  const handlePreviewWheel = (event: WheelEvent<SVGGElement>) => {
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (Math.abs(delta) < 8) return;
+    event.preventDefault();
+    event.stopPropagation();
+    shiftPreview(delta > 0 ? 1 : -1);
+  };
+  const handlePreviewMouseDown = (event: MouseEvent<SVGGElement>) => {
+    if (previewRowCount <= 1) return;
+    event.preventDefault();
+    setPreviewPaused(true);
+    setPreviewDrag({ startX: event.clientX, startIndex: wrapPreviewIndex(previewStart, previewRowCount) });
+  };
+  const handlePreviewMouseMove = (event: MouseEvent<SVGGElement>) => {
+    if (!previewDrag || previewRowCount <= 1) return;
+    const dragStep = Math.max(80, previewPanelStep * 0.45);
+    const delta = Math.trunc((previewDrag.startX - event.clientX) / dragStep);
+    setPreviewResetting(false);
+    setPreviewStart(wrapPreviewIndex(previewDrag.startIndex + delta, previewRowCount));
+  };
+  const handlePreviewMouseLeave = () => {
+    setPreviewPaused(false);
+    setPreviewDrag(null);
+  };
   const frameToken = cfg.componentTokens.sectionFrame;
-  const bottomPreviewY = cfg.layout.bottomPreviewY;
-  const mainSectionBottomY = Math.max(cfg.mainBody.sectionBottomY, bottomPreviewY - frameToken.mainToPreviewGap);
-  const leftPanelH = Math.max(cfg.layout.sidePanelH, mainSectionBottomY - cfg.layout.topY);
+  const bottomPreviewY = cfg.layout.footerY - cfg.layout.bottomPreviewH - frameToken.previewGap;
+  const mainSectionBottomY = bottomPreviewY - frameToken.mainToPreviewGap;
+  const leftPanelH = mainSectionBottomY - cfg.layout.topY;
   const rightPanelH = mainSectionBottomY - cfg.layout.mainY;
 
   return (
@@ -3433,8 +4110,9 @@ export function ShopPageSvgSurface({
           <clipPath id="shopPreviewTrackClip"><rect x={cfg.layout.outerPad - 6} y={bottomPreviewY - 6} width={previewViewportW + 12} height={cfg.layout.bottomPreviewH + 12} /></clipPath>
         </defs>
         <rect width={canvasWidth} height={cfg.canvas.height} fill={cfg.svgDefaults.canvasFill} />
-        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={cfg.layout.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} cfg={cfg} onTabChange={selectTab} onEarn={() => {
+        <LeftSidePanel x={metrics.leftX} y={metrics.leftY} w={metrics.leftW} h={leftPanelH} activeTab={activeTab} earnActive={specialView === 'earnRewards' || bottomPreviewTarget === 'Earn Free AC'} cfg={cfg} onTabChange={selectTab} onEarn={() => {
           setBottomPreviewTarget(null);
+          setRightDetailTarget(null);
           setSpecialView('earnRewards');
         }} />
         <HeaderLayer
@@ -3449,34 +4127,47 @@ export function ShopPageSvgSurface({
             setSpecialView(null);
             setInfoRequest('arenaCredits');
             setBottomPreviewTarget(null);
+            setRightDetailTarget(null);
             onTabChange('Treasury');
           }}
         />
         <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerSideW} h={cfg.layout.headerH} cfg={cfg} onElite={() => selectTab('Elite')} />
         <MainBody
-          key={`${activeTab}-${bottomPreviewVersion}`}
+          key={`${activeTab}-${bottomPreviewVersion}-${rightDetailTarget ?? 'right-preview-idle'}`}
           x={metrics.mainX}
           y={cfg.layout.mainY}
           w={metrics.mainW}
           activeTab={activeTab}
           products={products}
           loadingId={loadingId}
+          acBalance={acBalance}
           specialView={specialView}
           infoRequest={infoRequest}
           bottomPreviewTarget={bottomPreviewTarget}
+          rightPanelDetail={rightDetailTarget}
           sectionBottomY={mainSectionBottomY}
           cfg={cfg}
           onClearSpecial={() => setSpecialView(null)}
           onClearBottomPreview={() => setBottomPreviewTarget(null)}
+          onClearRightPanelDetail={() => setRightDetailTarget(null)}
           onInfoHandled={() => setInfoRequest(null)}
           onBuy={onBuy}
+          onElite={() => selectTab('Elite')}
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
           vaultDeckItems={vaultDeckItems}
           renderVaultDeckPreview={renderVaultDeckPreview}
         />
-        <RightSidePanel x={metrics.rightX} y={cfg.layout.mainY} w={cfg.layout.rightW} h={rightPanelH} cfg={cfg} acBalance={acBalance} onElite={() => selectTab('Elite')} />
-        <g clipPath="url(#shopPreviewTrackClip)">
+        <RightSidePanel x={metrics.rightX} y={cfg.layout.mainY} w={metrics.rightW} h={rightPanelH} cfg={cfg} acBalance={acBalance} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} />
+        <g
+          clipPath="url(#shopPreviewTrackClip)"
+          onMouseEnter={() => setPreviewPaused(true)}
+          onMouseLeave={handlePreviewMouseLeave}
+          onMouseDown={handlePreviewMouseDown}
+          onMouseMove={handlePreviewMouseMove}
+          onMouseUp={() => setPreviewDrag(null)}
+          onWheel={handlePreviewWheel}
+        >
           <g
             className="shop-preview-track"
             style={{

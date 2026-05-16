@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
+import { createShopMarketplaceHeaderLogoConfig } from '@ocentra/core-ui/Header/createOcentraHeaderConfig';
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader';
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell';
+import { shopPageMarketplaceLogoImageUrl } from '@ocentra/app-assets/shop-page';
 
 import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
@@ -40,6 +42,7 @@ type LooseRecord = Record<string, unknown>;
 
 const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
 const SHOP_DECK_ASSET_TYPE = Deck.assetType as string;
+const SHOP_MARKETPLACE_HEADER_CONFIG = createShopMarketplaceHeaderLogoConfig(shopPageMarketplaceLogoImageUrl);
 
 function asRecord(value: unknown): LooseRecord {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as LooseRecord : {};
@@ -161,7 +164,15 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   }, []);
 
   const acBalance = (user as UserProfile & { ac_balance?: number } | null)?.ac_balance ?? 0;
-  const handleBack = () => EventBus.instance.publish(new ShowScreenEvent('home'));
+  const handleBack = useCallback(() => EventBus.instance.publish(new ShowScreenEvent('home')), []);
+  const shopHeaderConfig = useMemo(() => ({
+    ...SHOP_MARKETPLACE_HEADER_CONFIG,
+    left: {
+      ...SHOP_MARKETPLACE_HEADER_CONFIG.left,
+      onClick: handleBack,
+    },
+    right: headerRightConfig,
+  }), [handleBack, headerRightConfig]);
 
   const handleBuy = async (product: ShopProduct) => {
     setError(null);
@@ -212,16 +223,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
       footer={<GameFooter appVersion={APP_VERSION} />}
       header={
         <UnifiedHeader
-          dynamicData={{
-            gameName: "Arena Marketplace",
-            tagline: "Gear up. Outthink. Outplay."
-          }}
-          config={{
-            right: headerRightConfig,
-            left: {
-              onClick: handleBack
-            }
-          }}
+          config={shopHeaderConfig}
           showPrimaryNavigation={false}
         />
       }

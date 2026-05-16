@@ -15,10 +15,10 @@ export const ProductSchema = withParser(Schema.Struct({
   stripeProductId: Schema.optional(Schema.String), // Set when created via admin
   displayName: Schema.String,
   description: Schema.optional(Schema.String),
-  shopTab: Schema.optional(Schema.Literal('Treasury', 'Elite', 'Vault', 'Play Access', 'Events', 'Creator Market')),
+  shopTab: Schema.optional(Schema.Literal('Treasury', 'Elite', 'Vault', 'Play Access', 'Events')),
   badge: Schema.optional(Schema.String),
   benefits: Schema.optional(Schema.Array(Schema.String)),
-  entitlementKind: Schema.optional(Schema.Literal('credits', 'pass', 'cosmetic', 'play_access', 'event_ticket', 'creator_good')),
+  entitlementKind: Schema.optional(Schema.Literal('credits', 'pass', 'cosmetic', 'play_access', 'event_ticket')),
   availability: Schema.optional(Schema.Literal('live', 'preview', 'coming_soon')),
   acAmount: Schema.optional(Schema.Number.pipe(Schema.positive())),
   acPrice: Schema.optional(Schema.Number.pipe(Schema.int(), Schema.nonNegative())),

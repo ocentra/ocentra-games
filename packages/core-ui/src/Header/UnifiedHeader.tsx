@@ -543,7 +543,7 @@ function normalizeLayoutConfig(layout: UnifiedHeaderLayoutConfig): UnifiedHeader
     leftExpandedWidth: clampNumber(layout.leftExpandedWidth, 72, 240),
     leftCollapsedWidth: clampNumber(layout.leftCollapsedWidth, 40, 120),
     leftCollapseWidth: clampNumber(layout.leftCollapseWidth, 320, 1600),
-    centerWidth: clampNumber(layout.centerWidth, 96, 520),
+    centerWidth: clampNumber(layout.centerWidth, 56, 520),
     rightWidth: clampNumber(layout.rightWidth, 72, 300),
     rightCollapsedWidth: clampNumber(layout.rightCollapsedWidth, 40, 160),
     rightCollapseWidth: clampNumber(layout.rightCollapseWidth, 320, 1600),

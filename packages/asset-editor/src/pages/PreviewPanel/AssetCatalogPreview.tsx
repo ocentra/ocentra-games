@@ -92,7 +92,10 @@ import {
   type ShopTab,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces'
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter'
-import { createOcentraHeaderLogoConfig } from '@ocentra/core-ui/Header/createOcentraHeaderConfig'
+import {
+  createOcentraHeaderLogoConfig,
+  createShopMarketplaceHeaderLogoConfig,
+} from '@ocentra/core-ui/Header/createOcentraHeaderConfig'
 import { UnifiedHeader } from '@ocentra/core-ui/Header/UnifiedHeader'
 import type {
   SerializedUnifiedHeaderConfig,
@@ -100,6 +103,7 @@ import type {
 } from '@ocentra/core-ui/Header/UnifiedHeader.config'
 import { UnifiedPageShell } from '@ocentra/core-ui/Shell/UnifiedPageShell'
 import { mlogoImageUrl } from '@ocentra/app-assets/commons'
+import { shopPageMarketplaceLogoImageUrl } from '@ocentra/app-assets/shop-page'
 import {
   authAnnonImageUrl,
   authFacebookImageUrl,
@@ -687,6 +691,7 @@ const FEATURED_SHOWCASE_CONTROLS_ASSET_PATH =
   'virtual:AssetCatalog/FeaturedShowcaseControls'
 
 const ASSET_EDITOR_PREVIEW_APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.1.0'
+const SHOP_MARKETPLACE_HEADER_CONFIG = createShopMarketplaceHeaderLogoConfig(shopPageMarketplaceLogoImageUrl)
 const SELECTED_GAME_PLACEHOLDER_ART_URL = '/Resources/AppAssets/PlaceHolders/image0.jpg'
 const SELECTED_GAME_PLACEHOLDER_OVERVIEW_URL = '/Resources/AppAssets/PlaceHolders/image1.jpg'
 const GAME_CATALOG_INDEX_PATHS = [
@@ -1811,9 +1816,17 @@ function PageLayoutMainAppPreview({
   const routePath = document.routePath || '/'
   const kind = getPageLayoutKind(document)
   const headerDynamicData =
-    kind === 'lobby' && lobbySampleGameName
+    kind === 'shop'
+      ? undefined
+      : kind === 'lobby' && lobbySampleGameName
       ? { gameName: `${lobbySampleGameName} Lobby`, tagline: lobbyGameTagline ?? 'Create or join tables before a match starts.' }
       : getPageLayoutHeaderData(document)
+  const resolvedHeaderConfigOverride = useMemo(
+    () => kind === 'shop'
+      ? mergeHeaderConfigInput(headerConfigOverride, SHOP_MARKETPLACE_HEADER_CONFIG)
+      : headerConfigOverride,
+    [headerConfigOverride, kind]
+  )
   const [shopTab, setShopTab] = useState<ShopTab>('Treasury')
   const [settingsTab, setSettingsTab] = useState<'models' | 'inference' | 'providers' | 'native' | 'assets'>('models')
   const [adminSearch, setAdminSearch] = useState('')
@@ -2127,7 +2140,7 @@ function PageLayoutMainAppPreview({
   return (
     <AssetCatalogMainAppPreviewShell
       routePath={routePath}
-      headerConfigOverride={headerConfigOverride}
+      headerConfigOverride={resolvedHeaderConfigOverride}
       headerDynamicData={headerDynamicData}
       toolbar={toolbar}
       shellClassName={shellClassName}
