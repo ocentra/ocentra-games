@@ -22,7 +22,7 @@ import {
 } from '@/logic/assets/assets';
 import { AssetContentSlicePath } from '@ocentra/game-asset-domain/constants/content-slices';
 import type { EntryIndexDocument } from '@ocentra/game-asset-domain/schemas/entry-index-schema';
-import { getEntryIndexHash, readEntryIndex } from '@/logic/assets/entry-index-loader';
+import { clearEntryIndexRuntimeCache, getEntryIndexHash, readEntryIndex } from '@/logic/assets/entry-index-loader';
 import { buildScanResponseFromResources, buildSyncDiff } from '@/logic/assets/resources';
 import { buildR2PresignedGetUrl, canPresignR2AssetGet } from '@/logic/assets/r2-presigned-get';
 
@@ -191,6 +191,7 @@ export async function handleAssetsRequest(
     await env.ASSETS_BUCKET!.put(AssetContentSlicePath.EntryIndex, JSON.stringify(next), {
       httpMetadata: { contentType: HttpContentType.ApplicationJson },
     });
+    clearEntryIndexRuntimeCache();
     return jsonResponse(env, { ok: true }, HttpStatus.Ok);
   }
 

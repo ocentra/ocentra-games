@@ -28,8 +28,18 @@ export function preserveSeoFallbackForHydration(rootElement: HTMLElement): HTMLE
   parityRoot.setAttribute('data-ocentra-seo-parity', '');
   parityRoot.setAttribute('data-ocentra-seo-pathname', normalizePathname(window.location.pathname));
   parityRoot.setAttribute('aria-hidden', 'true');
+  parityRoot.style.position = 'fixed';
+  parityRoot.style.inset = '0 auto auto 0';
+  parityRoot.style.width = '1px';
+  parityRoot.style.height = '1px';
+  parityRoot.style.overflow = 'hidden';
+  parityRoot.style.clipPath = 'inset(50%)';
+  parityRoot.style.whiteSpace = 'nowrap';
+  parityRoot.style.pointerEvents = 'none';
+  parityRoot.style.opacity = '0';
 
   fallback.setAttribute('data-ocentra-seo-hydrated', 'preserved');
+  fallback.setAttribute('aria-hidden', 'true');
   fallback.querySelectorAll<HTMLElement>(focusableSelector).forEach((element) => {
     element.setAttribute('tabindex', '-1');
   });

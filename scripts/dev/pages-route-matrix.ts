@@ -391,15 +391,40 @@ async function clickFirstAvailable(page: Page, selectors: string[]): Promise<boo
   return false;
 }
 
+async function clickVisibleCenterFirstAvailable(page: Page, selectors: string[]): Promise<boolean> {
+  for (const selector of selectors) {
+    const locator = page.locator(selector).first();
+    if (await locator.count() === 0) {
+      continue;
+    }
+    await locator.waitFor({ state: 'visible', timeout: 10_000 }).catch(() => undefined);
+    const box = await locator.boundingBox().catch(() => null);
+    if (!box) {
+      continue;
+    }
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    return true;
+  }
+  return false;
+}
+
+async function waitForSelectedClaimRoute(page: Page): Promise<void> {
+  await page.waitForFunction(
+    ({ pathPrefix }) => globalThis.location.pathname.startsWith(pathPrefix),
+    { pathPrefix: buildPublicGamePath(CLAIM_GAME_ID) },
+    { timeout: 60_000 }
+  );
+}
+
 async function openClaimGameFromCatalog(page: Page): Promise<boolean> {
   await page.locator('.games-catalog-svg-showcase').waitFor({ state: 'attached', timeout: CARD_GAMES_ROUTE_TIMEOUT_MS }).catch(() => undefined);
 
   const searchDialog = page.waitForEvent('dialog', { timeout: 5_000 })
     .then((dialog) => dialog.accept('Claim'))
     .catch(() => undefined);
-  const searchedClaim = await clickFirstAvailable(page, [
+  const searchedClaim = await clickVisibleCenterFirstAvailable(page, [
+    'g[role="button"][aria-label="Search games"]',
     '[role="button"][aria-label="Search games"]',
-    '[aria-label="Search games"]',
   ]);
   if (searchedClaim) {
     await searchDialog;
@@ -410,22 +435,18 @@ async function openClaimGameFromCatalog(page: Page): Promise<boolean> {
     ).catch(() => undefined);
   }
 
-  const selectedClaim = await clickFirstAvailable(page, [
-    '[role="button"][aria-label="Select CLAIM"]',
-    '[role="button"][aria-label="Select Claim"]',
-    '[aria-label="Select CLAIM"]',
-    '[aria-label="Select Claim"]',
+  const selectedClaim = await clickVisibleCenterFirstAvailable(page, [
+    'g[role="button"][aria-label="Select CLAIM"]',
+    'g[role="button"][aria-label="Select Claim"]',
   ]);
   if (!selectedClaim) {
     return false;
   }
 
   await page.locator('#games-catalog-svg-detail-overlay').waitFor({ state: 'visible', timeout: 10_000 }).catch(() => undefined);
-  return clickFirstAvailable(page, [
+  return clickVisibleCenterFirstAvailable(page, [
+    'g[role="button"][aria-label="Game Page"]',
     '[role="button"][aria-label="Game Page"]',
-    '[aria-label="Game Page"]',
-    'svg text:has-text("Game Page")',
-    'text=Game Page',
   ]);
 }
 
@@ -482,6 +503,7 @@ async function runCatalogCacheCheck(browser: Browser, baseUrl: string, enforcePr
         timeout: 60_000,
       });
     }
+    await waitForSelectedClaimRoute(page);
     await waitForRouteBody(page, {
       name: 'selected game cache transition',
       path: buildPublicGamePath(CLAIM_GAME_ID),
@@ -491,21 +513,16 @@ async function runCatalogCacheCheck(browser: Browser, baseUrl: string, enforcePr
     await page.waitForTimeout(1_000);
 
     phase = 'returnCatalog';
-    const usedSpaReturnNavigation = await clickFirstAvailable(page, [
-      `a[href="${PublicRoutePath[PublicRouteKey.CardGamesCatalog]}"]`,
-      `a[href$="${PublicRoutePath[PublicRouteKey.CardGamesCatalog]}"]`,
-      'g#bottom-actions text',
-      'g#bottom-actions',
-      'button:has-text("Explore Card Games")',
-      'button:has-text("Explore Games")',
-      'button:has-text("Explore")',
-      '[role="button"]:has-text("Explore Card Games")',
-      '[role="button"]:has-text("Explore Games")',
-      '[role="button"]:has-text("Explore")',
-      'text=EXPLORE GAMES',
-      'svg text:has-text("EXPLORE GAMES")',
-    ]);
-    if (!usedSpaReturnNavigation) {
+    let usedSpaReturnNavigation = false;
+    try {
+      await page.goBack({ waitUntil: 'domcontentloaded', timeout: CARD_GAMES_ROUTE_TIMEOUT_MS });
+      await page.waitForFunction(
+        ({ path }) => globalThis.location.pathname === path,
+        { path: PublicRoutePath[PublicRouteKey.CardGamesCatalog] },
+        { timeout: CARD_GAMES_ROUTE_TIMEOUT_MS }
+      );
+      usedSpaReturnNavigation = true;
+    } catch {
       await page.goto(joinUrl(baseUrl, PublicRoutePath[PublicRouteKey.CardGamesCatalog]), {
         waitUntil: 'domcontentloaded',
         timeout: CARD_GAMES_ROUTE_TIMEOUT_MS,

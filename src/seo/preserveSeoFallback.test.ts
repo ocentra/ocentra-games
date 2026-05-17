@@ -24,6 +24,10 @@ describe('SEO fallback hydration preservation', () => {
     expect(parityRoot?.querySelector('[data-ocentra-seo-body="catalog"]')).toBeTruthy();
     expect(parityRoot?.querySelector('a')?.getAttribute('tabindex')).toBe('-1');
     expect(parityRoot?.getAttribute('aria-hidden')).toBe('true');
+    expect(parityRoot?.style.position).toBe('fixed');
+    expect(parityRoot?.style.clipPath).toBe('inset(50%)');
+    expect(parityRoot?.style.opacity).toBe('0');
+    expect(parityRoot?.querySelector('.ocentra-seo-fallback')?.getAttribute('aria-hidden')).toBe('true');
     expect(parityRoot?.getAttribute('data-ocentra-seo-pathname')).toBe('/');
   });
 
