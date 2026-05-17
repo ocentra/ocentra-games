@@ -1,0 +1,563 @@
+import { useMemo, useState, type CSSProperties, type Dispatch, type SetStateAction } from 'react';
+import {
+  DEFAULT_SHOP_PAGE_CONTENT,
+  normalizeShopPageContent,
+  type ShopPageContentData,
+  type ShopRightTabId,
+} from './ShopPageSvgContent';
+import type { ShopIcon, ShopQuest, ShopStaticItem, ShopTone, ShopVaultShowcaseGroup } from './ShopPageSvgData';
+import type { ShopTab } from './ShopPageSvgTypes';
+
+type ShopContentPanelTab = 'sectionCards' | 'offers' | 'vault' | 'quests' | 'rightPanel' | 'rawJson';
+type SectionListKey = 'featured' | 'categories';
+type OfferListKey = 'creditPacks' | 'passes';
+
+type ShopPageContentControlsPanelProps = {
+  content: ShopPageContentData;
+  onContentChange: Dispatch<SetStateAction<ShopPageContentData>>;
+  onSave?: (content: ShopPageContentData) => Promise<string | void> | string | void;
+};
+
+const shopTabs: ShopTab[] = ['Treasury', 'Elite', 'Vault', 'Play Access', 'Events'];
+const rightTabIds: ShopRightTabId[] = ['account', 'wallet', 'pass', 'events', 'recent'];
+const toneOptions: ShopTone[] = ['cyan', 'gold', 'violet', 'green', 'orange', 'silver', 'danger'];
+const iconOptions: ShopIcon[] = ['coins', 'crown', 'chest', 'cards', 'trophy', 'crate', 'shield', 'link', 'lock', 'cart'];
+const panelTabs: Array<{ id: ShopContentPanelTab; label: string }> = [
+  { id: 'sectionCards', label: 'Cards' },
+  { id: 'offers', label: 'Packs & Passes' },
+  { id: 'vault', label: 'Vault' },
+  { id: 'quests', label: 'Quests' },
+  { id: 'rightPanel', label: 'Right Panel' },
+  { id: 'rawJson', label: 'Raw JSON' },
+];
+
+function newShopItem(prefix: string): ShopStaticItem {
+  return {
+    title: `New ${prefix}`,
+    subtitle: 'Describe what this marketplace card unlocks.',
+    tone: 'cyan',
+    icon: 'crate',
+    badge: 'NEW',
+    imageUrl: '',
+    price: 'Coming Soon',
+    benefits: ['Add the first player-facing benefit.'],
+  };
+}
+
+function newQuest(): ShopQuest {
+  return {
+    key: `quest_${Date.now()}`,
+    group: 'New',
+    title: 'New Reward Quest',
+    reward: '+1 Spin',
+    cadence: 'Weekly',
+    tone: 'cyan',
+    icon: 'trophy',
+    action: 'Start',
+    imageUrl: '',
+    description: 'Describe the action a player completes.',
+    details: ['Add the first verification step.'],
+  };
+}
+
+function newVaultGroup(): ShopVaultShowcaseGroup {
+  return {
+    key: `vault-${Date.now()}`,
+    title: 'New Vault Group',
+    subtitle: 'Describe this vault collection.',
+    tone: 'cyan',
+    icon: 'crate',
+    badge: 'NEW',
+    heroImageUrl: '',
+    items: [newShopItem('Vault Item')],
+  };
+}
+
+function linesFromText(value: string): string[] {
+  return value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+}
+
+function clampIndex(index: number, length: number): number {
+  if (length <= 0) return 0;
+  return Math.max(0, Math.min(length - 1, index));
+}
+
+function reorder<T>(items: T[], index: number, delta: number): T[] {
+  const nextIndex = index + delta;
+  if (index < 0 || index >= items.length || nextIndex < 0 || nextIndex >= items.length) return items;
+  const next = [...items];
+  const [item] = next.splice(index, 1);
+  next.splice(nextIndex, 0, item);
+  return next;
+}
+
+const shellStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.75rem',
+  color: '#e0fbff',
+};
+
+const toolbarStyle: CSSProperties = {
+  display: 'flex',
+  gap: '0.5rem',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+};
+
+const tabButtonStyle = (active: boolean): CSSProperties => ({
+  appearance: 'none',
+  border: '1px solid rgba(84,226,255,.32)',
+  borderRadius: '0.45rem',
+  background: active ? 'rgba(84,226,255,.2)' : 'rgba(5,18,31,.72)',
+  color: active ? '#effcff' : '#bcecff',
+  padding: '0.42rem 0.62rem',
+  fontWeight: active ? 900 : 750,
+  cursor: 'pointer',
+});
+
+const cardStyle: CSSProperties = {
+  border: '1px solid rgba(84,226,255,.22)',
+  borderRadius: '0.55rem',
+  background: 'rgba(2,10,19,.66)',
+  padding: '0.75rem',
+  display: 'grid',
+  gap: '0.65rem',
+};
+
+const gridStyle: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(14rem, 1fr))',
+  gap: '0.65rem',
+};
+
+const labelStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.25rem',
+  color: '#d9f7ff',
+  fontSize: '0.78rem',
+  fontWeight: 800,
+};
+
+const inputStyle: CSSProperties = {
+  width: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  border: '1px solid rgba(84,226,255,.28)',
+  borderRadius: '0.4rem',
+  background: 'rgba(4,16,29,.92)',
+  color: '#f0fdff',
+  padding: '0.45rem 0.55rem',
+};
+
+const buttonStyle: CSSProperties = {
+  appearance: 'none',
+  border: '1px solid rgba(84,226,255,.36)',
+  borderRadius: '0.4rem',
+  background: 'rgba(7,28,44,.84)',
+  color: '#dcfbff',
+  padding: '0.42rem 0.58rem',
+  fontWeight: 850,
+  cursor: 'pointer',
+};
+
+const dangerButtonStyle: CSSProperties = {
+  ...buttonStyle,
+  borderColor: 'rgba(248,113,113,.44)',
+  color: '#fecaca',
+};
+
+function TextField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label style={labelStyle}>
+      {label}
+      <input style={inputStyle} value={value} onChange={event => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function TextAreaField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return (
+    <label style={labelStyle}>
+      {label}
+      <textarea style={{ ...inputStyle, minHeight: '6rem', resize: 'vertical' }} value={value} onChange={event => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function SelectField<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: T[]; onChange: (value: T) => void }) {
+  return (
+    <label style={labelStyle}>
+      {label}
+      <select style={inputStyle} value={value} onChange={event => onChange(event.target.value as T)}>
+        {options.map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
+    </label>
+  );
+}
+
+function ShopItemEditor({ item, onChange }: { item: ShopStaticItem; onChange: (item: ShopStaticItem) => void }) {
+  return (
+    <div style={gridStyle}>
+      <TextField label="Title" value={item.title} onChange={value => onChange({ ...item, title: value })} />
+      <TextField label="Subtitle" value={item.subtitle} onChange={value => onChange({ ...item, subtitle: value })} />
+      <TextField label="Badge" value={item.badge ?? ''} onChange={value => onChange({ ...item, badge: value })} />
+      <TextField label="Price / CTA" value={item.price ?? ''} onChange={value => onChange({ ...item, price: value })} />
+      <TextField label="Image URL" value={item.imageUrl} onChange={value => onChange({ ...item, imageUrl: value })} />
+      <SelectField label="Tone" value={item.tone} options={toneOptions} onChange={value => onChange({ ...item, tone: value })} />
+      <SelectField label="Icon" value={item.icon} options={iconOptions} onChange={value => onChange({ ...item, icon: value })} />
+      <TextAreaField label="Benefits" value={(item.benefits ?? []).join('\n')} onChange={value => onChange({ ...item, benefits: linesFromText(value) })} />
+    </div>
+  );
+}
+
+export function ShopPageContentControlsPanel({
+  content,
+  onContentChange,
+  onSave,
+}: ShopPageContentControlsPanelProps) {
+  const normalized = useMemo(() => normalizeShopPageContent(content), [content]);
+  const [activePanel, setActivePanel] = useState<ShopContentPanelTab>('sectionCards');
+  const [activeShopTab, setActiveShopTab] = useState<ShopTab>('Treasury');
+  const [sectionListKey, setSectionListKey] = useState<SectionListKey>('featured');
+  const [sectionItemIndex, setSectionItemIndex] = useState(0);
+  const [offerListKey, setOfferListKey] = useState<OfferListKey>('creditPacks');
+  const [offerItemIndex, setOfferItemIndex] = useState(0);
+  const [vaultGroupIndex, setVaultGroupIndex] = useState(0);
+  const [vaultItemIndex, setVaultItemIndex] = useState(0);
+  const [questIndex, setQuestIndex] = useState(0);
+  const [rightTabId, setRightTabId] = useState<ShopRightTabId>('account');
+  const [rightRowIndex, setRightRowIndex] = useState(0);
+  const [rawJson, setRawJson] = useState('');
+  const [status, setStatus] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const updateContent = (producer: (current: ShopPageContentData) => ShopPageContentData) => {
+    onContentChange(previous => normalizeShopPageContent(producer(normalizeShopPageContent(previous))));
+    setStatus('Unsaved content changes');
+  };
+
+  const sectionItems = normalized.sections[activeShopTab][sectionListKey] ?? [];
+  const safeSectionItemIndex = clampIndex(sectionItemIndex, sectionItems.length);
+  const selectedSectionItem = sectionItems[safeSectionItemIndex];
+  const offerItems = normalized[offerListKey];
+  const safeOfferItemIndex = clampIndex(offerItemIndex, offerItems.length);
+  const selectedOfferItem = offerItems[safeOfferItemIndex];
+  const vaultGroups = normalized.vaultShowcaseGroups;
+  const safeVaultGroupIndex = clampIndex(vaultGroupIndex, vaultGroups.length);
+  const selectedVaultGroup = vaultGroups[safeVaultGroupIndex];
+  const vaultItems = selectedVaultGroup?.items ?? [];
+  const safeVaultItemIndex = clampIndex(vaultItemIndex, vaultItems.length);
+  const selectedVaultItem = vaultItems[safeVaultItemIndex];
+  const safeQuestIndex = clampIndex(questIndex, normalized.quests.length);
+  const selectedQuest = normalized.quests[safeQuestIndex];
+  const rightRows = normalized.rightDetails[rightTabId] ?? [];
+  const safeRightRowIndex = clampIndex(rightRowIndex, rightRows.length);
+  const selectedRightRow = rightRows[safeRightRowIndex];
+  const selectedRightTab = normalized.rightTabs.find(tab => tab.id === rightTabId);
+
+  const updateSectionItems = (items: ShopStaticItem[]) => {
+    updateContent(current => ({
+      ...current,
+      sections: {
+        ...current.sections,
+        [activeShopTab]: {
+          ...current.sections[activeShopTab],
+          [sectionListKey]: items,
+        },
+      },
+    }));
+  };
+
+  const updateOfferItems = (items: ShopStaticItem[]) => {
+    updateContent(current => ({ ...current, [offerListKey]: items }));
+  };
+
+  const updateVaultGroups = (groups: ShopVaultShowcaseGroup[]) => {
+    updateContent(current => ({ ...current, vaultShowcaseGroups: groups }));
+  };
+
+  const updateQuests = (quests: ShopQuest[]) => {
+    updateContent(current => ({ ...current, quests }));
+  };
+
+  const handleSave = async () => {
+    if (!onSave || isSaving) return;
+    setIsSaving(true);
+    setStatus('Saving content...');
+    try {
+      const result = await onSave(normalized);
+      setStatus(result || 'Content saved');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Content save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <section style={shellStyle}>
+      <div style={toolbarStyle}>
+        <strong>Shop Content Authoring</strong>
+        <span style={{ flex: 1 }} />
+        <button type="button" style={buttonStyle} onClick={() => {
+          setRawJson(JSON.stringify(normalized, null, 2));
+          setActivePanel('rawJson');
+        }}>View JSON</button>
+        <button type="button" style={buttonStyle} onClick={() => onContentChange(normalizeShopPageContent(DEFAULT_SHOP_PAGE_CONTENT))}>Reset Content</button>
+        <button type="button" style={buttonStyle} disabled={isSaving} onClick={() => void handleSave()}>{isSaving ? 'Saving...' : 'Save Content'}</button>
+      </div>
+      <div style={toolbarStyle}>
+        {panelTabs.map(tab => (
+          <button key={tab.id} type="button" style={tabButtonStyle(activePanel === tab.id)} onClick={() => setActivePanel(tab.id)}>{tab.label}</button>
+        ))}
+      </div>
+      {status ? <div style={{ color: status.includes('saved') || status.includes('Saved') ? '#bbf7d0' : '#fde68a', fontSize: '0.82rem' }}>{status}</div> : null}
+
+      {activePanel === 'sectionCards' ? (
+        <div style={cardStyle}>
+          <div style={toolbarStyle}>
+            <SelectField label="Shop section" value={activeShopTab} options={shopTabs} onChange={(value) => {
+              setActiveShopTab(value);
+              setSectionItemIndex(0);
+            }} />
+            <SelectField label="Card list" value={sectionListKey} options={['featured', 'categories']} onChange={(value) => {
+              setSectionListKey(value);
+              setSectionItemIndex(0);
+            }} />
+          </div>
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => {
+              const next = [...sectionItems, newShopItem(`${activeShopTab} Card`)];
+              updateSectionItems(next);
+              setSectionItemIndex(next.length - 1);
+            }}>+ Card</button>
+            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
+              const next = [...sectionItems, { ...selectedSectionItem, title: `${selectedSectionItem.title} Copy` }];
+              updateSectionItems(next);
+              setSectionItemIndex(next.length - 1);
+            }}>Duplicate</button>
+            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
+              updateSectionItems(reorder(sectionItems, safeSectionItemIndex, -1));
+              setSectionItemIndex(clampIndex(safeSectionItemIndex - 1, sectionItems.length));
+            }}>Up</button>
+            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
+              updateSectionItems(reorder(sectionItems, safeSectionItemIndex, 1));
+              setSectionItemIndex(clampIndex(safeSectionItemIndex + 1, sectionItems.length));
+            }}>Down</button>
+            <button type="button" style={dangerButtonStyle} disabled={!selectedSectionItem} onClick={() => {
+              updateSectionItems(sectionItems.filter((_, index) => index !== safeSectionItemIndex));
+              setSectionItemIndex(clampIndex(safeSectionItemIndex - 1, sectionItems.length - 1));
+            }}>Remove</button>
+          </div>
+          <SelectField label="Selected card" value={String(safeSectionItemIndex)} options={sectionItems.map((_, index) => String(index))} onChange={value => setSectionItemIndex(Number(value))} />
+          {selectedSectionItem ? (
+            <ShopItemEditor item={selectedSectionItem} onChange={item => updateSectionItems(sectionItems.map((candidate, index) => index === safeSectionItemIndex ? item : candidate))} />
+          ) : <div>No cards yet.</div>}
+        </div>
+      ) : null}
+
+      {activePanel === 'offers' ? (
+        <div style={cardStyle}>
+          <div style={toolbarStyle}>
+            <SelectField label="Offer list" value={offerListKey} options={['creditPacks', 'passes']} onChange={(value) => {
+              setOfferListKey(value);
+              setOfferItemIndex(0);
+            }} />
+          </div>
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => {
+              const next = [...offerItems, newShopItem(offerListKey === 'creditPacks' ? 'Credit Pack' : 'Pass')];
+              updateOfferItems(next);
+              setOfferItemIndex(next.length - 1);
+            }}>+ Offer</button>
+            <button type="button" style={buttonStyle} disabled={!selectedOfferItem} onClick={() => {
+              const next = [...offerItems, { ...selectedOfferItem, title: `${selectedOfferItem.title} Copy` }];
+              updateOfferItems(next);
+              setOfferItemIndex(next.length - 1);
+            }}>Duplicate</button>
+            <button type="button" style={buttonStyle} disabled={!selectedOfferItem} onClick={() => {
+              updateOfferItems(reorder(offerItems, safeOfferItemIndex, -1));
+              setOfferItemIndex(clampIndex(safeOfferItemIndex - 1, offerItems.length));
+            }}>Up</button>
+            <button type="button" style={buttonStyle} disabled={!selectedOfferItem} onClick={() => {
+              updateOfferItems(reorder(offerItems, safeOfferItemIndex, 1));
+              setOfferItemIndex(clampIndex(safeOfferItemIndex + 1, offerItems.length));
+            }}>Down</button>
+            <button type="button" style={dangerButtonStyle} disabled={!selectedOfferItem} onClick={() => {
+              const next = offerItems.filter((_, index) => index !== safeOfferItemIndex);
+              updateOfferItems(next);
+              setOfferItemIndex(clampIndex(safeOfferItemIndex - 1, next.length));
+            }}>Remove</button>
+          </div>
+          <SelectField label="Selected offer" value={String(safeOfferItemIndex)} options={offerItems.map((_, index) => String(index))} onChange={value => setOfferItemIndex(Number(value))} />
+          {selectedOfferItem ? (
+            <ShopItemEditor item={selectedOfferItem} onChange={item => updateOfferItems(offerItems.map((candidate, index) => index === safeOfferItemIndex ? item : candidate))} />
+          ) : <div>No offers yet.</div>}
+        </div>
+      ) : null}
+
+      {activePanel === 'vault' ? (
+        <div style={cardStyle}>
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => {
+              const next = [...vaultGroups, newVaultGroup()];
+              updateVaultGroups(next);
+              setVaultGroupIndex(next.length - 1);
+              setVaultItemIndex(0);
+            }}>+ Vault Group</button>
+            <button type="button" style={dangerButtonStyle} disabled={!selectedVaultGroup} onClick={() => {
+              updateVaultGroups(vaultGroups.filter((_, index) => index !== safeVaultGroupIndex));
+              setVaultGroupIndex(clampIndex(safeVaultGroupIndex - 1, vaultGroups.length - 1));
+              setVaultItemIndex(0);
+            }}>Remove Group</button>
+          </div>
+          <SelectField label="Vault group" value={String(safeVaultGroupIndex)} options={vaultGroups.map((_, index) => String(index))} onChange={value => {
+            setVaultGroupIndex(Number(value));
+            setVaultItemIndex(0);
+          }} />
+          {selectedVaultGroup ? (
+            <>
+              <div style={gridStyle}>
+                <TextField label="Group key" value={selectedVaultGroup.key} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, key: value } : group))} />
+                <TextField label="Group title" value={selectedVaultGroup.title} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, title: value } : group))} />
+                <TextField label="Subtitle" value={selectedVaultGroup.subtitle} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, subtitle: value } : group))} />
+                <TextField label="Hero image URL" value={selectedVaultGroup.heroImageUrl} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, heroImageUrl: value } : group))} />
+                <SelectField label="Tone" value={selectedVaultGroup.tone} options={toneOptions} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, tone: value } : group))} />
+                <SelectField label="Icon" value={selectedVaultGroup.icon} options={iconOptions} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, icon: value } : group))} />
+              </div>
+              <div style={toolbarStyle}>
+                <button type="button" style={buttonStyle} onClick={() => {
+                  const nextItems = [...vaultItems, newShopItem('Vault Item')];
+                  updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, items: nextItems } : group));
+                  setVaultItemIndex(nextItems.length - 1);
+                }}>+ Vault Item</button>
+                <button type="button" style={dangerButtonStyle} disabled={!selectedVaultItem} onClick={() => {
+                  const nextItems = vaultItems.filter((_, index) => index !== safeVaultItemIndex);
+                  updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, items: nextItems } : group));
+                  setVaultItemIndex(clampIndex(safeVaultItemIndex - 1, nextItems.length));
+                }}>Remove Item</button>
+              </div>
+              <SelectField label="Selected vault item" value={String(safeVaultItemIndex)} options={vaultItems.map((_, index) => String(index))} onChange={value => setVaultItemIndex(Number(value))} />
+              {selectedVaultItem ? (
+                <ShopItemEditor item={selectedVaultItem} onChange={item => updateVaultGroups(vaultGroups.map((group, groupIndex) => groupIndex === safeVaultGroupIndex ? { ...group, items: vaultItems.map((candidate, itemIndex) => itemIndex === safeVaultItemIndex ? item : candidate) } : group))} />
+              ) : null}
+            </>
+          ) : <div>No vault groups yet.</div>}
+        </div>
+      ) : null}
+
+      {activePanel === 'quests' ? (
+        <div style={cardStyle}>
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => {
+              const next = [...normalized.quests, newQuest()];
+              updateQuests(next);
+              setQuestIndex(next.length - 1);
+            }}>+ Quest</button>
+            <button type="button" style={dangerButtonStyle} disabled={!selectedQuest} onClick={() => {
+              const next = normalized.quests.filter((_, index) => index !== safeQuestIndex);
+              updateQuests(next);
+              setQuestIndex(clampIndex(safeQuestIndex - 1, next.length));
+            }}>Remove Quest</button>
+          </div>
+          <SelectField label="Selected quest" value={String(safeQuestIndex)} options={normalized.quests.map((_, index) => String(index))} onChange={value => setQuestIndex(Number(value))} />
+          {selectedQuest ? (
+            <div style={gridStyle}>
+              <TextField label="Key" value={selectedQuest.key} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, key: value } : quest))} />
+              <TextField label="Group" value={selectedQuest.group} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, group: value } : quest))} />
+              <TextField label="Title" value={selectedQuest.title} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, title: value } : quest))} />
+              <TextField label="Reward" value={selectedQuest.reward} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, reward: value } : quest))} />
+              <TextField label="Cadence" value={selectedQuest.cadence} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, cadence: value } : quest))} />
+              <TextField label="Action" value={selectedQuest.action} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, action: value } : quest))} />
+              <TextField label="Image URL" value={selectedQuest.imageUrl} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, imageUrl: value } : quest))} />
+              <SelectField label="Tone" value={selectedQuest.tone} options={toneOptions} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, tone: value } : quest))} />
+              <SelectField label="Icon" value={selectedQuest.icon} options={iconOptions} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, icon: value } : quest))} />
+              <TextAreaField label="Description" value={selectedQuest.description} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, description: value } : quest))} />
+              <TextAreaField label="Details" value={selectedQuest.details.join('\n')} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, details: linesFromText(value) } : quest))} />
+            </div>
+          ) : <div>No quests yet.</div>}
+        </div>
+      ) : null}
+
+      {activePanel === 'rightPanel' ? (
+        <div style={cardStyle}>
+          <SelectField label="Right panel tab" value={rightTabId} options={rightTabIds} onChange={(value) => {
+            setRightTabId(value);
+            setRightRowIndex(0);
+          }} />
+          {selectedRightTab ? (
+            <div style={gridStyle}>
+              <TextField label="Tab title" value={selectedRightTab.title} onChange={value => updateContent(current => ({
+                ...current,
+                rightTabs: current.rightTabs.map(tab => tab.id === rightTabId ? { ...tab, title: value } : tab),
+              }))} />
+              <TextField label="Accent color" value={selectedRightTab.accent} onChange={value => updateContent(current => ({
+                ...current,
+                rightTabs: current.rightTabs.map(tab => tab.id === rightTabId ? { ...tab, accent: value } : tab),
+              }))} />
+            </div>
+          ) : null}
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => updateContent(current => ({
+              ...current,
+              rightDetails: {
+                ...current.rightDetails,
+                [rightTabId]: [...(current.rightDetails[rightTabId] ?? []), { label: 'New row', value: 'Value', detail: 'Describe this account preview row.' }],
+              },
+            }))}>+ Detail Row</button>
+            <button type="button" style={dangerButtonStyle} disabled={!selectedRightRow} onClick={() => updateContent(current => ({
+              ...current,
+              rightDetails: {
+                ...current.rightDetails,
+                [rightTabId]: (current.rightDetails[rightTabId] ?? []).filter((_, index) => index !== safeRightRowIndex),
+              },
+            }))}>Remove Row</button>
+          </div>
+          <SelectField label="Selected row" value={String(safeRightRowIndex)} options={rightRows.map((_, index) => String(index))} onChange={value => setRightRowIndex(Number(value))} />
+          {selectedRightRow ? (
+            <div style={gridStyle}>
+              <TextField label="Label" value={selectedRightRow.label} onChange={value => updateContent(current => ({
+                ...current,
+                rightDetails: {
+                  ...current.rightDetails,
+                  [rightTabId]: (current.rightDetails[rightTabId] ?? []).map((row, index) => index === safeRightRowIndex ? { ...row, label: value } : row),
+                },
+              }))} />
+              <TextField label="Value" value={selectedRightRow.value} onChange={value => updateContent(current => ({
+                ...current,
+                rightDetails: {
+                  ...current.rightDetails,
+                  [rightTabId]: (current.rightDetails[rightTabId] ?? []).map((row, index) => index === safeRightRowIndex ? { ...row, value } : row),
+                },
+              }))} />
+              <TextAreaField label="Detail" value={selectedRightRow.detail} onChange={value => updateContent(current => ({
+                ...current,
+                rightDetails: {
+                  ...current.rightDetails,
+                  [rightTabId]: (current.rightDetails[rightTabId] ?? []).map((row, index) => index === safeRightRowIndex ? { ...row, detail: value } : row),
+                },
+              }))} />
+            </div>
+          ) : <div>No detail rows yet.</div>}
+        </div>
+      ) : null}
+
+      {activePanel === 'rawJson' ? (
+        <div style={cardStyle}>
+          <TextAreaField label="Full shopContent JSON" value={rawJson || JSON.stringify(normalized, null, 2)} onChange={setRawJson} />
+          <div style={toolbarStyle}>
+            <button type="button" style={buttonStyle} onClick={() => setRawJson(JSON.stringify(normalized, null, 2))}>Refresh From Form</button>
+            <button type="button" style={buttonStyle} onClick={() => {
+              try {
+                onContentChange(normalizeShopPageContent(JSON.parse(rawJson)));
+                setStatus('Applied JSON');
+              } catch (error) {
+                setStatus(error instanceof Error ? error.message : 'Invalid JSON');
+              }
+            }}>Apply JSON</button>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}

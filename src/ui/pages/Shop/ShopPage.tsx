@@ -24,6 +24,7 @@ import {
   type ShopTab,
   type ShopVaultDeckPreviewItem,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
+import type { ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
 import type { ShopPageSvgControls } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
 import { Deck } from '@ocentra/game-asset-domain/card/deck/Deck';
 import { getEntryIndexResourceEntries } from '@/adapters/assets/EntryIndexService';
@@ -68,13 +69,21 @@ function findGuidByPath(resources: ResourceEntryRef[], path: string, assetType =
   ))?.guid ?? '';
 }
 
-async function loadShopPageLayoutControls(): Promise<Partial<ShopPageSvgControls> | undefined> {
+async function loadShopPageLayoutData(): Promise<{
+  controls?: Partial<ShopPageSvgControls>;
+  content?: Partial<ShopPageContentData>;
+}> {
   const resources = await getEntryIndexResourceEntries();
   const guid = findGuidByPath(resources, SHOP_PAGE_LAYOUT_ASSET_PATH, 'PageLayout');
-  if (!guid) return undefined;
+  if (!guid) return {};
   const layoutDocument = await loadRawAssetDocumentByGuid(guid, { cache: 'no-store' });
-  const controls = asRecord(dataOf(layoutDocument).shopControls);
-  return Object.keys(controls).length > 0 ? controls as Partial<ShopPageSvgControls> : undefined;
+  const data = dataOf(layoutDocument);
+  const controls = asRecord(data.shopControls);
+  const content = asRecord(data.shopContent);
+  return {
+    controls: Object.keys(controls).length > 0 ? controls as Partial<ShopPageSvgControls> : undefined,
+    content: Object.keys(content).length > 0 ? content as Partial<ShopPageContentData> : undefined,
+  };
 }
 
 function shopDeckTitleFromPath(path: string | undefined, fallback: string): string {
@@ -121,6 +130,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ShopTab>('Treasury');
   const [layoutControls, setLayoutControls] = useState<Partial<ShopPageSvgControls> | undefined>(undefined);
+  const [shopContent, setShopContent] = useState<Partial<ShopPageContentData> | undefined>(undefined);
   const [vaultDeckItems, setVaultDeckItems] = useState<ShopVaultDeckPreviewItem[]>([]);
 
   const appOrigin = getShopAppOrigin();
@@ -143,9 +153,12 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
 
   useEffect(() => {
     let cancelled = false;
-    void loadShopPageLayoutControls()
-      .then((controls) => {
-        if (!cancelled) setLayoutControls(controls);
+    void loadShopPageLayoutData()
+      .then((layoutData) => {
+        if (!cancelled) {
+          setLayoutControls(layoutData.controls);
+          setShopContent(layoutData.content);
+        }
       })
       .catch(() => undefined);
     return () => { cancelled = true; };
@@ -240,6 +253,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         onClearError={() => setError(null)}
         onBuy={handleProtectedBuy}
         layoutControls={layoutControls}
+        shopContent={shopContent}
         dailyRewardStatus={dailyRewardStatus}
         onDailyRewardSpin={handleDailyRewardSpin}
         vaultDeckItems={vaultDeckItems}

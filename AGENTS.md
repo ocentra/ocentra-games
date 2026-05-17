@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-16
+**Last Updated:** 2026-05-17
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -83,6 +83,7 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - **Fixed-target main launcher shortcuts:** `npm run dev:web`, `npm run dev:tauri`, `npm run dev:android`, and `npm run dev:ios` reuse the same interactive launcher with the target preselected when you want to skip the prompt.
 - **Compare presets:** `npm run dev:compare` starts the shared web stack and attaches the default compare set (`web`, `tauri`, `android`). Use `npm run dev:compare:web-tauri`, `npm run dev:compare:web-android`, or `npm run dev:compare:all` when you want a pinned compare target set.
 - **Interactive editor launcher:** `npm --prefix packages/asset-editor run dev` uses `scripts/dev/dev-editor-interactive.ts` when you need preset/local-vs-production backend selection, optional `.temp/dev-editor-output.log`, or `--force` Vite cache clearing before launch.
+- **Editor web-only launcher:** `npm --prefix packages/asset-editor run dev:web` starts the managed asset-editor Vite session on port `5174` after regenerating the inspector map; `npm run dev:editor:stack` uses this under the hood after shared prep and local worker bootstrap.
 - **Mobile stack launcher:** `npm run dev:android:stack` / `npm run dev:ios:stack` uses `scripts/dev/dev-mobile-full.ts` to ensure shared dev prep, start or reuse the local Cloudflare worker, and point mobile asset/storage URLs at the local worker. For Android emulator runs, the worker is exposed as `http://10.0.2.2:8787`.
 
 ### Domain Build Standard (No .js in Source)
@@ -237,6 +238,8 @@ npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
 npm run dev:editor:tauri # Root shortcut: plain cargo tauri dev from packages/asset-editor
 npm --prefix packages/asset-editor run dev:tauri # Direct editor Tauri launcher (stale-process cleanup, dedicated target dir)
 npm --prefix packages/asset-editor run dev # Interactive asset-editor launcher (backend/output presets, optional log/profile)
+npm --prefix packages/asset-editor run dev:web # Managed asset-editor Vite on 5174 with inspector-map refresh
+npm --prefix packages/asset-editor run maintenance:reset-local-cache # Clear the editor's local asset cache DB
 npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
 npm run dev:seed:assets:force # Force re-upload during local asset seeding
@@ -312,6 +315,8 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 - **Card-game asset work needs validation without dragging the whole repo first**: Start with the package-level tests that match the asset contract you changed, then run the root gate. Current proven path: `cmd /c npm --prefix packages/asset-editor run test -- src/adapters/assets/createGameModeBundle.test.ts`, `cmd /c npm --prefix packages/game-asset-domain run test -- src/game/gameMechanics/MechanicsTranslator.test.ts src/schemas/asset/card-game-mechanics-data.schema.test.ts`, then `cmd /c npm run lint`.
 
 - **`logs:main` / `logs:vite` says the DB is missing or stale**: Rebuild from NDJSON first with `npm run logs:db:rebuild -- --scope main`, `npm run logs:db:rebuild -- --scope vite`, or `npm run logs:db:rebuild -- --scope all`, then retry the query. For ad hoc filtering, use `npm run logs:query -- search "<term>" --scope main --format json`.
+
+- **Asset-editor local data looks stale after resource changes**: Run `npm --prefix packages/asset-editor run maintenance:reset-local-cache` to remove `packages/asset-editor/Resources/.index/assets.db`; the editor rebuilds it on next startup.
 
 - **Android launcher icon updates do not show up**: The icon generator now reads from `packages/app-assets/src/images/mobile-icons`, with the shared logo SVG in `packages/app-assets/src/images/commons/OcentraLogo.svg` as the source for regenerated icon art. After changing those assets, rerun `npm run generate:icons`.
 

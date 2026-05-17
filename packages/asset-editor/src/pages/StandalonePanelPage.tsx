@@ -84,6 +84,12 @@ import {
   type LobbyPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls';
 import { ShopPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgControlsPanel';
+import { ShopPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageContentControlsPanel';
+import {
+  DEFAULT_SHOP_PAGE_CONTENT,
+  normalizeShopPageContent,
+  type ShopPageContentData,
+} from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
 import {
   DEFAULT_SHOP_PAGE_SVG_CONTROLS,
   normalizeShopPageSvgControls,
@@ -3704,6 +3710,7 @@ const StandaloneLobbyPageLayoutControls: React.FC<{ assetPath: string }> = ({ as
 
 const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
+  const [content, setContent] = useState<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState('');
   const channelRef = useRef<BroadcastChannel | null>(null);
@@ -3714,6 +3721,7 @@ const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ ass
       .then(result => {
         if (cancelled) return;
         setControls(result.controls);
+        setContent(result.content);
       })
       .catch(error => {
         if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
@@ -3754,7 +3762,7 @@ const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ ass
   }, []);
 
   const handleSave = useCallback(async (nextControls: ShopPageSvgControls) => {
-    const savedControls = await saveShopPageLayoutControlsToDisk(nextControls, assetPath);
+    const savedControls = await saveShopPageLayoutControlsToDisk(nextControls, content, assetPath);
     setControls(savedControls);
     channelRef.current?.postMessage({
       type: 'update',
@@ -3762,7 +3770,20 @@ const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ ass
     } satisfies ShopPageLayoutControlsMessage);
     const syncResult = await syncSavedLayoutAssetToR2(assetPath);
     return syncResult.message;
-  }, [assetPath]);
+  }, [assetPath, content]);
+
+  const handleContentSave = useCallback(async (nextContent: ShopPageContentData) => {
+    const normalizedContent = normalizeShopPageContent(nextContent);
+    const savedControls = await saveShopPageLayoutControlsToDisk(controls, normalizedContent, assetPath);
+    setControls(savedControls);
+    setContent(normalizedContent);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: savedControls,
+    } satisfies ShopPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath, controls]);
 
   if (isLoading) {
     return <StandalonePanelLoading label="Loading shop layout controls" />;
@@ -3774,6 +3795,11 @@ const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ ass
         controls={controls}
         onControlsChange={updateControls}
         onSave={handleSave}
+      />
+      <ShopPageContentControlsPanel
+        content={content}
+        onContentChange={setContent}
+        onSave={handleContentSave}
       />
       {status && (
         <p className="standalone-panel-page__status">{status}</p>

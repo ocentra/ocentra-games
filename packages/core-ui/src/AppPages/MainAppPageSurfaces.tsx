@@ -9,6 +9,7 @@ import type {
 } from './AppPageSvgSurfaceControls';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
+import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
 import type { ShopProduct, ShopTab, ShopVaultDeckPreviewItem } from './Shop/ShopPageSvgTypes';
 import type {
   LobbyAddAISeatDraft,
@@ -159,6 +160,7 @@ type LobbyPageSurfaceControlProps = {
 
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
+  shopContent?: Partial<ShopPageContentData> | null;
 };
 
 function formatValue(value: unknown): string {
@@ -794,6 +796,7 @@ export function ShopPageContent({
   onClearError,
   onBuy,
   layoutControls,
+  shopContent,
   dailyRewardStatus,
   onDailyRewardSpin,
   vaultDeckItems,
@@ -825,6 +828,7 @@ export function ShopPageContent({
       onClearError={onClearError}
       onBuy={onBuy}
       controls={layoutControls}
+      content={shopContent}
       dailyRewardStatus={dailyRewardStatus}
       onDailyRewardSpin={onDailyRewardSpin}
       vaultDeckItems={vaultDeckItems}

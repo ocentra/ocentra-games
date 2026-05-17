@@ -4,6 +4,10 @@ import {
   normalizeShopPageSvgControls,
   type ShopPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
+import {
+  normalizeShopPageContent,
+  type ShopPageContentData,
+} from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
 import { readAsset, writeAsset } from '@/adapters/assets/TauriAssetAdapter';
 
 export const SHOP_PAGE_LAYOUT_ASSET_PATH =
@@ -11,6 +15,7 @@ export const SHOP_PAGE_LAYOUT_ASSET_PATH =
 
 export interface ShopPageLayoutAssetDocument extends PageLayoutDocument {
   shopControls?: Partial<ShopPageSvgControls>;
+  shopContent?: Partial<ShopPageContentData>;
 }
 
 interface AssetEnvelope {
@@ -38,11 +43,18 @@ export function normalizeShopPageLayoutControls(
   return normalizeShopPageSvgControls(document?.shopControls);
 }
 
+export function normalizeShopPageLayoutContent(
+  document: Partial<ShopPageLayoutAssetDocument> | null | undefined
+): ShopPageContentData {
+  return normalizeShopPageContent(document?.shopContent);
+}
+
 export async function loadShopPageLayoutControlsFromDisk(
   assetPath = SHOP_PAGE_LAYOUT_ASSET_PATH
 ): Promise<{
   envelope: AssetEnvelope;
   controls: ShopPageSvgControls;
+  content: ShopPageContentData;
 }> {
   const response = await readAsset(assetPath);
   if (!response.ok) {
@@ -52,18 +64,22 @@ export async function loadShopPageLayoutControlsFromDisk(
   return {
     envelope,
     controls: normalizeShopPageLayoutControls(envelope.data),
+    content: normalizeShopPageLayoutContent(envelope.data),
   };
 }
 
 export async function saveShopPageLayoutControlsToDisk(
   controls: ShopPageSvgControls,
+  content?: ShopPageContentData,
   assetPath = SHOP_PAGE_LAYOUT_ASSET_PATH
 ): Promise<ShopPageSvgControls> {
   const { envelope } = await loadShopPageLayoutControlsFromDisk(assetPath);
   const normalizedControls = normalizeShopPageSvgControls(controls);
+  const normalizedContent = content ? normalizeShopPageContent(content) : normalizeShopPageLayoutContent(envelope.data);
   const nextDocument: ShopPageLayoutAssetDocument = {
     ...envelope.data,
     shopControls: normalizedControls,
+    shopContent: normalizedContent,
   };
   const payload = new TextEncoder().encode(
     `${JSON.stringify({ ...envelope, data: nextDocument }, null, 2)}\n`
