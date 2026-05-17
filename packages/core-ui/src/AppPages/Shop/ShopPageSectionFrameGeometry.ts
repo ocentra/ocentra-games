@@ -69,9 +69,9 @@ export function mainBottomOverlayContentRect(
   w: number,
   h: number,
 ): { x: number; y: number; w: number; h: number } {
-  const stageX = 21;
+  const stageX = 18;
   const lineY = 44;
-  const bodyInsetX = 16;
+  const bodyInsetX = 10;
   const bodyY = lineY + 7;
   const footerY = h - 20;
   return {

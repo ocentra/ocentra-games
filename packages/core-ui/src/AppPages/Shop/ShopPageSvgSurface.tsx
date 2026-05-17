@@ -3,7 +3,6 @@ import {
   isShopProductPurchasable,
   productPriceLabel,
   productsForShopTab,
-  SHOP_TABS,
   type ShopIcon,
   type ShopQuest,
   type ShopStaticItem,
@@ -162,11 +161,6 @@ function tilesForTab(products: ShopProduct[], tab: ShopTab, content: ShopPageCon
     ];
   }
   return real.length > 0 ? real : tileFallbacks(tab, content);
-}
-
-function nextShopTab(tab: ShopTab): ShopTab {
-  const index = SHOP_TABS.indexOf(tab);
-  return SHOP_TABS[(index + 1) % SHOP_TABS.length];
 }
 
 function wrapPreviewIndex(value: number, count: number): number {
@@ -1361,8 +1355,7 @@ function MainBody({
   const topH = cfg.mainBody.topBoxH;
   const bottomH = resolvedSectionBottomY - y - topH - cfg.mainBody.boxGap;
   const bottomY = y + topH + cfg.mainBody.boxGap;
-  const bottomTab = nextShopTab(activeTab);
-  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? bottomTab;
+  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? activeTab;
 
   const openInfoDetail = (mode: 'arenaCredits' | 'eliteBenefits') => {
     setSelectedTileDetail(null);
