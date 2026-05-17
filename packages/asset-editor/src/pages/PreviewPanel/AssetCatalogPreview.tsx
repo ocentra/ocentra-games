@@ -1843,6 +1843,7 @@ function PageLayoutMainAppPreview({
         loadingId={null}
         error={null}
         acBalance={12450}
+        onTabChange={setShopTab}
         onClearError={() => undefined}
         onBuy={() => undefined}
         layoutControls={pageControls}

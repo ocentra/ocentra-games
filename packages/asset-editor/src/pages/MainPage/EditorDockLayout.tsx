@@ -72,7 +72,7 @@ const LockIcon: React.FC<{ locked: boolean }> = ({ locked }) => (
       </>
     )}
   </svg>
-)
+);
 
 const GamesIcon: React.FC = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -927,4 +927,4 @@ export const EditorDockLayout = forwardRef<EditorDockLayoutHandle>((_, ref) => {
   );
 });
 
-EditorDockLayout.displayName = 'EditorDockLayout'
+EditorDockLayout.displayName = 'EditorDockLayout';

@@ -8,13 +8,15 @@ import { IsolationComponentType } from '@ocentra/game-layout-domain/isolation-ty
 
 function extractAlphaFromRgba(color: string | undefined): number {
   if (!color) return 1;
-  const rgbaMatch = color.match(/^rgba?\(\s*([^)]+)\)/i);
-  if (!rgbaMatch) return 1;
-  const parts = rgbaMatch[1]
+  const trimmed = color.trim();
+  const lower = trimmed.toLowerCase();
+  const prefixLength = lower.startsWith('rgba(') ? 5 : lower.startsWith('rgb(') ? 4 : 0;
+  if (prefixLength === 0 || !trimmed.endsWith(')')) return 1;
+  const parts = trimmed.slice(prefixLength, -1)
     .split(',')
     .map((segment) => parseFloat(segment.trim()))
     .filter((value) => !Number.isNaN(value));
-  if (rgbaMatch[0].toLowerCase().startsWith('rgba') && parts.length === 4) {
+  if (lower.startsWith('rgba(') && parts.length === 4) {
     return Math.max(0, Math.min(1, parts[3]));
   }
   if (parts.length === 4) {
@@ -74,14 +76,20 @@ function parseColorStop(token: string): GradientStop | null {
     return null;
   }
 
-  const percentMatch = trimmed.match(/(-?\d*\.?\d+%)(?!.*-?\d*\.?\d+%)/);
-  if (percentMatch && percentMatch.index !== undefined) {
-    const offset = percentMatch[1];
-    const color = trimmed.slice(0, percentMatch.index).trim();
-    return {
-      color: color || 'transparent',
-      offset,
-    };
+  const percentIndex = trimmed.lastIndexOf('%');
+  if (percentIndex > 0) {
+    let start = percentIndex - 1;
+    while (start >= 0 && /[0-9.-]/.test(trimmed[start])) {
+      start -= 1;
+    }
+    const offset = trimmed.slice(start + 1, percentIndex + 1);
+    if (offset.length > 1) {
+      const color = trimmed.slice(0, start + 1).trim();
+      return {
+        color: color || 'transparent',
+        offset,
+      };
+    }
   }
 
   return {
@@ -99,12 +107,12 @@ function parseLinearGradient(value?: string | null): ParsedLinearGradient | null
   }
 
   const trimmed = value.trim();
-  const match = trimmed.match(/^linear-gradient\((.*)\)$/i);
-  if (!match) {
+  const prefix = 'linear-gradient(';
+  if (!trimmed.toLowerCase().startsWith(prefix) || !trimmed.endsWith(')')) {
     return null;
   }
 
-  const args = splitGradientArgs(match[1]);
+  const args = splitGradientArgs(trimmed.slice(prefix.length, -1));
   if (!args.length) {
     return null;
   }

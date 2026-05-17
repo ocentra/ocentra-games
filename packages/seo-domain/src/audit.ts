@@ -47,12 +47,15 @@ function resolveUrl(baseUrl: string, path: string): string {
 
 function normalizeAuditPath(value: string, baseUrl: string, allowExternalOrigin = false): string | null {
   const trimmed = value.trim();
-  if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('mailto:') || trimmed.startsWith('tel:') || trimmed.startsWith('javascript:')) {
+  if (!trimmed || trimmed.startsWith('#')) {
     return null;
   }
   try {
     const base = new URL(baseUrl);
     const url = new URL(trimmed, base);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return null;
+    }
     if (!allowExternalOrigin && url.origin !== base.origin) {
       return null;
     }
@@ -74,11 +77,11 @@ function normalizeAuditPath(value: string, baseUrl: string, allowExternalOrigin 
 
 function decodeXmlText(value: string): string {
   return value
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&');
 }
 
 function parseSitemapLinks(body: string, baseUrl: string, maxUrls: number): string[] {

@@ -66,6 +66,14 @@ function escapeJsonForHtml(value: SeoStructuredData): string {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+function insertBeforeClosingHead(html: string, value: string): string {
+  const closeHeadIndex = html.lastIndexOf('</head>');
+  if (closeHeadIndex < 0) {
+    return html;
+  }
+  return `${html.slice(0, closeHeadIndex)}${value}${html.slice(closeHeadIndex)}`;
+}
+
 function uniqueStructuredData(items: SeoStructuredData[]): SeoStructuredData[] {
   const seen = new Set<string>();
   const result: SeoStructuredData[] = [];
@@ -745,8 +753,8 @@ export function injectSeoIntoHtml(html: string, metadata: RouteSeoMetadata): str
     .replace(titlePattern, `<title>${escapeHtml(metadata.title)}</title>`);
   const titled = titlePattern.test(cleaned)
     ? cleaned
-    : cleaned.replace('</head>', `    <title>${escapeHtml(metadata.title)}</title>\n  </head>`);
-  const withHead = titled.replace('</head>', `    ${renderSeoHead(metadata)}\n  </head>`);
+    : insertBeforeClosingHead(cleaned, `    <title>${escapeHtml(metadata.title)}</title>\n  `);
+  const withHead = insertBeforeClosingHead(titled, `    ${renderSeoHead(metadata)}\n  `);
   const bodyFallback = renderSeoBodyFallback(metadata);
   const rootHtml = bodyFallback ? `<div id="root">${bodyFallback}</div>` : '<div id="root"></div>';
   if (managedSeoRootPattern.test(withHead)) {

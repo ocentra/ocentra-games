@@ -26,10 +26,17 @@ export interface BuildTreeFromPathsOptions {
 }
 
 function normalizeResourcePath(rawPath: string): string {
-  return rawPath
-    .replace(/^\/+/, '')
-    .replace(/^Resources\//, '')
-    .replace(/\/+$/, '');
+  let normalized = rawPath;
+  while (normalized.startsWith('/')) {
+    normalized = normalized.slice(1);
+  }
+  if (normalized.startsWith('Resources/')) {
+    normalized = normalized.slice('Resources/'.length);
+  }
+  while (normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+  return normalized;
 }
 
 function createRootNode(name: string, path: string): FlatNode {
