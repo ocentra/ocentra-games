@@ -129,6 +129,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         loadingId={loadingId}
         error={error}
         acBalance={acBalance}
+        onTabChange={setActiveTab}
         onClearError={() => setError(null)}
         onBuy={handleProtectedBuy}
       />
