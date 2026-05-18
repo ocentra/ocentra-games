@@ -1527,8 +1527,13 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                   fontFamily="Arial, sans-serif"
                   fontSize={rightActionTextSize}
                   fontWeight="800"
-                  fill={rightActionEnabled ? '#dff8ff' : '#9bd9ff'}
+                  fill={rightActionEnabled ? '#f7feff' : '#bfeaff'}
                   opacity={rightActionEnabled ? 0.96 : 0.64}
+                  stroke="#020813"
+                  strokeOpacity={rightActionEnabled ? 0.92 : 0.56}
+                  strokeWidth={Math.max(1.8, rightActionTextSize * 0.22)}
+                  strokeLinejoin="round"
+                  paintOrder="stroke fill"
                 >
                   {rightActionLabel}
                 </text>
