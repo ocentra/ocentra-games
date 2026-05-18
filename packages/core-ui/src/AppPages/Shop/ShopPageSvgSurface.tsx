@@ -116,6 +116,8 @@ const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
 const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
 const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
 
+type VaultGridFrameArtMode = 'cards' | 'table';
+
 function shopDeckImagePathToBrowserUrl(path?: string): string | null {
   if (!path) return null;
   const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
@@ -834,6 +836,123 @@ function BottomDetailCardsLayer({
   );
 }
 
+function vaultTableThemePaints(cfg: ShopPageSvgControls, variantKey: string) {
+  const variant = variantKey.toLowerCase();
+  if (variant.includes('tournament')) {
+    return {
+      railDark: '#07192c',
+      railMid: '#265473',
+      railLight: cfg.colors.activeBlue,
+      railEdge: '#c6f5ff',
+      feltDark: '#042d37',
+      feltMid: '#0b627d',
+      feltLight: '#23d6c4',
+      line: '#d8fbff',
+    };
+  }
+  if (variant.includes('club')) {
+    return {
+      railDark: '#261902',
+      railMid: '#665016',
+      railLight: cfg.colors.gold,
+      railEdge: '#ffe9a8',
+      feltDark: '#063322',
+      feltMid: '#0a6a43',
+      feltLight: cfg.colors.green,
+      line: '#c7ffe8',
+    };
+  }
+  if (variant.includes('night')) {
+    return {
+      railDark: '#140923',
+      railMid: '#4a2470',
+      railLight: cfg.colors.violet,
+      railEdge: '#e2c3ff',
+      feltDark: '#03172c',
+      feltMid: '#0b355b',
+      feltLight: '#209ce8',
+      line: '#c7ecff',
+    };
+  }
+  return {
+    railDark: '#341707',
+    railMid: '#8b4e16',
+    railLight: '#f3bd61',
+    railEdge: '#ffe39c',
+    feltDark: '#07372f',
+    feltMid: '#09745d',
+    feltLight: '#18c99a',
+    line: '#b5fff0',
+  };
+}
+
+function vaultTableThemePaintId(x: number, y: number, variantKey: string, suffix: string) {
+  const normalized = variantKey.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'default';
+  return `shopVaultTable-${normalized}-${Math.round(x)}-${Math.round(y)}-${suffix}`;
+}
+
+function VaultTableThemeArt({
+  x,
+  y,
+  w,
+  h,
+  accent,
+  cfg,
+  variantKey,
+  active,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  accent: string;
+  cfg: ShopPageSvgControls;
+  variantKey: string;
+  active: boolean;
+}) {
+  const paints = vaultTableThemePaints(cfg, variantKey);
+  const railId = vaultTableThemePaintId(x, y, variantKey, 'rail');
+  const feltId = vaultTableThemePaintId(x, y, variantKey, 'felt');
+  const tableW = Math.max(40, w);
+  const tableH = Math.max(26, Math.min(h * 0.82, tableW * 0.44));
+  const tableX = x + (w - tableW) / 2;
+  const tableY = y + (h - tableH) / 2;
+  const radius = Math.min(tableW, tableH) / 2;
+  const innerInset = Math.max(5, Math.min(tableW, tableH) * 0.15);
+  const feltInset = innerInset + Math.max(4, Math.min(tableW, tableH) * 0.08);
+  const outerPath = lobbyRoundedRectPath(tableX, tableY, tableW, tableH, radius);
+  const railInnerPath = lobbyRoundedRectPath(tableX + innerInset, tableY + innerInset, tableW - innerInset * 2, tableH - innerInset * 2, Math.max(2, radius - innerInset * 0.8));
+  const feltPath = lobbyRoundedRectPath(tableX + feltInset, tableY + feltInset, tableW - feltInset * 2, tableH - feltInset * 2, Math.max(2, radius - feltInset * 0.74));
+  const strokeW = Math.max(1.2, Math.min(3.2, tableH * 0.07));
+  const centerX = tableX + tableW / 2;
+  const centerY = tableY + tableH / 2;
+  return (
+    <g pointerEvents="none">
+      <defs>
+        <linearGradient id={railId} x1={tableX} x2={tableX + tableW} y1={tableY} y2={tableY + tableH} gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={paints.railEdge} />
+          <stop offset="15%" stopColor={paints.railLight} />
+          <stop offset="43%" stopColor={paints.railMid} />
+          <stop offset="78%" stopColor={paints.railDark} />
+          <stop offset="100%" stopColor={paints.railLight} />
+        </linearGradient>
+        <radialGradient id={feltId} cx={centerX} cy={tableY + tableH * 0.38} r={Math.max(tableW, tableH) * 0.55} gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={paints.feltLight} />
+          <stop offset="45%" stopColor={paints.feltMid} />
+          <stop offset="100%" stopColor={paints.feltDark} />
+        </radialGradient>
+      </defs>
+      <ellipse cx={centerX} cy={tableY + tableH + Math.max(3, tableH * 0.08)} rx={tableW * 0.42} ry={Math.max(4, tableH * 0.1)} fill="#000000" opacity={active ? 0.36 : 0.24} filter="url(#shopSoftGlow)" />
+      <path d={outerPath} fill={`url(#${railId})`} stroke={paints.railEdge} strokeWidth={strokeW} strokeOpacity={active ? 0.98 : 0.86} />
+      <path d={outerPath} fill="none" stroke={accent} strokeWidth="1.2" strokeOpacity={active ? 0.54 : 0.28} filter={active ? 'url(#shopSoftGlow)' : undefined} />
+      <path d={railInnerPath} fill={cfg.colors.headerFill} stroke={paints.railLight} strokeWidth={Math.max(1, strokeW * 0.7)} strokeOpacity="0.84" />
+      <path d={feltPath} fill={`url(#${feltId})`} stroke={paints.line} strokeWidth={Math.max(1, strokeW * 0.68)} strokeOpacity={active ? 0.92 : 0.76} />
+      <path d={`M ${centerX} ${tableY + feltInset + 3} V ${tableY + tableH - feltInset - 3}`} stroke={paints.line} strokeWidth={Math.max(0.8, strokeW * 0.36)} strokeOpacity="0.34" strokeDasharray="4 4" />
+      <ellipse cx={centerX} cy={centerY} rx={Math.max(7, tableW * 0.08)} ry={Math.max(2.5, tableH * 0.06)} fill={alphaColor(accent, active ? 0.28 : 0.18)} stroke={paints.line} strokeWidth=".8" strokeOpacity="0.48" />
+    </g>
+  );
+}
+
 function VaultGridFrame({
   x,
   y,
@@ -845,6 +964,8 @@ function VaultGridFrame({
   deckPrice,
   sampleCards = [],
   resolveDeckImageUrl,
+  artMode = 'cards',
+  variantKey,
   onClick,
 }: {
   x: number;
@@ -857,6 +978,8 @@ function VaultGridFrame({
   deckPrice?: string;
   sampleCards?: ShopDeckPreviewCard[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
+  artMode?: VaultGridFrameArtMode;
+  variantKey?: string;
   onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -902,38 +1025,42 @@ function VaultGridFrame({
           <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 3} textAnchor="middle" fill={cfg.colors.bodyText} fontSize={Math.max(6.6, Math.min(8.2, badgeW / 6.8))} fontWeight="950" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">EXPAND</text>
         </g>
       ) : null}
-      {[0, 1, 2].map((cardIndex) => {
-        const rotate = [-9, 0, 9][cardIndex];
-        const cardX = cardStartX + cardIndex * cardW * 0.72;
-        const card = sampleCards[cardIndex];
-        const imageUrl = card ? resolveShopDeckImageUrl(resolveDeckImageUrl, card.imageHash, card.imagePath) : null;
-        const clipId = `shopVaultDeckCardClip-${Math.round(x)}-${Math.round(y)}-${cardIndex}`;
-        return (
-          <g key={cardIndex} transform={`rotate(${rotate} ${cardX + cardW / 2} ${cardY + cardH / 2})`}>
-            <rect x={cardX} y={cardY} width={cardW} height={cardH} rx={cfg.componentTokens.sectionFrame.contentRadius / 2} fill={cfg.colors.headerFillAlt} stroke={edge} strokeWidth="1" strokeOpacity={hovered ? 0.92 : 0.72} />
-            <clipPath id={clipId}>
-              <rect x={cardX + 3} y={cardY + 4} width={cardW - 6} height={cardH - 8} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} />
-            </clipPath>
-            {imageUrl ? (
-              <image
-                href={imageUrl}
-                x={cardX + 3}
-                y={cardY + 4}
-                width={cardW - 6}
-                height={cardH - 8}
-                preserveAspectRatio="xMidYMid meet"
-                clipPath={`url(#${clipId})`}
-              />
-            ) : (
-              <g>
-                <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".22" strokeDasharray="3 3" />
-                <text x={cardX + cardW / 2} y={cardY + cardH / 2 - 2} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">Missing</text>
-                <text x={cardX + cardW / 2} y={cardY + cardH / 2 + 6} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">image</text>
-              </g>
-            )}
-          </g>
-        );
-      })}
+      {artMode === 'table' ? (
+        <VaultTableThemeArt x={x + 14} y={y + 15} w={w - 28} h={Math.max(24, h - labelH - 25)} accent={edge} cfg={cfg} variantKey={variantKey ?? label} active={hovered} />
+      ) : (
+        [0, 1, 2].map((cardIndex) => {
+          const rotate = [-9, 0, 9][cardIndex];
+          const cardX = cardStartX + cardIndex * cardW * 0.72;
+          const card = sampleCards[cardIndex];
+          const imageUrl = card ? resolveShopDeckImageUrl(resolveDeckImageUrl, card.imageHash, card.imagePath) : null;
+          const clipId = `shopVaultDeckCardClip-${Math.round(x)}-${Math.round(y)}-${cardIndex}`;
+          return (
+            <g key={cardIndex} transform={`rotate(${rotate} ${cardX + cardW / 2} ${cardY + cardH / 2})`}>
+              <rect x={cardX} y={cardY} width={cardW} height={cardH} rx={cfg.componentTokens.sectionFrame.contentRadius / 2} fill={cfg.colors.headerFillAlt} stroke={edge} strokeWidth="1" strokeOpacity={hovered ? 0.92 : 0.72} />
+              <clipPath id={clipId}>
+                <rect x={cardX + 3} y={cardY + 4} width={cardW - 6} height={cardH - 8} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} />
+              </clipPath>
+              {imageUrl ? (
+                <image
+                  href={imageUrl}
+                  x={cardX + 3}
+                  y={cardY + 4}
+                  width={cardW - 6}
+                  height={cardH - 8}
+                  preserveAspectRatio="xMidYMid meet"
+                  clipPath={`url(#${clipId})`}
+                />
+              ) : (
+                <g>
+                  <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".22" strokeDasharray="3 3" />
+                  <text x={cardX + cardW / 2} y={cardY + cardH / 2 - 2} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">Missing</text>
+                  <text x={cardX + cardW / 2} y={cardY + cardH / 2 + 6} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">image</text>
+                </g>
+              )}
+            </g>
+          );
+        })
+      )}
       <rect x={x + 1} y={y + h - labelH - 1} width={w - 2} height={labelH} rx={cfg.svgDefaults.roundedNone} fill={cfg.colors.tileFooterFill} stroke={edge} strokeWidth=".7" strokeOpacity={hovered ? 0.72 : 0.34} />
       {label ? (
         <text x={x + w / 2} y={y + h - labelH / 2} fill={hovered ? edge : cfg.colors.bodyText} fontSize={Math.max(7, Math.min(9.5, w / Math.max(12, label.length * 0.62)))} fontWeight="900" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
@@ -1104,6 +1231,7 @@ function VaultShowcaseLayer({
   const isProfileFrameGrid = activeGroup.key === 'frames';
   const isDeckGrid = activeGroup.key === 'decks';
   const isLimitedPlaceholderGrid = activeGroup.key === 'card-backs' || activeGroup.key === 'table-themes';
+  const gridFrameArtMode: VaultGridFrameArtMode = activeGroup.key === 'table-themes' ? 'table' : 'cards';
   const isSelectableCircleGrid = isAvatarGrid || isProfileFrameGrid;
   const selectableCircleImages = isAvatarGrid ? avatarImageUrls : isProfileFrameGrid ? activeGroup.items.map(item => item.imageUrl).filter(Boolean) : [];
   const deckItems = isDeckGrid ? deckPreviews : [];
@@ -1256,6 +1384,8 @@ function VaultShowcaseLayer({
                 deckPrice={deckItem?.price}
                 sampleCards={deckItem?.sampleCards}
                 resolveDeckImageUrl={resolveDeckImageUrl}
+                artMode={gridFrameArtMode}
+                variantKey={frameLabel}
                 onClick={deckItem ? () => onDeckInspect?.(deckItem) : undefined}
               />
             );
