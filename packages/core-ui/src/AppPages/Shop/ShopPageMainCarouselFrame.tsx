@@ -854,9 +854,8 @@ function ShopMainCarouselCard({
   const bodyBadgeX = x + width - contentRailInset - bodyBadgeW;
   const bodyBadgeY = y + height - Math.max(5, 6 * scale) - bodyBadgeH;
   const imageInset = imageOnlyCard ? Math.max(7, contentRailInset * 0.55) : 1 * scale;
-  const imageCardBadgeReserve = imageOnlyCard && bodyBadgeW > 0 ? bodyBadgeW + Math.max(8, 9 * scale) : 0;
   const imageX = x + imageInset;
-  const imageW = Math.max(24, width - imageInset * 2 - imageCardBadgeReserve);
+  const imageW = Math.max(24, width - imageInset * 2);
   const imageCardTopPad = Math.max(3, 4 * scale);
   const imageCardBottomPad = Math.max(4, 5 * scale);
   const imageH = imageOnlyCard
