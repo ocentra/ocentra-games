@@ -168,6 +168,14 @@ function wrapPreviewIndex(value: number, count: number): number {
   return ((value % count) + count) % count;
 }
 
+function nextSidePanelTab(tab: ShopTab, content: ShopPageContentData): ShopTab {
+  const sideTabs = content.sideItems.map(item => item.key);
+  if (sideTabs.length === 0) return tab;
+  const currentIndex = sideTabs.indexOf(tab);
+  const nextIndex = currentIndex >= 0 ? currentIndex + 1 : 0;
+  return sideTabs[nextIndex % sideTabs.length] ?? tab;
+}
+
 function staticItemToPreviewItem(item: ShopStaticItem, index: number, prefix: string): PreviewPanelItem {
   return {
     key: `${prefix}-${item.title}-${index}`,
@@ -1355,7 +1363,7 @@ function MainBody({
   const topH = cfg.mainBody.topBoxH;
   const bottomH = resolvedSectionBottomY - y - topH - cfg.mainBody.boxGap;
   const bottomY = y + topH + cfg.mainBody.boxGap;
-  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? activeTab;
+  const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? nextSidePanelTab(activeTab, content);
 
   const openInfoDetail = (mode: 'arenaCredits' | 'eliteBenefits') => {
     setSelectedTileDetail(null);
@@ -1978,6 +1986,7 @@ export function ShopPageSvgSurface({
     setInfoRequest(null);
     setBottomPreviewTarget(null);
     setRightDetailTarget(null);
+    setBottomPreviewVersion(version => version + 1);
     onTabChange(tab);
   };
 
@@ -1991,7 +2000,8 @@ export function ShopPageSvgSurface({
       return;
     }
     setSpecialView(null);
-    setBottomPreviewTarget(row.tab);
+    setBottomPreviewTarget(null);
+    onTabChange(row.tab);
     setBottomPreviewVersion(version => version + 1);
   };
 
