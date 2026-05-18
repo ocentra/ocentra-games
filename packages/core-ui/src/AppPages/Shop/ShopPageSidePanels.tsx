@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HeaderBar, InfoRow, Panel, ProductImage, SvgButton, Txt, WrappedText } from './ShopPageSvgPrimitives';
+import { HeaderBar, Panel, SvgButton, Txt, WrappedText } from './ShopPageSvgPrimitives';
 import {
   SHOP_EARN_FREE_AC_IMAGE_URL,
   type ShopRightTab,
@@ -8,11 +8,11 @@ import {
 import type { ShopPageContentData } from './ShopPageSvgContent';
 import { bottomRoundedRectPath, toneColor, topRoundedRectPath } from './ShopPageSvgGeometry';
 import type { ShopPageSvgControls } from './ShopPageSvgSurfaceControls';
-import type { ShopTab } from './ShopPageSvgTypes';
+import type { ShopAccountSummary, ShopTab } from './ShopPageSvgTypes';
 import { alphaColor, fitSingleLineTextSize } from './ShopPageSvgUtils';
 import { TransparentAssetImage } from './ShopPageAssetArtwork';
-import { SectionFrame } from './ShopPageSectionFrame';
-import { sectionFrameContentRect } from './ShopPageSectionFrameGeometry';
+import { MainBottom } from './ShopPageMainBottom';
+import { mainBottomOverlayContentRect } from './ShopPageSectionFrameGeometry';
 import { roundedRectPath as lobbyRoundedRectPath } from '../Lobby/LobbyPageSvgGeometry';
 
 export type ShopRightTabId = ShopRightTab['id'];
@@ -47,6 +47,116 @@ function rightPanelDetailRows(id: ShopRightTabId, acBalance: number, content: Sh
     }));
   }
   return content.rightDetails[id] ?? content.rightDetails.account;
+}
+
+function rightPanelFullTitle(id: ShopRightTabId, content: ShopPageContentData): string {
+  return rightPanelMeta(id, content).title.replace(/\s+PREVIEW$/i, '');
+}
+
+function accountDisplayName(accountSummary?: ShopAccountSummary | null): string {
+  return accountSummary?.displayName?.trim() || 'ocentra';
+}
+
+function accountEmail(accountSummary?: ShopAccountSummary | null): string {
+  return accountSummary?.email?.trim() || (accountSummary?.isGuest ? 'Guest profile' : 'Marketplace profile');
+}
+
+function accountInitials(accountSummary?: ShopAccountSummary | null): string {
+  const source = accountDisplayName(accountSummary) || accountEmail(accountSummary);
+  const initials = source
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? '')
+    .join('');
+  return initials || 'OC';
+}
+
+function AccountProfileAvatar({
+  x,
+  y,
+  size,
+  accountSummary,
+  accent,
+  cfg,
+}: {
+  x: number;
+  y: number;
+  size: number;
+  accountSummary?: ShopAccountSummary | null;
+  accent: string;
+  cfg: ShopPageSvgControls;
+}) {
+  const [failedPhotoUrl, setFailedPhotoUrl] = useState<string | null>(null);
+  const clipId = `shop-account-avatar-${Math.round(x)}-${Math.round(y)}-${Math.round(size)}`;
+  const photoUrl = accountSummary?.photoUrl?.trim() ?? '';
+  const showPhoto = Boolean(photoUrl) && failedPhotoUrl !== photoUrl;
+  return (
+    <g>
+      <defs>
+        <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+          <circle cx={x + size / 2} cy={y + size / 2} r={size / 2 - 1} />
+        </clipPath>
+      </defs>
+      <circle cx={x + size / 2} cy={y + size / 2} r={size / 2} fill={alphaColor(accent, 0.22)} stroke={accent} strokeWidth="1.2" filter="url(#shopSoftGlow)" />
+      {showPhoto ? (
+        <image href={photoUrl} x={x} y={y} width={size} height={size} preserveAspectRatio="xMidYMid meet" clipPath={`url(#${clipId})`} onError={() => setFailedPhotoUrl(photoUrl)} />
+      ) : (
+        <Txt x={x + size / 2} y={y + size / 2 + size * 0.12} anchor="middle" size={Math.max(12, size * 0.34)} weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{accountInitials(accountSummary)}</Txt>
+      )}
+      <circle cx={x + size / 2} cy={y + size / 2} r={size / 2 - 1} fill="none" stroke={cfg.colors.bodyText} strokeOpacity="0.5" strokeWidth="0.9" />
+    </g>
+  );
+}
+
+function AccountSummaryBand({
+  x,
+  y,
+  w,
+  h,
+  accountSummary,
+  accent,
+  cfg,
+  compact = false,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  accountSummary?: ShopAccountSummary | null;
+  accent: string;
+  cfg: ShopPageSvgControls;
+  compact?: boolean;
+}) {
+  const avatarSize = Math.max(compact ? 34 : 54, Math.min(compact ? 44 : 66, h - 10));
+  const avatarX = x + 10;
+  const avatarY = y + h / 2 - avatarSize / 2;
+  const textX = avatarX + avatarSize + 12;
+  const name = accountDisplayName(accountSummary);
+  const email = accountEmail(accountSummary);
+  const chips = [
+    accountSummary?.eloRating ? `ELO ${accountSummary.eloRating}` : 'ELO 1200',
+    accountSummary?.gamesPlayed !== undefined ? `${accountSummary.gamesPlayed} games` : 'Tracked profile',
+    accountSummary?.winRate !== undefined ? `${accountSummary.winRate.toFixed(1)}% win` : 'Linked account',
+  ];
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx={8} fill={alphaColor(accent, 0.12)} stroke={accent} strokeWidth="1.1" strokeOpacity="0.56" />
+      <AccountProfileAvatar x={avatarX} y={avatarY} size={avatarSize} accountSummary={accountSummary} accent={accent} cfg={cfg} />
+      <Txt x={textX} y={y + (compact ? 21 : 25)} size={compact ? 11.2 : 15.2} weight="950" fill={accent} cfg={cfg}>{name}</Txt>
+      <WrappedText x={textX} y={y + (compact ? 35 : 43)} width={Math.max(90, w - (textX - x) - 12)} lines={email} size={compact ? 7.1 : 9.5} lineHeight={compact ? 7.7 : 10.5} fill={cfg.colors.mutedText} weight={650} maxLines={1} cfg={cfg} />
+      {!compact ? chips.map((chip, index) => {
+        const chipW = Math.max(74, Math.min(118, chip.length * 6.2 + 20));
+        const chipX = textX + index * (chipW + 8);
+        return (
+          <g key={chip}>
+            <rect x={chipX} y={y + h - 25} width={chipW} height={17} rx={5} fill={alphaColor(accent, 0.1)} stroke={accent} strokeOpacity="0.42" />
+            <Txt x={chipX + chipW / 2} y={y + h - 14} anchor="middle" size={7.8} weight="850" fill={cfg.colors.bodyText} cfg={cfg}>{chip}</Txt>
+          </g>
+        );
+      }) : null}
+    </g>
+  );
 }
 
 function SideNavCard({
@@ -211,11 +321,12 @@ function RightPreviewContent({
   x,
   y,
   w,
-  h: _h,
+  h,
   active,
   content,
   cfg,
   acBalance,
+  accountSummary,
 }: {
   x: number;
   y: number;
@@ -225,64 +336,49 @@ function RightPreviewContent({
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   acBalance: number;
+  accountSummary?: ShopAccountSummary | null;
 }) {
+  const meta = rightPanelMeta(active, content);
   const token = cfg.componentTokens.rightPanel;
-  if (active === 'wallet') {
-    const dotColors = [cfg.colors.gold, cfg.colors.activeBlue, cfg.colors.green, cfg.colors.violet, cfg.colors.orange];
-    const rows = content.rightRows.wallet.map((row, index) => index === 0 ? [row[0], `${acBalance.toLocaleString()} ${row[1]}`] : row);
-    return (
-      <g>
-        <Txt x={x + token.contentTitleX} y={y + token.contentTitleY} size={token.contentTitleSize} weight="950" fill={cfg.colors.gold} cfg={cfg}>WALLET & BALANCE</Txt>
-        {rows.map((row, index) => <InfoRow key={row[0]} x={x + token.rowX} y={y + token.walletFirstRowY + index * token.walletRowGap} w={w - token.rowX * 2} label={row[0]} value={row[1]} dotFill={dotColors[index]} cfg={cfg} />)}
-      </g>
-    );
-  }
-
-  if (active === 'pass') {
-    return (
-      <g>
-        <Txt x={x + token.contentTitleX} y={y + token.contentTitleY} size={token.contentTitleSize} weight="950" fill={cfg.colors.violet} cfg={cfg}>ACTIVE PASS</Txt>
-        <ProductImage x={x + token.imageInsetX} y={y + token.passImageY} w={w - token.imageInsetX * 2} h={token.passImageH} imageUrl={(content.passes[1] ?? content.passes[0])?.imageUrl ?? ''} cfg={cfg} />
-        <rect x={x + token.imageInsetX} y={y + token.passOverlayY} width={w - token.imageInsetX * 2} height={token.passOverlayH} fill={cfg.colors.tileOverlayFill} />
-        <Txt x={x + token.imageInsetX + token.rowX} y={y + token.passOverlayY + token.passOverlayH / 2 - 1} size={token.accountNameSize} weight="950" cfg={cfg}>Champion Pass</Txt>
-      </g>
-    );
-  }
-
-  if (active === 'events') {
-    return (
-      <g>
-        <Txt x={x + token.contentTitleX} y={y + token.contentTitleY} size={token.contentTitleSize} weight="950" fill={cfg.colors.violet} cfg={cfg}>UPCOMING EVENTS</Txt>
-        {content.rightRows.events.map((row, index) => (
-          <g key={row[0]}>
-            <rect x={x + token.rowX} y={y + token.eventFirstRowY + index * token.eventRowGap} width={w - token.rowX * 2} height={token.eventRowH} rx={cfg.svgDefaults.roundedNone} fill={cfg.colors.rowFill} stroke={cfg.colors.violet} />
-            <Txt x={x + token.rowX * 2} y={y + token.eventFirstRowY + token.contentTitleSize + index * token.eventRowGap} size={token.eventButtonH / 2} weight="900" cfg={cfg}>{row[0]}</Txt>
-            <Txt x={x + token.rowX * 2} y={y + token.eventFirstRowY + token.contentTitleSize + token.accountEloSize + index * token.eventRowGap} fill={cfg.colors.mutedText} size={token.accountEloSize - 3.2} cfg={cfg}>{row[1]}</Txt>
-            <rect x={x + w - token.eventButtonRight} y={y + token.eventButtonY + index * token.eventRowGap} width={token.eventButtonW} height={token.eventButtonH} rx="4" fill={alphaColor(cfg.colors.violet, 0.12)} stroke={cfg.colors.violet} strokeOpacity="0.48" />
-            <Txt x={x + w - token.eventButtonRight + token.eventButtonW / 2} y={y + token.eventButtonY + token.eventButtonH / 2 + index * token.eventRowGap + 1} anchor="middle" size="8.6" weight="900" fill={cfg.colors.tileSubtitleText} cfg={cfg}>{row[2]}</Txt>
-          </g>
-        ))}
-      </g>
-    );
-  }
-
-  if (active === 'recent') {
-    return (
-      <g>
-        <Txt x={x + token.contentTitleX} y={y + token.contentTitleY} size={token.contentTitleSize} weight="950" fill={cfg.colors.green} cfg={cfg}>RECENT PURCHASES</Txt>
-        {content.rightRows.recent.map((row, index) => <InfoRow key={row[0]} x={x + token.rowX} y={y + token.recentFirstRowY + index * token.recentRowGap} w={w - token.rowX * 2} label={row[0]} value={row[1]} stroke={cfg.colors.green} cfg={cfg} />)}
-      </g>
-    );
-  }
-
+  const rows = rightPanelDetailRows(active, acBalance, content);
+  const accountMode = active === 'account';
+  const profileBandH = accountMode ? Math.max(46, Math.min(58, h * 0.24)) : 0;
+  const visibleRows = accountMode
+    ? rows.filter(row => row.label !== 'Profile').slice(0, 3)
+    : rows.slice(0, active === 'events' ? 3 : 4);
+  const rowX = x + token.rowX;
+  const rowW = w - token.rowX * 2;
+  const rowGap = 7;
+  const rowTop = y + 12 + profileBandH;
+  const rowH = Math.max(24, Math.min(38, (h - 22 - profileBandH - rowGap * Math.max(0, visibleRows.length - 1)) / Math.max(1, visibleRows.length)));
   return (
     <g>
-      <Txt x={x + token.contentTitleX} y={y + token.contentTitleY} size={token.contentTitleSize} weight="950" fill={cfg.colors.activeBlue} cfg={cfg}>ACCOUNT PREVIEW</Txt>
-      <circle cx={x + token.accountAvatarX} cy={y + token.accountAvatarY} r={token.accountAvatarR} fill={alphaColor(cfg.colors.violet, 0.1)} stroke={cfg.colors.activeBlue} strokeWidth={token.previewStrokeWidth} />
-      <Txt x={x + token.accountNameX} y={y + token.accountNameY} size={token.accountNameSize} weight="950" cfg={cfg}>{content.uiCopy.rightPanel.profileName}</Txt>
-      <Txt x={x + token.accountNameX} y={y + token.accountEloY} fill={cfg.colors.mutedText} size={token.accountEloSize} weight="600" cfg={cfg}>{content.uiCopy.rightPanel.profileElo}</Txt>
-      <rect x={x + token.accountNameX} y={y + token.accountProgressY} width={w - token.accountNameX - token.contentTitleX * 2} height={token.accountProgressH} rx={token.accountProgressH / 2} fill={cfg.colors.headerFill} />
-      <rect x={x + token.accountNameX} y={y + token.accountProgressY} width={Math.min(token.accountNameX + token.contentTitleX, w - token.accountNameX - token.contentTitleX * 3)} height={token.accountProgressH} rx={token.accountProgressH / 2} fill={cfg.colors.activeBlue} />
+      {accountMode ? (
+        <AccountSummaryBand
+          x={rowX}
+          y={y + 8}
+          w={rowW}
+          h={profileBandH - 4}
+          accountSummary={accountSummary}
+          accent={meta.accent}
+          cfg={cfg}
+          compact
+        />
+      ) : null}
+      {visibleRows.map((row, index) => {
+        const rowY = rowTop + index * (rowH + rowGap);
+        const labelSize = fitSingleLineTextSize(row.label, rowW * 0.52, 8.4, 10.8, 0.62);
+        const valueSize = fitSingleLineTextSize(row.value, rowW * 0.36, 8.2, 10.6, 0.58);
+        return (
+          <g key={`${active}-preview-${row.label}`}>
+            <rect x={rowX} y={rowY} width={rowW} height={rowH} rx={cfg.svgDefaults.roundedNone} fill={index === 0 ? alphaColor(meta.accent, 0.14) : cfg.colors.rowFill} stroke={meta.accent} strokeWidth={index === 0 ? 1.25 : 0.9} strokeOpacity={index === 0 ? 0.72 : 0.38} />
+            <rect x={rowX} y={rowY} width={4} height={rowH} rx={2} fill={meta.accent} opacity={index === 0 ? 0.95 : 0.58} />
+            <Txt x={rowX + 11} y={rowY + rowH * 0.42} size={labelSize} weight="950" fill={index === 0 ? meta.accent : cfg.colors.bodyText} cfg={cfg}>{row.label}</Txt>
+            <Txt x={rowX + rowW - 10} y={rowY + rowH * 0.42} size={valueSize} weight="950" anchor="end" fill={meta.accent} cfg={cfg}>{row.value}</Txt>
+            <WrappedText x={rowX + 11} y={rowY + rowH - 8} width={rowW - 22} lines={row.detail} size={6.9} lineHeight={7.6} fill={cfg.colors.mutedText} weight={600} maxLines={1} cfg={cfg} />
+          </g>
+        );
+      })}
     </g>
   );
 }
@@ -336,6 +432,7 @@ export function RightSidePanel({
   content,
   cfg,
   acBalance,
+  accountSummary,
   active,
   onActiveChange,
   onPreviewOpen,
@@ -347,6 +444,7 @@ export function RightSidePanel({
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   acBalance: number;
+  accountSummary?: ShopAccountSummary | null;
   active: ShopRightTabId;
   onActiveChange: (id: ShopRightTabId) => void;
   onPreviewOpen: () => void;
@@ -391,7 +489,7 @@ export function RightSidePanel({
             </g>
           ) : null}
         </HeaderBar>
-        <RightPreviewContent x={mainX} y={mainY + cfg.rightPanel.previewHeaderH} w={mainW} h={mainH - cfg.rightPanel.previewHeaderH} active={active} content={content} cfg={cfg} acBalance={acBalance} />
+        <RightPreviewContent x={mainX} y={mainY + cfg.rightPanel.previewHeaderH} w={mainW} h={mainH - cfg.rightPanel.previewHeaderH} active={active} content={content} cfg={cfg} acBalance={acBalance} accountSummary={accountSummary} />
       </g>
       <path d={bottomRoundedRectPath(mainX, tabsY, mainW, selectorH, token.panelRadius)} fill={cfg.colors.tileFooterFill} stroke={activeMeta.accent} strokeWidth={token.previewStrokeWidth} strokeOpacity=".82" />
       {rightTabs.map((tab, index) => (
@@ -418,6 +516,7 @@ export function RightPanelDetailLayer({
   h,
   active,
   acBalance,
+  accountSummary,
   content,
   cfg,
   onClose,
@@ -429,6 +528,7 @@ export function RightPanelDetailLayer({
   h: number;
   active: ShopRightTabId;
   acBalance: number;
+  accountSummary?: ShopAccountSummary | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onClose: () => void;
@@ -436,23 +536,39 @@ export function RightPanelDetailLayer({
 }) {
   const meta = rightPanelMeta(active, content);
   const rows = rightPanelDetailRows(active, acBalance, content);
-  const contentRect = sectionFrameContentRect(x, y, w, h, cfg, false, false);
-  const pad = Math.max(8, Math.min(14, contentRect.w * 0.012));
-  const panelX = contentRect.x + pad;
-  const panelY = contentRect.y + pad;
-  const panelW = Math.max(260, contentRect.w - pad * 2);
-  const availablePanelH = Math.max(160, contentRect.h - pad * 2);
+  const detailTitle = rightPanelFullTitle(active, content);
+  const accountMode = active === 'account';
+  const detailRows = accountMode ? rows.filter(row => row.label !== 'Profile') : rows;
+  const body = mainBottomOverlayContentRect(x, y, w, h, false);
+  const pad = Math.max(10, Math.min(18, body.w * 0.012));
+  const panelX = body.x + pad;
+  const panelY = body.y + pad;
+  const panelW = Math.max(260, body.w - pad * 2);
+  const availablePanelH = Math.max(160, body.h - pad * 2);
   const rowGap = 10;
   const rowTopPad = Math.max(14, Math.min(22, availablePanelH * 0.045));
+  const accountBandH = accountMode ? Math.max(72, Math.min(92, availablePanelH * 0.22)) : 0;
   const rowBottomPad = active === 'pass' ? 58 : rowTopPad;
-  const rowAreaH = Math.max(0, availablePanelH - rowTopPad - rowBottomPad);
-  const rowH = Math.max(42, Math.min(66, (rowAreaH - rowGap * Math.max(0, rows.length - 1)) / Math.max(1, rows.length)));
-  const panelH = Math.min(availablePanelH, rowTopPad + rows.length * rowH + rowGap * Math.max(0, rows.length - 1) + rowBottomPad);
-  const rowAreaY = panelY + rowTopPad;
+  const rowAreaH = Math.max(0, availablePanelH - rowTopPad - accountBandH - rowBottomPad);
+  const rowH = Math.max(42, Math.min(66, (rowAreaH - rowGap * Math.max(0, detailRows.length - 1)) / Math.max(1, detailRows.length)));
+  const panelH = Math.min(availablePanelH, rowTopPad + accountBandH + detailRows.length * rowH + rowGap * Math.max(0, detailRows.length - 1) + rowBottomPad);
+  const rowAreaY = panelY + rowTopPad + accountBandH;
   return (
-    <SectionFrame x={x} y={y} w={w} h={h} title={meta.title} subtitle="" rightText="Back To Shop" accent={meta.accent} cfg={cfg} onRightTextClick={onClose} hideSubtitle>
+    <g>
+      <MainBottom x={x} y={y} w={w} h={h} label={detailTitle} count={detailRows.length} rightActionLabel="Back To Shop" onRightAction={onClose} showNavigation={false} />
       <path d={lobbyRoundedRectPath(panelX, panelY, panelW, panelH, 8)} fill={alphaColor(meta.accent, 0.055)} stroke={meta.accent} strokeWidth="1.1" strokeOpacity="0.44" />
-      {rows.map((row, index) => {
+      {accountMode ? (
+        <AccountSummaryBand
+          x={panelX + 16}
+          y={panelY + rowTopPad}
+          w={panelW - 32}
+          h={accountBandH - 12}
+          accountSummary={accountSummary}
+          accent={meta.accent}
+          cfg={cfg}
+        />
+      ) : null}
+      {detailRows.map((row, index) => {
         const rowY = rowAreaY + index * (rowH + rowGap);
         const activeRow = index === 0;
         return (
@@ -478,6 +594,6 @@ export function RightPanelDetailLayer({
           cfg={cfg}
         />
       ) : null}
-    </SectionFrame>
+    </g>
   );
 }

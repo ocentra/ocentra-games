@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactNode, type WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type WheelEvent } from 'react';
 import {
   isShopProductPurchasable,
   productPriceLabel,
@@ -37,8 +37,20 @@ import {
   DailySpinSpinnerSvg,
   type DailySpinRewardStatus,
 } from '../../Common/Rewards/DailySpinSvg';
+import {
+  DeckPreviewView,
+  type DeckPreviewAxis,
+  type DeckPreviewCell,
+} from '../../Common/DeckPreview/DeckPreviewView';
 import { avatarImageUrls } from '@ocentra/app-assets/avatars';
-import type { ShopProduct, ShopTab, ShopVaultDeckPreviewItem } from './ShopPageSvgTypes';
+import type {
+  ShopAccountSummary,
+  ShopDeckImageResolver,
+  ShopDeckPreviewCard,
+  ShopProduct,
+  ShopTab,
+  ShopVaultDeckPreviewItem,
+} from './ShopPageSvgTypes';
 import { TransparentAssetImage } from './ShopPageAssetArtwork';
 import {
   BottomPanel,
@@ -74,10 +86,11 @@ export type ShopPageSvgSurfaceProps = {
   onBuy: (product: ShopProduct) => void;
   controls?: Partial<ShopPageSvgControls> | null;
   content?: Partial<ShopPageContentData> | null;
+  vaultDecks?: ShopVaultDeckPreviewItem[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  accountSummary?: ShopAccountSummary | null;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
-  vaultDeckItems?: ShopVaultDeckPreviewItem[];
-  renderVaultDeckPreview?: (item: ShopVaultDeckPreviewItem | null) => ReactNode;
 };
 
 type Metrics = {
@@ -103,6 +116,22 @@ const PREFERRED_BOTTOM_PREVIEW_ITEMS = 4;
 const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
 const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
 const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
+
+function shopDeckImagePathToBrowserUrl(path?: string): string | null {
+  if (!path) return null;
+  const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
+  return normalized.startsWith('Resources/')
+    ? `/${normalized}`
+    : `/Resources/${normalized}`;
+}
+
+function resolveShopDeckImageUrl(
+  resolver: ShopDeckImageResolver | undefined,
+  imageHash?: string,
+  imagePath?: string,
+): string | null {
+  return resolver?.(imageHash, imagePath) ?? shopDeckImagePathToBrowserUrl(imagePath);
+}
 
 function staticCreditPackForProduct(product: ShopProduct, index: number, content: ShopPageContentData): ShopStaticItem {
   const amount = product.acAmount ?? Number(product.displayName.match(/\d+/)?.[0]);
@@ -320,8 +349,26 @@ function vaultGroupToMainCarouselCard(group: ShopVaultShowcaseGroup): ShopMainCa
   };
 }
 
+function vaultGroupBenefits(group: ShopVaultShowcaseGroup): string[] {
+  if (group.key === 'decks') {
+    return ['Browse deck drops.', 'Open group details.', 'Author drops in editor.'];
+  }
+  if (group.key === 'card-backs') {
+    return ['Manage card backs.', 'Preview upcoming backs.', 'Add backs in editor.'];
+  }
+  if (group.key === 'table-themes') {
+    return ['Preview table themes.', 'Keep default surfaces.', 'Add themes in editor.'];
+  }
+  if (group.key === 'frames') {
+    return ['Choose profile frames.', 'Keep free frames visible.', 'Add frames in editor.'];
+  }
+  if (group.key === 'avatars') {
+    return ['Choose avatars.', 'Keep free avatars visible.', 'Add avatars in editor.'];
+  }
+  return [group.subtitle, 'Open group details.', 'Tune inventory in editor.'];
+}
+
 function vaultGroupToTile(group: ShopVaultShowcaseGroup): TileItem {
-  const itemTitles = group.items.map(item => item.title).filter(Boolean);
   return {
     title: group.title,
     subtitle: group.subtitle,
@@ -330,7 +377,7 @@ function vaultGroupToTile(group: ShopVaultShowcaseGroup): TileItem {
     badge: group.badge,
     imageUrl: group.heroImageUrl,
     price: group.badge === 'FREE' ? 'Free' : group.badge === 'SOON' ? 'Coming Soon' : undefined,
-    benefits: itemTitles.length > 0 ? itemTitles : [group.subtitle],
+    benefits: vaultGroupBenefits(group),
   };
 }
 
@@ -483,6 +530,8 @@ function EliteBottomPassCard({
   cfg,
   loading,
   expanded = false,
+  expandedActionLabel,
+  expandedAction = 'buy',
   onInspect,
   onBuy,
 }: {
@@ -495,6 +544,8 @@ function EliteBottomPassCard({
   cfg: ShopPageSvgControls;
   loading?: boolean;
   expanded?: boolean;
+  expandedActionLabel?: string;
+  expandedAction?: 'buy' | 'inspect';
   onInspect: () => void;
   onBuy: (product: ShopProduct) => void;
 }) {
@@ -528,7 +579,7 @@ function EliteBottomPassCard({
     : Math.min(156, Math.max(104, footerValue.length * 5.8 + 28));
   const buttonW = expanded ? Math.min(190, Math.max(132, w * 0.24)) : Math.min(132, Math.max(96, w * 0.28));
   const disabled = item.product ? !isShopProductPurchasable(item.product) : false;
-  const buttonLabel = loading ? 'Working' : expanded ? tileActionLabel(item, content) : 'View';
+  const buttonLabel = loading ? 'Working' : expanded ? expandedActionLabel ?? tileActionLabel(item, content) : 'View';
   const subtitleText = Array.isArray(item.subtitle) ? item.subtitle.join(' ') : item.subtitle;
   const subtitleSize = fitSingleLineTextSize(
     subtitleText,
@@ -635,7 +686,7 @@ function EliteBottomPassCard({
         color={color}
         active={hovered}
         onClick={() => {
-          if (expanded && item.product) onBuy(item.product);
+          if (expanded && expandedAction === 'buy' && item.product) onBuy(item.product);
           else onInspect();
         }}
         disabled={loading || disabled}
@@ -656,6 +707,9 @@ function BottomDetailCardsLayer({
   cfg,
   loadingId,
   pageIndex,
+  expandedItem,
+  expandedActionLabel,
+  expandedAction,
   rightActionLabel,
   onRightAction,
   onInspect,
@@ -672,45 +726,46 @@ function BottomDetailCardsLayer({
   cfg: ShopPageSvgControls;
   loadingId: string | null;
   pageIndex: number;
+  expandedItem?: TileItem;
+  expandedActionLabel?: string;
+  expandedAction?: 'buy' | 'inspect';
   rightActionLabel?: string;
   onRightAction?: () => void;
   onInspect: (item: TileItem) => void;
   onBuy: (product: ShopProduct) => void;
   onPageChange: (pageIndex: number) => void;
 }) {
-  const body = mainBottomOverlayContentRect(x, y, w, h);
-  const token = cfg.componentTokens.sectionFrame;
+  const measuredBody = mainBottomOverlayContentRect(x, y, w, h);
   const pad = 10;
   const gap = 12;
+  const measuredContentW = Math.max(0, measuredBody.w - pad * 2);
+  const minCardW = label === 'Treasury'
+    ? Math.max(cfg.mainBody.treasuryCardMinW, 560)
+    : label === 'Elite'
+      ? Math.max(cfg.mainBody.passCardMinW, 560)
+      : Math.max(cfg.mainBody.productCardMinW, 560);
+  const maxCardW = label === 'Treasury'
+    ? minCardW
+    : minCardW;
+  const maxVisible = label === 'Treasury'
+    ? Math.min(2, Math.round(cfg.mainBody.treasuryMaxVisible))
+    : label === 'Elite'
+      ? Math.min(2, Math.round(cfg.mainBody.passMaxVisible))
+      : Math.min(2, Math.round(cfg.mainBody.productMaxVisible));
+  const expanded = Boolean(expandedItem);
+  const visibleCount = expanded ? 1 : visibleCardCount(measuredContentW, items.length, gap, 0, minCardW, maxVisible);
+  const rawCardW = visibleCount > 0 ? (measuredContentW - gap * (visibleCount - 1)) / visibleCount : measuredContentW;
+  const cardW = expanded ? measuredContentW : Math.max(minCardW, Math.min(maxCardW, rawCardW));
+  const rowW = visibleCount * cardW + Math.max(0, visibleCount - 1) * gap;
+  const { pageItems, pageCount, safePageIndex } = carouselPage(items, visibleCount, pageIndex);
+  const displayItems = expandedItem ? [expandedItem] : pageItems;
+  const canPage = !expanded && pageCount > 1;
+  const body = expanded ? mainBottomOverlayContentRect(x, y, w, h, false) : measuredBody;
   const contentX = body.x + pad;
   const contentY = body.y + pad;
   const contentW = Math.max(0, body.w - pad * 2);
   const contentH = Math.max(0, body.h - pad * 2);
-  const minCardW = label === 'Treasury'
-    ? cfg.mainBody.treasuryCardMinW
-    : label === 'Elite'
-      ? cfg.mainBody.passCardMinW
-      : cfg.mainBody.productCardMinW;
-  const maxCardW = label === 'Treasury'
-    ? cfg.mainBody.treasuryCardMaxW
-    : label === 'Elite'
-      ? cfg.mainBody.passCardMaxW
-      : cfg.mainBody.productCardMaxW;
-  const maxVisible = label === 'Treasury'
-    ? Math.round(cfg.mainBody.treasuryMaxVisible)
-    : label === 'Elite'
-      ? Math.round(cfg.mainBody.passMaxVisible)
-      : Math.round(cfg.mainBody.productMaxVisible);
-  const visibleCount = visibleCardCount(contentW, items.length, gap, 0, minCardW, maxVisible);
-  const rawCardW = visibleCount > 0 ? (contentW - gap * (visibleCount - 1)) / visibleCount : contentW;
-  const cardW = Math.max(minCardW, Math.min(maxCardW, rawCardW));
-  const rowW = visibleCount * cardW + Math.max(0, visibleCount - 1) * gap;
   const rowX = contentX + Math.max(0, (contentW - rowW) / 2);
-  const { pageItems, pageCount, safePageIndex } = carouselPage(items, visibleCount, pageIndex);
-  const canPage = pageCount > 1;
-  const dotsW = Math.max(0, pageCount - 1) * token.dotGap + pageCount * token.dotW;
-  const dotsX = x + w / 2 - dotsW / 2;
-  const dotsY = y + h - token.dotBottom - 2;
   const hitTop = y + Math.max(16, h * 0.16);
   const hitH = Math.max(80, h * 0.62);
   return (
@@ -724,6 +779,10 @@ function BottomDetailCardsLayer({
         count={items.length}
         rightActionLabel={rightActionLabel}
         onRightAction={onRightAction}
+        showNavigation={!expanded}
+        navigationPageCount={pageCount}
+        navigationPageIndex={safePageIndex}
+        onNavigationPageChange={onPageChange}
       />
       {canPage ? (
         <>
@@ -733,31 +792,9 @@ function BottomDetailCardsLayer({
           <g role="button" tabIndex={0} aria-label={`Next ${label} items`} className="shop-page-svg-clickable" onClick={() => onPageChange(safePageIndex + 1)}>
             <rect x={x + w - 40} y={hitTop} width="74" height={hitH} fill="transparent" />
           </g>
-          <g>
-            {Array.from({ length: pageCount }, (_, dotIndex) => (
-              <g key={`${label}-bottom-dot-${dotIndex}`} role="button" tabIndex={0} aria-label={`${label} page ${dotIndex + 1}`} className="shop-page-svg-clickable" onClick={() => onPageChange(dotIndex)}>
-                <rect
-                  x={dotsX + dotIndex * (token.dotW + token.dotGap) - 2}
-                  y={dotsY - 4}
-                  width={token.dotW + 4}
-                  height={token.dotH + 8}
-                  fill="transparent"
-                />
-                <rect
-                  x={dotsX + dotIndex * (token.dotW + token.dotGap)}
-                  y={dotsY}
-                  width={token.dotW}
-                  height={token.dotH}
-                  rx={token.dotH / 2}
-                  fill={dotIndex === safePageIndex ? cfg.colors.frameDotActive : cfg.colors.frameDotInactive}
-                  opacity={dotIndex === safePageIndex ? 1 : 0.82}
-                />
-              </g>
-            ))}
-          </g>
         </>
       ) : null}
-      {pageItems.map((item, index) => (
+      {displayItems.map((item, index) => (
         <EliteBottomPassCard
           key={item.title}
           x={rowX + index * (cardW + gap)}
@@ -768,6 +805,9 @@ function BottomDetailCardsLayer({
           content={content}
           cfg={cfg}
           loading={item.product ? loadingId === item.product.productId : false}
+          expanded={expanded}
+          expandedActionLabel={expandedActionLabel}
+          expandedAction={expandedAction}
           onInspect={() => onInspect(item)}
           onBuy={onBuy}
         />
@@ -784,6 +824,8 @@ function VaultGridFrame({
   accent,
   cfg,
   deckName,
+  sampleCards = [],
+  resolveDeckImageUrl,
   onClick,
 }: {
   x: number;
@@ -793,36 +835,67 @@ function VaultGridFrame({
   accent: string;
   cfg: ShopPageSvgControls;
   deckName?: string;
+  sampleCards?: ShopDeckPreviewCard[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
   onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const label = deckName ?? '';
   const labelH = Math.max(20, Math.min(28, h * 0.28));
-  const cardW = Math.min(28, w * 0.18);
-  const cardH = Math.min(42, h * 0.46);
+  const cardW = Math.min(42, w * 0.24);
+  const cardH = Math.min(58, h * 0.54);
   const cardY = y + Math.max(8, h * 0.12);
   const cardStartX = x + w / 2 - cardW * 1.22;
   const edge = hovered ? cfg.colors.activeBlue : accent;
   const chrome = cfg.componentTokens.cardChrome;
+  const interactive = Boolean(onClick);
 
   return (
     <g
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
+      onClick={(event) => {
+        if (!onClick) return;
+        event.stopPropagation();
+        onClick();
+      }}
+      onMouseDown={(event) => event.stopPropagation()}
+      onKeyDown={(event) => {
+        if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return;
+        event.preventDefault();
+        onClick();
+      }}
+      onMouseEnter={() => setHovered(interactive)}
       onMouseLeave={() => setHovered(false)}
-      role="button"
-      tabIndex={0}
-      className="shop-page-svg-clickable"
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      className={interactive ? 'shop-page-svg-clickable' : undefined}
     >
       {hovered ? <rect x={x - chrome.hoverPad} y={y - chrome.hoverPad} width={w + chrome.hoverPad * 2} height={h + chrome.hoverPad * 2} rx={cfg.componentTokens.sectionFrame.contentRadius} fill="none" stroke={edge} strokeWidth={chrome.hoverOuterStrokeWidth} strokeOpacity=".34" filter="url(#shopSoftGlow)" /> : null}
       <rect x={x} y={y} width={w} height={h} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={hovered ? alphaColor(cfg.colors.activeBlue, chrome.activeFillOpacity) : cfg.colors.vaultGridFill} stroke={edge} strokeWidth={hovered ? 1.4 : 1} strokeOpacity={hovered ? 0.86 : 0.42} />
       {[0, 1, 2].map((cardIndex) => {
         const rotate = [-9, 0, 9][cardIndex];
         const cardX = cardStartX + cardIndex * cardW * 0.72;
+        const card = sampleCards[cardIndex];
+        const imageUrl = card ? resolveShopDeckImageUrl(resolveDeckImageUrl, card.imageHash, card.imagePath) : null;
+        const clipId = `shopVaultDeckCardClip-${Math.round(x)}-${Math.round(y)}-${cardIndex}`;
         return (
           <g key={cardIndex} transform={`rotate(${rotate} ${cardX + cardW / 2} ${cardY + cardH / 2})`}>
             <rect x={cardX} y={cardY} width={cardW} height={cardH} rx={cfg.componentTokens.sectionFrame.contentRadius / 2} fill={cfg.colors.headerFillAlt} stroke={edge} strokeWidth="1" strokeOpacity={hovered ? 0.92 : 0.72} />
-            <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".16" />
+            <clipPath id={clipId}>
+              <rect x={cardX + 3} y={cardY + 4} width={cardW - 6} height={cardH - 8} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} />
+            </clipPath>
+            {imageUrl ? (
+              <image
+                href={imageUrl}
+                x={cardX + 3}
+                y={cardY + 4}
+                width={cardW - 6}
+                height={cardH - 8}
+                preserveAspectRatio="xMidYMid meet"
+                clipPath={`url(#${clipId})`}
+              />
+            ) : (
+              <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".16" />
+            )}
           </g>
         );
       })}
@@ -937,41 +1010,6 @@ function VaultGridMessage({
   );
 }
 
-function VaultDeckPreviewLayer({
-  x,
-  y,
-  w,
-  h,
-  cfg,
-  deckItem,
-  renderDeckPreview,
-  onClose,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  cfg: ShopPageSvgControls;
-  deckItem: ShopVaultDeckPreviewItem;
-  renderDeckPreview?: (item: ShopVaultDeckPreviewItem | null) => ReactNode;
-  onClose: () => void;
-}) {
-  const bodyY = y + cfg.mainBody.headerH;
-  const contentX = x + 18;
-  const contentY = bodyY + 12;
-  const contentW = w - 36;
-  const contentH = h - cfg.mainBody.headerH - 28;
-  return (
-    <SectionFrame x={x} y={y} w={w} h={h} title="DECK PREVIEW" subtitle={deckItem.title} rightText="Back To Vault" accent="#ffd36a" cfg={cfg} onRightTextClick={onClose}>
-      <foreignObject x={contentX} y={contentY} width={contentW} height={contentH}>
-        <div className="shop-deck-preview-host">
-          {renderDeckPreview ? renderDeckPreview(deckItem) : <div className="shop-deck-preview-host__empty">Deck preview unavailable.</div>}
-        </div>
-      </foreignObject>
-    </SectionFrame>
-  );
-}
-
 function VaultShowcaseLayer({
   x,
   y,
@@ -980,10 +1018,13 @@ function VaultShowcaseLayer({
   content,
   cfg,
   activeGroupKey,
-  vaultDeckItems,
   onGroupChange,
   onGroupInspect,
-  onDeckPreview,
+  deckPreviews = [],
+  resolveDeckImageUrl,
+  onDeckInspect,
+  rightActionLabel,
+  onRightAction,
 }: {
   x: number;
   y: number;
@@ -992,10 +1033,13 @@ function VaultShowcaseLayer({
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   activeGroupKey: string;
-  vaultDeckItems?: ShopVaultDeckPreviewItem[];
   onGroupChange: (key: string) => void;
   onGroupInspect: (group: ShopVaultShowcaseGroup) => void;
-  onDeckPreview: (item: ShopVaultDeckPreviewItem | null) => void;
+  deckPreviews?: ShopVaultDeckPreviewItem[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  onDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
+  rightActionLabel?: string;
+  onRightAction?: () => void;
 }) {
   const [gridScrollState, setGridScrollState] = useState<{ groupKey: string; value: number }>({ groupKey: activeGroupKey, value: 0 });
   const [gridDrag, setGridDrag] = useState<{ groupKey: string; pointerX: number; scrollX: number } | null>(null);
@@ -1024,9 +1068,7 @@ function VaultShowcaseLayer({
   const isLimitedPlaceholderGrid = activeGroup.key === 'card-backs' || activeGroup.key === 'table-themes';
   const isSelectableCircleGrid = isAvatarGrid || isProfileFrameGrid;
   const selectableCircleImages = isAvatarGrid ? avatarImageUrls : isProfileFrameGrid ? activeGroup.items.map(item => item.imageUrl).filter(Boolean) : [];
-  const deckItems = vaultDeckItems && vaultDeckItems.length > 0
-    ? vaultDeckItems
-    : activeGroup.items.map((item, index) => ({ id: `${activeGroup.key}-${index}`, title: item.title }));
+  const deckItems = isDeckGrid ? deckPreviews : [];
   const rows = isSelectableCircleGrid ? token.selectableRows : isDeckGrid ? token.deckRows : isLimitedPlaceholderGrid ? 1 : token.defaultRows;
   const scrollbarH = token.scrollbarH;
   const frameGap = isSelectableCircleGrid ? token.selectableFrameGap : token.frameGap;
@@ -1040,9 +1082,9 @@ function VaultShowcaseLayer({
   const itemColumns = isSelectableCircleGrid
     ? Math.ceil(selectableCircleImages.length / rows)
     : isDeckGrid
-      ? Math.max(token.minDeckColumns, deckItems.length)
+      ? deckItems.length > 0 ? Math.max(token.minDeckColumns, deckItems.length) : 0
       : Math.max(1, gridStaticItemCount);
-  const showGridMessage = !isDeckGrid;
+  const showGridMessage = !isDeckGrid || deckItems.length === 0;
   const messageColumnSpan = showGridMessage ? 2 : 0;
   const columns = itemColumns + messageColumnSpan;
   const messageTitle = activeGroup.key === 'card-backs'
@@ -1051,14 +1093,18 @@ function VaultShowcaseLayer({
       ? 'Table themes dropping soon'
       : activeGroup.key === 'frames'
         ? 'Paid frames soon'
-        : 'Paid avatars soon';
+        : activeGroup.key === 'decks'
+          ? 'Deck assets loading'
+          : 'Paid avatars soon';
   const messageLines = activeGroup.key === 'card-backs'
     ? ['Default card backs stay free.', 'Premium animated backs will appear in this grid when the art is ready.']
     : activeGroup.key === 'table-themes'
       ? ['The default table theme stays active.', 'More room surfaces and competitive table moods will drop here.']
       : activeGroup.key === 'frames'
         ? ['Free profile frames are available now.', 'More custom paid profile frames are dropping soon.']
-        : ['Free avatars are available now.', 'More premium paid avatars are dropping soon.'];
+        : activeGroup.key === 'decks'
+          ? ['No deck preview assets were returned yet.', 'The Vault grid uses deck assets from the shared asset runtime.']
+          : ['Free avatars are available now.', 'More premium paid avatars are dropping soon.'];
   const contentW = columns * frameW + (columns - 1) * frameGap;
   const maxScrollX = Math.max(0, contentW - gridW);
   const rawScrollX = gridScrollState.groupKey === activeGroupKey ? gridScrollState.value : 0;
@@ -1073,7 +1119,7 @@ function VaultShowcaseLayer({
   };
 
   return (
-    <SectionFrame x={x} y={y} w={w} h={h} title="VAULT" subtitle="Deck drops, card backs, table themes, frames, and free avatar identity." accent={cfg.colors.violet} cfg={cfg} countText={String(activeGroup.items.length)} pageIndex={pageIndex} pageCount={pageCount} onPrevious={() => movePage(-1)} onNext={() => movePage(1)}>
+    <SectionFrame x={x} y={y} w={w} h={h} title="VAULT" subtitle="Deck drops, card backs, table themes, frames, and free avatar identity." accent={cfg.colors.violet} cfg={cfg} countText={String(isDeckGrid ? deckItems.length : activeGroup.items.length)} pageIndex={pageIndex} pageCount={pageCount} rightText={rightActionLabel} onRightTextClick={onRightAction} onPrevious={() => movePage(-1)} onNext={() => movePage(1)}>
       <rect x={heroX} y={heroY} width={heroW} height={heroH} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={cfg.colors.vaultHeroFill} />
       <g onClick={() => {
         onGroupChange(activeGroup.key);
@@ -1156,14 +1202,210 @@ function VaultShowcaseLayer({
             }
             const deckItem = isDeckGrid ? deckItems[index] ?? null : null;
             const staticItem = isDeckGrid ? null : activeGroup.items[index] ?? null;
+            if (isDeckGrid && !deckItem) return null;
             if (!isDeckGrid && !staticItem) return null;
-            return <VaultGridFrame key={`${activeGroup.key}-frame-${index}`} x={frameX} y={frameY} w={frameW} h={frameH} accent={accent} cfg={cfg} deckName={isDeckGrid ? deckItem?.title : staticItem?.title} onClick={isDeckGrid ? () => onDeckPreview(deckItem) : undefined} />;
+            const frameLabel = deckItem?.title ?? staticItem?.title;
+            return (
+              <VaultGridFrame
+                key={deckItem?.key ?? `${activeGroup.key}-frame-${index}`}
+                x={frameX}
+                y={frameY}
+                w={frameW}
+                h={frameH}
+                accent={accent}
+                cfg={cfg}
+                deckName={frameLabel}
+                sampleCards={deckItem?.sampleCards}
+                resolveDeckImageUrl={resolveDeckImageUrl}
+                onClick={deckItem ? () => onDeckInspect?.(deckItem) : undefined}
+              />
+            );
           })}
         </g>
         <rect x="0" y={gridH - scrollbarH} width={gridW} height={scrollbarH} rx={scrollbarH / 2} fill={cfg.colors.vaultScrollbarFill} stroke={accent} strokeWidth="1" strokeOpacity=".25" />
         <rect x={thumbX} y={gridH - scrollbarH + token.scrollbarThumbInset} width={thumbW} height={scrollbarH - token.scrollbarThumbInset * 2} rx={(scrollbarH - token.scrollbarThumbInset * 2) / 2} fill={accent} opacity=".55" />
       </svg>
     </SectionFrame>
+  );
+}
+
+function ShopDeckPreviewLayer({
+  x,
+  y,
+  w,
+  h,
+  deck,
+  cfg,
+  resolveDeckImageUrl,
+  onClose,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  deck: ShopVaultDeckPreviewItem;
+  cfg: ShopPageSvgControls;
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  onClose: () => void;
+}) {
+  const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
+  const body = sectionFrameContentRect(x, y, w, h, cfg, false, false);
+  const previewStyle = {
+    '--deck-preview-card-track-min': '2.7rem',
+    '--deck-preview-card-cell-min-height': '3.5rem',
+    '--deck-preview-compact-matrix-gap': '0.36rem',
+    '--deck-preview-compact-row-gap': '0.34rem',
+    '--deck-preview-axis-column-width': '2.35rem',
+    '--deck-preview-axis-glyph-size': '1rem',
+    '--deck-preview-axis-image-size': '1.25rem',
+  } as CSSProperties;
+
+  return (
+    <SectionFrame
+      x={x}
+      y={y}
+      w={w}
+      h={h}
+      title="DECK PREVIEW"
+      subtitle={deck.title}
+      rightText="Back To Vault"
+      accent={cfg.colors.violet}
+      cfg={cfg}
+      hideSubtitle
+      onRightTextClick={onClose}
+    >
+      <foreignObject x={body.x} y={body.y} width={body.w} height={body.h}>
+        <div className="shop-deck-preview-host">
+          {deck.model ? (
+            <div className="shop-deck-preview-host__scroll" style={previewStyle}>
+              <DeckPreviewView
+                model={deck.model}
+                compact
+                onCellClick={setSelectedCell}
+                renderPiece={(cell) => <ShopDeckPreviewPieceCell cell={cell} resolveDeckImageUrl={resolveDeckImageUrl} />}
+                renderAxis={(axis) => <ShopDeckPreviewAxisCell axis={axis} resolveDeckImageUrl={resolveDeckImageUrl} />}
+                renderBack={(imageHash) => <ShopDeckPreviewBackCell imageHash={imageHash} resolveDeckImageUrl={resolveDeckImageUrl} />}
+              />
+            </div>
+          ) : (
+            <div className="shop-deck-preview-host__empty">No deck data available.</div>
+          )}
+          {selectedCell ? (
+            <ShopDeckPreviewCellDetail
+              cell={selectedCell}
+              resolveDeckImageUrl={resolveDeckImageUrl}
+              onClose={() => setSelectedCell(null)}
+            />
+          ) : null}
+        </div>
+      </foreignObject>
+    </SectionFrame>
+  );
+}
+
+function ShopDeckPreviewPieceCell({
+  cell,
+  resolveDeckImageUrl,
+}: {
+  cell: DeckPreviewCell;
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+}) {
+  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, cell.imageHash, cell.imagePath);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  if (src && failedSrc !== src) {
+    return (
+      <img
+        src={src}
+        alt={cell.label}
+        className="shop-deck-preview-host__piece-image"
+        onError={() => setFailedSrc(src)}
+      />
+    );
+  }
+
+  return <span className="shop-deck-preview-host__piece-label">{cell.label}</span>;
+}
+
+function ShopDeckPreviewAxisCell({
+  axis,
+  resolveDeckImageUrl,
+}: {
+  axis: DeckPreviewAxis;
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+}) {
+  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, axis.imageHash, axis.imagePath);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  if (src && failedSrc !== src) {
+    return (
+      <img
+        src={src}
+        alt={axis.label}
+        title={axis.label}
+        className="shop-deck-preview-host__axis-image"
+        onError={() => setFailedSrc(src)}
+      />
+    );
+  }
+
+  return undefined;
+}
+
+function ShopDeckPreviewBackCell({
+  imageHash,
+  resolveDeckImageUrl,
+}: {
+  imageHash: string;
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+}) {
+  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, imageHash, undefined);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  if (src && failedSrc !== src) {
+    return (
+      <img
+        src={src}
+        alt="Back"
+        className="shop-deck-preview-host__back-image"
+        onError={() => setFailedSrc(src)}
+      />
+    );
+  }
+
+  return <span className="shop-deck-preview-host__piece-label">Back</span>;
+}
+
+function ShopDeckPreviewCellDetail({
+  cell,
+  resolveDeckImageUrl,
+  onClose,
+}: {
+  cell: DeckPreviewCell;
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  onClose: () => void;
+}) {
+  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, cell.imageHash, cell.imagePath);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+
+  return (
+    <div className="shop-deck-preview-host__detail" role="dialog" aria-label={`${cell.label} detail`}>
+      <div className="shop-deck-preview-host__detail-panel">
+        <button type="button" className="shop-deck-preview-host__detail-close" onClick={onClose} aria-label="Close card detail">
+          x
+        </button>
+        {src && failedSrc !== src ? (
+          <img
+            src={src}
+            alt={cell.label}
+            className="shop-deck-preview-host__detail-image"
+            onError={() => setFailedSrc(src)}
+          />
+        ) : (
+          <span className="shop-deck-preview-host__piece-label">{cell.label}</span>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1188,19 +1430,21 @@ function InfoDetailLayer({
 }) {
   const token = cfg.componentTokens.sectionFrame;
   const accent = mode === 'arenaCredits' ? cfg.colors.activeBlue : cfg.colors.gold;
-  const bodyY = y + cfg.mainBody.headerH;
+  const body = mainBottomOverlayContentRect(x, y, w, h, false);
+  const bodyY = body.y;
   if (mode === 'eliteBenefits') {
     const detail = content.infoDetails.eliteBenefits;
-    const tableX = x + token.comparisonTablePadX;
-    const tableY = bodyY + token.comparisonTableTop;
-    const tableW = w - token.comparisonTablePadX * 2;
+    const tableX = body.x + token.comparisonTablePadX;
+    const tableY = bodyY + Math.max(12, token.comparisonTableTop - 8);
+    const tableW = body.w - token.comparisonTablePadX * 2;
     const labelW = token.comparisonLabelW;
     const tierCount = detail.tiers.length;
     const colW = (tableW - labelW) / tierCount;
     const headH = token.comparisonHeadH;
-    const rowH = Math.min(token.comparisonMaxRowH, (h - cfg.mainBody.headerH - headH - token.comparisonBottomReserve) / detail.rows.length);
+    const rowH = Math.min(token.comparisonMaxRowH, (body.h - headH - token.comparisonBottomReserve) / detail.rows.length);
     return (
-      <SectionFrame x={x} y={y} w={w} h={h} title={detail.title} subtitle={detail.subtitle} rightText={detail.cta} accent={accent} cfg={cfg} onRightTextClick={onClose}>
+      <g>
+        <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.rows.length} rightActionLabel={detail.cta} onRightAction={onClose} showNavigation={false} />
         <rect x={tableX} y={tableY} width={tableW} height={headH + rowH * detail.rows.length} fill={cfg.colors.tableFill} stroke={accent} strokeOpacity=".35" />
         <rect x={tableX} y={tableY} width={labelW} height={headH} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.tableGridStroke} />
         <Txt x={tableX + token.comparisonBenefitX} y={tableY + token.comparisonBenefitY} size={token.comparisonBenefitSize} weight="950" fill={accent} cfg={cfg}>Benefit</Txt>
@@ -1233,70 +1477,30 @@ function InfoDetailLayer({
             </g>
           );
         })}
-        <Txt x={tableX} y={y + h - token.comparisonNoteBottom} size={token.comparisonNoteSize} fill={cfg.colors.mutedText} weight="550" cfg={cfg}>Comparison is mock data for layout only; real tier benefits can wire into this surface later.</Txt>
-        <SvgButton x={x + w - token.comparisonButtonRight} y={y + h - token.comparisonButtonBottom} w={token.comparisonButtonW} h={token.comparisonButtonH} label={detail.cta} active small onClick={onClose} cfg={cfg} />
-      </SectionFrame>
+        <Txt x={tableX} y={body.y + body.h - Math.max(14, token.comparisonNoteBottom - 10)} size={token.comparisonNoteSize} fill={cfg.colors.mutedText} weight="550" cfg={cfg}>Comparison is mock data for layout only; real tier benefits can wire into this surface later.</Txt>
+      </g>
     );
   }
   const detail = content.infoDetails.arenaCredits;
-  const imageW = Math.min(token.detailImageMaxW, w * token.detailImageRatio);
-  const textX = x + token.detailImageX + imageW + token.detailTextGap;
+  const imageW = Math.min(token.detailImageMaxW, body.w * token.detailImageRatio);
+  const imageX = body.x + token.detailImageX;
+  const imageY = bodyY + token.detailImageTop;
+  const imageH = body.h - token.detailImageTop - token.detailImageBottomPad;
+  const textX = imageX + imageW + token.detailTextGap;
   return (
-    <SectionFrame x={x} y={y} w={w} h={h} title={detail.title} subtitle={detail.subtitle} rightText={detail.cta} accent={accent} cfg={cfg} onRightTextClick={onClose} hideTitleTab hideSubtitle>
-      <ProductImage x={x + token.detailImageX} y={bodyY + token.detailImageTop} w={imageW} h={h - cfg.mainBody.headerH - token.detailImageBottomPad} imageUrl={(content.creditPacks[2] ?? content.creditPacks[0])?.imageUrl ?? ''} cfg={cfg} />
-      <rect x={x + token.detailImageX} y={bodyY + token.detailImageTop} width={imageW} height={h - cfg.mainBody.headerH - token.detailImageBottomPad} fill="none" stroke={accent} strokeOpacity=".32" />
+    <g>
+      <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.bullets.length} rightActionLabel={detail.cta} onRightAction={onClose} showNavigation={false} />
+      <ProductImage x={imageX} y={imageY} w={imageW} h={imageH} imageUrl={(content.creditPacks[2] ?? content.creditPacks[0])?.imageUrl ?? ''} cfg={cfg} />
+      <rect x={imageX} y={imageY} width={imageW} height={imageH} fill="none" stroke={accent} strokeOpacity=".32" />
       <Txt x={textX} y={bodyY + token.detailTitleTop} size={token.detailTitleSize} weight="950" fill={accent} cfg={cfg}>{detail.title}</Txt>
-      <WrappedText x={textX} y={bodyY + token.detailSubtitleTop} width={w - (textX - x) - 28} lines={detail.subtitle} size={token.detailSubtitleSize} lineHeight={token.detailSubtitleLineHeight} fill={cfg.colors.tileSubtitleText} weight={600} maxLines={token.detailSubtitleMaxLines} cfg={cfg} />
+      <WrappedText x={textX} y={bodyY + token.detailSubtitleTop} width={body.x + body.w - textX - 28} lines={detail.subtitle} size={token.detailSubtitleSize} lineHeight={token.detailSubtitleLineHeight} fill={cfg.colors.tileSubtitleText} weight={600} maxLines={token.detailSubtitleMaxLines} cfg={cfg} />
       {detail.bullets.map((row, index) => (
         <g key={row}>
           <circle cx={textX + 5} cy={bodyY + token.detailBulletStartY + index * token.detailBulletGap} r={token.detailBulletR} fill={accent} />
-          <WrappedText x={textX + token.detailBulletTextX} y={bodyY + token.detailBulletStartY + index * token.detailBulletGap} width={w - (textX - x) - 46} lines={row} size={token.detailBulletSize} lineHeight={token.detailBulletLineHeight} fill={cfg.colors.frameSubtitleText} weight={550} maxLines={2} cfg={cfg} />
+          <WrappedText x={textX + token.detailBulletTextX} y={bodyY + token.detailBulletStartY + index * token.detailBulletGap} width={body.x + body.w - textX - 46} lines={row} size={token.detailBulletSize} lineHeight={token.detailBulletLineHeight} fill={cfg.colors.frameSubtitleText} weight={550} maxLines={2} cfg={cfg} />
         </g>
       ))}
-      <SvgButton x={textX} y={y + h - token.detailButtonBottom} w={token.detailButtonW} h={token.detailButtonH} label={detail.cta} active small onClick={onClose} cfg={cfg} />
-    </SectionFrame>
-  );
-}
-
-function TileDetailLayer({
-  x,
-  y,
-  w,
-  h,
-  item,
-  content,
-  cfg,
-  onClose,
-  onBuy,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  item: TileItem;
-  content: ShopPageContentData;
-  cfg: ShopPageSvgControls;
-  onClose: () => void;
-  onBuy: (product: ShopProduct) => void;
-}) {
-  const accent = toneColor(item.tone, cfg);
-  const contentRect = sectionFrameContentRect(x, y, w, h, cfg, false);
-  const pad = Math.max(20, Math.min(34, contentRect.w * 0.03));
-  return (
-    <SectionFrame x={x} y={y} w={w} h={h} title={`${item.title} DETAILS`} subtitle={item.subtitle} rightText="Back To Shop" accent={accent} cfg={cfg} onRightTextClick={onClose}>
-      <EliteBottomPassCard
-        x={contentRect.x + pad}
-        y={contentRect.y + pad}
-        w={Math.max(320, contentRect.w - pad * 2)}
-        h={Math.max(180, contentRect.h - pad * 2)}
-        item={item}
-        content={content}
-        cfg={cfg}
-        expanded
-        onInspect={() => undefined}
-        onBuy={onBuy}
-      />
-    </SectionFrame>
+    </g>
   );
 }
 
@@ -1313,6 +1517,7 @@ function MainBody({
   infoRequest,
   bottomPreviewTarget,
   rightPanelDetail,
+  accountSummary,
   sectionBottomY,
   cfg,
   onClearSpecial,
@@ -1321,10 +1526,10 @@ function MainBody({
   onInfoHandled,
   onBuy,
   onElite,
+  vaultDecks,
+  resolveDeckImageUrl,
   dailyRewardStatus,
   onDailyRewardSpin,
-  vaultDeckItems,
-  renderVaultDeckPreview,
 }: {
   x: number;
   y: number;
@@ -1338,6 +1543,7 @@ function MainBody({
   infoRequest: 'arenaCredits' | 'eliteBenefits' | null;
   bottomPreviewTarget: BottomPreviewTarget | null;
   rightPanelDetail: ShopRightTabId | null;
+  accountSummary?: ShopAccountSummary | null;
   sectionBottomY?: number;
   cfg: ShopPageSvgControls;
   onClearSpecial: () => void;
@@ -1346,16 +1552,18 @@ function MainBody({
   onInfoHandled: () => void;
   onBuy: (product: ShopProduct) => void;
   onElite: () => void;
+  vaultDecks?: ShopVaultDeckPreviewItem[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
-  vaultDeckItems?: ShopVaultDeckPreviewItem[];
-  renderVaultDeckPreview?: (item: ShopVaultDeckPreviewItem | null) => ReactNode;
 }) {
   const [selectedTileDetail, setSelectedTileDetail] = useState<TileItem | null>(null);
+  const [bottomTileDetail, setBottomTileDetail] = useState<TileItem | null>(null);
   const [activeInfoDetail, setActiveInfoDetail] = useState<'arenaCredits' | 'eliteBenefits' | null>(null);
   const [activeVaultGroupKey, setActiveVaultGroupKey] = useState(content.vaultShowcaseGroups[0]?.key ?? '');
   const [vaultTopSelectionKey, setVaultTopSelectionKey] = useState<string | null>(null);
-  const [activeDeckPreviewItem, setActiveDeckPreviewItem] = useState<ShopVaultDeckPreviewItem | null>(null);
+  const [expandedVaultGroupKey, setExpandedVaultGroupKey] = useState<string | null>(null);
+  const [selectedVaultDeckKey, setSelectedVaultDeckKey] = useState<string | null>(null);
   const [topRoutedBottomTab, setTopRoutedBottomTab] = useState<ShopTab | null>(null);
   const [bottomPageByTab, setBottomPageByTab] = useState<Partial<Record<ShopTab, number>>>({});
   const displayedInfoDetail = infoRequest ?? activeInfoDetail;
@@ -1364,26 +1572,80 @@ function MainBody({
   const bottomH = resolvedSectionBottomY - y - topH - cfg.mainBody.boxGap;
   const bottomY = y + topH + cfg.mainBody.boxGap;
   const displayedBottomTab = bottomPreviewTarget && bottomPreviewTarget !== 'Earn Free AC' ? bottomPreviewTarget : topRoutedBottomTab ?? nextSidePanelTab(activeTab, content);
+  const bottomPageSizeForTab = (tab: ShopTab) => {
+    if (tab === 'Treasury') return Math.max(1, Math.min(2, Math.round(cfg.mainBody.treasuryMaxVisible)));
+    if (tab === 'Elite') return Math.max(1, Math.min(2, Math.round(cfg.mainBody.passMaxVisible)));
+    return Math.max(1, Math.min(2, Math.round(cfg.mainBody.productMaxVisible)));
+  };
 
   const openInfoDetail = (mode: 'arenaCredits' | 'eliteBenefits') => {
     setSelectedTileDetail(null);
-    setActiveDeckPreviewItem(null);
+    setBottomTileDetail(null);
+    setExpandedVaultGroupKey(null);
+    setSelectedVaultDeckKey(null);
     setActiveInfoDetail(mode);
     onInfoHandled();
   };
 
   const openTileDetail = (item: TileItem) => {
+    setBottomTileDetail(null);
+    setExpandedVaultGroupKey(null);
+    setSelectedVaultDeckKey(null);
     setActiveInfoDetail(null);
-    setActiveDeckPreviewItem(null);
     onInfoHandled();
     setSelectedTileDetail(item);
   };
 
-  const closeBottomDetail = () => {
+  const openBottomTileDetail = (item: TileItem, tab: ShopTab, itemIndex: number) => {
+    setTopRoutedBottomTab(tab);
+    setBottomPageByTab(state => ({ ...state, [tab]: Math.max(0, Math.floor(itemIndex / bottomPageSizeForTab(tab))) }));
     setSelectedTileDetail(null);
     setActiveInfoDetail(null);
-    setActiveDeckPreviewItem(null);
+    setExpandedVaultGroupKey(null);
+    setSelectedVaultDeckKey(null);
+    setBottomTileDetail(item);
     onInfoHandled();
+  };
+
+  const closeBottomDetail = () => {
+    setSelectedTileDetail(null);
+    setBottomTileDetail(null);
+    setExpandedVaultGroupKey(null);
+    setSelectedVaultDeckKey(null);
+    setActiveInfoDetail(null);
+    onInfoHandled();
+  };
+
+  const openVaultGroupDetail = (group: ShopVaultShowcaseGroup) => {
+    setActiveVaultGroupKey(group.key);
+    setTopRoutedBottomTab('Vault');
+    setSelectedTileDetail(null);
+    setBottomTileDetail(null);
+    setActiveInfoDetail(null);
+    setSelectedVaultDeckKey(null);
+    setExpandedVaultGroupKey(group.key);
+    onInfoHandled();
+  };
+
+  const openVaultDeckDetail = (deck: ShopVaultDeckPreviewItem) => {
+    setActiveVaultGroupKey('decks');
+    setTopRoutedBottomTab('Vault');
+    setSelectedTileDetail(null);
+    setBottomTileDetail(null);
+    setActiveInfoDetail(null);
+    setSelectedVaultDeckKey(deck.key);
+    onInfoHandled();
+  };
+
+  const inspectBottomItem = (item: TileItem) => {
+    if (displayedBottomTab === 'Vault') {
+      const group = content.vaultShowcaseGroups.find(entry => entry.title === item.title);
+      if (group) {
+        openVaultGroupDetail(group);
+        return;
+      }
+    }
+    openTileDetail(item);
   };
 
   const actionForTab = (tab: ShopTab): { label: string; onAction: () => void } | undefined => {
@@ -1415,8 +1677,7 @@ function MainBody({
     const bottomTileItems = displayedBottomTab === 'Treasury' || displayedBottomTab === 'Elite'
       ? tilesForTab(products, displayedBottomTab, content)
       : [];
-    const bottomVaultGroup = content.vaultShowcaseGroups.find(group => group.key === activeVaultGroupKey) ?? content.vaultShowcaseGroups[0];
-    const bottomVaultItems = displayedBottomTab === 'Vault' ? bottomVaultGroup?.items ?? [] : [];
+    const bottomVaultItems = displayedBottomTab === 'Vault' ? content.vaultShowcaseGroups.map(vaultGroupToTile) : [];
     const bottomPlayAccessItems = displayedBottomTab === 'Play Access' ? content.sections['Play Access'].featured ?? content.sections['Play Access'].categories ?? [] : [];
     const bottomEventItems = displayedBottomTab === 'Events' ? content.sections.Events.featured ?? content.sections.Events.categories ?? [] : [];
     const bottomDetailItems = displayedBottomTab === 'Vault'
@@ -1430,13 +1691,16 @@ function MainBody({
     const setBottomPageIndex = (nextPageIndex: number) => {
       setBottomPageByTab(state => ({ ...state, [displayedBottomTab]: nextPageIndex }));
     };
-    const showVaultShowcase = displayedBottomTab === 'Vault' || (activeTab === 'Vault' && Boolean(vaultTopSelectionKey) && !bottomPreviewTarget);
+    const showVaultShowcase = activeTab === 'Vault' && displayedBottomTab === 'Vault' && Boolean(vaultTopSelectionKey) && !bottomPreviewTarget;
+    const selectedVaultDeck = vaultDecks?.find(deck => deck.key === selectedVaultDeckKey) ?? null;
     const routeTopCardToBottom = (tab: ShopTab, itemIndex: number) => {
       setTopRoutedBottomTab(tab);
-      setBottomPageByTab(state => ({ ...state, [tab]: Math.max(0, Math.floor(itemIndex / 3)) }));
+      setBottomPageByTab(state => ({ ...state, [tab]: Math.max(0, Math.floor(itemIndex / bottomPageSizeForTab(tab))) }));
       setSelectedTileDetail(null);
+      setBottomTileDetail(null);
+      setExpandedVaultGroupKey(null);
+      setSelectedVaultDeckKey(null);
       setActiveInfoDetail(null);
-      setActiveDeckPreviewItem(null);
       onInfoHandled();
     };
     const handleTopCardAction = (card: ShopMainCarouselCardItem) => {
@@ -1452,18 +1716,21 @@ function MainBody({
       if (activeTab === 'Play Access') {
         const tileIndex = topPlayAccessItems.findIndex((item, index) => staticTopCardKey('play-access', item, index) === card.key);
         if (tileIndex < 0) return;
-        routeTopCardToBottom('Play Access', tileIndex);
+        const item = topPlayAccessItems[tileIndex];
+        if (item) openBottomTileDetail(item, 'Play Access', tileIndex);
         return;
       }
       if (activeTab === 'Events') {
         const tileIndex = topEventItems.findIndex((item, index) => staticTopCardKey('events', item, index) === card.key);
         if (tileIndex < 0) return;
-        routeTopCardToBottom('Events', tileIndex);
+        const item = topEventItems[tileIndex];
+        if (item) openBottomTileDetail(item, 'Events', tileIndex);
         return;
       }
       const tileIndex = topTileItems.findIndex((item, index) => tileCardKey(item, index) === card.key);
       if (tileIndex < 0) return;
-      routeTopCardToBottom(activeTab, tileIndex);
+      const item = topTileItems[tileIndex];
+      if (item) openBottomTileDetail(item, activeTab, tileIndex);
     };
     if (showEarnRewards) {
       return (
@@ -1495,39 +1762,90 @@ function MainBody({
           content={content}
           cfg={cfg}
           acBalance={acBalance}
+          accountSummary={accountSummary}
           onClose={onClearRightPanelDetail}
           onElite={onElite}
         />
       );
     }
 
-    if (activeDeckPreviewItem) {
+    if (selectedVaultDeck) {
       return (
-        <VaultDeckPreviewLayer
+        <ShopDeckPreviewLayer
+          key={selectedVaultDeck.key}
           x={bottomFrameBounds.x}
           y={y}
           w={bottomFrameBounds.w}
           h={resolvedSectionBottomY - y}
+          deck={selectedVaultDeck}
           cfg={cfg}
-          deckItem={activeDeckPreviewItem}
-          renderDeckPreview={renderVaultDeckPreview}
-          onClose={() => setActiveDeckPreviewItem(null)}
+          resolveDeckImageUrl={resolveDeckImageUrl}
+          onClose={() => setSelectedVaultDeckKey(null)}
+        />
+      );
+    }
+
+    if (expandedVaultGroupKey) {
+      return (
+        <VaultShowcaseLayer
+          x={bottomFrameBounds.x}
+          y={y}
+          w={bottomFrameBounds.w}
+          h={resolvedSectionBottomY - y}
+          content={content}
+          cfg={cfg}
+          activeGroupKey={expandedVaultGroupKey}
+          onGroupChange={(key) => {
+            setActiveVaultGroupKey(key);
+            setExpandedVaultGroupKey(key);
+          }}
+          onGroupInspect={(group) => {
+            setActiveVaultGroupKey(group.key);
+            setExpandedVaultGroupKey(group.key);
+          }}
+          deckPreviews={vaultDecks}
+          resolveDeckImageUrl={resolveDeckImageUrl}
+          onDeckInspect={openVaultDeckDetail}
+          rightActionLabel="Back To Shop"
+          onRightAction={closeBottomDetail}
+        />
+      );
+    }
+
+    if (displayedInfoDetail) {
+      return (
+        <InfoDetailLayer
+          x={bottomFrameBounds.x}
+          y={y}
+          w={bottomFrameBounds.w}
+          h={resolvedSectionBottomY - y}
+          mode={displayedInfoDetail}
+          content={content}
+          cfg={cfg}
+          onClose={closeBottomDetail}
         />
       );
     }
 
     if (selectedTileDetail) {
       return (
-        <TileDetailLayer
+        <BottomDetailCardsLayer
           x={bottomFrameBounds.x}
           y={y}
           w={bottomFrameBounds.w}
           h={resolvedSectionBottomY - y}
-          item={selectedTileDetail}
+          label={displayedBottomTab}
+          items={bottomDetailItems.length > 0 ? bottomDetailItems : [selectedTileDetail]}
+          expandedItem={selectedTileDetail}
           content={content}
           cfg={cfg}
-          onClose={closeBottomDetail}
+          loadingId={loadingId}
+          pageIndex={bottomPageIndex}
+          rightActionLabel="Back To Shop"
+          onRightAction={closeBottomDetail}
+          onInspect={inspectBottomItem}
           onBuy={onBuy}
+          onPageChange={setBottomPageIndex}
         />
       );
     }
@@ -1535,8 +1853,25 @@ function MainBody({
     return (
       <g>
         <MainTop x={topFrameBounds.x} y={y} w={topFrameBounds.w} h={topH} label={activeTab} cards={topCards} onCardAction={handleTopCardAction} rightActionLabel={topAction?.label} onRightAction={topAction?.onAction} />
-        {displayedInfoDetail ? (
-          <InfoDetailLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} mode={displayedInfoDetail} content={content} cfg={cfg} onClose={closeBottomDetail} />
+        {bottomTileDetail ? (
+          <BottomDetailCardsLayer
+            x={bottomFrameBounds.x}
+            y={bottomY}
+            w={bottomFrameBounds.w}
+            h={bottomH}
+            label={displayedBottomTab}
+            items={bottomDetailItems.length > 0 ? bottomDetailItems : [bottomTileDetail]}
+            expandedItem={bottomTileDetail}
+            content={content}
+            cfg={cfg}
+            loadingId={loadingId}
+            pageIndex={bottomPageIndex}
+            rightActionLabel={`Back To ${displayedBottomTab}`}
+            onRightAction={() => setBottomTileDetail(null)}
+            onInspect={inspectBottomItem}
+            onBuy={onBuy}
+            onPageChange={setBottomPageIndex}
+          />
         ) : showVaultShowcase ? (
           <VaultShowcaseLayer
             x={bottomFrameBounds.x}
@@ -1546,17 +1881,17 @@ function MainBody({
             content={content}
             cfg={cfg}
             activeGroupKey={activeVaultGroupKey}
-            vaultDeckItems={vaultDeckItems}
             onGroupChange={setActiveVaultGroupKey}
-            onGroupInspect={(group) => openTileDetail(vaultGroupToTile(group))}
-            onDeckPreview={(item) => {
-              setSelectedTileDetail(null);
-              setActiveInfoDetail(null);
-              setActiveDeckPreviewItem(item);
+            onGroupInspect={(group) => {
+              setActiveVaultGroupKey(group.key);
+              setExpandedVaultGroupKey(group.key);
             }}
+            deckPreviews={vaultDecks}
+            resolveDeckImageUrl={resolveDeckImageUrl}
+            onDeckInspect={openVaultDeckDetail}
           />
         ) : bottomDetailItems.length > 0 ? (
-          <BottomDetailCardsLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} items={bottomDetailItems} content={content} cfg={cfg} loadingId={loadingId} pageIndex={bottomPageIndex} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} onInspect={openTileDetail} onBuy={onBuy} onPageChange={setBottomPageIndex} />
+          <BottomDetailCardsLayer x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} items={bottomDetailItems} content={content} cfg={cfg} loadingId={loadingId} pageIndex={bottomPageIndex} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} onInspect={inspectBottomItem} onBuy={onBuy} onPageChange={setBottomPageIndex} />
         ) : (
           <MainBottom x={bottomFrameBounds.x} y={bottomY} w={bottomFrameBounds.w} h={bottomH} label={displayedBottomTab} rightActionLabel={bottomAction?.label} onRightAction={bottomAction?.onAction} />
         )}
@@ -1755,7 +2090,7 @@ function EarnRewardsBottomLayer({
   const [selectedQuestKey, setSelectedQuestKey] = useState(content.quests[0]?.key ?? '');
   const [actionQuestKey, setActionQuestKey] = useState<string | null>(null);
   const [spinnerOpen, setSpinnerOpen] = useState(false);
-  const body = mainBottomOverlayContentRect(x, y, w, h);
+  const body = mainBottomOverlayContentRect(x, y, w, h, false);
   const gap = 10;
   const pad = 10;
   const contentX = body.x + pad;
@@ -1797,6 +2132,7 @@ function EarnRewardsBottomLayer({
         count={content.quests.length}
         rightActionLabel={content.uiCopy.earnRewards.backLabel}
         onRightAction={onClose}
+        showNavigation={false}
       />
       {selectedQuest ? <EarnRewardFrameCard x={contentX} y={contentY} w={featureW} h={contentH} quest={selectedQuest} cfg={cfg} featured selected onAction={openQuestAction} dailyRewardStatus={dailyRewardStatus} /> : null}
       {visibleQuests.map((quest, index) => {
@@ -1856,10 +2192,11 @@ export function ShopPageSvgSurface({
   onBuy,
   controls,
   content,
+  vaultDecks,
+  resolveDeckImageUrl,
+  accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
-  vaultDeckItems,
-  renderVaultDeckPreview,
 }: ShopPageSvgSurfaceProps) {
   const cfg = useMemo(() => normalizeShopPageSvgControls(controls), [controls]);
   const shopContent = useMemo(() => normalizeShopPageContent(content), [content]);
@@ -2000,8 +2337,7 @@ export function ShopPageSvgSurface({
       return;
     }
     setSpecialView(null);
-    setBottomPreviewTarget(null);
-    onTabChange(row.tab);
+    setBottomPreviewTarget(row.tab);
     setBottomPreviewVersion(version => version + 1);
   };
 
@@ -2015,6 +2351,13 @@ export function ShopPageSvgSurface({
     setInfoRequest(null);
     setBottomPreviewTarget(null);
     setRightDetailTarget(rightPreviewTarget);
+  };
+  const openActivePassDetail = () => {
+    setSpecialView(null);
+    setInfoRequest(null);
+    setBottomPreviewTarget(null);
+    setRightPreviewTarget('pass');
+    setRightDetailTarget('pass');
   };
   const previewLocalIndex = wrapPreviewIndex(previewStart, previewRowCount);
   const previewCycleIndex = previewRowCount > 0 ? Math.floor(previewStart / previewRowCount) : 0;
@@ -2101,7 +2444,7 @@ export function ShopPageSvgSurface({
             onTabChange('Treasury');
           }}
         />
-        <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerSideW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onElite={() => selectTab('Elite')} />
+        <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerSideW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onActivePass={openActivePassDetail} />
         <MainBody
           key={`${activeTab}-${bottomPreviewVersion}-${rightDetailTarget ?? 'right-preview-idle'}`}
           x={metrics.mainX}
@@ -2116,6 +2459,7 @@ export function ShopPageSvgSurface({
           infoRequest={infoRequest}
           bottomPreviewTarget={bottomPreviewTarget}
           rightPanelDetail={rightDetailTarget}
+          accountSummary={accountSummary}
           sectionBottomY={mainSectionBottomY}
           cfg={cfg}
           onClearSpecial={() => setSpecialView(null)}
@@ -2124,12 +2468,12 @@ export function ShopPageSvgSurface({
           onInfoHandled={() => setInfoRequest(null)}
           onBuy={onBuy}
           onElite={() => selectTab('Elite')}
+          vaultDecks={vaultDecks}
+          resolveDeckImageUrl={resolveDeckImageUrl}
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
-          vaultDeckItems={vaultDeckItems}
-          renderVaultDeckPreview={renderVaultDeckPreview}
         />
-        <RightSidePanel x={metrics.rightX} y={cfg.layout.mainY} w={metrics.rightW} h={rightPanelH} content={shopContent} cfg={cfg} acBalance={acBalance} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} />
+        <RightSidePanel x={metrics.rightX} y={cfg.layout.mainY} w={metrics.rightW} h={rightPanelH} content={shopContent} cfg={cfg} acBalance={acBalance} accountSummary={accountSummary} active={rightPreviewTarget} onActiveChange={selectRightPreview} onPreviewOpen={openRightPreviewDetail} />
         <BottomPanel
           y={bottomPreviewY}
           h={cfg.layout.bottomPreviewH}

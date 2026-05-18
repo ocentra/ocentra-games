@@ -1178,6 +1178,10 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   showLearnMore = true,
   rightActionLabel,
   onRightAction,
+  showNavigation = true,
+  navigationPageCount,
+  navigationPageIndex,
+  onNavigationPageChange,
 }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const rawId = useId().replace(/:/g, '');
@@ -1185,6 +1189,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const [measuredWidth, setMeasuredWidth] = useState(1600);
   const [activeTabId, setActiveTabId] = useState<ShowcaseTabId>('featured');
   const [hoverTabId, setHoverTabId] = useState<ShowcaseTabId | null>(null);
+  const [rightActionHovered, setRightActionHovered] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [prevImageIndex, setPrevImageIndex] = useState<number | null>(null);
@@ -1216,7 +1221,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
     },
     [activeTab.id, activeTab.label, isLoading],
   );
-  const activeGames = activeTab.games.length > 0 ? activeTab.games : [placeholderGame];
+  const activeGames = showNavigation && activeTab.games.length > 0 ? activeTab.games : [placeholderGame];
   const currentSlideIndex = activeGames.length > 0 ? Math.min(activeSlideIndex, activeGames.length - 1) : 0;
   const currentGame = activeGames[currentSlideIndex] ?? placeholderGame;
   const currentImages = currentGame ? getGameImages(currentGame) : [];
@@ -1336,37 +1341,50 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const tabFirstSize = tabTextSize + c.header.tabFirstBoost;
   const tabsH = Math.max(c.header.minTabsH, tabFirstSize + 18);
   const lineY = stageY + tabsH;
-  const indicatorH = c.footer.height;
-  const footerY = stageY + stageH - indicatorH;
-  const bodyY = lineY + c.body.topGap;
-  const bodyH = footerY - c.body.bottomGap - bodyY;
   const bodyX = stageX + bodyInsetX;
   const bodyW = stageW - bodyInsetX * 2;
   const leftW = bodyW;
+  const cardVisibleCount = cards.length > 0
+    ? getShopCardVisibleCount(leftW, cards.length, c.sideA.cardGap, c.sideA.cardMinW)
+    : 0;
+  const cardPageCount = cardVisibleCount > 0 ? Math.max(1, Math.ceil(cards.length / cardVisibleCount)) : 1;
+  const activePageCount = cards.length > 0 ? cardPageCount : activeGames.length;
+  const hasNavigation = showNavigation;
+  const indicatorH = hasNavigation ? c.footer.height : 0;
+  const footerY = stageY + stageH - indicatorH;
+  const bodyY = lineY + c.body.topGap;
+  const bodyH = footerY - c.body.bottomGap - bodyY;
   const hasCardPage = cards.length > 0;
   const topH = hasCardPage ? footerY - bodyY : bodyH;
   const bodyRadius = c.body.radius;
   const mediaClipPathId = ids('mediaClip');
   const aPath = roundedRectPath(bodyX, bodyY, bodyW, topH, bodyRadius);
-  const cardVisibleCount = cards.length > 0
-    ? getShopCardVisibleCount(leftW, cards.length, c.sideA.cardGap, c.sideA.cardMinW)
-    : 0;
-  const cardPageCount = cardVisibleCount > 0 ? Math.max(1, Math.ceil(cards.length / cardVisibleCount)) : 1;
   const currentCardPageIndex = cards.length > 0 ? clamp(activeSlideIndex, 0, cardPageCount - 1) : 0;
   const visibleCards = cards.length > 0
     ? cards.slice(currentCardPageIndex * cardVisibleCount, currentCardPageIndex * cardVisibleCount + cardVisibleCount)
     : [];
-  const activePageCount = cards.length > 0 ? cardPageCount : activeGames.length;
   const currentPageIndex = cards.length > 0 ? currentCardPageIndex : currentSlideIndex;
+  const hasExternalNavigation = typeof navigationPageCount === 'number' && typeof navigationPageIndex === 'number' && Boolean(onNavigationPageChange);
+  const resolvedPageCount = hasExternalNavigation ? Math.max(1, Math.round(navigationPageCount ?? 1)) : activePageCount;
+  const resolvedPageIndex = hasExternalNavigation ? clamp(Math.round(navigationPageIndex ?? 0), 0, resolvedPageCount - 1) : currentPageIndex;
+  const goToNavigationPage = (pageIndex: number) => {
+    if (resolvedPageCount <= 0) return;
+    const safePageIndex = clamp(pageIndex, 0, resolvedPageCount - 1);
+    if (hasExternalNavigation) {
+      onNavigationPageChange?.(safePageIndex);
+      return;
+    }
+    goToSlide(safePageIndex, resolvedPageCount);
+  };
   const goPrev = () => {
-    if (activePageCount <= 1) return;
-    goToSlide(currentPageIndex === 0 ? activePageCount - 1 : currentPageIndex - 1, activePageCount);
+    if (resolvedPageCount <= 1) return;
+    goToNavigationPage(resolvedPageIndex === 0 ? resolvedPageCount - 1 : resolvedPageIndex - 1);
   };
   const goNext = () => {
-    if (activePageCount <= 1) return;
-    goToSlide(currentPageIndex >= activePageCount - 1 ? 0 : currentPageIndex + 1, activePageCount);
+    if (resolvedPageCount <= 1) return;
+    goToNavigationPage(resolvedPageIndex >= resolvedPageCount - 1 ? 0 : resolvedPageIndex + 1);
   };
-  const visibleIndicatorCount = Math.min(activePageCount, c.footer.maxVisible);
+  const visibleIndicatorCount = Math.min(resolvedPageCount, c.footer.maxVisible);
   const visibleIndicatorIndexes = Array.from({ length: visibleIndicatorCount }, (_, index) => index);
   const inactiveIndicatorW = c.footer.inactiveW;
   const activeIndicatorW = inactiveIndicatorW * c.footer.activeMultiplier;
@@ -1374,7 +1392,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const indicatorMinGap = c.footer.minGap;
   const indicatorTrackX = bodyX + c.footer.trackInset;
   const indicatorTrackW = bodyW - c.footer.trackInset * 2;
-  const indicatorWidthSum = visibleIndicatorIndexes.reduce((sum, indicatorIndex) => sum + (indicatorIndex === currentPageIndex ? activeIndicatorW : inactiveIndicatorW), 0);
+  const indicatorWidthSum = visibleIndicatorIndexes.reduce((sum, indicatorIndex) => sum + (indicatorIndex === resolvedPageIndex ? activeIndicatorW : inactiveIndicatorW), 0);
   const indicatorGap = visibleIndicatorIndexes.length > 1 ? Math.max(2, Math.min(indicatorMinGap, (indicatorTrackW - indicatorWidthSum) / (visibleIndicatorIndexes.length - 1))) : indicatorMinGap;
   const actualIndicatorW = indicatorWidthSum + Math.max(0, visibleIndicatorIndexes.length - 1) * indicatorGap;
   const indicatorsStartX = indicatorTrackX + (indicatorTrackW - actualIndicatorW) / 2;
@@ -1384,8 +1402,21 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const bottomBadgeY = bodyY + topH - c.sideA.bottomBadgeBottom;
   const learnMoreX = bodyX + leftW - c.sideA.learnMoreW - c.sideA.learnMoreRight;
   const learnMoreY = bodyY + topH - c.sideA.learnMoreH - c.sideA.learnMoreBottom;
-  const rightActionX = bodyX + bodyW - 6;
-  const rightActionY = lineY - 13;
+  const rightActionTextSize = Math.max(9.4, Math.min(11.8, tabTextSize * 0.64));
+  const rightActionW = rightActionLabel ? Math.max(88, Math.min(178, rightActionLabel.length * rightActionTextSize * 0.58 + 28)) : 0;
+  const rightActionH = Math.max(20, Math.min(26, tabsH - 12));
+  const rightActionX = bodyX + bodyW - rightActionW - 6;
+  const rightActionY = Math.max(stageY + c.header.tabTop + 5, lineY - rightActionH - 7);
+  const rightActionEnabled = Boolean(onRightAction);
+  const rightActionStroke = rightActionEnabled && rightActionHovered ? c.colors.tabHover : shopProductCardColors.buttonStroke;
+  const rightActionFill = rightActionEnabled && rightActionHovered ? shopProductCardColors.buttonHoverFill : shopProductCardColors.buttonFill;
+  const handleRightActionKeyDown = (event: React.KeyboardEvent<SVGGElement>) => {
+    if (!onRightAction) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onRightAction();
+    }
+  };
 
   const mediaSlot: FeaturedShowcaseMediaSlot = {
     game: currentGame,
@@ -1412,8 +1443,12 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
         <svg viewBox={`0 0 ${vw} ${vh}`} width="100%" preserveAspectRatio="xMidYMin meet" shapeRendering="geometricPrecision" textRendering="geometricPrecision" style={{ display: 'block', height: 'auto', width: '100%' }}>
           <ShowcaseDefs ids={ids} />
 
-          <SvgArrowButton x={edgeInset} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="left" onClick={goPrev} ids={ids} />
-          <SvgArrowButton x={vw - edgeInset - arrowW} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="right" onClick={goNext} ids={ids} />
+          {hasNavigation ? (
+            <>
+              <SvgArrowButton x={edgeInset} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="left" onClick={goPrev} ids={ids} />
+              <SvgArrowButton x={vw - edgeInset - arrowW} y={stageY + stageH / 2 - arrowH / 2} width={arrowW} height={arrowH} radius={c.arrows.radius} hoverColor={c.colors.arrowHover} direction="right" onClick={goNext} ids={ids} />
+            </>
+          ) : null}
 
           <rect x={stageX} y={stageY} width={stageW} height={stageH} rx={c.overall.stageRadius} fill="#000000" opacity="0.28" filter={`url(#${ids('skeletonShadow')})`} pointerEvents="none" />
           <g>
@@ -1471,20 +1506,30 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
 
             {rightActionLabel ? (
               <g
+                role="button"
+                tabIndex={rightActionEnabled ? 0 : -1}
+                aria-disabled={!rightActionEnabled}
                 onClick={onRightAction}
-                style={{ cursor: onRightAction ? 'pointer' : 'default' }}
-                pointerEvents={onRightAction ? 'auto' : 'none'}
+                onKeyDown={handleRightActionKeyDown}
+                onMouseEnter={() => setRightActionHovered(true)}
+                onMouseLeave={() => setRightActionHovered(false)}
+                style={{ cursor: rightActionEnabled ? 'pointer' : 'default' }}
+                pointerEvents={rightActionEnabled ? 'auto' : 'none'}
               >
+                {rightActionHovered && rightActionEnabled ? (
+                  <rect x={rightActionX - 3} y={rightActionY - 3} width={rightActionW + 6} height={rightActionH + 6} rx="0" fill="none" stroke={rightActionStroke} strokeWidth="2.2" opacity="0.28" filter={`url(#${ids('cyanGlow')})`} />
+                ) : null}
+                <rect x={rightActionX} y={rightActionY} width={rightActionW} height={rightActionH} rx="0" fill={rightActionFill} stroke={rightActionStroke} strokeWidth="1.45" opacity={rightActionEnabled ? 1 : 0.62} />
                 <text
-                  x={rightActionX}
-                  y={rightActionY}
-                  textAnchor="end"
+                  x={rightActionX + rightActionW / 2}
+                  y={rightActionY + rightActionH / 2 + 1}
+                  textAnchor="middle"
+                  dominantBaseline="central"
                   fontFamily="Arial, sans-serif"
-                  fontSize={Math.max(10, tabTextSize * 0.58)}
+                  fontSize={rightActionTextSize}
                   fontWeight="800"
-                  fill={onRightAction ? c.colors.tabHover : '#9bd9ff'}
-                  opacity={onRightAction ? 0.94 : 0.64}
-                  filter={onRightAction ? `url(#${ids('cyanGlow')})` : undefined}
+                  fill={rightActionEnabled ? '#dff8ff' : '#9bd9ff'}
+                  opacity={rightActionEnabled ? 0.96 : 0.64}
                 >
                   {rightActionLabel}
                 </text>
@@ -1525,7 +1570,7 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
               <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyRadius} fill="none" stroke={c.colors.bodyStroke} strokeWidth={c.body.outlineWidth} />
             )}
 
-            {c.footer.showLine ? (
+            {hasNavigation && c.footer.showLine ? (
               <line
                 x1={bodyX + footerLineInset}
                 y1={footerY}
@@ -1536,19 +1581,21 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                 strokeOpacity={c.footer.lineOpacity}
               />
             ) : null}
-            <g>
-              {visibleIndicatorIndexes.map((indicatorIndex, visibleIndex) => {
-                const isActive = indicatorIndex === currentPageIndex;
-                const width = isActive ? activeIndicatorW : inactiveIndicatorW;
-                const x = indicatorsStartX + visibleIndicatorIndexes.slice(0, visibleIndex).reduce((sum, priorIndex) => sum + (priorIndex === currentPageIndex ? activeIndicatorW : inactiveIndicatorW), 0) + visibleIndex * indicatorGap;
-                return (
-                  <g key={indicatorIndex} onClick={() => goToSlide(indicatorIndex, activePageCount)} style={{ cursor: 'pointer' }} filter={isActive ? `url(#${ids('cyanGlow')})` : undefined}>
-                    <rect x={x - indicatorGap * 0.5} y={indicatorsY - 7} width={width + indicatorGap} height={indicatorPillH + 14} rx={(indicatorPillH + 14) / 2} fill="transparent" opacity="0" pointerEvents="all" />
-                    <rect x={x} y={indicatorsY} width={width} height={indicatorPillH} rx={indicatorPillH / 2} fill={isActive ? `url(#${ids('footerSelectedPill')})` : 'transparent'} stroke={isActive ? '#ffe187' : '#64d8ff'} strokeWidth={isActive ? 1.7 : 1.25} strokeOpacity={isActive ? 0.95 : 0.58} />
-                  </g>
-                );
-              })}
-            </g>
+            {hasNavigation ? (
+              <g>
+                {visibleIndicatorIndexes.map((indicatorIndex, visibleIndex) => {
+                  const isActive = indicatorIndex === resolvedPageIndex;
+                  const width = isActive ? activeIndicatorW : inactiveIndicatorW;
+                  const x = indicatorsStartX + visibleIndicatorIndexes.slice(0, visibleIndex).reduce((sum, priorIndex) => sum + (priorIndex === resolvedPageIndex ? activeIndicatorW : inactiveIndicatorW), 0) + visibleIndex * indicatorGap;
+                  return (
+                    <g key={indicatorIndex} onClick={() => goToNavigationPage(indicatorIndex)} style={{ cursor: 'pointer' }} filter={isActive ? `url(#${ids('cyanGlow')})` : undefined}>
+                      <rect x={x - indicatorGap * 0.5} y={indicatorsY - 7} width={width + indicatorGap} height={indicatorPillH + 14} rx={(indicatorPillH + 14) / 2} fill="transparent" opacity="0" pointerEvents="all" />
+                      <rect x={x} y={indicatorsY} width={width} height={indicatorPillH} rx={indicatorPillH / 2} fill={isActive ? `url(#${ids('footerSelectedPill')})` : 'transparent'} stroke={isActive ? '#ffe187' : '#64d8ff'} strokeWidth={isActive ? 1.7 : 1.25} strokeOpacity={isActive ? 0.95 : 0.58} />
+                    </g>
+                  );
+                })}
+              </g>
+            ) : null}
           </g>
           {showBounds ? (
             <g pointerEvents="none">

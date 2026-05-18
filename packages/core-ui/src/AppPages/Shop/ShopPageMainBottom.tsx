@@ -17,6 +17,10 @@ type MainBottomProps = {
   onCardAction?: (card: ShopMainCarouselCardItem) => void;
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showNavigation?: boolean;
+  navigationPageCount?: number;
+  navigationPageIndex?: number;
+  onNavigationPageChange?: (pageIndex: number) => void;
 };
 
 type MainBottomCardProfile = {
@@ -121,7 +125,22 @@ function renderMainBottomGlass({ x, y, width, height }: FeaturedShowcaseMediaSlo
   );
 }
 
-export function MainBottom({ x, y, w, h, label, count = 0, cards, onCardAction, rightActionLabel, onRightAction }: MainBottomProps) {
+export function MainBottom({
+  x,
+  y,
+  w,
+  h,
+  label,
+  count = 0,
+  cards,
+  onCardAction,
+  rightActionLabel,
+  onRightAction,
+  showNavigation = true,
+  navigationPageCount,
+  navigationPageIndex,
+  onNavigationPageChange,
+}: MainBottomProps) {
   if (w <= 0 || h <= 0) return null;
   const controls = createMainBottomControls(w, h, label);
   const resolvedCards = cards ?? [];
@@ -155,6 +174,10 @@ export function MainBottom({ x, y, w, h, label, count = 0, cards, onCardAction, 
           showLearnMore={false}
           rightActionLabel={rightActionLabel}
           onRightAction={onRightAction}
+          showNavigation={showNavigation}
+          navigationPageCount={navigationPageCount}
+          navigationPageIndex={navigationPageIndex}
+          onNavigationPageChange={onNavigationPageChange}
           style={{ width: '100%' }}
         />
       </div>

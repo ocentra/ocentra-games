@@ -1,9 +1,8 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { roundedRectPath as lobbyRoundedRectPath } from '../Lobby/LobbyPageSvgGeometry';
 import { Txt, WrappedText } from './ShopPageSvgPrimitives';
 import { sectionFrameContentRect } from './ShopPageSectionFrameGeometry';
 import type { ShopPageSvgControls } from './ShopPageSvgSurfaceControls';
-import { alphaColor } from './ShopPageSvgUtils';
 
 function CarouselSideHandle({
   x,
@@ -92,15 +91,18 @@ function SectionFrameActionButton({
   onClick?: () => void;
 }) {
   const token = cfg.componentTokens.sectionFrame;
+  const [hovered, setHovered] = useState(false);
   const buttonH = Math.max(26, Math.min(32, token.tabH * 0.62));
   const buttonW = Math.max(112, Math.min(240, label.length * token.rightTextSize * 0.62 + 42));
   const buttonX = frameX + frameW - token.rightTextPad - buttonW;
   const buttonY = frameY + token.tabTop + Math.max(0, (token.tabH - buttonH) / 2);
+  const stroke = hovered ? accent : cfg.colors.buttonIdleStroke;
+  const fill = hovered ? cfg.colors.buttonHoverFill : cfg.colors.buttonIdleFill;
   return (
-    <g onClick={onClick} role="button" tabIndex={0} className="shop-page-svg-clickable">
-      <rect x={buttonX} y={buttonY} width={buttonW} height={buttonH} rx={6} fill={alphaColor(accent, 0.09)} stroke={accent} strokeWidth="1.05" strokeOpacity="0.62" />
-      <rect x={buttonX + 1} y={buttonY + 1} width={buttonW - 2} height={Math.max(6, buttonH * 0.35)} rx={5} fill={cfg.colors.frameTitleHighlightFill} stroke="none" opacity="0.5" />
-      <Txt x={buttonX + buttonW / 2} y={buttonY + buttonH / 2 + 0.5} anchor="middle" fill={cfg.colors.frameActionText} size={token.rightTextSize} weight={token.rightTextWeight} cfg={cfg}>{label}</Txt>
+    <g onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} role="button" tabIndex={0} className="shop-page-svg-clickable">
+      {hovered ? <rect x={buttonX - 3} y={buttonY - 3} width={buttonW + 6} height={buttonH + 6} rx="0" fill="none" stroke={stroke} strokeWidth="2.2" opacity="0.28" filter="url(#shopSoftGlow)" /> : null}
+      <rect x={buttonX} y={buttonY} width={buttonW} height={buttonH} rx="0" fill={fill} stroke={stroke} strokeWidth="1.45" strokeOpacity={hovered ? 0.95 : 0.72} />
+      <Txt x={buttonX + buttonW / 2} y={buttonY + buttonH / 2 + 0.5} anchor="middle" fill={cfg.colors.bodyText} size={token.rightTextSize} weight={token.rightTextWeight} cfg={cfg}>{label}</Txt>
     </g>
   );
 }

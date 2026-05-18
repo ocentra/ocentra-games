@@ -68,12 +68,13 @@ export function mainBottomOverlayContentRect(
   y: number,
   w: number,
   h: number,
+  showNavigation = true,
 ): { x: number; y: number; w: number; h: number } {
   const stageX = 18;
   const lineY = 44;
   const bodyInsetX = 10;
   const bodyY = lineY + 7;
-  const footerY = h - 20;
+  const footerY = showNavigation ? h - 20 : h - 6;
   return {
     x: x + stageX + bodyInsetX,
     y: y + bodyY,

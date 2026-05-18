@@ -57,9 +57,8 @@ function PreviewPanel({
   const bodyY = y + cfg.bottomPreview.headerH + token.cardInset;
   const bodyW = w - cfg.bottomPreview.sidePad * 2;
   const bodyH = itemH - token.cardInset;
-  const showLabels = row.tab !== 'Vault';
-  const footerH = showLabels ? Math.min(token.overlayMaxH, Math.max(token.overlayMinH, bodyH * token.overlayRatio)) : 0;
-  const artH = Math.max(34, showLabels ? bodyH - footerH : bodyH - token.cardInset);
+  const footerH = Math.min(token.overlayMaxH, Math.max(token.overlayMinH, bodyH * token.overlayRatio));
+  const artH = Math.max(34, bodyH - footerH);
   const labelBoxY = bodyH - footerH + token.labelBoxInsetY;
   const labelBoxH = Math.max(16, footerH - token.labelBoxInsetY * 2);
   const itemStep = itemW + cfg.bottomPreview.cardGap;
@@ -109,13 +108,9 @@ function PreviewPanel({
               <g key={`${item.key}-${index}`}>
                 <TransparentAssetImage x={artX} y={artY} w={artW} h={artBoxH} imageUrl={item.imageUrl} cfg={cfg} glow={hovered} />
                 <rect x={artX} y={artY} width={artW} height={artBoxH} rx={token.cardRadius} fill="none" stroke={row.accent} strokeWidth={token.panelStrokeWidth} strokeOpacity={token.imageStrokeOpacity} />
-                {showLabels ? (
-                  <>
-                    <rect x={labelBoxX} y={labelBoxY} width={labelBoxW} height={labelBoxH} rx={token.labelBoxRadius} fill="none" stroke={row.accent} strokeWidth={token.labelBoxGlowStrokeWidth} opacity={token.labelBoxGlowOpacity} filter="url(#shopSoftGlow)" />
-                    <rect x={labelBoxX} y={labelBoxY} width={labelBoxW} height={labelBoxH} rx={token.labelBoxRadius} fill={cfg.colors.tileFooterFill} stroke={row.accent} strokeWidth={token.labelBoxStrokeWidth} strokeOpacity=".9" />
-                    <Txt x={labelBoxX + labelBoxW / 2} y={labelBoxY + labelBoxH / 2 + 0.5} anchor="middle" size={labelFontSize} weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{item.label}</Txt>
-                  </>
-                ) : null}
+                <rect x={labelBoxX} y={labelBoxY} width={labelBoxW} height={labelBoxH} rx={token.labelBoxRadius} fill="none" stroke={row.accent} strokeWidth={token.labelBoxGlowStrokeWidth} opacity={token.labelBoxGlowOpacity} filter="url(#shopSoftGlow)" />
+                <rect x={labelBoxX} y={labelBoxY} width={labelBoxW} height={labelBoxH} rx={token.labelBoxRadius} fill={cfg.colors.tileFooterFill} stroke={row.accent} strokeWidth={token.labelBoxStrokeWidth} strokeOpacity=".9" />
+                <Txt x={labelBoxX + labelBoxW / 2} y={labelBoxY + labelBoxH / 2 + 0.5} anchor="middle" size={labelFontSize} weight="900" fill={cfg.colors.bodyText} cfg={cfg}>{item.label}</Txt>
               </g>
             );
           })}

@@ -75,6 +75,10 @@ import {
   type ShopPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls'
 import {
+  normalizeShopPageContent,
+  type ShopPageContentData,
+} from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent'
+import {
   AdminUsersPageContent,
   CompetitionPageContent,
   LobbyPageContent,
@@ -1491,6 +1495,9 @@ type AssetCatalogPreviewProps = {
 }
 
 type PageLayoutPreviewData = Partial<PageLayoutDocument>
+type ShopPageLayoutContentSource = {
+  shopContent?: Partial<ShopPageContentData> | null
+}
 
 type PagePreviewResolutionOption = {
   label: string
@@ -1526,6 +1533,12 @@ const PAGE_PREVIEW_CANVAS_PADDING = 40
 
 function clampPreviewNumber(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
+}
+
+function readShopPageLayoutContent(
+  document: PageLayoutPreviewData | null | undefined
+): Partial<ShopPageContentData> | null | undefined {
+  return (document as ShopPageLayoutContentSource | null | undefined)?.shopContent
 }
 
 function createDefaultPagePreviewCameraState(): LayoutEditorCanvasCameraState {
@@ -1788,6 +1801,7 @@ function PageLayoutMainAppPreview({
   lobbyControls,
   authControls,
   shopControls,
+  shopContent,
   lobbySampleGameId = null,
   lobbySampleGameName = null,
   lobbyGameTagline = null,
@@ -1804,6 +1818,7 @@ function PageLayoutMainAppPreview({
   lobbyControls?: LobbyPageSvgControls
   authControls?: AuthPageSvgControls
   shopControls?: ShopPageSvgControls
+  shopContent?: Partial<ShopPageContentData> | null
   lobbySampleGameId?: string | null
   lobbySampleGameName?: string | null
   lobbyGameTagline?: string | null
@@ -1844,6 +1859,10 @@ function PageLayoutMainAppPreview({
     () => normalizeShopPageSvgControls(shopControls ?? document.shopControls as Partial<ShopPageSvgControls> | undefined),
     [shopControls, document.shopControls]
   )
+  const resolvedShopContent = useMemo(
+    () => normalizeShopPageContent(shopContent ?? readShopPageLayoutContent(document)),
+    [document, shopContent]
+  )
   const authPreviewAvatarOptions = useMemo(
     () => Object.entries(avatarImageById)
       .map(([key, url]) => ({ id: Number(key), url: url as string }))
@@ -1877,6 +1896,7 @@ function PageLayoutMainAppPreview({
         onClearError={() => undefined}
         onBuy={() => undefined}
         layoutControls={resolvedShopControls}
+        shopContent={resolvedShopContent}
       />
     ) : kind === 'social' ? (
       <SocialPageContent
@@ -2777,6 +2797,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     () => normalizeShopPageSvgControls(pageLayoutData?.shopControls as Partial<ShopPageSvgControls> | undefined),
     [pageLayoutData]
   )
+  const initialShopPageLayoutContent = useMemo(
+    () => normalizeShopPageContent(readShopPageLayoutContent(pageLayoutData)),
+    [pageLayoutData]
+  )
   const initialPreviewSampleGameId =
     isSelectedGameLayout || isLobbyPageLayout
       ? pageLayoutGameId ||
@@ -2877,6 +2901,8 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     useState<AuthPageSvgControls>(() => initialAuthPageLayoutControls)
   const [shopPageLayoutControls, setShopPageLayoutControls] =
     useState<ShopPageSvgControls>(() => initialShopPageLayoutControls)
+  const [shopPageLayoutContent, setShopPageLayoutContent] =
+    useState<ShopPageContentData>(() => initialShopPageLayoutContent)
   const [pageLayoutBoundsOverlay, setPageLayoutBoundsOverlay] = useState(false)
   const pageLayoutViewportFrameRef = useRef<PageLayoutViewportFrameHandle | null>(null)
   const [pageLayoutPreviewResolution, setPageLayoutPreviewResolution] = useState('fit')
@@ -2934,6 +2960,9 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   )
   const shopPageLayoutControlsRef = useRef<ShopPageSvgControls>(
     initialShopPageLayoutControls
+  )
+  const shopPageLayoutContentRef = useRef<ShopPageContentData>(
+    initialShopPageLayoutContent
   )
   const headerConfigOverrideRef = useRef<SerializedUnifiedHeaderConfig | null>(null)
   const homepageContentFrameRef = useRef<HTMLDivElement | null>(null)
@@ -3065,6 +3094,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
   }, [shopPageLayoutControls])
 
   useEffect(() => {
+    shopPageLayoutContentRef.current = shopPageLayoutContent
+  }, [shopPageLayoutContent])
+
+  useEffect(() => {
     selectedGameContentPlanRef.current = selectedGameContentPlan
   }, [selectedGameContentPlan])
 
@@ -3110,9 +3143,10 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
     }
     const timeoutId = window.setTimeout(() => {
       setShopPageLayoutControls(initialShopPageLayoutControls)
+      setShopPageLayoutContent(initialShopPageLayoutContent)
     }, 0)
     return () => window.clearTimeout(timeoutId)
-  }, [initialShopPageLayoutControls, isShopPageLayout])
+  }, [initialShopPageLayoutContent, initialShopPageLayoutControls, isShopPageLayout])
 
   useEffect(() => {
     selectedGamePreviewSampleGameIdRef.current = selectedGamePreviewSampleGameId
@@ -3453,6 +3487,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         channel.postMessage({
           type: 'state',
           controls: shopPageLayoutControlsRef.current,
+          content: shopPageLayoutContentRef.current,
         } satisfies ShopPageLayoutControlsMessage)
         return
       }
@@ -3461,6 +3496,11 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
         setShopPageLayoutControls(
           normalizeShopPageSvgControls(event.data.controls)
         )
+        if (event.data.content) {
+          setShopPageLayoutContent(
+            normalizeShopPageContent(event.data.content)
+          )
+        }
       }
     }
     channel.addEventListener('message', handler)
@@ -4958,6 +4998,7 @@ export const AssetCatalogPreview: React.FC<AssetCatalogPreviewProps> = ({
           lobbyControls={lobbyPageLayoutControls}
           authControls={authPageLayoutControls}
           shopControls={shopPageLayoutControls}
+          shopContent={shopPageLayoutContent}
           lobbySampleGameId={selectedGameId}
           lobbySampleGameName={selectedGame?.home.name ?? selectedGame?.entry.displayName ?? (selectedGameId ? null : 'Template')}
           lobbyGameTagline={lobbyHeroMedia?.tagline ?? null}

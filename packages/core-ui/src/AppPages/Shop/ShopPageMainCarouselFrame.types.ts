@@ -261,6 +261,10 @@ export type FeaturedGameShowcaseProps = {
   showLearnMore?: boolean;
   rightActionLabel?: string;
   onRightAction?: () => void;
+  showNavigation?: boolean;
+  navigationPageCount?: number;
+  navigationPageIndex?: number;
+  onNavigationPageChange?: (pageIndex: number) => void;
 };
 
 export const DEFAULT_FEATURED_SHOWCASE_CONTROLS: FeaturedShowcaseControls = {

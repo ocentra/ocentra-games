@@ -10,7 +10,13 @@ import type {
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
-import type { ShopProduct, ShopTab, ShopVaultDeckPreviewItem } from './Shop/ShopPageSvgTypes';
+import type {
+  ShopAccountSummary,
+  ShopDeckImageResolver,
+  ShopProduct,
+  ShopTab,
+  ShopVaultDeckPreviewItem,
+} from './Shop/ShopPageSvgTypes';
 import type {
   LobbyAddAISeatDraft,
   LobbyCreateRoomDraft,
@@ -35,7 +41,13 @@ export type {
 } from './AppPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
-export type { ShopProduct, ShopTab, ShopVaultDeckPreviewItem } from './Shop/ShopPageSvgTypes';
+export type {
+  ShopAccountSummary,
+  ShopDeckImageResolver,
+  ShopProduct,
+  ShopTab,
+  ShopVaultDeckPreviewItem,
+} from './Shop/ShopPageSvgTypes';
 export type {
   LobbyAddAISeatDraft,
   LobbyChatMessageItem,
@@ -161,6 +173,9 @@ type LobbyPageSurfaceControlProps = {
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
   shopContent?: Partial<ShopPageContentData> | null;
+  vaultDecks?: ShopVaultDeckPreviewItem[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  accountSummary?: ShopAccountSummary | null;
 };
 
 function formatValue(value: unknown): string {
@@ -797,10 +812,11 @@ export function ShopPageContent({
   onBuy,
   layoutControls,
   shopContent,
+  vaultDecks,
+  resolveDeckImageUrl,
+  accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
-  vaultDeckItems,
-  renderVaultDeckPreview,
 }: {
   activeTab: ShopTab;
   products: ShopProduct[];
@@ -813,8 +829,6 @@ export function ShopPageContent({
   onBuy: (product: ShopProduct) => void;
   dailyRewardStatus?: LobbyRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
-  vaultDeckItems?: ShopVaultDeckPreviewItem[];
-  renderVaultDeckPreview?: (item: ShopVaultDeckPreviewItem | null) => ReactNode;
 } & ShopPageSurfaceControlProps) {
   return (
     <ShopPageSvgSurface
@@ -829,10 +843,11 @@ export function ShopPageContent({
       onBuy={onBuy}
       controls={layoutControls}
       content={shopContent}
+      vaultDecks={vaultDecks}
+      resolveDeckImageUrl={resolveDeckImageUrl}
+      accountSummary={accountSummary}
       dailyRewardStatus={dailyRewardStatus}
       onDailyRewardSpin={onDailyRewardSpin}
-      vaultDeckItems={vaultDeckItems}
-      renderVaultDeckPreview={renderVaultDeckPreview}
     />
   );
 }

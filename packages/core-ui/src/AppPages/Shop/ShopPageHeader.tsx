@@ -183,7 +183,7 @@ export function TopStatsLayer({
   h,
   content,
   cfg,
-  onElite,
+  onActivePass,
 }: {
   x: number;
   y: number;
@@ -191,7 +191,7 @@ export function TopStatsLayer({
   h: number;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
-  onElite: () => void;
+  onActivePass: () => void;
 }) {
   const token = cfg.componentTokens.topStatsLayer;
   const visibleStats = w < 360 ? [] : w < 500 ? content.headerStats.slice(0, 1) : w < 640 ? content.headerStats.slice(0, 2) : content.headerStats;
@@ -218,7 +218,7 @@ export function TopStatsLayer({
       glowOpacity={token.panelGlowOpacity}
       cfg={cfg}
     >
-      <g onClick={onElite} role="button" tabIndex={0} className="shop-page-svg-clickable">
+      <g onClick={onActivePass} role="button" tabIndex={0} className="shop-page-svg-clickable">
         <rect x={x + token.padX} y={y + token.passY} width={passW} height={token.passH} rx={token.passRadius} fill={cfg.colors.headerFillAlt} stroke={cfg.colors.statsPassStroke} strokeWidth={token.passStrokeWidth} strokeOpacity={token.passStrokeOpacity} />
         <MiniIcon type="crown" x={x + token.padX + token.passIconX} y={y + token.passY + token.passIconY} size={token.passIconSize} tone="gold" cfg={cfg} />
         {!iconOnlyPass && !compactPass ? <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passTitleY} fill={cfg.colors.balanceText} size={token.passTitleSize} weight={token.passTitleWeight} cfg={cfg}>Active Pass</Txt> : null}
