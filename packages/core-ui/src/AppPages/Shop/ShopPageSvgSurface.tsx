@@ -1653,7 +1653,7 @@ function MainBody({
       return { label: 'What is Arena Credits?', onAction: () => openInfoDetail('arenaCredits') };
     }
     if (tab === 'Elite') {
-      return { label: 'Compare All Benefits >', onAction: () => openInfoDetail('eliteBenefits') };
+      return { label: 'Compare All Benefits', onAction: () => openInfoDetail('eliteBenefits') };
     }
     return undefined;
   };
