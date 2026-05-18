@@ -55,7 +55,6 @@ type DeckImageUrlMap = Record<string, string>;
 
 const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
 const SHOP_MARKETPLACE_HEADER_CONFIG = createShopMarketplaceHeaderLogoConfig(shopPageMarketplaceLogoImageUrl);
-const VAULT_DECK_PREVIEW_LIMIT = 5;
 const VAULT_PREFERRED_DECK_PATHS = [
   'Resources/GameMode/CardGames/Decks/Standard_52.asset',
   'Resources/GameMode/CardGames/Decks/Standard_40.asset',
@@ -90,10 +89,7 @@ function findGuidByPath(resources: ResourceEntryRef[], path: string, assetType =
 
 function imagePathToBrowserUrl(path?: string): string | null {
   if (!path) return null;
-  const normalized = path.replace(/\\/g, '/').replace(/^\/+/, '');
-  return normalized.startsWith('Resources/')
-    ? `/${normalized}`
-    : `/Resources/${normalized}`;
+  return /^(https?:|data:|blob:)/i.test(path) ? path : null;
 }
 
 function deckPathSortKey(resource: ResourceEntryRef): string {
@@ -114,7 +110,7 @@ function preferredDeckResources(resources: ResourceEntryRef[]): ResourceEntryRef
     .filter((resource): resource is ResourceEntryRef => Boolean(resource));
   const preferredGuids = new Set(preferred.map(resource => resource.guid));
   const fallback = deckResources.filter(resource => !preferredGuids.has(resource.guid));
-  return [...preferred, ...fallback].slice(0, VAULT_DECK_PREVIEW_LIMIT);
+  return [...preferred, ...fallback];
 }
 
 async function loadDeckResourceCandidates(): Promise<{ resources: ResourceEntryRef[]; deckResources: ResourceEntryRef[] }> {
@@ -163,21 +159,53 @@ function displayNameForDeck(document: LooseRecord, resource: ResourceEntryRef): 
   return rawName.replace(/_/g, ' ');
 }
 
+function displayNameForDeckResource(resource: ResourceEntryRef): string {
+  const rawName = typeof resource.displayName === 'string'
+    ? resource.displayName
+    : typeof resource.name === 'string'
+      ? resource.name
+      : resource.path?.split(/[\\/]/).pop()?.replace(/\.asset$/i, '') ?? 'Deck';
+  return rawName.replace(/_/g, ' ');
+}
+
+function isBaselineDeckResource(resource: ResourceEntryRef): boolean {
+  return normalizePath(resource.path ?? '').endsWith('/standard_52.asset');
+}
+
+function fallbackVaultDeckPreviewItem(resource: ResourceEntryRef): ShopVaultDeckPreviewItem | null {
+  if (!resource.guid) return null;
+  const baselineDeck = isBaselineDeckResource(resource);
+  return {
+    key: resource.guid,
+    title: displayNameForDeckResource(resource),
+    subtitle: 'Deck data N/A',
+    badge: 'Missing Data',
+    price: baselineDeck ? 'Free' : 'Price N/A',
+    assetGuid: resource.guid,
+    assetPath: resource.path,
+    model: null,
+    sampleCards: [],
+  };
+}
+
 function collectDeckSampleCards(model: DeckPreviewModel): DeckPreviewCell[] {
   const scoredSections = [...model.sections].sort((a, b) => deckSampleSectionScore(b) - deckSampleSectionScore(a));
   const seen = new Set<string>();
-  const cards: DeckPreviewCell[] = [];
+  const imageCards: DeckPreviewCell[] = [];
+  const fallbackCards: DeckPreviewCell[] = [];
   for (const section of scoredSections) {
     const sectionCards = section.cells ?? section.items ?? [];
     for (const card of sectionCards) {
       if (!card || seen.has(card.id)) continue;
-      if (!card.imageHash && !card.imagePath) continue;
       seen.add(card.id);
-      cards.push(card);
-      if (cards.length >= 3) return cards;
+      if (card.imageHash || card.imagePath) {
+        imageCards.push(card);
+      } else {
+        fallbackCards.push(card);
+      }
     }
   }
-  return cards;
+  return [...imageCards, ...fallbackCards].slice(0, 3);
 }
 
 function collectDeckPreviewImageRefs(items: ShopVaultDeckPreviewItem[]): Array<{ imageHash?: string; imagePath?: string }> {
@@ -231,7 +259,7 @@ function deckSampleSectionScore(section: DeckPreviewModel['sections'][number]): 
 async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: ResourceEntryRef[]): Promise<ShopVaultDeckPreviewItem | null> {
   if (!resource.guid) return null;
   const deckDocument = await loadRawAssetDocumentByGuid(resource.guid);
-  if (!deckDocument) return null;
+  if (!deckDocument) return fallbackVaultDeckPreviewItem(resource);
   const refs = collectDeckPreviewRefs(deckDocument);
   const [pieces, rankings] = await Promise.all([
     loadDeckReferences(uniqueDeckPreviewRefs(refs.pieceRefs), resources),
@@ -244,11 +272,13 @@ async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: R
     rankings,
     title: `${title} Deck`,
   });
+  const isBaselineDeck = isBaselineDeckResource(resource);
   return {
     key: resource.guid,
     title,
     subtitle: `${model.totalPieces} pieces`,
-    badge: 'Deck',
+    badge: isBaselineDeck ? 'Free' : 'Digital',
+    price: isBaselineDeck ? 'Free' : 'Price N/A',
     assetGuid: resource.guid,
     assetPath: resource.path,
     model,
@@ -256,20 +286,15 @@ async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: R
   };
 }
 
-async function loadVaultDeckPreviewData(): Promise<{ items: ShopVaultDeckPreviewItem[]; imageUrls: DeckImageUrlMap }> {
-  const { resources, deckResources } = await loadDeckResourceCandidates();
-  const items = await Promise.all(deckResources.map(resource => loadVaultDeckPreviewItem(resource, resources)));
-  const resolvedItems = items.filter((item): item is ShopVaultDeckPreviewItem => item !== null);
-  let imageUrls: DeckImageUrlMap = {};
-  try {
-    imageUrls = await resolveDeckPreviewImageUrls(resolvedItems);
-  } catch {
-    imageUrls = {};
-  }
-  return {
-    items: resolvedItems,
-    imageUrls,
-  };
+async function loadVaultDeckPreviewItems(deckResources: ResourceEntryRef[], resources: ResourceEntryRef[]): Promise<ShopVaultDeckPreviewItem[]> {
+  const items = await Promise.all(deckResources.map(async (resource) => {
+    try {
+      return await loadVaultDeckPreviewItem(resource, resources);
+    } catch {
+      return fallbackVaultDeckPreviewItem(resource);
+    }
+  }));
+  return items.filter((item): item is ShopVaultDeckPreviewItem => item !== null);
 }
 
 async function loadShopPageLayoutData(): Promise<{
@@ -337,11 +362,18 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
 
   useEffect(() => {
     let cancelled = false;
-    void loadVaultDeckPreviewData()
-      .then((deckPreviewData) => {
-        if (!cancelled) {
-          setVaultDecks(deckPreviewData.items);
-          setVaultDeckImageUrls(deckPreviewData.imageUrls);
+    void loadDeckResourceCandidates()
+      .then(async ({ resources, deckResources }) => {
+        if (cancelled) return;
+        setVaultDecks(deckResources.map(fallbackVaultDeckPreviewItem).filter((item): item is ShopVaultDeckPreviewItem => item !== null));
+        const items = await loadVaultDeckPreviewItems(deckResources, resources);
+        if (cancelled) return;
+        setVaultDecks(items);
+        try {
+          const imageUrls = await resolveDeckPreviewImageUrls(items);
+          if (!cancelled) setVaultDeckImageUrls(imageUrls);
+        } catch {
+          if (!cancelled) setVaultDeckImageUrls({});
         }
       })
       .catch(() => {
@@ -367,7 +399,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const resolveDeckImageUrl = useCallback<ShopDeckImageResolver>((imageHash, imagePath) => {
     if (imageHash && vaultDeckImageUrls[imageHash]) return vaultDeckImageUrls[imageHash];
     if (imagePath && vaultDeckImageUrls[imagePath]) return vaultDeckImageUrls[imagePath];
-    return imageHash ? null : imagePathToBrowserUrl(imagePath);
+    return imagePathToBrowserUrl(imagePath);
   }, [vaultDeckImageUrls]);
   const shopHeaderConfig = useMemo(() => ({
     ...SHOP_MARKETPLACE_HEADER_CONFIG,

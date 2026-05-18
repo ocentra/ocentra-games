@@ -67,7 +67,6 @@ import { SectionFrame } from './ShopPageSectionFrame';
 import {
   mainBottomOverlayContentRect,
   mainSlotFrameBounds,
-  sectionFrameContentRect,
 } from './ShopPageSectionFrameGeometry';
 import { LeftSidePanel, RightPanelDetailLayer, RightSidePanel, type ShopRightTabId } from './ShopPageSidePanels';
 import type { ShopMainCarouselCardItem } from './ShopPageMainCarouselFrame.types';
@@ -130,7 +129,8 @@ function resolveShopDeckImageUrl(
   imageHash?: string,
   imagePath?: string,
 ): string | null {
-  return resolver?.(imageHash, imagePath) ?? shopDeckImagePathToBrowserUrl(imagePath);
+  if (resolver) return resolver(imageHash, imagePath);
+  return shopDeckImagePathToBrowserUrl(imagePath);
 }
 
 function staticCreditPackForProduct(product: ShopProduct, index: number, content: ShopPageContentData): ShopStaticItem {
@@ -271,15 +271,28 @@ function isCreditPackTile(item: TileItem, content: ShopPageContentData): boolean
   return item.product?.productType === 'AC_CREDITS' || content.creditPacks.some(pack => pack.title === item.title);
 }
 
-function tileActionLabel(item: TileItem, content: ShopPageContentData): string {
-  if (item.title === 'Custom AC') return 'Custom Top Up';
-  if (isCreditPackTile(item, content)) return 'Buy Now';
-  if (item.price?.toLowerCase() === 'free') return 'Claim Free';
-  if (item.price?.toLowerCase().includes('coming soon')) return 'Coming Soon';
-  if (item.price?.toLowerCase().includes('printable')) return 'Buy Digital';
+function tileActionLabel(item: TileItem, content: ShopPageContentData, tab?: ShopTab): string {
+  const price = item.price?.toLowerCase() ?? '';
+  if (price.includes('coming soon')) return 'Coming Soon';
+  if (tab === 'Treasury') return item.title === 'Custom AC' ? 'Top Up' : 'Purchase';
+  if (tab === 'Elite') {
+    if (item.tone === 'gold' && item.title.toLowerCase().includes('founder')) return content.uiCopy.passCard.lifetimeButton;
+    return content.uiCopy.passCard.selectButton;
+  }
+  if (tab === 'Events') return item.product ? 'Select' : 'View';
+  if (tab === 'Play Access') return 'View';
+  if (tab === 'Vault') {
+    if (price === 'free') return 'Claim Free';
+    if (price.includes('printable') || price.includes('digital')) return 'Buy Digital';
+    return 'Open';
+  }
+  if (item.title === 'Custom AC') return 'Top Up';
+  if (isCreditPackTile(item, content)) return 'Purchase';
+  if (price === 'free') return 'Claim Free';
+  if (price.includes('printable') || price.includes('digital')) return 'Buy Digital';
   if (item.tone === 'gold' && item.title.toLowerCase().includes('founder')) return content.uiCopy.passCard.lifetimeButton;
   if (item.product?.productType === 'SUBSCRIPTION' || content.passes.some(pass => pass.title === item.title)) return content.uiCopy.passCard.selectButton;
-  return item.price ? 'Buy Now' : 'View';
+  return item.price ? 'Purchase' : 'View';
 }
 
 function tileCardKey(item: TileItem, index: number): string {
@@ -290,7 +303,7 @@ function staticTopCardKey(prefix: string, item: TileItem, index: number): string
   return `${prefix}:${item.title}:${index}`;
 }
 
-function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string | null): ShopMainCarouselCardItem {
+function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string | null, content: ShopPageContentData, tab: ShopTab): ShopMainCarouselCardItem {
   return {
     key: tileCardKey(item, index),
     title: item.title,
@@ -301,7 +314,7 @@ function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string
     badge: item.badge,
     imageUrl: item.imageUrl,
     price: item.price,
-    actionLabel: 'View',
+    actionLabel: tileActionLabel(item, content, tab),
     loading: item.product ? loadingId === item.product.productId : false,
     disabled: false,
   };
@@ -527,6 +540,7 @@ function EliteBottomPassCard({
   h,
   item,
   content,
+  tab,
   cfg,
   loading,
   expanded = false,
@@ -541,6 +555,7 @@ function EliteBottomPassCard({
   h: number;
   item: TileItem;
   content: ShopPageContentData;
+  tab: ShopTab;
   cfg: ShopPageSvgControls;
   loading?: boolean;
   expanded?: boolean;
@@ -579,7 +594,9 @@ function EliteBottomPassCard({
     : Math.min(156, Math.max(104, footerValue.length * 5.8 + 28));
   const buttonW = expanded ? Math.min(190, Math.max(132, w * 0.24)) : Math.min(132, Math.max(96, w * 0.28));
   const disabled = item.product ? !isShopProductPurchasable(item.product) : false;
-  const buttonLabel = loading ? 'Working' : expanded ? expandedActionLabel ?? tileActionLabel(item, content) : 'View';
+  const defaultActionLabel = tileActionLabel(item, content, tab);
+  const buttonLabel = loading ? 'Working' : expanded ? expandedActionLabel ?? defaultActionLabel : defaultActionLabel;
+  const buttonCanBuy = Boolean(item.product && isShopProductPurchasable(item.product) && (tab === 'Treasury' || tab === 'Elite' || item.product.productType === 'TOURNAMENT_ENTRY' || item.product.productType === 'MARKETPLACE'));
   const subtitleText = Array.isArray(item.subtitle) ? item.subtitle.join(' ') : item.subtitle;
   const subtitleSize = fitSingleLineTextSize(
     subtitleText,
@@ -686,7 +703,7 @@ function EliteBottomPassCard({
         color={color}
         active={hovered}
         onClick={() => {
-          if (expanded && expandedAction === 'buy' && item.product) onBuy(item.product);
+          if (((expanded && expandedAction === 'buy') || (!expanded && buttonCanBuy)) && item.product) onBuy(item.product);
           else onInspect();
         }}
         disabled={loading || disabled}
@@ -803,6 +820,7 @@ function BottomDetailCardsLayer({
           h={contentH}
           item={item}
           content={content}
+          tab={label}
           cfg={cfg}
           loading={item.product ? loadingId === item.product.productId : false}
           expanded={expanded}
@@ -824,6 +842,7 @@ function VaultGridFrame({
   accent,
   cfg,
   deckName,
+  deckPrice,
   sampleCards = [],
   resolveDeckImageUrl,
   onClick,
@@ -835,6 +854,7 @@ function VaultGridFrame({
   accent: string;
   cfg: ShopPageSvgControls;
   deckName?: string;
+  deckPrice?: string;
   sampleCards?: ShopDeckPreviewCard[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onClick?: () => void;
@@ -849,6 +869,11 @@ function VaultGridFrame({
   const edge = hovered ? cfg.colors.activeBlue : accent;
   const chrome = cfg.componentTokens.cardChrome;
   const interactive = Boolean(onClick);
+  const badgeW = Math.min(58, Math.max(46, w * 0.32));
+  const badgeH = Math.max(13, Math.min(17, h * 0.16));
+  const badgeX = x + w - badgeW - 5;
+  const badgeY = y + 5;
+  const priceLabel = deckPrice ?? '';
 
   return (
     <g
@@ -871,6 +896,12 @@ function VaultGridFrame({
     >
       {hovered ? <rect x={x - chrome.hoverPad} y={y - chrome.hoverPad} width={w + chrome.hoverPad * 2} height={h + chrome.hoverPad * 2} rx={cfg.componentTokens.sectionFrame.contentRadius} fill="none" stroke={edge} strokeWidth={chrome.hoverOuterStrokeWidth} strokeOpacity=".34" filter="url(#shopSoftGlow)" /> : null}
       <rect x={x} y={y} width={w} height={h} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={hovered ? alphaColor(cfg.colors.activeBlue, chrome.activeFillOpacity) : cfg.colors.vaultGridFill} stroke={edge} strokeWidth={hovered ? 1.4 : 1} strokeOpacity={hovered ? 0.86 : 0.42} />
+      {interactive ? (
+        <g opacity={hovered ? 1 : 0.72} pointerEvents="none">
+          <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx="3" fill={alphaColor(edge, 0.18)} stroke={edge} strokeWidth="1" strokeOpacity="0.86" filter="url(#shopSoftGlow)" />
+          <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 3} textAnchor="middle" fill={cfg.colors.bodyText} fontSize={Math.max(6.6, Math.min(8.2, badgeW / 6.8))} fontWeight="950" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">EXPAND</text>
+        </g>
+      ) : null}
       {[0, 1, 2].map((cardIndex) => {
         const rotate = [-9, 0, 9][cardIndex];
         const cardX = cardStartX + cardIndex * cardW * 0.72;
@@ -894,7 +925,11 @@ function VaultGridFrame({
                 clipPath={`url(#${clipId})`}
               />
             ) : (
-              <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".16" />
+              <g>
+                <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".22" strokeDasharray="3 3" />
+                <text x={cardX + cardW / 2} y={cardY + cardH / 2 - 2} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">Missing</text>
+                <text x={cardX + cardW / 2} y={cardY + cardH / 2 + 6} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">image</text>
+              </g>
             )}
           </g>
         );
@@ -902,6 +937,9 @@ function VaultGridFrame({
       <rect x={x + 1} y={y + h - labelH - 1} width={w - 2} height={labelH} rx={cfg.svgDefaults.roundedNone} fill={cfg.colors.tileFooterFill} stroke={edge} strokeWidth=".7" strokeOpacity={hovered ? 0.72 : 0.34} />
       {label ? (
         <text x={x + w / 2} y={y + h - labelH / 2} fill={hovered ? edge : cfg.colors.bodyText} fontSize={Math.max(7, Math.min(9.5, w / Math.max(12, label.length * 0.62)))} fontWeight="900" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{label}</text>
+      ) : null}
+      {priceLabel && hovered ? (
+        <text x={x + w - 6} y={y + h - labelH - 6} fill={edge} fontSize={Math.max(6.8, Math.min(8.4, w * 0.055))} fontWeight="900" textAnchor="end" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{priceLabel}</text>
       ) : null}
     </g>
   );
@@ -1215,6 +1253,7 @@ function VaultShowcaseLayer({
                 accent={accent}
                 cfg={cfg}
                 deckName={frameLabel}
+                deckPrice={deckItem?.price}
                 sampleCards={deckItem?.sampleCards}
                 resolveDeckImageUrl={resolveDeckImageUrl}
                 onClick={deckItem ? () => onDeckInspect?.(deckItem) : undefined}
@@ -1235,7 +1274,6 @@ function ShopDeckPreviewLayer({
   w,
   h,
   deck,
-  cfg,
   resolveDeckImageUrl,
   onClose,
 }: {
@@ -1244,12 +1282,16 @@ function ShopDeckPreviewLayer({
   w: number;
   h: number;
   deck: ShopVaultDeckPreviewItem;
-  cfg: ShopPageSvgControls;
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onClose: () => void;
 }) {
   const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
-  const body = sectionFrameContentRect(x, y, w, h, cfg, false, false);
+  const body = mainBottomOverlayContentRect(x, y, w, h, false);
+  const pieceCount = deck.model?.totalPieces ?? deck.sampleCards.length;
+  const normalizedPrice = deck.price?.toLowerCase() ?? '';
+  const freeDeck = normalizedPrice === 'free' || deck.badge?.toLowerCase() === 'free';
+  const deckPrice = deck.price ?? 'Price N/A';
+  const primaryDeckAction = freeDeck ? 'Claim Free' : 'Buy Digital';
   const previewStyle = {
     '--deck-preview-card-track-min': '2.7rem',
     '--deck-preview-card-cell-min-height': '3.5rem',
@@ -1261,21 +1303,25 @@ function ShopDeckPreviewLayer({
   } as CSSProperties;
 
   return (
-    <SectionFrame
-      x={x}
-      y={y}
-      w={w}
-      h={h}
-      title="DECK PREVIEW"
-      subtitle={deck.title}
-      rightText="Back To Vault"
-      accent={cfg.colors.violet}
-      cfg={cfg}
-      hideSubtitle
-      onRightTextClick={onClose}
-    >
+    <g>
+      <MainBottom x={x} y={y} w={w} h={h} label="DECK PREVIEW" count={pieceCount} rightActionLabel="Back To Vault" onRightAction={onClose} showNavigation={false} />
       <foreignObject x={body.x} y={body.y} width={body.w} height={body.h}>
         <div className="shop-deck-preview-host">
+          <aside className="shop-deck-preview-host__commerce">
+            <div className="shop-deck-preview-host__eyebrow">{deck.badge ?? 'Digital Deck'}</div>
+            <h2 className="shop-deck-preview-host__title">{deck.title}</h2>
+            <div className="shop-deck-preview-host__subtitle">{deck.subtitle ?? `${pieceCount} pieces`}</div>
+            <div className="shop-deck-preview-host__price">{deckPrice}</div>
+            <div className="shop-deck-preview-host__actions" aria-label={`${deck.title} purchase options`}>
+              <button type="button" disabled>{primaryDeckAction}</button>
+              <button type="button" disabled>Printable + Digital</button>
+            </div>
+            <ul className="shop-deck-preview-host__notes">
+              <li>{freeDeck ? 'Included starter deck.' : 'Table-ready digital deck.'}</li>
+              <li>Printable export included.</li>
+              <li>Card artwork included when available.</li>
+            </ul>
+          </aside>
           {deck.model ? (
             <div className="shop-deck-preview-host__scroll" style={previewStyle}>
               <DeckPreviewView
@@ -1299,8 +1345,12 @@ function ShopDeckPreviewLayer({
           ) : null}
         </div>
       </foreignObject>
-    </SectionFrame>
+    </g>
   );
+}
+
+function deckPieceDisplayLabel(label: string): string {
+  return label.replace(/_/g, ' ');
 }
 
 function ShopDeckPreviewPieceCell({
@@ -1324,7 +1374,12 @@ function ShopDeckPreviewPieceCell({
     );
   }
 
-  return <span className="shop-deck-preview-host__piece-label">{cell.label}</span>;
+  return (
+    <span className="shop-deck-preview-host__piece-label" title={deckPieceDisplayLabel(cell.label)}>
+      <span>{deckPieceDisplayLabel(cell.label)}</span>
+      <span className="shop-deck-preview-host__missing-label">Missing image</span>
+    </span>
+  );
 }
 
 function ShopDeckPreviewAxisCell({
@@ -1402,7 +1457,10 @@ function ShopDeckPreviewCellDetail({
             onError={() => setFailedSrc(src)}
           />
         ) : (
-          <span className="shop-deck-preview-host__piece-label">{cell.label}</span>
+          <span className="shop-deck-preview-host__piece-label" title={deckPieceDisplayLabel(cell.label)}>
+            <span>{deckPieceDisplayLabel(cell.label)}</span>
+            <span className="shop-deck-preview-host__missing-label">Missing image</span>
+          </span>
         )}
       </div>
     </div>
@@ -1673,7 +1731,7 @@ function MainBody({
         ? topPlayAccessItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'play-access'))
         : activeTab === 'Events'
           ? topEventItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'events'))
-          : topTileItems.map((item, index) => tileToMainCarouselCard(item, index, loadingId));
+          : topTileItems.map((item, index) => tileToMainCarouselCard(item, index, loadingId, content, activeTab));
     const bottomTileItems = displayedBottomTab === 'Treasury' || displayedBottomTab === 'Elite'
       ? tilesForTab(products, displayedBottomTab, content)
       : [];
@@ -1778,7 +1836,6 @@ function MainBody({
           w={bottomFrameBounds.w}
           h={resolvedSectionBottomY - y}
           deck={selectedVaultDeck}
-          cfg={cfg}
           resolveDeckImageUrl={resolveDeckImageUrl}
           onClose={() => setSelectedVaultDeckKey(null)}
         />
