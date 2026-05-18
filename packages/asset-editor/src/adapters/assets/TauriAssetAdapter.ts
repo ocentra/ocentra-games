@@ -21,6 +21,22 @@ function normalizeResourcePath(path: string): string {
     : normalized
 }
 
+function createBrowserResourceUrl(path: string): URL {
+  const normalizedPath = normalizeResourcePath(path)
+  if (
+    normalizedPath.includes('\0') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(normalizedPath)
+  ) {
+    throw new Error('Invalid browser asset path')
+  }
+  const resourcePath = normalizedPath
+    .split('/')
+    .filter(Boolean)
+    .map(segment => encodeURIComponent(segment))
+    .join('/')
+  return new URL(`/Resources/${resourcePath}`, window.location.origin)
+}
+
 function inferMimeType(path: string): string {
   const lowerPath = path.toLowerCase()
   if (lowerPath.endsWith('.png')) return 'image/png'
@@ -122,11 +138,7 @@ export async function loadAsset(identifier: {
     if (!resolvedPath) {
       throw new Error('Browser asset loading requires a path identifier')
     }
-    const normalizedPath = resolvedPath.replace(/\\/g, '/').replace(/^\/+/, '')
-    const browserPath = normalizedPath.startsWith('Resources/')
-      ? `/${normalizedPath}`
-      : `/Resources/${normalizedPath}`
-    return fetch(browserPath)
+    return fetch(createBrowserResourceUrl(resolvedPath))
   }
   const bytes = await invoke<number[]>('load_asset', { input })
   const responsePathForMime = resolvedPath ?? path ?? ''

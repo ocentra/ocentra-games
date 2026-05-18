@@ -1059,13 +1059,11 @@ const DynamicBackground3D: React.FC<DynamicBackground3DProps> = ({ controlRef, o
                 }
                 c.lodLevel = lodLevel;
 
-                let sizeMultiplier = 1.0;
-                switch (lodLevel) {
-                    case 1: sizeMultiplier = 0.75; break;
-                    case 2: sizeMultiplier = 0.5; break;
-                    case 3: sizeMultiplier = 0.25; break;
-                    default: sizeMultiplier = 1.0; break;
-                }
+                const sizeMultiplier =
+                    lodLevel === 1 ? 0.75 :
+                        lodLevel === 2 ? 0.5 :
+                            lodLevel === 3 ? 0.25 :
+                                1.0;
                 c.currentSize = c.size * sizeMultiplier;
 
                 const speedVariation = 0.1 + Math.random() * 0.3;

@@ -119,6 +119,12 @@ const EXCLUDED_MAIN_APP_ASSET_TYPES = new Set([
   'GameInfo',
 ]);
 
+const PACKAGE_IMPORT_PATH_PATTERN = /^@ocentra\/[a-z0-9-]+(?:\/[A-Za-z0-9._-]+)*$/;
+
+function isPackageImportPath(importPath: string): boolean {
+  return PACKAGE_IMPORT_PATH_PATTERN.test(importPath);
+}
+
 function getPackageName(pkgPath: string): string | null {
   try {
     const pkg = JSON.parse(readFileSync(join(process.cwd(), pkgPath, 'package.json'), 'utf-8'));
@@ -381,7 +387,7 @@ export const assetTypeMap: Record<string, AssetTypeMetadata> = Object.fromEntrie
 
   const createAssetConstructorLoadersContent = (map: Record<string, AssetTypeMetadata>) => {
     const loaderEntries = Object.entries(map)
-    .filter(([, m]) => m.importPath.startsWith('@ocentra/'))
+    .filter(([, m]) => isPackageImportPath(m.importPath))
     .map(([k, m]) => {
       return `  ${JSON.stringify(k)}: () => import(${JSON.stringify(m.importPath)})`;
     })

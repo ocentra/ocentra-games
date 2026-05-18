@@ -9,13 +9,11 @@ import { LogLevel } from '../types/logLevel';
 import { deleteAppNdjsonFiles, listAppNdjsonFiles } from '../app-log/appNdjsonWriter';
 
 describe('Log Transports and Retention', () => {
-  const tempDir = path.join(os.tmpdir(), `ocentra-log-test-${Date.now()}`);
+  let tempDir: string;
   const scope = 'test-scope';
 
   beforeEach(() => {
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ocentra-log-test-'));
   });
 
   afterEach(() => {
@@ -51,7 +49,7 @@ describe('Log Transports and Retention', () => {
     it('should only send logs above minLevel', async () => {
       const transport = new AnalyticsTransport({ minLevel: LogLevel.Warn });
       const consoleDebug = vi.spyOn(console, 'debug').mockImplementation(() => {});
-      
+
       const entries = [
         { log: { level: 'info', message: 'info-msg' } },
         { log: { level: 'warn', message: 'warn-msg' } },
@@ -69,17 +67,17 @@ describe('Log Transports and Retention', () => {
   describe('NDJSON Retention Policy', () => {
     it('should keep specified number of files', () => {
       const dbDir = tempDir;
-      
+
       // Create some dummy files
       // Create some dummy content
-      
+
       // We need to simulate different days or different filenames
       // appendLogEntries uses getCurrentNdjsonPath which uses current date
       // So let's mock path for a moment or just create files manually
-      
+
       const ndjsonDir = path.join(dbDir, 'ndjson', scope);
       if (!fs.existsSync(ndjsonDir)) fs.mkdirSync(ndjsonDir, { recursive: true });
-      
+
       for (let i = 1; i <= 5; i++) {
         fs.writeFileSync(path.join(ndjsonDir, `app-logs-2026-04-0${i}.ndjson`), 'test');
       }
@@ -99,9 +97,9 @@ describe('Log Transports and Retention', () => {
       const dbDir = tempDir;
       const ndjsonDir = path.join(dbDir, 'ndjson', scope);
       if (!fs.existsSync(ndjsonDir)) fs.mkdirSync(ndjsonDir, { recursive: true });
-      
+
       fs.writeFileSync(path.join(ndjsonDir, `app-logs-2026-04-01.ndjson`), 'test');
-      
+
       deleteAppNdjsonFiles(scope, 0, dbDir);
       expect(listAppNdjsonFiles(scope, dbDir).length).toBe(0);
     });

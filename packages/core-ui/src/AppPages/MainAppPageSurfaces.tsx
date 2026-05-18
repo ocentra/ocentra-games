@@ -815,6 +815,7 @@ export function ShopPageContent({
   loadingId: string | null;
   error: string | null;
   acBalance: number;
+  onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
 } & AppPageSurfaceControlProps) {
