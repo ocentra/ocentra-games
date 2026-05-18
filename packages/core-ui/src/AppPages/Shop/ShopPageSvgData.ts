@@ -305,10 +305,10 @@ export const SHOP_TABS: ShopTab[] = [
 ];
 
 export const SHOP_HEADER_STATS = [
-  { label: 'Owned', value: '128' },
-  { label: 'Tables', value: '4 / 6' },
-  { label: 'Tickets', value: '3' },
-  { label: 'Events', value: '2' },
+  { label: 'Owned', value: 'N/A' },
+  { label: 'Tables', value: 'N/A' },
+  { label: 'Tickets', value: 'N/A' },
+  { label: 'Events', value: 'N/A' },
 ];
 
 export const SHOP_SIDE_ITEMS: ShopSideItem[] = [
@@ -544,21 +544,21 @@ export const SHOP_RIGHT_TABS: ShopRightTab[] = [
 export const SHOP_RIGHT_ROWS = {
   wallet: [
     ['Arena Credits', 'AC'],
-    ['Tournament Tickets', '3'],
-    ['Season Points', '1,250 SP'],
-    ['Owned Items', '128'],
-    ['Active Tables', '4 / 6'],
+    ['Tournament Tickets', 'N/A'],
+    ['Season Points', 'N/A'],
+    ['Owned Items', 'N/A'],
+    ['Active Tables', 'N/A'],
   ],
   events: [
-    ['Weekly Claim Cup', 'Sat, 8:00 PM', 'Join'],
-    ['Season Ladder Reset', 'Sun, 12:00 AM', 'Details'],
-    ['Qualifier Entry', 'Coming Soon', 'View'],
+    ['Published Schedule', 'N/A', 'Check Later'],
+    ['Open Entries', 'N/A', 'Check Later'],
+    ['Reward Calendar', 'N/A', 'Check Later'],
   ],
   recent: [
-    ['Champion Pass', '-1,499 AC'],
-    ['1500 AC Pack', '+1,500 AC'],
-    ['Weekly Claim Cup', '-250 AC'],
-    ['Neon Card Back', '-400 AC'],
+    ['Purchase History', 'N/A'],
+    ['Last Checkout', 'N/A'],
+    ['Last Reward Sync', 'N/A'],
+    ['Inventory Change', 'N/A'],
   ],
 } as const;
 
@@ -624,11 +624,11 @@ export const SHOP_UI_COPY = {
     eventsTitle: 'UPCOMING EVENTS',
     recentTitle: 'RECENT PURCHASES',
     accountTitle: 'ACCOUNT PREVIEW',
-    passName: 'Champion Pass',
+    passName: 'N/A',
     managePass: 'Manage Pass',
     viewProfile: 'View Profile',
-    profileName: 'ocentra',
-    profileElo: 'ELO 1200',
+    profileName: 'N/A',
+    profileElo: 'N/A',
   },
   footer: [
     { title: 'Secure Checkout', sub: '256-bit SSL Encryption', icon: 'shield', tone: 'green' },

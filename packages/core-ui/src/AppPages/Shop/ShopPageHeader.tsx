@@ -195,6 +195,7 @@ export function TopStatsLayer({
 }) {
   const token = cfg.componentTokens.topStatsLayer;
   const visibleStats = w < 360 ? [] : w < 500 ? content.headerStats.slice(0, 1) : w < 640 ? content.headerStats.slice(0, 2) : content.headerStats;
+  const activePassValue = content.rightDetails.pass.find(row => row.label.toLowerCase() === 'active pass')?.value.trim() || 'N/A';
   const compactPass = w < 300;
   const iconOnlyPass = w < 156;
   const passW = visibleStats.length === 0
@@ -226,12 +227,12 @@ export function TopStatsLayer({
           <Txt
             x={compactPass ? x + token.padX + passW / 2 + token.passIconSize * 0.26 : x + token.padX + token.passTextX}
             y={compactPass ? y + token.passY + token.passH / 2 + 2 : y + token.passY + token.passValueY}
-            size={compactPass ? Math.min(token.passValueSize, fitSingleLineTextSize('Champion', passW - token.passIconSize - 22, 10, token.passValueSize, 0.55)) : token.passValueSize}
+            size={compactPass ? Math.min(token.passValueSize, fitSingleLineTextSize(activePassValue, passW - token.passIconSize - 22, 10, token.passValueSize, 0.55)) : token.passValueSize}
             weight={token.passValueWeight}
             anchor={compactPass ? 'middle' : 'start'}
             cfg={cfg}
           >
-            Champion
+            {activePassValue}
           </Txt>
         ) : null}
       </g>

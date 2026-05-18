@@ -54,11 +54,11 @@ function rightPanelFullTitle(id: ShopRightTabId, content: ShopPageContentData): 
 }
 
 function accountDisplayName(accountSummary?: ShopAccountSummary | null): string {
-  return accountSummary?.displayName?.trim() || 'ocentra';
+  return accountSummary?.displayName?.trim() || 'N/A';
 }
 
 function accountEmail(accountSummary?: ShopAccountSummary | null): string {
-  return accountSummary?.email?.trim() || (accountSummary?.isGuest ? 'Guest profile' : 'Marketplace profile');
+  return accountSummary?.email?.trim() || (accountSummary?.isGuest ? 'Guest profile' : 'Email N/A');
 }
 
 function accountInitials(accountSummary?: ShopAccountSummary | null): string {
@@ -135,9 +135,9 @@ function AccountSummaryBand({
   const name = accountDisplayName(accountSummary);
   const email = accountEmail(accountSummary);
   const chips = [
-    accountSummary?.eloRating ? `ELO ${accountSummary.eloRating}` : 'ELO 1200',
-    accountSummary?.gamesPlayed !== undefined ? `${accountSummary.gamesPlayed} games` : 'Tracked profile',
-    accountSummary?.winRate !== undefined ? `${accountSummary.winRate.toFixed(1)}% win` : 'Linked account',
+    accountSummary?.eloRating ? `ELO ${accountSummary.eloRating}` : 'Rating N/A',
+    accountSummary?.gamesPlayed !== undefined ? `${accountSummary.gamesPlayed} games` : 'Games N/A',
+    accountSummary?.winRate !== undefined ? `${accountSummary.winRate.toFixed(1)}% win` : 'Win rate N/A',
   ];
   return (
     <g>
