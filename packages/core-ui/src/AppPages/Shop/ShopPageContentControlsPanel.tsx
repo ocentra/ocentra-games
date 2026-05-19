@@ -14,12 +14,13 @@ import type {
   ShopTone,
   ShopVaultShowcaseGroup,
 } from './ShopPageSvgData';
+import { resolveShopPageImageUrl } from './ShopPageImageResolver';
 import type { ShopTab } from './ShopPageSvgTypes';
 
 type ShopContentPanelTab = 'overview' | 'pageShell' | 'sectionCards' | 'offers' | 'vault' | 'quests' | 'rightPanel' | 'rawJson';
 type SectionListKey = 'featured' | 'categories';
 type OfferListKey = 'creditPacks' | 'passes';
-type ShellListKey = 'sideItems' | 'headerStats' | 'previews';
+type ShellSurfaceKey = 'sidePanel' | 'header' | 'mainBody' | 'rightPanel' | 'bottomPanel' | 'footer';
 type SelectOption<T extends string> = T | { value: T; label: string };
 
 type ShopPageContentControlsPanelProps = {
@@ -146,6 +147,44 @@ function imageFileName(imageUrl: string): string {
   }
 }
 
+function sidePanelItemMetrics(content: ShopPageContentData, key: ShopTab): string[] {
+  const section = content.sections[key];
+  const featuredCount = section.featured?.length ?? 0;
+  const categoryCount = section.categories?.length ?? 0;
+  if (key === 'Treasury') return [`${content.creditPacks.length} credit packs`, `${featuredCount} featured cards`, `${categoryCount} category cards`];
+  if (key === 'Elite') return [`${content.passes.length} passes`, `${featuredCount} featured cards`, `${categoryCount} category cards`];
+  if (key === 'Vault') return [`${content.vaultShowcaseGroups.length} vault groups`, `${content.vaultShowcaseGroups.reduce((sum, group) => sum + group.items.length, 0)} vault items`, `${categoryCount} top cards`];
+  if (key === 'Play Access') return [`${featuredCount} access cards`, `${categoryCount} category cards`, `${content.previews.filter(preview => preview.tab === key).length} bottom previews`];
+  return [`${featuredCount} event cards`, `${categoryCount} category cards`, `${content.quests.length} quest actions`];
+}
+
+function productSurfaceMetrics(content: ShopPageContentData, key: ShopTab): string[] {
+  if (key === 'Treasury') return [`${content.creditPacks.length} credit packs`];
+  if (key === 'Elite') return [`${content.passes.length} passes`];
+  if (key === 'Vault') return [
+    `${content.vaultShowcaseGroups.length} vault groups`,
+    `${content.vaultShowcaseGroups.reduce((sum, group) => sum + group.items.length, 0)} vault items`,
+  ];
+  if (key === 'Events') return [`${content.quests.length} event quests`];
+  return [`${content.previews.filter(preview => preview.tab === key).length} bottom preview row`];
+}
+
+function productEditorLabel(key: ShopTab): string {
+  if (key === 'Treasury') return 'Credit packs';
+  if (key === 'Elite') return 'Passes';
+  if (key === 'Vault') return 'Vault groups';
+  if (key === 'Events') return 'Event quests';
+  return 'Access cards';
+}
+
+function sectionListLabel(key: SectionListKey): string {
+  return key === 'featured' ? 'Top main cards' : 'Bottom main cards';
+}
+
+function updateArrayItem<T>(items: T[], index: number, item: T): T[] {
+  return items.map((candidate, candidateIndex) => candidateIndex === index ? item : candidate);
+}
+
 const shellStyle: CSSProperties = {
   display: 'grid',
   gap: '0.75rem',
@@ -210,6 +249,85 @@ const summaryListStyle: CSSProperties = {
   lineHeight: 1.35,
 };
 
+const surfaceNavStyle: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(8.8rem, 1fr))',
+  gap: '0.5rem',
+};
+
+const surfaceButtonStyle = (active: boolean): CSSProperties => ({
+  ...tabButtonStyle(active),
+  minHeight: '3rem',
+  textAlign: 'left',
+  display: 'grid',
+  alignContent: 'center',
+  gap: '0.1rem',
+});
+
+const surfaceGridStyle: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 22rem), 1fr))',
+  gap: '0.85rem',
+  alignItems: 'start',
+};
+
+const authorListStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.55rem',
+};
+
+const authorListItemStyle = (active: boolean): CSSProperties => ({
+  border: `1px solid ${active ? 'rgba(84,226,255,.82)' : 'rgba(84,226,255,.24)'}`,
+  borderRadius: '0.55rem',
+  background: active ? 'rgba(30,130,160,.24)' : 'rgba(5,18,31,.78)',
+  color: '#effcff',
+  padding: '0.55rem',
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) auto',
+  gap: '0.65rem',
+  alignItems: 'center',
+  textAlign: 'left',
+  boxShadow: active ? '0 0 0.9rem rgba(84,226,255,.16)' : undefined,
+});
+
+const authorSelectButtonStyle: CSSProperties = {
+  appearance: 'none',
+  border: 0,
+  background: 'transparent',
+  color: 'inherit',
+  padding: 0,
+  display: 'grid',
+  gridTemplateColumns: '3rem minmax(0, 1fr)',
+  gap: '0.65rem',
+  alignItems: 'center',
+  textAlign: 'left',
+  cursor: 'pointer',
+  minWidth: 0,
+};
+
+const thumbStyle: CSSProperties = {
+  width: '3rem',
+  height: '3rem',
+  borderRadius: '0.45rem',
+  border: '1px solid rgba(84,226,255,.35)',
+  background: 'rgba(3,13,25,.9)',
+  objectFit: 'contain',
+  boxSizing: 'border-box',
+};
+
+const listActionBarStyle: CSSProperties = {
+  display: 'flex',
+  gap: '0.3rem',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  flexWrap: 'wrap',
+};
+
+const surfacePanelStyle: CSSProperties = {
+  ...cardStyle,
+  background: 'rgba(3,13,25,.74)',
+};
+
 const labelStyle: CSSProperties = {
   display: 'grid',
   gap: '0.25rem',
@@ -238,6 +356,12 @@ const buttonStyle: CSSProperties = {
   padding: '0.42rem 0.58rem',
   fontWeight: 850,
   cursor: 'pointer',
+};
+
+const iconButtonStyle: CSSProperties = {
+  ...buttonStyle,
+  padding: '0.32rem 0.46rem',
+  minWidth: '2rem',
 };
 
 const dangerButtonStyle: CSSProperties = {
@@ -281,6 +405,18 @@ function SelectField<T extends string>({ label, value, options, onChange }: { la
       </select>
     </label>
   );
+}
+
+function AuthoringThumb({ imageUrl, label }: { imageUrl: string; label: string }) {
+  const resolvedImageUrl = resolveShopPageImageUrl(imageUrl);
+  if (!resolvedImageUrl) {
+    return (
+      <span style={{ ...thumbStyle, display: 'grid', placeItems: 'center', color: '#54e2ff', fontWeight: 950 }}>
+        {label.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+  return <img src={resolvedImageUrl} alt="" style={thumbStyle} />;
 }
 
 function SummaryCard({
@@ -328,8 +464,10 @@ export function ShopPageContentControlsPanel({
 }: ShopPageContentControlsPanelProps) {
   const normalized = useMemo(() => normalizeShopPageContent(content), [content]);
   const [activePanel, setActivePanel] = useState<ShopContentPanelTab>('overview');
-  const [shellListKey, setShellListKey] = useState<ShellListKey>('sideItems');
+  const [shellSurfaceKey, setShellSurfaceKey] = useState<ShellSurfaceKey>('sidePanel');
   const [shellItemIndex, setShellItemIndex] = useState(0);
+  const [headerBadgeIndex, setHeaderBadgeIndex] = useState(0);
+  const [footerItemIndex, setFooterItemIndex] = useState(0);
   const [activeShopTab, setActiveShopTab] = useState<ShopTab>('Treasury');
   const [sectionListKey, setSectionListKey] = useState<SectionListKey>('featured');
   const [sectionItemIndex, setSectionItemIndex] = useState(0);
@@ -367,10 +505,17 @@ export function ShopPageContentControlsPanel({
   const safeRightRowIndex = clampIndex(rightRowIndex, rightRows.length);
   const selectedRightRow = rightRows[safeRightRowIndex];
   const selectedRightTab = normalized.rightTabs.find(tab => tab.id === rightTabId);
-  const safeShellItemIndex = clampIndex(shellItemIndex, shellListKey === 'sideItems' ? normalized.sideItems.length : shellListKey === 'headerStats' ? normalized.headerStats.length : normalized.previews.length);
-  const selectedSideItem = normalized.sideItems[safeShellItemIndex];
-  const selectedHeaderStat = normalized.headerStats[safeShellItemIndex];
-  const selectedPreview = normalized.previews[safeShellItemIndex];
+  const safeSideItemIndex = clampIndex(shellItemIndex, normalized.sideItems.length);
+  const selectedSideItem = normalized.sideItems[safeSideItemIndex];
+  const safeHeaderStatIndex = clampIndex(shellItemIndex, normalized.headerStats.length);
+  const selectedHeaderStat = normalized.headerStats[safeHeaderStatIndex];
+  const safeHeaderBadgeIndex = clampIndex(headerBadgeIndex, normalized.uiCopy.header.badges.length);
+  const selectedHeaderBadge = normalized.uiCopy.header.badges[safeHeaderBadgeIndex];
+  const safePreviewIndex = clampIndex(shellItemIndex, normalized.previews.length);
+  const selectedPreview = normalized.previews[safePreviewIndex];
+  const safeFooterItemIndex = clampIndex(footerItemIndex, normalized.uiCopy.footer.length);
+  const selectedFooterItem = normalized.uiCopy.footer[safeFooterItemIndex];
+  const missingSideTabs = shopTabs.filter(tab => !normalized.sideItems.some(item => item.key === tab));
   const sectionCardCount = shopTabs.reduce((sum, tab) => {
     const section = normalized.sections[tab];
     return sum + (section.featured?.length ?? 0) + (section.categories?.length ?? 0);
@@ -420,6 +565,13 @@ export function ShopPageContentControlsPanel({
     updateContent(current => ({ ...current, previews }));
   };
 
+  const openSectionEditor = (tab: ShopTab, listKey: SectionListKey) => {
+    setActivePanel('sectionCards');
+    setActiveShopTab(tab);
+    setSectionListKey(listKey);
+    setSectionItemIndex(0);
+  };
+
   const handleSave = async () => {
     if (!onSave || isSaving) return;
     setIsSaving(true);
@@ -432,6 +584,33 @@ export function ShopPageContentControlsPanel({
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const openSidePanelItems = (key: ShopTab) => {
+    if (key === 'Treasury') {
+      setActivePanel('offers');
+      setOfferListKey('creditPacks');
+      setOfferItemIndex(0);
+      return;
+    }
+    if (key === 'Elite') {
+      setActivePanel('offers');
+      setOfferListKey('passes');
+      setOfferItemIndex(0);
+      return;
+    }
+    if (key === 'Vault') {
+      setActivePanel('vault');
+      setVaultGroupIndex(0);
+      setVaultItemIndex(0);
+      return;
+    }
+    if (key === 'Events') {
+      setActivePanel('quests');
+      setQuestIndex(0);
+      return;
+    }
+    openSectionEditor(key, 'featured');
   };
 
   return (
@@ -471,7 +650,7 @@ export function ShopPageContentControlsPanel({
               items={[`${normalized.sideItems.length} side buttons`, `${normalized.headerStats.length} top stats`, `${normalized.previews.length} bottom previews`, `${previewImageCount} preview images`]}
               onOpen={() => {
                 setActivePanel('pageShell');
-                setShellListKey('sideItems');
+                setShellSurfaceKey('sidePanel');
                 setShellItemIndex(0);
               }}
             />
@@ -531,170 +710,507 @@ export function ShopPageContentControlsPanel({
 
       {activePanel === 'pageShell' ? (
         <div style={cardStyle}>
-          <SelectField<ShellListKey>
-            label="Page shell data"
-            value={shellListKey}
-            options={[
-              { value: 'sideItems', label: `Left side panel buttons (${normalized.sideItems.length})` },
-              { value: 'headerStats', label: `Top stat cells (${normalized.headerStats.length})` },
-              { value: 'previews', label: `Bottom preview rows (${normalized.previews.length})` },
-            ]}
-            onChange={(value) => {
-              setShellListKey(value);
-              setShellItemIndex(0);
-            }}
-          />
+          <div style={surfaceNavStyle}>
+            {[
+              { id: 'sidePanel' as const, title: 'Side Panel', detail: `${normalized.sideItems.length} buttons + earn CTA` },
+              { id: 'header' as const, title: 'Header', detail: `${normalized.uiCopy.header.badges.length} badges, ${normalized.headerStats.length} stats` },
+              { id: 'mainBody' as const, title: 'Main Body', detail: `${sectionCardCount} cards across sections` },
+              { id: 'rightPanel' as const, title: 'Right Sidepanel', detail: `${normalized.rightTabs.length} tabs, ${rightDetailCount} rows` },
+              { id: 'bottomPanel' as const, title: 'Bottom Panel', detail: `${normalized.previews.length} preview rows` },
+              { id: 'footer' as const, title: 'Footer', detail: `${normalized.uiCopy.footer.length} trust items` },
+            ].map(surface => (
+              <button key={surface.id} type="button" style={surfaceButtonStyle(shellSurfaceKey === surface.id)} onClick={() => {
+                setShellSurfaceKey(surface.id);
+                setShellItemIndex(0);
+              }}>
+                <strong>{surface.title}</strong>
+                <span style={{ color: '#9edfee', fontSize: '0.72rem' }}>{surface.detail}</span>
+              </button>
+            ))}
+          </div>
 
-          {shellListKey === 'sideItems' ? (
-            <>
-              <div style={{ color: '#bcecff', fontSize: '0.8rem' }}>These are the left rail buttons and their authored art/text. Their keys map to the fixed shop sections.</div>
-              <SelectField
-                label="Selected side button"
-                value={String(safeShellItemIndex)}
-                options={normalized.sideItems.map((item, index) => namedOption(item.title, index, item.subtitle))}
-                onChange={value => setShellItemIndex(Number(value))}
-              />
-              {selectedSideItem ? (
-                <div style={gridStyle}>
-                  <TextField label="Section key" value={selectedSideItem.key} readOnly onChange={() => undefined} />
-                  <TextField label="Title" value={selectedSideItem.title} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, title: value } : item))} />
-                  <TextField label="Subtitle" value={selectedSideItem.subtitle} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, subtitle: value } : item))} />
-                  <TextField label={`Image URL${selectedSideItem.imageUrl ? ` (${imageFileName(selectedSideItem.imageUrl)})` : ''}`} value={selectedSideItem.imageUrl} wide onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, imageUrl: value } : item))} />
-                  <SelectField label="Tone" value={selectedSideItem.tone} options={toneOptions} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, tone: value } : item))} />
-                  <SelectField label="Icon" value={selectedSideItem.icon} options={iconOptions} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, icon: value } : item))} />
+          {shellSurfaceKey === 'sidePanel' ? (
+            <div style={surfaceGridStyle}>
+              <div style={surfacePanelStyle}>
+                <div style={toolbarStyle}>
+                  <strong>Side Panel</strong>
+                  <span style={{ flex: 1 }} />
+                  <button type="button" style={buttonStyle} disabled={missingSideTabs.length === 0} onClick={() => {
+                    const defaultSideItem = DEFAULT_SHOP_PAGE_CONTENT.sideItems.find(item => item.key === missingSideTabs[0]);
+                    if (!defaultSideItem) return;
+                    const next = [...normalized.sideItems, { ...defaultSideItem }];
+                    updateSideItems(next);
+                    setShellItemIndex(next.length - 1);
+                  }}>+ Add Button</button>
                 </div>
-              ) : <div>No side panel buttons authored.</div>}
-            </>
+                <div style={authorListStyle}>
+                  {normalized.sideItems.map((item, index) => {
+                    const active = index === safeSideItemIndex;
+                    return (
+                      <div key={item.key} style={authorListItemStyle(active)}>
+                        <button type="button" style={authorSelectButtonStyle} onClick={() => setShellItemIndex(index)}>
+                          <AuthoringThumb imageUrl={item.imageUrl} label={item.title} />
+                          <span style={{ display: 'grid', gap: '0.16rem', minWidth: 0 }}>
+                            <strong>{item.title}</strong>
+                            <span style={{ color: '#bcecff', fontSize: '0.76rem' }}>{item.subtitle}</span>
+                            <span style={{ color: '#7dd3fc', fontSize: '0.72rem' }}>{sidePanelItemMetrics(normalized, item.key).join(' | ')}</span>
+                          </span>
+                        </button>
+                        <span style={listActionBarStyle}>
+                          <button type="button" style={iconButtonStyle} onClick={() => openSidePanelItems(item.key)}>Items</button>
+                          <button type="button" style={iconButtonStyle} aria-label={`Move ${item.title} up`} onClick={(event) => {
+                            event.stopPropagation();
+                            updateSideItems(reorder(normalized.sideItems, index, -1));
+                            setShellItemIndex(clampIndex(index - 1, normalized.sideItems.length));
+                          }}>Up</button>
+                          <button type="button" style={iconButtonStyle} aria-label={`Move ${item.title} down`} onClick={(event) => {
+                            event.stopPropagation();
+                            updateSideItems(reorder(normalized.sideItems, index, 1));
+                            setShellItemIndex(clampIndex(index + 1, normalized.sideItems.length));
+                          }}>Down</button>
+                          <button type="button" style={dangerButtonStyle} aria-label={`Delete ${item.title}`} onClick={(event) => {
+                            event.stopPropagation();
+                            const next = normalized.sideItems.filter((_, itemIndex) => itemIndex !== index);
+                            updateSideItems(next);
+                            setShellItemIndex(clampIndex(index - 1, next.length));
+                          }}>X</button>
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div style={{ ...summaryCardStyle, color: '#e0fbff' }}>
+                    <span style={{ color: '#54e2ff', fontWeight: 950 }}>Earn Free AC CTA</span>
+                    <strong>{normalized.uiCopy.earnPanel.title}</strong>
+                    <span style={{ color: '#bcecff', fontSize: '0.78rem' }}>{normalized.uiCopy.earnPanel.description}</span>
+                    <span style={{ color: '#fde68a', fontSize: '0.76rem', fontWeight: 900 }}>Button: {normalized.uiCopy.earnPanel.buttonLabel}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={surfacePanelStyle}>
+                <strong>{selectedSideItem ? `Edit ${selectedSideItem.title}` : 'No side button selected'}</strong>
+                {selectedSideItem ? (
+                  <div style={gridStyle}>
+                    <TextField label="Section key" value={selectedSideItem.key} readOnly onChange={() => undefined} />
+                    <TextField label="Title" value={selectedSideItem.title} onChange={value => updateSideItems(updateArrayItem(normalized.sideItems, safeSideItemIndex, { ...selectedSideItem, title: value }))} />
+                    <TextField label="Subtitle" value={selectedSideItem.subtitle} onChange={value => updateSideItems(updateArrayItem(normalized.sideItems, safeSideItemIndex, { ...selectedSideItem, subtitle: value }))} />
+                    <TextField label={`Image URL${selectedSideItem.imageUrl ? ` (${imageFileName(selectedSideItem.imageUrl)})` : ''}`} value={selectedSideItem.imageUrl} wide onChange={value => updateSideItems(updateArrayItem(normalized.sideItems, safeSideItemIndex, { ...selectedSideItem, imageUrl: value }))} />
+                    <SelectField label="Tone" value={selectedSideItem.tone} options={toneOptions} onChange={value => updateSideItems(updateArrayItem(normalized.sideItems, safeSideItemIndex, { ...selectedSideItem, tone: value }))} />
+                    <SelectField label="Icon" value={selectedSideItem.icon} options={iconOptions} onChange={value => updateSideItems(updateArrayItem(normalized.sideItems, safeSideItemIndex, { ...selectedSideItem, icon: value }))} />
+                    <div style={{ ...summaryCardStyle, gridColumn: '1 / -1', color: '#e0fbff' }}>
+                      <strong>Items controlled by this button</strong>
+                      <ul style={summaryListStyle}>{sidePanelItemMetrics(normalized, selectedSideItem.key).map(item => <li key={item}>{item}</li>)}</ul>
+                      <button type="button" style={buttonStyle} onClick={() => openSidePanelItems(selectedSideItem.key)}>Open linked items</button>
+                    </div>
+                    <div style={{ ...summaryCardStyle, gridColumn: '1 / -1', color: '#e0fbff' }}>
+                      <strong>Earn Free AC CTA</strong>
+                      <div style={gridStyle}>
+                        <TextField label="Title" value={normalized.uiCopy.earnPanel.title} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, earnPanel: { ...current.uiCopy.earnPanel, title: value } } }))} />
+                        <TextField label="Button label" value={normalized.uiCopy.earnPanel.buttonLabel} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, earnPanel: { ...current.uiCopy.earnPanel, buttonLabel: value } } }))} />
+                        <TextAreaField label="Description" value={normalized.uiCopy.earnPanel.description} wide onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, earnPanel: { ...current.uiCopy.earnPanel, description: value } } }))} />
+                      </div>
+                    </div>
+                  </div>
+                ) : <div>No side panel buttons authored.</div>}
+              </div>
+            </div>
           ) : null}
 
-          {shellListKey === 'headerStats' ? (
-            <>
-              <div style={toolbarStyle}>
-                <button type="button" style={buttonStyle} onClick={() => {
-                  const next = [...normalized.headerStats, { label: 'New Stat', value: 'N/A' }];
-                  updateHeaderStats(next);
-                  setShellItemIndex(next.length - 1);
-                }}>+ Stat</button>
-                <button type="button" style={dangerButtonStyle} disabled={!selectedHeaderStat} onClick={() => {
-                  const next = normalized.headerStats.filter((_, index) => index !== safeShellItemIndex);
-                  updateHeaderStats(next);
-                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, next.length));
-                }}>Remove Stat</button>
-              </div>
-              <SelectField
-                label="Selected stat"
-                value={String(safeShellItemIndex)}
-                options={normalized.headerStats.map((stat, index) => namedOption(stat.label, index, stat.value))}
-                onChange={value => setShellItemIndex(Number(value))}
-              />
-              {selectedHeaderStat ? (
+          {shellSurfaceKey === 'header' ? (
+            <div style={surfaceGridStyle}>
+              <div style={surfacePanelStyle}>
+                <strong>Header Copy</strong>
                 <div style={gridStyle}>
-                  <TextField label="Label" value={selectedHeaderStat.label} onChange={value => updateHeaderStats(normalized.headerStats.map((stat, index) => index === safeShellItemIndex ? { ...stat, label: value } : stat))} />
-                  <TextField label="Value" value={selectedHeaderStat.value} onChange={value => updateHeaderStats(normalized.headerStats.map((stat, index) => index === safeShellItemIndex ? { ...stat, value } : stat))} />
+                  <TextField label="Title" value={normalized.uiCopy.header.title} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, title: value } } }))} />
+                  <TextField label="Subtitle" value={normalized.uiCopy.header.subtitle} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, subtitle: value } } }))} />
+                  <TextField label="Balance title" value={normalized.uiCopy.header.balanceTitle} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, balanceTitle: value } } }))} />
+                  <TextField label="Balance unit" value={normalized.uiCopy.header.balanceUnit} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, balanceUnit: value } } }))} />
+                  <TextField label="Balance subtitle" value={normalized.uiCopy.header.balanceSub} wide onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, balanceSub: value } } }))} />
                 </div>
-              ) : <div>No top stats authored.</div>}
-            </>
+                <div style={{ ...summaryCardStyle, color: '#e0fbff' }}>
+                  <div style={toolbarStyle}>
+                    <strong>Header badges</strong>
+                    <span style={{ flex: 1 }} />
+                    <button type="button" style={buttonStyle} onClick={() => {
+                      const next = [...normalized.uiCopy.header.badges, { title: 'New', sub: 'Badge', icon: 'shield' as ShopIcon, tone: 'cyan' as ShopTone }];
+                      updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: next } } }));
+                      setHeaderBadgeIndex(next.length - 1);
+                    }}>+ Badge</button>
+                  </div>
+                  <div style={authorListStyle}>
+                    {normalized.uiCopy.header.badges.map((badge, index) => (
+                      <div key={`${badge.title}-${index}`} style={authorListItemStyle(index === safeHeaderBadgeIndex)}>
+                        <button type="button" style={authorSelectButtonStyle} onClick={() => setHeaderBadgeIndex(index)}>
+                          <span style={{ ...thumbStyle, display: 'grid', placeItems: 'center', fontWeight: 950 }}>{badge.icon}</span>
+                          <span style={{ display: 'grid', minWidth: 0 }}><strong>{badge.title}</strong><span style={{ color: '#bcecff' }}>{badge.sub}</span></span>
+                        </button>
+                        <span style={listActionBarStyle}>
+                          <button type="button" style={iconButtonStyle} onClick={(event) => {
+                            event.stopPropagation();
+                            const next = reorder(normalized.uiCopy.header.badges, index, -1);
+                            updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: next } } }));
+                            setHeaderBadgeIndex(clampIndex(index - 1, normalized.uiCopy.header.badges.length));
+                          }}>Up</button>
+                          <button type="button" style={iconButtonStyle} onClick={(event) => {
+                            event.stopPropagation();
+                            const next = reorder(normalized.uiCopy.header.badges, index, 1);
+                            updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: next } } }));
+                            setHeaderBadgeIndex(clampIndex(index + 1, normalized.uiCopy.header.badges.length));
+                          }}>Down</button>
+                          <button type="button" style={dangerButtonStyle} onClick={(event) => {
+                            event.stopPropagation();
+                            const next = normalized.uiCopy.header.badges.filter((_, badgeIndex) => badgeIndex !== index);
+                            updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: next } } }));
+                            setHeaderBadgeIndex(clampIndex(index - 1, next.length));
+                          }}>X</button>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div style={surfacePanelStyle}>
+                <strong>Header Stats</strong>
+                <div style={toolbarStyle}>
+                  <button type="button" style={buttonStyle} onClick={() => {
+                    const next = [...normalized.headerStats, { label: 'New Stat', value: 'N/A' }];
+                    updateHeaderStats(next);
+                    setShellItemIndex(next.length - 1);
+                  }}>+ Stat</button>
+                </div>
+                <div style={authorListStyle}>
+                  {normalized.headerStats.map((stat, index) => (
+                    <div key={`${stat.label}-${index}`} style={authorListItemStyle(index === safeHeaderStatIndex)}>
+                      <button type="button" style={authorSelectButtonStyle} onClick={() => setShellItemIndex(index)}>
+                        <span style={{ ...thumbStyle, display: 'grid', placeItems: 'center', fontWeight: 950 }}>{index + 1}</span>
+                        <span style={{ display: 'grid', minWidth: 0 }}>
+                          <strong>{stat.label}</strong>
+                          <span style={{ color: '#bcecff' }}>{stat.value}</span>
+                        </span>
+                      </button>
+                      <span style={listActionBarStyle}>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          updateHeaderStats(reorder(normalized.headerStats, index, -1));
+                          setShellItemIndex(clampIndex(index - 1, normalized.headerStats.length));
+                        }}>Up</button>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          updateHeaderStats(reorder(normalized.headerStats, index, 1));
+                          setShellItemIndex(clampIndex(index + 1, normalized.headerStats.length));
+                        }}>Down</button>
+                        <button type="button" style={dangerButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = normalized.headerStats.filter((_, statIndex) => statIndex !== index);
+                          updateHeaderStats(next);
+                          setShellItemIndex(clampIndex(index - 1, next.length));
+                        }}>X</button>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {selectedHeaderStat ? (
+                  <div style={gridStyle}>
+                    <TextField label="Label" value={selectedHeaderStat.label} onChange={value => updateHeaderStats(updateArrayItem(normalized.headerStats, safeHeaderStatIndex, { ...selectedHeaderStat, label: value }))} />
+                    <TextField label="Value" value={selectedHeaderStat.value} onChange={value => updateHeaderStats(updateArrayItem(normalized.headerStats, safeHeaderStatIndex, { ...selectedHeaderStat, value }))} />
+                  </div>
+                ) : null}
+                {selectedHeaderBadge ? (
+                  <div style={{ ...summaryCardStyle, color: '#e0fbff' }}>
+                    <strong>Selected Badge</strong>
+                    <div style={gridStyle}>
+                      <TextField label="Title" value={selectedHeaderBadge.title} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: updateArrayItem(current.uiCopy.header.badges, safeHeaderBadgeIndex, { ...selectedHeaderBadge, title: value }) } } }))} />
+                      <TextField label="Subtitle" value={selectedHeaderBadge.sub} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: updateArrayItem(current.uiCopy.header.badges, safeHeaderBadgeIndex, { ...selectedHeaderBadge, sub: value }) } } }))} />
+                      <SelectField label="Icon" value={selectedHeaderBadge.icon} options={iconOptions} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: updateArrayItem(current.uiCopy.header.badges, safeHeaderBadgeIndex, { ...selectedHeaderBadge, icon: value }) } } }))} />
+                      <SelectField label="Tone" value={selectedHeaderBadge.tone} options={toneOptions} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, header: { ...current.uiCopy.header, badges: updateArrayItem(current.uiCopy.header.badges, safeHeaderBadgeIndex, { ...selectedHeaderBadge, tone: value }) } } }))} />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
           ) : null}
 
-          {shellListKey === 'previews' ? (
-            <>
-              <div style={toolbarStyle}>
-                <button type="button" style={buttonStyle} onClick={() => {
-                  const next = [...normalized.previews, newPreviewRow()];
-                  updatePreviews(next);
-                  setShellItemIndex(next.length - 1);
-                }}>+ Preview Row</button>
-                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
-                  const next = selectedPreview ? [...normalized.previews, { ...selectedPreview, title: `${selectedPreview.title} Copy` }] : normalized.previews;
-                  updatePreviews(next);
-                  setShellItemIndex(next.length - 1);
-                }}>Duplicate</button>
-                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
-                  updatePreviews(reorder(normalized.previews, safeShellItemIndex, -1));
-                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, normalized.previews.length));
-                }}>Up</button>
-                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
-                  updatePreviews(reorder(normalized.previews, safeShellItemIndex, 1));
-                  setShellItemIndex(clampIndex(safeShellItemIndex + 1, normalized.previews.length));
-                }}>Down</button>
-                <button type="button" style={dangerButtonStyle} disabled={!selectedPreview} onClick={() => {
-                  const next = normalized.previews.filter((_, index) => index !== safeShellItemIndex);
-                  updatePreviews(next);
-                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, next.length));
-                }}>Remove Preview</button>
+          {shellSurfaceKey === 'mainBody' ? (
+            <div style={surfacePanelStyle}>
+              <strong>Main Body</strong>
+              <div style={{ color: '#bcecff', fontSize: '0.82rem' }}>Each section has separate authoring paths for top cards, bottom cards, and the product data it opens.</div>
+              <div style={summaryGridStyle}>
+                {shopTabs.map(tab => {
+                  const section = normalized.sections[tab];
+                  const featuredCount = section.featured?.length ?? 0;
+                  const categoryCount = section.categories?.length ?? 0;
+                  return (
+                    <div key={tab} style={{ ...summaryCardStyle, color: '#e0fbff' }}>
+                      <span style={{ color: '#54e2ff', fontSize: '0.78rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{tab}</span>
+                      <strong style={{ fontSize: '1.08rem' }}>{featuredCount + categoryCount} section cards</strong>
+                      <ul style={summaryListStyle}>
+                        <li>{featuredCount} top main cards</li>
+                        <li>{categoryCount} bottom main cards</li>
+                        {productSurfaceMetrics(normalized, tab).map(item => <li key={item}>{item}</li>)}
+                      </ul>
+                      <div style={listActionBarStyle}>
+                        <button type="button" style={buttonStyle} onClick={() => openSectionEditor(tab, 'featured')}>Edit top cards</button>
+                        <button type="button" style={buttonStyle} onClick={() => openSectionEditor(tab, 'categories')}>Edit bottom cards</button>
+                        <button type="button" style={buttonStyle} onClick={() => openSidePanelItems(tab)}>Edit {productEditorLabel(tab)}</button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <SelectField
-                label="Selected preview"
-                value={String(safeShellItemIndex)}
-                options={normalized.previews.map((preview, index) => namedOption(preview.title, index, `${preview.items.length} buttons, ${preview.imageUrls.length} images`))}
-                onChange={value => setShellItemIndex(Number(value))}
-              />
-              {selectedPreview ? (
-                <div style={gridStyle}>
-                  <TextField label="Title" value={selectedPreview.title} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, title: value } : preview))} />
-                  <SelectField<ShopPreviewRow['tab']>
-                    label="Target tab"
-                    value={selectedPreview.tab}
-                    options={previewTabOptions}
-                    onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, tab: value } : preview))}
+            </div>
+          ) : null}
+
+          {shellSurfaceKey === 'rightPanel' ? (
+            <div style={surfacePanelStyle}>
+              <strong>Right Sidepanel</strong>
+              <div style={summaryGridStyle}>
+                {normalized.rightTabs.map(tab => (
+                  <SummaryCard
+                    key={tab.id}
+                    title={tab.title}
+                    count={normalized.rightDetails[tab.id]?.length ?? 0}
+                    items={(normalized.rightDetails[tab.id] ?? []).map(row => `${row.label}: ${row.value}`)}
+                    onOpen={() => {
+                      setActivePanel('rightPanel');
+                      setRightTabId(tab.id);
+                      setRightRowIndex(0);
+                    }}
                   />
-                  <TextField label="Subtitle" value={selectedPreview.subtitle} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, subtitle: value } : preview))} />
-                  <TextField label="Accent color" value={selectedPreview.accent} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, accent: value } : preview))} />
-                  <TextAreaField label="Button labels / items" value={selectedPreview.items.join('\n')} wide onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, items: linesFromText(value) } : preview))} />
-                  <TextAreaField label="Image URLs" value={selectedPreview.imageUrls.join('\n')} wide onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, imageUrls: linesFromText(value) } : preview))} />
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {shellSurfaceKey === 'bottomPanel' ? (
+            <div style={surfaceGridStyle}>
+              <div style={surfacePanelStyle}>
+                <div style={toolbarStyle}>
+                  <strong>Bottom Panel Preview Rows</strong>
+                  <span style={{ flex: 1 }} />
+                  <button type="button" style={buttonStyle} onClick={() => {
+                    const next = [...normalized.previews, newPreviewRow()];
+                    updatePreviews(next);
+                    setShellItemIndex(next.length - 1);
+                  }}>+ Preview Row</button>
                 </div>
-              ) : <div>No bottom preview rows authored.</div>}
-            </>
+                <div style={authorListStyle}>
+                  {normalized.previews.map((preview, index) => (
+                    <div key={`${preview.title}-${index}`} style={authorListItemStyle(index === safePreviewIndex)}>
+                      <button type="button" style={authorSelectButtonStyle} onClick={() => setShellItemIndex(index)}>
+                        <AuthoringThumb imageUrl={preview.imageUrls[0] ?? ''} label={preview.title} />
+                        <span style={{ display: 'grid', gap: '0.12rem', minWidth: 0 }}>
+                          <strong>{preview.title}</strong>
+                          <span style={{ color: '#bcecff', fontSize: '0.76rem' }}>{preview.subtitle}</span>
+                          <span style={{ color: '#7dd3fc', fontSize: '0.72rem' }}>{preview.items.length} buttons | {preview.imageUrls.length} images | {preview.tab}</span>
+                        </span>
+                      </button>
+                      <span style={listActionBarStyle}>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = [
+                            ...normalized.previews.slice(0, index + 1),
+                            { ...preview, title: `${preview.title} Copy` },
+                            ...normalized.previews.slice(index + 1),
+                          ];
+                          updatePreviews(next);
+                          setShellItemIndex(index + 1);
+                        }}>Copy</button>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          updatePreviews(reorder(normalized.previews, index, -1));
+                          setShellItemIndex(clampIndex(index - 1, normalized.previews.length));
+                        }}>Up</button>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          updatePreviews(reorder(normalized.previews, index, 1));
+                          setShellItemIndex(clampIndex(index + 1, normalized.previews.length));
+                        }}>Down</button>
+                        <button type="button" style={dangerButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = normalized.previews.filter((_, previewIndex) => previewIndex !== index);
+                          updatePreviews(next);
+                          setShellItemIndex(clampIndex(index - 1, next.length));
+                        }}>X</button>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={surfacePanelStyle}>
+                <strong>{selectedPreview ? `Edit ${selectedPreview.title}` : 'No bottom preview selected'}</strong>
+                {selectedPreview ? (
+                  <div style={gridStyle}>
+                    <TextField label="Title" value={selectedPreview.title} onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, title: value }))} />
+                    <SelectField<ShopPreviewRow['tab']> label="Target tab" value={selectedPreview.tab} options={previewTabOptions} onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, tab: value }))} />
+                    <TextField label="Subtitle" value={selectedPreview.subtitle} onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, subtitle: value }))} />
+                    <TextField label="Accent color" value={selectedPreview.accent} onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, accent: value }))} />
+                    <TextAreaField label="Button labels / items" value={selectedPreview.items.join('\n')} wide onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, items: linesFromText(value) }))} />
+                    <TextAreaField label="Image URLs" value={selectedPreview.imageUrls.join('\n')} wide onChange={value => updatePreviews(updateArrayItem(normalized.previews, safePreviewIndex, { ...selectedPreview, imageUrls: linesFromText(value) }))} />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          {shellSurfaceKey === 'footer' ? (
+            <div style={surfaceGridStyle}>
+              <div style={surfacePanelStyle}>
+                <div style={toolbarStyle}>
+                  <strong>Footer Trust Row</strong>
+                  <span style={{ flex: 1 }} />
+                  <button type="button" style={buttonStyle} onClick={() => {
+                    const next = [...normalized.uiCopy.footer, { title: 'New Footer Item', sub: 'Describe the trust signal', icon: 'shield' as ShopIcon, tone: 'cyan' as ShopTone }];
+                    updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: next } }));
+                    setFooterItemIndex(next.length - 1);
+                  }}>+ Footer Item</button>
+                </div>
+                <div style={authorListStyle}>
+                  {normalized.uiCopy.footer.map((item, index) => (
+                    <div key={`${item.title}-${index}`} style={authorListItemStyle(index === safeFooterItemIndex)}>
+                      <button type="button" style={authorSelectButtonStyle} onClick={() => setFooterItemIndex(index)}>
+                        <span style={{ ...thumbStyle, display: 'grid', placeItems: 'center', fontWeight: 950 }}>{item.icon}</span>
+                        <span style={{ display: 'grid', minWidth: 0 }}><strong>{item.title}</strong><span style={{ color: '#bcecff' }}>{item.sub}</span></span>
+                      </button>
+                      <span style={listActionBarStyle}>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = reorder(normalized.uiCopy.footer, index, -1);
+                          updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: next } }));
+                          setFooterItemIndex(clampIndex(index - 1, normalized.uiCopy.footer.length));
+                        }}>Up</button>
+                        <button type="button" style={iconButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = reorder(normalized.uiCopy.footer, index, 1);
+                          updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: next } }));
+                          setFooterItemIndex(clampIndex(index + 1, normalized.uiCopy.footer.length));
+                        }}>Down</button>
+                        <button type="button" style={dangerButtonStyle} onClick={(event) => {
+                          event.stopPropagation();
+                          const next = normalized.uiCopy.footer.filter((_, footerIndex) => footerIndex !== index);
+                          updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: next } }));
+                          setFooterItemIndex(clampIndex(index - 1, next.length));
+                        }}>X</button>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={surfacePanelStyle}>
+                <strong>{selectedFooterItem ? `Edit ${selectedFooterItem.title}` : 'No footer item selected'}</strong>
+                {selectedFooterItem ? (
+                  <div style={gridStyle}>
+                    <TextField label="Title" value={selectedFooterItem.title} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: updateArrayItem(current.uiCopy.footer, safeFooterItemIndex, { ...selectedFooterItem, title: value }) } }))} />
+                    <TextField label="Subtitle" value={selectedFooterItem.sub} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: updateArrayItem(current.uiCopy.footer, safeFooterItemIndex, { ...selectedFooterItem, sub: value }) } }))} />
+                    <SelectField label="Icon" value={selectedFooterItem.icon} options={iconOptions} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: updateArrayItem(current.uiCopy.footer, safeFooterItemIndex, { ...selectedFooterItem, icon: value }) } }))} />
+                    <SelectField label="Tone" value={selectedFooterItem.tone} options={toneOptions} onChange={value => updateContent(current => ({ ...current, uiCopy: { ...current.uiCopy, footer: updateArrayItem(current.uiCopy.footer, safeFooterItemIndex, { ...selectedFooterItem, tone: value }) } }))} />
+                  </div>
+                ) : null}
+              </div>
+            </div>
           ) : null}
         </div>
       ) : null}
 
       {activePanel === 'sectionCards' ? (
         <div style={cardStyle}>
-          <div style={toolbarStyle}>
-            <SelectField label="Shop section" value={activeShopTab} options={shopTabs.map(tab => ({
-              value: tab,
-              label: `${tab} - ${(normalized.sections[tab].featured?.length ?? 0)} featured, ${(normalized.sections[tab].categories?.length ?? 0)} categories`,
-            }))} onChange={(value) => {
-              setActiveShopTab(value);
-              setSectionItemIndex(0);
-            }} />
-            <SelectField label="Card list" value={sectionListKey} options={[
-              { value: 'featured', label: `Featured / top row (${normalized.sections[activeShopTab].featured?.length ?? 0})` },
-              { value: 'categories', label: `Categories / bottom row (${normalized.sections[activeShopTab].categories?.length ?? 0})` },
-            ]} onChange={(value) => {
-              setSectionListKey(value);
-              setSectionItemIndex(0);
-            }} />
+          <div>
+            <strong>Section Cards</strong>
+            <div style={{ color: '#bcecff', fontSize: '0.82rem', marginTop: '0.2rem' }}>
+              Pick the shop section, then choose whether you are editing the top main strip or the bottom main cards.
+            </div>
+          </div>
+          <div style={surfaceNavStyle}>
+            {shopTabs.map(tab => {
+              const section = normalized.sections[tab];
+              return (
+                <button key={tab} type="button" style={surfaceButtonStyle(activeShopTab === tab)} onClick={() => {
+                  setActiveShopTab(tab);
+                  setSectionItemIndex(0);
+                }}>
+                  <strong>{tab}</strong>
+                  <span style={{ color: '#9edfee', fontSize: '0.72rem' }}>{section.featured?.length ?? 0} top, {section.categories?.length ?? 0} bottom</span>
+                </button>
+              );
+            })}
           </div>
           <div style={toolbarStyle}>
-            <button type="button" style={buttonStyle} onClick={() => {
-              const next = [...sectionItems, newShopItem(`${activeShopTab} Card`)];
-              updateSectionItems(next);
-              setSectionItemIndex(next.length - 1);
-            }}>+ Card</button>
-            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
-              const next = [...sectionItems, { ...selectedSectionItem, title: `${selectedSectionItem.title} Copy` }];
-              updateSectionItems(next);
-              setSectionItemIndex(next.length - 1);
-            }}>Duplicate</button>
-            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
-              updateSectionItems(reorder(sectionItems, safeSectionItemIndex, -1));
-              setSectionItemIndex(clampIndex(safeSectionItemIndex - 1, sectionItems.length));
-            }}>Up</button>
-            <button type="button" style={buttonStyle} disabled={!selectedSectionItem} onClick={() => {
-              updateSectionItems(reorder(sectionItems, safeSectionItemIndex, 1));
-              setSectionItemIndex(clampIndex(safeSectionItemIndex + 1, sectionItems.length));
-            }}>Down</button>
-            <button type="button" style={dangerButtonStyle} disabled={!selectedSectionItem} onClick={() => {
-              updateSectionItems(sectionItems.filter((_, index) => index !== safeSectionItemIndex));
-              setSectionItemIndex(clampIndex(safeSectionItemIndex - 1, sectionItems.length - 1));
-            }}>Remove</button>
+            {(['featured', 'categories'] as SectionListKey[]).map(listKey => (
+              <button key={listKey} type="button" style={tabButtonStyle(sectionListKey === listKey)} onClick={() => {
+                setSectionListKey(listKey);
+                setSectionItemIndex(0);
+              }}>{sectionListLabel(listKey)} ({normalized.sections[activeShopTab][listKey]?.length ?? 0})</button>
+            ))}
+            <span style={{ flex: 1 }} />
+            <button type="button" style={buttonStyle} onClick={() => openSidePanelItems(activeShopTab)}>Edit {productEditorLabel(activeShopTab)}</button>
           </div>
-          {sectionItems.length > 0 ? <SelectField label="Selected card" value={String(safeSectionItemIndex)} options={sectionItems.map(itemOption)} onChange={value => setSectionItemIndex(Number(value))} /> : null}
-          {selectedSectionItem ? (
-            <ShopItemEditor item={selectedSectionItem} onChange={item => updateSectionItems(sectionItems.map((candidate, index) => index === safeSectionItemIndex ? item : candidate))} />
-          ) : <div>No cards yet.</div>}
+          <div style={surfaceGridStyle}>
+            <div style={surfacePanelStyle}>
+              <div style={toolbarStyle}>
+                <strong>{activeShopTab} - {sectionListLabel(sectionListKey)}</strong>
+                <span style={{ flex: 1 }} />
+                <button type="button" style={buttonStyle} onClick={() => {
+                  const next = [...sectionItems, newShopItem(`${activeShopTab} Card`)];
+                  updateSectionItems(next);
+                  setSectionItemIndex(next.length - 1);
+                }}>+ Card</button>
+              </div>
+              <div style={authorListStyle}>
+                {sectionItems.map((item, index) => (
+                  <div key={`${item.title}-${index}`} style={authorListItemStyle(index === safeSectionItemIndex)}>
+                    <button type="button" style={authorSelectButtonStyle} onClick={() => setSectionItemIndex(index)}>
+                      <AuthoringThumb imageUrl={item.imageUrl} label={item.title} />
+                      <span style={{ display: 'grid', gap: '0.12rem', minWidth: 0 }}>
+                        <strong>{item.title}</strong>
+                        <span style={{ color: '#bcecff', fontSize: '0.76rem' }}>{item.subtitle}</span>
+                        <span style={{ color: '#7dd3fc', fontSize: '0.72rem' }}>{item.price || 'No CTA'} | {item.badge || 'No badge'} | {item.tone}</span>
+                      </span>
+                    </button>
+                    <span style={listActionBarStyle}>
+                      <button type="button" style={iconButtonStyle} onClick={(event) => {
+                        event.stopPropagation();
+                        const next = [
+                          ...sectionItems.slice(0, index + 1),
+                          { ...item, title: `${item.title} Copy` },
+                          ...sectionItems.slice(index + 1),
+                        ];
+                        updateSectionItems(next);
+                        setSectionItemIndex(index + 1);
+                      }}>Copy</button>
+                      <button type="button" style={iconButtonStyle} onClick={(event) => {
+                        event.stopPropagation();
+                        updateSectionItems(reorder(sectionItems, index, -1));
+                        setSectionItemIndex(clampIndex(index - 1, sectionItems.length));
+                      }}>Up</button>
+                      <button type="button" style={iconButtonStyle} onClick={(event) => {
+                        event.stopPropagation();
+                        updateSectionItems(reorder(sectionItems, index, 1));
+                        setSectionItemIndex(clampIndex(index + 1, sectionItems.length));
+                      }}>Down</button>
+                      <button type="button" style={dangerButtonStyle} onClick={(event) => {
+                        event.stopPropagation();
+                        const next = sectionItems.filter((_, itemIndex) => itemIndex !== index);
+                        updateSectionItems(next);
+                        setSectionItemIndex(clampIndex(index - 1, next.length));
+                      }}>X</button>
+                    </span>
+                  </div>
+                ))}
+                {sectionItems.length === 0 ? (
+                  <div style={{ ...summaryCardStyle, color: '#e0fbff' }}>
+                    <strong>No {sectionListLabel(sectionListKey).toLowerCase()} authored for {activeShopTab}.</strong>
+                    <span style={{ color: '#bcecff', fontSize: '0.8rem' }}>Use + Card for visible section cards, or use Edit {productEditorLabel(activeShopTab)} for the product list behind this section.</span>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div style={surfacePanelStyle}>
+              <strong>{selectedSectionItem ? `Edit ${selectedSectionItem.title}` : `${activeShopTab} ${sectionListLabel(sectionListKey)}`}</strong>
+              {selectedSectionItem ? (
+                <ShopItemEditor item={selectedSectionItem} onChange={item => updateSectionItems(sectionItems.map((candidate, index) => index === safeSectionItemIndex ? item : candidate))} />
+              ) : (
+                <div style={{ color: '#bcecff', fontSize: '0.82rem' }}>Select a card or add one to edit title, copy, image, tone, badge, CTA, and benefits.</div>
+              )}
+            </div>
+          </div>
         </div>
       ) : null}
 
