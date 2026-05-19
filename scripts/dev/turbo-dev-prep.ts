@@ -232,6 +232,12 @@ function writeTurboLastRunSentinel(): void {
 }
 
 export function ensureTurboDevPrep(target: DevPrepTarget, log: (message: string) => void = console.log): void {
+  log('Ensuring pre-commit hook is installed.');
+  execSync(`node ${path.join(ROOT, 'scripts', 'git-hooks', 'install-pre-commit.mjs')}`, {
+    cwd: ROOT,
+    stdio: 'inherit',
+  });
+
   const config = TARGET_CONFIG[target];
   const useSingleFilter = 'singleFilterPackage' in config && config.singleFilterPackage;
   const packageNames = useSingleFilter

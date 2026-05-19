@@ -6,7 +6,8 @@
     "packages/*",
     "infra/cloudflare",
     "infra/firebase",
-    "infra/firebase/functions"
+    "infra/firebase/functions",
+    "scratchpad"
   ],
   "type": "module",
   "packageManager": "npm@11.7.0",
@@ -77,6 +78,7 @@
     "dev:seed:assets:force": "node scripts/dev/run-seed-and-verify.mjs --force",
     "predev:editor": "npm run validate:game-assets",
     "dev:editor": "cd packages/asset-editor && npm run dev",
+    "dev:scratchpad": "npm --prefix scratchpad run dev",
     "predev:editor:stack": "npm run validate:game-assets",
     "dev:editor:stack": "npx tsx scripts/dev/dev-editor-full.ts",
     "predev:editor:e2e": "npm run validate:game-assets",
@@ -92,6 +94,7 @@
     "build:verify": "node scripts/build/verify-build.js",
     "lint:schema-boundaries": "node scripts/check-no-zod-source.mjs && node scripts/check-no-naked-domain-strings.mjs",
     "lint": "npm run validate:game-assets && npm run lint:schema-boundaries && turbo run lint:exec type-check",
+    "lint:scratchpad": "npm --prefix scratchpad run lint",
     "lint:local": "eslint src vite scripts vite.config.ts vitest.config.ts playwright.config.ts eslint.config.js --ignore-pattern \"scripts/test/monitoring/**\" && npx tsx --tsconfig tsconfig.node.json scripts/validate-required-fields.ts && npm run type-check",
     "validate": "npm run validate:game-assets && npm run lint:schema-boundaries && turbo run lint:exec type-check",
     "validate:main": "npm run validate:game-assets && turbo run lint:exec type-check --filter=!@ocentra/asset-editor",
@@ -108,6 +111,7 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "type-check": "npx tsx scripts/generate-exports-flattened.ts && npx tsx scripts/generate-registry-maps.ts && npm run build:domains && tsc -b",
+    "type-check:scratchpad": "npm --prefix scratchpad run type-check",
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

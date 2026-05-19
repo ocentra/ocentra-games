@@ -1,8 +1,12 @@
+import { execFileSync } from 'node:child_process';
 import { chmodSync, mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname } from 'node:path';
 
-const hookDir = join(process.cwd(), '.git', 'hooks');
-const hookPath = join(hookDir, 'pre-commit');
+const hookPath = execFileSync('git', ['rev-parse', '--git-path', 'hooks/pre-commit'], {
+  cwd: process.cwd(),
+  encoding: 'utf8',
+}).trim();
+const hookDir = dirname(hookPath);
 
 const hookScript = [
   '#!/bin/sh',
