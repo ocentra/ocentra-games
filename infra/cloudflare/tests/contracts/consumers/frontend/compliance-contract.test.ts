@@ -67,8 +67,8 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
         });
         builder.jsonBody({
           reportType: Matchers.string('soc2'),
-          startDate: Matchers.iso8601Date('2026-01-01'),
-          endDate: Matchers.iso8601Date('2026-02-01'),
+          startDate: Matchers.date('yyyy-MM-dd', '2026-01-01'),
+          endDate: Matchers.date('yyyy-MM-dd', '2026-02-01'),
           summary: Matchers.like({
             totalEvents: Matchers.integer(0),
             warnings: Matchers.integer(0),
