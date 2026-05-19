@@ -4,6 +4,146 @@
   },
   "interactions": [
     {
+      "description": "a direct profile badge mutation",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user cannot directly mint profile badges"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "badgeId": "pro_gold",
+            "name": "Pro Gold",
+            "source": "client"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/profiles/test-user/add-badge"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Profile badges must be issued by trusted server workflows"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a direct profile stats mutation",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user cannot directly set earned profile stats"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "gamesPlayed": 1,
+            "level": 99,
+            "wins": 1
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/profiles/test-user/update-stats"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Profile stats must be issued by trusted server workflows"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for profile by id",
       "pending": false,
       "providerStates": [

@@ -43,6 +43,14 @@ async function consumeResponseBody(response: Response): Promise<void> {
   }
 }
 
+async function expectTrustedBadgeWorkflowRejection(response: Response): Promise<void> {
+  expect(response.status).toBe(HttpStatus.Forbidden);
+  const data = await response.json() as { error?: string; message?: string; success?: boolean };
+  expect(data.error).toBe('Forbidden');
+  expect(data.message).toContain('trusted server workflows');
+  expect(data.success).not.toBe(true);
+}
+
 describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   let worker: TestWorker;
 
@@ -93,6 +101,25 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
       expect(response.status).toBe(HttpStatus.Forbidden);
       await consumeResponseBody(response);
+    });
+
+  it(testName('Badge Criteria Safety: should reject client-authoritative badge unlock attempts'), async () => {
+      const token = await createToken();
+      const userId = generateTestUserId('badge-unlock-block');
+      const badgesClaimUrl = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
+      const response = await worker.fetch(badgesClaimUrl, {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
+      }, token);
+
+      expect(response.status).toBe(HttpStatus.Forbidden);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe('Forbidden');
+      expect(data.message).toContain('trusted server workflows');
     });
 
   it(testName('Authorization (Badge-Specific): should reject cross-user active badges setting'), async () => {
@@ -147,8 +174,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       }, token);
 
       expect(response.status).toBe(HttpStatus.BadRequest);
-      const data = (await response.json()) as { success: boolean; error?: string };
-      expect(data.success).toBe(false);
+      const data = (await response.json()) as { success?: boolean; error?: string };
+      expect(data.success).not.toBe(true);
       expect(typeof data.error).toBe('string');
       expect((data.error ?? '').length).toBeGreaterThan(0);
     });
@@ -186,7 +213,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       await consumeResponseBody(response);
     });
 
-  it(testName('Replay Protection (Rule 14.8): should handle duplicate badge unlock requests idempotently'), async () => {
+  it(testName('Replay Protection (Rule 14.8): should reject duplicate client-authoritative badge unlock requests'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-replay');
 
@@ -207,11 +234,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
       }, token);
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = (await response1.json()) as {
-        badge: { badge_id: string; unlocked_at: string };
-        rewards_claimed: boolean;
-      };
+      await expectTrustedBadgeWorkflowRejection(response1);
 
       const badgesClaimUrl2 = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
       const response2 = await worker.fetch(badgesClaimUrl2, {
@@ -222,16 +245,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
       }, token);
-      expect(response2.status).toBe(HttpStatus.Ok);
-      const data2 = (await response2.json()) as {
-        badge: { badge_id: string; unlocked_at: string };
-        rewards_claimed: boolean;
-        already_unlocked?: boolean;
-      };
-
-      expect(data2.badge.badge_id).toBe(data1.badge.badge_id);
-      expect(data2.badge.unlocked_at).toBe(data1.badge.unlocked_at);
-      expect(data2.already_unlocked).toBe(true);
+      await expectTrustedBadgeWorkflowRejection(response2);
 
       const balanceAfter = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
         method: HttpMethod.Get,
@@ -246,18 +260,21 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         initialGP,
         balanceAfterGP: balanceAfterData.gp_balance,
         gpIncrease,
-        rewards1: data1.rewards_claimed,
-        rewards2: data2.rewards_claimed,
       }, LOG_DIAG_BADGES_SECURITY);
 
-      expect(gpIncrease).toBe(50);
-      expect(data1.rewards_claimed).toBe(true);
-      expect(data2.rewards_claimed).toBe(true);
+      expect(gpIncrease).toBe(0);
     });
 
-  it(testName('Partial Failure & Rollback (Rule 12.1.1, 12.1.2): should not award rewards if badge unlock fails after state update'), async () => {
+  it(testName('Partial Failure & Rollback (Rule 12.1.1, 12.1.2): should not award rewards for rejected badge unlocks'), async () => {
       const token = await createToken();
       const userId = generateTestUserId('badge-rollback');
+      const balanceBefore = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      expect(balanceBefore.status).toBe(HttpStatus.Ok);
+      const balanceData = (await balanceBefore.json()) as { gp_balance: number };
+      const initialGP = balanceData.gp_balance;
 
       const badgesClaimUrl1 = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
       const response1 = await worker.fetch(badgesClaimUrl1, {
@@ -268,48 +285,15 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
       }, token);
-      expect(response1.status).toBe(HttpStatus.Ok);
-      const data1 = (await response1.json()) as {
-        success: boolean;
-        badge?: { badge_id: string };
-        rewards_claimed?: boolean;
-      };
+      await expectTrustedBadgeWorkflowRejection(response1);
 
-      if (data1.success && data1.badge) {
-        const balanceBefore = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
-          method: HttpMethod.Get,
-          headers: getValidRequestHeaders(userId),
-        }, token);
-        expect(balanceBefore.status).toBe(HttpStatus.Ok);
-        const balanceData = (await balanceBefore.json()) as { gp_balance: number };
-        const initialGP = balanceData.gp_balance;
-
-        const badgesClaimUrl2 = buildTestBadgesApiUrl(userId, BadgeAction.Claim);
-        const response2 = await worker.fetch(badgesClaimUrl2, {
-          method: HttpMethod.Post,
-          headers: {
-            ...getValidRequestHeaders(userId),
-            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          },
-          body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: BadgeId.ProBronze }),
-        }, token);
-        expect(response2.status).toBe(HttpStatus.Ok);
-        const data2 = (await response2.json()) as {
-          success: boolean;
-          rewards_claimed?: boolean;
-          already_unlocked?: boolean;
-        };
-        expect(data2.success).toBe(true);
-        expect(data2.already_unlocked).toBe(true);
-
-        const balanceAfter = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
-          method: HttpMethod.Get,
-          headers: getValidRequestHeaders(userId),
-        }, token);
-        expect(balanceAfter.status).toBe(HttpStatus.Ok);
-        const balanceAfterData = (await balanceAfter.json()) as { gp_balance: number };
-        expect(balanceAfterData.gp_balance).toBe(initialGP);
-      }
+      const balanceAfter = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
+        method: HttpMethod.Get,
+        headers: getValidRequestHeaders(userId),
+      }, token);
+      expect(balanceAfter.status).toBe(HttpStatus.Ok);
+      const balanceAfterData = (await balanceAfter.json()) as { gp_balance: number };
+      expect(balanceAfterData.gp_balance).toBe(initialGP);
     });
 
   it(testName('Partial Failure & Rollback (Rule 12.1.1, 12.1.2): should maintain idempotency across retries after partial execution'), async () => {
@@ -326,7 +310,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         worker.fetch(badgesClaimUrl, { method: HttpMethod.Post, headers: postHeaders, body: postBody }, token),
         worker.fetch(badgesClaimUrl, { method: HttpMethod.Post, headers: postHeaders, body: postBody }, token),
       ]);
-      await Promise.all(responses.map(r => consumeResponseBody(r)));
+      await Promise.all(responses.map(r => expectTrustedBadgeWorkflowRejection(r)));
 
       const initialBalance = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
         method: HttpMethod.Get,
@@ -343,8 +327,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(finalBalance.status).toBe(HttpStatus.Ok);
       const finalData = (await finalBalance.json()) as { gp_balance: number };
       const gpIncrease = finalData.gp_balance - initialGP;
-      expect(gpIncrease).toBeGreaterThanOrEqual(0);
-      expect(gpIncrease).toBeLessThanOrEqual(50);
+      expect(gpIncrease).toBe(0);
 
       const profileResponse = await worker.fetch(buildTestBadgesApiUrl(userId), {
         method: HttpMethod.Get,
@@ -354,8 +337,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         badges: Array<{ badge_id: string }>;
         badge_counts: { total: number };
       };
-      expect(profile.badges.length).toBe(1);
-      expect(profile.badge_counts.total).toBe(1);
+      expect(profile.badges.length).toBe(0);
+      expect(profile.badge_counts.total).toBe(0);
     });
 
   it(testName('Time-Based Attacks (Rule 15.3): should handle concurrent badge unlocks at time boundaries'), async () => {
@@ -375,7 +358,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
 
       const timeResponses = await Promise.all(concurrentRequests);
-      await Promise.all(timeResponses.map(r => consumeResponseBody(r)));
+      await Promise.all(timeResponses.map(r => expectTrustedBadgeWorkflowRejection(r)));
 
       const profileResponse = await worker.fetch(buildTestBadgesApiUrl(userId), {
         method: HttpMethod.Get,
@@ -385,12 +368,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         badges: Array<{ badge_id: string; unlocked_at: string }>;
         badge_counts: { total: number };
       };
-      expect(profile.badges.length).toBe(1);
-      expect(profile.badge_counts.total).toBe(1);
-
-      const firstUnlockTime = profile.badges[0]!.unlocked_at;
-      expect(typeof firstUnlockTime).toBe('string');
-      expect(firstUnlockTime.length).toBeGreaterThan(0);
+      expect(profile.badges.length).toBe(0);
+      expect(profile.badge_counts.total).toBe(0);
 
       const initialBalance = await worker.fetch(buildCreditsApiUrl(userId, CreditAction.Balance), {
         method: HttpMethod.Get,
@@ -407,8 +386,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(finalBalance.status).toBe(HttpStatus.Ok);
       const finalData = (await finalBalance.json()) as { gp_balance: number };
       const gpIncrease = finalData.gp_balance - initialGP;
-      expect(gpIncrease).toBeGreaterThanOrEqual(0);
-      expect(gpIncrease).toBeLessThanOrEqual(50);
+      expect(gpIncrease).toBe(0);
     });
 
   it(testName('Economic Exhaustion (Rule 15.4): should prevent profit from spamming badge unlock attempts'), async () => {
@@ -478,8 +456,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         );
       }
 
-      expect(gpIncrease).toBeGreaterThanOrEqual(0);
-      expect(gpIncrease).toBeLessThanOrEqual(50);
+      expect(results.every((r) => r.status === HttpStatus.Forbidden)).toBe(true);
+      expect(rewardsClaimedCount).toBe(0);
+      expect(gpIncrease).toBe(0);
 
       const profileResponse = await worker.fetch(buildTestBadgesApiUrl(userId), {
         method: HttpMethod.Get,
@@ -489,8 +468,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         badges: Array<{ badge_id: string }>;
         badge_counts: { total: number };
       };
-      expect(profile.badges.length).toBe(1);
-      expect(profile.badge_counts.total).toBe(1);
+      expect(profile.badges.length).toBe(0);
+      expect(profile.badge_counts.total).toBe(0);
     });
 
   it(testName('Economic Exhaustion (Rule 15.4): should maintain conservation of value for badge rewards (Rule 15.4.1.1)'), async () => {
@@ -749,7 +728,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: invalidBadgeId }),
       }, token);
 
-      expect(rejectResponse.status).toBe(HttpStatus.BadRequest);
+      expect(rejectResponse.status).toBe(HttpStatus.Forbidden);
       const rejectData = (await rejectResponse.json()) as { error?: string };
       expect(typeof rejectData.error).toBe('string');
       expect((rejectData.error ?? '').length).toBeGreaterThan(0);
@@ -898,7 +877,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: nonexistentBadgeId }),
       }, token);
 
-      expect(rejectResponse.status).toBe(HttpStatus.BadRequest);
+      expect(rejectResponse.status).toBe(HttpStatus.Forbidden);
       const rejectData = (await rejectResponse.json()) as { error?: string; success?: boolean };
       expect(typeof rejectData.error).toBe('string');
       expect((rejectData.error ?? '').length).toBeGreaterThan(0);
@@ -998,9 +977,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         body: JSON.stringify({ [BadgeApiBodyKey.BadgeId]: nonExistentBadgeId }),
       }, token);
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const data = (await response.json()) as { success: boolean; error?: string };
-      expect(data.success).toBe(false);
+      expect(response.status).toBe(HttpStatus.Forbidden);
+      const data = (await response.json()) as { success?: boolean; error?: string };
+      expect(data.success).not.toBe(true);
       expect(typeof data.error).toBe('string');
       expect((data.error ?? '').length).toBeGreaterThan(0);
     });

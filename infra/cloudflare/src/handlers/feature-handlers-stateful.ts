@@ -33,10 +33,8 @@ import {
   FeedFanoutRequestSchema,
   FeedReportRequestSchema,
   DiscoverySearchQuerySchema,
-  InventoryAddItemRequestSchema,
   InventoryEquipItemRequestSchema,
   InventoryGiftRequestSchema,
-  InventoryRemoveItemRequestSchema,
   InventoryTradeRequestSchema,
   MarketplaceBuyRequestSchema,
   MarketplaceEmptyRequestSchema,
@@ -71,6 +69,16 @@ const rewardClaimFlow = new RewardClaimFlow();
 const inventoryTransferFlow = new InventoryTransferFlow();
 const tournamentPrizeDistributionFlow = new TournamentPrizeDistributionFlow();
 
+function rejectClientTrustedWorkflowMutation(env: Env, requestOrigin: string | undefined, message: string): Response {
+  return new Response(JSON.stringify({
+    error: ErrorMessage.Forbidden,
+    message,
+  }), {
+    status: HttpStatus.Forbidden,
+    headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, requestOrigin) },
+  });
+}
+
 export async function handleRewardRequest(request: Request, env: Env, path: string): Promise<Response> {
   const methodCheck = rejectUnsupportedMethod(request, env, [HttpMethod.Get, HttpMethod.Post]);
   if (methodCheck) return methodCheck;
@@ -91,6 +99,14 @@ export async function handleRewardRequest(request: Request, env: Env, path: stri
   const isBattlePass = rewardPath === RewardDOSegment.BattlePass;
   const isMissionProgress = missionParts[0] !== undefined && missionParts[missionParts.length - 1] === MissionsDOSegment.Progress;
   const isMissionClaim = missionParts.length >= 2 && missionParts[missionParts.length - 1] === MissionsDOSegment.Claim;
+
+  if (request.method === HttpMethod.Post && isBattlePassXp) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Battle pass XP must be issued by trusted server workflows');
+  }
+
+  if (request.method === HttpMethod.Post && isMissionProgress) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Mission progress must be issued by trusted server workflows');
+  }
 
   let parsedBody: Record<string, unknown> | undefined;
   if (request.method === HttpMethod.Post) {
@@ -578,6 +594,12 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
       headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
     });
   }
+  if (request.method === HttpMethod.Post && isAddItem) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Inventory items must be issued by trusted server workflows');
+  }
+  if (request.method === HttpMethod.Post && isRemoveItem) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Inventory item removal must be issued by trusted server workflows');
+  }
   const doPath = isAddItem
     ? InventoryDOPaths.AddItem
     : isRemoveItem
@@ -587,19 +609,9 @@ export async function handleInventoryRequest(request: Request, env: Env, path: s
         : InventoryDOPaths.Equip;
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
-    if (isAddItem) {
-      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryAddItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    } else if (isRemoveItem) {
-      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryRemoveItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    } else {
-      const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryEquipItemRequestSchema);
-      if (errorResponse || !data) return errorResponse!;
-      validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
-    }
+    const { data, errorResponse } = await validateSchemaBody(request.clone(), env, InventoryEquipItemRequestSchema);
+    if (errorResponse || !data) return errorResponse!;
+    validatedGenericBody = JSON.stringify({ ...data, operationId: data.idempotencyKey });
   }
   const res = await doFetch(stub, doPath, { method: request.method, body: validatedGenericBody });
   const data = await res.json().catch(() => ({}));
@@ -699,7 +711,14 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
   const tournamentId = tournamentIdResult.id;
   const stub = ns.get(ns.idFromName(tournamentId));
 
-  if (segment === TournamentDOSegment.DistributePrizes && request.method === HttpMethod.Post) {
+  if (
+    request.method === HttpMethod.Post &&
+    (
+      segment === TournamentDOSegment.Start ||
+      segment === TournamentDOSegment.Result ||
+      segment === TournamentDOSegment.DistributePrizes
+    )
+  ) {
     const adminCheck = await checkAdminStatus(request, env);
     if (!adminCheck.isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden: Admin required' }), {
@@ -707,6 +726,9 @@ export async function handleTournamentRequest(request: Request, env: Env, path: 
         headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
       });
     }
+  }
+
+  if (segment === TournamentDOSegment.DistributePrizes && request.method === HttpMethod.Post) {
     const flowResult = await flowRunner.run(
       tournamentPrizeDistributionFlow,
       createFlowContext({

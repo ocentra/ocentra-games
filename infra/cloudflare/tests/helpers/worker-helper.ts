@@ -217,6 +217,18 @@ function assertUnstableDevPrerequisites(): void {
   }
 }
 
+function createUnstableDevConfig(cwd: string): string {
+  const sourcePath = path.join(cwd, 'wrangler.toml');
+  const targetPath = path.join(cwd, 'tests', '.test-storage', 'wrangler.unstable-dev.toml');
+  const sourceText = fs.readFileSync(sourcePath, 'utf-8');
+  const localText = sourceText
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*script_name\s*=/.test(line))
+    .join('\n');
+  fs.writeFileSync(targetPath, localText);
+  return targetPath;
+}
+
 async function createUnstableDevWorker(overrides: Record<string, string> = {}): Promise<TestWorker> {
   assertUnstableDevPrerequisites();
 
@@ -234,7 +246,7 @@ async function createUnstableDevWorker(overrides: Record<string, string> = {}): 
     };
     const cwd = process.cwd();
     const entryPath = path.join(cwd, 'src', 'index.ts');
-    const configPath = path.join(cwd, 'wrangler.toml');
+    const configPath = createUnstableDevConfig(cwd);
     const persistToPath = path.join(cwd, 'tests', '.test-storage');
     const dev = await unstable_dev(entryPath, {
       experimental: { disableExperimentalWarning: true },

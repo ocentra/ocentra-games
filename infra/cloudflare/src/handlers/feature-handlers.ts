@@ -50,8 +50,6 @@ import {
   PresenceBlockRequestSchema,
   PresenceFriendRequestSchema,
   ProfileAvatarRequestSchema,
-  ProfileBadgeRequestSchema,
-  ProfileStatsRequestSchema,
   ProfileUpdateRequestSchema,
   ProgressionXpRequestSchema,
   PenaltyAppealRequestSchema,
@@ -112,6 +110,16 @@ const logError = (message: string, stackTrace: StackTrace, data?: unknown) => {
 const logDebug = (message: string, stackTrace: StackTrace, data?: unknown, enabled: boolean = false) => {
   log.logDebug(message, stackTrace, data, enabled);
 };
+
+function rejectClientTrustedWorkflowMutation(env: Env, requestOrigin: string | undefined, message: string): Response {
+  return new Response(JSON.stringify({
+    error: ErrorMessage.Forbidden,
+    message,
+  }), {
+    status: HttpStatus.Forbidden,
+    headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, requestOrigin) },
+  });
+}
 
 export async function handleLobbyRequest(request: Request, env: Env, path: string): Promise<Response> {
   logDebug('Lobby request', getStackTrace(), { path });
@@ -595,6 +603,15 @@ export async function handleProgressionRequest(request: Request, env: Env, path:
                 : request.method === HttpMethod.Post && isBasePath
                   ? ProgressionDOPaths.Xp
                   : ProgressionDOPaths.Get;
+
+  if (request.method === HttpMethod.Post && doPath === ProgressionDOPaths.Xp) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Progression XP must be issued by trusted server workflows');
+  }
+
+  if (request.method === HttpMethod.Post && doPath === ProgressionDOPaths.UpdateAchievement) {
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Achievement progress must be issued by trusted server workflows');
+  }
+
   let validatedGenericBody = undefined;
   if (request.method === HttpMethod.Post || request.method === HttpMethod.Put || request.method === HttpMethod.Patch) {
     if (doPath === ProgressionDOPaths.Xp) {
@@ -1109,25 +1126,11 @@ export async function handleProfileRequest(request: Request, env: Env, path: str
   }
 
   if (pathParts[1] === ProfileDOSegment.AddBadge && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileBadgeRequestSchema);
-    if (errorResponse) return errorResponse;
-    const res = await doFetch(stub, ProfileDOPaths.AddBadge, { method: HttpMethod.Post, body: JSON.stringify(data) });
-    const result = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(result), {
-      status: res.status,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Profile badges must be issued by trusted server workflows');
   }
 
   if (pathParts[1] === ProfileDOSegment.UpdateStats && request.method === HttpMethod.Post) {
-    const { data, errorResponse } = await validateSchemaBody(request, env, ProfileStatsRequestSchema);
-    if (errorResponse) return errorResponse;
-    const res = await doFetch(stub, ProfileDOPaths.UpdateStats, { method: HttpMethod.Post, body: JSON.stringify(data) });
-    const result = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(result), {
-      status: res.status,
-      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env) },
-    });
+    return rejectClientTrustedWorkflowMutation(env, requestOrigin, 'Profile stats must be issued by trusted server workflows');
   }
 
   if (request.method === HttpMethod.Get) {

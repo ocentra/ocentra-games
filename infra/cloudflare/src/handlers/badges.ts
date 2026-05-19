@@ -628,6 +628,31 @@ export async function handleBadgesRequest(
       )
       if (validation.errorResponse) return validation.errorResponse
       const body = validation.data!
+      const claimedBadgeId = body.badge_id as BadgeIdType
+      const { profile } = await storage.getProfile(userId)
+      const existingBadge = profile.badges.find((badge) => badge.badge_id === claimedBadgeId)
+
+      if (!existingBadge) {
+        logWarn(
+          'Rejected client-authoritative badge unlock',
+          getStackTrace(),
+          { userId, badgeId: claimedBadgeId },
+          LOG_CLAIM_REQUEST
+        )
+        return new Response(
+          JSON.stringify({
+            error: ErrorMessage.Forbidden,
+            message: 'Badge unlocks must be issued by trusted server workflows',
+          }),
+          {
+            status: HttpStatus.Forbidden,
+            headers: {
+              [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+              ...getCorsHeaders(env, requestOrigin || undefined),
+            },
+          }
+        )
+      }
 
       const checkAborted = (): boolean => {
         const aborted = request.signal?.aborted ?? false
@@ -669,7 +694,7 @@ export async function handleBadgesRequest(
         getStackTrace(),
         {
           userId,
-          badgeId: body.badge_id,
+          badgeId: claimedBadgeId,
           elapsed: Date.now() - requestStartTime,
         },
         LOG_UNLOCK_LOGIC
@@ -677,7 +702,7 @@ export async function handleBadgesRequest(
       const result = await unlockBadgeLogic(
         {
           userId,
-          badgeId: body.badge_id as BadgeIdType,
+          badgeId: claimedBadgeId,
           gameType: body.game_type,
           checkAborted,
         },

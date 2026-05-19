@@ -55,10 +55,10 @@ declare module '@pact-foundation/pact' {
     string(value: string): Matcher<string>;
     boolean(value: boolean): Matcher<boolean>;
     like<T>(value: T): Matcher<T>;
-    eachLike<T>(value: T, min?: number): Matcher<T[]>;
+    eachLike<T>(value: T, opts?: { min?: number }): Matcher<T[]>;
     uuid(value?: string): Matcher<string>;
-    datetime(format: string, example: string): Matcher<string>;
-    date(format: string, example: string): Matcher<string>;
+    iso8601DateTimeWithMillis(value?: string): Matcher<string>;
+    iso8601Date(value?: string): Matcher<string>;
     decimal(value?: number): Matcher<number>;
     [key: string]: unknown;
   };

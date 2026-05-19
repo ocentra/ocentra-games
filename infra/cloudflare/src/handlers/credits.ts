@@ -96,6 +96,11 @@ async function resolveIdempotencyKey(
   return validation.key;
 }
 
+function rejectClientCreditMutation(env: Env, requestOrigin: string | null, message: string): Response {
+  const headers = { [HttpHeader.ContentType]: HttpContentType.ApplicationJson, ...getCorsHeaders(env, requestOrigin || undefined) };
+  return new Response(JSON.stringify({ error: ErrorMessage.Forbidden, message }), { status: HttpStatus.Forbidden, headers });
+}
+
 
 export async function getCreditBalance(env: Env, userId: string): Promise<CreditBalance> {
   if (!env.CREDITS_DO) {
@@ -272,8 +277,18 @@ export async function handleCreditsRequest(
     creditsDOType: typeof env.CREDITS_DO,
     envKeys: Object.keys(env).filter(k => k.includes('CREDIT') || k.includes('DO'))
   }, LOG_CREDITS_OPERATIONS);
-  
+
   try {
+    if (request.method === HttpMethod.Post && action === CreditAction.Purchase) {
+      logWarn('[CREDITS-PURCHASE] Rejected client-authoritative purchase mutation', getStackTrace(), { userId }, LOG_CREDITS_WARNINGS);
+      return rejectClientCreditMutation(env, requestOrigin, 'Credit purchases must be completed through the payment checkout flow');
+    }
+
+    if (request.method === HttpMethod.Post && action === CreditAction.Earn) {
+      logWarn('[CREDITS-EARN] Rejected client-authoritative GP mutation', getStackTrace(), { userId }, LOG_CREDITS_WARNINGS);
+      return rejectClientCreditMutation(env, requestOrigin, 'GP awards must be issued by trusted server workflows');
+    }
+
     if (action === CreditAction.Balance || action === userId) {
       if (!env.CREDITS_DO) {
         return new Response(JSON.stringify({

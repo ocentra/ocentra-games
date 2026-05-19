@@ -9,6 +9,7 @@ import { getCurrentContext } from '@/logging/request-context';
 import { decryptKey, importMasterKey } from '@/logic/ai-keys';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
 import { AIGenerateRequestSchema } from '@ocentra/endpoint-domain/schemas/worker-contracts';
+import { validateWorkerOutboundBaseUrl } from '@/utils/worker-outbound-url-policy';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -305,6 +306,19 @@ export async function handleAIGenerateRequest(
     if (!baseUrl) {
       return new Response(
         JSON.stringify({ error: 'Bad Request', message: 'baseUrl required for this provider' }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env, requestOrigin),
+          },
+        }
+      );
+    }
+    const baseUrlError = validateWorkerOutboundBaseUrl(baseUrl, env);
+    if (baseUrlError) {
+      return new Response(
+        JSON.stringify({ error: 'Bad Request', message: baseUrlError }),
         {
           status: HttpStatus.BadRequest,
           headers: {

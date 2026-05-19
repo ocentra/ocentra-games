@@ -4,6 +4,144 @@
   },
   "interactions": [
     {
+      "description": "a direct inventory add-item mutation",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user cannot directly mint inventory items"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "count": 10,
+            "itemId": "premium-card-back",
+            "type": "cosmetic"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/inventory/test-user/add-item"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Inventory items must be issued by trusted server workflows"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a direct inventory remove-item mutation",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user cannot directly remove inventory items"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "itemId": "premium-card-back"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/inventory/test-user/remove-item"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Inventory item removal must be issued by trusted server workflows"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for inventory by user",
       "pending": false,
       "providerStates": [

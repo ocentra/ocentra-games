@@ -50,7 +50,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           }),
           active_badges: Matchers.like([]),
           badge_progress: Matchers.like({}),
-          last_updated: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
+          last_updated: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
         });
       })
       .executeTest(async (mockServer) => {
@@ -276,14 +276,14 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
       });
   });
 
-  it('badges claim: returns 200 with badge and rewards_claimed', async () => {
+  it('badges claim: returns 403 for client-authoritative badge unlock', async () => {
     const userId = TestConfig.TestUserId;
     const pathSegment = badgesPath(userId, BadgeAction.Claim);
 
     await provider
       .addInteraction()
-      .given('user can claim a badge')
-      .uponReceiving('a request to claim a badge')
+      .given('user has not unlocked the badge')
+      .uponReceiving('a client-authoritative request to claim a badge')
       .withRequest(HttpMethod.Post, pathSegment, (builder) => {
         builder.headers({
           [HttpHeader.Authorization]: formatBearerToken(createTestToken(userId)),
@@ -292,17 +292,13 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
         });
         builder.jsonBody({ badge_id: BadgeId.ProBronze });
       })
-      .willRespondWith(HttpStatus.Ok, (builder) => {
+      .willRespondWith(HttpStatus.Forbidden, (builder) => {
         builder.headers({
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          success: Matchers.boolean(true),
-          badge: Matchers.like({
-            badge_id: Matchers.string(BadgeId.ProBronze),
-            unlocked_at: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
-          }),
-          rewards_claimed: Matchers.boolean(false),
+          error: Matchers.string('Forbidden'),
+          message: Matchers.string('Badge unlocks must be issued by trusted server workflows'),
         });
       })
       .executeTest(async (mockServer) => {
@@ -317,12 +313,10 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           },
           body: JSON.stringify({ badge_id: BadgeId.ProBronze }),
         });
-        expect(response.status).toBe(HttpStatus.Ok);
-        const data = (await response.json()) as { success: boolean; badge: { badge_id: string }; rewards_claimed: boolean };
-        expect(data.success).toBe(true);
-        expect(data.badge).not.toBeNull();
-        expect(data.badge).toHaveProperty('badge_id');
-        expect(typeof data.rewards_claimed).toBe('boolean');
+        expect(response.status).toBe(HttpStatus.Forbidden);
+        const data = (await response.json()) as { error: string; message: string };
+        expect(data.error).toBe('Forbidden');
+        expect(data.message).toContain('trusted server workflows');
       });
   });
 

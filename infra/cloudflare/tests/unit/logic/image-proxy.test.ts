@@ -172,6 +172,27 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     expect(mockFetch.fetch).not.toHaveBeenCalled();
   });
 
+  it(testName('should reject non-http image URL schemes before fetch'), async () => {
+    const mockFetch: ImageProxyFetch = {
+      fetch: vi.fn(),
+    };
+
+    const result = await proxyImageLogic(
+      {
+        imageUrl: `ftp://${TestConstants.Googleusercontent}/${TestConstants.ImageJpg}`,
+        allowedDomains: [TestConstants.Googleusercontent],
+        userAgent: TestConstants.TestAgent,
+        defaultContentType: HttpContentType.ImageJpeg,
+      },
+      mockFetch
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.statusCode).toBe(HttpStatus.Forbidden);
+    expect(result.error).toBe(TestConstants.ImageSourceNotAllowed);
+    expect(mockFetch.fetch).not.toHaveBeenCalled();
+  });
+
   it(testName('should return error when fetch fails'), async () => {
     const mockFetch: ImageProxyFetch = {
       fetch: vi.fn().mockResolvedValue({

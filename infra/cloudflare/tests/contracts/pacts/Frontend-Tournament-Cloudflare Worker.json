@@ -4,6 +4,123 @@
   },
   "interactions": [
     {
+      "description": "a non-admin tournament result request",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user is authenticated but not an admin"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "matchId": "match-1",
+            "winnerId": "test-user"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tournaments/contract-tournament-1/result"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden: Admin required"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a non-admin tournament start request",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user is authenticated but not an admin"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {},
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/tournaments/contract-tournament-1/start"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden: Admin required"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for tournament bracket by id",
       "pending": false,
       "providerStates": [

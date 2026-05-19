@@ -49,6 +49,14 @@ async function consumeResponseBody(response: Response): Promise<void> {
   }
 }
 
+async function expectCheckoutOnlyPurchaseRejection(response: Response): Promise<void> {
+  expect(response.status).toBe(HttpStatus.Forbidden);
+  const data = await response.json() as { error?: string; message?: string; stack?: string };
+  expect(data.error).toBe('Forbidden');
+  expect(data.message).toContain('payment checkout flow');
+  expect(data.stack).toBeUndefined();
+}
+
 describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
   let worker: TestWorker;
 
@@ -236,6 +244,58 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       await consumeResponseBody(response);
     });
 
+  it(testName('Economic Safety: should reject client-authoritative AC purchase minting'), async () => {
+      const token = await createToken();
+      const userId = generateTestUserId('purchase-mint-block');
+      const url = buildCreditsApiUrl(userId, CreditAction.Purchase);
+      const response = await worker.fetch(url,
+        {
+          method: HttpMethod.Post,
+          headers: {
+            ...getValidRequestHeaders(userId),
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            [HttpHeader.IdempotencyKey]: generateIdempotencyKey(IdempotencyKeyPrefix.Purchase),
+          },
+          body: JSON.stringify({
+            ac_amount: 999999,
+            amount: 1,
+            currency: Currency.USD,
+          })
+        },
+      token
+      );
+
+      expect(response.status).toBe(HttpStatus.Forbidden);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe('Forbidden');
+      expect(data.message).toContain('payment checkout');
+    });
+
+  it(testName('Economic Safety: should reject client-authoritative GP award minting'), async () => {
+      const token = await createToken();
+      const userId = generateTestUserId('gp-mint-block');
+      const url = buildCreditsApiUrl(userId, CreditAction.Earn);
+      const response = await worker.fetch(url,
+        {
+          method: HttpMethod.Post,
+          headers: {
+            ...getValidRequestHeaders(userId),
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+          },
+          body: JSON.stringify({
+            gp_amount: 999999,
+            description: 'client selected reward',
+          })
+        },
+      token
+      );
+
+      expect(response.status).toBe(HttpStatus.Forbidden);
+      const data = await response.json() as { error?: string; message?: string };
+      expect(data.error).toBe('Forbidden');
+      expect(data.message).toContain('trusted server workflows');
+    });
+
   it(testName('Redeem: requires authentication (Rule 14.1.1)'), async () => {
     const token = await createToken();
     const userId = generateTestUserId('redeem-no-auth');
@@ -304,8 +364,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Input Validation: should reject purchase with zero amount'), async () => {
@@ -332,8 +391,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
     it(testName('should reject purchase with missing ac_amount'), async () => {
@@ -359,8 +417,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Input Validation: should reject consumption with negative amount'), async () => {
@@ -484,7 +541,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
       const purchaseUrl = buildCreditsApiUrl(userId, CreditAction.Purchase);
       const purchaseKey = generateIdempotencyKey(IdempotencyKeyPrefix.Purchase);
-      await worker.fetch(purchaseUrl,
+      const purchaseResponse = await worker.fetch(purchaseUrl,
         {
           method: HttpMethod.Post,
           headers: {
@@ -500,6 +557,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
       token
       );
+      await expectCheckoutOnlyPurchaseRejection(purchaseResponse);
 
       const consumeUrl1 = buildCreditsApiUrl(userId, CreditAction.Consume);
       const consumeKey1 = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
@@ -550,9 +608,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
 
       expect(balanceResponse.status).toBe(HttpStatus.Ok);
       const balance = await balanceResponse.json() as { ac_balance: number; total_ac_purchased: number; total_ac_spent: number };
-      expect(balance.ac_balance).toBe(500);
-      expect(balance.total_ac_purchased).toBe(1000);
-      expect(balance.total_ac_spent).toBe(500);
+      expect(balance.ac_balance).toBe(0);
+      expect(balance.total_ac_purchased).toBe(0);
+      expect(balance.total_ac_spent).toBe(0);
     });
 
   it(testName('Replay Protection: should create unique transaction IDs for each purchase'), async () => {
@@ -597,23 +655,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      if (response1.status !== HttpStatus.Ok || response2.status !== HttpStatus.Ok) {
-        const error1 = response1.status !== HttpStatus.Ok ? await response1.json().catch(() => ({ error: 'Failed to parse' })) : null;
-        const error2 = response2.status !== HttpStatus.Ok ? await response2.json().catch(() => ({ error: 'Failed to parse' })) : null;
-        logError('[TEST] Replay requests failed', getStackTrace(), { response1: response1.status, error1, response2: response2.status, error2 });
-      }
-
-      expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(response1.status);
-      expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(response2.status);
-      
-      if (response1.status !== HttpStatus.Ok || response2.status !== HttpStatus.Ok) {
-        return;
-      }
-
-      const data1 = await response1.json() as { transaction_id: string };
-      const data2 = await response2.json() as { transaction_id: string };
-
-      expect(data1.transaction_id).not.toBe(data2.transaction_id);
+      await expectCheckoutOnlyPurchaseRejection(response1);
+      await expectCheckoutOnlyPurchaseRejection(response2);
     });
 
   it(testName('Replay Protection: should create unique transaction IDs for each consumption'), async () => {
@@ -640,9 +683,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
 
       if (purchaseResponse.status !== HttpStatus.Ok) {
-        const errorBody = await purchaseResponse.json().catch(() => ({ error: 'Failed to parse' }));
-        logError('[TEST] Purchase failed in consume test', getStackTrace(), { status: purchaseResponse.status, errorBody });
-        expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(purchaseResponse.status);
+        await expectCheckoutOnlyPurchaseRejection(purchaseResponse);
         return;
       }
 
@@ -735,17 +776,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       }
 
       const responses = await Promise.all(purchaseRequests);
-      const rateLimited = responses.filter(r => r.status === HttpStatus.TooManyRequests);
-
-      if (!isRealMode) {
-        expect(rateLimited.length).toBeGreaterThan(0);
-      } else {
-        expect(rateLimited.length).toBeLessThan(iterations);
-        for (const response of responses) {
-          expect(response.status).toBeGreaterThanOrEqual(HttpStatus.Ok);
-          expect(response.status).toBeLessThan(HttpStatus.InternalServerError);
-        }
-      }
+      const forbidden = responses.filter(r => r.status === HttpStatus.Forbidden);
+      expect(forbidden.length).toBe(iterations);
       await Promise.all(responses.map(r => consumeResponseBody(r)));
     });
 
@@ -809,36 +841,8 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         Promise.all(requests2)
       ]);
 
-      const rateLimited1 = responses1.filter(r => r.status === HttpStatus.TooManyRequests);
-      const rateLimited2 = responses2.filter(r => r.status === HttpStatus.TooManyRequests);
-      const successful1 = responses1.filter(r => r.status === HttpStatus.Ok);
-      const successful2 = responses2.filter(r => r.status === HttpStatus.Ok);
-
-      const totalRateLimited = rateLimited1.length + rateLimited2.length;
-      const totalSuccessful = successful1.length + successful2.length;
-
-      if (!isRealMode && totalRateLimited === 0 && totalSuccessful >= 12) {
-        logError('[TEST] SECURITY BUG DETECTED: Rate limiting not enforced', getStackTrace(), {
-          user1: { successful: successful1.length, rateLimited: rateLimited1.length, total: responses1.length },
-          user2: { successful: successful2.length, rateLimited: rateLimited2.length, total: responses2.length },
-          expectedRateLimited: 'at least 2 (12 requests with limit of 10)'
-        });
-      }
-
-      if (!isRealMode) {
-        expect(totalRateLimited).toBeGreaterThan(0);
-        expect(totalSuccessful).toBeLessThanOrEqual(24);
-        if (rateLimited1.length > 0 || rateLimited2.length > 0) {
-          expect(rateLimited1.length).toBeGreaterThan(0);
-          expect(rateLimited2.length).toBeGreaterThan(0);
-        }
-      } else {
-        expect(totalRateLimited).toBeLessThan(iterations * 2);
-        for (const response of [...responses1, ...responses2]) {
-          expect(response.status).toBeGreaterThanOrEqual(HttpStatus.Ok);
-          expect(response.status).toBeLessThan(HttpStatus.InternalServerError);
-        }
-      }
+      expect(responses1.every(r => r.status === HttpStatus.Forbidden)).toBe(true);
+      expect(responses2.every(r => r.status === HttpStatus.Forbidden)).toBe(true);
       await Promise.all([...responses1, ...responses2].map(r => consumeResponseBody(r)));
     });
 
@@ -860,13 +864,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const data = await response.json() as { error?: string; message?: string; stack?: string };
-      
-      expect(data.stack).toBeUndefined();
-      expect(data.error).not.toContain('JSON');
-      expect(data.error).not.toContain('SyntaxError');
-      expect(data.error).not.toContain('Unexpected');
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Error & Information Leakage: should return consistent error shape for unauthorized requests'), async () => {
@@ -971,7 +969,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
       token
       );
-      await consumeResponseBody(skipStepsPurchase);
+      await expectCheckoutOnlyPurchaseRejection(skipStepsPurchase);
 
       const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
       const consumeKey = generateIdempotencyKey(IdempotencyKeyPrefix.Consume);
@@ -1004,7 +1002,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
       const finalData = await finalBalance.json() as { ac_balance: number };
       
-      expect(finalData.ac_balance).toBe(initialAC + 500);
+      expect(finalData.ac_balance).toBe(initialAC);
       expect(finalData.ac_balance).toBeGreaterThanOrEqual(0);
     });
 
@@ -1028,9 +1026,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const data = await response.json() as { error?: string; message?: string };
-      expect(data.message).toContain('Invalid request payload');
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Concurrency & Race Conditions: should handle concurrent purchase requests correctly'), async () => {
@@ -1127,7 +1123,12 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
         },
       token
       );
-      await consumeResponseBody(concurrentPurchaseRes);
+      const startingBalance = concurrentPurchaseRes.status === HttpStatus.Ok ? 1000 : 0;
+      if (concurrentPurchaseRes.status === HttpStatus.Ok) {
+        await consumeResponseBody(concurrentPurchaseRes);
+      } else {
+        await expectCheckoutOnlyPurchaseRejection(concurrentPurchaseRes);
+      }
 
       const consumeUrl = buildCreditsApiUrl(userId, CreditAction.Consume);
       const requests = Array.from({ length: 10 }, () => {
@@ -1167,9 +1168,9 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       
       const consumed = successful.length * 50;
       expect(finalData.ac_balance).toBeGreaterThanOrEqual(0);
-      expect(finalData.ac_balance).toBeLessThanOrEqual(1000);
+      expect(finalData.ac_balance).toBeLessThanOrEqual(startingBalance);
       
-      const expectedBalance = 1000 - consumed;
+      const expectedBalance = startingBalance - consumed;
       const balanceDifference = Math.abs(finalData.ac_balance - expectedBalance);
       expect(balanceDifference).toBeLessThanOrEqual(50);
     });
@@ -1200,9 +1201,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
 
       if (response1.status !== HttpStatus.Ok) {
-        const errorBody = await response1.json().catch(() => ({ error: 'Failed to parse' }));
-        logError('[TEST] First purchase failed', getStackTrace(), { status: response1.status, errorBody });
-        expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(response1.status);
+        await expectCheckoutOnlyPurchaseRejection(response1);
         return;
       }
       
@@ -1271,22 +1270,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
 
       if (response1.status !== HttpStatus.Ok) {
-        const errorBody = await response1.json().catch(() => ({ error: 'Failed to parse' }));
-        logError('[TEST] First purchase failed', getStackTrace(), { status: response1.status, errorBody, payload: purchasePayload });
-        
-        if (response1.status === HttpStatus.BadRequest) {
-          const errorData = errorBody as { error?: string; message?: string };
-          const errorMessage = errorData.error || errorData.message || '';
-          if (errorMessage.includes('positive integer')) {
-            expect(purchasePayload.ac_amount).toBeGreaterThan(0);
-            expect(Number.isInteger(purchasePayload.ac_amount)).toBe(true);
-          }
-        }
-      }
-      
-      expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(response1.status);
-      
-      if (response1.status !== HttpStatus.Ok) {
+        await expectCheckoutOnlyPurchaseRejection(response1);
         return;
       }
       
@@ -1346,13 +1330,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       );
 
       if (response1.status !== HttpStatus.Ok) {
-        const errorBody = await response1.json().catch(() => ({ error: 'Failed to parse' }));
-        logError('[TEST] First purchase failed', getStackTrace(), { status: response1.status, errorBody });
-      }
-
-      expect([HttpStatus.Ok, HttpStatus.TooManyRequests, HttpStatus.Conflict, HttpStatus.BadRequest]).toContain(response1.status);
-      
-      if (response1.status !== HttpStatus.Ok) {
+        await expectCheckoutOnlyPurchaseRejection(response1);
         return;
       }
 
@@ -1415,10 +1393,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.Ok);
-      const data = await response.json() as { new_balance: number };
-      expect(typeof data.new_balance).toBe('number');
-      expect(data.new_balance).toBeGreaterThan(0);
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Boundary Value Testing: should reject NaN values'), async () => {
@@ -1445,8 +1420,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      await consumeResponseBody(response);
+      await expectCheckoutOnlyPurchaseRejection(response);
     });
 
   it(testName('Boundary Value Testing: should reject Infinity values (serialized as null by JSON.stringify)'), async () => {
@@ -1473,11 +1447,7 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       token
       );
 
-      expect(response.status).toBe(HttpStatus.BadRequest);
-      const data = await response.json() as { error?: string; message?: string };
-      const msg = data.error ?? data.message;
-      expect(typeof msg).toBe('string');
-      expect((msg as string).length).toBeGreaterThan(0);
+      await expectCheckoutOnlyPurchaseRejection(response);
       
       const bodyText = JSON.stringify({
         ac_amount: Infinity,
@@ -1487,4 +1457,3 @@ describe(extractName(import.meta.url), TestSuiteType.E2E, () => {
       expect(bodyText).toContain('"ac_amount":null');
     });
 });
-

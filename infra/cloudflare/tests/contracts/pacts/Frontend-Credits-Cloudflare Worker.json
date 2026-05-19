@@ -4,6 +4,224 @@
   },
   "interactions": [
     {
+      "description": "a client-authoritative earn request for GP",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "description": "Contract test earn",
+            "gp_amount": 50
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Idempotency-Key": [
+            "earn-5bf0455d-7c66-4bde-814d-957e0fd0d5b7"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/credits/test-user/earn"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "GP awards must be issued by trusted server workflows"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a client-authoritative purchase request for AC",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "ac_amount": 100,
+            "amount": 10,
+            "currency": "USD"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Idempotency-Key": [
+            "purchase-e7f2cde5-18cf-4520-8182-c0cd3bb9fe43"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/credits/test-user/purchase"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Credit purchases must be completed through the payment checkout flow"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a client-authoritative purchase request with invalid negative amount",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "user exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "ac_amount": -100,
+            "amount": 10,
+            "currency": "USD"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Authorization": [
+            "Bearer test-token:test-user"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Idempotency-Key": [
+            "purchase-3df6f75a-2ec7-40cc-8426-c9250278af9c"
+          ],
+          "Origin": [
+            "http://localhost:5173"
+          ]
+        },
+        "method": "POST",
+        "path": "/api/v1/credits/test-user/purchase"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "error": "Forbidden",
+            "message": "Credit purchases must be completed through the payment checkout flow"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.error": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.message": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 403
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a consume request exceeding balance",
       "pending": false,
       "providerStates": [
@@ -28,7 +246,7 @@
             "application/json"
           ],
           "Idempotency-Key": [
-            "consume-ac-0b2c6fe9-f5a1-4195-a717-4c99501c422c"
+            "consume-ac-cfe64e15-a1c0-43bf-98f5-73dda02e51ad"
           ],
           "Origin": [
             "http://localhost:5173"

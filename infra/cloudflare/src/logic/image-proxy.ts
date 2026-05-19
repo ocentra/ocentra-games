@@ -41,6 +41,14 @@ export async function proxyImageLogic(
     }
 
     const imageUrlObj = new URL(input.imageUrl);
+    if (imageUrlObj.protocol !== 'https:' && imageUrlObj.protocol !== 'http:') {
+      return {
+        success: false,
+        statusCode: HttpStatus.Forbidden,
+        error: 'Image source not allowed',
+      };
+    }
+
     const isAllowed = isAllowedImageHostname(imageUrlObj.hostname, input.allowedDomains);
 
     if (!isAllowed) {

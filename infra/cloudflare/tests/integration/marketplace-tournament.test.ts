@@ -7,7 +7,7 @@ import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { OpenApiExampleValue } from '@ocentra/endpoint-domain/constants/openapi-examples';
 import { HttpMethod, HttpStatus, HttpHeader, HttpContentType } from '@ocentra/endpoint-domain/constants/http';
 import { TestConfig } from '@tests/constants/test-constants';
-import { getAdminAuthHeaders } from '@tests/helpers/test-helpers';
+import { getAdminAuthHeaders, getValidRequestHeaders } from '@tests/helpers/test-helpers';
 import { Logger, getStackTrace, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 
@@ -120,5 +120,39 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
       body: JSON.stringify(OpenApiExampleValue.TournamentStartRequest),
     });
     expect([HttpStatus.Ok, HttpStatus.BadRequest, HttpStatus.NotFound]).toContain(response.status);
+  });
+
+  it(testName('Tournament POST start: rejects non-admin scheduling mutation'), async () => {
+    const tournamentId = 'test-tournament-start-forbidden-' + Date.now();
+    const url = buildApiUrl(ApiEndpoint.Tournament.Start(tournamentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
+    const response = await worker.fetch(url, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(TestConfig.TestUserId),
+        [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      },
+      body: JSON.stringify(OpenApiExampleValue.TournamentStartRequest),
+    });
+    expect(response.status).toBe(HttpStatus.Forbidden);
+    const body = (await response.json()) as { error?: string };
+    expect(body.error).toBe('Forbidden: Admin required');
+  });
+
+  it(testName('Tournament POST result: rejects non-admin result mutation'), async () => {
+    const tournamentId = 'test-tournament-result-forbidden-' + Date.now();
+    const url = buildApiUrl(ApiEndpoint.Tournament.Result(tournamentId), { baseUrl: TestConfig.TestApiUrlPlaceholder });
+    const response = await worker.fetch(url, {
+      method: HttpMethod.Post,
+      headers: {
+        ...getValidRequestHeaders(TestConfig.TestUserId),
+        [HttpHeader.Origin]: TestConfig.LocalhostOrigin,
+        [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+      },
+      body: JSON.stringify(OpenApiExampleValue.TournamentResultRequest),
+    });
+    expect(response.status).toBe(HttpStatus.Forbidden);
+    const body = (await response.json()) as { error?: string };
+    expect(body.error).toBe('Forbidden: Admin required');
   });
 });

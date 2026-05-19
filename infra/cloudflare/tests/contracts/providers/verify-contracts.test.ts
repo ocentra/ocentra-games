@@ -16,7 +16,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
   });
 
   afterAll(async () => {
-    if (worker.stop) await worker.stop();
+    if (worker?.stop) await worker.stop();
   });
 
   it(

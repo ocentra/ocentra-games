@@ -208,6 +208,32 @@ describe(extractName(import.meta.url), TestSuiteType.Integration, () => {
     expect(data.message).toContain('catalog');
   });
 
+  it(testName('AI Keys custom: rejects non-http baseUrl before storage'), async () => {
+    const userId = generateTestUserId('ai-keys-custom-bad-url');
+    const token = await createToken();
+    const url = buildTestApiUrlForEndpoint(ApiEndpoint.AI.KeysCustom);
+
+    const res = await worker.fetch(
+      url,
+      {
+        method: HttpMethod.Post,
+        headers: {
+          ...getValidRequestHeaders(userId),
+          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+        },
+        body: JSON.stringify({
+          providerId: 'openai',
+          apiKey: 'sk-any',
+          baseUrl: 'ftp://api.openai.com/v1',
+        }),
+      },
+      token
+    );
+    expect(res.status).toBe(HttpStatus.BadRequest);
+    const data = (await res.json()) as { message?: string };
+    expect(data.message).toBe('baseUrl must use http:// or https://');
+  });
+
   it(testName('AI Keys: rejects store without providerId or apiKey'), async () => {
     const userId = generateTestUserId('ai-bad-store');
     const token = await createToken();

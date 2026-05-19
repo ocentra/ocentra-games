@@ -49,7 +49,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
             type: Matchers.string('noop'),
             playerId: TestConfig.TestPlayerId,
             data: Matchers.like({}),
-            timestamp: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
+            timestamp: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
           }),
           chainOfThought: Matchers.eachLike(Matchers.like({})),
           modelMetadata: Matchers.like({}),

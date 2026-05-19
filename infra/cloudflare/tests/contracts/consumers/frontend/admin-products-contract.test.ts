@@ -79,7 +79,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               displayName: Matchers.string('100 AC'),
               active: Matchers.boolean(true),
             },
-            1
+            { min: 1 }
           ),
         });
       })

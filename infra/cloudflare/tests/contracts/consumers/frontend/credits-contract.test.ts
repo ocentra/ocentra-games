@@ -42,7 +42,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           user_id: userId,
           gp_balance: Matchers.integer(50),
           ac_balance: Matchers.integer(100),
-          last_updated: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
+          last_updated: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
           total_gp_earned: Matchers.integer(50),
           total_ac_purchased: Matchers.integer(100),
           total_ac_spent: Matchers.integer(0),
@@ -116,15 +116,15 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
       });
   });
 
-  it('credits purchase: returns 200 and balance for valid purchase', async () => {
+  it('credits purchase: returns 403 for client-authoritative purchase', async () => {
     const userId = TestConfig.TestUserId;
     const pathSegment = ApiEndpoint.Credits.Purchase(userId);
     const idempotencyKey = `${IdempotencyKeyPrefix.Purchase}${generateValidGuid()}`;
 
     await provider
       .addInteraction()
-      .given('user has 0 AC balance')
-      .uponReceiving('a valid purchase request for AC')
+      .given('user exists')
+      .uponReceiving('a client-authoritative purchase request for AC')
       .withRequest(HttpMethod.Post, pathSegment, (builder) => {
         builder.headers({
           [HttpHeader.Authorization]: formatBearerToken(createTestToken(userId)),
@@ -138,15 +138,13 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           currency: Currency.USD,
         });
       })
-      .willRespondWith(HttpStatus.Ok, (builder) => {
+      .willRespondWith(HttpStatus.Forbidden, (builder) => {
         builder.headers({
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          success: true,
-          transaction_id: Matchers.string('tx-123'),
-          new_balance: Matchers.integer(100),
-          ac_added: Matchers.integer(100),
+          error: Matchers.string('Forbidden'),
+          message: Matchers.string('Credit purchases must be completed through the payment checkout flow'),
         });
       })
       .executeTest(async (mockServer) => {
@@ -162,15 +160,14 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           },
           body: JSON.stringify({ ac_amount: 100, amount: 10, currency: Currency.USD }),
         });
-        expect(response.status).toBe(HttpStatus.Ok);
-        const data = (await response.json()) as { success: boolean; new_balance: number; ac_added: number };
-        expect(data.success).toBe(true);
-        expect(typeof data.new_balance).toBe('number');
-        expect(data.ac_added).toBe(100);
+        expect(response.status).toBe(HttpStatus.Forbidden);
+        const data = (await response.json()) as { error: string; message: string };
+        expect(data.error).toBe('Forbidden');
+        expect(data.message).toContain('payment checkout');
       });
   });
 
-  it('credits purchase: returns 400 for invalid amount', async () => {
+  it('credits purchase: returns 403 before validating client-authoritative amount', async () => {
     const userId = TestConfig.TestUserId;
     const pathSegment = ApiEndpoint.Credits.Purchase(userId);
     const idempotencyKey = `${IdempotencyKeyPrefix.Purchase}${generateValidGuid()}`;
@@ -178,7 +175,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
     await provider
       .addInteraction()
       .given('user exists')
-      .uponReceiving('a purchase request with invalid negative amount')
+      .uponReceiving('a client-authoritative purchase request with invalid negative amount')
       .withRequest(HttpMethod.Post, pathSegment, (builder) => {
         builder.headers({
           [HttpHeader.Authorization]: formatBearerToken(createTestToken(userId)),
@@ -192,13 +189,13 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           currency: Currency.USD,
         });
       })
-      .willRespondWith(HttpStatus.BadRequest, (builder) => {
+      .willRespondWith(HttpStatus.Forbidden, (builder) => {
         builder.headers({
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          error: Matchers.string('Bad Request'),
-          message: Matchers.string('AC amount must be a positive integer greater than 0'),
+          error: Matchers.string('Forbidden'),
+          message: Matchers.string('Credit purchases must be completed through the payment checkout flow'),
         });
       })
       .executeTest(async (mockServer) => {
@@ -214,10 +211,10 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           },
           body: JSON.stringify({ ac_amount: -100, amount: 10, currency: Currency.USD }),
         });
-        expect(response.status).toBe(HttpStatus.BadRequest);
+        expect(response.status).toBe(HttpStatus.Forbidden);
         const data = (await response.json()) as { error: string; message: string };
-        expect(data.error).toBe('Bad Request');
-        expect(typeof data.message).toBe('string');
+        expect(data.error).toBe('Forbidden');
+        expect(data.message).toContain('payment checkout');
       });
   });
 
@@ -271,15 +268,15 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
       });
   });
 
-  it('credits earn: returns 200 and new balance for valid earn', async () => {
+  it('credits earn: returns 403 for client-authoritative GP award', async () => {
     const userId = TestConfig.TestUserId;
     const pathSegment = ApiEndpoint.Credits.Earn(userId);
     const idempotencyKey = `${IdempotencyKeyPrefix.Earn}${generateValidGuid()}`;
 
     await provider
       .addInteraction()
-      .given('user has 0 GP balance')
-      .uponReceiving('a valid earn request for GP')
+      .given('user exists')
+      .uponReceiving('a client-authoritative earn request for GP')
       .withRequest(HttpMethod.Post, pathSegment, (builder) => {
         builder.headers({
           [HttpHeader.Authorization]: formatBearerToken(createTestToken(userId)),
@@ -289,14 +286,13 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
         });
         builder.jsonBody({ gp_amount: 50, description: 'Contract test earn' });
       })
-      .willRespondWith(HttpStatus.Ok, (builder) => {
+      .willRespondWith(HttpStatus.Forbidden, (builder) => {
         builder.headers({
           [HttpHeader.ContentType]: String(HttpContentType.ApplicationJson),
         });
         builder.jsonBody({
-          success: true,
-          transaction_id: Matchers.string('earn-tx-123'),
-          new_balance: Matchers.integer(50),
+          error: Matchers.string('Forbidden'),
+          message: Matchers.string('GP awards must be issued by trusted server workflows'),
         });
       })
       .executeTest(async (mockServer) => {
@@ -312,10 +308,10 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           },
           body: JSON.stringify({ gp_amount: 50, description: 'Contract test earn' }),
         });
-        expect(response.status).toBe(HttpStatus.Ok);
-        const data = (await response.json()) as { success: boolean; new_balance: number };
-        expect(data.success).toBe(true);
-        expect(typeof data.new_balance).toBe('number');
+        expect(response.status).toBe(HttpStatus.Forbidden);
+        const data = (await response.json()) as { error: string; message: string };
+        expect(data.error).toBe('Forbidden');
+        expect(data.message).toContain('trusted server workflows');
       });
   });
 

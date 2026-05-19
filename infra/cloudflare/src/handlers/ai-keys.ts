@@ -17,6 +17,7 @@ import { getCatalogFromEnv } from '@/data/ai-catalog';
 import { Logger } from '@/logging/domain-logger-init';
 import type { StackTrace } from '@ocentra/logging-domain/core/stackTrace';
 import { rejectUnsupportedMethod } from '@/utils/method-guards';
+import { validateWorkerOutboundBaseUrl } from '@/utils/worker-outbound-url-policy';
 
 const log = Logger.instance;
 log.register(import.meta.url);
@@ -186,6 +187,21 @@ async function handleStoreCustom(
       }
     );
   }
+  if (baseUrl !== undefined && baseUrl !== '') {
+    const baseUrlError = validateWorkerOutboundBaseUrl(baseUrl, env);
+    if (baseUrlError) {
+      return new Response(
+        JSON.stringify({ error: 'Bad Request', message: baseUrlError }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env, requestOrigin),
+          },
+        }
+      );
+    }
+  }
   try {
     const masterKey = await importMasterKey(env.AI_MASTER_KEY!);
     const encrypted = await encryptKey(apiKey, masterKey);
@@ -319,6 +335,22 @@ async function handleTest(
         },
       }
     );
+  }
+
+  if (getData.baseUrl) {
+    const baseUrlError = validateWorkerOutboundBaseUrl(getData.baseUrl, env);
+    if (baseUrlError) {
+      return new Response(
+        JSON.stringify({ error: 'Bad Request', message: baseUrlError }),
+        {
+          status: HttpStatus.BadRequest,
+          headers: {
+            [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
+            ...getCorsHeaders(env, requestOrigin),
+          },
+        }
+      );
+    }
   }
 
   const ciphertext = Uint8Array.from(atob(getData.ciphertext), (c) => c.charCodeAt(0)).buffer;
