@@ -5,6 +5,15 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
+import { notifyBridgeRunStarted } from '@ocentra/logging-domain/transport/bridgeTransport';
+import { TestSuiteType } from '@ocentra/logging-domain/test-log/types';
+import { RunType } from '@ocentra/logging-domain/test-log/types';
+import { TestRunMode, asTestRunModeOrNull } from '../src/constants/test-run-mode.js';
+import { VitestConfigFile } from '../src/constants/vitest-config.js';
+import { TestEnvVar, TestEnvValue } from '../tests/constants/test-constants.js';
+import { runSuiteTypeCollector } from '../test-runner/script/lib/suite-type-collector.js';
+import { getSuiteTypeWithFallback } from '../test-runner/script/lib/suite-type-map.js';
 
 const BRIDGE_HEALTH_URL = 'http://127.0.0.1:8765/__health__';
 const DEFAULT_LOG_BRIDGE_URL = PUBLIC_TUNNEL_BRIDGE_URL;
@@ -30,15 +39,6 @@ function checkBridgeRunning(): Promise<boolean> {
     });
   });
 }
-import { TestRunMode, asTestRunModeOrNull } from '../src/constants/test-run-mode.js';
-import { TestEnvVar, TestEnvValue } from '../tests/constants/test-constants.js';
-import { TestSuiteType } from '@ocentra/logging-domain/test-log/types';
-import { RunType } from '@ocentra/logging-domain/test-log/types';
-import { VitestConfigFile } from '../src/constants/vitest-config.js';
-import { runSuiteTypeCollector } from '../test-runner/script/lib/suite-type-collector.js';
-import { getSuiteTypeWithFallback } from '../test-runner/script/lib/suite-type-map.js';
-import { notifyBridgeRunStarted } from '@ocentra/logging-domain/transport/bridgeTransport';
-import { PUBLIC_TUNNEL_BRIDGE_URL } from '@ocentra/logging-domain/core/constants';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

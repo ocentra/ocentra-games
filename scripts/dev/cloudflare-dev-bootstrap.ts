@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { spawn, execSync } from 'child_process';
+import { spawn, execFileSync, execSync } from 'child_process';
 import type { ChildProcess } from 'child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -382,30 +382,24 @@ function runCommand(
   log(`${description} completed in ${formatDurationMs(Date.now() - startedAt)}.`);
 }
 
-function quoteShellArg(value: string): string {
-  return `"${value.replace(/"/g, '\\"')}"`;
-}
-
-function createWranglerShellCommand(args: string[]): string {
-  return [
-    quoteShellArg(process.execPath),
-    quoteShellArg(WRANGLER_ENTRYPOINT),
-    ...args.map(quoteShellArg),
-  ].join(' ');
-}
-
 function seedAiCatalog(log: (message: string) => void): void {
   log('Seeding AI_CATALOG_KV...');
   try {
     const outFile = path.join(GAME_WORKER_DIR, 'ai-catalog-seed.json');
-    execSync(`npx tsx scripts/seed-ai-catalog.ts "${outFile}"`, {
+    execFileSync(NODE_EXECUTABLE, ['--import', 'tsx', 'scripts/seed-ai-catalog.ts', outFile], {
       cwd: GAME_WORKER_DIR,
       stdio: 'pipe',
     });
-    execSync(
-      createWranglerShellCommand(['kv', 'key', 'put', 'catalog', '--path=ai-catalog-seed.json', '--namespace-id=0000000000000000000000000000000c', '--local']),
-      { cwd: GAME_WORKER_DIR, stdio: 'pipe' }
-    );
+    execFileSync(process.execPath, [
+      WRANGLER_ENTRYPOINT,
+      'kv',
+      'key',
+      'put',
+      'catalog',
+      '--path=ai-catalog-seed.json',
+      '--namespace-id=0000000000000000000000000000000c',
+      '--local',
+    ], { cwd: GAME_WORKER_DIR, stdio: 'pipe' });
     log('AI_CATALOG_KV seeded.');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

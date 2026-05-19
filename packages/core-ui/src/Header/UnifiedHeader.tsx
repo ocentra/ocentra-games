@@ -248,8 +248,12 @@ const SVG_TITLE_PRESETS: Record<string, Partial<TextStyleConfig>> = {
 };
 
 function pathMatchesPattern(pathname: string, pattern: string) {
-  const regex = new RegExp(`^${pattern.replace(/\//g, '\\/').replace(/\*/g, '.*')}$`);
-  return regex.test(pathname);
+  const pathParts = pathname.split('/');
+  const patternParts = pattern.split('/');
+  if (pathParts.length !== patternParts.length) {
+    return false;
+  }
+  return patternParts.every((part, index) => part === '*' || part === pathParts[index]);
 }
 
 function pathMatchesProfile(pathname: string, config?: UnifiedHeaderConfigInput) {

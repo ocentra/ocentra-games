@@ -412,12 +412,16 @@ function cloneConfig(config: SelectedGameShowcaseConfig): SelectedGameShowcaseCo
 function getByPath(obj: ConfigRecord, path: string): unknown {
   return path.split('.').reduce<unknown>((acc, part) => {
     if (typeof acc !== 'object' || acc === null) return undefined;
+    if (part === '__proto__' || part === 'prototype' || part === 'constructor') return undefined;
     return (acc as ConfigRecord)[part];
   }, obj);
 }
 
 function setByPath<T extends ConfigRecord>(obj: T, path: string, value: unknown): T {
   const parts = path.split('.');
+  if (parts.some(part => part === '__proto__' || part === 'prototype' || part === 'constructor')) {
+    return obj;
+  }
   const root = { ...obj };
   let cursor: ConfigRecord = root;
   for (let i = 0; i < parts.length - 1; i += 1) {

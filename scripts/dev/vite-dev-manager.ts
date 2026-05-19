@@ -17,6 +17,7 @@ export type ViteManagerOptions = {
   spawnCommand: string;
   spawnArgs: string[];
   spawnEnv?: NodeJS.ProcessEnv;
+  spawnShell?: boolean;
   logPrefix: string;
   verbose?: boolean;
   beforeAllocate?: () => Promise<void> | void;
@@ -217,7 +218,7 @@ export async function runManagedVite(options: ViteManagerOptions): Promise<void>
   const vite = spawn(options.spawnCommand, options.spawnArgs, {
     cwd: options.cwd,
     stdio: 'inherit',
-    shell: process.platform === 'win32',
+    shell: options.spawnShell ?? process.platform === 'win32',
     env: {
       ...process.env,
       ...(options.spawnEnv ?? {}),

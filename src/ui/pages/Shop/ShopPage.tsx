@@ -617,4 +617,3 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     </UnifiedPageShell>
   );
 }
-

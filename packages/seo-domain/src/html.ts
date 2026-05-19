@@ -27,12 +27,15 @@ function canonicalPath(value: string, baseUrl: string): string {
 
 function normalizeInternalHref(value: string, baseUrl: string): string | null {
   const href = value.trim();
-  if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+  if (!href || href.startsWith('#')) {
     return null;
   }
   try {
     const base = new URL(baseUrl);
     const url = new URL(href, base);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return null;
+    }
     if (url.origin !== base.origin) {
       return null;
     }

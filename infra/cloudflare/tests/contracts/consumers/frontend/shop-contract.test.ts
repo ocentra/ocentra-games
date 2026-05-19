@@ -42,7 +42,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               description: Matchers.string('Starter refill'),
               shopTab: Matchers.string('Treasury'),
               badge: Matchers.string('Starter'),
-              benefits: Matchers.eachLike(Matchers.string('AI analysis fuel'), { min: 1 }),
+              benefits: Matchers.eachLike(Matchers.string('AI analysis fuel'), 1),
               entitlementKind: Matchers.string('credits'),
               availability: Matchers.string('live'),
               acAmount: Matchers.integer(100),
@@ -50,7 +50,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               currency: Matchers.string('usd'),
               active: Matchers.boolean(true),
             },
-            { min: 1 }
+            1
           ),
         });
       })

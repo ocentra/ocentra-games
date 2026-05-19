@@ -42,7 +42,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           user_id: userId,
           gp_balance: Matchers.integer(50),
           ac_balance: Matchers.integer(100),
-          last_updated: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
+          last_updated: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
           total_gp_earned: Matchers.integer(50),
           total_ac_purchased: Matchers.integer(100),
           total_ac_spent: Matchers.integer(0),
