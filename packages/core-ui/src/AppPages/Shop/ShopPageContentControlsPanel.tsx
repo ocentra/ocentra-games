@@ -5,12 +5,22 @@ import {
   type ShopPageContentData,
   type ShopRightTabId,
 } from './ShopPageSvgContent';
-import type { ShopIcon, ShopQuest, ShopStaticItem, ShopTone, ShopVaultShowcaseGroup } from './ShopPageSvgData';
+import type {
+  ShopIcon,
+  ShopPreviewRow,
+  ShopQuest,
+  ShopSideItem,
+  ShopStaticItem,
+  ShopTone,
+  ShopVaultShowcaseGroup,
+} from './ShopPageSvgData';
 import type { ShopTab } from './ShopPageSvgTypes';
 
-type ShopContentPanelTab = 'sectionCards' | 'offers' | 'vault' | 'quests' | 'rightPanel' | 'rawJson';
+type ShopContentPanelTab = 'overview' | 'pageShell' | 'sectionCards' | 'offers' | 'vault' | 'quests' | 'rightPanel' | 'rawJson';
 type SectionListKey = 'featured' | 'categories';
 type OfferListKey = 'creditPacks' | 'passes';
+type ShellListKey = 'sideItems' | 'headerStats' | 'previews';
+type SelectOption<T extends string> = T | { value: T; label: string };
 
 type ShopPageContentControlsPanelProps = {
   content: ShopPageContentData;
@@ -23,6 +33,8 @@ const rightTabIds: ShopRightTabId[] = ['account', 'wallet', 'pass', 'events', 'r
 const toneOptions: ShopTone[] = ['cyan', 'gold', 'violet', 'green', 'orange', 'silver', 'danger'];
 const iconOptions: ShopIcon[] = ['coins', 'crown', 'chest', 'cards', 'trophy', 'crate', 'shield', 'link', 'lock', 'cart'];
 const panelTabs: Array<{ id: ShopContentPanelTab; label: string }> = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'pageShell', label: 'Page Shell' },
   { id: 'sectionCards', label: 'Cards' },
   { id: 'offers', label: 'Packs & Passes' },
   { id: 'vault', label: 'Vault' },
@@ -73,6 +85,17 @@ function newVaultGroup(): ShopVaultShowcaseGroup {
   };
 }
 
+function newPreviewRow(tab: ShopPreviewRow['tab'] = 'Treasury'): ShopPreviewRow {
+  return {
+    title: `${tab.toUpperCase()} PREVIEW`,
+    tab,
+    subtitle: 'Describe what this bottom preview carousel shows.',
+    items: ['New preview item'],
+    accent: '#54e2ff',
+    imageUrls: [],
+  };
+}
+
 function linesFromText(value: string): string[] {
   return value.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
 }
@@ -89,6 +112,38 @@ function reorder<T>(items: T[], index: number, delta: number): T[] {
   const [item] = next.splice(index, 1);
   next.splice(nextIndex, 0, item);
   return next;
+}
+
+function optionValue<T extends string>(option: SelectOption<T>): T {
+  return typeof option === 'string' ? option : option.value;
+}
+
+function optionLabel<T extends string>(option: SelectOption<T>): string {
+  return typeof option === 'string' ? option : option.label;
+}
+
+function itemOption(item: ShopStaticItem, index: number): SelectOption<string> {
+  const parts = [`${index + 1}. ${item.title}`];
+  if (item.price) parts.push(item.price);
+  if (item.badge) parts.push(item.badge);
+  return { value: String(index), label: parts.join(' - ') };
+}
+
+function namedOption(title: string, index: number, detail?: string): SelectOption<string> {
+  return { value: String(index), label: `${index + 1}. ${title}${detail ? ` - ${detail}` : ''}` };
+}
+
+function titleList(items: Array<{ title: string; subtitle?: string }>, fallback: string): string[] {
+  return items.length > 0 ? items.map(item => `${item.title}${item.subtitle ? ` - ${item.subtitle}` : ''}`) : [fallback];
+}
+
+function imageFileName(imageUrl: string): string {
+  const value = imageUrl.split(/[?#]/, 1)[0] ?? imageUrl;
+  try {
+    return decodeURIComponent(value.split('/').pop() ?? value);
+  } catch {
+    return value.split('/').pop() ?? value;
+  }
 }
 
 const shellStyle: CSSProperties = {
@@ -130,6 +185,31 @@ const gridStyle: CSSProperties = {
   gap: '0.65rem',
 };
 
+const summaryGridStyle: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(16rem, 1fr))',
+  gap: '0.75rem',
+};
+
+const summaryCardStyle: CSSProperties = {
+  border: '1px solid rgba(84,226,255,.22)',
+  borderRadius: '0.55rem',
+  background: 'rgba(4,16,29,.72)',
+  padding: '0.75rem',
+  display: 'grid',
+  gap: '0.45rem',
+};
+
+const summaryListStyle: CSSProperties = {
+  display: 'grid',
+  gap: '0.28rem',
+  margin: 0,
+  paddingLeft: '1rem',
+  color: '#bcecff',
+  fontSize: '0.78rem',
+  lineHeight: 1.35,
+};
+
 const labelStyle: CSSProperties = {
   display: 'grid',
   gap: '0.25rem',
@@ -166,32 +246,63 @@ const dangerButtonStyle: CSSProperties = {
   color: '#fecaca',
 };
 
-function TextField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+function TextField({ label, value, onChange, wide = false, readOnly = false }: { label: string; value: string; onChange: (value: string) => void; wide?: boolean; readOnly?: boolean }) {
   return (
-    <label style={labelStyle}>
+    <label style={wide ? { ...labelStyle, gridColumn: '1 / -1' } : labelStyle}>
       {label}
-      <input style={inputStyle} value={value} onChange={event => onChange(event.target.value)} />
+      <input
+        style={readOnly ? { ...inputStyle, color: '#9ccbd6', cursor: 'not-allowed', opacity: 0.8 } : inputStyle}
+        value={value}
+        readOnly={readOnly}
+        onChange={event => onChange(event.target.value)}
+      />
     </label>
   );
 }
 
-function TextAreaField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+function TextAreaField({ label, value, onChange, wide = false }: { label: string; value: string; onChange: (value: string) => void; wide?: boolean }) {
   return (
-    <label style={labelStyle}>
+    <label style={wide ? { ...labelStyle, gridColumn: '1 / -1' } : labelStyle}>
       {label}
       <textarea style={{ ...inputStyle, minHeight: '6rem', resize: 'vertical' }} value={value} onChange={event => onChange(event.target.value)} />
     </label>
   );
 }
 
-function SelectField<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: T[]; onChange: (value: T) => void }) {
+function SelectField<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: Array<SelectOption<T>>; onChange: (value: T) => void }) {
   return (
     <label style={labelStyle}>
       {label}
       <select style={inputStyle} value={value} onChange={event => onChange(event.target.value as T)}>
-        {options.map(option => <option key={option} value={option}>{option}</option>)}
+        {options.map(option => {
+          const nextValue = optionValue(option);
+          return <option key={nextValue} value={nextValue}>{optionLabel(option)}</option>;
+        })}
       </select>
     </label>
+  );
+}
+
+function SummaryCard({
+  title,
+  count,
+  items,
+  onOpen,
+}: {
+  title: string;
+  count: number;
+  items: string[];
+  onOpen: () => void;
+}) {
+  return (
+    <button type="button" style={{ ...summaryCardStyle, color: '#e0fbff', textAlign: 'left', cursor: 'pointer' }} onClick={onOpen}>
+      <span style={{ color: '#54e2ff', fontSize: '0.78rem', fontWeight: 950, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{title}</span>
+      <strong style={{ fontSize: '1.15rem' }}>{count} authored</strong>
+      <ul style={summaryListStyle}>
+        {items.slice(0, 5).map(item => <li key={item}>{item}</li>)}
+        {items.length > 5 ? <li>{items.length - 5} more</li> : null}
+      </ul>
+    </button>
   );
 }
 
@@ -202,10 +313,10 @@ function ShopItemEditor({ item, onChange }: { item: ShopStaticItem; onChange: (i
       <TextField label="Subtitle" value={item.subtitle} onChange={value => onChange({ ...item, subtitle: value })} />
       <TextField label="Badge" value={item.badge ?? ''} onChange={value => onChange({ ...item, badge: value })} />
       <TextField label="Price / CTA" value={item.price ?? ''} onChange={value => onChange({ ...item, price: value })} />
-      <TextField label="Image URL" value={item.imageUrl} onChange={value => onChange({ ...item, imageUrl: value })} />
+      <TextField label={`Image URL${item.imageUrl ? ` (${imageFileName(item.imageUrl)})` : ''}`} value={item.imageUrl} wide onChange={value => onChange({ ...item, imageUrl: value })} />
       <SelectField label="Tone" value={item.tone} options={toneOptions} onChange={value => onChange({ ...item, tone: value })} />
       <SelectField label="Icon" value={item.icon} options={iconOptions} onChange={value => onChange({ ...item, icon: value })} />
-      <TextAreaField label="Benefits" value={(item.benefits ?? []).join('\n')} onChange={value => onChange({ ...item, benefits: linesFromText(value) })} />
+      <TextAreaField label="Benefits" value={(item.benefits ?? []).join('\n')} wide onChange={value => onChange({ ...item, benefits: linesFromText(value) })} />
     </div>
   );
 }
@@ -216,7 +327,9 @@ export function ShopPageContentControlsPanel({
   onSave,
 }: ShopPageContentControlsPanelProps) {
   const normalized = useMemo(() => normalizeShopPageContent(content), [content]);
-  const [activePanel, setActivePanel] = useState<ShopContentPanelTab>('sectionCards');
+  const [activePanel, setActivePanel] = useState<ShopContentPanelTab>('overview');
+  const [shellListKey, setShellListKey] = useState<ShellListKey>('sideItems');
+  const [shellItemIndex, setShellItemIndex] = useState(0);
   const [activeShopTab, setActiveShopTab] = useState<ShopTab>('Treasury');
   const [sectionListKey, setSectionListKey] = useState<SectionListKey>('featured');
   const [sectionItemIndex, setSectionItemIndex] = useState(0);
@@ -254,6 +367,21 @@ export function ShopPageContentControlsPanel({
   const safeRightRowIndex = clampIndex(rightRowIndex, rightRows.length);
   const selectedRightRow = rightRows[safeRightRowIndex];
   const selectedRightTab = normalized.rightTabs.find(tab => tab.id === rightTabId);
+  const safeShellItemIndex = clampIndex(shellItemIndex, shellListKey === 'sideItems' ? normalized.sideItems.length : shellListKey === 'headerStats' ? normalized.headerStats.length : normalized.previews.length);
+  const selectedSideItem = normalized.sideItems[safeShellItemIndex];
+  const selectedHeaderStat = normalized.headerStats[safeShellItemIndex];
+  const selectedPreview = normalized.previews[safeShellItemIndex];
+  const sectionCardCount = shopTabs.reduce((sum, tab) => {
+    const section = normalized.sections[tab];
+    return sum + (section.featured?.length ?? 0) + (section.categories?.length ?? 0);
+  }, 0);
+  const vaultItemCount = normalized.vaultShowcaseGroups.reduce((sum, group) => sum + group.items.length, 0);
+  const rightDetailCount = rightTabIds.reduce((sum, tabId) => sum + (normalized.rightDetails[tabId]?.length ?? 0), 0);
+  const previewImageCount = normalized.previews.reduce((sum, preview) => sum + preview.imageUrls.length, 0);
+  const previewTabOptions: Array<SelectOption<ShopPreviewRow['tab']>> = [...shopTabs, 'Earn Free AC'].map(tab => ({
+    value: tab as ShopPreviewRow['tab'],
+    label: tab,
+  }));
 
   const updateSectionItems = (items: ShopStaticItem[]) => {
     updateContent(current => ({
@@ -280,6 +408,18 @@ export function ShopPageContentControlsPanel({
     updateContent(current => ({ ...current, quests }));
   };
 
+  const updateSideItems = (sideItems: ShopSideItem[]) => {
+    updateContent(current => ({ ...current, sideItems }));
+  };
+
+  const updateHeaderStats = (headerStats: ShopPageContentData['headerStats']) => {
+    updateContent(current => ({ ...current, headerStats }));
+  };
+
+  const updatePreviews = (previews: ShopPreviewRow[]) => {
+    updateContent(current => ({ ...current, previews }));
+  };
+
   const handleSave = async () => {
     if (!onSave || isSaving) return;
     setIsSaving(true);
@@ -303,7 +443,10 @@ export function ShopPageContentControlsPanel({
           setRawJson(JSON.stringify(normalized, null, 2));
           setActivePanel('rawJson');
         }}>View JSON</button>
-        <button type="button" style={buttonStyle} onClick={() => onContentChange(normalizeShopPageContent(DEFAULT_SHOP_PAGE_CONTENT))}>Reset Content</button>
+        <button type="button" style={buttonStyle} onClick={() => {
+          onContentChange(normalizeShopPageContent(DEFAULT_SHOP_PAGE_CONTENT));
+          setStatus('Content reset to default authored data');
+        }}>Reset Content</button>
         <button type="button" style={buttonStyle} disabled={isSaving} onClick={() => void handleSave()}>{isSaving ? 'Saving...' : 'Save Content'}</button>
       </div>
       <div style={toolbarStyle}>
@@ -313,14 +456,213 @@ export function ShopPageContentControlsPanel({
       </div>
       {status ? <div style={{ color: status.includes('saved') || status.includes('Saved') ? '#bbf7d0' : '#fde68a', fontSize: '0.82rem' }}>{status}</div> : null}
 
+      {activePanel === 'overview' ? (
+        <div style={cardStyle}>
+          <div>
+            <strong>Current authored shop data</strong>
+            <div style={{ color: '#bcecff', fontSize: '0.82rem', marginTop: '0.2rem' }}>
+              This is the content currently carried by the shop layout asset. Use these blocks to jump to the editor for what already exists, then add or adjust only the dataset you intend to run.
+            </div>
+          </div>
+          <div style={summaryGridStyle}>
+            <SummaryCard
+              title="Page shell"
+              count={normalized.sideItems.length + normalized.headerStats.length + normalized.previews.length}
+              items={[`${normalized.sideItems.length} side buttons`, `${normalized.headerStats.length} top stats`, `${normalized.previews.length} bottom previews`, `${previewImageCount} preview images`]}
+              onOpen={() => {
+                setActivePanel('pageShell');
+                setShellListKey('sideItems');
+                setShellItemIndex(0);
+              }}
+            />
+            <SummaryCard
+              title="Section cards"
+              count={sectionCardCount}
+              items={shopTabs.map(tab => `${tab}: ${(normalized.sections[tab].featured?.length ?? 0)} featured, ${(normalized.sections[tab].categories?.length ?? 0)} categories`)}
+              onOpen={() => {
+                setActivePanel('sectionCards');
+                setActiveShopTab('Treasury');
+                setSectionListKey('featured');
+                setSectionItemIndex(0);
+              }}
+            />
+            <SummaryCard
+              title="Packs and passes"
+              count={normalized.creditPacks.length + normalized.passes.length}
+              items={[...titleList(normalized.creditPacks, 'No credit packs'), ...titleList(normalized.passes, 'No passes')]}
+              onOpen={() => {
+                setActivePanel('offers');
+                setOfferListKey('creditPacks');
+                setOfferItemIndex(0);
+              }}
+            />
+            <SummaryCard
+              title="Vault"
+              count={vaultItemCount}
+              items={normalized.vaultShowcaseGroups.map(group => `${group.title}: ${group.items.length} items`)}
+              onOpen={() => {
+                setActivePanel('vault');
+                setVaultGroupIndex(0);
+                setVaultItemIndex(0);
+              }}
+            />
+            <SummaryCard
+              title="Quests"
+              count={normalized.quests.length}
+              items={normalized.quests.map(quest => `${quest.title}: ${quest.reward}`)}
+              onOpen={() => {
+                setActivePanel('quests');
+                setQuestIndex(0);
+              }}
+            />
+            <SummaryCard
+              title="Right panel"
+              count={rightDetailCount}
+              items={normalized.rightTabs.map(tab => `${tab.title}: ${normalized.rightDetails[tab.id]?.length ?? 0} rows`)}
+              onOpen={() => {
+                setActivePanel('rightPanel');
+                setRightTabId('account');
+                setRightRowIndex(0);
+              }}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {activePanel === 'pageShell' ? (
+        <div style={cardStyle}>
+          <SelectField<ShellListKey>
+            label="Page shell data"
+            value={shellListKey}
+            options={[
+              { value: 'sideItems', label: `Left side panel buttons (${normalized.sideItems.length})` },
+              { value: 'headerStats', label: `Top stat cells (${normalized.headerStats.length})` },
+              { value: 'previews', label: `Bottom preview rows (${normalized.previews.length})` },
+            ]}
+            onChange={(value) => {
+              setShellListKey(value);
+              setShellItemIndex(0);
+            }}
+          />
+
+          {shellListKey === 'sideItems' ? (
+            <>
+              <div style={{ color: '#bcecff', fontSize: '0.8rem' }}>These are the left rail buttons and their authored art/text. Their keys map to the fixed shop sections.</div>
+              <SelectField
+                label="Selected side button"
+                value={String(safeShellItemIndex)}
+                options={normalized.sideItems.map((item, index) => namedOption(item.title, index, item.subtitle))}
+                onChange={value => setShellItemIndex(Number(value))}
+              />
+              {selectedSideItem ? (
+                <div style={gridStyle}>
+                  <TextField label="Section key" value={selectedSideItem.key} readOnly onChange={() => undefined} />
+                  <TextField label="Title" value={selectedSideItem.title} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, title: value } : item))} />
+                  <TextField label="Subtitle" value={selectedSideItem.subtitle} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, subtitle: value } : item))} />
+                  <TextField label={`Image URL${selectedSideItem.imageUrl ? ` (${imageFileName(selectedSideItem.imageUrl)})` : ''}`} value={selectedSideItem.imageUrl} wide onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, imageUrl: value } : item))} />
+                  <SelectField label="Tone" value={selectedSideItem.tone} options={toneOptions} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, tone: value } : item))} />
+                  <SelectField label="Icon" value={selectedSideItem.icon} options={iconOptions} onChange={value => updateSideItems(normalized.sideItems.map((item, index) => index === safeShellItemIndex ? { ...item, icon: value } : item))} />
+                </div>
+              ) : <div>No side panel buttons authored.</div>}
+            </>
+          ) : null}
+
+          {shellListKey === 'headerStats' ? (
+            <>
+              <div style={toolbarStyle}>
+                <button type="button" style={buttonStyle} onClick={() => {
+                  const next = [...normalized.headerStats, { label: 'New Stat', value: 'N/A' }];
+                  updateHeaderStats(next);
+                  setShellItemIndex(next.length - 1);
+                }}>+ Stat</button>
+                <button type="button" style={dangerButtonStyle} disabled={!selectedHeaderStat} onClick={() => {
+                  const next = normalized.headerStats.filter((_, index) => index !== safeShellItemIndex);
+                  updateHeaderStats(next);
+                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, next.length));
+                }}>Remove Stat</button>
+              </div>
+              <SelectField
+                label="Selected stat"
+                value={String(safeShellItemIndex)}
+                options={normalized.headerStats.map((stat, index) => namedOption(stat.label, index, stat.value))}
+                onChange={value => setShellItemIndex(Number(value))}
+              />
+              {selectedHeaderStat ? (
+                <div style={gridStyle}>
+                  <TextField label="Label" value={selectedHeaderStat.label} onChange={value => updateHeaderStats(normalized.headerStats.map((stat, index) => index === safeShellItemIndex ? { ...stat, label: value } : stat))} />
+                  <TextField label="Value" value={selectedHeaderStat.value} onChange={value => updateHeaderStats(normalized.headerStats.map((stat, index) => index === safeShellItemIndex ? { ...stat, value } : stat))} />
+                </div>
+              ) : <div>No top stats authored.</div>}
+            </>
+          ) : null}
+
+          {shellListKey === 'previews' ? (
+            <>
+              <div style={toolbarStyle}>
+                <button type="button" style={buttonStyle} onClick={() => {
+                  const next = [...normalized.previews, newPreviewRow()];
+                  updatePreviews(next);
+                  setShellItemIndex(next.length - 1);
+                }}>+ Preview Row</button>
+                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
+                  const next = selectedPreview ? [...normalized.previews, { ...selectedPreview, title: `${selectedPreview.title} Copy` }] : normalized.previews;
+                  updatePreviews(next);
+                  setShellItemIndex(next.length - 1);
+                }}>Duplicate</button>
+                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
+                  updatePreviews(reorder(normalized.previews, safeShellItemIndex, -1));
+                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, normalized.previews.length));
+                }}>Up</button>
+                <button type="button" style={buttonStyle} disabled={!selectedPreview} onClick={() => {
+                  updatePreviews(reorder(normalized.previews, safeShellItemIndex, 1));
+                  setShellItemIndex(clampIndex(safeShellItemIndex + 1, normalized.previews.length));
+                }}>Down</button>
+                <button type="button" style={dangerButtonStyle} disabled={!selectedPreview} onClick={() => {
+                  const next = normalized.previews.filter((_, index) => index !== safeShellItemIndex);
+                  updatePreviews(next);
+                  setShellItemIndex(clampIndex(safeShellItemIndex - 1, next.length));
+                }}>Remove Preview</button>
+              </div>
+              <SelectField
+                label="Selected preview"
+                value={String(safeShellItemIndex)}
+                options={normalized.previews.map((preview, index) => namedOption(preview.title, index, `${preview.items.length} buttons, ${preview.imageUrls.length} images`))}
+                onChange={value => setShellItemIndex(Number(value))}
+              />
+              {selectedPreview ? (
+                <div style={gridStyle}>
+                  <TextField label="Title" value={selectedPreview.title} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, title: value } : preview))} />
+                  <SelectField<ShopPreviewRow['tab']>
+                    label="Target tab"
+                    value={selectedPreview.tab}
+                    options={previewTabOptions}
+                    onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, tab: value } : preview))}
+                  />
+                  <TextField label="Subtitle" value={selectedPreview.subtitle} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, subtitle: value } : preview))} />
+                  <TextField label="Accent color" value={selectedPreview.accent} onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, accent: value } : preview))} />
+                  <TextAreaField label="Button labels / items" value={selectedPreview.items.join('\n')} wide onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, items: linesFromText(value) } : preview))} />
+                  <TextAreaField label="Image URLs" value={selectedPreview.imageUrls.join('\n')} wide onChange={value => updatePreviews(normalized.previews.map((preview, index) => index === safeShellItemIndex ? { ...preview, imageUrls: linesFromText(value) } : preview))} />
+                </div>
+              ) : <div>No bottom preview rows authored.</div>}
+            </>
+          ) : null}
+        </div>
+      ) : null}
+
       {activePanel === 'sectionCards' ? (
         <div style={cardStyle}>
           <div style={toolbarStyle}>
-            <SelectField label="Shop section" value={activeShopTab} options={shopTabs} onChange={(value) => {
+            <SelectField label="Shop section" value={activeShopTab} options={shopTabs.map(tab => ({
+              value: tab,
+              label: `${tab} - ${(normalized.sections[tab].featured?.length ?? 0)} featured, ${(normalized.sections[tab].categories?.length ?? 0)} categories`,
+            }))} onChange={(value) => {
               setActiveShopTab(value);
               setSectionItemIndex(0);
             }} />
-            <SelectField label="Card list" value={sectionListKey} options={['featured', 'categories']} onChange={(value) => {
+            <SelectField label="Card list" value={sectionListKey} options={[
+              { value: 'featured', label: `Featured / top row (${normalized.sections[activeShopTab].featured?.length ?? 0})` },
+              { value: 'categories', label: `Categories / bottom row (${normalized.sections[activeShopTab].categories?.length ?? 0})` },
+            ]} onChange={(value) => {
               setSectionListKey(value);
               setSectionItemIndex(0);
             }} />
@@ -349,7 +691,7 @@ export function ShopPageContentControlsPanel({
               setSectionItemIndex(clampIndex(safeSectionItemIndex - 1, sectionItems.length - 1));
             }}>Remove</button>
           </div>
-          <SelectField label="Selected card" value={String(safeSectionItemIndex)} options={sectionItems.map((_, index) => String(index))} onChange={value => setSectionItemIndex(Number(value))} />
+          {sectionItems.length > 0 ? <SelectField label="Selected card" value={String(safeSectionItemIndex)} options={sectionItems.map(itemOption)} onChange={value => setSectionItemIndex(Number(value))} /> : null}
           {selectedSectionItem ? (
             <ShopItemEditor item={selectedSectionItem} onChange={item => updateSectionItems(sectionItems.map((candidate, index) => index === safeSectionItemIndex ? item : candidate))} />
           ) : <div>No cards yet.</div>}
@@ -359,7 +701,10 @@ export function ShopPageContentControlsPanel({
       {activePanel === 'offers' ? (
         <div style={cardStyle}>
           <div style={toolbarStyle}>
-            <SelectField label="Offer list" value={offerListKey} options={['creditPacks', 'passes']} onChange={(value) => {
+            <SelectField label="Offer list" value={offerListKey} options={[
+              { value: 'creditPacks', label: `Arena Credit packs (${normalized.creditPacks.length})` },
+              { value: 'passes', label: `Passes and subscriptions (${normalized.passes.length})` },
+            ]} onChange={(value) => {
               setOfferListKey(value);
               setOfferItemIndex(0);
             }} />
@@ -389,7 +734,7 @@ export function ShopPageContentControlsPanel({
               setOfferItemIndex(clampIndex(safeOfferItemIndex - 1, next.length));
             }}>Remove</button>
           </div>
-          <SelectField label="Selected offer" value={String(safeOfferItemIndex)} options={offerItems.map((_, index) => String(index))} onChange={value => setOfferItemIndex(Number(value))} />
+          {offerItems.length > 0 ? <SelectField label="Selected offer" value={String(safeOfferItemIndex)} options={offerItems.map(itemOption)} onChange={value => setOfferItemIndex(Number(value))} /> : null}
           {selectedOfferItem ? (
             <ShopItemEditor item={selectedOfferItem} onChange={item => updateOfferItems(offerItems.map((candidate, index) => index === safeOfferItemIndex ? item : candidate))} />
           ) : <div>No offers yet.</div>}
@@ -411,17 +756,17 @@ export function ShopPageContentControlsPanel({
               setVaultItemIndex(0);
             }}>Remove Group</button>
           </div>
-          <SelectField label="Vault group" value={String(safeVaultGroupIndex)} options={vaultGroups.map((_, index) => String(index))} onChange={value => {
+          {vaultGroups.length > 0 ? <SelectField label="Vault group" value={String(safeVaultGroupIndex)} options={vaultGroups.map((group, index) => namedOption(group.title, index, `${group.items.length} items`))} onChange={value => {
             setVaultGroupIndex(Number(value));
             setVaultItemIndex(0);
-          }} />
+          }} /> : null}
           {selectedVaultGroup ? (
             <>
               <div style={gridStyle}>
                 <TextField label="Group key" value={selectedVaultGroup.key} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, key: value } : group))} />
                 <TextField label="Group title" value={selectedVaultGroup.title} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, title: value } : group))} />
                 <TextField label="Subtitle" value={selectedVaultGroup.subtitle} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, subtitle: value } : group))} />
-                <TextField label="Hero image URL" value={selectedVaultGroup.heroImageUrl} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, heroImageUrl: value } : group))} />
+                <TextField label={`Hero image URL${selectedVaultGroup.heroImageUrl ? ` (${imageFileName(selectedVaultGroup.heroImageUrl)})` : ''}`} value={selectedVaultGroup.heroImageUrl} wide onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, heroImageUrl: value } : group))} />
                 <SelectField label="Tone" value={selectedVaultGroup.tone} options={toneOptions} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, tone: value } : group))} />
                 <SelectField label="Icon" value={selectedVaultGroup.icon} options={iconOptions} onChange={value => updateVaultGroups(vaultGroups.map((group, index) => index === safeVaultGroupIndex ? { ...group, icon: value } : group))} />
               </div>
@@ -437,7 +782,7 @@ export function ShopPageContentControlsPanel({
                   setVaultItemIndex(clampIndex(safeVaultItemIndex - 1, nextItems.length));
                 }}>Remove Item</button>
               </div>
-              <SelectField label="Selected vault item" value={String(safeVaultItemIndex)} options={vaultItems.map((_, index) => String(index))} onChange={value => setVaultItemIndex(Number(value))} />
+              {vaultItems.length > 0 ? <SelectField label="Selected vault item" value={String(safeVaultItemIndex)} options={vaultItems.map(itemOption)} onChange={value => setVaultItemIndex(Number(value))} /> : null}
               {selectedVaultItem ? (
                 <ShopItemEditor item={selectedVaultItem} onChange={item => updateVaultGroups(vaultGroups.map((group, groupIndex) => groupIndex === safeVaultGroupIndex ? { ...group, items: vaultItems.map((candidate, itemIndex) => itemIndex === safeVaultItemIndex ? item : candidate) } : group))} />
               ) : null}
@@ -460,7 +805,7 @@ export function ShopPageContentControlsPanel({
               setQuestIndex(clampIndex(safeQuestIndex - 1, next.length));
             }}>Remove Quest</button>
           </div>
-          <SelectField label="Selected quest" value={String(safeQuestIndex)} options={normalized.quests.map((_, index) => String(index))} onChange={value => setQuestIndex(Number(value))} />
+          {normalized.quests.length > 0 ? <SelectField label="Selected quest" value={String(safeQuestIndex)} options={normalized.quests.map((quest, index) => namedOption(quest.title, index, `${quest.reward} | ${quest.cadence}`))} onChange={value => setQuestIndex(Number(value))} /> : null}
           {selectedQuest ? (
             <div style={gridStyle}>
               <TextField label="Key" value={selectedQuest.key} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, key: value } : quest))} />
@@ -469,11 +814,11 @@ export function ShopPageContentControlsPanel({
               <TextField label="Reward" value={selectedQuest.reward} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, reward: value } : quest))} />
               <TextField label="Cadence" value={selectedQuest.cadence} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, cadence: value } : quest))} />
               <TextField label="Action" value={selectedQuest.action} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, action: value } : quest))} />
-              <TextField label="Image URL" value={selectedQuest.imageUrl} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, imageUrl: value } : quest))} />
+              <TextField label={`Image URL${selectedQuest.imageUrl ? ` (${imageFileName(selectedQuest.imageUrl)})` : ''}`} value={selectedQuest.imageUrl} wide onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, imageUrl: value } : quest))} />
               <SelectField label="Tone" value={selectedQuest.tone} options={toneOptions} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, tone: value } : quest))} />
               <SelectField label="Icon" value={selectedQuest.icon} options={iconOptions} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, icon: value } : quest))} />
-              <TextAreaField label="Description" value={selectedQuest.description} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, description: value } : quest))} />
-              <TextAreaField label="Details" value={selectedQuest.details.join('\n')} onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, details: linesFromText(value) } : quest))} />
+              <TextAreaField label="Description" value={selectedQuest.description} wide onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, description: value } : quest))} />
+              <TextAreaField label="Details" value={selectedQuest.details.join('\n')} wide onChange={value => updateQuests(normalized.quests.map((quest, index) => index === safeQuestIndex ? { ...quest, details: linesFromText(value) } : quest))} />
             </div>
           ) : <div>No quests yet.</div>}
         </div>
@@ -481,7 +826,10 @@ export function ShopPageContentControlsPanel({
 
       {activePanel === 'rightPanel' ? (
         <div style={cardStyle}>
-          <SelectField label="Right panel tab" value={rightTabId} options={rightTabIds} onChange={(value) => {
+          <SelectField label="Right panel tab" value={rightTabId} options={normalized.rightTabs.map(tab => ({
+            value: tab.id,
+            label: `${tab.title} (${normalized.rightDetails[tab.id]?.length ?? 0} rows)`,
+          }))} onChange={(value) => {
             setRightTabId(value);
             setRightRowIndex(0);
           }} />
@@ -513,7 +861,7 @@ export function ShopPageContentControlsPanel({
               },
             }))}>Remove Row</button>
           </div>
-          <SelectField label="Selected row" value={String(safeRightRowIndex)} options={rightRows.map((_, index) => String(index))} onChange={value => setRightRowIndex(Number(value))} />
+          {rightRows.length > 0 ? <SelectField label="Selected row" value={String(safeRightRowIndex)} options={rightRows.map((row, index) => namedOption(row.label, index, row.value))} onChange={value => setRightRowIndex(Number(value))} /> : null}
           {selectedRightRow ? (
             <div style={gridStyle}>
               <TextField label="Label" value={selectedRightRow.label} onChange={value => updateContent(current => ({
@@ -544,12 +892,12 @@ export function ShopPageContentControlsPanel({
 
       {activePanel === 'rawJson' ? (
         <div style={cardStyle}>
-          <TextAreaField label="Full shopContent JSON" value={rawJson || JSON.stringify(normalized, null, 2)} onChange={setRawJson} />
+          <TextAreaField label="Full shopContent JSON" value={rawJson || JSON.stringify(normalized, null, 2)} wide onChange={setRawJson} />
           <div style={toolbarStyle}>
             <button type="button" style={buttonStyle} onClick={() => setRawJson(JSON.stringify(normalized, null, 2))}>Refresh From Form</button>
             <button type="button" style={buttonStyle} onClick={() => {
               try {
-                onContentChange(normalizeShopPageContent(JSON.parse(rawJson)));
+                onContentChange(normalizeShopPageContent(JSON.parse(rawJson || JSON.stringify(normalized))));
                 setStatus('Applied JSON');
               } catch (error) {
                 setStatus(error instanceof Error ? error.message : 'Invalid JSON');

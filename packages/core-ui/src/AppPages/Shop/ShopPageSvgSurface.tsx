@@ -55,6 +55,7 @@ import type {
   ShopVaultDeckPreviewItem,
 } from './ShopPageSvgTypes';
 import { TransparentAssetImage } from './ShopPageAssetArtwork';
+import { resolveShopPageImageUrl } from './ShopPageImageResolver';
 import {
   BottomPanel,
   type BottomPreviewTarget,
@@ -1196,6 +1197,7 @@ function VaultSelectableCircle({
   const ringColor = hovered ? hoverBlue : selected ? green : accent;
   const scale = hovered ? 1.08 : selected ? 1.03 : 1;
   const imageInset = clipImage ? 5 : Math.max(3, size * 0.06);
+  const resolvedImageUrl = resolveShopPageImageUrl(imageUrl);
   const showBaseCircle = clipImage;
   const showInteractionCircle = clipImage || hovered || selected;
   return (
@@ -1220,7 +1222,7 @@ function VaultSelectableCircle({
       {active ? <circle cx={center} cy={center} r={center - 1} fill="none" stroke={ringColor} strokeWidth={selected ? 3 : 2} strokeOpacity={clipImage || hovered ? selected ? 0.92 : 0.5 : 0.26} filter="url(#shopSoftGlow)" /> : null}
       {showBaseCircle ? <circle cx={center} cy={center} r={center - 2} fill={selected ? `${green}18` : `${accent}10`} stroke={ringColor} strokeWidth={selected ? 1.8 : 1.2} strokeOpacity={selected ? 0.96 : 0.64} /> : null}
       {showBaseCircle ? <circle cx={center} cy={center} r={center - 8} fill={cfg.colors.tileFooterFill} stroke={cfg.colors.bodyText} strokeWidth=".8" strokeOpacity=".22" /> : null}
-      <image href={imageUrl} x={imageInset} y={imageInset} width={size - imageInset * 2} height={size - imageInset * 2} preserveAspectRatio={clipImage ? 'xMidYMid slice' : 'xMidYMid meet'} clipPath={clipImage ? `url(#${clipId})` : undefined} />
+      <image href={resolvedImageUrl} x={imageInset} y={imageInset} width={size - imageInset * 2} height={size - imageInset * 2} preserveAspectRatio={clipImage ? 'xMidYMid slice' : 'xMidYMid meet'} clipPath={clipImage ? `url(#${clipId})` : undefined} />
       {showInteractionCircle ? <circle cx={center} cy={center} r={center - 5} fill="none" stroke={ringColor} strokeWidth={selected ? 1.8 : 1.1} strokeOpacity={clipImage ? selected ? 0.96 : 0.78 : hovered ? 0.72 : 0.34} /> : null}
       <rect x={center - badgeW / 2} y={size - badgeH - 1} width={badgeW} height={badgeH} rx={badgeH / 2} fill={green} stroke={cfg.colors.bodyText} strokeWidth=".45" strokeOpacity=".38" />
       <text x={center} y={size - badgeH / 2} fill={cfg.colors.headerFill} fontSize={Math.max(6.4, badgeH * 0.58)} fontWeight="950" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">FREE</text>

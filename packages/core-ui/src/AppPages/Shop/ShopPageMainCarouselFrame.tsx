@@ -20,6 +20,7 @@ import {
   type FeaturedShowcaseMediaSlot,
   type ShopMainCarouselCardItem,
 } from './ShopPageMainCarouselFrame.types';
+import { resolveShopPageImageUrl } from './ShopPageImageResolver';
 
 type ShowcaseTabId = 'featured' | 'recommended';
 type BadgeTone = 'blue' | 'green' | 'purple' | 'pink' | 'gold' | 'bannerBlue' | 'bannerPurple' | 'bannerGreen' | 'bannerPink' | 'bannerGold';
@@ -904,6 +905,7 @@ function ShopMainCarouselCard({
     : card.imageFit === 'cover'
       ? `xMid${imageCardYAlign} slice`
       : 'xMidYMid meet';
+  const cardImageUrl = card.imageUrl ? resolveShopPageImageUrl(card.imageUrl) : '';
 
   return (
     <g
@@ -986,9 +988,9 @@ function ShopMainCarouselCard({
         </g>
       ) : null}
       {imageOnlyCard ? (
-        card.imageUrl ? (
+        cardImageUrl ? (
           <image
-            href={card.imageUrl}
+            href={cardImageUrl}
             x={imageX}
             y={imageY + imageCardTopPad}
             width={imageW}
@@ -1007,7 +1009,7 @@ function ShopMainCarouselCard({
         )
       ) : (
         <g>
-          {card.imageUrl ? (
+          {cardImageUrl ? (
             <>
               <rect
                 x={splitImageX}
@@ -1030,7 +1032,7 @@ function ShopMainCarouselCard({
                 strokeOpacity="0.1"
               />
               <image
-                href={card.imageUrl}
+                href={cardImageUrl}
                 x={splitImageX + 4}
                 y={splitBodyY + 4}
                 width={splitImageW - 8}

@@ -1,4 +1,5 @@
 import type { ShopPageSvgControls } from './ShopPageSvgSurfaceControls';
+import { resolveShopPageImageUrl } from './ShopPageImageResolver';
 
 function MissingAssetPlaceholder({
   x,
@@ -52,10 +53,11 @@ export function TransparentAssetImage({
   if (!imageUrl) {
     return <MissingAssetPlaceholder x={x} y={y} w={w} h={h} cfg={cfg} compact={h < 72 || w < 100} />;
   }
+  const resolvedImageUrl = resolveShopPageImageUrl(imageUrl);
   return (
     <g>
       <image
-        href={imageUrl}
+        href={resolvedImageUrl}
         x={x}
         y={y}
         width={w}

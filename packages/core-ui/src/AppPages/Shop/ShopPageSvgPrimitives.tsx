@@ -2,6 +2,7 @@ import { useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { ShopPageSvgControls } from './ShopPageSvgSurfaceControls';
 import type { ShopIcon, ShopTone } from './ShopPageSvgData';
 import { toneColor, topRoundedRectPath } from './ShopPageSvgGeometry';
+import { resolveShopPageImageUrl } from './ShopPageImageResolver';
 
 export function Txt({
   x,
@@ -328,10 +329,11 @@ export function ProductImage({
       </g>
     );
   }
+  const resolvedImageUrl = resolveShopPageImageUrl(imageUrl);
   return (
     <g>
       <rect x={x} y={y} width={w} height={h} fill={cfg.colors.productImageFill} />
-      <image href={imageUrl} x={x} y={y} width={w} height={h} preserveAspectRatio={cfg.svgDefaults.preserveAspectRatio} opacity={cfg.primitives.imageOpacity} />
+      <image href={resolvedImageUrl} x={x} y={y} width={w} height={h} preserveAspectRatio={cfg.svgDefaults.preserveAspectRatio} opacity={cfg.primitives.imageOpacity} />
       <rect x={x} y={y} width={w} height={h} fill="url(#shopImageShade)" />
       <rect x={x} y={y} width={w} height={h} fill="none" stroke={cfg.colors.edgeStroke} strokeOpacity="0.14" strokeWidth="1" />
     </g>
