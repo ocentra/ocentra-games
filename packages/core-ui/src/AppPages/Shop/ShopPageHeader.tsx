@@ -198,6 +198,14 @@ export function TopStatsLayer({
   const activePassValue = content.rightDetails.pass.find(row => row.label.toLowerCase() === 'active pass')?.value.trim() || 'N/A';
   const compactPass = w < 300;
   const iconOnlyPass = w < 156;
+  const gradientKey = `shop-top-stats-${Math.round(x)}-${Math.round(y)}-${Math.round(w)}`;
+  const panelGlowId = `${gradientKey}-panel`;
+  const passFillId = `${gradientKey}-pass`;
+  const statFillId = `${gradientKey}-stat`;
+  const labelSize = Math.max(token.statLabelSize, 11.4);
+  const valueSize = Math.max(token.statValueSize, 20.2);
+  const passTitleSize = Math.max(token.passTitleSize, 12.8);
+  const passValueSize = Math.max(token.passValueSize, 20.6);
   const passW = visibleStats.length === 0
     ? Math.max(80, w - token.padX * 2)
     : Math.min(token.passMaxW, Math.max(Math.min(token.passMinW, w * 0.46), w * token.passRatioW));
@@ -219,17 +227,37 @@ export function TopStatsLayer({
       glowOpacity={token.panelGlowOpacity}
       cfg={cfg}
     >
+      <defs>
+        <linearGradient id={panelGlowId} x1={x} x2={x + w} y1={y} y2={y + h} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#64d8ff" stopOpacity="0.12" />
+          <stop offset="0.42" stopColor="#7a5cff" stopOpacity="0.045" />
+          <stop offset="1" stopColor="#ffd36a" stopOpacity="0.08" />
+        </linearGradient>
+        <linearGradient id={passFillId} x1={x} x2={x + passW} y1={y + token.passY} y2={y + token.passY + token.passH} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#1c4f7d" stopOpacity="0.82" />
+          <stop offset="0.62" stopColor="#12345c" stopOpacity="0.92" />
+          <stop offset="1" stopColor="#071827" stopOpacity="0.94" />
+        </linearGradient>
+        <linearGradient id={statFillId} x1={x} x2={x + w} y1={y + token.statY} y2={y + token.statY + token.statH} gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#205889" stopOpacity="0.54" />
+          <stop offset="0.55" stopColor="#153557" stopOpacity="0.86" />
+          <stop offset="1" stopColor="#071827" stopOpacity="0.9" />
+        </linearGradient>
+      </defs>
+      <rect x={x + token.padX} y={y + token.passY} width={Math.max(0, w - token.padX * 2)} height={token.passH} fill={`url(#${panelGlowId})`} opacity="0.75" pointerEvents="none" />
       <g onClick={onActivePass} role="button" tabIndex={0} className="shop-page-svg-clickable">
-        <rect x={x + token.padX} y={y + token.passY} width={passW} height={token.passH} rx={token.passRadius} fill={cfg.colors.headerFillAlt} stroke={cfg.colors.statsPassStroke} strokeWidth={token.passStrokeWidth} strokeOpacity={token.passStrokeOpacity} />
+        <rect x={x + token.padX} y={y + token.passY} width={passW} height={token.passH} rx={token.passRadius} fill={`url(#${passFillId})`} stroke={cfg.colors.statsPassStroke} strokeWidth={token.passStrokeWidth} strokeOpacity={token.passStrokeOpacity} />
+        <line x1={x + token.padX + 10} y1={y + token.passY + 7} x2={x + token.padX + passW - 10} y2={y + token.passY + 7} stroke={cfg.colors.gold} strokeWidth="1.6" strokeOpacity="0.5" />
         <MiniIcon type="crown" x={x + token.padX + token.passIconX} y={y + token.passY + token.passIconY} size={token.passIconSize} tone="gold" cfg={cfg} />
-        {!iconOnlyPass && !compactPass ? <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passTitleY} fill={cfg.colors.balanceText} size={token.passTitleSize} weight={token.passTitleWeight} cfg={cfg}>Active Pass</Txt> : null}
+        {!iconOnlyPass && !compactPass ? <Txt x={x + token.padX + token.passTextX} y={y + token.passY + token.passTitleY} fill="#d8f6ff" size={passTitleSize} weight={token.passTitleWeight} cfg={cfg}>Active Pass</Txt> : null}
         {!iconOnlyPass ? (
           <Txt
             x={compactPass ? x + token.padX + passW / 2 + token.passIconSize * 0.26 : x + token.padX + token.passTextX}
             y={compactPass ? y + token.passY + token.passH / 2 + 2 : y + token.passY + token.passValueY}
-            size={compactPass ? Math.min(token.passValueSize, fitSingleLineTextSize(activePassValue, passW - token.passIconSize - 22, 10, token.passValueSize, 0.55)) : token.passValueSize}
+            size={compactPass ? Math.min(passValueSize, fitSingleLineTextSize(activePassValue, passW - token.passIconSize - 22, 10, passValueSize, 0.55)) : passValueSize}
             weight={token.passValueWeight}
             anchor={compactPass ? 'middle' : 'start'}
+            fill={cfg.colors.bodyText}
             cfg={cfg}
           >
             {activePassValue}
@@ -238,9 +266,10 @@ export function TopStatsLayer({
       </g>
       {visibleStats.map((stat, index) => (
         <g key={stat.label}>
-          <rect x={statStart + index * (statW + token.statGap)} y={y + token.statY} width={statW} height={token.statH} rx={token.statRadius} fill={cfg.colors.statsCardFill} stroke={cfg.colors.statsCardStroke} strokeWidth={token.statStrokeWidth} strokeOpacity={token.statStrokeOpacity} />
-          <Txt x={statStart + index * (statW + token.statGap) + statW / 2} y={y + token.statY + token.statLabelY} anchor="middle" size={token.statLabelSize} fill={cfg.colors.headerBadgeSubText} weight={token.statLabelWeight} cfg={cfg}>{stat.label}</Txt>
-          <Txt x={statStart + index * (statW + token.statGap) + statW / 2} y={y + token.statY + token.statValueY} anchor="middle" size={token.statValueSize} weight={token.statValueWeight} cfg={cfg}>{stat.value}</Txt>
+          <rect x={statStart + index * (statW + token.statGap)} y={y + token.statY} width={statW} height={token.statH} rx={token.statRadius} fill={`url(#${statFillId})`} stroke={cfg.colors.statsCardStroke} strokeWidth={token.statStrokeWidth} strokeOpacity={token.statStrokeOpacity} />
+          <line x1={statStart + index * (statW + token.statGap) + 8} y1={y + token.statY + 7} x2={statStart + index * (statW + token.statGap) + statW - 8} y2={y + token.statY + 7} stroke={cfg.colors.activeBlue} strokeWidth="1.45" strokeOpacity="0.38" />
+          <Txt x={statStart + index * (statW + token.statGap) + statW / 2} y={y + token.statY + token.statLabelY} anchor="middle" size={labelSize} fill="#bdeaff" weight={token.statLabelWeight} cfg={cfg}>{stat.label}</Txt>
+          <Txt x={statStart + index * (statW + token.statGap) + statW / 2} y={y + token.statY + token.statValueY} anchor="middle" size={valueSize} fill={cfg.colors.bodyText} weight={token.statValueWeight} cfg={cfg}>{stat.value}</Txt>
         </g>
       ))}
     </Panel>

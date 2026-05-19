@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type WheelEvent } from 'react';
+import { createPortal } from 'react-dom';
 import {
   isShopProductPurchasable,
   productPriceLabel,
@@ -42,7 +43,9 @@ import {
   type DeckPreviewAxis,
   type DeckPreviewCell,
 } from '../../Common/DeckPreview/DeckPreviewView';
+import { PictureViewerFrame } from '../../Common/PictureViewerFrame/PictureViewerFrame';
 import { avatarImageUrls } from '@ocentra/app-assets/avatars';
+import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type {
   ShopAccountSummary,
   ShopDeckImageResolver,
@@ -63,7 +66,6 @@ import { FooterLayer } from './ShopPageFooter';
 import { HeaderLayer, TopStatsLayer } from './ShopPageHeader';
 import { MainBottom } from './ShopPageMainBottom';
 import { MainTop } from './ShopPageMainTop';
-import { SectionFrame } from './ShopPageSectionFrame';
 import {
   mainBottomOverlayContentRect,
   mainSlotFrameBounds,
@@ -83,10 +85,18 @@ export type ShopPageSvgSurfaceProps = {
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
+  purchasePrompt?: {
+    product: ShopProduct;
+    message?: string | null;
+    busyProvider?: ShopPaymentProvider | null;
+  } | null;
+  onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
+  onPurchaseCancel?: () => void;
   controls?: Partial<ShopPageSvgControls> | null;
   content?: Partial<ShopPageContentData> | null;
   vaultDecks?: ShopVaultDeckPreviewItem[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
+  onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   accountSummary?: ShopAccountSummary | null;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
@@ -115,8 +125,26 @@ const PREFERRED_BOTTOM_PREVIEW_ITEMS = 4;
 const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
 const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
 const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
+const SHOP_PAYMENT_PROVIDER_OPTIONS: Array<{
+  provider: ShopPaymentProvider;
+  label: string;
+  detail: string;
+}> = [
+  { provider: 'stripe', label: 'Card / Stripe', detail: 'Hosted checkout when Stripe is configured.' },
+  { provider: 'paypal', label: 'PayPal', detail: 'PayPal checkout placeholder until provider setup lands.' },
+  { provider: 'solana', label: 'Solana', detail: 'Wallet payment placeholder until on-chain checkout lands.' },
+];
 
 type VaultGridFrameArtMode = 'cards' | 'table';
+
+function paymentProvidersForProduct(product: ShopProduct): Array<{
+  provider: ShopPaymentProvider;
+  label: string;
+  detail: string;
+}> {
+  const configured = product.paymentProviders?.length ? new Set(product.paymentProviders) : null;
+  return SHOP_PAYMENT_PROVIDER_OPTIONS.filter(option => !configured || configured.has(option.provider));
+}
 
 function shopDeckImagePathToBrowserUrl(path?: string): string | null {
   if (!path) return null;
@@ -241,6 +269,64 @@ function previewItemsForRow(row: ShopPreviewSourceRow, products: ShopProduct[], 
   return tilesForTab(products, row.tab, content).map((item, index) => staticItemToPreviewItem(item, index, `${row.tab.toLowerCase()}-preview`));
 }
 
+function PurchaseProviderDialog({
+  x,
+  y,
+  w,
+  product,
+  message,
+  busyProvider,
+  cfg,
+  onProviderSelect,
+  onCancel,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  product: ShopProduct;
+  message?: string | null;
+  busyProvider?: ShopPaymentProvider | null;
+  cfg: ShopPageSvgControls;
+  onProviderSelect: (product: ShopProduct, provider: ShopPaymentProvider) => void;
+  onCancel: () => void;
+}) {
+  const h = 246;
+  const providers = paymentProvidersForProduct(product);
+  const pad = 22;
+  const providerGap = 12;
+  const providerW = (w - pad * 2 - providerGap * (providers.length - 1)) / providers.length;
+  const providerY = y + 122;
+  const title = `Pay for ${product.displayName}`;
+  const price = productPriceLabel(product);
+  return (
+    <g>
+      <rect x={x - 18} y={y - 18} width={w + 36} height={h + 36} fill="rgba(2,10,18,.72)" />
+      <path d={lobbyRoundedRectPath(x, y, w, h, 10)} fill="rgba(6,22,41,.96)" stroke={cfg.colors.activeBlue} strokeWidth="1.8" filter="url(#shopSoftGlow)" />
+      <Txt x={x + pad} y={y + 34} size="24" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{title}</Txt>
+      <Txt x={x + w - pad} y={y + 34} anchor="end" size="18" weight="950" fill={cfg.colors.gold} cfg={cfg}>{price}</Txt>
+      <WrappedText x={x + pad} y={y + 66} width={w - pad * 2} lines={product.description ?? 'Choose a checkout provider to start this purchase.'} size={11.5} lineHeight={15} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
+      {message ? (
+        <WrappedText x={x + pad} y={y + 101} width={w - pad * 2} lines={message} size={12.2} lineHeight={15} fill={cfg.colors.gold} weight={850} maxLines={2} cfg={cfg} />
+      ) : (
+        <Txt x={x + pad} y={y + 101} size="12.2" weight="850" fill={cfg.colors.mutedText} cfg={cfg}>Provider setup can fail gracefully without changing this shop UI.</Txt>
+      )}
+      {providers.map((option, index) => {
+        const optionX = x + pad + index * (providerW + providerGap);
+        const isBusy = busyProvider === option.provider;
+        return (
+          <g key={option.provider}>
+            <rect x={optionX} y={providerY} width={providerW} height="74" fill={alphaColor(cfg.colors.panelFill, 0.84)} stroke={isBusy ? cfg.colors.gold : cfg.colors.activeBlue} strokeWidth="1.2" />
+            <Txt x={optionX + 12} y={providerY + 25} size="15" weight="950" fill={isBusy ? cfg.colors.gold : cfg.colors.bodyText} cfg={cfg}>{isBusy ? 'Starting...' : option.label}</Txt>
+            <WrappedText x={optionX + 12} y={providerY + 45} width={providerW - 24} lines={option.detail} size={8.3} lineHeight={10.5} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
+            <SvgButton x={optionX + providerW - 116} y={providerY + 46} w={104} h={22} label={isBusy ? 'Working' : 'Select'} active={isBusy} small arrow={false} disabled={Boolean(busyProvider)} onClick={() => onProviderSelect(product, option.provider)} cfg={cfg} />
+          </g>
+        );
+      })}
+      <SvgButton x={x + w - pad - 132} y={y + h - 42} w={132} h={26} label="Cancel" small arrow={false} onClick={onCancel} cfg={cfg} />
+    </g>
+  );
+}
+
 function minimumShopCanvasWidth(cfg: ShopPageSvgControls): number {
   return Math.ceil(
     cfg.layout.outerPad * 2
@@ -253,8 +339,10 @@ function minimumShopCanvasWidth(cfg: ShopPageSvgControls): number {
 
 function shopCanvasWidthForSurface(cfg: ShopPageSvgControls, surfaceSize: { width: number; height: number }): number {
   if (surfaceSize.width <= 0 || surfaceSize.height <= 0) return cfg.canvas.width;
+  const minimumWidth = minimumShopCanvasWidth(cfg);
+  if (surfaceSize.width <= minimumWidth) return minimumWidth;
   const ratioWidth = Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height));
-  return Math.max(minimumShopCanvasWidth(cfg), Math.min(2600, ratioWidth));
+  return Math.max(minimumWidth, Math.min(2600, ratioWidth));
 }
 
 function responsiveColumnWidths(canvasWidth: number, cfg: ShopPageSvgControls): { leftW: number; mainW: number; rightW: number } {
@@ -324,11 +412,10 @@ function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string
 
 function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix: string): ShopMainCarouselCardItem {
   const coverImage = prefix === 'play-access' && ['Private Tables', 'Public Tables', 'Room Chat'].includes(item.title);
-  const fillImage = prefix === 'play-access' && ['Private Tables', 'Public Tables'].includes(item.title);
   const imageAnchor = item.title === 'Room Chat'
     ? 'bottom'
     : item.title.includes('Tables')
-      ? 'top'
+      ? 'center'
       : 'center';
   return {
     key: staticTopCardKey(prefix, item, index),
@@ -336,7 +423,7 @@ function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix
     subtitle: item.subtitle,
     bodyLines: item.benefits ?? [item.subtitle],
     layout: 'image',
-    imageFit: fillImage ? 'fill' : coverImage ? 'cover' : 'contain',
+    imageFit: coverImage ? 'cover' : 'contain',
     imageAnchor,
     badgePlacement: 'header',
     tone: item.tone,
@@ -763,6 +850,7 @@ function BottomDetailCardsLayer({
     : label === 'Elite'
       ? Math.max(cfg.mainBody.passCardMinW, 560)
       : Math.max(cfg.mainBody.productCardMinW, 560);
+  const responsiveMinCardW = Math.min(minCardW, Math.max(1, measuredContentW));
   const maxCardW = label === 'Treasury'
     ? minCardW
     : minCardW;
@@ -772,9 +860,9 @@ function BottomDetailCardsLayer({
       ? Math.min(2, Math.round(cfg.mainBody.passMaxVisible))
       : Math.min(2, Math.round(cfg.mainBody.productMaxVisible));
   const expanded = Boolean(expandedItem);
-  const visibleCount = expanded ? 1 : visibleCardCount(measuredContentW, items.length, gap, 0, minCardW, maxVisible);
+  const visibleCount = expanded ? 1 : visibleCardCount(measuredContentW, items.length, gap, 0, responsiveMinCardW, maxVisible);
   const rawCardW = visibleCount > 0 ? (measuredContentW - gap * (visibleCount - 1)) / visibleCount : measuredContentW;
-  const cardW = expanded ? measuredContentW : Math.max(minCardW, Math.min(maxCardW, rawCardW));
+  const cardW = expanded ? measuredContentW : Math.min(maxCardW, Math.max(responsiveMinCardW, rawCardW));
   const rowW = visibleCount * cardW + Math.max(0, visibleCount - 1) * gap;
   const { pageItems, pageCount, safePageIndex } = carouselPage(items, visibleCount, pageIndex);
   const displayItems = expandedItem ? [expandedItem] : pageItems;
@@ -1213,19 +1301,19 @@ function VaultShowcaseLayer({
   const activeGroup = content.vaultShowcaseGroups.find(group => group.key === activeGroupKey) ?? content.vaultShowcaseGroups[0];
   if (!activeGroup) return null;
   const accent = toneColor(activeGroup.tone, cfg);
-  const frameToken = cfg.componentTokens.sectionFrame;
   const token = cfg.componentTokens.vaultShowcase;
-  const bodyY = y + cfg.mainBody.headerH;
-  const bodyH = h - cfg.mainBody.headerH - frameToken.footerReserve;
+  const body = mainBottomOverlayContentRect(x, y, w, h);
+  const bodyY = body.y;
+  const bodyH = body.h;
   const pad = token.pad;
-  const heroX = x + pad;
+  const heroX = body.x + pad;
   const heroY = bodyY + token.heroTop;
-  const heroW = Math.min(token.heroMaxW, Math.max(token.heroMinW, w * token.heroRatioW));
+  const heroW = Math.min(token.heroMaxW, Math.max(token.heroMinW, body.w * token.heroRatioW));
   const heroH = bodyH - token.heroVPad;
   const dividerX = heroX + heroW + token.dividerGap;
   const gridX = dividerX + token.gridGap;
   const gridY = heroY;
-  const gridW = w - (gridX - x) - pad;
+  const gridW = body.x + body.w - gridX - pad;
   const gridH = heroH;
   const isAvatarGrid = activeGroup.key === 'avatars';
   const isProfileFrameGrid = activeGroup.key === 'frames';
@@ -1280,12 +1368,26 @@ function VaultShowcaseLayer({
   const thumbX = maxScrollX > 0 ? (scrollX / maxScrollX) * thumbTravel : 0;
   const pageCount = Math.max(1, Math.ceil(contentW / Math.max(1, gridW)));
   const pageIndex = maxScrollX > 0 ? Math.min(pageCount - 1, Math.round(scrollX / Math.max(1, gridW))) : 0;
-  const movePage = (delta: -1 | 1) => {
-    setGridScrollState({ groupKey: activeGroupKey, value: clampNumber(scrollX + delta * gridW, 0, maxScrollX) });
+  const setGridPage = (nextPageIndex: number) => {
+    setGridScrollState({ groupKey: activeGroupKey, value: clampNumber(nextPageIndex * gridW, 0, maxScrollX) });
   };
 
   return (
-    <SectionFrame x={x} y={y} w={w} h={h} title="VAULT" subtitle="Deck drops, card backs, table themes, frames, and free avatar identity." accent={cfg.colors.violet} cfg={cfg} countText={String(isDeckGrid ? deckItems.length : activeGroup.items.length)} pageIndex={pageIndex} pageCount={pageCount} rightText={rightActionLabel} onRightTextClick={onRightAction} onPrevious={() => movePage(-1)} onNext={() => movePage(1)}>
+    <g>
+      <MainBottom
+        x={x}
+        y={y}
+        w={w}
+        h={h}
+        label="VAULT"
+        count={isDeckGrid ? deckItems.length : activeGroup.items.length}
+        rightActionLabel={rightActionLabel}
+        onRightAction={onRightAction}
+        showNavigation
+        navigationPageCount={pageCount}
+        navigationPageIndex={pageIndex}
+        onNavigationPageChange={setGridPage}
+      />
       <rect x={heroX} y={heroY} width={heroW} height={heroH} rx={cfg.componentTokens.sectionFrame.contentRadius} fill={cfg.colors.vaultHeroFill} />
       <g onClick={() => {
         onGroupChange(activeGroup.key);
@@ -1394,7 +1496,7 @@ function VaultShowcaseLayer({
         <rect x="0" y={gridH - scrollbarH} width={gridW} height={scrollbarH} rx={scrollbarH / 2} fill={cfg.colors.vaultScrollbarFill} stroke={accent} strokeWidth="1" strokeOpacity=".25" />
         <rect x={thumbX} y={gridH - scrollbarH + token.scrollbarThumbInset} width={thumbW} height={scrollbarH - token.scrollbarThumbInset * 2} rx={(scrollbarH - token.scrollbarThumbInset * 2) / 2} fill={accent} opacity=".55" />
       </svg>
-    </SectionFrame>
+    </g>
   );
 }
 
@@ -1416,6 +1518,7 @@ function ShopDeckPreviewLayer({
   onClose: () => void;
 }) {
   const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
+  const viewerCells = useMemo(() => deckPreviewViewerCells(deck), [deck]);
   const body = mainBottomOverlayContentRect(x, y, w, h, false);
   const pieceCount = deck.model?.totalPieces ?? deck.sampleCards.length;
   const normalizedPrice = deck.price?.toLowerCase() ?? '';
@@ -1466,21 +1569,154 @@ function ShopDeckPreviewLayer({
           ) : (
             <div className="shop-deck-preview-host__empty">No deck data available.</div>
           )}
-          {selectedCell ? (
-            <ShopDeckPreviewCellDetail
-              cell={selectedCell}
-              resolveDeckImageUrl={resolveDeckImageUrl}
-              onClose={() => setSelectedCell(null)}
-            />
-          ) : null}
         </div>
       </foreignObject>
+      {selectedCell ? (
+        <ShopDeckPictureViewerOverlay
+          deck={deck}
+          cell={selectedCell}
+          cells={viewerCells}
+          resolveDeckImageUrl={resolveDeckImageUrl}
+          onSelectCell={setSelectedCell}
+          onClose={() => setSelectedCell(null)}
+        />
+      ) : null}
     </g>
   );
 }
 
+function deckPreviewViewerCells(deck: ShopVaultDeckPreviewItem): DeckPreviewCell[] {
+  const seen = new Set<string>();
+  const cells: DeckPreviewCell[] = [];
+  const addCell = (cell: DeckPreviewCell | ShopDeckPreviewCard | null | undefined) => {
+    if (!cell) return;
+    const key = cell.id || `${cell.label}:${cell.imageHash ?? ''}:${cell.imagePath ?? ''}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    cells.push(cell);
+  };
+
+  for (const section of deck.model?.sections ?? []) {
+    for (const cell of section.cells ?? []) addCell(cell);
+    for (const cell of section.items ?? []) addCell(cell);
+  }
+  for (const cell of deck.sampleCards) addCell(cell);
+
+  return cells;
+}
+
+function wrapDeckPreviewIndex(index: number, count: number): number {
+  if (count <= 0) return 0;
+  return ((index % count) + count) % count;
+}
+
+function ShopDeckPictureViewerOverlay({
+  deck,
+  cell,
+  cells,
+  resolveDeckImageUrl,
+  onSelectCell,
+  onClose,
+}: {
+  deck: ShopVaultDeckPreviewItem;
+  cell: DeckPreviewCell;
+  cells: DeckPreviewCell[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  onSelectCell: (cell: DeckPreviewCell) => void;
+  onClose: () => void;
+}) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, cell.imageHash, cell.imagePath);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const currentIndex = Math.max(0, cells.findIndex(item => item.id === cell.id));
+  const canCycle = cells.length > 1;
+  const selectByDelta = (delta: number) => {
+    if (!canCycle) return;
+    onSelectCell(cells[wrapDeckPreviewIndex(currentIndex + delta, cells.length)]);
+  };
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      onClose();
+      return;
+    }
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      selectByDelta(-1);
+      return;
+    }
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      selectByDelta(1);
+    }
+  };
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, [cell.id]);
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+      <div
+        ref={dialogRef}
+        className="shop-picture-viewer"
+        role="dialog"
+        aria-label={`${deck.title} ${cell.label} picture viewer`}
+        tabIndex={-1}
+        onKeyDown={handleKeyDown}
+      >
+        <button type="button" className="shop-picture-viewer__backdrop" aria-label="Close picture viewer" onClick={onClose} />
+        <section className="shop-picture-viewer__panel" aria-label={`${cell.label} image`} onClick={event => event.stopPropagation()}>
+          <PictureViewerFrame
+            className="shop-picture-viewer__frame"
+            ariaLabel={`${cell.label} frame`}
+            previousLabel="Previous card image"
+            nextLabel="Next card image"
+            onPrevious={canCycle ? () => selectByDelta(-1) : undefined}
+            onNext={canCycle ? () => selectByDelta(1) : undefined}
+          />
+          <button type="button" className="shop-picture-viewer__close" onClick={onClose} aria-label="Close card detail">
+            x
+          </button>
+          <div className="shop-picture-viewer__media">
+            {src && failedSrc !== src ? (
+              <img
+                src={src}
+                alt={cell.label}
+                className="shop-picture-viewer__image"
+                onError={() => setFailedSrc(src)}
+              />
+            ) : (
+              <div className="shop-picture-viewer__missing" title={deckPieceDisplayLabel(cell.label)}>
+                <span>{deckPieceDisplayLabel(cell.label)}</span>
+                <strong>Missing image</strong>
+              </div>
+            )}
+          </div>
+          <div className="shop-picture-viewer__caption">
+            <span>{deckPieceDisplayLabel(cell.label)}</span>
+            <span>{cells.length > 0 ? `${currentIndex + 1}/${cells.length}` : '1/1'}</span>
+          </div>
+        </section>
+      </div>,
+      document.body
+  );
+}
+
 function deckPieceDisplayLabel(label: string): string {
-  return label.replace(/_/g, ' ');
+  const normalizedLabel = label.replace(/_/g, ' ');
+  const standardCardMatch = /^(14|13|12|11|1|[2-9]|10) of (spades|hearts|diamonds|clubs)$/i.exec(normalizedLabel);
+  if (!standardCardMatch) return normalizedLabel;
+  const [, rank, suit] = standardCardMatch;
+  const rankLabel: Record<string, string> = {
+    '1': 'Ace',
+    '11': 'Jack',
+    '12': 'Queen',
+    '13': 'King',
+    '14': 'Ace',
+  };
+  return `${rankLabel[rank] ?? rank} of ${suit}`;
 }
 
 function ShopDeckPreviewPieceCell({
@@ -1559,42 +1795,6 @@ function ShopDeckPreviewBackCell({
   }
 
   return <span className="shop-deck-preview-host__piece-label">Back</span>;
-}
-
-function ShopDeckPreviewCellDetail({
-  cell,
-  resolveDeckImageUrl,
-  onClose,
-}: {
-  cell: DeckPreviewCell;
-  resolveDeckImageUrl?: ShopDeckImageResolver;
-  onClose: () => void;
-}) {
-  const src = resolveShopDeckImageUrl(resolveDeckImageUrl, cell.imageHash, cell.imagePath);
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-
-  return (
-    <div className="shop-deck-preview-host__detail" role="dialog" aria-label={`${cell.label} detail`}>
-      <div className="shop-deck-preview-host__detail-panel">
-        <button type="button" className="shop-deck-preview-host__detail-close" onClick={onClose} aria-label="Close card detail">
-          x
-        </button>
-        {src && failedSrc !== src ? (
-          <img
-            src={src}
-            alt={cell.label}
-            className="shop-deck-preview-host__detail-image"
-            onError={() => setFailedSrc(src)}
-          />
-        ) : (
-          <span className="shop-deck-preview-host__piece-label" title={deckPieceDisplayLabel(cell.label)}>
-            <span>{deckPieceDisplayLabel(cell.label)}</span>
-            <span className="shop-deck-preview-host__missing-label">Missing image</span>
-          </span>
-        )}
-      </div>
-    </div>
-  );
 }
 
 function InfoDetailLayer({
@@ -1716,6 +1916,7 @@ function MainBody({
   onElite,
   vaultDecks,
   resolveDeckImageUrl,
+  onVaultDeckInspect,
   dailyRewardStatus,
   onDailyRewardSpin,
 }: {
@@ -1742,6 +1943,7 @@ function MainBody({
   onElite: () => void;
   vaultDecks?: ShopVaultDeckPreviewItem[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
+  onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   dailyRewardStatus?: DailySpinRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
 }) {
@@ -1822,6 +2024,7 @@ function MainBody({
     setBottomTileDetail(null);
     setActiveInfoDetail(null);
     setSelectedVaultDeckKey(deck.key);
+    onVaultDeckInspect?.(deck);
     onInfoHandled();
   };
 
@@ -2377,10 +2580,14 @@ export function ShopPageSvgSurface({
   onTabChange,
   onClearError,
   onBuy,
+  purchasePrompt,
+  onPurchaseProviderSelect,
+  onPurchaseCancel,
   controls,
   content,
   vaultDecks,
   resolveDeckImageUrl,
+  onVaultDeckInspect,
   accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
@@ -2467,21 +2674,21 @@ export function ShopPageSvgSurface({
   }, [cfg, surfaceSize]);
 
   const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
+  const idealCanvasWidth = surfaceSize.width > 0 && surfaceSize.height > 0
+    ? Math.round(cfg.canvas.height * (surfaceSize.width / surfaceSize.height))
+    : canvasWidth;
+  const preserveAspectRatio = Math.abs(canvasWidth - idealCanvasWidth) > 2
+    ? 'none'
+    : cfg.svgDefaults.preserveAspectRatio;
 
   const previewViewportW = canvasWidth - cfg.layout.outerPad * 2;
-  const previewPreferredPanelW = previewPanelWidthForCardCount(PREFERRED_BOTTOM_PREVIEW_ITEMS, cfg);
-  const previewMaxSlots = Math.max(1, Math.min(previewRowCount, Math.round(cfg.bottomPreview.visibleCount)));
-  const previewVisibleSlots = Math.max(
-    1,
-    Math.min(
-      previewMaxSlots,
-      Math.max(1, Math.floor((previewViewportW + cfg.bottomPreview.gap) / (previewPreferredPanelW + cfg.bottomPreview.gap))),
-    ),
-  );
-  const previewPanelW = Math.max(260, (previewViewportW - cfg.bottomPreview.gap * Math.max(0, previewVisibleSlots - 1)) / previewVisibleSlots);
   const previewWidths = useMemo(() => {
-    return resolvedPreviewRows.map(() => previewPanelW);
-  }, [previewPanelW, resolvedPreviewRows]);
+    const maxPanelW = Math.max(260, previewViewportW);
+    return resolvedPreviewRows.map((row) => {
+      const preferredCount = Math.min(PREFERRED_BOTTOM_PREVIEW_ITEMS, Math.max(1, row.previewItems.length || 1));
+      return Math.min(maxPanelW, previewPanelWidthForCardCount(preferredCount, cfg));
+    });
+  }, [cfg, previewViewportW, resolvedPreviewRows]);
 
   const previewTrackLayout = useMemo(() => {
     return previewWidths.reduce(
@@ -2549,7 +2756,7 @@ export function ShopPageSvgSurface({
   const previewLocalIndex = wrapPreviewIndex(previewStart, previewRowCount);
   const previewCycleIndex = previewRowCount > 0 ? Math.floor(previewStart / previewRowCount) : 0;
   const previewTrackX = previewCycleIndex * previewTrackLayout.cycleWidth + (previewTrackLayout.offsets[previewLocalIndex] ?? 0);
-  const previewPanelStep = previewPanelW + cfg.bottomPreview.gap;
+  const previewPanelStep = (previewWidths[previewLocalIndex] ?? previewPanelWidthForCardCount(PREFERRED_BOTTOM_PREVIEW_ITEMS, cfg)) + cfg.bottomPreview.gap;
   const shiftPreview = (delta: number) => {
     if (previewRowCount <= 1) return;
     setPreviewResetting(false);
@@ -2592,7 +2799,7 @@ export function ShopPageSvgSurface({
         className="shop-page-svg-surface"
         role="img"
         aria-label="Arena Marketplace page layout"
-        preserveAspectRatio={cfg.svgDefaults.preserveAspectRatio}
+        preserveAspectRatio={preserveAspectRatio}
       >
         <LobbySvgDefs />
         <defs>
@@ -2657,6 +2864,7 @@ export function ShopPageSvgSurface({
           onElite={() => selectTab('Elite')}
           vaultDecks={vaultDecks}
           resolveDeckImageUrl={resolveDeckImageUrl}
+          onVaultDeckInspect={onVaultDeckInspect}
           dailyRewardStatus={dailyRewardStatus}
           onDailyRewardSpin={onDailyRewardSpin}
         />
@@ -2689,6 +2897,19 @@ export function ShopPageSvgSurface({
             <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 195} anchor="middle" size="17" weight="950" fill="#ffd7dd" cfg={cfg}>{error}</Txt>
             <SvgButton x={metrics.mainX + metrics.mainW / 2 - 80} y={cfg.layout.mainY + 230} w={160} h={28} label="Clear Error" active small onClick={onClearError} cfg={cfg} />
           </g>
+        ) : null}
+        {purchasePrompt && onPurchaseProviderSelect && onPurchaseCancel ? (
+          <PurchaseProviderDialog
+            x={metrics.mainX + metrics.mainW / 2 - Math.min(620, metrics.mainW - 120) / 2}
+            y={cfg.layout.mainY + 118}
+            w={Math.min(620, metrics.mainW - 120)}
+            product={purchasePrompt.product}
+            message={purchasePrompt.message}
+            busyProvider={purchasePrompt.busyProvider}
+            cfg={cfg}
+            onProviderSelect={onPurchaseProviderSelect}
+            onCancel={onPurchaseCancel}
+          />
         ) : null}
       </svg>
     </main>

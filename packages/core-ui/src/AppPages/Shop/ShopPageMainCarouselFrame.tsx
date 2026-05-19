@@ -42,6 +42,8 @@ const badgeTones: BadgeTone[] = [
   'bannerGold',
 ];
 
+const compareActionIconPath = 'M2 4h9v1H3v15h8v1H2zm10 19h1V2h-1zM8.283 10.283l-.566-.566L4.934 12.5l2.783 2.783.566-.566L6.566 13H11v-1H6.566zM14 12h4.08l-1.54-1.54.92-.92 2.96 2.96-2.96 2.96-.92-.92L18.08 13H14v8h9V4h-9z';
+
 const shellStyle: React.CSSProperties = {
   position: 'relative',
   width: '100%',
@@ -474,6 +476,12 @@ function ShowcaseDefs({ ids }: { ids: (name: string) => string }) {
         <stop offset="0" stopColor="#63dfff" />
         <stop offset="0.46" stopColor="#58bdfb" />
         <stop offset="1" stopColor="#d026d9" />
+      </linearGradient>
+      <linearGradient id={ids('compareActionIconFill')} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#7ff5ff" />
+        <stop offset="0.34" stopColor="#ffdb55" />
+        <stop offset="0.68" stopColor="#b45cff" />
+        <stop offset="1" stopColor="#1ef0a5" />
       </linearGradient>
       <linearGradient id={ids('tabCountGoldFill')} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="#fff7c7" />
@@ -1027,7 +1035,7 @@ function ShopMainCarouselCard({
                 y={splitBodyY + 4}
                 width={splitImageW - 8}
                 height={splitBodyH - 8}
-                preserveAspectRatio="xMidYMid meet"
+                preserveAspectRatio={imageCardPreserveAspectRatio}
                 style={{ filter: imageGlow }}
                 opacity={imageOpacity}
               />
@@ -1401,11 +1409,21 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
   const bottomBadgeY = bodyY + topH - c.sideA.bottomBadgeBottom;
   const learnMoreX = bodyX + leftW - c.sideA.learnMoreW - c.sideA.learnMoreRight;
   const learnMoreY = bodyY + topH - c.sideA.learnMoreH - c.sideA.learnMoreBottom;
-  const rightActionTextSize = Math.max(9.4, Math.min(11.8, tabTextSize * 0.64));
-  const rightActionW = rightActionLabel ? Math.max(88, Math.min(178, rightActionLabel.length * rightActionTextSize * 0.58 + 28)) : 0;
   const rightActionH = Math.max(20, Math.min(26, tabsH - 12));
+  const rightActionKind = rightActionLabel?.match(/^what is/i) ? 'arena' : rightActionLabel?.match(/^compare/i) ? 'compare' : 'default';
+  const rightActionFullTextSize = Math.max(9.4, Math.min(11.8, tabTextSize * 0.64));
+  const rightActionFullW = rightActionLabel ? Math.max(88, Math.min(178, rightActionLabel.length * rightActionFullTextSize * 0.58 + 28)) : 0;
+  const tabsTotalW = tabs.reduce((sum, tab) => sum + getTabBlockWidth(tab.label, tabTextSize, c.header.tabFirstBoost, c.header.tabCountW), 0);
+  const rightActionAvailableW = Math.max(0, bodyX + bodyW - (contentX + tabsTotalW) - 12);
+  const rightActionCompact = rightActionKind !== 'default' && rightActionFullW > Math.max(76, rightActionAvailableW);
+  const rightActionDisplayLabel = rightActionCompact ? rightActionKind === 'arena' ? 'AC?' : '' : rightActionLabel ?? '';
+  const rightActionTextSize = rightActionCompact ? rightActionKind === 'arena' ? Math.max(10.2, Math.min(11.8, tabTextSize * 0.7)) : Math.max(12.8, Math.min(15, tabTextSize * 0.86)) : rightActionFullTextSize;
+  const rightActionW = rightActionLabel ? rightActionCompact ? rightActionKind === 'arena' ? Math.max(36, rightActionH + 12) : Math.max(32, rightActionH + 6) : rightActionFullW : 0;
   const rightActionX = bodyX + bodyW - rightActionW - 6;
   const rightActionY = Math.max(stageY + c.header.tabTop + 5, lineY - rightActionH - 7);
+  const compareIconSize = Math.max(16, Math.min(rightActionW - 7, rightActionH - 4));
+  const compareIconX = rightActionX + (rightActionW - compareIconSize) / 2;
+  const compareIconY = rightActionY + (rightActionH - compareIconSize) / 2;
   const rightActionEnabled = Boolean(onRightAction);
   const rightActionStroke = rightActionEnabled && rightActionHovered ? c.colors.tabHover : shopProductCardColors.buttonStroke;
   const rightActionFill = rightActionEnabled && rightActionHovered ? shopProductCardColors.buttonHoverFill : shopProductCardColors.buttonFill;
@@ -1435,6 +1453,50 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
     mediaScale: c.sideA.mediaScale,
   };
   const transitionDurationMs = currentGame.carouselTransitionDurationMs ?? 1500;
+  const rightActionButton = rightActionLabel ? (
+    <g
+      role="button"
+      tabIndex={rightActionEnabled ? 0 : -1}
+      aria-label={rightActionLabel}
+      aria-disabled={!rightActionEnabled}
+      onClick={onRightAction}
+      onKeyDown={handleRightActionKeyDown}
+      onMouseEnter={() => setRightActionHovered(true)}
+      onMouseLeave={() => setRightActionHovered(false)}
+      style={{ cursor: rightActionEnabled ? 'pointer' : 'default' }}
+      pointerEvents={rightActionEnabled ? 'auto' : 'none'}
+    >
+      <title>{rightActionLabel}</title>
+      {rightActionHovered && rightActionEnabled ? (
+        <rect x={rightActionX - 3} y={rightActionY - 3} width={rightActionW + 6} height={rightActionH + 6} rx={rightActionCompact ? rightActionH / 2 + 3 : 0} fill="none" stroke={rightActionStroke} strokeWidth="2.2" opacity="0.28" filter={`url(#${ids('cyanGlow')})`} />
+      ) : null}
+      <rect x={rightActionX} y={rightActionY} width={rightActionW} height={rightActionH} rx={rightActionCompact ? rightActionH / 2 : 0} fill={rightActionCompact ? 'rgba(84,226,255,.18)' : rightActionFill} stroke={rightActionStroke} strokeWidth={rightActionCompact ? 1.8 : 1.45} opacity={rightActionEnabled ? 1 : 0.62} />
+      {rightActionCompact && rightActionKind === 'compare' ? (
+        <svg x={compareIconX} y={compareIconY} width={compareIconSize} height={compareIconSize} viewBox="0 0 24 24" overflow="visible" aria-hidden="true" focusable="false" pointerEvents="none">
+          <path d={compareActionIconPath} fill={`url(#${ids('compareActionIconFill')})`} stroke="#020813" strokeWidth="0.82" strokeLinejoin="round" paintOrder="stroke fill" filter={`url(#${ids('cyanGlow')})`} />
+        </svg>
+      ) : (
+        <text
+          x={rightActionX + rightActionW / 2}
+          y={rightActionY + rightActionH / 2 + 1}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fontFamily="Arial, sans-serif"
+          fontSize={rightActionTextSize}
+          fontWeight="800"
+          fill={rightActionCompact ? c.colors.tabHover : rightActionEnabled ? '#f7feff' : '#bfeaff'}
+          opacity={rightActionEnabled ? 0.96 : 0.64}
+          stroke="#020813"
+          strokeOpacity={rightActionEnabled ? 0.92 : 0.56}
+          strokeWidth={Math.max(1.8, rightActionTextSize * 0.22)}
+          strokeLinejoin="round"
+          paintOrder="stroke fill"
+        >
+          {rightActionDisplayLabel}
+        </text>
+      )}
+    </g>
+  ) : null;
 
   return (
     <div ref={wrapperRef} className={className} style={wrapperStyle}>
@@ -1490,7 +1552,21 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                     <path d={countPath} fill={isHover ? `url(#${ids('tabHoverFill')})` : `url(#${ids('tabCountGoldFill')})`} stroke={isHover ? c.colors.tabHover : '#f7c84a'} strokeOpacity={isHover ? 0.86 : 0.92} strokeWidth="1.35" filter={!isHover ? `url(#${ids('goldGlow')})` : undefined} />
                     <path d={countPath} fill={`url(#${ids('tabCountGoldShine')})`} opacity={isHover ? 0.1 : 0.32} pointerEvents="none" />
                     <path d={labelPath} fill={isActive ? '#1b2f22' : isHover ? '#0d4029' : '#071827'} fillOpacity={isActive ? 0.58 : isHover ? 0.66 : 0.18} stroke={isActive ? '#f5c84b' : isHover ? c.colors.tabHover : '#5fc9ff'} strokeOpacity={isActive ? 0.62 : isHover ? 0.78 : 0.22} strokeWidth="1.1" />
-                    <text x={mainX + countW / 2} y={mainY + mainH / 2 + countFontSize * 0.35} textAnchor="middle" fontFamily="Arial Narrow, Arial, sans-serif" fontSize={countFontSize * 0.95} fontWeight="500" fill={isHover ? '#9dffc2' : '#8fd8ff'} filter={isHover ? `url(#${ids('tabGreenGlow')})` : undefined}>
+                    <text
+                      x={mainX + countW / 2}
+                      y={mainY + mainH / 2 + countFontSize * 0.35}
+                      textAnchor="middle"
+                      fontFamily="Arial Narrow, Arial, sans-serif"
+                      fontSize={countFontSize * 0.95}
+                      fontWeight="900"
+                      fill={isHover ? '#eafff4' : '#07111a'}
+                      stroke={isHover ? '#02100b' : '#fff3a3'}
+                      strokeOpacity={isHover ? 0.9 : 0.48}
+                      strokeWidth={isHover ? Math.max(1.2, countFontSize * 0.12) : Math.max(0.45, countFontSize * 0.035)}
+                      strokeLinejoin="round"
+                      paintOrder="stroke fill"
+                      filter={isHover ? `url(#${ids('tabGreenGlow')})` : undefined}
+                    >
                       {cards.length > 0 ? cards.length : tab.games.length}
                     </text>
                     <text x={labelCenterX} y={textY} textAnchor="middle" fontFamily="Impact, Arial Black" fill={isActive ? '#8fd8ff' : isHover ? '#9dffc2' : '#d9edff'} opacity={isActive || isHover ? 1 : 0.58} filter={isActive ? `url(#${ids('cyanGlow')})` : undefined}>
@@ -1502,43 +1578,6 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
                 );
               })}
             </g>
-
-            {rightActionLabel ? (
-              <g
-                role="button"
-                tabIndex={rightActionEnabled ? 0 : -1}
-                aria-disabled={!rightActionEnabled}
-                onClick={onRightAction}
-                onKeyDown={handleRightActionKeyDown}
-                onMouseEnter={() => setRightActionHovered(true)}
-                onMouseLeave={() => setRightActionHovered(false)}
-                style={{ cursor: rightActionEnabled ? 'pointer' : 'default' }}
-                pointerEvents={rightActionEnabled ? 'auto' : 'none'}
-              >
-                {rightActionHovered && rightActionEnabled ? (
-                  <rect x={rightActionX - 3} y={rightActionY - 3} width={rightActionW + 6} height={rightActionH + 6} rx="0" fill="none" stroke={rightActionStroke} strokeWidth="2.2" opacity="0.28" filter={`url(#${ids('cyanGlow')})`} />
-                ) : null}
-                <rect x={rightActionX} y={rightActionY} width={rightActionW} height={rightActionH} rx="0" fill={rightActionFill} stroke={rightActionStroke} strokeWidth="1.45" opacity={rightActionEnabled ? 1 : 0.62} />
-                <text
-                  x={rightActionX + rightActionW / 2}
-                  y={rightActionY + rightActionH / 2 + 1}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontFamily="Arial, sans-serif"
-                  fontSize={rightActionTextSize}
-                  fontWeight="800"
-                  fill={rightActionEnabled ? '#f7feff' : '#bfeaff'}
-                  opacity={rightActionEnabled ? 0.96 : 0.64}
-                  stroke="#020813"
-                  strokeOpacity={rightActionEnabled ? 0.92 : 0.56}
-                  strokeWidth={Math.max(1.8, rightActionTextSize * 0.22)}
-                  strokeLinejoin="round"
-                  paintOrder="stroke fill"
-                >
-                  {rightActionLabel}
-                </text>
-              </g>
-            ) : null}
 
             <line x1={bodyX} y1={lineY} x2={bodyX + bodyW} y2={lineY} stroke={c.colors.bodyStroke} strokeWidth="2" strokeOpacity="0.52" />
 
@@ -1573,6 +1612,8 @@ export const ShopPageMainCarouselFrame: React.FC<FeaturedGameShowcaseProps> = ({
             {visibleCards.length > 0 ? null : (
               <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyRadius} fill="none" stroke={c.colors.bodyStroke} strokeWidth={c.body.outlineWidth} />
             )}
+
+            {rightActionButton}
 
             {hasNavigation && c.footer.showLine ? (
               <line

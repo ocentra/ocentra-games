@@ -11,15 +11,14 @@ import {
   SHOP_STATIC_PASSES,
   SHOP_UI_COPY,
   SHOP_VAULT_SHOWCASE_GROUPS,
-  type ShopPreviewRow,
-  type ShopQuest,
   type ShopRightTab,
-  type ShopSection,
-  type ShopSideItem,
-  type ShopStaticItem,
-  type ShopVaultShowcaseGroup,
 } from './ShopPageSvgData';
-import type { ShopTab } from './ShopPageSvgTypes';
+import {
+  ShopPageContentDataSchema,
+  type ShopPageContentData,
+} from '@ocentra/game-asset-domain/schemas/shop-page-content-schema';
+
+export type { ShopPageContentData };
 
 export type ShopHeaderStat = {
   label: string;
@@ -45,22 +44,6 @@ export type ShopRightDetailRow = {
 };
 
 export type ShopRightDetailRows = Record<ShopRightTabId, ShopRightDetailRow[]>;
-
-export type ShopPageContentData = {
-  headerStats: ShopHeaderStat[];
-  sideItems: ShopSideItem[];
-  sections: Record<ShopTab, ShopSection>;
-  vaultShowcaseGroups: ShopVaultShowcaseGroup[];
-  creditPacks: ShopStaticItem[];
-  passes: ShopStaticItem[];
-  previews: ShopPreviewRow[];
-  quests: ShopQuest[];
-  rightTabs: ShopRightTab[];
-  rightRows: ShopRightRows;
-  rightDetails: ShopRightDetailRows;
-  uiCopy: typeof SHOP_UI_COPY;
-  infoDetails: typeof SHOP_INFO_DETAILS;
-};
 
 const DEFAULT_RIGHT_DETAILS: ShopRightDetailRows = {
   account: [
@@ -91,7 +74,7 @@ const DEFAULT_RIGHT_DETAILS: ShopRightDetailRows = {
   ],
   recent: [
     { label: 'Purchase History', value: 'N/A', detail: 'Completed checkout activity will display after order history is connected.' },
-    { label: 'Last Checkout', value: 'N/A', detail: 'Most recent checkout status will display after Stripe sync is connected.' },
+    { label: 'Last Checkout', value: 'N/A', detail: 'Most recent checkout status will display after checkout sync is connected.' },
     { label: 'Last Reward Sync', value: 'N/A', detail: 'Reward grants will display after entitlement sync is connected.' },
     { label: 'Inventory Change', value: 'N/A', detail: 'Cosmetic and deck changes will display after inventory sync is connected.' },
   ],
@@ -119,8 +102,8 @@ export const DEFAULT_SHOP_PAGE_CONTENT: ShopPageContentData = {
     recent: SHOP_RIGHT_ROWS.recent.map(row => [row[0], row[1]]),
   },
   rightDetails: DEFAULT_RIGHT_DETAILS,
-  uiCopy: SHOP_UI_COPY,
-  infoDetails: SHOP_INFO_DETAILS,
+  uiCopy: JSON.parse(JSON.stringify(SHOP_UI_COPY)) as ShopPageContentData['uiCopy'],
+  infoDetails: JSON.parse(JSON.stringify(SHOP_INFO_DETAILS)) as ShopPageContentData['infoDetails'],
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -152,5 +135,6 @@ function mergeKnownValue<T>(fallback: T, source: unknown): T {
 export function normalizeShopPageContent(
   content?: Partial<ShopPageContentData> | null,
 ): ShopPageContentData {
-  return mergeKnownValue(cloneContent(), content);
+  const merged = mergeKnownValue(cloneContent(), content);
+  return ShopPageContentDataSchema.parse(merged);
 }

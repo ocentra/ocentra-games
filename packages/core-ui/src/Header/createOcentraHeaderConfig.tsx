@@ -1,5 +1,10 @@
 import type { CenterContentRenderArgs, CenterLogoRenderArgs, UnifiedHeaderConfigInput } from './UnifiedHeader.config';
 
+const SHOP_MARKETPLACE_LOGO_ASPECT = 1024 / 425;
+const SHOP_MARKETPLACE_LOGO_HEIGHT_SCALE = 1.3;
+const SHOP_MARKETPLACE_CENTER_WIDTH = 184;
+const SHOP_MARKETPLACE_CENTER_MIN_WIDTH = 164;
+
 export function createOcentraHeaderLogoConfig(logoImageUrl: string, size = 44): UnifiedHeaderConfigInput {
   return {
     center: {
@@ -64,8 +69,8 @@ export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): Uni
     layout: {
       height: 76,
       boxHeight: 56,
-      centerWidth: 112,
-      centerMinWidth: 104,
+      centerWidth: SHOP_MARKETPLACE_CENTER_WIDTH,
+      centerMinWidth: SHOP_MARKETPLACE_CENTER_MIN_WIDTH,
       wingUnderlap: 6,
     },
     center: {
@@ -84,9 +89,8 @@ export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): Uni
       customRenderer: ({ box }: CenterContentRenderArgs) => {
         const cx = box.x + box.w / 2;
         const cy = box.y + box.h / 2;
-        const logoAspect = 1024 / 425;
-        const logoH = box.h * 1.3;
-        const logoW = logoH * logoAspect;
+        const logoH = box.h * SHOP_MARKETPLACE_LOGO_HEIGHT_SCALE;
+        const logoW = logoH * SHOP_MARKETPLACE_LOGO_ASPECT;
         const logoX = cx - logoW / 2;
         const logoY = cy - logoH / 2;
 

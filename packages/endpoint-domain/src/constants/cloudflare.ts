@@ -638,6 +638,7 @@ export const ApiEndpoint = {
     Base: shopBase as ApiPath,
     Products: `${shopBase}/products` as ApiPath,
     ProductById: (id: string): ApiPath => `${shopBase}/products/${id}` as ApiPath,
+    Purchase: `${shopBase}/purchase` as ApiPath,
   },
 
   CardGames: {

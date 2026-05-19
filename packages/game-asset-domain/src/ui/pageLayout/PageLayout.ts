@@ -7,6 +7,7 @@ import {
   type SelectedGameContentPlan,
   type SelectedGameLayoutControls,
 } from '@/ui/selectedGame/SelectedGamePresentation';
+import type { PartialShopPageContentData } from '@/schemas/shop-page-content-schema';
 
 export type PageLayoutKind =
   | 'home'
@@ -68,6 +69,7 @@ export interface PageLayoutDocument {
   lobbyControls?: Record<string, unknown>;
   authControls?: Record<string, unknown>;
   shopControls?: Record<string, unknown>;
+  shopContent?: PartialShopPageContentData;
   contentPlan?: SelectedGameContentPlan;
   preview?: {
     sampleGameRef?: {
@@ -174,6 +176,9 @@ export class PageLayout extends Layout {
 
   @serializable({ label: 'Shop Controls' })
   shopControls: Record<string, unknown> = {};
+
+  @serializable({ label: 'Shop Content' })
+  shopContent: PartialShopPageContentData = {};
 
   @serializable({ label: 'Content Plan' })
   contentPlan: SelectedGameContentPlan = DEFAULT_SELECTED_GAME_CONTENT_PLAN;

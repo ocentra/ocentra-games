@@ -7,6 +7,7 @@ import type {
   AppPageSvgControls,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
 import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
 import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
@@ -175,6 +176,7 @@ type ShopPageSurfaceControlProps = {
   shopContent?: Partial<ShopPageContentData> | null;
   vaultDecks?: ShopVaultDeckPreviewItem[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
+  onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
   accountSummary?: ShopAccountSummary | null;
 };
 
@@ -810,10 +812,14 @@ export function ShopPageContent({
   onTabChange,
   onClearError,
   onBuy,
+  purchasePrompt,
+  onPurchaseProviderSelect,
+  onPurchaseCancel,
   layoutControls,
   shopContent,
   vaultDecks,
   resolveDeckImageUrl,
+  onVaultDeckInspect,
   accountSummary,
   dailyRewardStatus,
   onDailyRewardSpin,
@@ -827,6 +833,13 @@ export function ShopPageContent({
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
+  purchasePrompt?: {
+    product: ShopProduct;
+    message?: string | null;
+    busyProvider?: ShopPaymentProvider | null;
+  } | null;
+  onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
+  onPurchaseCancel?: () => void;
   dailyRewardStatus?: LobbyRewardStatus | null;
   onDailyRewardSpin?: () => void | Promise<void>;
 } & ShopPageSurfaceControlProps) {
@@ -841,10 +854,14 @@ export function ShopPageContent({
       onTabChange={onTabChange}
       onClearError={onClearError}
       onBuy={onBuy}
+      purchasePrompt={purchasePrompt}
+      onPurchaseProviderSelect={onPurchaseProviderSelect}
+      onPurchaseCancel={onPurchaseCancel}
       controls={layoutControls}
       content={shopContent}
       vaultDecks={vaultDecks}
       resolveDeckImageUrl={resolveDeckImageUrl}
+      onVaultDeckInspect={onVaultDeckInspect}
       accountSummary={accountSummary}
       dailyRewardStatus={dailyRewardStatus}
       onDailyRewardSpin={onDailyRewardSpin}

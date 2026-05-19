@@ -232,13 +232,25 @@ function EarnFreeSideCard({
   const token = cfg.componentTokens.sideNavCard;
   const active = selected || hovered;
   const color = cfg.colors.activeBlue;
+  const headerTitle = content.uiCopy.earnPanel.title;
+  const compact = w < 132 || h < 255;
+  const description = compact ? 'Quests and events earn AC.' : content.uiCopy.earnPanel.description;
+  const buttonLabel = content.uiCopy.earnPanel.buttonLabel;
   const imageX = x + earn.imageInsetX;
   const imageY = y + earn.imageTop;
   const imageW = w - earn.imageInsetX * 2;
-  const imageH = Math.max(earn.imageMinH, h - earn.imageBottomReserve);
   const badgeX = x + earn.buttonInsetX;
   const badgeY = y + h - earn.buttonBottom;
   const badgeW = w - earn.buttonInsetX * 2;
+  const textW = Math.max(48, w - earn.textInsetX * 2);
+  const textY = y + h - earn.textBottom;
+  const imageBottomLimit = textY - (compact ? 8 : 12);
+  const imageH = Math.max(compact ? 44 : earn.imageMinH, Math.min(Math.max(44, h - earn.imageBottomReserve), Math.max(34, imageBottomLimit - imageY)));
+  const headerTitleSize = fitSingleLineTextSize(headerTitle, Math.max(48, w - earn.headerInset * 2 - 14), compact ? 9.2 : 10.4, earn.headerTitleSize, 0.58);
+  const descriptionSize = compact ? Math.max(7.4, Math.min(earn.textSize, textW / 11.5)) : earn.textSize;
+  const descriptionLineHeight = compact ? Math.max(7.4, Math.min(earn.textLineHeight, descriptionSize * 1.25)) : earn.textLineHeight;
+  const descriptionMaxLines = compact ? Math.max(2, Math.min(4, Math.floor(Math.max(18, badgeY - textY - 8) / descriptionLineHeight))) : earn.textMaxLines;
+  const buttonTextSize = fitSingleLineTextSize(buttonLabel, Math.max(28, badgeW - 28), 7.2, 9.5, 0.48);
   const arrowH = cfg.leftPanel.cardH - token.arrowTopInset * 2;
   const arrowTop = y + h / 2 - arrowH / 2;
   const arrowBottom = arrowTop + arrowH;
@@ -254,12 +266,12 @@ function EarnFreeSideCard({
       {hovered && !selected ? <rect x={x - token.hoverPad} y={y - token.hoverPad} width={w + token.hoverPad * 2} height={h + token.hoverPad * 2} rx={token.hoverGlowRadius} fill="none" stroke={color} strokeWidth={token.hoverGlowStrokeWidth} opacity={token.hoverGlowOpacity} filter="url(#shopSoftGlow)" /> : null}
       <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.earnRadius} fill={selected ? alphaColor(cfg.colors.activeBlue, 0.36) : hovered ? activeFill : cfg.colors.panelFill} stroke={active ? color : cfg.colors.tileStroke} strokeWidth={active ? 1.6 : 1.25} />
       <HeaderBar x={x + earn.headerInset} y={y + earn.headerInset} w={w - earn.headerInset * 2} h={earn.headerH} cfg={cfg} stroke={color}>
-        <Txt x={x + earn.headerTitleX} y={y + earn.headerTitleY} size={earn.headerTitleSize} weight="950" cfg={cfg}>{content.uiCopy.earnPanel.title}</Txt>
+        <Txt x={x + earn.headerTitleX} y={y + earn.headerTitleY} size={headerTitleSize} weight="950" cfg={cfg}>{headerTitle}</Txt>
       </HeaderBar>
       <TransparentAssetImage x={imageX} y={imageY} w={imageW} h={imageH} imageUrl={SHOP_EARN_FREE_AC_IMAGE_URL} cfg={cfg} glow={active} cyanGlow={hovered && !selected} />
-      <WrappedText x={x + earn.textInsetX} y={y + h - earn.textBottom} width={w - earn.textInsetX * 2} lines={content.uiCopy.earnPanel.description} size={earn.textSize} lineHeight={earn.textLineHeight} fill={cfg.colors.frameSubtitleText} maxLines={earn.textMaxLines} cfg={cfg} />
+      <WrappedText x={x + earn.textInsetX} y={textY} width={textW} lines={description} size={descriptionSize} lineHeight={descriptionLineHeight} fill={cfg.colors.frameSubtitleText} maxLines={descriptionMaxLines} cfg={cfg} />
       <rect x={badgeX} y={badgeY} width={badgeW} height={earn.buttonH} rx={cfg.svgDefaults.roundedNone} fill={active ? 'url(#shopActiveBlue)' : cfg.colors.buttonIdleFill} stroke={active ? color : cfg.colors.buttonIdleStroke} strokeWidth="1.15" />
-      <Txt x={badgeX + badgeW / 2 - 8} y={badgeY + earn.buttonH / 2 + 1} size="9.5" weight="850" anchor="middle" cfg={cfg}>{content.uiCopy.earnPanel.buttonLabel}</Txt>
+      <Txt x={badgeX + (badgeW - 24) / 2} y={badgeY + earn.buttonH / 2 + 1} size={buttonTextSize} weight="850" anchor="middle" cfg={cfg}>{buttonLabel}</Txt>
       <line x1={badgeX + badgeW - 24} y1={badgeY + 1} x2={badgeX + badgeW - 24} y2={badgeY + earn.buttonH - 1} stroke={active ? color : cfg.colors.buttonIdleStroke} />
       <path d={`M ${badgeX + badgeW - 15} ${badgeY + 7} L ${badgeX + badgeW - 7} ${badgeY + earn.buttonH / 2} L ${badgeX + badgeW - 15} ${badgeY + earn.buttonH - 7} Z`} fill={active ? cfg.colors.buttonArrowHoverFill : cfg.colors.buttonArrowFill} />
     </g>
@@ -383,6 +395,19 @@ function RightPreviewContent({
   );
 }
 
+function splitRightPanelTabTitle(title: string): string[] {
+  const words = title.split(/\s+/).filter(Boolean);
+  if (words.length <= 1) return [title];
+  if (title.includes('&')) {
+    const markerIndex = words.indexOf('&');
+    if (markerIndex > 0 && markerIndex < words.length - 1) {
+      return [words.slice(0, markerIndex + 1).join(' '), words.slice(markerIndex + 1).join(' ')];
+    }
+  }
+  const splitAt = Math.ceil(words.length / 2);
+  return [words.slice(0, splitAt).join(' '), words.slice(splitAt).join(' ')];
+}
+
 function RightPanelSelectorCard({
   x,
   y,
@@ -409,6 +434,13 @@ function RightPanelSelectorCard({
   const activeFill = alphaColor(color, cfg.componentTokens.cardChrome.activeFillOpacity);
   const arrowTop = y + token.arrowTopInset;
   const arrowBottom = y + h - token.arrowTopInset;
+  const compactLabel = w < 154 || tab.title.length > 12;
+  const labelLines = compactLabel ? splitRightPanelTabTitle(tab.title) : [tab.title];
+  const singleLineSize = fitSingleLineTextSize(tab.title, w - 16, 8.2, 10.8, 0.58);
+  const lineSize = labelLines.length > 1
+    ? Math.min(9.6, Math.min(...labelLines.map(line => fitSingleLineTextSize(line, w - 16, 7.2, 9.6, 0.58))))
+    : singleLineSize;
+  const fill = selected ? cfg.colors.bodyText : cfg.colors.tileSubtitleText;
   return (
     <g onClick={onClick} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} className={cfg.svgDefaults.cursorPointerClassName} role="button" tabIndex={0}>
       {selected ? (
@@ -419,7 +451,13 @@ function RightPanelSelectorCard({
       ) : null}
       {hovered && !selected ? <rect x={x - token.hoverPad} y={y - token.hoverPad} width={w + token.hoverPad * 2} height={h + token.hoverPad * 2} rx={token.hoverGlowRadius} fill="none" stroke={color} strokeWidth={token.hoverGlowStrokeWidth} opacity={token.hoverGlowOpacity} filter="url(#shopSoftGlow)" /> : null}
       <rect x={x} y={y} width={w} height={h} rx={cfg.leftPanel.cardRadius} fill={selected ? alphaColor(cfg.colors.activeBlue, 0.36) : hovered ? activeFill : cfg.colors.panelFill} stroke={active ? color : cfg.colors.tileStroke} strokeWidth={active ? 1.6 : 1.25} />
-      <Txt x={x + w / 2} y={y + h / 2 + 1} size={Math.max(8.8, Math.min(10.8, w / Math.max(16, tab.title.length * 0.72)))} weight="950" fill={selected ? cfg.colors.bodyText : cfg.colors.tileSubtitleText} anchor="middle" cfg={cfg}>{tab.title}</Txt>
+      {labelLines.length > 1 ? (
+        labelLines.map((line, index) => (
+          <Txt key={`${tab.id}-${line}`} x={x + w / 2} y={y + h / 2 + (index === 0 ? -4.6 : 5.4)} size={lineSize} weight="950" fill={fill} anchor="middle" cfg={cfg}>{line}</Txt>
+        ))
+      ) : (
+        <Txt x={x + w / 2} y={y + h / 2 + 1} size={lineSize} weight="950" fill={fill} anchor="middle" cfg={cfg}>{tab.title}</Txt>
+      )}
     </g>
   );
 }

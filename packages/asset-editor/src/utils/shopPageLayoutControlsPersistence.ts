@@ -13,10 +13,7 @@ import { readAsset, writeAsset } from '@/adapters/assets/TauriAssetAdapter';
 export const SHOP_PAGE_LAYOUT_ASSET_PATH =
   'Resources/Pages/ShopPageLayout.asset';
 
-export interface ShopPageLayoutAssetDocument extends PageLayoutDocument {
-  shopControls?: Partial<ShopPageSvgControls>;
-  shopContent?: Partial<ShopPageContentData>;
-}
+export type ShopPageLayoutAssetDocument = PageLayoutDocument;
 
 interface AssetEnvelope {
   system: Record<string, unknown>;

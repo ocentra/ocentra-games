@@ -1,5 +1,8 @@
-import { Schema, type Infer, withParser } from '@ocentra/schema-domain/effect';
 import { KvKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes';
+import {
+  ShopProductStorageSchema,
+  type ShopProductStorage,
+} from '@ocentra/endpoint-domain/schemas/shop';
 
 /**
  * Product Catalog Configuration
@@ -8,28 +11,9 @@ import { KvKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes'
  * No hardcoded products - single source of truth in KV.
  */
 
-export const ProductSchema = withParser(Schema.Struct({
-  productType: Schema.Literal('AC_CREDITS', 'SUBSCRIPTION', 'TOURNAMENT_ENTRY', 'MARKETPLACE'),
-  productId: Schema.String,
-  stripePriceId: Schema.String,
-  stripeProductId: Schema.optional(Schema.String), // Set when created via admin
-  displayName: Schema.String,
-  description: Schema.optional(Schema.String),
-  shopTab: Schema.optional(Schema.Literal('Treasury', 'Elite', 'Vault', 'Play Access', 'Events')),
-  badge: Schema.optional(Schema.String),
-  benefits: Schema.optional(Schema.Array(Schema.String)),
-  entitlementKind: Schema.optional(Schema.Literal('credits', 'pass', 'cosmetic', 'play_access', 'event_ticket')),
-  availability: Schema.optional(Schema.Literal('live', 'preview', 'coming_soon')),
-  acAmount: Schema.optional(Schema.Number.pipe(Schema.positive())),
-  acPrice: Schema.optional(Schema.Number.pipe(Schema.int(), Schema.nonNegative())),
-  unitPriceCents: Schema.optional(Schema.Number.pipe(Schema.int(), Schema.nonNegative())),
-  priceLabel: Schema.optional(Schema.String),
-  subscriptionTier: Schema.optional(Schema.String),
-  currency: Schema.optionalWith(Schema.String.pipe(Schema.length(3)), { default: () => 'usd' }),
-  active: Schema.optionalWith(Schema.Boolean, { default: () => true }),
-}));
+export const ProductSchema = ShopProductStorageSchema;
 
-export type Product = Infer<typeof ProductSchema>;
+export type Product = ShopProductStorage;
 
 /**
  * Validate product from request
@@ -49,7 +33,14 @@ export async function validateProduct(
     return null;
   }
 
-  const product = JSON.parse(kvData) as Product;
+  let product: Product;
+  try {
+    const parsed = ProductSchema.safeParse(JSON.parse(kvData) as unknown);
+    if (!parsed.success) return null;
+    product = parsed.data;
+  } catch {
+    return null;
+  }
   
   // Validate product type matches and is active
   if (product.productType !== productType) return null;
@@ -99,7 +90,8 @@ export async function getAllActiveProducts(
       const data = await env.PRODUCT_KV!.get(`${KvKeyPrefix.Product}${id}`);
       if (!data) return null;
       try {
-        return JSON.parse(data) as Product;
+        const parsed = ProductSchema.safeParse(JSON.parse(data) as unknown);
+        return parsed.success ? parsed.data : null;
       } catch {
         return null;
       }
@@ -123,7 +115,13 @@ export async function getProductFromKV(
   }
 
   const data = await env.PRODUCT_KV.get(`${KvKeyPrefix.Product}${productId}`);
-  return data ? (JSON.parse(data) as Product) : null;
+  if (!data) return null;
+  try {
+    const parsed = ProductSchema.safeParse(JSON.parse(data) as unknown);
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -137,7 +135,8 @@ export async function saveProductToKV(
     throw new Error('PRODUCT_KV not configured');
   }
 
-  await env.PRODUCT_KV.put(`${KvKeyPrefix.Product}${product.productId}`, JSON.stringify(product));
+  const parsed = ProductSchema.parse(product);
+  await env.PRODUCT_KV.put(`${KvKeyPrefix.Product}${parsed.productId}`, JSON.stringify(parsed));
 }
 
 /**

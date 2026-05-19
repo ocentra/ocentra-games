@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { EventBus } from '@ocentra/eventing-domain/core/EventBus';
 import { ShowScreenEvent } from '@ocentra/eventing-domain/events/lobby/ShowScreenEvent';
 import { GameFooter } from '@ocentra/core-ui/Footer/GameFooter';
@@ -11,15 +11,13 @@ import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetId
 
 import { DynamicBackground } from '@ocentra/core-ui/Background/DynamicBackground';
 import { auth } from '@/adapters/firebase/config';
-import { StripeEndpoint } from '@ocentra/endpoint-domain/constants/stripe';
-import { HttpAuthScheme, HttpContentType, HttpHeader, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
-import { buildApiUrl } from '@ocentra/endpoint-domain/utils/url-builder';
+import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type { UserProfile } from '@/adapters/firebase/service';
 import { APP_VERSION } from '@/constants/version';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
-import { fetchShopProducts } from '@/ui/pages/Shop/shopApi';
+import { fetchShopProducts, startShopPurchase } from '@/ui/pages/Shop/shopApi';
 import { getShopApiBaseUrl, getShopAppOrigin } from '@/ui/pages/Shop/shopApiBase';
 import {
   ShopPageContent,
@@ -55,6 +53,8 @@ type DeckImageUrlMap = Record<string, string>;
 
 const SHOP_PAGE_LAYOUT_ASSET_PATH = 'Resources/Pages/ShopPageLayout.asset';
 const SHOP_MARKETPLACE_HEADER_CONFIG = createShopMarketplaceHeaderLogoConfig(shopPageMarketplaceLogoImageUrl);
+const VAULT_INITIAL_DECK_MODEL_LIMIT = 5;
+const VAULT_DECK_REFERENCE_LOAD_CONCURRENCY = 8;
 const VAULT_PREFERRED_DECK_PATHS = [
   'Resources/GameMode/CardGames/Decks/Standard_52.asset',
   'Resources/GameMode/CardGames/Decks/Standard_40.asset',
@@ -140,7 +140,13 @@ async function loadDeckReference(ref: DeckPreviewReference, resources: ResourceE
 }
 
 async function loadDeckReferences(refs: DeckPreviewReference[], resources: ResourceEntryRef[]): Promise<LooseRecord[]> {
-  const documents = await Promise.all(refs.map(ref => loadDeckReference(ref, resources)));
+  const documents: Array<LooseRecord | null> = Array.from({ length: refs.length }, () => null);
+  const workerCount = Math.min(VAULT_DECK_REFERENCE_LOAD_CONCURRENCY, refs.length);
+  await Promise.all(Array.from({ length: workerCount }, async (_, workerIndex) => {
+    for (let index = workerIndex; index < refs.length; index += workerCount) {
+      documents[index] = await loadDeckReference(refs[index], resources);
+    }
+  }));
   return documents.filter((document): document is LooseRecord => document !== null);
 }
 
@@ -186,6 +192,27 @@ function fallbackVaultDeckPreviewItem(resource: ResourceEntryRef): ShopVaultDeck
     model: null,
     sampleCards: [],
   };
+}
+
+function replaceVaultDeckPreviewItem(items: ShopVaultDeckPreviewItem[], nextItem: ShopVaultDeckPreviewItem): ShopVaultDeckPreviewItem[] {
+  const index = items.findIndex(item => item.key === nextItem.key);
+  if (index < 0) {
+    return [...items, nextItem];
+  }
+  return items.map((item, itemIndex) => (itemIndex === index ? nextItem : item));
+}
+
+function findDeckResourceForPreview(deck: ShopVaultDeckPreviewItem, resources: ResourceEntryRef[]): ResourceEntryRef | null {
+  const guid = deck.assetGuid || deck.key;
+  return resources.find(resource => (
+    (guid && resource.guid === guid) ||
+    (deck.assetPath && normalizePath(resource.path ?? '') === normalizePath(deck.assetPath))
+  )) ?? (guid ? {
+    guid,
+    path: deck.assetPath,
+    assetType: 'Deck',
+    displayName: deck.title,
+  } : null);
 }
 
 function collectDeckSampleCards(model: DeckPreviewModel): DeckPreviewCell[] {
@@ -286,17 +313,6 @@ async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: R
   };
 }
 
-async function loadVaultDeckPreviewItems(deckResources: ResourceEntryRef[], resources: ResourceEntryRef[]): Promise<ShopVaultDeckPreviewItem[]> {
-  const items = await Promise.all(deckResources.map(async (resource) => {
-    try {
-      return await loadVaultDeckPreviewItem(resource, resources);
-    } catch {
-      return fallbackVaultDeckPreviewItem(resource);
-    }
-  }));
-  return items.filter((item): item is ShopVaultDeckPreviewItem => item !== null);
-}
-
 async function loadShopPageLayoutData(): Promise<{
   controls?: Partial<ShopPageSvgControls>;
   content?: Partial<ShopPageContentData>;
@@ -328,6 +344,13 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [shopContent, setShopContent] = useState<Partial<ShopPageContentData> | undefined>(undefined);
   const [vaultDecks, setVaultDecks] = useState<ShopVaultDeckPreviewItem[]>([]);
   const [vaultDeckImageUrls, setVaultDeckImageUrls] = useState<DeckImageUrlMap>({});
+  const vaultDeckResourceContextRef = useRef<{ resources: ResourceEntryRef[]; deckResources: ResourceEntryRef[] } | null>(null);
+  const hydratingVaultDeckGuidsRef = useRef(new Set<string>());
+  const [purchasePrompt, setPurchasePrompt] = useState<{
+    product: ShopProduct;
+    message?: string | null;
+    busyProvider?: ShopPaymentProvider | null;
+  } | null>(null);
 
   const appOrigin = getShopAppOrigin();
   const apiBaseUrl = getShopApiBaseUrl();
@@ -365,21 +388,37 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     void loadDeckResourceCandidates()
       .then(async ({ resources, deckResources }) => {
         if (cancelled) return;
-        setVaultDecks(deckResources.map(fallbackVaultDeckPreviewItem).filter((item): item is ShopVaultDeckPreviewItem => item !== null));
-        const items = await loadVaultDeckPreviewItems(deckResources, resources);
-        if (cancelled) return;
-        setVaultDecks(items);
-        try {
-          const imageUrls = await resolveDeckPreviewImageUrls(items);
-          if (!cancelled) setVaultDeckImageUrls(imageUrls);
-        } catch {
-          if (!cancelled) setVaultDeckImageUrls({});
+        vaultDeckResourceContextRef.current = { resources, deckResources };
+        const fallbackItems = deckResources.map(fallbackVaultDeckPreviewItem).filter((item): item is ShopVaultDeckPreviewItem => item !== null);
+        setVaultDecks(fallbackItems);
+        for (const resource of deckResources.slice(0, VAULT_INITIAL_DECK_MODEL_LIMIT)) {
+          if (cancelled) return;
+          if (!resource.guid) continue;
+          hydratingVaultDeckGuidsRef.current.add(resource.guid);
+          try {
+            const item = await loadVaultDeckPreviewItem(resource, resources);
+            if (cancelled) return;
+            if (!item) continue;
+            setVaultDecks(current => replaceVaultDeckPreviewItem(current, item));
+            const imageUrls = await resolveDeckPreviewImageUrls([item]);
+            if (!cancelled) {
+              setVaultDeckImageUrls(current => ({ ...current, ...imageUrls }));
+            }
+          } catch {
+            if (!cancelled) {
+              const fallback = fallbackVaultDeckPreviewItem(resource);
+              if (fallback) setVaultDecks(current => replaceVaultDeckPreviewItem(current, fallback));
+            }
+          } finally {
+            hydratingVaultDeckGuidsRef.current.delete(resource.guid);
+          }
         }
       })
       .catch(() => {
         if (!cancelled) {
           setVaultDecks([]);
           setVaultDeckImageUrls({});
+          vaultDeckResourceContextRef.current = null;
         }
       });
     return () => { cancelled = true; };
@@ -401,6 +440,34 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     if (imagePath && vaultDeckImageUrls[imagePath]) return vaultDeckImageUrls[imagePath];
     return imagePathToBrowserUrl(imagePath);
   }, [vaultDeckImageUrls]);
+  const handleVaultDeckInspect = useCallback((deck: ShopVaultDeckPreviewItem) => {
+    const guid = deck.assetGuid || deck.key;
+    if (!guid || deck.model || hydratingVaultDeckGuidsRef.current.has(guid)) return;
+    hydratingVaultDeckGuidsRef.current.add(guid);
+    void (async () => {
+      try {
+        let context = vaultDeckResourceContextRef.current;
+        if (!context) {
+          context = await loadDeckResourceCandidates();
+          vaultDeckResourceContextRef.current = context;
+        }
+        const resource = findDeckResourceForPreview(deck, context.resources);
+        if (!resource) return;
+        const item = await loadVaultDeckPreviewItem(resource, context.resources);
+        if (!item) return;
+        setVaultDecks(current => replaceVaultDeckPreviewItem(current, item));
+        const imageUrls = await resolveDeckPreviewImageUrls([item]);
+        setVaultDeckImageUrls(current => ({ ...current, ...imageUrls }));
+      } catch {
+        const context = vaultDeckResourceContextRef.current;
+        const resource = context ? findDeckResourceForPreview(deck, context.resources) : null;
+        const fallback = resource ? fallbackVaultDeckPreviewItem(resource) : null;
+        if (fallback) setVaultDecks(current => replaceVaultDeckPreviewItem(current, fallback));
+      } finally {
+        hydratingVaultDeckGuidsRef.current.delete(guid);
+      }
+    })();
+  }, []);
   const shopHeaderConfig = useMemo(() => ({
     ...SHOP_MARKETPLACE_HEADER_CONFIG,
     left: {
@@ -410,36 +477,39 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     right: headerRightConfig,
   }), [handleBack, headerRightConfig]);
 
-  const handleBuy = async (product: ShopProduct) => {
+  const handleBuy = (product: ShopProduct) => {
+    setError(null);
+    setPurchasePrompt({ product });
+  };
+
+  const handlePurchaseProviderSelect = async (product: ShopProduct, provider: ShopPaymentProvider) => {
     setError(null);
     setLoadingId(product.productId);
+    setPurchasePrompt({ product, busyProvider: provider });
     try {
       const token = auth?.currentUser ? await auth.currentUser.getIdToken(true) : null;
-      if (!token) { setError('Not authenticated'); return; }
-      const res = await fetch(buildApiUrl(StripeEndpoint.CreateCheckoutSession, { baseUrl: apiBaseUrl }), {
-        method: HttpMethod.Post,
-        headers: {
-          [HttpHeader.ContentType]: HttpContentType.ApplicationJson,
-          [HttpHeader.Authorization]: `${HttpAuthScheme.Bearer} ${token}`,
-        },
-        body: JSON.stringify({
-          productType: product.productType,
-          productId: product.productId,
-          quantity: 1,
-          successUrl: `${appOrigin}/shop?success=true`,
-          cancelUrl:  `${appOrigin}/shop?canceled=true`,
-        }),
-      });
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({})) as { error?: string };
-        setError(d.error ?? `Request failed: ${res.status}`);
+      if (!token) {
+        setPurchasePrompt({ product, message: 'Sign in is required before checkout.' });
         return;
       }
-      const d = await res.json() as { url?: string };
-      if (d.url) { window.location.href = d.url; return; }
-      setError('No checkout URL returned');
+      const result = await startShopPurchase({
+        apiBaseUrl,
+        token,
+        product,
+        provider,
+        returnUrl: `${appOrigin}/shop?checkout=success`,
+        cancelUrl: `${appOrigin}/shop?checkout=cancel`,
+      });
+      if (result.status === 'redirect' && result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+        return;
+      }
+      setPurchasePrompt({
+        product,
+        message: result.message ?? (result.success ? 'Purchase request accepted.' : 'Checkout provider is not configured yet.'),
+      });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Checkout failed');
+      setPurchasePrompt({ product, message: e instanceof Error ? e.message : 'Checkout request failed.' });
     } finally {
       setLoadingId(null);
     }
@@ -447,7 +517,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
 
   const handleProtectedBuy = (product: ShopProduct) => {
     void runWithAccount(async () => {
-      await handleBuy(product);
+      handleBuy(product);
     });
   };
 
@@ -455,6 +525,7 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     <UnifiedPageShell
       className="sp-root"
       workClassName="sp-shell-work"
+      workScrollMode="auto"
       background={<DynamicBackground />}
       footer={<GameFooter appVersion={APP_VERSION} />}
       header={
@@ -475,10 +546,14 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
         onTabChange={setActiveTab}
         onClearError={() => setError(null)}
         onBuy={handleProtectedBuy}
+        purchasePrompt={purchasePrompt}
+        onPurchaseProviderSelect={handlePurchaseProviderSelect}
+        onPurchaseCancel={() => setPurchasePrompt(null)}
         layoutControls={layoutControls}
         shopContent={shopContent}
         vaultDecks={vaultDecks}
         resolveDeckImageUrl={resolveDeckImageUrl}
+        onVaultDeckInspect={handleVaultDeckInspect}
         accountSummary={accountSummary}
         dailyRewardStatus={dailyRewardStatus}
         onDailyRewardSpin={handleDailyRewardSpin}

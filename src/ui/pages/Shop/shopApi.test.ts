@@ -31,4 +31,21 @@ describe('readShopProductsResponse', () => {
       headers: { [HttpHeader.ContentType]: HttpContentType.TextHtml },
     }))).rejects.toThrow('Shop API returned a non-JSON response');
   });
+
+  it('rejects invalid product payloads at the app boundary', async () => {
+    await expect(readShopProductsResponse(new Response(JSON.stringify({
+      products: [
+        {
+          productId: 'bad',
+          productType: 'UNKNOWN',
+          displayName: '',
+          currency: 'usd',
+          active: true,
+        },
+      ],
+    }), {
+      status: HttpStatus.Ok,
+      headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson },
+    }))).rejects.toThrow('Shop API returned an invalid product payload');
+  });
 });

@@ -49,78 +49,29 @@ import {
   bannerTrueMultiplayerImageUrl,
   bannerWalletFreedomImageUrl,
 } from '@ocentra/app-assets/banners';
+import type {
+  ShopIcon,
+  ShopPreviewRow,
+  ShopQuest,
+  ShopRightTab,
+  ShopSection,
+  ShopSideItem,
+  ShopStaticItem,
+  ShopTone,
+  ShopVaultShowcaseGroup,
+} from '@ocentra/game-asset-domain/schemas/shop-page-content-schema';
 import type { ShopProduct, ShopTab } from './ShopPageSvgTypes';
 
-export type ShopTone = 'cyan' | 'gold' | 'violet' | 'green' | 'orange' | 'silver' | 'danger';
-export type ShopIcon = 'coins' | 'crown' | 'chest' | 'cards' | 'trophy' | 'crate' | 'shield' | 'link' | 'lock' | 'cart';
-
-export type ShopSideItem = {
-  key: ShopTab;
-  title: string;
-  subtitle: string;
-  icon: ShopIcon;
-  tone: ShopTone;
-  imageUrl: string;
-};
-
-export type ShopStaticItem = {
-  title: string;
-  subtitle: string;
-  tone: ShopTone;
-  icon: ShopIcon;
-  badge?: string;
-  imageUrl: string;
-  price?: string;
-  benefits?: string[];
-};
-
-export type ShopSection = {
-  title: string;
-  subtitle: string;
-  footerTitle: string;
-  footerItems: string[];
-  categories?: ShopStaticItem[];
-  featured?: ShopStaticItem[];
-};
-
-export type ShopVaultShowcaseGroup = {
-  key: string;
-  title: string;
-  subtitle: string;
-  tone: ShopTone;
-  icon: ShopIcon;
-  badge?: string;
-  heroImageUrl: string;
-  items: ShopStaticItem[];
-};
-
-export type ShopPreviewRow = {
-  title: string;
-  tab: ShopTab | 'Earn Free AC';
-  subtitle: string;
-  items: string[];
-  accent: string;
-  imageUrls: string[];
-};
-
-export type ShopQuest = {
-  key: string;
-  group: string;
-  title: string;
-  reward: string;
-  cadence: string;
-  tone: ShopTone;
-  icon: ShopIcon;
-  action: string;
-  imageUrl: string;
-  description: string;
-  details: string[];
-};
-
-export type ShopRightTab = {
-  id: 'account' | 'wallet' | 'pass' | 'events' | 'recent';
-  title: string;
-  accent: string;
+export type {
+  ShopIcon,
+  ShopPreviewRow,
+  ShopQuest,
+  ShopRightTab,
+  ShopSection,
+  ShopSideItem,
+  ShopStaticItem,
+  ShopTone,
+  ShopVaultShowcaseGroup,
 };
 
 const SHOP_PLAY_ACCESS_CORE_CARDS: ShopStaticItem[] = [
