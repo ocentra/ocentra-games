@@ -262,6 +262,19 @@ const HomeShowcaseFrameSideBControlsSchema = schema.object({
   overflowVisible: schema.boolean().optional().default(false),
 });
 
+const HomeShowcaseFrameStartupControlsSchema = schema.object({
+  enabled: schema.boolean().optional().default(true),
+  holdAfterReadyMs: schema.number().optional().default(1600),
+  fadeMs: schema.number().optional().default(280),
+  overlayOpacity: schema.number().optional().default(0),
+  accentOpacity: schema.number().optional().default(0),
+  panelScale: schema.number().optional().default(1),
+  panelOffsetX: schema.number().optional().default(0),
+  panelOffsetY: schema.number().optional().default(0),
+  panelMaxWidth: schema.number().optional().default(224),
+  radius: schema.number().optional().default(12),
+});
+
 const HomeShowcaseFrameCopyControlsSchema = schema.object({
   titleMaxFont: schema.number(),
   titleMinFont: schema.number(),
@@ -301,6 +314,7 @@ const HomeShowcaseFrameControlGroupsSchema = schema.object({
   body: HomeShowcaseFrameBodyControlsSchema,
   sideA: HomeShowcaseFrameSideAControlsSchema,
   sideB: HomeShowcaseFrameSideBControlsSchema,
+  startup: HomeShowcaseFrameStartupControlsSchema.default({}),
   copy: HomeShowcaseFrameCopyControlsSchema,
   footer: HomeShowcaseFrameFooterControlsSchema,
   colors: HomeShowcaseFrameColorControlsSchema,
@@ -316,6 +330,7 @@ export const HomeShowcaseFrameControlsSchema = schema.object({
   body: HomeShowcaseFrameBodyControlsSchema,
   sideA: HomeShowcaseFrameSideAControlsSchema,
   sideB: HomeShowcaseFrameSideBControlsSchema,
+  startup: HomeShowcaseFrameStartupControlsSchema.default({}),
   copy: HomeShowcaseFrameCopyControlsSchema,
   footer: HomeShowcaseFrameFooterControlsSchema,
   colors: HomeShowcaseFrameColorControlsSchema,

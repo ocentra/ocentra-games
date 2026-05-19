@@ -121,6 +121,7 @@ export const serializedUnifiedHeaderConfigSchema = schema.object({
     mode: schema.enum(centerModeValues),
     contentGap: schema.number(),
     sidePadding: schema.number(),
+    disablePillChrome: schema.boolean().optional(),
     modeA: schema.object({
       leftText: schema.string(),
       rightText: schema.string(),
@@ -455,6 +456,7 @@ export function createUnifiedHeaderConfig(input: UnifiedHeaderConfigInput = {}):
         icons: input.center?.modeB?.icons ?? [defaultSpadeIcon, defaultHeartIcon, defaultDiamondIcon, defaultClubIcon],
       },
       customRenderer: input.center?.customRenderer,
+      disablePillChrome: input.center?.disablePillChrome ?? false,
     },
     navigation: {
       enabled: input.navigation?.enabled ?? true,
@@ -603,6 +605,7 @@ export type UnifiedHeaderCenterConfig = {
   modeA: CenterModeAConfig;
   modeB: CenterModeBConfig;
   customRenderer?: CenterContentRenderer;
+  disablePillChrome?: boolean;
 };
 
 export type UnifiedHeaderNavigationConfig = {

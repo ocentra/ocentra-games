@@ -27,7 +27,7 @@ export interface TransactionHistoryQuery extends PaginationParams {
  */
 export interface AwardCreditsRequest {
   amount: number;
-  currency: 'GP';
+  currency: Currency;
   reason: 'win' | 'daily_login' | 'achievement' | 'referral' | 'other';
   description?: string;
   match_id?: string;

@@ -200,6 +200,12 @@ export class PaymentCheckoutFlow extends BaseFlow<PaymentCheckoutFlowInput, Paym
         body: { error: 'Stripe not configured' },
       };
     }
+    if (product.unitPriceCents == null && !product.stripePriceId) {
+      return {
+        status: HttpStatus.ServiceUnavailable,
+        body: { error: 'Stripe price not configured' },
+      };
+    }
 
     const stripeClient = await (this.deps.createStripeClient ?? defaultCreateStripeClient)(secret);
     const lineItems = product.unitPriceCents != null

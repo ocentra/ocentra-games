@@ -3,6 +3,13 @@
   max-width: 100%;
 }
 
+.feature-banner-showcase-shell {
+  position: relative;
+  display: flow-root;
+  width: 100%;
+  max-width: 100%;
+}
+
 .feature-banner-showcase__cube-panel {
   position: relative;
   width: 100%;
@@ -47,11 +54,61 @@
   opacity: var(--feature-banner-cube-glow-opacity, 0.64);
 }
 
+.feature-banner-showcase__cube-panel--startup-masked::before {
+  opacity: 0;
+}
+
 .feature-banner-showcase__cube-panel .rubik-banner-cube {
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
+}
+
+.feature-banner-showcase__cube-panel:not(.feature-banner-showcase__cube-panel--ready):not(
+  .feature-banner-showcase__cube-panel--startup-revealed
+) .rubik-banner-cube,
+.feature-banner-showcase__cube-panel--startup-masked .rubik-banner-cube,
+.feature-banner-showcase__cube-panel--startup-masked .feature-banner-showcase__empty-cube {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.feature-banner-showcase__startup-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.25rem, 0.75dvh, 0.55rem);
+  border-radius: var(--feature-banner-startup-radius, 0.75rem);
+  background: transparent;
+  opacity: 1;
+  transform: scale(var(--feature-banner-startup-cover-inverse-scale, 1));
+  transform-origin: center center;
+  transition:
+    opacity var(--feature-banner-startup-fade-ms, 420ms) ease,
+    transform var(--feature-banner-startup-fade-ms, 420ms) cubic-bezier(0.2, 0.82, 0.22, 1);
+  pointer-events: auto;
+  overflow: hidden;
+  clip-path: inset(0 round var(--feature-banner-startup-radius, 0.75rem));
+}
+
+.feature-banner-showcase__startup-cover .daily-reward-spin-panel {
+  width: 100%;
+  height: 100%;
+  max-width: min(100%, var(--feature-banner-startup-panel-max-width, 14rem));
+  max-height: 100%;
+  translate: var(--feature-banner-startup-panel-offset-x, 0) var(--feature-banner-startup-panel-offset-y, 0);
+  transform: none;
+}
+
+.feature-banner-showcase__startup-cover--releasing {
+  opacity: 0;
+  transform: scale(var(--feature-banner-startup-cover-inverse-scale, 1));
+  pointer-events: none;
 }
 
 .feature-banner-showcase__empty-cube {

@@ -1,6 +1,7 @@
 import type { Env } from '@/constants/env';
 import { HttpStatus, HttpHeader, HttpContentType, HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { RewardDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { RateLimitKeyPrefix } from '@ocentra/boundary-domain/constants/kv-key-prefixes';
 import { RewardDOStoragePrefix } from '@ocentra/boundary-domain/constants/do-storage-prefixes';
 import { Logger, getStackTrace } from '@/logging/domain-logger-init';
@@ -17,11 +18,11 @@ interface DailyState {
   loginStreak: number;
   lastLoginDate: string;
   freezeUsesRemaining: number;
+  lastReward?: DailyRewardItem;
 }
 
 interface DailyRewardItem {
-  xp: number;
-  gp?: number;
+  ac: number;
 }
 
 function nextMidnightUtc(now: number): number {
@@ -34,20 +35,29 @@ function dateKey(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
 }
 
-function getDailyClaimReward(state: DailyState): { xp: number; gp: number } {
+function getDailyClaimReward(state: DailyState): DailyRewardItem {
   const claimedDay = state.currentDay === 1 ? DAILY_CYCLE_DAYS : state.currentDay - 1;
   const reward = DAILY_REWARDS[claimedDay - 1] ?? DAILY_REWARDS[0];
-  return { xp: reward.xp, gp: reward.gp ?? 0 };
+  return { ac: reward.ac };
+}
+
+function dailyRewardPayload(reward: DailyRewardItem): { type: 'ac'; currency: typeof Currency.AC; amount: number; ac: number } {
+  return {
+    type: 'ac',
+    currency: Currency.AC,
+    amount: reward.ac,
+    ac: reward.ac,
+  };
 }
 
 const DAILY_REWARDS: DailyRewardItem[] = [
-  { xp: 50 },
-  { xp: 75, gp: 5 },
-  { xp: 100 },
-  { xp: 150, gp: 10 },
-  { xp: 200 },
-  { xp: 300 },
-  { xp: 500, gp: 25 },
+  { ac: 25 },
+  { ac: 50 },
+  { ac: 75 },
+  { ac: 100 },
+  { ac: 125 },
+  { ac: 150 },
+  { ac: 250 },
 ];
 
 const BATTLE_PASS_SEASON_ID = 'season-1';
@@ -170,7 +180,8 @@ export class RewardDO implements DurableObject {
       history: state.history,
       loginStreak: state.loginStreak,
       lastClaimedAt: state.lastClaimedAt || null,
-      rewardForNext: { xp: rewardForNext.xp, gp: rewardForNext.gp ?? 0 },
+      rewardForNext: dailyRewardPayload(rewardForNext),
+      lastReward: state.lastReward ? dailyRewardPayload(state.lastReward) : null,
       freezeUsesRemaining: state.freezeUsesRemaining,
       canFreeze: state.freezeUsesRemaining > 0,
     });
@@ -200,11 +211,11 @@ export class RewardDO implements DurableObject {
     const idempotencyKey = body.idempotencyKey ?? `daily-${today}`;
     const idemExists = await this.ctx.storage.get<boolean>(`${RateLimitKeyPrefix.Idempotency}${idempotencyKey}`);
     if (idemExists) {
-      const reward = getDailyClaimReward(state);
+      const reward = state.lastReward ?? getDailyClaimReward(state);
       return this.json({
         claimed: true,
         alreadyClaimed: true,
-        reward: { type: 'xp', amount: reward.xp, gp: reward.gp },
+        reward: dailyRewardPayload(reward),
         currentDay: state.currentDay,
         loginStreak: state.loginStreak,
       });
@@ -214,11 +225,11 @@ export class RewardDO implements DurableObject {
     }
     const dayIndex = state.currentDay - 1;
     const rewardItem = DAILY_REWARDS[dayIndex] ?? DAILY_REWARDS[0];
-    const xpReward = rewardItem.xp;
-    const gpReward = rewardItem.gp ?? 0;
+    const acReward = rewardItem.ac;
     state.lastClaimedAt = now;
     state.canClaimAt = nextMidnightUtc(now);
     state.history[dayIndex] = true;
+    state.lastReward = { ac: acReward };
     const todayStr = dateKey(now);
     if (state.lastLoginDate) {
       const prev = new Date(state.lastLoginDate).getTime();
@@ -246,7 +257,7 @@ export class RewardDO implements DurableObject {
     return this.json({
       claimed: true,
       alreadyClaimed: false,
-      reward: { type: 'xp', amount: xpReward, gp: gpReward },
+      reward: dailyRewardPayload({ ac: acReward }),
       nextAt: state.canClaimAt,
       currentDay: state.currentDay,
       loginStreak: state.loginStreak,
@@ -464,6 +475,7 @@ export class RewardDO implements DurableObject {
         loginStreak: typeof stored.loginStreak === 'number' ? stored.loginStreak : 0,
         lastLoginDate: typeof stored.lastLoginDate === 'string' ? stored.lastLoginDate : '',
         freezeUsesRemaining: typeof stored.freezeUsesRemaining === 'number' ? Math.max(0, stored.freezeUsesRemaining) : 3,
+        lastReward: stored.lastReward && typeof stored.lastReward.ac === 'number' ? { ac: stored.lastReward.ac } : undefined,
       };
     }
     return {

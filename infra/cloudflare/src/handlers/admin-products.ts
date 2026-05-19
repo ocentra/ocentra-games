@@ -73,7 +73,7 @@ async function createStripeProduct(env: Env, product: Product): Promise<StripePr
   // Create price for the product
   const price = await stripe.prices.create({
     product: stripeProduct.id,
-    unit_amount: product.unitPriceCents,
+    unit_amount: product.unitPriceCents ?? 0,
     currency: product.currency,
   });
 
@@ -141,7 +141,8 @@ export async function handleAdminProductRequest(
       for (const key of list.keys) {
         const data = await env.PRODUCT_KV.get(key.name);
         if (data) {
-          products.push(JSON.parse(data));
+          const parsed = ProductSchema.safeParse(JSON.parse(data) as unknown);
+          if (parsed.success) products.push(parsed.data);
         }
       }
 
@@ -175,25 +176,26 @@ export async function handleAdminProductRequest(
         });
       }
 
-      // Create in Stripe
-      let stripeProductId: string;
-      let stripePriceId: string;
-      try {
-        const stripeProduct = await createStripeProduct(env, product);
-        stripeProductId = stripeProduct.id;
-        stripePriceId = typeof stripeProduct.default_price === 'object' && stripeProduct.default_price
-          ? stripeProduct.default_price.id
-          : '';
-      } catch (error) {
-        logError('Failed to create Stripe product', getStackTrace(), { error, productId: product.productId });
-        return new Response(JSON.stringify({ error: 'Failed to create Stripe product' }), {
-          status: HttpStatus.BadGateway,
-          headers: cors(env),
-        });
+      let productWithStripe = product;
+      if (env.STRIPE_SECRET_KEY && product.unitPriceCents !== undefined && !product.stripePriceId) {
+        try {
+          const stripeProduct = await createStripeProduct(env, product);
+          const stripeProductId = stripeProduct.id;
+          const stripePriceId = typeof stripeProduct.default_price === 'object' && stripeProduct.default_price
+            ? stripeProduct.default_price.id
+            : undefined;
+          productWithStripe = { ...product, stripePriceId, stripeProductId };
+        } catch (error) {
+          logError('Failed to create Stripe product', getStackTrace(), { error, productId: product.productId });
+          return new Response(JSON.stringify({ error: 'Failed to create Stripe product' }), {
+            status: HttpStatus.BadGateway,
+            headers: cors(env),
+          });
+        }
+      } else if (!env.STRIPE_SECRET_KEY) {
+        logWarn('Admin saved product without Stripe materialization', getStackTrace(), { productId: product.productId });
       }
 
-      // Save to KV with Stripe IDs
-      const productWithStripe = { ...product, stripePriceId, stripeProductId };
       await saveProductToKV(env, productWithStripe);
 
       // Update active index
@@ -205,7 +207,7 @@ export async function handleAdminProductRequest(
         }
       }
 
-      logInfo('Admin created product', getStackTrace(), { productId: product.productId, stripeProductId });
+      logInfo('Admin created product', getStackTrace(), { productId: product.productId, stripeProductId: productWithStripe.stripeProductId });
       return new Response(JSON.stringify(productWithStripe), {
         status: HttpStatus.Created,
         headers: cors(env),

@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import type { UserProfile } from '@/adapters/firebase/service';
 import type { AvatarInfo } from '@ocentra/core-ui/types/avatarInfo';
 import type { UnifiedHeaderConfigInput } from '@ocentra/core-ui/Header/UnifiedHeader.config';
+import { auth } from '@/adapters/firebase/config';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { isGuestIdentity } from '@/lib/auth/guestIdentity';
 import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
@@ -59,7 +60,7 @@ export function useHeaderRightAuthConfig({
         uid: user.uid,
         name: user.displayName || 'Player',
         email: user.email,
-        avatarUrl: getHeaderAvatarUrl(user.photoURL),
+        avatarUrl: getHeaderAvatarUrl(user.photoURL || auth?.currentUser?.photoURL),
         isLoggedIn: true,
         isGuest: isGuestIdentity(user),
         isAdmin: user.isAdmin,

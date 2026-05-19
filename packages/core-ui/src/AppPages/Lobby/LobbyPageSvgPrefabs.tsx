@@ -2,7 +2,6 @@ import type { KeyboardEvent, ReactNode } from 'react';
 import {
   LOBBY_CONFIG,
   MODE_TABS,
-  REWARD_SPINNER,
   SIDEBAR_ACTIONS,
   SIDEBAR_NAV_ITEMS,
 } from './LobbyPageSvgData';
@@ -93,81 +92,6 @@ export function SidebarAction({ x, y, w, h, label, sub, icon, active, onClick }:
   );
 }
 
-export function MiniRewardSpinner({
-  x,
-  y,
-  w,
-  h,
-  onClick,
-  reward,
-  disabled,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  onClick: () => void;
-  reward?: LobbyRewardStatus | null;
-  disabled?: boolean;
-}) {
-  const cx = x + w * 0.5;
-  const cy = y + h * 0.56;
-  const r = Math.min(w, h) * 0.31;
-  const innerR = r * 0.22;
-  const title = reward?.rewardLabel ?? REWARD_SPINNER.title;
-  const readyLabel = reward?.claiming ? 'CLAIMING...' : reward?.readyLabel ?? REWARD_SPINNER.readyLabel;
-  const isDisabled = Boolean(disabled || reward?.claiming || (reward && !reward.available && !reward.claimed));
-  const toPt = (ang: number, rad: number) => {
-    const a = (ang - 90) * Math.PI / 180;
-    return [cx + Math.cos(a) * rad, cy + Math.sin(a) * rad];
-  };
-  const wedgePath = (i: number) => {
-    const a0 = i * 360 / REWARD_SPINNER.labels.length;
-    const a1 = (i + 1) * 360 / REWARD_SPINNER.labels.length;
-    const [p0x, p0y] = toPt(a0, innerR);
-    const [p1x, p1y] = toPt(a0, r - 2);
-    const [p2x, p2y] = toPt(a1, r - 2);
-    const [p3x, p3y] = toPt(a1, innerR);
-    return `M${p0x} ${p0y} L${p1x} ${p1y} A${r - 2} ${r - 2} 0 0 1 ${p2x} ${p2y} L${p3x} ${p3y} A${innerR} ${innerR} 0 0 0 ${p0x} ${p0y} Z`;
-  };
-  return (
-    <g
-      className={isDisabled ? '' : 'lobby-ui-hit'}
-      onClick={() => {
-        if (!isDisabled) onClick();
-      }}
-      onKeyDown={(event) => {
-        if (!isDisabled) handleSvgButtonKey(event, onClick);
-      }}
-      filter="url(#lobbyPurpleGlow)"
-      role="button"
-      aria-label="DAILY REWARD"
-      tabIndex={isDisabled ? -1 : 0}
-      opacity={isDisabled ? 0.78 : 1}
-    >
-      <rect x={x} y={y} width={w} height={h} rx="10" fill="#100f2d" stroke="#6d35ff" strokeWidth="1.2" />
-      <CenterTxt x={x + 12} y={y + 10} w={w - 24} h={26} text={title} size={12.8} weight="950" />
-      <ellipse cx={cx} cy={cy + r * 0.96} rx={r * 0.92} ry="8" fill="#000" opacity="0.34" />
-      <circle cx={cx} cy={cy} r={r + 12} fill="#071321" stroke="#58bfff" strokeWidth="1.1" filter="url(#lobbyCyanGlow)" />
-      <circle cx={cx} cy={cy} r={r + 2} fill="#06111f" stroke="#7d49ff" strokeWidth="2.2" filter="url(#lobbyPurpleGlow)" />
-      {REWARD_SPINNER.labels.map((label, i) => {
-        const mid = i * 360 / REWARD_SPINNER.labels.length + 360 / REWARD_SPINNER.labels.length / 2;
-        const [tx, ty] = toPt(mid, r * 0.73);
-        return (
-          <g key={`${label}-${i}`}>
-            <path d={wedgePath(i)} fill={REWARD_SPINNER.colors[i]} stroke="#06111f" strokeWidth="0.55" />
-            <text x={tx} y={ty} fill="#ffffff" fontSize={label.length >= 3 ? 6.5 : 7.4} fontWeight="950" textAnchor="middle" dominantBaseline="middle" transform={`rotate(${mid} ${tx} ${ty})`}>{label}</text>
-          </g>
-        );
-      })}
-      <circle cx={cx} cy={cy} r={r * 0.33} fill="url(#lobbyGold)" stroke="#ffca4b" strokeWidth="0.7" filter="url(#lobbyGoldGlow)" />
-      <rect x={x + 46} y={y + h - 32} width={w - 92} height="20" rx="8" fill="#17143c" stroke="#5f35e8" opacity="0.96" />
-      <CenterTxt x={x + 46} y={y + h - 32} w={w - 92} h={20} text={readyLabel} size={9.5} weight="900" />
-      {reward?.balanceLabel ? <CenterTxt x={x + 12} y={y + h - 54} w={w - 24} h={18} text={reward.balanceLabel} size={9.2} weight="850" fill="#95e8ff" /> : null}
-    </g>
-  );
-}
-
 export function Sidebar({
   controls,
   panel,
@@ -175,7 +99,7 @@ export function Sidebar({
   onOpenActionPopup,
   onNavigate,
   reward,
-  onClaimReward,
+  renderRewardBadge,
 }: {
   controls: LobbyPageSvgControls;
   panel: LobbyPanelRect;
@@ -183,7 +107,14 @@ export function Sidebar({
   onOpenActionPopup: (type: string) => void;
   onNavigate?: (target: LobbyNavigationTarget) => void;
   reward?: LobbyRewardStatus | null;
-  onClaimReward?: () => void;
+  renderRewardBadge: (props: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    reward?: LobbyRewardStatus | null;
+    onOpen: () => void;
+  }) => ReactNode;
 }) {
   const side = { ...controls.leftPanel, ...panel };
   const innerX = side.x + side.pad;
@@ -233,19 +164,14 @@ export function Sidebar({
         })}
       </Panel>
       <Panel x={promo.x} y={promo.y} w={promo.w} h={promo.h} r={10} stroke="#5d1a87" fill="rgba(28,6,52,0.18)">
-        {useSampleData ? (
-          <MiniRewardSpinner x={promo.x + 8} y={promo.y + 6} w={promo.w - 16} h={(promo.h - 12) * controls.leftPanel.eventCardScale} onClick={() => onOpenActionPopup('spinner')} />
-        ) : (
-          <MiniRewardSpinner
-            x={promo.x + 8}
-            y={promo.y + 6}
-            w={promo.w - 16}
-            h={(promo.h - 12) * controls.leftPanel.eventCardScale}
-            reward={reward}
-            disabled={!onClaimReward || !reward?.available}
-            onClick={() => onClaimReward?.()}
-          />
-        )}
+        {renderRewardBadge({
+          x: promo.x + 8,
+          y: promo.y + 6,
+          w: promo.w - 16,
+          h: (promo.h - 12) * controls.leftPanel.eventCardScale,
+          reward: useSampleData ? null : reward,
+          onOpen: () => onOpenActionPopup('spinner'),
+        })}
       </Panel>
     </Panel>
   );

@@ -7,6 +7,7 @@ import { createFlowContext } from '@/flows/core/FlowContext';
 import type { FlowContext } from '@/flows/core/FlowContext';
 import { PaymentCheckoutFlow } from '@/flows/payment-checkout-flow';
 import { RewardClaimFlow } from '@/flows/reward-claim-flow';
+import { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { HttpStatus } from '@ocentra/endpoint-domain/constants/http';
 import { Logger, flushAllBatchesAndTestLogs } from '@/logging/domain-logger-init';
 
@@ -36,7 +37,7 @@ function createRewardStub(): { stub: DurableObjectStub; requests: Request[]; fet
   const requests: Request[] = [];
   const fetchMock = vi.fn(async (request: Request) => {
       requests.push(request.clone());
-      return new Response(JSON.stringify({ claimed: true, reward: { xp: 500, gp: 25 } }), {
+      return new Response(JSON.stringify({ claimed: true, reward: { type: 'ac', currency: Currency.AC, amount: 75, ac: 75 } }), {
         status: HttpStatus.Ok,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -198,7 +199,7 @@ describe(extractName(import.meta.url), TestSuiteType.Unit, () => {
     );
 
     expect(result.status).toBe(HttpStatus.Ok);
-    expect(result.body).toEqual({ claimed: true, reward: { xp: 500, gp: 25 }, balance: {} });
+    expect(result.body).toEqual({ claimed: true, reward: { type: 'ac', currency: Currency.AC, amount: 75, ac: 75 }, balance: {} });
     expect(requests).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const forwarded = await requests[0].clone().json() as { idempotencyKey?: string; userId?: string };

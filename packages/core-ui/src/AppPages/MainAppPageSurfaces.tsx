@@ -1,12 +1,23 @@
 import { useMemo, type ReactNode } from 'react';
 import { AppPageSvgSurface } from './AppPageSvgSurface';
 import { LobbyPageSvgSurface } from './Lobby/LobbyPageSvgSurface';
+import { ShopPageSvgSurface } from './Shop/ShopPageSvgSurface';
 import type {
   AppPageSvgAction,
   AppPageSvgControls,
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
+import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+import type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
+import type { ShopPageContentData } from './Shop/ShopPageSvgContent';
+import type {
+  ShopAccountSummary,
+  ShopDeckImageResolver,
+  ShopProduct,
+  ShopTab,
+  ShopVaultDeckPreviewItem,
+} from './Shop/ShopPageSvgTypes';
 import type {
   LobbyAddAISeatDraft,
   LobbyCreateRoomDraft,
@@ -30,6 +41,14 @@ export type {
   AppPageSvgPanel,
 } from './AppPageSvgSurfaceControls';
 export type { LobbyPageSvgControls } from './Lobby/LobbyPageSvgSurfaceControls';
+export type { ShopPageSvgControls } from './Shop/ShopPageSvgSurfaceControls';
+export type {
+  ShopAccountSummary,
+  ShopDeckImageResolver,
+  ShopProduct,
+  ShopTab,
+  ShopVaultDeckPreviewItem,
+} from './Shop/ShopPageSvgTypes';
 export type {
   LobbyAddAISeatDraft,
   LobbyChatMessageItem,
@@ -82,18 +101,6 @@ export type AdminActivityRow = {
   targetEmail: string;
   action: 'grant' | 'revoke';
   timestamp: string | number | Date;
-};
-
-export type ShopTab = 'Treasury' | 'Elite' | 'Vault' | 'Tickets';
-
-export type ShopProduct = {
-  productId: string;
-  productType: 'AC_CREDITS' | 'SUBSCRIPTION' | 'TOURNAMENT_ENTRY' | 'MARKETPLACE';
-  displayName: string;
-  acAmount?: number;
-  unitPriceCents?: number;
-  currency: string;
-  active: boolean;
 };
 
 export type CompetitionPageMode =
@@ -164,6 +171,15 @@ type LobbyPageSurfaceControlProps = {
   layoutControls?: Partial<LobbyPageSvgControls> | null;
 };
 
+type ShopPageSurfaceControlProps = {
+  layoutControls?: Partial<ShopPageSvgControls> | null;
+  shopContent: ShopPageContentData;
+  vaultDecks?: ShopVaultDeckPreviewItem[];
+  resolveDeckImageUrl?: ShopDeckImageResolver;
+  onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
+  accountSummary?: ShopAccountSummary | null;
+};
+
 function formatValue(value: unknown): string {
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
   if (value === null || value === undefined) return '-';
@@ -174,22 +190,10 @@ function formatValue(value: unknown): string {
   }
 }
 
-function formatPrice(cents?: number): string {
-  return `$${((cents ?? 0) / 100).toFixed(2)}`;
-}
-
 function formatDate(value: string | number | Date | null | undefined): string {
   if (!value) return 'Never';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? 'Never' : date.toLocaleDateString();
-}
-
-function productCount(products: ShopProduct[], type: ShopProduct['productType']): number {
-  return products.filter(product => product.productType === type).length;
-}
-
-function primaryShopProduct(products: ShopProduct[], type: ShopProduct['productType']): ShopProduct | null {
-  return products.find(product => product.productType === type && product.active) ?? products.find(product => product.productType === type) ?? null;
 }
 
 function noopAction(label: string): AppPageSvgAction {
@@ -769,35 +773,6 @@ export function AdminUsersPageContent({
   );
 }
 
-export function ShopPageToolbar({
-  activeTab,
-  acBalance,
-  onTabChange,
-}: {
-  activeTab: ShopTab;
-  acBalance: number;
-  onTabChange: (tab: ShopTab) => void;
-}) {
-  const tabs: ShopTab[] = ['Treasury', 'Elite', 'Vault', 'Tickets'];
-  return (
-    <div className="app-page-svg-toolbar">
-      <div className="app-page-svg-toolbar__tabs">
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            className={`app-page-svg-toolbar__button ${activeTab === tab ? 'is-active' : ''}`}
-            type="button"
-            onClick={() => onTabChange(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <span className="app-page-svg-toolbar__pill">{acBalance.toLocaleString()} AC</span>
-    </div>
-  );
-}
-
 export function ShopPageContent({
   activeTab,
   products,
@@ -805,96 +780,62 @@ export function ShopPageContent({
   loadingId,
   error,
   acBalance,
+  onTabChange,
   onClearError,
   onBuy,
+  purchasePrompt,
+  onPurchaseProviderSelect,
+  onPurchaseCancel,
   layoutControls,
+  shopContent,
+  vaultDecks,
+  resolveDeckImageUrl,
+  onVaultDeckInspect,
+  accountSummary,
+  dailyRewardStatus,
+  onDailyRewardSpin,
 }: {
   activeTab: ShopTab;
   products: ShopProduct[];
   loadingProducts: boolean;
   loadingId: string | null;
   error: string | null;
-  acBalance: number;
+  acBalance: number | null;
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
-} & AppPageSurfaceControlProps) {
-  const creditProduct = primaryShopProduct(products, 'AC_CREDITS');
-  const subscriptionProduct = primaryShopProduct(products, 'SUBSCRIPTION');
-  const marketplaceProduct = primaryShopProduct(products, 'MARKETPLACE');
-  const ticketProduct = primaryShopProduct(products, 'TOURNAMENT_ENTRY');
-  const visibleProducts = products.filter(product => {
-    if (activeTab === 'Treasury') return product.productType === 'AC_CREDITS';
-    if (activeTab === 'Elite') return product.productType === 'SUBSCRIPTION';
-    if (activeTab === 'Vault') return product.productType === 'MARKETPLACE';
-    return product.productType === 'TOURNAMENT_ENTRY';
-  });
-  const primaryProduct = visibleProducts[0] ?? creditProduct ?? subscriptionProduct ?? marketplaceProduct ?? ticketProduct;
-  const panels: AppPageSvgPanel[] = [
-    {
-      title: `${activeTab} Offers`,
-      subtitle: 'Active marketplace products',
-      rows: visibleProducts.slice(0, 5).map(product => ({
-        label: product.displayName,
-        value: `${formatPrice(product.unitPriceCents)} ${product.currency}`,
-      })),
-      actions: [
-        { label: loadingId ? 'Buying' : 'Buy', onClick: () => primaryProduct && onBuy(primaryProduct), disabled: !primaryProduct || Boolean(loadingId) },
-        { label: 'Clear Error', onClick: onClearError, disabled: !error },
-      ],
-    },
-    {
-      title: 'Arena Credits',
-      subtitle: 'Spendable AI and tournament balance',
-      rows: [
-        { label: 'Balance', value: `${acBalance.toLocaleString()} AC` },
-        { label: 'Credit packs', value: productCount(products, 'AC_CREDITS') },
-        { label: 'Best pack', value: creditProduct?.displayName ?? '-' },
-      ],
-      actions: [{ label: 'Reload', onClick: () => creditProduct && onBuy(creditProduct), disabled: !creditProduct }],
-    },
-    {
-      title: 'Elite',
-      subtitle: 'Subscriptions and pass access',
-      rows: [
-        { label: 'Subscriptions', value: productCount(products, 'SUBSCRIPTION') },
-        { label: 'Featured', value: subscriptionProduct?.displayName ?? '-' },
-        { label: 'Price', value: formatPrice(subscriptionProduct?.unitPriceCents) },
-      ],
-      actions: [{ label: 'Subscribe', onClick: () => subscriptionProduct && onBuy(subscriptionProduct), disabled: !subscriptionProduct }],
-    },
-    {
-      title: 'Vault And Tickets',
-      subtitle: 'Cosmetics and event entry',
-      rows: [
-        { label: 'Vault items', value: productCount(products, 'MARKETPLACE') },
-        { label: 'Tickets', value: productCount(products, 'TOURNAMENT_ENTRY') },
-        { label: 'Featured ticket', value: ticketProduct?.displayName ?? '-' },
-      ],
-    },
-  ];
-
+  purchasePrompt?: {
+    product: ShopProduct;
+    message?: string | null;
+    busyProvider?: ShopPaymentProvider | null;
+  } | null;
+  onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
+  onPurchaseCancel?: () => void;
+  dailyRewardStatus?: LobbyRewardStatus | null;
+  onDailyRewardSpin?: () => void | Promise<void>;
+} & ShopPageSurfaceControlProps) {
   return (
-    <AppPageSvgSurface
-      title="Arena Marketplace"
-      eyebrow="Shop"
-      subtitle="Arena Credits, memberships, vault items, and tournament tickets use the shared SVG commerce surface."
-      routeLabel="/shop"
-      metrics={[
-        { label: 'Balance', value: `${acBalance.toLocaleString()} AC` },
-        { label: 'Products', value: products.length },
-        { label: 'Tab', value: activeTab },
-        { label: 'Loading', value: loadingProducts ? 'yes' : 'no' },
-      ]}
-      panels={panels}
-      actions={[
-        { label: 'Buy', onClick: () => primaryProduct && onBuy(primaryProduct), disabled: !primaryProduct || Boolean(loadingId) },
-        { label: 'Clear', onClick: onClearError, disabled: !error },
-        noopAction(activeTab),
-      ]}
-      loading={loadingProducts}
+    <ShopPageSvgSurface
+      activeTab={activeTab}
+      products={products}
+      loadingProducts={loadingProducts}
+      loadingId={loadingId}
       error={error}
+      acBalance={acBalance}
+      onTabChange={onTabChange}
+      onClearError={onClearError}
+      onBuy={onBuy}
+      purchasePrompt={purchasePrompt}
+      onPurchaseProviderSelect={onPurchaseProviderSelect}
+      onPurchaseCancel={onPurchaseCancel}
       controls={layoutControls}
+      content={shopContent}
+      vaultDecks={vaultDecks}
+      resolveDeckImageUrl={resolveDeckImageUrl}
+      onVaultDeckInspect={onVaultDeckInspect}
+      accountSummary={accountSummary}
+      dailyRewardStatus={dailyRewardStatus}
+      onDailyRewardSpin={onDailyRewardSpin}
     />
   );
 }

@@ -1052,6 +1052,7 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
     { id: 'body', label: 'Body A|B' },
     { id: 'sideA', label: 'Side A' },
     { id: 'sideB', label: 'Side B' },
+    { id: 'startup', label: 'Startup Cover' },
     { id: 'copy', label: 'Copy/Text' },
     { id: 'footer', label: 'Footer' },
   ];
@@ -1198,6 +1199,23 @@ export const HomeShowcaseFrameControlsPanel = memo(function HomeShowcaseFrameCon
             numberField({ group: 'sideB', field: 'contentOffsetY', label: 'Offset Y', min: -600, max: 600 }),
             numberField({ group: 'sideB', field: 'contentZIndex', label: 'Layer Z', min: 0, max: 20 }),
             toggleField('sideB', 'overflowVisible', 'Allow Overflow'),
+          ])}
+        </div>
+      ) : null}
+
+      {tab === 'startup' ? (
+        <div style={sectionGridStyle}>
+          {renderSection('Startup Mask', [
+            toggleField('startup', 'enabled', 'Enabled'),
+            numberField({ group: 'startup', field: 'holdAfterReadyMs', label: 'Hold After Ready MS', min: 0, max: 3000, step: 10 }),
+            numberField({ group: 'startup', field: 'fadeMs', label: 'Fade MS', min: 0, max: 2000, step: 10 }),
+            numberField({ group: 'startup', field: 'overlayOpacity', label: 'Overlay Opacity', min: 0, max: 1, step: 0.01 }),
+            numberField({ group: 'startup', field: 'accentOpacity', label: 'Accent Opacity', min: 0, max: 1, step: 0.01 }),
+            numberField({ group: 'startup', field: 'panelScale', label: 'Panel Scale', min: 0.2, max: 2, step: 0.01 }),
+            numberField({ group: 'startup', field: 'panelOffsetX', label: 'Panel Offset X', min: -200, max: 200 }),
+            numberField({ group: 'startup', field: 'panelOffsetY', label: 'Panel Offset Y', min: -200, max: 200 }),
+            numberField({ group: 'startup', field: 'panelMaxWidth', label: 'Panel Max Width', min: 120, max: 420 }),
+            numberField({ group: 'startup', field: 'radius', label: 'Cover Radius', min: 0, max: 80 }),
           ])}
         </div>
       ) : null}

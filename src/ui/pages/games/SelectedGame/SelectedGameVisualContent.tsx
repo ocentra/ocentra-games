@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { isImageHash, type ImageHash } from '@ocentra/asset-domain/types/assetIdentifier';
 import {
@@ -20,6 +20,7 @@ import {
   type SelectedGameTabId,
 } from '@ocentra/game-asset-domain/ui/selectedGame/SelectedGamePresentation';
 import { DeckPreviewView } from '@ocentra/core-ui/Common/DeckPreview/DeckPreviewView';
+import { CardImageViewer } from '@ocentra/core-ui/Common/CardImageViewer/CardImageViewer';
 import { SuitIcon } from '@ocentra/core-ui/Common/SuitArt/SuitArt';
 import { normalizeSuit, type Suit } from '@ocentra/core-ui/Common/SuitArt/SuitArtPrimitives';
 import { useImageUrl } from '@/hooks/useImageUrl';
@@ -95,6 +96,7 @@ function SelectedGameDeckVisual({
   const [model, setModel] = useState<DeckPreviewModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCell, setSelectedCell] = useState<DeckPreviewCell | null>(null);
+  const viewerCells = useMemo(() => deckPreviewViewerCells(model), [model]);
   const style = useMemo(() => buildDeckPreviewCompactStyle({
     ...DEFAULT_SELECTED_GAME_DECK_VISUAL_CONTROLS,
     ...controls,
@@ -157,7 +159,14 @@ function SelectedGameDeckVisual({
         renderAxis={(axis) => <DeckAxisCell axis={axis} />}
         renderBack={(imageHash) => <DeckBackCell imageHash={imageHash} />}
       />
-      {selectedCell ? <DeckCellDetail cell={selectedCell} onClose={() => setSelectedCell(null)} /> : null}
+      {selectedCell ? (
+        <DeckCellDetail
+          cell={selectedCell}
+          cells={viewerCells}
+          onSelectCell={setSelectedCell}
+          onClose={() => setSelectedCell(null)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -374,31 +383,110 @@ function DeckBackCell({ imageHash }: { imageHash: string }) {
   return <span className="selected-game-deck-visual__piece-label">Back</span>;
 }
 
-function DeckCellDetail({ cell, onClose }: { cell: DeckPreviewCell; onClose: () => void }) {
+function deckPreviewViewerCells(model: DeckPreviewModel | null): DeckPreviewCell[] {
+  const seen = new Set<string>();
+  const cells: DeckPreviewCell[] = [];
+  for (const section of model?.sections ?? []) {
+    for (const cell of section.cells ?? []) {
+      if (seen.has(cell.id)) continue;
+      seen.add(cell.id);
+      cells.push(cell);
+    }
+    for (const cell of section.items ?? []) {
+      if (seen.has(cell.id)) continue;
+      seen.add(cell.id);
+      cells.push(cell);
+    }
+  }
+  return cells;
+}
+
+function wrapDeckPreviewIndex(index: number, count: number): number {
+  if (count <= 0) return 0;
+  return ((index % count) + count) % count;
+}
+
+function deckPieceDisplayLabel(label: string): string {
+  return label.replace(/_/g, ' ');
+}
+
+function DeckCellDetail({
+  cell,
+  cells,
+  onSelectCell,
+  onClose,
+}: {
+  cell: DeckPreviewCell;
+  cells: DeckPreviewCell[];
+  onSelectCell: (cell: DeckPreviewCell) => void;
+  onClose: () => void;
+}) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const src = useDeckImageUrl(cell.imageHash, cell.imagePath);
   const [hasError, setHasError] = useState(false);
-
+  const currentIndex = Math.max(0, cells.findIndex(item => item.id === cell.id));
+  const canCycle = cells.length > 1;
+  const selectByDelta = useCallback((delta: number) => {
+    if (!canCycle) return;
+    const nextCell = cells[wrapDeckPreviewIndex(currentIndex + delta, cells.length)];
+    if (nextCell) {
+      onSelectCell(nextCell);
+    }
+  }, [canCycle, cells, currentIndex, onSelectCell]);
   useEffect(() => {
     setHasError(false);
   }, [src]);
 
+  useEffect(() => {
+    dialogRef.current?.focus();
+  }, [cell.id]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        selectByDelta(-1);
+        return;
+      }
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault();
+        selectByDelta(1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose, selectByDelta]);
+
   return (
-    <div className="selected-game-deck-visual__detail" role="dialog" aria-label={`${cell.label} detail`}>
-      <div className="selected-game-deck-visual__detail-panel">
-        <button type="button" className="selected-game-deck-visual__detail-close" onClick={onClose} aria-label="Close card detail">
-          x
-        </button>
-        {src && !hasError ? (
-          <img
-            src={src}
-            alt={cell.label}
-            className="selected-game-deck-visual__detail-image"
-            onError={() => setHasError(true)}
-          />
-        ) : (
-          <span className="selected-game-deck-visual__piece-label">{cell.label}</span>
-        )}
-      </div>
+    <div
+      ref={dialogRef}
+      className="selected-game-deck-visual__detail"
+      role="dialog"
+      aria-label={`${cell.label} detail`}
+      tabIndex={-1}
+    >
+      <CardImageViewer
+        className="selected-game-deck-visual__viewer"
+        ariaLabel={`${cell.label} card image`}
+        imageSrc={src && !hasError ? src : null}
+        imageAlt={deckPieceDisplayLabel(cell.label)}
+        missingLabel={deckPieceDisplayLabel(cell.label)}
+        caption={deckPieceDisplayLabel(cell.label)}
+        counter={cells.length > 0 ? `${currentIndex + 1}/${cells.length}` : '1/1'}
+        previousLabel="Previous card image"
+        nextLabel="Next card image"
+        closeLabel="Close card detail"
+        onPrevious={canCycle ? () => selectByDelta(-1) : undefined}
+        onNext={canCycle ? () => selectByDelta(1) : undefined}
+        onClose={onClose}
+        onImageError={src ? () => setHasError(true) : undefined}
+      />
     </div>
   );
 }

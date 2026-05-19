@@ -1,6 +1,6 @@
 # Ocentra Games - Agent Quick Reference
 
-**Last Updated:** 2026-05-12
+**Last Updated:** 2026-05-17
 
 Quick pointers for AI agents. For detailed rules, see [`.cursor/rules/`](#cursor-rules).
 
@@ -71,14 +71,19 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 ### Route SEO
 - Route SEO now has a shared audit package at `packages/seo-domain`; use it instead of ad-hoc crawlers when checking metadata, sitemap, robots, canonicals, raw HTML fallback bodies, or internal-link coverage.
 - `npm run generate:catalog-seo` refreshes `src/seo/generated/catalogSeoData.ts` from `packages/asset-editor/Resources/catalog/*`; the main `npm run build` path already runs this before Vite.
-- After route/head SEO changes, prefer `npm run seo:audit` against a local app server (defaults to `http://127.0.0.1:3000`; override with `-- --base=http://127.0.0.1:4174` or `SEO_AUDIT_BASE_URL`) so served HTML, sitemap, robots, and fallback text are checked together.
+- After route/head SEO changes, prefer `npm run seo:audit` against a local app server (defaults to `http://127.0.0.1:3000`; override with `-- --base=http://127.0.0.1:4174` or `SEO_AUDIT_BASE_URL`) so served HTML, sitemap, robots, and fallback text are checked together. Use `npm run seo:audit:full` when you need the broader local audit sweep.
 
 ### Dev: shared backend and separate Tauri apps
 - **Shared dev backend:** One Cloudflare worker (port 8787); main app or editor can start it; the other reuses it. Same for Turbo (skip if recently run).
+- **Worktree bootstrap:** `npm run setup:worktree -- [flags]` handles the usual first-pass worktree prep: `npm install --ignore-scripts` when needed, domain builds, game-asset validation, and generated export refresh. Use `--skip-install`, `--skip-domain-build`, `--skip-assets`, or `--skip-generated` only when you know that step is already satisfied.
 - **Two Tauri apps:** Main app binary **ocentraplatform** (platforms/desktop/tauri), editor **ocentraeditor** (packages/asset-editor/src-tauri). They do not depend on each other; each is built and run from its own directory with its own `CARGO_TARGET_DIR`.
 - **Asset editor Tauri launchers:** `npm --prefix packages/asset-editor run dev:tauri` is the direct launcher backed by `scripts/dev/dev-editor-tauri.ts`; it kills stale `ocentraeditor` processes and uses `packages/asset-editor/src-tauri/target-editor` as its dedicated Cargo target dir. `npm run dev:editor:tauri` is the simpler root shortcut that currently runs plain `cargo tauri dev` from `packages/asset-editor`.
 - **Interactive main launcher / preview parity:** `npm run dev` uses `scripts/dev/dev-interactive.ts` for web/Tauri/mobile launch presets; it now supports Cloudflare Pages parity preview presets plus local, development, or production asset backends. The Pages parity flow runs `scripts/dev/preview-stack.ts --pages` and can smoke-check the built app against a local worker (`--with-worker`) or remote Cloudflare asset sync (`--sync-assets=development|production`).
+- **Pages parity route matrix:** `validate:pages:routes` extends the local Pages parity smoke with `scripts/dev/pages-route-matrix.ts`, covering the public route set plus a same-session card-games cache check. Use `validate:pages:routes:dev` when you also need route-title parity and cache-boundary comparison against `https://main.ocentra-games.pages.dev`.
+- **Fixed-target main launcher shortcuts:** `npm run dev:web`, `npm run dev:tauri`, `npm run dev:android`, and `npm run dev:ios` reuse the same interactive launcher with the target preselected when you want to skip the prompt.
+- **Compare presets:** `npm run dev:compare` starts the shared web stack and attaches the default compare set (`web`, `tauri`, `android`). Use `npm run dev:compare:web-tauri`, `npm run dev:compare:web-android`, or `npm run dev:compare:all` when you want a pinned compare target set.
 - **Interactive editor launcher:** `npm --prefix packages/asset-editor run dev` uses `scripts/dev/dev-editor-interactive.ts` when you need preset/local-vs-production backend selection, optional `.temp/dev-editor-output.log`, or `--force` Vite cache clearing before launch.
+- **Editor web-only launcher:** `npm --prefix packages/asset-editor run dev:web` starts the managed asset-editor Vite session on port `5174` after regenerating the inspector map; `npm run dev:editor:stack` uses this under the hood after shared prep and local worker bootstrap.
 - **Mobile stack launcher:** `npm run dev:android:stack` / `npm run dev:ios:stack` uses `scripts/dev/dev-mobile-full.ts` to ensure shared dev prep, start or reuse the local Cloudflare worker, and point mobile asset/storage URLs at the local worker. For Android emulator runs, the worker is exposed as `http://10.0.2.2:8787`.
 
 ### Domain Build Standard (No .js in Source)
@@ -102,6 +107,7 @@ See each package README for scope and usage (e.g. [boundary-domain](packages/bou
 - For homepage/page-layout tuning, prefer the standalone page/homepage layout control panels and save from there so the editor does the local write plus targeted R2 sync.
 - Auth page tuning now uses `packages/asset-editor/Resources/Pages/AuthPageLayout.asset`; open the standalone auth layout controls from the editor and use Save + Sync there so the editor writes the updated `authControls` and performs the targeted R2 sync for that asset.
 - Lobby page tuning now uses `packages/asset-editor/Resources/Pages/LobbyPageLayout.asset`; open the standalone lobby layout controls from the editor and use Save there so the editor writes the updated `lobbyControls` and performs the targeted R2 sync for that asset.
+- Shop page tuning now uses `packages/asset-editor/Resources/Pages/ShopPageLayout.asset`; open the standalone shop layout controls from the editor and use Save + Sync there so the editor writes the updated `shopControls` and performs the targeted R2 sync for that asset.
 - Selected-game page tuning now uses `packages/asset-editor/Resources/Pages/SelectedGameLayout.asset`; adjust its standalone selected-game layout controls (`layoutControls` / `contentPlan`) there, then use Save + Sync for the local write plus targeted R2 sync flow.
 
 ### Shared Main-App Page Surfaces
@@ -212,11 +218,19 @@ When you want a **compliance report** (rules vs `infra/cloudflare` code and test
 ## Common Commands
 
 ```bash
+npm run setup:worktree -- --skip-install # Bootstrap a fresh worktree when deps are already present
 npm run dev              # Dev server
+npm run dev:web          # Main app launcher with web target preselected
+npm run dev:tauri        # Main app launcher with desktop target preselected
+npm run dev:android      # Main app launcher with Android target preselected
+npm run dev:ios          # Main app launcher with iOS target preselected
 npm run dev:prep:main    # Prebuild shared workspace deps for main app
 npm run dev:prep:editor  # Prebuild shared workspace deps for asset editor
 npm run dev:prep:worker  # Prebuild shared workspace deps for Cloudflare worker
 npm run dev:compare      # Shared web stack + desktop/mobile compare targets
+npm run dev:compare:web-tauri # Shared web stack + pinned web/tauri compare targets
+npm run dev:compare:web-android # Shared web stack + pinned web/android compare targets
+npm run dev:compare:all  # Shared web stack + pinned web/tauri/android compare targets
 npm run dev:android:stack # Main app + local worker + Capacitor Android flow
 npm run dev:ios:stack   # Main app + local worker + Capacitor iOS flow
 npm run dev:editor:stack # Asset editor with shared backend/dev stack
@@ -224,11 +238,14 @@ npm run dev:editor:e2e   # Start editor stack for Playwright/editor flows
 npm run dev:editor:tauri # Root shortcut: plain cargo tauri dev from packages/asset-editor
 npm --prefix packages/asset-editor run dev:tauri # Direct editor Tauri launcher (stale-process cleanup, dedicated target dir)
 npm --prefix packages/asset-editor run dev # Interactive asset-editor launcher (backend/output presets, optional log/profile)
+npm --prefix packages/asset-editor run dev:web # Managed asset-editor Vite on 5174 with inspector-map refresh
+npm --prefix packages/asset-editor run maintenance:reset-local-cache # Clear the editor's local asset cache DB
 npm run dev:seed:assets  # Seed and verify local asset payloads
 npm run dev:seed:assets:tee # Seed assets and tee output to .dev-seed-output.log
 npm run dev:seed:assets:force # Force re-upload during local asset seeding
 npm run generate:catalog-seo # Rebuild generated catalog SEO data from asset-editor catalog resources
 npm run seo:audit       # Crawl a local app server and verify SEO metadata, robots, sitemap, canonicals, and fallback bodies
+npm run seo:audit:full  # Run the broader local SEO audit sweep
 npm run build            # Production build
 npm test                 # Unit tests
 npm run test:editor      # Asset-editor package tests
@@ -240,6 +257,8 @@ npm run validate:main    # Main-app focused lint + type-check
 npm run validate:editor  # Asset-editor focused lint + type-check
 npm run validate:pages:dist  # Smoke-check existing dist/ through Cloudflare Pages parity preview
 npm run validate:pages:local # Build + seed local worker, then smoke-check Cloudflare Pages parity preview
+npm run validate:pages:routes # Local Pages parity smoke + public-route matrix + card-games cache check
+npm run validate:pages:routes:dev # Local Pages route matrix plus compare-base parity against main Pages
 npm run validate:pages:dev   # Build + sync remote dev assets, then smoke-check Cloudflare Pages parity preview
 npm run validate:pages:prod  # Build + sync remote prod assets, then smoke-check Cloudflare Pages parity preview
 npm run logs:main        # Query local main-app logs
@@ -289,11 +308,15 @@ More queries can be added under `packages/card-games/db/` (same pattern: script 
 
 - **Shared page-surface work needs a fast validation loop**: For `packages/core-ui` home/showcase or app-page surface edits, start with `cmd /c npm --prefix packages/core-ui run lint:exec`, then `cmd /c npm run validate:main`.
 
-- **Cloudflare Pages parity matters for route/page-shell work**: Use `npm run validate:pages:local` for the default smoke check; switch to `npm run validate:pages:dev` or `npm run validate:pages:prod` when the bug only reproduces against remote Cloudflare asset buckets. The current pre-commit validation hook runs `validate:pages:local` after the turbo build/lint/type-check pass.
+- **Cloudflare Pages parity matters for route/page-shell work**: Use `npm run validate:pages:local` for the default smoke check; it now waits for the local worker asset seed/verify pass and rechecks the worker after the production build before smoke-testing the Pages preview. Switch to `npm run validate:pages:dev` or `npm run validate:pages:prod` when the bug only reproduces against remote Cloudflare asset buckets. The current pre-commit validation hook runs `validate:pages:local` after the turbo build/lint/type-check pass.
+
+- **Pages parity needs route-level proof, not just shell smoke**: Reach for `npm run validate:pages:routes` when a page-shell, route-body, or card-games cache regression is suspected. Use `npm run validate:pages:routes:dev` when you need title parity and cache-boundary comparison against the deployed Pages site.
 
 - **Card-game asset work needs validation without dragging the whole repo first**: Start with the package-level tests that match the asset contract you changed, then run the root gate. Current proven path: `cmd /c npm --prefix packages/asset-editor run test -- src/adapters/assets/createGameModeBundle.test.ts`, `cmd /c npm --prefix packages/game-asset-domain run test -- src/game/gameMechanics/MechanicsTranslator.test.ts src/schemas/asset/card-game-mechanics-data.schema.test.ts`, then `cmd /c npm run lint`.
 
 - **`logs:main` / `logs:vite` says the DB is missing or stale**: Rebuild from NDJSON first with `npm run logs:db:rebuild -- --scope main`, `npm run logs:db:rebuild -- --scope vite`, or `npm run logs:db:rebuild -- --scope all`, then retry the query. For ad hoc filtering, use `npm run logs:query -- search "<term>" --scope main --format json`.
+
+- **Asset-editor local data looks stale after resource changes**: Run `npm --prefix packages/asset-editor run maintenance:reset-local-cache` to remove `packages/asset-editor/Resources/.index/assets.db`; the editor rebuilds it on next startup.
 
 - **Android launcher icon updates do not show up**: The icon generator now reads from `packages/app-assets/src/images/mobile-icons`, with the shared logo SVG in `packages/app-assets/src/images/commons/OcentraLogo.svg` as the source for regenerated icon art. After changing those assets, rerun `npm run generate:icons`.
 

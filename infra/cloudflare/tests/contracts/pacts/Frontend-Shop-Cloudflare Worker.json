@@ -27,10 +27,18 @@
               {
                 "acAmount": 100,
                 "active": true,
+                "availability": "live",
+                "badge": "Starter",
+                "benefits": [
+                  "AI analysis fuel"
+                ],
                 "currency": "usd",
+                "description": "Starter refill",
                 "displayName": "100 AC",
+                "entitlementKind": "credits",
                 "productId": "prod-1",
                 "productType": "AC_CREDITS",
+                "shopTab": "Treasury",
                 "unitPriceCents": 199
               }
             ]
@@ -70,6 +78,39 @@
                 }
               ]
             },
+            "$.products[*].availability": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.products[*].badge": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.products[*].benefits": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$.products[*].benefits[*]": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
             "$.products[*].currency": {
               "combine": "AND",
               "matchers": [
@@ -78,7 +119,23 @@
                 }
               ]
             },
+            "$.products[*].description": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
             "$.products[*].displayName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.products[*].entitlementKind": {
               "combine": "AND",
               "matchers": [
                 {
@@ -95,6 +152,14 @@
               ]
             },
             "$.products[*].productType": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.products[*].shopTab": {
               "combine": "AND",
               "matchers": [
                 {

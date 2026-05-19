@@ -365,6 +365,17 @@ function getProfileDisplayName(name: string | undefined, maxChars = 9) {
   return `${firstWord.slice(0, Math.max(1, maxChars - 2))}..`;
 }
 
+function getProfileInitials(name: string | undefined) {
+  const normalized = (name || 'OC').trim();
+  const initials = normalized
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? '')
+    .join('');
+  return initials || 'OC';
+}
+
 function looksLikeGeneratedGuestName(name: string | undefined) {
   return /^[A-Z][a-z]+ [A-Z][a-z]+ \d{3}$/.test((name || '').trim());
 }
@@ -547,7 +558,7 @@ function normalizeLayoutConfig(layout: UnifiedHeaderLayoutConfig): UnifiedHeader
     leftExpandedWidth: clampNumber(layout.leftExpandedWidth, 72, 240),
     leftCollapsedWidth: clampNumber(layout.leftCollapsedWidth, 40, 120),
     leftCollapseWidth: clampNumber(layout.leftCollapseWidth, 320, 1600),
-    centerWidth: clampNumber(layout.centerWidth, 96, 520),
+    centerWidth: clampNumber(layout.centerWidth, 56, 520),
     rightWidth: clampNumber(layout.rightWidth, 72, 300),
     rightCollapsedWidth: clampNumber(layout.rightCollapsedWidth, 40, 160),
     rightCollapseWidth: clampNumber(layout.rightCollapseWidth, 320, 1600),
@@ -805,6 +816,10 @@ function applyRuntimeOverlay(
 
   return {
     ...profileConfig,
+    layout: {
+      ...profileConfig.layout,
+      ...runtimeOverlay.layout,
+    },
     navigation: {
       ...profileConfig.navigation,
       ...runtimeOverlay.navigation,
@@ -1943,7 +1958,7 @@ export function UnifiedHeader({
                 )}
               </HeaderPill>
 
-              <HeaderPill box={geometry.centerBox} style={style}>
+              <HeaderPill box={geometry.centerBox} style={style} showChrome={!center.disablePillChrome}>
                 <CenterContent
                   box={geometry.centerBox}
                   config={center}
@@ -1968,6 +1983,7 @@ export function UnifiedHeader({
                     box={geometry.rightBox}
                     collapsed={geometry.isRightCollapsed}
                     user={right.user}
+                    isGuest={isGuestUser}
                     textStyle={right.textStyle}
                     style={style}
                     avatarLoadFailed={profileAvatarLoadFailed}
@@ -2053,11 +2069,7 @@ export function UnifiedHeader({
                       onError={() => setFailedProfileAvatarUrl(profileAvatarUrl)}
                     />
                   ) : (
-                    <img
-                      src={authAnnonImageUrl}
-                      alt="Anonymous User"
-                      style={{ width: '100%', height: '100%' }}
-                    />
+                    <span>{getProfileInitials(right.user.name)}</span>
                   )}
                   <div className={styles.editOverlay}>
                     <span>Edit</span>
@@ -2245,6 +2257,7 @@ function HeaderPill({
   isButton,
   ariaLabel,
   dataSlot,
+  showChrome = true,
 }: {
   box: HeaderBoxRect;
   style: UnifiedHeaderStyleConfig;
@@ -2253,6 +2266,7 @@ function HeaderPill({
   isButton?: boolean;
   ariaLabel?: string;
   dataSlot?: string;
+  showChrome?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
   const titleId = useId().replace(/:/g, '');
@@ -2284,19 +2298,21 @@ function HeaderPill({
       style={{ cursor: interactive ? 'pointer' : 'default', outline: 'none' }}
     >
       {interactive && accessibleName ? <title id={titleId}>{accessibleName}</title> : null}
-      <rect
-        x={box.x}
-        y={box.y}
-        width={box.w}
-        height={box.h}
-        rx={box.h / 2}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-        stroke={edgeColor}
-        strokeWidth={1}
-        vectorEffect="non-scaling-stroke"
-        filter={style.pillGlowBlur > 0 ? 'url(#pillGlow)' : undefined}
-      />
+      {showChrome ? (
+        <rect
+          x={box.x}
+          y={box.y}
+          width={box.w}
+          height={box.h}
+          rx={box.h / 2}
+          fill={fillColor}
+          fillOpacity={fillOpacity}
+          stroke={edgeColor}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+          filter={style.pillGlowBlur > 0 ? 'url(#pillGlow)' : undefined}
+        />
+      ) : null}
       {interactive ? <g aria-hidden="true">{children}</g> : children}
     </g>
   );
@@ -2556,6 +2572,7 @@ function RightProfileContent({
   box,
   collapsed,
   user,
+  isGuest,
   textStyle,
   style,
   avatarLoadFailed,
@@ -2564,6 +2581,7 @@ function RightProfileContent({
   box: HeaderBoxRect;
   collapsed: boolean;
   user?: { name: string; avatarUrl?: string | null };
+  isGuest: boolean;
   textStyle: TextStyleConfig;
   style: UnifiedHeaderStyleConfig;
   avatarLoadFailed: boolean;
@@ -2578,6 +2596,8 @@ function RightProfileContent({
     { ...textStyle, fontSize: Math.min(textStyle.fontSize, box.h * 0.45) },
     Math.max(24, box.w - avatarSize - 40),
   );
+  const showAvatarImage = Boolean(user?.avatarUrl) && !avatarLoadFailed;
+  const showAnonymousImage = isGuest && !showAvatarImage;
   return (
     <g>
       <defs>
@@ -2594,20 +2614,20 @@ function RightProfileContent({
         fillOpacity={0.1}
       />
 
-      {user?.avatarUrl && !avatarLoadFailed ? (
+      {showAvatarImage ? (
         <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
           <image
-            href={user.avatarUrl}
+            href={user?.avatarUrl ?? ''}
             x={avatarX}
             y={avatarY}
             width={avatarSize}
             height={avatarSize}
             clipPath="url(#avatarClip)"
-            preserveAspectRatio="xMidYMid slice"
+            preserveAspectRatio="xMidYMid meet"
             onError={onAvatarError}
           />
         </g>
-      ) : (
+      ) : showAnonymousImage ? (
         <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
           <image
             href={authAnnonImageUrl}
@@ -2616,8 +2636,31 @@ function RightProfileContent({
             width={avatarSize}
             height={avatarSize}
             clipPath="url(#avatarClip)"
-            preserveAspectRatio="xMidYMid slice"
+            preserveAspectRatio="xMidYMid meet"
           />
+        </g>
+      ) : (
+        <g filter={style.iconGlowBlur > 0 ? 'url(#iconGlow)' : undefined}>
+          <circle
+            cx={avatarX + avatarSize / 2}
+            cy={avatarY + avatarSize / 2}
+            r={avatarSize / 2}
+            fill="rgba(8, 34, 62, 0.78)"
+            stroke={getTextSolidColor(textStyle)}
+            strokeOpacity={0.72}
+            strokeWidth={1.1}
+          />
+          <text
+            x={avatarX + avatarSize / 2}
+            y={avatarY + avatarSize / 2 + avatarSize * 0.13}
+            textAnchor="middle"
+            fontFamily={textStyle.fontFamily}
+            fontSize={Math.max(10, avatarSize * 0.34)}
+            fontWeight={900}
+            fill={getTextSolidColor(textStyle)}
+          >
+            {getProfileInitials(user?.name)}
+          </text>
         </g>
       )}
 

@@ -16,6 +16,7 @@ export type HomeShowcaseControlTab =
   | 'body'
   | 'sideA'
   | 'sideB'
+  | 'startup'
   | 'copy'
   | 'footer';
 
@@ -75,6 +76,18 @@ export type HomeShowcaseFrameControlGroups = {
     contentOffsetY: number;
     contentZIndex: number;
     overflowVisible: boolean;
+  };
+  startup: {
+    enabled: boolean;
+    holdAfterReadyMs: number;
+    fadeMs: number;
+    overlayOpacity: number;
+    accentOpacity: number;
+    panelScale: number;
+    panelOffsetX: number;
+    panelOffsetY: number;
+    panelMaxWidth: number;
+    radius: number;
   };
   copy: {
     titleMaxFont: number;
@@ -192,6 +205,18 @@ export const DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS: HomeShowcaseFrameControls = {
     contentZIndex: 2,
     overflowVisible: false,
   },
+  startup: {
+    enabled: true,
+    holdAfterReadyMs: 1600,
+    fadeMs: 280,
+    overlayOpacity: 0,
+    accentOpacity: 0,
+    panelScale: 1,
+    panelOffsetX: 0,
+    panelOffsetY: 0,
+    panelMaxWidth: 224,
+    radius: 12,
+  },
   copy: {
     titleMaxFont: 61,
     titleMinFont: 27,
@@ -293,6 +318,10 @@ function serializeHomeShowcaseFrameControlGroups(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB,
       controls.sideB,
     ),
+    startup: serializePrimitiveControlGroup(
+      DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup,
+      controls.startup ?? DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup,
+    ),
     copy: serializePrimitiveControlGroup(
       DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy,
       controls.copy ?? DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy,
@@ -318,6 +347,7 @@ function mergeHomeShowcaseFrameControlGroups(
     body: { ...base.body, ...overrides.body },
     sideA: { ...base.sideA, ...overrides.sideA },
     sideB: { ...base.sideB, ...overrides.sideB },
+    startup: { ...base.startup, ...overrides.startup },
     copy: { ...base.copy, ...overrides.copy },
     footer: { ...base.footer, ...overrides.footer },
     colors: { ...base.colors, ...overrides.colors },

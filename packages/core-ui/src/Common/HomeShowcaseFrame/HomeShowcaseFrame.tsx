@@ -20,6 +20,7 @@ function mergeControls(value?: HomeShowcaseFrameControls): HomeShowcaseFrameCont
     body: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.body, ...value.body },
     sideA: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideA, ...value.sideA },
     sideB: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.sideB, ...value.sideB },
+    startup: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.startup, ...value.startup },
     copy: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.copy, ...value.copy },
     footer: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.footer, ...value.footer },
     colors: { ...DEFAULT_HOME_SHOWCASE_FRAME_CONTROLS.colors, ...value.colors },

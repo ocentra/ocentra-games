@@ -1,5 +1,6 @@
 import { ApiEndpoint } from '@ocentra/endpoint-domain/constants/cloudflare';
 import { MarketplaceDOSegment } from '@ocentra/endpoint-domain/constants/cloudflare-do';
+import type { Currency } from '@ocentra/endpoint-domain/constants/credits';
 import { HttpMethod } from '@ocentra/endpoint-domain/constants/http';
 import { requestJson } from './httpClient';
 
@@ -32,10 +33,21 @@ export interface DailyRewardStateResponse {
   loginStreak?: number;
   lastClaimedAt?: number | null;
   rewardForNext?: {
+    ac?: number;
+    amount?: number;
+    currency?: Currency;
+    type?: string;
     xp?: number;
     gp?: number;
     [key: string]: unknown;
   };
+  lastReward?: {
+    ac?: number;
+    amount?: number;
+    currency?: Currency;
+    type?: string;
+    [key: string]: unknown;
+  } | null;
   [key: string]: unknown;
 }
 
@@ -52,7 +64,9 @@ export interface DailyRewardClaimResponse {
   alreadyClaimed?: boolean;
   reward?: {
     type?: string;
+    currency?: Currency;
     amount?: number;
+    ac?: number;
     gp?: number;
     xp?: number;
     [key: string]: unknown;

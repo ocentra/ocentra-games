@@ -19,6 +19,7 @@ import {
 interface CreditLedgerEntry {
   id: string;
   amount: number;
+  currency?: Currency;
   type: CreditLedgerType;
   source: CreditLedgerSource;
   timestamp: number;
@@ -199,19 +200,19 @@ export class CreditsDO implements DurableObject {
 
   private calculateTotalGPEarned(): number {
     return this.state.ledger
-      .filter(entry => entry.type === CreditLedgerType.Earn && entry.amount > 0)
+      .filter(entry => entry.type === CreditLedgerType.Earn && entry.amount > 0 && (entry.currency ?? Currency.GP) === Currency.GP)
       .reduce((sum, entry) => sum + entry.amount, 0);
   }
 
   private calculateTotalACPurchased(): number {
     return this.state.ledger
-      .filter(entry => entry.type === CreditLedgerType.Purchase && entry.amount > 0)
+      .filter(entry => entry.type === CreditLedgerType.Purchase && entry.amount > 0 && (entry.currency ?? Currency.AC) === Currency.AC)
       .reduce((sum, entry) => sum + entry.amount, 0);
   }
 
   private calculateTotalACSpent(): number {
     return this.state.ledger
-      .filter(entry => entry.type === CreditLedgerType.Consume && entry.amount < 0 && entry.amount !== undefined)
+      .filter(entry => entry.type === CreditLedgerType.Consume && entry.amount < 0 && (entry.currency ?? Currency.AC) === Currency.AC)
       .reduce((sum, entry) => sum + Math.abs(entry.amount), 0);
   }
 
@@ -278,6 +279,7 @@ export class CreditsDO implements DurableObject {
     let body: {
       awardId: string;
       amount: number;
+      currency?: Currency;
       description: string;
       source?: CreditLedgerSource;
       metadata?: Record<string, unknown>;
@@ -287,6 +289,7 @@ export class CreditsDO implements DurableObject {
       body = await request.json() as {
         awardId: string;
         amount: number;
+        currency?: Currency;
         description: string;
         source?: CreditLedgerSource;
         metadata?: Record<string, unknown>;
@@ -308,23 +311,38 @@ export class CreditsDO implements DurableObject {
       }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
     }
 
+    if (body.currency && body.currency !== Currency.GP && body.currency !== Currency.AC) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Unsupported award currency',
+      }), { status: HttpStatus.BadRequest, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
+    }
+
+    const currency = body.currency ?? Currency.GP;
     if (this.state.processed[body.awardId]) {
-      this.log.logInfo('Award already processed (idempotent)', getStackTrace(), { awardId: body.awardId, balance: this.state.gp_balance });
+      const currentBalance = currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
+      this.log.logInfo('Award already processed (idempotent)', getStackTrace(), { awardId: body.awardId, currency, balance: currentBalance });
       return new Response(JSON.stringify({
         success: true,
         already_processed: true,
-        new_balance: this.state.gp_balance,
+        new_balance: currentBalance,
       }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
     }
 
-    this.log.logInfo('Processing award', getStackTrace(), { awardId: body.awardId, amount: body.amount, previousBalance: this.state.gp_balance });
-    this.state.gp_balance += body.amount;
-    this.state.total_gp_earned += body.amount;
+    const previousBalance = currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
+    this.log.logInfo('Processing award', getStackTrace(), { awardId: body.awardId, currency, amount: body.amount, previousBalance });
+    if (currency === Currency.AC) {
+      this.state.ac_balance += body.amount;
+    } else {
+      this.state.gp_balance += body.amount;
+      this.state.total_gp_earned += body.amount;
+    }
     this.state.processed[body.awardId] = Date.now();
 
     this.state.ledger.push({
       id: body.awardId,
       amount: body.amount,
+      currency,
       type: CreditLedgerType.Earn,
       source: body.source || CreditLedgerSource.Other,
       timestamp: Date.now(),
@@ -335,10 +353,11 @@ export class CreditsDO implements DurableObject {
     this.pruneLedger();
     await this.persistState();
 
-    this.log.logInfo('Award processed successfully', getStackTrace(), { awardId: body.awardId, newBalance: this.state.gp_balance });
+    const newBalance = currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
+    this.log.logInfo('Award processed successfully', getStackTrace(), { awardId: body.awardId, currency, newBalance });
     return new Response(JSON.stringify({
       success: true,
-      new_balance: this.state.gp_balance,
+      new_balance: newBalance,
       transaction_id: body.awardId,
     }), { status: HttpStatus.Ok, headers: { [HttpHeader.ContentType]: HttpContentType.ApplicationJson } });
   }
@@ -424,10 +443,11 @@ export class CreditsDO implements DurableObject {
       try {
         const result = await this.applyAward({
           awardId,
-          amount,
-          description: reason,
-          source: CreditLedgerSource.Match,
-          metadata: awardMetadata,
+      amount,
+      currency: Currency.GP,
+      description: reason,
+      source: CreditLedgerSource.Match,
+      metadata: awardMetadata,
         });
         results.push({
           userId,
@@ -452,6 +472,7 @@ export class CreditsDO implements DurableObject {
   private async applyAward(body: {
     awardId: string;
     amount: number;
+    currency?: Currency;
     description: string;
     source?: CreditLedgerSource;
     metadata?: Record<string, unknown>;
@@ -466,20 +487,28 @@ export class CreditsDO implements DurableObject {
     }
 
     if (this.state.processed[body.awardId]) {
+      const currentBalance = body.currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
       return {
         already_processed: true,
-        new_balance: this.state.gp_balance,
+        new_balance: currentBalance,
       };
     }
 
-    this.log.logInfo('Processing award', getStackTrace(), { awardId: body.awardId, amount: body.amount, previousBalance: this.state.gp_balance });
-    this.state.gp_balance += body.amount;
-    this.state.total_gp_earned += body.amount;
+    const currency = body.currency ?? Currency.GP;
+    const previousBalance = currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
+    this.log.logInfo('Processing award', getStackTrace(), { awardId: body.awardId, currency, amount: body.amount, previousBalance });
+    if (currency === Currency.AC) {
+      this.state.ac_balance += body.amount;
+    } else {
+      this.state.gp_balance += body.amount;
+      this.state.total_gp_earned += body.amount;
+    }
     this.state.processed[body.awardId] = Date.now();
 
     this.state.ledger.push({
       id: body.awardId,
       amount: body.amount,
+      currency,
       type: CreditLedgerType.Earn,
       source: body.source || CreditLedgerSource.Other,
       timestamp: Date.now(),
@@ -490,9 +519,10 @@ export class CreditsDO implements DurableObject {
     this.pruneLedger();
     await this.persistState();
 
-    this.log.logInfo('Award processed successfully', getStackTrace(), { awardId: body.awardId, newBalance: this.state.gp_balance });
+    const newBalance = currency === Currency.AC ? this.state.ac_balance : this.state.gp_balance;
+    this.log.logInfo('Award processed successfully', getStackTrace(), { awardId: body.awardId, currency, newBalance });
     return {
-      new_balance: this.state.gp_balance,
+      new_balance: newBalance,
       transaction_id: body.awardId,
     };
   }
@@ -548,6 +578,7 @@ export class CreditsDO implements DurableObject {
     this.state.ledger.push({
       id: body.purchaseId,
       amount: body.amount,
+      currency: Currency.AC,
       type: CreditLedgerType.Purchase,
       source: body.source || CreditLedgerSource.Purchase,
       timestamp: Date.now(),
@@ -641,6 +672,7 @@ export class CreditsDO implements DurableObject {
     this.state.ledger.push({
       id: body.consumeId,
       amount: -body.amount,
+      currency: body.currency,
       type: CreditLedgerType.Consume,
       source: CreditLedgerSource.Other,
       timestamp: Date.now(),
@@ -691,13 +723,13 @@ export class CreditsDO implements DurableObject {
 
         if (entry.type === CreditLedgerType.Earn) {
           transactionType = TransactionType.Earned;
-          currency = Currency.GP;
+          currency = entry.currency ?? Currency.GP;
         } else if (entry.type === CreditLedgerType.Purchase) {
           transactionType = TransactionType.Purchase;
-          currency = Currency.AC;
+          currency = entry.currency ?? Currency.AC;
         } else if (entry.type === CreditLedgerType.Consume) {
           transactionType = TransactionType.Consumption;
-          currency = entry.amount < 0 ? Currency.AC : Currency.GP;
+          currency = entry.currency ?? (entry.amount < 0 ? Currency.AC : Currency.GP);
         } else {
           transactionType = TransactionType.Earned;
           currency = Currency.GP;

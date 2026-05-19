@@ -483,6 +483,14 @@ export const CloudflareRouteManifest: readonly RouteSpec[] = [
     handlerKey: CloudflareHandlerKey.Shop,
     priority: 10,
   },
+  {
+    path: ApiEndpoint.Shop.Purchase,
+    match: RouteMatch.Exact,
+    handlerKey: CloudflareHandlerKey.Shop,
+    method: HttpMethod.Post,
+    middleware: [MiddlewareKey.Auth],
+    priority: 15,
+  },
   { path: ApiEndpoint.Compliance.Base, match: RouteMatch.Prefix, handlerKey: CloudflareHandlerKey.Compliance, priority: 10 },
   { path: ApiEndpoint.HealthDetail, match: RouteMatch.Exact, handlerKey: CloudflareHandlerKey.HealthDetail, priority: 15 },
   {

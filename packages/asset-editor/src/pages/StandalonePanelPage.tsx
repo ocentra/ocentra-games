@@ -83,6 +83,18 @@ import {
   normalizeLobbyPageSvgControls,
   type LobbyPageSvgControls,
 } from '@ocentra/core-ui/AppPages/Lobby/LobbyPageSvgSurfaceControls';
+import { ShopPageSvgControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgControlsPanel';
+import { ShopPageContentControlsPanel } from '@ocentra/core-ui/AppPages/Shop/ShopPageContentControlsPanel';
+import {
+  DEFAULT_SHOP_PAGE_CONTENT,
+  normalizeShopPageContent,
+  type ShopPageContentData,
+} from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
+import {
+  DEFAULT_SHOP_PAGE_SVG_CONTROLS,
+  normalizeShopPageSvgControls,
+  type ShopPageSvgControls,
+} from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
 import { AuthPageSvgControlsPanel } from '@ocentra/core-ui/Auth/AuthPageSvgControlsPanel';
 import {
   DEFAULT_AUTH_PAGE_SVG_CONTROLS,
@@ -164,6 +176,14 @@ import {
   saveLobbyPageLayoutControlsToDisk,
 } from '@/utils/lobbyPageLayoutControlsPersistence';
 import {
+  SHOP_PAGE_LAYOUT_CONTROLS_CHANNEL,
+  type ShopPageLayoutControlsMessage,
+} from '@/utils/shopPageLayoutControlsChannel';
+import {
+  loadShopPageLayoutControlsFromDisk,
+  saveShopPageLayoutControlsToDisk,
+} from '@/utils/shopPageLayoutControlsPersistence';
+import {
   AUTH_PAGE_LAYOUT_CONTROLS_CHANNEL,
   type AuthPageLayoutControlsMessage,
 } from '@/utils/authPageLayoutControlsChannel';
@@ -212,6 +232,7 @@ type StandalonePanel =
   | 'featured-showcase-controls'
   | 'homepage-layout-controls'
   | 'lobby-page-layout-controls'
+  | 'shop-page-layout-controls'
   | 'auth-page-layout-controls'
   | 'selected-game-layout-controls'
   | 'games-catalog-layout-controls'
@@ -3687,6 +3708,178 @@ const StandaloneLobbyPageLayoutControls: React.FC<{ assetPath: string }> = ({ as
   );
 };
 
+const StandaloneShopPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
+  const [controls, setControls] = useState<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
+  const [content, setContent] = useState<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
+  const [activePane, setActivePane] = useState<'layout' | 'content'>('layout');
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState('');
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  const controlsRef = useRef<ShopPageSvgControls>(DEFAULT_SHOP_PAGE_SVG_CONTROLS);
+  const contentRef = useRef<ShopPageContentData>(DEFAULT_SHOP_PAGE_CONTENT);
+
+  useEffect(() => {
+    controlsRef.current = controls;
+  }, [controls]);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadShopPageLayoutControlsFromDisk(assetPath)
+      .then(result => {
+        if (cancelled) return;
+        controlsRef.current = result.controls;
+        contentRef.current = result.content;
+        setControls(result.controls);
+        setContent(result.content);
+      })
+      .catch(error => {
+        if (!cancelled) setStatus(error instanceof Error ? error.message : 'Load failed');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    const channel = new BroadcastChannel(SHOP_PAGE_LAYOUT_CONTROLS_CHANNEL);
+    channelRef.current = channel;
+    const handler = (event: MessageEvent<ShopPageLayoutControlsMessage>) => {
+      if (event.data.type === 'state' || event.data.type === 'update') {
+        const nextControls = normalizeShopPageSvgControls(event.data.controls);
+        controlsRef.current = nextControls;
+        setControls(nextControls);
+        if (event.data.content) {
+          const nextContent = normalizeShopPageContent(event.data.content);
+          contentRef.current = nextContent;
+          setContent(nextContent);
+        }
+      }
+    };
+    channel.addEventListener('message', handler);
+    channel.postMessage({ type: 'request-state' } satisfies ShopPageLayoutControlsMessage);
+
+    return () => {
+      cancelled = true;
+      channel.removeEventListener('message', handler);
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [assetPath]);
+
+  const updateControls = useCallback<React.Dispatch<React.SetStateAction<ShopPageSvgControls>>>((value) => {
+    setControls((previous: ShopPageSvgControls) => {
+      const next = normalizeShopPageSvgControls(
+        typeof value === 'function' ? value(previous) : value
+      );
+      controlsRef.current = next;
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: next,
+        content: contentRef.current,
+      } satisfies ShopPageLayoutControlsMessage);
+      return next;
+    });
+  }, []);
+
+  const updateContent = useCallback<React.Dispatch<React.SetStateAction<ShopPageContentData>>>((value) => {
+    setContent((previous: ShopPageContentData) => {
+      const next = normalizeShopPageContent(
+        typeof value === 'function' ? value(previous) : value
+      );
+      contentRef.current = next;
+      channelRef.current?.postMessage({
+        type: 'update',
+        controls: controlsRef.current,
+        content: next,
+      } satisfies ShopPageLayoutControlsMessage);
+      return next;
+    });
+  }, []);
+
+  const handleSave = useCallback(async (nextControls: ShopPageSvgControls) => {
+    const savedControls = await saveShopPageLayoutControlsToDisk(nextControls, contentRef.current, assetPath);
+    controlsRef.current = savedControls;
+    setControls(savedControls);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: savedControls,
+      content: contentRef.current,
+    } satisfies ShopPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath]);
+
+  const handleContentSave = useCallback(async (nextContent: ShopPageContentData) => {
+    const normalizedContent = normalizeShopPageContent(nextContent);
+    const savedControls = await saveShopPageLayoutControlsToDisk(controlsRef.current, normalizedContent, assetPath);
+    controlsRef.current = savedControls;
+    contentRef.current = normalizedContent;
+    setControls(savedControls);
+    setContent(normalizedContent);
+    channelRef.current?.postMessage({
+      type: 'update',
+      controls: savedControls,
+      content: normalizedContent,
+    } satisfies ShopPageLayoutControlsMessage);
+    const syncResult = await syncSavedLayoutAssetToR2(assetPath);
+    return syncResult.message;
+  }, [assetPath]);
+
+  if (isLoading) {
+    return <StandalonePanelLoading label="Loading shop layout controls" />;
+  }
+
+  return (
+    <main className="standalone-panel-page standalone-panel-page--shop-authoring">
+      <header className="standalone-panel-page__shop-authoring-header">
+        <div>
+          <span className="standalone-panel-page__shop-authoring-kicker">Shop Page</span>
+          <h1>Authoring Controls</h1>
+          <p>Layout tunes the SVG surface. Content authors cards, packs, passes, vault groups, quests, and right-panel data.</p>
+        </div>
+      </header>
+      <nav className="standalone-panel-page__shop-authoring-tabs" aria-label="Shop authoring panes">
+        <button
+          type="button"
+          className={activePane === 'layout' ? 'is-active' : ''}
+          aria-pressed={activePane === 'layout'}
+          onClick={() => setActivePane('layout')}
+        >
+          Layout
+        </button>
+        <button
+          type="button"
+          className={activePane === 'content' ? 'is-active' : ''}
+          aria-pressed={activePane === 'content'}
+          onClick={() => setActivePane('content')}
+        >
+          Content
+        </button>
+      </nav>
+      <section className="standalone-panel-page__shop-authoring-body">
+        {activePane === 'layout' ? (
+          <ShopPageSvgControlsPanel
+            controls={controls}
+            onControlsChange={updateControls}
+            onSave={handleSave}
+          />
+        ) : (
+          <ShopPageContentControlsPanel
+            content={content}
+            onContentChange={updateContent}
+            onSave={handleContentSave}
+          />
+        )}
+      </section>
+      {status && (
+        <p className="standalone-panel-page__status">{status}</p>
+      )}
+    </main>
+  );
+};
+
 const StandaloneAuthPageLayoutControls: React.FC<{ assetPath: string }> = ({ assetPath }) => {
   const [controls, setControls] = useState<AuthPageSvgControls>(DEFAULT_AUTH_PAGE_SVG_CONTROLS);
   const [isLoading, setIsLoading] = useState(true);
@@ -3933,6 +4126,7 @@ export const StandalonePanelPage: React.FC = () => {
         panel === 'featured-showcase-controls' ||
         panel === 'homepage-layout-controls' ||
         panel === 'lobby-page-layout-controls' ||
+        panel === 'shop-page-layout-controls' ||
         panel === 'auth-page-layout-controls' ||
         panel === 'selected-game-layout-controls' ||
         panel === 'games-catalog-layout-controls' ||
@@ -3968,6 +4162,7 @@ export const StandalonePanelPage: React.FC = () => {
     params.panel !== 'featured-showcase-controls' &&
     params.panel !== 'homepage-layout-controls' &&
     params.panel !== 'lobby-page-layout-controls' &&
+    params.panel !== 'shop-page-layout-controls' &&
     params.panel !== 'auth-page-layout-controls' &&
     params.panel !== 'selected-game-layout-controls' &&
     params.panel !== 'games-catalog-layout-controls';
@@ -4021,6 +4216,10 @@ export const StandalonePanelPage: React.FC = () => {
 
   if (params.panel === 'lobby-page-layout-controls') {
     return <StandaloneLobbyPageLayoutControls assetPath={params.assetPath} />;
+  }
+
+  if (params.panel === 'shop-page-layout-controls') {
+    return <StandaloneShopPageLayoutControls assetPath={params.assetPath} />;
   }
 
   if (params.panel === 'auth-page-layout-controls') {
