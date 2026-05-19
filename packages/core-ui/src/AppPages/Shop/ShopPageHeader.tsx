@@ -93,7 +93,7 @@ export function HeaderLayer({
   h: number;
   rightX: number;
   showMarketplace?: boolean;
-  acBalance: number;
+  acBalance: number | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onArenaCreditsInfo: () => void;
@@ -120,6 +120,7 @@ export function HeaderLayer({
   const titleRight = visibleBadgeCount > 0 ? badgesX - token.bodyGap : x + w - token.pad;
   const titleW = Math.max(120, titleRight - bodyX);
   const titleSize = Math.min(cfg.header.titleSize, fitSingleLineTextSize(copy.title, titleW, compact ? 14 : 18, cfg.header.titleSize, 0.48));
+  const balanceValue = acBalance === null ? content.uiCopy.status.unknownValue : acBalance.toLocaleString();
   return (
     <g>
       {showMarketplacePanel ? (
@@ -172,7 +173,7 @@ export function HeaderLayer({
           <ArenaCreditCoinIcon x={balanceX + token.balanceCoinX} y={y + token.balanceCoinY} size={token.balanceCoinSize} cfg={cfg} />
           <line x1={balanceX + token.balanceDividerX} y1={y + token.balanceDividerTop} x2={balanceX + token.balanceDividerX} y2={y + h - token.balanceDividerBottom} stroke={cfg.colors.line} strokeWidth={token.balanceDividerStrokeWidth} />
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceTitleY} fill={cfg.colors.balanceText} size={token.balanceTitleSize} weight={token.balanceTitleWeight} cfg={cfg}>{copy.balanceTitle}</Txt>
-          <Txt x={balanceX + token.balanceTextX} y={y + token.balanceValueY} fill={cfg.colors.gold} size={token.balanceValueSize} weight={token.balanceValueWeight} cfg={cfg}>{acBalance.toLocaleString()}</Txt>
+          <Txt x={balanceX + token.balanceTextX} y={y + token.balanceValueY} fill={cfg.colors.gold} size={token.balanceValueSize} weight={token.balanceValueWeight} cfg={cfg}>{balanceValue}</Txt>
           <Txt x={balanceX + token.balanceUnitX} y={y + token.balanceUnitY} size={token.balanceUnitSize} weight={token.balanceUnitWeight} fill={cfg.colors.balanceUnitText} cfg={cfg}>{copy.balanceUnit}</Txt>
           <Txt x={balanceX + token.balanceTextX} y={y + token.balanceSubY} fill={cfg.colors.headerBadgeSubText} size={token.balanceSubSize} cfg={cfg}>{copy.balanceSub}</Txt>
         </Panel>
@@ -200,7 +201,8 @@ export function TopStatsLayer({
 }) {
   const token = cfg.componentTokens.topStatsLayer;
   const visibleStats = w < 360 ? [] : w < 500 ? content.headerStats.slice(0, 1) : w < 640 ? content.headerStats.slice(0, 2) : content.headerStats;
-  const activePassValue = content.rightDetails.pass.find(row => row.label.toLowerCase() === 'active pass')?.value.trim() || 'N/A';
+  const activePassLabel = content.uiCopy.rightPanel.passTitle.toLowerCase();
+  const activePassValue = content.rightDetails.pass.find(row => row.label.toLowerCase() === activePassLabel)?.value.trim() || content.uiCopy.status.unknownValue;
   const compactPass = w < 300;
   const iconOnlyPass = w < 156;
   const gradientKey = `shop-top-stats-${Math.round(x)}-${Math.round(y)}-${Math.round(w)}`;

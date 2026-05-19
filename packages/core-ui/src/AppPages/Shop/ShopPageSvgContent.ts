@@ -138,3 +138,7 @@ export function normalizeShopPageContent(
   const merged = mergeKnownValue(cloneContent(), content);
   return ShopPageContentDataSchema.parse(merged);
 }
+
+export function parseShopPageContent(content: unknown): ShopPageContentData {
+  return ShopPageContentDataSchema.parse(content);
+}

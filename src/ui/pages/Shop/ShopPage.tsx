@@ -17,7 +17,13 @@ import { APP_VERSION } from '@/constants/version';
 import { useAuthAccess } from '@/hooks/useAuthAccess';
 import { getHeaderAvatarUrl } from '@/ui/header/getHeaderAvatarUrl';
 import { useHeaderRightAuthConfig } from '@/ui/header/useHeaderRightAuthConfig';
-import { fetchShopProducts, startShopPurchase } from '@/ui/pages/Shop/shopApi';
+import {
+  fetchShopPlayerStats,
+  fetchShopProducts,
+  playerStatsToShopAccountState,
+  startShopPurchase,
+  type ShopCloudAccountState,
+} from '@/ui/pages/Shop/shopApi';
 import { getShopApiBaseUrl, getShopAppOrigin } from '@/ui/pages/Shop/shopApiBase';
 import {
   ShopPageContent,
@@ -27,7 +33,7 @@ import {
   type ShopTab,
   type ShopVaultDeckPreviewItem,
 } from '@ocentra/core-ui/AppPages/MainAppPageSurfaces';
-import type { ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
+import { parseShopPageContent, type ShopPageContentData } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgContent';
 import type { ShopPageSvgControls } from '@ocentra/core-ui/AppPages/Shop/ShopPageSvgSurfaceControls';
 import {
   buildDeckPreviewModel,
@@ -47,7 +53,14 @@ interface ShopPageProps {
   onLogoutClick?: () => void;
 }
 
-type ResourceEntryRef = { guid?: string; path?: string; assetType?: string; displayName?: string; name?: string };
+type ResourceEntryRef = {
+  guid?: string;
+  path?: string;
+  assetType?: string;
+  displayName?: string;
+  name?: string;
+  checksum?: string;
+};
 type LooseRecord = Record<string, unknown>;
 type DeckImageUrlMap = Record<string, string>;
 
@@ -77,14 +90,18 @@ function normalizePath(path: string): string {
   return path.replace(/\\/g, '/').replace(/^\/+/, '').toLowerCase();
 }
 
-function findGuidByPath(resources: ResourceEntryRef[], path: string, assetType = ''): string {
+function findResourceByPath(resources: ResourceEntryRef[], path: string, assetType = ''): ResourceEntryRef | null {
   const normalizedPath = normalizePath(path);
-  if (!normalizedPath) return '';
+  if (!normalizedPath) return null;
   return resources.find((resource) => (
     resource.guid &&
     normalizePath(resource.path ?? '') === normalizedPath &&
     (!assetType || !resource.assetType || resource.assetType === assetType)
-  ))?.guid ?? '';
+  )) ?? null;
+}
+
+function findGuidByPath(resources: ResourceEntryRef[], path: string, assetType = ''): string {
+  return findResourceByPath(resources, path, assetType)?.guid ?? '';
 }
 
 function imagePathToBrowserUrl(path?: string): string | null {
@@ -174,19 +191,11 @@ function displayNameForDeckResource(resource: ResourceEntryRef): string {
   return rawName.replace(/_/g, ' ');
 }
 
-function isBaselineDeckResource(resource: ResourceEntryRef): boolean {
-  return normalizePath(resource.path ?? '').endsWith('/standard_52.asset');
-}
-
 function fallbackVaultDeckPreviewItem(resource: ResourceEntryRef): ShopVaultDeckPreviewItem | null {
   if (!resource.guid) return null;
-  const baselineDeck = isBaselineDeckResource(resource);
   return {
     key: resource.guid,
     title: displayNameForDeckResource(resource),
-    subtitle: 'Deck data N/A',
-    badge: 'Missing Data',
-    price: baselineDeck ? 'Free' : 'Price N/A',
     assetGuid: resource.guid,
     assetPath: resource.path,
     model: null,
@@ -299,13 +308,10 @@ async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: R
     rankings,
     title: `${title} Deck`,
   });
-  const isBaselineDeck = isBaselineDeckResource(resource);
   return {
     key: resource.guid,
     title,
     subtitle: `${model.totalPieces} pieces`,
-    badge: isBaselineDeck ? 'Free' : 'Digital',
-    price: isBaselineDeck ? 'Free' : 'Price N/A',
     assetGuid: resource.guid,
     assetPath: resource.path,
     model,
@@ -315,18 +321,21 @@ async function loadVaultDeckPreviewItem(resource: ResourceEntryRef, resources: R
 
 async function loadShopPageLayoutData(): Promise<{
   controls?: Partial<ShopPageSvgControls>;
-  content?: Partial<ShopPageContentData>;
+  content: ShopPageContentData;
 }> {
   const resources = await getEntryIndexResourceEntries();
-  const guid = findGuidByPath(resources, SHOP_PAGE_LAYOUT_ASSET_PATH, 'PageLayout');
-  if (!guid) return {};
-  const layoutDocument = await loadRawAssetDocumentByGuid(guid, { cache: 'no-store' });
+  const resource = findResourceByPath(resources, SHOP_PAGE_LAYOUT_ASSET_PATH, 'PageLayout');
+  if (!resource?.guid) throw new Error('Shop layout asset not found');
+  const layoutDocument = await loadRawAssetDocumentByGuid(resource.guid, {
+    cache: 'no-store',
+    checksum: resource.checksum,
+  });
   const data = dataOf(layoutDocument);
   const controls = asRecord(data.shopControls);
-  const content = asRecord(data.shopContent);
+  const content = parseShopPageContent(data.shopContent);
   return {
     controls: Object.keys(controls).length > 0 ? controls as Partial<ShopPageSvgControls> : undefined,
-    content: Object.keys(content).length > 0 ? content as Partial<ShopPageContentData> : undefined,
+    content,
   };
 }
 
@@ -341,7 +350,10 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<ShopTab>('Treasury');
   const [layoutControls, setLayoutControls] = useState<Partial<ShopPageSvgControls> | undefined>(undefined);
-  const [shopContent, setShopContent] = useState<Partial<ShopPageContentData> | undefined>(undefined);
+  const [shopContent, setShopContent] = useState<ShopPageContentData | null>(null);
+  const [layoutLoading, setLayoutLoading] = useState(true);
+  const [layoutError, setLayoutError] = useState<string | null>(null);
+  const [cloudAccountState, setCloudAccountState] = useState<ShopCloudAccountState | null>(null);
   const [vaultDecks, setVaultDecks] = useState<ShopVaultDeckPreviewItem[]>([]);
   const [vaultDeckImageUrls, setVaultDeckImageUrls] = useState<DeckImageUrlMap>({});
   const vaultDeckResourceContextRef = useRef<{ resources: ResourceEntryRef[]; deckResources: ResourceEntryRef[] } | null>(null);
@@ -372,16 +384,49 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
 
   useEffect(() => {
     let cancelled = false;
+    setLayoutLoading(true);
+    setLayoutError(null);
     void loadShopPageLayoutData()
       .then((layoutData) => {
         if (!cancelled) {
           setLayoutControls(layoutData.controls);
           setShopContent(layoutData.content);
+          setLayoutError(null);
         }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!cancelled) {
+          setLayoutControls(undefined);
+          setShopContent(null);
+          setLayoutError('Shop layout content failed Effect Schema validation.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLayoutLoading(false);
+      });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setCloudAccountState(null);
+    if (!user?.uid || !auth?.currentUser) {
+      return () => { cancelled = true; };
+    }
+    void auth.currentUser.getIdToken(false)
+      .then(token => fetchShopPlayerStats({ apiBaseUrl, token, userId: user.uid }))
+      .then(stats => {
+        if (!cancelled) {
+          setCloudAccountState(playerStatsToShopAccountState(stats));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCloudAccountState(null);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [apiBaseUrl, user?.uid]);
 
   useEffect(() => {
     let cancelled = false;
@@ -424,16 +469,15 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
     return () => { cancelled = true; };
   }, []);
 
-  const acBalance = (user as UserProfile & { ac_balance?: number } | null)?.ac_balance ?? 0;
+  const acBalance = cloudAccountState?.acBalance ?? null;
   const accountSummary = useMemo<ShopAccountSummary>(() => ({
-    displayName: user?.displayName || auth?.currentUser?.displayName || 'ocentra',
-    email: user?.email || auth?.currentUser?.email || '',
-    photoUrl: getHeaderAvatarUrl(user?.photoURL || auth?.currentUser?.photoURL) || '',
-    eloRating: user?.eloRating,
-    gamesPlayed: user?.gamesPlayed,
-    winRate: user?.winRate,
+    displayName: cloudAccountState?.displayName,
+    email: user?.email || auth?.currentUser?.email || undefined,
+    photoUrl: getHeaderAvatarUrl(user?.photoURL || auth?.currentUser?.photoURL) || undefined,
+    gamesPlayed: cloudAccountState?.gamesPlayed,
+    winRate: cloudAccountState?.winRate,
     isGuest: user?.isGuest,
-  }), [user]);
+  }), [cloudAccountState, user]);
   const handleBack = useCallback(() => EventBus.instance.publish(new ShowScreenEvent('home')), []);
   const resolveDeckImageUrl = useCallback<ShopDeckImageResolver>((imageHash, imagePath) => {
     if (imageHash && vaultDeckImageUrls[imageHash]) return vaultDeckImageUrls[imageHash];
@@ -483,13 +527,15 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
   };
 
   const handlePurchaseProviderSelect = async (product: ShopProduct, provider: ShopPaymentProvider) => {
+    const paymentCopy = shopContent?.uiCopy.payment;
+    if (!paymentCopy) return;
     setError(null);
     setLoadingId(product.productId);
     setPurchasePrompt({ product, busyProvider: provider });
     try {
       const token = auth?.currentUser ? await auth.currentUser.getIdToken(true) : null;
       if (!token) {
-        setPurchasePrompt({ product, message: 'Sign in is required before checkout.' });
+        setPurchasePrompt({ product, message: paymentCopy.signInRequired });
         return;
       }
       const result = await startShopPurchase({
@@ -506,10 +552,10 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
       }
       setPurchasePrompt({
         product,
-        message: result.message ?? (result.success ? 'Purchase request accepted.' : 'Checkout provider is not configured yet.'),
+        message: result.message ?? (result.success ? paymentCopy.successAccepted : paymentCopy.providerNotConfigured),
       });
     } catch (e) {
-      setPurchasePrompt({ product, message: e instanceof Error ? e.message : 'Checkout request failed.' });
+      setPurchasePrompt({ product, message: e instanceof Error ? e.message : paymentCopy.checkoutFailed });
     } finally {
       setLoadingId(null);
     }
@@ -536,28 +582,38 @@ export function ShopPage({ user, onLogout, onLogoutClick: _onLogoutClick }: Shop
       }
     >
 
-      <ShopPageContent
-        activeTab={activeTab}
-        products={products}
-        loadingProducts={loadingProducts}
-        loadingId={loadingId}
-        error={error}
-        acBalance={acBalance}
-        onTabChange={setActiveTab}
-        onClearError={() => setError(null)}
-        onBuy={handleProtectedBuy}
-        purchasePrompt={purchasePrompt}
-        onPurchaseProviderSelect={handlePurchaseProviderSelect}
-        onPurchaseCancel={() => setPurchasePrompt(null)}
-        layoutControls={layoutControls}
-        shopContent={shopContent}
-        vaultDecks={vaultDecks}
-        resolveDeckImageUrl={resolveDeckImageUrl}
-        onVaultDeckInspect={handleVaultDeckInspect}
-        accountSummary={accountSummary}
-        dailyRewardStatus={dailyRewardStatus}
-        onDailyRewardSpin={handleDailyRewardSpin}
-      />
+      {shopContent ? (
+        <ShopPageContent
+          activeTab={activeTab}
+          products={products}
+          loadingProducts={loadingProducts}
+          loadingId={loadingId}
+          error={layoutError ?? error}
+          acBalance={acBalance}
+          onTabChange={setActiveTab}
+          onClearError={() => {
+            setError(null);
+            setLayoutError(null);
+          }}
+          onBuy={handleProtectedBuy}
+          purchasePrompt={purchasePrompt}
+          onPurchaseProviderSelect={handlePurchaseProviderSelect}
+          onPurchaseCancel={() => setPurchasePrompt(null)}
+          layoutControls={layoutControls}
+          shopContent={shopContent}
+          vaultDecks={vaultDecks}
+          resolveDeckImageUrl={resolveDeckImageUrl}
+          onVaultDeckInspect={handleVaultDeckInspect}
+          accountSummary={accountSummary}
+          dailyRewardStatus={dailyRewardStatus}
+          onDailyRewardSpin={handleDailyRewardSpin}
+        />
+      ) : (
+        <div className="shop-page-integrity-state" role={layoutLoading ? 'status' : 'alert'}>
+          <strong>{layoutLoading ? 'Loading shop layout' : 'Shop layout unavailable'}</strong>
+          <span>{layoutLoading ? 'Waiting for authored Effect Schema content.' : layoutError ?? 'Authored shop content is required before rendering.'}</span>
+        </div>
+      )}
     </UnifiedPageShell>
   );
 }

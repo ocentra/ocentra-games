@@ -36,7 +36,11 @@ export async function loadRawAssetTextByGuid(guid: string, options: LoadRawAsset
     options.cache,
     async () => {
       try {
-        const response = await getPlatformAssetRuntime().fetchAsset({ guid }, getStorageConfig(), { cache: options.cache });
+        const response = await getPlatformAssetRuntime().fetchAsset(
+          options.checksum ? { checksum: options.checksum } : { guid },
+          getStorageConfig(),
+          { cache: options.cache }
+        );
         if (!response.ok) {
           return null;
         }

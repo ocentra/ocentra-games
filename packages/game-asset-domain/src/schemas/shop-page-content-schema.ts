@@ -102,6 +102,73 @@ const ShopFooterItemSchema = schema.object({
   tone: ShopPageToneSchema,
 }).strict();
 
+const ShopActionCopySchema = schema.object({
+  comingSoon: schema.string(),
+  purchase: schema.string(),
+  topUp: schema.string(),
+  select: schema.string(),
+  view: schema.string(),
+  open: schema.string(),
+  claimFree: schema.string(),
+  freeBadge: schema.string(),
+  buyDigital: schema.string(),
+  openVaultGroup: schema.string(),
+  working: schema.string(),
+  details: schema.string(),
+  backToShop: schema.string(),
+  backToPrefix: schema.string(),
+  vaultEntryCountSuffix: schema.string(),
+  selectVaultGroup: schema.string(),
+}).strict();
+
+const ShopPaymentProviderCopySchema = schema.object({
+  provider: schema.enum(['stripe', 'paypal', 'solana']),
+  label: schema.string(),
+  detail: schema.string(),
+}).strict();
+
+const ShopPaymentCopySchema = schema.object({
+  titlePrefix: schema.string(),
+  defaultDescription: schema.string(),
+  idleMessage: schema.string(),
+  providerOptions: schema.array(ShopPaymentProviderCopySchema),
+  starting: schema.string(),
+  working: schema.string(),
+  select: schema.string(),
+  cancel: schema.string(),
+  signInRequired: schema.string(),
+  successAccepted: schema.string(),
+  providerNotConfigured: schema.string(),
+  checkoutFailed: schema.string(),
+}).strict();
+
+const ShopDeckPreviewCopySchema = schema.object({
+  title: schema.string(),
+  backToVault: schema.string(),
+  digitalDeck: schema.string(),
+  purchaseOptionsSuffix: schema.string(),
+  printableDigital: schema.string(),
+  includedStarterDeck: schema.string(),
+  tableReadyDigitalDeck: schema.string(),
+  printableExportIncluded: schema.string(),
+  cardArtworkIncluded: schema.string(),
+  noDeckData: schema.string(),
+  cardBackAlt: schema.string(),
+  cardBackLabel: schema.string(),
+  missingImage: schema.string(),
+  priceUnavailable: schema.string(),
+  previousCardImage: schema.string(),
+  nextCardImage: schema.string(),
+  closeCardDetail: schema.string(),
+  expand: schema.string(),
+}).strict();
+
+const ShopStatusCopySchema = schema.object({
+  loadingMarketplace: schema.string(),
+  clearError: schema.string(),
+  unknownValue: schema.string(),
+}).strict();
+
 const ShopUiCopySchema = schema.object({
   header: schema.object({
     title: schema.string(),
@@ -148,6 +215,10 @@ const ShopUiCopySchema = schema.object({
     shareProof: schema.string(),
     inviteStatus: schema.string(),
     defaultStatus: schema.string(),
+    verificationStatus: schema.string(),
+    shareTargetStatus: schema.string(),
+    progressStatus: schema.string(),
+    rewardSuffix: schema.string(),
     openShare: schema.string(),
     copyInvite: schema.string(),
     start: schema.string(),
@@ -165,7 +236,22 @@ const ShopUiCopySchema = schema.object({
     viewProfile: schema.string(),
     profileName: schema.string(),
     profileElo: schema.string(),
+    emailUnavailable: schema.string(),
+    guestProfile: schema.string(),
+    initialsUnavailable: schema.string(),
+    ratingUnavailable: schema.string(),
+    gamesUnavailable: schema.string(),
+    winRateUnavailable: schema.string(),
+    eloPrefix: schema.string(),
+    gamesSuffix: schema.string(),
+    winRateSuffix: schema.string(),
+    moreLabel: schema.string(),
+    openEliteShop: schema.string(),
   }).strict(),
+  actions: ShopActionCopySchema,
+  payment: ShopPaymentCopySchema,
+  deckPreview: ShopDeckPreviewCopySchema,
+  status: ShopStatusCopySchema,
   footer: schema.array(ShopFooterItemSchema),
 }).strict();
 

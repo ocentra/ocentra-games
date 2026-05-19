@@ -49,6 +49,7 @@ export const PlayerStatsResponseSchema = schema.object({
     total_ac_spent: schema.number().int(),
   }),
 });
+export type PlayerStatsResponse = schema.infer<typeof PlayerStatsResponseSchema>;
 
 export const SkillAreaSchema = schema.object({
   area: schema.string(),

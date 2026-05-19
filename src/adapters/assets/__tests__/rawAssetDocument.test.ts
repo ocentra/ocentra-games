@@ -94,5 +94,10 @@ describe('rawAssetDocument cache', () => {
     expect(typeof stored).toBe('string');
     expect(String(stored)).toContain('Claim');
     expect(mocks.fetchAsset).toHaveBeenCalledTimes(1);
+    expect(mocks.fetchAsset).toHaveBeenCalledWith(
+      { checksum: 'claim-checksum' },
+      expect.any(Object),
+      expect.any(Object)
+    );
   });
 });

@@ -173,7 +173,7 @@ type LobbyPageSurfaceControlProps = {
 
 type ShopPageSurfaceControlProps = {
   layoutControls?: Partial<ShopPageSvgControls> | null;
-  shopContent?: Partial<ShopPageContentData> | null;
+  shopContent: ShopPageContentData;
   vaultDecks?: ShopVaultDeckPreviewItem[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
@@ -773,35 +773,6 @@ export function AdminUsersPageContent({
   );
 }
 
-export function ShopPageToolbar({
-  activeTab,
-  acBalance,
-  onTabChange,
-}: {
-  activeTab: ShopTab;
-  acBalance: number;
-  onTabChange: (tab: ShopTab) => void;
-}) {
-  const tabs: ShopTab[] = ['Treasury', 'Elite', 'Vault', 'Play Access', 'Events'];
-  return (
-    <div className="app-page-svg-toolbar">
-      <div className="app-page-svg-toolbar__tabs">
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            className={`app-page-svg-toolbar__button ${activeTab === tab ? 'is-active' : ''}`}
-            type="button"
-            onClick={() => onTabChange(tab)}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <span className="app-page-svg-toolbar__pill">{acBalance.toLocaleString()} AC</span>
-    </div>
-  );
-}
-
 export function ShopPageContent({
   activeTab,
   products,
@@ -829,7 +800,7 @@ export function ShopPageContent({
   loadingProducts: boolean;
   loadingId: string | null;
   error: string | null;
-  acBalance: number;
+  acBalance: number | null;
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;

@@ -10,10 +10,7 @@ import {
   type ShopTone,
   type ShopVaultShowcaseGroup,
 } from './ShopPageSvgData';
-import {
-  normalizeShopPageContent,
-  type ShopPageContentData,
-} from './ShopPageSvgContent';
+import type { ShopPageContentData } from './ShopPageSvgContent';
 import {
   HeaderBar,
   MiniIcon,
@@ -82,7 +79,7 @@ export type ShopPageSvgSurfaceProps = {
   loadingProducts: boolean;
   loadingId: string | null;
   error: string | null;
-  acBalance: number;
+  acBalance: number | null;
   onTabChange: (tab: ShopTab) => void;
   onClearError: () => void;
   onBuy: (product: ShopProduct) => void;
@@ -94,7 +91,7 @@ export type ShopPageSvgSurfaceProps = {
   onPurchaseProviderSelect?: (product: ShopProduct, provider: ShopPaymentProvider) => void;
   onPurchaseCancel?: () => void;
   controls?: Partial<ShopPageSvgControls> | null;
-  content?: Partial<ShopPageContentData> | null;
+  content: ShopPageContentData;
   vaultDecks?: ShopVaultDeckPreviewItem[];
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onVaultDeckInspect?: (deck: ShopVaultDeckPreviewItem) => void;
@@ -128,25 +125,17 @@ const PREFERRED_BOTTOM_PREVIEW_ITEMS = 4;
 const SHOP_RESPONSIVE_MIN_LEFT_W = 118;
 const SHOP_RESPONSIVE_MIN_RIGHT_W = 212;
 const SHOP_RESPONSIVE_MIN_MAIN_W = 390;
-const SHOP_PAYMENT_PROVIDER_OPTIONS: Array<{
-  provider: ShopPaymentProvider;
-  label: string;
-  detail: string;
-}> = [
-  { provider: 'stripe', label: 'Card / Stripe', detail: 'Hosted checkout when Stripe is configured.' },
-  { provider: 'paypal', label: 'PayPal', detail: 'PayPal checkout placeholder until provider setup lands.' },
-  { provider: 'solana', label: 'Solana', detail: 'Wallet payment placeholder until on-chain checkout lands.' },
-];
-
 type VaultGridFrameArtMode = 'cards' | 'table';
 
-function paymentProvidersForProduct(product: ShopProduct): Array<{
+function paymentProvidersForProduct(product: ShopProduct, content: ShopPageContentData): Array<{
   provider: ShopPaymentProvider;
   label: string;
   detail: string;
 }> {
   const configured = product.paymentProviders?.length ? new Set(product.paymentProviders) : null;
-  return SHOP_PAYMENT_PROVIDER_OPTIONS.filter(option => !configured || configured.has(option.provider));
+  return content.uiCopy.payment.providerOptions
+    .filter(option => !configured || configured.has(option.provider as ShopPaymentProvider))
+    .map(option => ({ ...option, provider: option.provider as ShopPaymentProvider }));
 }
 
 function shopDeckImagePathToBrowserUrl(path?: string): string | null {
@@ -197,7 +186,7 @@ function productToTile(product: ShopProduct, index: number, content: ShopPageCon
   const icons: ShopIcon[] = ['coins', 'cards', 'chest', 'trophy', 'crate', 'shield'];
   return {
     title: product.displayName,
-    subtitle: product.description || product.benefits?.slice(0, 2).join(' / ') || product.productType.replace('_', ' '),
+    subtitle: product.description || product.benefits?.slice(0, 2).join(' / ') || product.displayName,
     tone: tones[index % tones.length],
     icon: icons[index % icons.length],
     badge: product.badge,
@@ -279,6 +268,7 @@ function PurchaseProviderDialog({
   product,
   message,
   busyProvider,
+  content,
   cfg,
   onProviderSelect,
   onCancel,
@@ -289,17 +279,19 @@ function PurchaseProviderDialog({
   product: ShopProduct;
   message?: string | null;
   busyProvider?: ShopPaymentProvider | null;
+  content: ShopPageContentData;
   cfg: ShopPageSvgControls;
   onProviderSelect: (product: ShopProduct, provider: ShopPaymentProvider) => void;
   onCancel: () => void;
 }) {
   const h = 246;
-  const providers = paymentProvidersForProduct(product);
+  const copy = content.uiCopy.payment;
+  const providers = paymentProvidersForProduct(product, content);
   const pad = 22;
   const providerGap = 12;
   const providerW = (w - pad * 2 - providerGap * (providers.length - 1)) / providers.length;
   const providerY = y + 122;
-  const title = `Pay for ${product.displayName}`;
+  const title = `${copy.titlePrefix} ${product.displayName}`;
   const price = productPriceLabel(product);
   return (
     <g>
@@ -307,11 +299,11 @@ function PurchaseProviderDialog({
       <path d={lobbyRoundedRectPath(x, y, w, h, 10)} fill="rgba(6,22,41,.96)" stroke={cfg.colors.activeBlue} strokeWidth="1.8" filter="url(#shopSoftGlow)" />
       <Txt x={x + pad} y={y + 34} size="24" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{title}</Txt>
       <Txt x={x + w - pad} y={y + 34} anchor="end" size="18" weight="950" fill={cfg.colors.gold} cfg={cfg}>{price}</Txt>
-      <WrappedText x={x + pad} y={y + 66} width={w - pad * 2} lines={product.description ?? 'Choose a checkout provider to start this purchase.'} size={11.5} lineHeight={15} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
+      <WrappedText x={x + pad} y={y + 66} width={w - pad * 2} lines={product.description ?? copy.defaultDescription} size={11.5} lineHeight={15} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
       {message ? (
         <WrappedText x={x + pad} y={y + 101} width={w - pad * 2} lines={message} size={12.2} lineHeight={15} fill={cfg.colors.gold} weight={850} maxLines={2} cfg={cfg} />
       ) : (
-        <Txt x={x + pad} y={y + 101} size="12.2" weight="850" fill={cfg.colors.mutedText} cfg={cfg}>Provider setup can fail gracefully without changing this shop UI.</Txt>
+        <Txt x={x + pad} y={y + 101} size="12.2" weight="850" fill={cfg.colors.mutedText} cfg={cfg}>{copy.idleMessage}</Txt>
       )}
       {providers.map((option, index) => {
         const optionX = x + pad + index * (providerW + providerGap);
@@ -319,13 +311,13 @@ function PurchaseProviderDialog({
         return (
           <g key={option.provider}>
             <rect x={optionX} y={providerY} width={providerW} height="74" fill={alphaColor(cfg.colors.panelFill, 0.84)} stroke={isBusy ? cfg.colors.gold : cfg.colors.activeBlue} strokeWidth="1.2" />
-            <Txt x={optionX + 12} y={providerY + 25} size="15" weight="950" fill={isBusy ? cfg.colors.gold : cfg.colors.bodyText} cfg={cfg}>{isBusy ? 'Starting...' : option.label}</Txt>
+            <Txt x={optionX + 12} y={providerY + 25} size="15" weight="950" fill={isBusy ? cfg.colors.gold : cfg.colors.bodyText} cfg={cfg}>{isBusy ? copy.starting : option.label}</Txt>
             <WrappedText x={optionX + 12} y={providerY + 45} width={providerW - 24} lines={option.detail} size={8.3} lineHeight={10.5} fill={cfg.colors.mutedText} weight={700} maxLines={2} cfg={cfg} />
-            <SvgButton x={optionX + providerW - 116} y={providerY + 46} w={104} h={22} label={isBusy ? 'Working' : 'Select'} active={isBusy} small arrow={false} disabled={Boolean(busyProvider)} onClick={() => onProviderSelect(product, option.provider)} cfg={cfg} />
+            <SvgButton x={optionX + providerW - 116} y={providerY + 46} w={104} h={22} label={isBusy ? copy.working : copy.select} active={isBusy} small arrow={false} disabled={Boolean(busyProvider)} onClick={() => onProviderSelect(product, option.provider)} cfg={cfg} />
           </g>
         );
       })}
-      <SvgButton x={x + w - pad - 132} y={y + h - 42} w={132} h={26} label="Cancel" small arrow={false} onClick={onCancel} cfg={cfg} />
+      <SvgButton x={x + w - pad - 132} y={y + h - 42} w={132} h={26} label={copy.cancel} small arrow={false} onClick={onCancel} cfg={cfg} />
     </g>
   );
 }
@@ -365,27 +357,28 @@ function isCreditPackTile(item: TileItem, content: ShopPageContentData): boolean
 }
 
 function tileActionLabel(item: TileItem, content: ShopPageContentData, tab?: ShopTab): string {
+  const actions = content.uiCopy.actions;
   const price = item.price?.toLowerCase() ?? '';
-  if (price.includes('coming soon')) return 'Coming Soon';
-  if (tab === 'Treasury') return item.title === 'Custom AC' ? 'Top Up' : 'Purchase';
+  if (price.includes('coming soon')) return actions.comingSoon;
+  if (tab === 'Treasury') return item.title === 'Custom AC' ? actions.topUp : actions.purchase;
   if (tab === 'Elite') {
     if (item.tone === 'gold' && item.title.toLowerCase().includes('founder')) return content.uiCopy.passCard.lifetimeButton;
     return content.uiCopy.passCard.selectButton;
   }
-  if (tab === 'Events') return item.product ? 'Select' : 'View';
-  if (tab === 'Play Access') return 'View';
+  if (tab === 'Events') return item.product ? actions.select : actions.view;
+  if (tab === 'Play Access') return actions.view;
   if (tab === 'Vault') {
-    if (price === 'free') return 'Claim Free';
-    if (price.includes('printable') || price.includes('digital')) return 'Buy Digital';
-    return 'Open';
+    if (price === 'free') return actions.claimFree;
+    if (price.includes('printable') || price.includes('digital')) return actions.buyDigital;
+    return actions.open;
   }
-  if (item.title === 'Custom AC') return 'Top Up';
-  if (isCreditPackTile(item, content)) return 'Purchase';
-  if (price === 'free') return 'Claim Free';
-  if (price.includes('printable') || price.includes('digital')) return 'Buy Digital';
+  if (item.title === 'Custom AC') return actions.topUp;
+  if (isCreditPackTile(item, content)) return actions.purchase;
+  if (price === 'free') return actions.claimFree;
+  if (price.includes('printable') || price.includes('digital')) return actions.buyDigital;
   if (item.tone === 'gold' && item.title.toLowerCase().includes('founder')) return content.uiCopy.passCard.lifetimeButton;
   if (item.product?.productType === 'SUBSCRIPTION' || content.passes.some(pass => pass.title === item.title)) return content.uiCopy.passCard.selectButton;
-  return item.price ? 'Purchase' : 'View';
+  return item.price ? actions.purchase : actions.view;
 }
 
 function tileCardKey(item: TileItem, index: number): string {
@@ -413,7 +406,7 @@ function tileToMainCarouselCard(item: TileItem, index: number, loadingId: string
   };
 }
 
-function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix: string): ShopMainCarouselCardItem {
+function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix: string, content: ShopPageContentData): ShopMainCarouselCardItem {
   const coverImage = prefix === 'play-access' && ['Private Tables', 'Public Tables', 'Room Chat'].includes(item.title);
   const imageAnchor = item.title === 'Room Chat'
     ? 'bottom'
@@ -434,43 +427,30 @@ function staticItemToImageMainCarouselCard(item: TileItem, index: number, prefix
     badge: item.badge,
     imageUrl: item.imageUrl,
     price: item.price,
-    actionLabel: 'View',
+    actionLabel: content.uiCopy.actions.view,
   };
 }
 
-function vaultGroupToMainCarouselCard(group: ShopVaultShowcaseGroup): ShopMainCarouselCardItem {
+function vaultGroupToMainCarouselCard(group: ShopVaultShowcaseGroup, content: ShopPageContentData): ShopMainCarouselCardItem {
+  const actions = content.uiCopy.actions;
   return {
     key: `vault:${group.key}`,
     title: group.title,
     subtitle: group.subtitle,
-    bodyLines: [`${group.items.length} vault entries`, 'Select to preview group'],
+    bodyLines: [`${group.items.length} ${actions.vaultEntryCountSuffix}`, actions.selectVaultGroup],
     layout: 'image',
     badgePlacement: 'header',
     tone: group.tone,
     icon: group.icon,
     badge: group.badge,
     imageUrl: group.heroImageUrl,
-    actionLabel: 'Open Vault Group',
+    actionLabel: content.uiCopy.actions.openVaultGroup,
   };
 }
 
 function vaultGroupBenefits(group: ShopVaultShowcaseGroup): string[] {
-  if (group.key === 'decks') {
-    return ['Browse deck drops.', 'Open group details.', 'Author drops in editor.'];
-  }
-  if (group.key === 'card-backs') {
-    return ['Manage card backs.', 'Preview upcoming backs.', 'Add backs in editor.'];
-  }
-  if (group.key === 'table-themes') {
-    return ['Preview table themes.', 'Keep default surfaces.', 'Add themes in editor.'];
-  }
-  if (group.key === 'frames') {
-    return ['Choose profile frames.', 'Keep free frames visible.', 'Add frames in editor.'];
-  }
-  if (group.key === 'avatars') {
-    return ['Choose avatars.', 'Keep free avatars visible.', 'Add avatars in editor.'];
-  }
-  return [group.subtitle, 'Open group details.', 'Tune inventory in editor.'];
+  const authoredBenefits = group.items.flatMap(item => item.benefits ?? []).filter(Boolean);
+  return authoredBenefits.length > 0 ? authoredBenefits.slice(0, 3) : [group.subtitle];
 }
 
 function vaultGroupToTile(group: ShopVaultShowcaseGroup): TileItem {
@@ -481,7 +461,7 @@ function vaultGroupToTile(group: ShopVaultShowcaseGroup): TileItem {
     icon: group.icon,
     badge: group.badge,
     imageUrl: group.heroImageUrl,
-    price: group.badge === 'FREE' ? 'Free' : group.badge === 'SOON' ? 'Coming Soon' : undefined,
+    price: group.badge === 'FREE' ? group.badge : group.badge === 'SOON' ? group.badge : undefined,
     benefits: vaultGroupBenefits(group),
   };
 }
@@ -560,9 +540,7 @@ function RewardQuestArtwork({
 function bottomCardBenefits(item: TileItem, content: ShopPageContentData): string[] {
   if (item.benefits?.length) return item.benefits;
   if (item.product?.benefits?.length) return item.product.benefits;
-  if (isCreditPackTile(item, content)) {
-    return ['One-time Arena Credit top-up', 'Adds to marketplace balance', 'Use for tools, vault, access, and events'];
-  }
+  if (isCreditPackTile(item, content)) return [item.subtitle].filter(Boolean);
   return [item.subtitle].filter(Boolean);
 }
 
@@ -680,14 +658,14 @@ function EliteBottomPassCard({
   const badgeText = item.badge ?? '';
   const badgeW = badgeText ? Math.min(expanded ? 132 : 106, Math.max(expanded ? 86 : 64, badgeText.length * (expanded ? 8.2 : 6.8) + 22)) : 0;
   const titleW = Math.max(72, w - badgeW - 28);
-  const footerValue = item.price ?? item.badge ?? 'Details';
+  const footerValue = item.price ?? item.badge ?? content.uiCopy.actions.details;
   const priceW = expanded
     ? Math.min(230, Math.max(142, footerValue.length * 10.6 + 34))
     : Math.min(156, Math.max(104, footerValue.length * 5.8 + 28));
   const buttonW = expanded ? Math.min(190, Math.max(132, w * 0.24)) : Math.min(132, Math.max(96, w * 0.28));
   const disabled = item.product ? !isShopProductPurchasable(item.product) : false;
   const defaultActionLabel = tileActionLabel(item, content, tab);
-  const buttonLabel = loading ? 'Working' : expanded ? expandedActionLabel ?? defaultActionLabel : defaultActionLabel;
+  const buttonLabel = loading ? content.uiCopy.actions.working : expanded ? expandedActionLabel ?? defaultActionLabel : defaultActionLabel;
   const buttonCanBuy = Boolean(item.product && isShopProductPurchasable(item.product) && (tab === 'Treasury' || tab === 'Elite' || item.product.productType === 'TOURNAMENT_ENTRY' || item.product.productType === 'MARKETPLACE'));
   const subtitleText = Array.isArray(item.subtitle) ? item.subtitle.join(' ') : item.subtitle;
   const subtitleSize = fitSingleLineTextSize(
@@ -1057,6 +1035,8 @@ function VaultGridFrame({
   resolveDeckImageUrl,
   artMode = 'cards',
   variantKey,
+  expandLabel,
+  missingImageLabel,
   onClick,
 }: {
   x: number;
@@ -1071,6 +1051,8 @@ function VaultGridFrame({
   resolveDeckImageUrl?: ShopDeckImageResolver;
   artMode?: VaultGridFrameArtMode;
   variantKey?: string;
+  expandLabel: string;
+  missingImageLabel: string;
   onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
@@ -1088,6 +1070,7 @@ function VaultGridFrame({
   const badgeX = x + w - badgeW - 5;
   const badgeY = y + 5;
   const priceLabel = deckPrice ?? '';
+  const missingImageLines = missingImageLabel.split(/\s+/).filter(Boolean).slice(0, 2);
 
   return (
     <g
@@ -1113,7 +1096,7 @@ function VaultGridFrame({
       {interactive ? (
         <g opacity={hovered ? 1 : 0.72} pointerEvents="none">
           <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx="3" fill={alphaColor(edge, 0.18)} stroke={edge} strokeWidth="1" strokeOpacity="0.86" filter="url(#shopSoftGlow)" />
-          <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 3} textAnchor="middle" fill={cfg.colors.bodyText} fontSize={Math.max(6.6, Math.min(8.2, badgeW / 6.8))} fontWeight="950" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">EXPAND</text>
+          <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 3} textAnchor="middle" fill={cfg.colors.bodyText} fontSize={Math.max(6.6, Math.min(8.2, badgeW / 6.8))} fontWeight="950" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{expandLabel}</text>
         </g>
       ) : null}
       {artMode === 'table' ? (
@@ -1144,8 +1127,9 @@ function VaultGridFrame({
               ) : (
                 <g>
                   <rect x={cardX + 4} y={cardY + 5} width={cardW - 8} height={cardH - 10} rx={cfg.componentTokens.sectionFrame.contentRadius / 3} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.bodyText} strokeWidth=".6" strokeOpacity=".22" strokeDasharray="3 3" />
-                  <text x={cardX + cardW / 2} y={cardY + cardH / 2 - 2} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">Missing</text>
-                  <text x={cardX + cardW / 2} y={cardY + cardH / 2 + 6} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">image</text>
+                  {missingImageLines.map((line, lineIndex) => (
+                    <text key={line} x={cardX + cardW / 2} y={cardY + cardH / 2 - 2 + lineIndex * 8} textAnchor="middle" fill={cfg.colors.tileSubtitleText} fontSize={Math.max(4.8, Math.min(6.4, cardW * 0.15))} fontWeight="850" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{line}</text>
+                  ))}
                 </g>
               )}
             </g>
@@ -1174,6 +1158,7 @@ function VaultSelectableCircle({
   selected,
   onSelect,
   clipImage,
+  badgeLabel,
 }: {
   x: number;
   y: number;
@@ -1185,6 +1170,7 @@ function VaultSelectableCircle({
   selected: boolean;
   onSelect: (index: number) => void;
   clipImage: boolean;
+  badgeLabel: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const center = size / 2;
@@ -1225,7 +1211,7 @@ function VaultSelectableCircle({
       <image href={resolvedImageUrl} x={imageInset} y={imageInset} width={size - imageInset * 2} height={size - imageInset * 2} preserveAspectRatio={clipImage ? 'xMidYMid slice' : 'xMidYMid meet'} clipPath={clipImage ? `url(#${clipId})` : undefined} />
       {showInteractionCircle ? <circle cx={center} cy={center} r={center - 5} fill="none" stroke={ringColor} strokeWidth={selected ? 1.8 : 1.1} strokeOpacity={clipImage ? selected ? 0.96 : 0.78 : hovered ? 0.72 : 0.34} /> : null}
       <rect x={center - badgeW / 2} y={size - badgeH - 1} width={badgeW} height={badgeH} rx={badgeH / 2} fill={green} stroke={cfg.colors.bodyText} strokeWidth=".45" strokeOpacity=".38" />
-      <text x={center} y={size - badgeH / 2} fill={cfg.colors.headerFill} fontSize={Math.max(6.4, badgeH * 0.58)} fontWeight="950" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">FREE</text>
+      <text x={center} y={size - badgeH / 2} fill={cfg.colors.headerFill} fontSize={Math.max(6.4, badgeH * 0.58)} fontWeight="950" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, ui-sans-serif, system-ui, sans-serif">{badgeLabel}</text>
       {selected ? (
         <g>
           <circle cx={size - 9} cy="9" r="8" fill={green} stroke={cfg.colors.bodyText} strokeWidth=".7" strokeOpacity=".52" />
@@ -1345,24 +1331,11 @@ function VaultShowcaseLayer({
   const showGridMessage = !isDeckGrid || deckItems.length === 0;
   const messageColumnSpan = showGridMessage ? 2 : 0;
   const columns = itemColumns + messageColumnSpan;
-  const messageTitle = activeGroup.key === 'card-backs'
-    ? 'Card backs dropping soon'
-    : activeGroup.key === 'table-themes'
-      ? 'Table themes dropping soon'
-      : activeGroup.key === 'frames'
-        ? 'Paid frames soon'
-        : activeGroup.key === 'decks'
-          ? 'Deck assets loading'
-          : 'Paid avatars soon';
-  const messageLines = activeGroup.key === 'card-backs'
-    ? ['Default card backs stay free.', 'Premium animated backs will appear in this grid when the art is ready.']
-    : activeGroup.key === 'table-themes'
-      ? ['The default table theme stays active.', 'More room surfaces and competitive table moods will drop here.']
-      : activeGroup.key === 'frames'
-        ? ['Free profile frames are available now.', 'More custom paid profile frames are dropping soon.']
-        : activeGroup.key === 'decks'
-          ? ['No deck preview assets were returned yet.', 'The Vault grid uses deck assets from the shared asset runtime.']
-          : ['Free avatars are available now.', 'More premium paid avatars are dropping soon.'];
+  const authoredMessageItems = activeGroup.items.slice(0, 2);
+  const messageTitle = activeGroup.title;
+  const messageLines = authoredMessageItems.length > 0
+    ? authoredMessageItems.map(item => item.subtitle || item.title)
+    : [activeGroup.subtitle];
   const contentW = columns * frameW + (columns - 1) * frameGap;
   const maxScrollX = Math.max(0, contentW - gridW);
   const rawScrollX = gridScrollState.groupKey === activeGroupKey ? gridScrollState.value : 0;
@@ -1383,7 +1356,7 @@ function VaultShowcaseLayer({
         y={y}
         w={w}
         h={h}
-        label="VAULT"
+        label={content.sections.Vault.title}
         count={isDeckGrid ? deckItems.length : activeGroup.items.length}
         rightActionLabel={rightActionLabel}
         onRightAction={onRightAction}
@@ -1469,6 +1442,7 @@ function VaultShowcaseLayer({
                   selected={selectedIndex === index}
                   onSelect={isAvatarGrid ? setSelectedAvatarIndex : setSelectedProfileFrameIndex}
                   clipImage={isAvatarGrid}
+                  badgeLabel={content.uiCopy.actions.freeBadge}
                 />
               );
             }
@@ -1492,6 +1466,8 @@ function VaultShowcaseLayer({
                 resolveDeckImageUrl={resolveDeckImageUrl}
                 artMode={gridFrameArtMode}
                 variantKey={frameLabel}
+                expandLabel={content.uiCopy.deckPreview.expand}
+                missingImageLabel={content.uiCopy.deckPreview.missingImage}
                 onClick={deckItem ? () => onDeckInspect?.(deckItem) : undefined}
               />
             );
@@ -1510,6 +1486,7 @@ function ShopDeckPreviewLayer({
   w,
   h,
   deck,
+  content,
   resolveDeckImageUrl,
   onClose,
 }: {
@@ -1518,6 +1495,7 @@ function ShopDeckPreviewLayer({
   w: number;
   h: number;
   deck: ShopVaultDeckPreviewItem;
+  content: ShopPageContentData;
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onClose: () => void;
 }) {
@@ -1527,8 +1505,9 @@ function ShopDeckPreviewLayer({
   const pieceCount = deck.model?.totalPieces ?? deck.sampleCards.length;
   const normalizedPrice = deck.price?.toLowerCase() ?? '';
   const freeDeck = normalizedPrice === 'free' || deck.badge?.toLowerCase() === 'free';
-  const deckPrice = deck.price ?? 'Price N/A';
-  const primaryDeckAction = freeDeck ? 'Claim Free' : 'Buy Digital';
+  const copy = content.uiCopy.deckPreview;
+  const deckPrice = deck.price ?? copy.priceUnavailable;
+  const primaryDeckAction = freeDeck ? content.uiCopy.actions.claimFree : content.uiCopy.actions.buyDigital;
   const previewStyle = {
     '--deck-preview-card-track-min': '2.7rem',
     '--deck-preview-card-cell-min-height': '3.5rem',
@@ -1541,22 +1520,22 @@ function ShopDeckPreviewLayer({
 
   return (
     <g>
-      <MainBottom x={x} y={y} w={w} h={h} label="DECK PREVIEW" count={pieceCount} rightActionLabel="Back To Vault" onRightAction={onClose} showNavigation={false} />
+      <MainBottom x={x} y={y} w={w} h={h} label={copy.title} count={pieceCount} rightActionLabel={copy.backToVault} onRightAction={onClose} showNavigation={false} />
       <foreignObject x={body.x} y={body.y} width={body.w} height={body.h}>
         <div className="shop-deck-preview-host">
           <aside className="shop-deck-preview-host__commerce">
-            <div className="shop-deck-preview-host__eyebrow">{deck.badge ?? 'Digital Deck'}</div>
+            <div className="shop-deck-preview-host__eyebrow">{deck.badge ?? copy.digitalDeck}</div>
             <h2 className="shop-deck-preview-host__title">{deck.title}</h2>
             <div className="shop-deck-preview-host__subtitle">{deck.subtitle ?? `${pieceCount} pieces`}</div>
             <div className="shop-deck-preview-host__price">{deckPrice}</div>
-            <div className="shop-deck-preview-host__actions" aria-label={`${deck.title} purchase options`}>
+            <div className="shop-deck-preview-host__actions" aria-label={`${deck.title} ${copy.purchaseOptionsSuffix}`}>
               <button type="button" disabled>{primaryDeckAction}</button>
-              <button type="button" disabled>Printable + Digital</button>
+              <button type="button" disabled>{copy.printableDigital}</button>
             </div>
             <ul className="shop-deck-preview-host__notes">
-              <li>{freeDeck ? 'Included starter deck.' : 'Table-ready digital deck.'}</li>
-              <li>Printable export included.</li>
-              <li>Card artwork included when available.</li>
+              <li>{freeDeck ? copy.includedStarterDeck : copy.tableReadyDigitalDeck}</li>
+              <li>{copy.printableExportIncluded}</li>
+              <li>{copy.cardArtworkIncluded}</li>
             </ul>
           </aside>
           {deck.model ? (
@@ -1565,13 +1544,13 @@ function ShopDeckPreviewLayer({
                 model={deck.model}
                 compact
                 onCellClick={setSelectedCell}
-                renderPiece={(cell) => <ShopDeckPreviewPieceCell cell={cell} resolveDeckImageUrl={resolveDeckImageUrl} />}
+                renderPiece={(cell) => <ShopDeckPreviewPieceCell cell={cell} content={content} resolveDeckImageUrl={resolveDeckImageUrl} />}
                 renderAxis={(axis) => <ShopDeckPreviewAxisCell axis={axis} resolveDeckImageUrl={resolveDeckImageUrl} />}
-                renderBack={(imageHash) => <ShopDeckPreviewBackCell imageHash={imageHash} resolveDeckImageUrl={resolveDeckImageUrl} />}
+                renderBack={(imageHash) => <ShopDeckPreviewBackCell imageHash={imageHash} content={content} resolveDeckImageUrl={resolveDeckImageUrl} />}
               />
             </div>
           ) : (
-            <div className="shop-deck-preview-host__empty">No deck data available.</div>
+            <div className="shop-deck-preview-host__empty">{copy.noDeckData}</div>
           )}
         </div>
       </foreignObject>
@@ -1580,6 +1559,7 @@ function ShopDeckPreviewLayer({
           deck={deck}
           cell={selectedCell}
           cells={viewerCells}
+          content={content}
           resolveDeckImageUrl={resolveDeckImageUrl}
           onSelectCell={setSelectedCell}
           onClose={() => setSelectedCell(null)}
@@ -1618,6 +1598,7 @@ function ShopDeckPictureViewerOverlay({
   deck,
   cell,
   cells,
+  content,
   resolveDeckImageUrl,
   onSelectCell,
   onClose,
@@ -1625,6 +1606,7 @@ function ShopDeckPictureViewerOverlay({
   deck: ShopVaultDeckPreviewItem;
   cell: DeckPreviewCell;
   cells: DeckPreviewCell[];
+  content: ShopPageContentData;
   resolveDeckImageUrl?: ShopDeckImageResolver;
   onSelectCell: (cell: DeckPreviewCell) => void;
   onClose: () => void;
@@ -1680,9 +1662,9 @@ function ShopDeckPictureViewerOverlay({
             missingLabel={deckPieceDisplayLabel(cell.label)}
             caption={deckPieceDisplayLabel(cell.label)}
             counter={cells.length > 0 ? `${currentIndex + 1}/${cells.length}` : '1/1'}
-            previousLabel="Previous card image"
-            nextLabel="Next card image"
-            closeLabel="Close card detail"
+            previousLabel={content.uiCopy.deckPreview.previousCardImage}
+            nextLabel={content.uiCopy.deckPreview.nextCardImage}
+            closeLabel={content.uiCopy.deckPreview.closeCardDetail}
             onPrevious={canCycle ? () => selectByDelta(-1) : undefined}
             onNext={canCycle ? () => selectByDelta(1) : undefined}
             onClose={onClose}
@@ -1711,9 +1693,11 @@ function deckPieceDisplayLabel(label: string): string {
 
 function ShopDeckPreviewPieceCell({
   cell,
+  content,
   resolveDeckImageUrl,
 }: {
   cell: DeckPreviewCell;
+  content: ShopPageContentData;
   resolveDeckImageUrl?: ShopDeckImageResolver;
 }) {
   const src = resolveShopDeckImageUrl(resolveDeckImageUrl, cell.imageHash, cell.imagePath);
@@ -1733,7 +1717,7 @@ function ShopDeckPreviewPieceCell({
   return (
     <span className="shop-deck-preview-host__piece-label" title={deckPieceDisplayLabel(cell.label)}>
       <span>{deckPieceDisplayLabel(cell.label)}</span>
-      <span className="shop-deck-preview-host__missing-label">Missing image</span>
+      <span className="shop-deck-preview-host__missing-label">{content.uiCopy.deckPreview.missingImage}</span>
     </span>
   );
 }
@@ -1765,9 +1749,11 @@ function ShopDeckPreviewAxisCell({
 
 function ShopDeckPreviewBackCell({
   imageHash,
+  content,
   resolveDeckImageUrl,
 }: {
   imageHash: string;
+  content: ShopPageContentData;
   resolveDeckImageUrl?: ShopDeckImageResolver;
 }) {
   const src = resolveShopDeckImageUrl(resolveDeckImageUrl, imageHash, undefined);
@@ -1777,14 +1763,14 @@ function ShopDeckPreviewBackCell({
     return (
       <img
         src={src}
-        alt="Back"
+        alt={content.uiCopy.deckPreview.cardBackAlt}
         className="shop-deck-preview-host__back-image"
         onError={() => setFailedSrc(src)}
       />
     );
   }
 
-  return <span className="shop-deck-preview-host__piece-label">Back</span>;
+  return <span className="shop-deck-preview-host__piece-label">{content.uiCopy.deckPreview.cardBackLabel}</span>;
 }
 
 function InfoDetailLayer({
@@ -1825,7 +1811,7 @@ function InfoDetailLayer({
         <MainBottom x={x} y={y} w={w} h={h} label={detail.title} count={detail.rows.length} rightActionLabel={detail.cta} onRightAction={onClose} showNavigation={false} />
         <rect x={tableX} y={tableY} width={tableW} height={headH + rowH * detail.rows.length} fill={cfg.colors.tableFill} stroke={accent} strokeOpacity=".35" />
         <rect x={tableX} y={tableY} width={labelW} height={headH} fill={cfg.colors.tableHeaderFill} stroke={cfg.colors.tableGridStroke} />
-        <Txt x={tableX + token.comparisonBenefitX} y={tableY + token.comparisonBenefitY} size={token.comparisonBenefitSize} weight="950" fill={accent} cfg={cfg}>Benefit</Txt>
+        <Txt x={tableX + token.comparisonBenefitX} y={tableY + token.comparisonBenefitY} size={token.comparisonBenefitSize} weight="950" fill={accent} cfg={cfg}>{detail.title}</Txt>
         {detail.tiers.map((tier, index) => {
           const cx = tableX + labelW + index * colW;
           const color = toneColor(tier.tone as ShopTone, cfg);
@@ -1855,7 +1841,7 @@ function InfoDetailLayer({
             </g>
           );
         })}
-        <Txt x={tableX} y={body.y + body.h - Math.max(14, token.comparisonNoteBottom - 10)} size={token.comparisonNoteSize} fill={cfg.colors.mutedText} weight="550" cfg={cfg}>Comparison is mock data for layout only; real tier benefits can wire into this surface later.</Txt>
+        <Txt x={tableX} y={body.y + body.h - Math.max(14, token.comparisonNoteBottom - 10)} size={token.comparisonNoteSize} fill={cfg.colors.mutedText} weight="550" cfg={cfg}>{detail.subtitle}</Txt>
       </g>
     );
   }
@@ -1917,7 +1903,7 @@ function MainBody({
   products: ShopProduct[];
   content: ShopPageContentData;
   loadingId: string | null;
-  acBalance: number;
+  acBalance: number | null;
   specialView: 'earnRewards' | null;
   infoRequest: 'arenaCredits' | 'eliteBenefits' | null;
   bottomPreviewTarget: BottomPreviewTarget | null;
@@ -2031,10 +2017,10 @@ function MainBody({
 
   const actionForTab = (tab: ShopTab): { label: string; onAction: () => void } | undefined => {
     if (tab === 'Treasury') {
-      return { label: 'What is Arena Credits?', onAction: () => openInfoDetail('arenaCredits') };
+      return { label: content.infoDetails.arenaCredits.title, onAction: () => openInfoDetail('arenaCredits') };
     }
     if (tab === 'Elite') {
-      return { label: 'Compare All Benefits', onAction: () => openInfoDetail('eliteBenefits') };
+      return { label: content.infoDetails.eliteBenefits.title, onAction: () => openInfoDetail('eliteBenefits') };
     }
     return undefined;
   };
@@ -2049,11 +2035,11 @@ function MainBody({
     const topPlayAccessItems = activeTab === 'Play Access' ? content.sections['Play Access'].categories ?? [] : [];
     const topEventItems = activeTab === 'Events' ? content.sections.Events.featured ?? content.sections.Events.categories ?? [] : [];
     const topCards = activeTab === 'Vault'
-      ? topVaultGroups.map(vaultGroupToMainCarouselCard)
+      ? topVaultGroups.map(group => vaultGroupToMainCarouselCard(group, content))
       : activeTab === 'Play Access'
-        ? topPlayAccessItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'play-access'))
+        ? topPlayAccessItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'play-access', content))
         : activeTab === 'Events'
-          ? topEventItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'events'))
+          ? topEventItems.map((item, index) => staticItemToImageMainCarouselCard(item, index, 'events', content))
           : topTileItems.map((item, index) => tileToMainCarouselCard(item, index, loadingId, content, activeTab));
     const bottomTileItems = displayedBottomTab === 'Treasury' || displayedBottomTab === 'Elite'
       ? tilesForTab(products, displayedBottomTab, content)
@@ -2159,6 +2145,7 @@ function MainBody({
           w={bottomFrameBounds.w}
           h={resolvedSectionBottomY - y}
           deck={selectedVaultDeck}
+          content={content}
           resolveDeckImageUrl={resolveDeckImageUrl}
           onClose={() => setSelectedVaultDeckKey(null)}
         />
@@ -2186,7 +2173,7 @@ function MainBody({
           deckPreviews={vaultDecks}
           resolveDeckImageUrl={resolveDeckImageUrl}
           onDeckInspect={openVaultDeckDetail}
-          rightActionLabel="Back To Shop"
+          rightActionLabel={content.uiCopy.actions.backToShop}
           onRightAction={closeBottomDetail}
         />
       );
@@ -2221,7 +2208,7 @@ function MainBody({
           cfg={cfg}
           loadingId={loadingId}
           pageIndex={bottomPageIndex}
-          rightActionLabel="Back To Shop"
+          rightActionLabel={content.uiCopy.actions.backToShop}
           onRightAction={closeBottomDetail}
           onInspect={inspectBottomItem}
           onBuy={onBuy}
@@ -2246,7 +2233,7 @@ function MainBody({
             cfg={cfg}
             loadingId={loadingId}
             pageIndex={bottomPageIndex}
-            rightActionLabel={`Back To ${displayedBottomTab}`}
+            rightActionLabel={`${content.uiCopy.actions.backToPrefix} ${content.sections[displayedBottomTab].title}`}
             onRightAction={() => setBottomTileDetail(null)}
             onInspect={inspectBottomItem}
             onBuy={onBuy}
@@ -2333,7 +2320,7 @@ function RewardActionOverlay({
       <RewardQuestArtwork x={artX + 1} y={artY + 1} w={artW - 2} h={Math.max(120, artH - token.overlayArtFooterH)} quest={quest} cfg={cfg} featured={false} active />
       <rect x={artX + 1} y={artY + artH - token.overlayArtFooterH} width={artW - 2} height={token.overlayArtFooterVisibleH} fill={cfg.colors.earnOverlayArtFooterFill} />
       <Txt x={artX + token.overlayArtRewardX} y={artY + artH - token.overlayArtRewardY} size={token.overlayArtRewardSize} weight={token.overlayArtRewardWeight} fill={color} cfg={cfg}>{quest.reward}</Txt>
-      <Txt x={artX + token.overlayArtRewardX} y={artY + artH - token.overlayArtCadenceY} size={token.overlayArtCadenceSize} fill={cfg.colors.earnOverlayMutedText} weight={token.overlayArtCadenceWeight} cfg={cfg}>{quest.cadence} reward</Txt>
+      <Txt x={artX + token.overlayArtRewardX} y={artY + artH - token.overlayArtCadenceY} size={token.overlayArtCadenceSize} fill={cfg.colors.earnOverlayMutedText} weight={token.overlayArtCadenceWeight} cfg={cfg}>{quest.cadence} {copy.rewardSuffix}</Txt>
       <Txt x={detailX} y={artY + token.overlayDetailTitleY} size={token.overlayDetailTitleSize} weight={token.overlayDetailTitleWeight} fill={color} cfg={cfg}>{quest.title}</Txt>
       <WrappedText x={detailX} y={artY + token.overlayDescriptionY} width={detailW} lines={quest.description} size={token.overlayDescriptionSize} lineHeight={token.overlayDescriptionLineHeight} fill={cfg.colors.earnOverlayBodyText} weight={token.overlayDescriptionWeight} maxLines={2} cfg={cfg} />
       <WrappedText x={detailX} y={artY + token.overlayHelperTextY} width={detailW} lines={helper} size={token.overlayHelperSize} lineHeight={token.overlayHelperLineHeight} fill={cfg.colors.earnOverlayMutedText} weight={token.overlayHelperWeight} maxLines={2} cfg={cfg} />
@@ -2345,7 +2332,7 @@ function RewardActionOverlay({
         </g>
       ))}
       <rect x={detailX} y={statusY} width={detailW} height={token.overlayStatusH} rx={cfg.svgDefaults.roundedNone} fill={cfg.colors.earnOverlayStatusFill} stroke={color} strokeOpacity={token.overlayStatusStrokeOpacity} />
-      <Txt x={detailX + token.overlayStatusTextX} y={statusY + token.overlayStatusTitleY} size={token.overlayStatusTitleSize} weight={token.overlayStatusTitleWeight} fill={color} cfg={cfg}>{isInvite ? 'Verification' : isShare ? 'Share Target' : 'Progress'}</Txt>
+      <Txt x={detailX + token.overlayStatusTextX} y={statusY + token.overlayStatusTitleY} size={token.overlayStatusTitleSize} weight={token.overlayStatusTitleWeight} fill={color} cfg={cfg}>{isInvite ? copy.verificationStatus : isShare ? copy.shareTargetStatus : copy.progressStatus}</Txt>
       <WrappedText x={detailX + token.overlayStatusTextX} y={statusY + token.overlayStatusChipsY} width={detailW - token.overlayStatusChipsReserve} lines={chips.join('  /  ')} size={token.overlayStatusChipsSize} lineHeight={token.overlayStatusChipsLineHeight} fill={cfg.colors.earnOverlayMutedText} weight={token.overlayStatusChipsWeight} maxLines={1} cfg={cfg} />
       <SvgButton x={x + token.overlayButtonOuterPad} y={y + h - token.overlayButtonBottom} w={buttonW} h={token.overlayButtonH} label={primaryLabel} active small cfg={cfg} />
       <SvgButton x={x + token.overlayButtonOuterPad + token.overlayButtonGap + buttonW} y={y + h - token.overlayButtonBottom} w={buttonW} h={token.overlayButtonH} label={secondaryLabel} active small onClick={hasSpinReward ? onSpin : undefined} cfg={cfg} />
@@ -2583,7 +2570,7 @@ export function ShopPageSvgSurface({
   onDailyRewardSpin,
 }: ShopPageSvgSurfaceProps) {
   const cfg = useMemo(() => normalizeShopPageSvgControls(controls), [controls]);
-  const shopContent = useMemo(() => normalizeShopPageContent(content), [content]);
+  const shopContent = content;
   const mainRef = useRef<HTMLElement | null>(null);
   const [surfaceSize, setSurfaceSize] = useState({ width: 0, height: 0 });
   const [previewStart, setPreviewStart] = useState(0);
@@ -2882,14 +2869,14 @@ export function ShopPageSvgSurface({
         {loadingProducts ? (
           <g>
             <rect x={metrics.mainX} y={cfg.layout.mainY} width={metrics.mainW} height={mainSectionBottomY - cfg.layout.mainY} fill="rgba(2,10,19,.52)" />
-            <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 250} anchor="middle" size="24" weight="950" fill="#bcecff" cfg={cfg}>Loading marketplace...</Txt>
+            <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 250} anchor="middle" size="24" weight="950" fill="#bcecff" cfg={cfg}>{shopContent.uiCopy.status.loadingMarketplace}</Txt>
           </g>
         ) : null}
         {error ? (
           <g>
             <rect x={metrics.mainX + 80} y={cfg.layout.mainY + 150} width={metrics.mainW - 160} height="120" rx="0" fill="rgba(60,10,22,.86)" stroke={cfg.colors.danger} />
             <Txt x={metrics.mainX + metrics.mainW / 2} y={cfg.layout.mainY + 195} anchor="middle" size="17" weight="950" fill="#ffd7dd" cfg={cfg}>{error}</Txt>
-            <SvgButton x={metrics.mainX + metrics.mainW / 2 - 80} y={cfg.layout.mainY + 230} w={160} h={28} label="Clear Error" active small onClick={onClearError} cfg={cfg} />
+            <SvgButton x={metrics.mainX + metrics.mainW / 2 - 80} y={cfg.layout.mainY + 230} w={160} h={28} label={shopContent.uiCopy.status.clearError} active small onClick={onClearError} cfg={cfg} />
           </g>
         ) : null}
         {purchasePrompt && onPurchaseProviderSelect && onPurchaseCancel ? (
@@ -2900,6 +2887,7 @@ export function ShopPageSvgSurface({
             product={purchasePrompt.product}
             message={purchasePrompt.message}
             busyProvider={purchasePrompt.busyProvider}
+            content={shopContent}
             cfg={cfg}
             onProviderSelect={onPurchaseProviderSelect}
             onCancel={onPurchaseCancel}

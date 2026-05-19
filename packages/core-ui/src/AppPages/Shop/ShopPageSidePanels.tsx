@@ -21,13 +21,14 @@ function rightPanelMeta(id: ShopRightTabId, content: ShopPageContentData): ShopR
   return content.rightTabs.find(tab => tab.id === id) ?? content.rightTabs[0];
 }
 
-function rightPanelDetailRows(id: ShopRightTabId, acBalance: number, content: ShopPageContentData): Array<{ label: string; value: string; detail: string }> {
+function rightPanelDetailRows(id: ShopRightTabId, acBalance: number | null, content: ShopPageContentData): Array<{ label: string; value: string; detail: string }> {
   if (id === 'wallet') {
     const details = content.rightDetails.wallet;
+    const balanceValue = acBalance === null ? content.uiCopy.status.unknownValue : acBalance.toLocaleString();
     return content.rightRows.wallet.map((row, index) => ({
       label: row[0],
-      value: index === 0 ? `${acBalance.toLocaleString()} ${row[1]}` : row[1],
-      detail: details[index]?.detail ?? 'Account balance state for this shop tab.',
+      value: index === 0 ? `${balanceValue} ${row[1]}` : row[1],
+      detail: details[index]?.detail ?? '',
     }));
   }
   if (id === 'events') {
@@ -35,7 +36,7 @@ function rightPanelDetailRows(id: ShopRightTabId, acBalance: number, content: Sh
     return content.rightRows.events.map((row, index) => ({
       label: row[0],
       value: row[1],
-      detail: details[index]?.detail ?? `${row[2]} state for this event entry.`,
+      detail: details[index]?.detail ?? '',
     }));
   }
   if (id === 'recent') {
@@ -43,7 +44,7 @@ function rightPanelDetailRows(id: ShopRightTabId, acBalance: number, content: Sh
     return content.rightRows.recent.map((row, index) => ({
       label: row[0],
       value: row[1],
-      detail: details[index]?.detail ?? (row[1].startsWith('+') ? 'Credit added to marketplace balance.' : 'Marketplace purchase recorded in account history.'),
+      detail: details[index]?.detail ?? '',
     }));
   }
   return content.rightDetails[id] ?? content.rightDetails.account;
@@ -53,23 +54,23 @@ function rightPanelFullTitle(id: ShopRightTabId, content: ShopPageContentData): 
   return rightPanelMeta(id, content).title.replace(/\s+PREVIEW$/i, '');
 }
 
-function accountDisplayName(accountSummary?: ShopAccountSummary | null): string {
-  return accountSummary?.displayName?.trim() || 'N/A';
+function accountDisplayName(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
+  return accountSummary?.displayName?.trim() || content.uiCopy.status.unknownValue;
 }
 
-function accountEmail(accountSummary?: ShopAccountSummary | null): string {
-  return accountSummary?.email?.trim() || (accountSummary?.isGuest ? 'Guest profile' : 'Email N/A');
+function accountEmail(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
+  return accountSummary?.email?.trim() || (accountSummary?.isGuest ? content.uiCopy.rightPanel.guestProfile : content.uiCopy.rightPanel.emailUnavailable);
 }
 
-function accountInitials(accountSummary?: ShopAccountSummary | null): string {
-  const source = accountDisplayName(accountSummary) || accountEmail(accountSummary);
+function accountInitials(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
+  const source = accountSummary?.displayName?.trim() || accountSummary?.email?.trim() || '';
   const initials = source
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map(part => part[0]?.toUpperCase() ?? '')
     .join('');
-  return initials || 'OC';
+  return initials || content.uiCopy.rightPanel.initialsUnavailable;
 }
 
 function AccountProfileAvatar({
@@ -77,6 +78,7 @@ function AccountProfileAvatar({
   y,
   size,
   accountSummary,
+  content,
   accent,
   cfg,
 }: {
@@ -84,6 +86,7 @@ function AccountProfileAvatar({
   y: number;
   size: number;
   accountSummary?: ShopAccountSummary | null;
+  content: ShopPageContentData;
   accent: string;
   cfg: ShopPageSvgControls;
 }) {
@@ -102,7 +105,7 @@ function AccountProfileAvatar({
       {showPhoto ? (
         <image href={photoUrl} x={x} y={y} width={size} height={size} preserveAspectRatio="xMidYMid meet" clipPath={`url(#${clipId})`} onError={() => setFailedPhotoUrl(photoUrl)} />
       ) : (
-        <Txt x={x + size / 2} y={y + size / 2 + size * 0.12} anchor="middle" size={Math.max(12, size * 0.34)} weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{accountInitials(accountSummary)}</Txt>
+        <Txt x={x + size / 2} y={y + size / 2 + size * 0.12} anchor="middle" size={Math.max(12, size * 0.34)} weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{accountInitials(accountSummary, content)}</Txt>
       )}
       <circle cx={x + size / 2} cy={y + size / 2} r={size / 2 - 1} fill="none" stroke={cfg.colors.bodyText} strokeOpacity="0.5" strokeWidth="0.9" />
     </g>
@@ -115,6 +118,7 @@ function AccountSummaryBand({
   w,
   h,
   accountSummary,
+  content,
   accent,
   cfg,
   compact = false,
@@ -124,6 +128,7 @@ function AccountSummaryBand({
   w: number;
   h: number;
   accountSummary?: ShopAccountSummary | null;
+  content: ShopPageContentData;
   accent: string;
   cfg: ShopPageSvgControls;
   compact?: boolean;
@@ -132,17 +137,18 @@ function AccountSummaryBand({
   const avatarX = x + 10;
   const avatarY = y + h / 2 - avatarSize / 2;
   const textX = avatarX + avatarSize + 12;
-  const name = accountDisplayName(accountSummary);
-  const email = accountEmail(accountSummary);
+  const name = accountDisplayName(accountSummary, content);
+  const email = accountEmail(accountSummary, content);
+  const copy = content.uiCopy.rightPanel;
   const chips = [
-    accountSummary?.eloRating ? `ELO ${accountSummary.eloRating}` : 'Rating N/A',
-    accountSummary?.gamesPlayed !== undefined ? `${accountSummary.gamesPlayed} games` : 'Games N/A',
-    accountSummary?.winRate !== undefined ? `${accountSummary.winRate.toFixed(1)}% win` : 'Win rate N/A',
+    accountSummary?.eloRating ? `${copy.eloPrefix} ${accountSummary.eloRating}` : copy.ratingUnavailable,
+    accountSummary?.gamesPlayed !== undefined ? `${accountSummary.gamesPlayed} ${copy.gamesSuffix}` : copy.gamesUnavailable,
+    accountSummary?.winRate !== undefined ? `${accountSummary.winRate.toFixed(1)}% ${copy.winRateSuffix}` : copy.winRateUnavailable,
   ];
   return (
     <g>
       <rect x={x} y={y} width={w} height={h} rx={8} fill={alphaColor(accent, 0.12)} stroke={accent} strokeWidth="1.1" strokeOpacity="0.56" />
-      <AccountProfileAvatar x={avatarX} y={avatarY} size={avatarSize} accountSummary={accountSummary} accent={accent} cfg={cfg} />
+      <AccountProfileAvatar x={avatarX} y={avatarY} size={avatarSize} accountSummary={accountSummary} content={content} accent={accent} cfg={cfg} />
       <Txt x={textX} y={y + (compact ? 21 : 25)} size={compact ? 11.2 : 15.2} weight="950" fill={accent} cfg={cfg}>{name}</Txt>
       <WrappedText x={textX} y={y + (compact ? 35 : 43)} width={Math.max(90, w - (textX - x) - 12)} lines={email} size={compact ? 7.1 : 9.5} lineHeight={compact ? 7.7 : 10.5} fill={cfg.colors.mutedText} weight={650} maxLines={1} cfg={cfg} />
       {!compact ? chips.map((chip, index) => {
@@ -347,7 +353,7 @@ function RightPreviewContent({
   active: ShopRightTabId;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
-  acBalance: number;
+  acBalance: number | null;
   accountSummary?: ShopAccountSummary | null;
 }) {
   const meta = rightPanelMeta(active, content);
@@ -356,7 +362,7 @@ function RightPreviewContent({
   const accountMode = active === 'account';
   const profileBandH = accountMode ? Math.max(46, Math.min(58, h * 0.24)) : 0;
   const visibleRows = accountMode
-    ? rows.filter(row => row.label !== 'Profile').slice(0, 3)
+    ? rows.slice(1, 4)
     : rows.slice(0, active === 'events' ? 3 : 4);
   const rowX = x + token.rowX;
   const rowW = w - token.rowX * 2;
@@ -372,6 +378,7 @@ function RightPreviewContent({
           w={rowW}
           h={profileBandH - 4}
           accountSummary={accountSummary}
+          content={content}
           accent={meta.accent}
           cfg={cfg}
           compact
@@ -484,7 +491,7 @@ export function RightSidePanel({
   h: number;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
-  acBalance: number;
+  acBalance: number | null;
   accountSummary?: ShopAccountSummary | null;
   active: ShopRightTabId;
   onActiveChange: (id: ShopRightTabId) => void;
@@ -526,7 +533,7 @@ export function RightSidePanel({
           {previewHovered ? (
             <g>
               <rect x={mainX + mainW - 70} y={mainY + token.previewHeaderInset + 6} width="54" height="17" rx="4" fill={alphaColor(activeMeta.accent, 0.18)} stroke={activeMeta.accent} strokeOpacity="0.72" />
-              <Txt x={mainX + mainW - 43} y={mainY + token.previewHeaderInset + 17} anchor="middle" size="8.4" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>MORE...</Txt>
+              <Txt x={mainX + mainW - 43} y={mainY + token.previewHeaderInset + 17} anchor="middle" size="8.4" weight="950" fill={cfg.colors.bodyText} cfg={cfg}>{content.uiCopy.rightPanel.moreLabel}</Txt>
             </g>
           ) : null}
         </HeaderBar>
@@ -568,7 +575,7 @@ export function RightPanelDetailLayer({
   w: number;
   h: number;
   active: ShopRightTabId;
-  acBalance: number;
+  acBalance: number | null;
   accountSummary?: ShopAccountSummary | null;
   content: ShopPageContentData;
   cfg: ShopPageSvgControls;
@@ -579,7 +586,7 @@ export function RightPanelDetailLayer({
   const rows = rightPanelDetailRows(active, acBalance, content);
   const detailTitle = rightPanelFullTitle(active, content);
   const accountMode = active === 'account';
-  const detailRows = accountMode ? rows.filter(row => row.label !== 'Profile') : rows;
+  const detailRows = accountMode ? rows.slice(1) : rows;
   const body = mainBottomOverlayContentRect(x, y, w, h, false);
   const pad = Math.max(10, Math.min(18, body.w * 0.012));
   const panelX = body.x + pad;
@@ -596,7 +603,7 @@ export function RightPanelDetailLayer({
   const rowAreaY = panelY + rowTopPad + accountBandH;
   return (
     <g>
-      <MainBottom x={x} y={y} w={w} h={h} label={detailTitle} count={detailRows.length} rightActionLabel="Back To Shop" onRightAction={onClose} showNavigation={false} />
+      <MainBottom x={x} y={y} w={w} h={h} label={detailTitle} count={detailRows.length} rightActionLabel={content.uiCopy.actions.backToShop} onRightAction={onClose} showNavigation={false} />
       <path d={lobbyRoundedRectPath(panelX, panelY, panelW, panelH, 8)} fill={alphaColor(meta.accent, 0.055)} stroke={meta.accent} strokeWidth="1.1" strokeOpacity="0.44" />
       {accountMode ? (
         <AccountSummaryBand
@@ -605,6 +612,7 @@ export function RightPanelDetailLayer({
           w={panelW - 32}
           h={accountBandH - 12}
           accountSummary={accountSummary}
+          content={content}
           accent={meta.accent}
           cfg={cfg}
         />
@@ -628,7 +636,7 @@ export function RightPanelDetailLayer({
           y={panelY + panelH - 42}
           w={170}
           h={28}
-          label="Open Elite Shop"
+          label={content.uiCopy.rightPanel.openEliteShop}
           active
           small
           onClick={onElite}
