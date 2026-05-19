@@ -44,7 +44,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
               currency: Matchers.string('usd'),
               active: Matchers.boolean(true),
             },
-            { min: 1 }
+            1
           ),
         });
       })

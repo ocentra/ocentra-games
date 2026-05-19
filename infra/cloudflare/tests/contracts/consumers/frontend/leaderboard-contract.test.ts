@@ -39,7 +39,7 @@ describe(extractName(import.meta.url), TestSuiteType.Contract, () => {
           season_id: Matchers.string('current'),
           entries: Matchers.like([]),
           total_entries: Matchers.integer(0),
-          last_updated: Matchers.iso8601DateTimeWithMillis('2026-02-05T12:00:00.000Z'),
+          last_updated: Matchers.datetime("yyyy-MM-dd'T'HH:mm:ss.SSSX", '2026-02-05T12:00:00.000Z'),
           ai_only: Matchers.boolean(false),
         });
       })
