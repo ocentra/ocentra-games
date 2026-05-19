@@ -50,8 +50,17 @@ function rightPanelDetailRows(id: ShopRightTabId, acBalance: number | null, cont
   return content.rightDetails[id] ?? content.rightDetails.account;
 }
 
+function withoutPreviewSuffix(title: string): string {
+  const trimmed = title.trimEnd();
+  const suffix = 'PREVIEW';
+  if (!trimmed.toUpperCase().endsWith(suffix)) {
+    return title;
+  }
+  return trimmed.slice(0, -suffix.length).trimEnd();
+}
+
 function rightPanelFullTitle(id: ShopRightTabId, content: ShopPageContentData): string {
-  return rightPanelMeta(id, content).title.replace(/\s+PREVIEW$/i, '');
+  return withoutPreviewSuffix(rightPanelMeta(id, content).title);
 }
 
 function accountDisplayName(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
@@ -64,13 +73,33 @@ function accountEmail(accountSummary: ShopAccountSummary | null | undefined, con
 
 function accountInitials(accountSummary: ShopAccountSummary | null | undefined, content: ShopPageContentData): string {
   const source = accountSummary?.displayName?.trim() || accountSummary?.email?.trim() || '';
-  const initials = source
-    .split(/\s+/)
+  const initials = firstWords(source, 2)
     .filter(Boolean)
-    .slice(0, 2)
     .map(part => part[0]?.toUpperCase() ?? '')
     .join('');
   return initials || content.uiCopy.rightPanel.initialsUnavailable;
+}
+
+function firstWords(value: string, maxWords: number): string[] {
+  const words: string[] = [];
+  let current = '';
+  for (const char of value.trim()) {
+    if (char.trim() === '') {
+      if (current.length > 0) {
+        words.push(current);
+        if (words.length >= maxWords) {
+          return words;
+        }
+        current = '';
+      }
+    } else {
+      current += char;
+    }
+  }
+  if (current.length > 0 && words.length < maxWords) {
+    words.push(current);
+  }
+  return words;
 }
 
 function AccountProfileAvatar({

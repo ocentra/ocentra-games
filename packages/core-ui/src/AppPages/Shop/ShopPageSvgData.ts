@@ -16,7 +16,7 @@ import {
   shopPageFeedbackImageUrl,
   shopPageFoundersLifetimeImageUrl,
   shopPageInviteFriendImageUrl,
-  shopPageLinkedInImageUrl,
+  shopPageProfessionalNetworkImageUrl,
   shopPagePlayersAccessImageUrl,
   shopPagePrivateTableImageUrl,
   shopPageProfileFrameImageUrl,
@@ -470,14 +470,14 @@ export const SHOP_PREVIEWS: ShopPreviewRow[] = [
     subtitle: 'Daily rewards and bonus spins',
     items: ['Daily Reward', 'Facebook Share', 'LinkedIn Post', 'X / Twitter', 'Invite Friend', 'Finish 3 Matches', 'Useful Feedback'],
     accent: '#20e39d',
-    imageUrls: [shopPageEarnFreeAcImageUrl, shopPageFacebookImageUrl, shopPageLinkedInImageUrl, shopPageXLogoImageUrl, shopPageInviteFriendImageUrl, shopPageWin3MatchesImageUrl, shopPageFeedbackImageUrl],
+    imageUrls: [shopPageEarnFreeAcImageUrl, shopPageFacebookImageUrl, shopPageProfessionalNetworkImageUrl, shopPageXLogoImageUrl, shopPageInviteFriendImageUrl, shopPageWin3MatchesImageUrl, shopPageFeedbackImageUrl],
   },
 ];
 
 export const SHOP_QUESTS: ShopQuest[] = [
   { key: 'daily_spin', group: 'Daily', title: 'Daily Reward Spin', reward: 'Free Spin', cadence: 'Daily', tone: 'gold', icon: 'trophy', action: 'Spin', imageUrl: shopPageEarnFreeAcImageUrl, description: 'Open the daily wheel and spin for a capped AC reward.', details: ['One free spin resets daily.', 'Wheel rewards AC only.', 'Reward syncs into wallet after claim.'] },
   { key: 'share_facebook', group: 'Share', title: 'Share on Facebook', reward: '+1 Spin', cadence: 'Weekly', tone: 'cyan', icon: 'link', action: 'Share', imageUrl: shopPageFacebookImageUrl, description: 'Share a game page, lobby invite, or event post to unlock a bonus spin.', details: ['Share an approved Ocentra link.', 'Verify with proof or platform APIs.', 'Verified share unlocks one spin.'] },
-  { key: 'share_linkedin', group: 'Share', title: 'Share on LinkedIn', reward: '+1 Spin', cadence: 'Weekly', tone: 'green', icon: 'link', action: 'Post', imageUrl: shopPageLinkedInImageUrl, description: 'Post an achievement, invite, or developer update to earn a spin.', details: ['Share a public game or profile link.', 'Submit proof or verify automatically later.', 'Claim one spin after verification.'] },
+  { key: 'share_linkedin', group: 'Share', title: 'Share on LinkedIn', reward: '+1 Spin', cadence: 'Weekly', tone: 'green', icon: 'link', action: 'Post', imageUrl: shopPageProfessionalNetworkImageUrl, description: 'Post an achievement, invite, or developer update to earn a spin.', details: ['Share a public game or profile link.', 'Submit proof or verify automatically later.', 'Claim one spin after verification.'] },
   { key: 'share_x', group: 'Share', title: 'Share on X / Twitter', reward: '+1 Spin', cadence: 'Weekly', tone: 'silver', icon: 'link', action: 'Tweet', imageUrl: shopPageXLogoImageUrl, description: 'Post a game invite, table result, or marketplace feature to earn a spin.', details: ['Post an approved Ocentra link.', 'Proof can be screenshot, link paste, or API verification.', 'Spin reward is capped and non-cash.'] },
   { key: 'invite_friend', group: 'Community', title: 'Invite A Friend', reward: '+250 AC + Spin', cadence: 'Verified', tone: 'orange', icon: 'link', action: 'Invite', imageUrl: shopPageInviteFriendImageUrl, description: 'Earn a verified-join reward when a real friend becomes active.', details: ['Send an invite link.', 'Friend verifies and completes a game.', 'Fixed AC and bonus spin sync after verification.'] },
   { key: 'play_match', group: 'Play', title: 'Finish 3 Matches', reward: '+1 Spin', cadence: 'Daily', tone: 'violet', icon: 'cards', action: 'Play', imageUrl: shopPageWin3MatchesImageUrl, description: 'Reward healthy completed play sessions, not wins or wagering.', details: ['Complete three valid matches.', 'Abandoned games do not count.', 'Unlock a bonus spin after completion.'] },
