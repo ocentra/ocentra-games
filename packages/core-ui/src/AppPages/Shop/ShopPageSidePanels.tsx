@@ -434,11 +434,14 @@ function RightPanelSelectorCard({
   const activeFill = alphaColor(color, cfg.componentTokens.cardChrome.activeFillOpacity);
   const arrowTop = y + token.arrowTopInset;
   const arrowBottom = y + h - token.arrowTopInset;
-  const compactLabel = w < 154 || tab.title.length > 12;
+  const labelW = Math.max(24, w - 16);
+  const singleLineReadableMin = 8.4;
+  const rawSingleLineSize = labelW / (Math.max(1, tab.title.length) * 0.58);
+  const compactLabel = rawSingleLineSize < singleLineReadableMin;
   const labelLines = compactLabel ? splitRightPanelTabTitle(tab.title) : [tab.title];
-  const singleLineSize = fitSingleLineTextSize(tab.title, w - 16, 8.2, 10.8, 0.58);
+  const singleLineSize = fitSingleLineTextSize(tab.title, labelW, singleLineReadableMin, 10.8, 0.58);
   const lineSize = labelLines.length > 1
-    ? Math.min(9.6, Math.min(...labelLines.map(line => fitSingleLineTextSize(line, w - 16, 7.2, 9.6, 0.58))))
+    ? Math.min(9.6, Math.min(...labelLines.map(line => fitSingleLineTextSize(line, labelW, 7.2, 9.6, 0.58))))
     : singleLineSize;
   const fill = selected ? cfg.colors.bodyText : cfg.colors.tileSubtitleText;
   return (

@@ -1954,7 +1954,7 @@ export function UnifiedHeader({
                 )}
               </HeaderPill>
 
-              <HeaderPill box={geometry.centerBox} style={style}>
+              <HeaderPill box={geometry.centerBox} style={style} showChrome={!center.disablePillChrome}>
                 <CenterContent
                   box={geometry.centerBox}
                   config={center}
@@ -2253,6 +2253,7 @@ function HeaderPill({
   isButton,
   ariaLabel,
   dataSlot,
+  showChrome = true,
 }: {
   box: HeaderBoxRect;
   style: UnifiedHeaderStyleConfig;
@@ -2261,6 +2262,7 @@ function HeaderPill({
   isButton?: boolean;
   ariaLabel?: string;
   dataSlot?: string;
+  showChrome?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
   const titleId = useId().replace(/:/g, '');
@@ -2292,19 +2294,21 @@ function HeaderPill({
       style={{ cursor: interactive ? 'pointer' : 'default', outline: 'none' }}
     >
       {interactive && accessibleName ? <title id={titleId}>{accessibleName}</title> : null}
-      <rect
-        x={box.x}
-        y={box.y}
-        width={box.w}
-        height={box.h}
-        rx={box.h / 2}
-        fill={fillColor}
-        fillOpacity={fillOpacity}
-        stroke={edgeColor}
-        strokeWidth={1}
-        vectorEffect="non-scaling-stroke"
-        filter={style.pillGlowBlur > 0 ? 'url(#pillGlow)' : undefined}
-      />
+      {showChrome ? (
+        <rect
+          x={box.x}
+          y={box.y}
+          width={box.w}
+          height={box.h}
+          rx={box.h / 2}
+          fill={fillColor}
+          fillOpacity={fillOpacity}
+          stroke={edgeColor}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+          filter={style.pillGlowBlur > 0 ? 'url(#pillGlow)' : undefined}
+        />
+      ) : null}
       {interactive ? <g aria-hidden="true">{children}</g> : children}
     </g>
   );

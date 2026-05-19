@@ -43,7 +43,7 @@ import {
   type DeckPreviewAxis,
   type DeckPreviewCell,
 } from '../../Common/DeckPreview/DeckPreviewView';
-import { PictureViewerFrame } from '../../Common/PictureViewerFrame/PictureViewerFrame';
+import { CardImageViewer } from '../../Common/CardImageViewer/CardImageViewer';
 import { avatarImageUrls } from '@ocentra/app-assets/avatars';
 import type { ShopPaymentProvider } from '@ocentra/endpoint-domain/schemas/shop';
 import type {
@@ -111,8 +111,10 @@ type Metrics = {
   rightX: number;
   rightW: number;
   headerSideW: number;
+  headerStatsW: number;
   headerCenterX: number;
   headerStatsX: number;
+  showHeaderMarketplace: boolean;
 };
 
 type TileItem = ShopStaticItem & {
@@ -1668,36 +1670,22 @@ function ShopDeckPictureViewerOverlay({
       >
         <button type="button" className="shop-picture-viewer__backdrop" aria-label="Close picture viewer" onClick={onClose} />
         <section className="shop-picture-viewer__panel" aria-label={`${cell.label} image`} onClick={event => event.stopPropagation()}>
-          <PictureViewerFrame
+          <CardImageViewer
             className="shop-picture-viewer__frame"
             ariaLabel={`${cell.label} frame`}
+            imageSrc={src && failedSrc !== src ? src : null}
+            imageAlt={deckPieceDisplayLabel(cell.label)}
+            missingLabel={deckPieceDisplayLabel(cell.label)}
+            caption={deckPieceDisplayLabel(cell.label)}
+            counter={cells.length > 0 ? `${currentIndex + 1}/${cells.length}` : '1/1'}
             previousLabel="Previous card image"
             nextLabel="Next card image"
+            closeLabel="Close card detail"
             onPrevious={canCycle ? () => selectByDelta(-1) : undefined}
             onNext={canCycle ? () => selectByDelta(1) : undefined}
+            onClose={onClose}
+            onImageError={src ? () => setFailedSrc(src) : undefined}
           />
-          <button type="button" className="shop-picture-viewer__close" onClick={onClose} aria-label="Close card detail">
-            x
-          </button>
-          <div className="shop-picture-viewer__media">
-            {src && failedSrc !== src ? (
-              <img
-                src={src}
-                alt={cell.label}
-                className="shop-picture-viewer__image"
-                onError={() => setFailedSrc(src)}
-              />
-            ) : (
-              <div className="shop-picture-viewer__missing" title={deckPieceDisplayLabel(cell.label)}>
-                <span>{deckPieceDisplayLabel(cell.label)}</span>
-                <strong>Missing image</strong>
-              </div>
-            )}
-          </div>
-          <div className="shop-picture-viewer__caption">
-            <span>{deckPieceDisplayLabel(cell.label)}</span>
-            <span>{cells.length > 0 ? `${currentIndex + 1}/${cells.length}` : '1/1'}</span>
-          </div>
         </section>
       </div>,
       document.body
@@ -2667,10 +2655,13 @@ export function ShopPageSvgSurface({
     const mainW = rightX - mainX - cfg.layout.mainGap;
     const headerTotalW = canvasWidth - cfg.layout.outerPad - mainX;
     const headerCreditW = Math.max(cfg.header.arenaCreditW, cfg.componentTokens.headerLayer.balanceMinWidth);
-    const headerSideW = (headerTotalW - headerCreditW - cfg.header.gap * 2) / 2;
-    const headerCenterX = mainX + headerSideW + cfg.header.gap;
+    const naturalHeaderSideW = (headerTotalW - headerCreditW - cfg.header.gap * 2) / 2;
+    const showHeaderMarketplace = naturalHeaderSideW >= 218;
+    const headerSideW = showHeaderMarketplace ? naturalHeaderSideW : 0;
+    const headerCenterX = showHeaderMarketplace ? mainX + headerSideW + cfg.header.gap : mainX;
     const headerStatsX = headerCenterX + headerCreditW + cfg.header.gap;
-    return { leftX, leftY, leftW: columns.leftW, mainX, mainW, rightX, rightW: columns.rightW, headerSideW, headerCenterX, headerStatsX };
+    const headerStatsW = Math.max(80, canvasWidth - cfg.layout.outerPad - headerStatsX);
+    return { leftX, leftY, leftW: columns.leftW, mainX, mainW, rightX, rightW: columns.rightW, headerSideW, headerStatsW, headerCenterX, headerStatsX, showHeaderMarketplace };
   }, [cfg, surfaceSize]);
 
   const canvasWidth = shopCanvasWidthForSurface(cfg, surfaceSize);
@@ -2827,6 +2818,7 @@ export function ShopPageSvgSurface({
           w={metrics.headerSideW}
           h={cfg.layout.headerH}
           rightX={metrics.headerCenterX + cfg.header.arenaCreditW + cfg.header.gap}
+          showMarketplace={metrics.showHeaderMarketplace}
           acBalance={acBalance}
           content={shopContent}
           cfg={cfg}
@@ -2838,7 +2830,7 @@ export function ShopPageSvgSurface({
             onTabChange('Treasury');
           }}
         />
-        <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerSideW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onActivePass={openActivePassDetail} />
+        <TopStatsLayer x={metrics.headerStatsX} y={cfg.layout.topY} w={metrics.headerStatsW} h={cfg.layout.headerH} content={shopContent} cfg={cfg} onActivePass={openActivePassDetail} />
         <MainBody
           key={`${activeTab}-${bottomPreviewVersion}-${rightDetailTarget ?? 'right-preview-idle'}`}
           x={metrics.mainX}

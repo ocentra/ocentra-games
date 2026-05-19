@@ -2,8 +2,8 @@ import type { CenterContentRenderArgs, CenterLogoRenderArgs, UnifiedHeaderConfig
 
 const SHOP_MARKETPLACE_LOGO_ASPECT = 1024 / 425;
 const SHOP_MARKETPLACE_LOGO_HEIGHT_SCALE = 1.3;
-const SHOP_MARKETPLACE_CENTER_WIDTH = 184;
-const SHOP_MARKETPLACE_CENTER_MIN_WIDTH = 164;
+const SHOP_MARKETPLACE_CENTER_WIDTH = 150;
+const SHOP_MARKETPLACE_CENTER_MIN_WIDTH = 144;
 
 export function createOcentraHeaderLogoConfig(logoImageUrl: string, size = 44): UnifiedHeaderConfigInput {
   return {
@@ -77,6 +77,7 @@ export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): Uni
       mode: 'B',
       contentGap: 0,
       sidePadding: 0,
+      disablePillChrome: true,
       modeB: {
         text: '',
         tagline: '',
@@ -93,6 +94,10 @@ export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): Uni
         const logoW = logoH * SHOP_MARKETPLACE_LOGO_ASPECT;
         const logoX = cx - logoW / 2;
         const logoY = cy - logoH / 2;
+        const outlineW = logoW * 0.74;
+        const outlineH = logoH * 0.62;
+        const outlineX = cx - outlineW / 2;
+        const outlineY = cy - outlineH / 2 + logoH * 0.015;
 
         return (
           <g>
@@ -103,6 +108,18 @@ export function createShopMarketplaceHeaderLogoConfig(logoImageUrl: string): Uni
               width={logoW}
               height={logoH}
               preserveAspectRatio="xMidYMid meet"
+            />
+            <rect
+              x={outlineX}
+              y={outlineY}
+              width={outlineW}
+              height={outlineH}
+              rx={outlineH / 2}
+              fill="none"
+              stroke="#eaffff"
+              strokeWidth="0.9"
+              strokeOpacity="0.58"
+              vectorEffect="non-scaling-stroke"
             />
           </g>
         );
